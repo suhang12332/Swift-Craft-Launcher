@@ -18,13 +18,15 @@ struct ModrinthProjectDetailToolbarView: View {
     var onBack: () -> Void
 
     var body: some View {
-        projectIconAndTitle
+        backButton
         
         if selectedTab == 1 {
             versionPaginationControls
         }
         Spacer()
-        backButton
+        projectIconAndTitle
+        Spacer()
+        
         tabPicker
     }
     

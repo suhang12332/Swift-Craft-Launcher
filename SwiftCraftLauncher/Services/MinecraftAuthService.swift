@@ -1,6 +1,6 @@
 import Foundation
 import Combine
-import SwiftUICore
+import SwiftUI
 
 class MinecraftAuthService: ObservableObject {
     static let shared = MinecraftAuthService()
