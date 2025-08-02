@@ -16,16 +16,9 @@ class BatchJarDownloader {
     ) async throws {
         let total = tasks.count
         let counter = Counter()
-        
-        // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GameSettingsManager.shared.concurrentDownloads)
-        
         try await withThrowingTaskGroup(of: Void.self) { group in
             for task in tasks {
                 group.addTask {
-                    await semaphore.wait()
-                    defer { Task { await semaphore.signal() } }
-                    
                     let fileManager = FileManager.default
                     let destinationURL = metaLibrariesDir.appendingPathComponent(task.destinationPath)
                     try fileManager.createDirectory(at: destinationURL.deletingLastPathComponent(), withIntermediateDirectories: true)

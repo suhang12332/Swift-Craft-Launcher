@@ -6,27 +6,16 @@ enum URLConfig {
         // Authentication API
         enum Authentication {
             // Microsoft OAuth
-//          static let deviceCode = URL(string: "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode")!
-//          static let token = URL(string: "https://login.microsoftonline.com/consumers/oauth2/v2.0/token")!
-//          
-//          // Xbox Live
-//          static let xboxLiveAuth = URL(string: "https://user.auth.xboxlive.com/user/authenticate")!
-//          static let xstsAuth = URL(string: "https://xsts.auth.xboxlive.com/xsts/authorize")!
-//          
-//          // Minecraft Services
-//          static let minecraftLogin = URL(string: "https://api.minecraftservices.com/authentication/login_with_xbox")!
-//          static let minecraftProfile = URL(string: "https://api.minecraftservices.com/minecraft/profile")!
-            
-            static let deviceCode = URL(string: "https://localhost:8081/consumers/oauth2/v2.0/devicecode")!
-            static let token = URL(string: "https://localhost:8081/consumers/oauth2/v2.0/token")!
-            
-            // Xbox Live
-            static let xboxLiveAuth = URL(string: "https://localhost:8081/user/authenticate")!
-            static let xstsAuth = URL(string: "https://localhost:8081/xsts/authorize")!
-            
-            // Minecraft Services
-            static let minecraftLogin = URL(string: "https://localhost:8081/authentication/login_with_xbox")!
-            static let minecraftProfile = URL(string: "https://localhost:8081/minecraft/profile")!
+          static let deviceCode = URL(string: "https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode")!
+          static let token = URL(string: "https://login.microsoftonline.com/consumers/oauth2/v2.0/token")!
+          
+          // Xbox Live
+          static let xboxLiveAuth = URL(string: "https://user.auth.xboxlive.com/user/authenticate")!
+          static let xstsAuth = URL(string: "https://xsts.auth.xboxlive.com/xsts/authorize")!
+          
+          // Minecraft Services
+          static let minecraftLogin = URL(string: "https://api.minecraftservices.com/authentication/login_with_xbox")!
+          static let minecraftProfile = URL(string: "https://api.minecraftservices.com/minecraft/profile")!
           
         }
 
@@ -48,11 +37,7 @@ enum URLConfig {
             static func version(id: String) -> URL {
                 baseURL.appendingPathComponent("project/\(id)/version")
             }
-//            https://api.modrinth.com/v2/version/ND4ROcMQ
-            static func versionId(versionId: String) -> URL {
-                baseURL.appendingPathComponent("version/\(versionId)")
-            }
-            
+
             // 搜索相关
             static let search = baseURL.appendingPathComponent("search")
 

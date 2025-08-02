@@ -109,19 +109,9 @@ class PlayerDataManager {
     func deletePlayer(byID id: String) throws {
         var players = try loadPlayersThrowing()
         let initialCount = players.count
-        
-        // 检查要删除的玩家是否为当前玩家
-        let isDeletingCurrentPlayer = players.contains { $0.id == id && $0.isCurrent }
-        
         players.removeAll { $0.id == id }
         
         if players.count < initialCount {
-            // 如果删除的是当前玩家，需要设置新的当前玩家
-            if isDeletingCurrentPlayer && !players.isEmpty {
-                players[0].isCurrent = true
-                Logger.shared.debug("当前玩家被删除，已设置第一个玩家为当前玩家: \(players[0].name)")
-            }
-            
             try savePlayersThrowing(players)
             Logger.shared.debug("已删除玩家 (ID: \(id))")
         } else {

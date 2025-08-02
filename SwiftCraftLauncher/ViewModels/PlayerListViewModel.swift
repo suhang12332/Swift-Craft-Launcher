@@ -110,9 +110,19 @@ class PlayerListViewModel: ObservableObject {
     /// - Throws: GlobalError 当操作失败时
     func deletePlayerThrowing(byID id: String) throws {
         try dataManager.deletePlayer(byID: id)
+        
+        // 处理当前玩家被删除的情况
+        if currentPlayer?.id == id {
+            currentPlayer = players.first(where: { $0.isCurrent }) ?? players.first
+            if currentPlayer == nil && !players.isEmpty {
+                try setCurrentPlayerThrowing(byID: players[0].id)
+            } else if currentPlayer == nil && players.isEmpty {
+                Logger.shared.debug("当前玩家被删除，且列表已空。")
+            }
+        }
+        
         try loadPlayersThrowing()
         Logger.shared.debug("玩家 (ID: \(id)) 删除成功，列表已更新。")
-        Logger.shared.debug("当前玩家 (删除后): \(currentPlayer?.name ?? "无")")
     }
     
     /// 设置当前玩家（静默版本）

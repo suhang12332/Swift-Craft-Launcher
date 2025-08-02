@@ -563,37 +563,3 @@
 // Play and Stop Actions
 "play.fill" = "启动";
 "stop.fill" = "停止";
-
-// ModPack Download
-"modpack.download.title" = "下载整合包";
-"modpack.download.button" = "下载";
-"modpack.processing.title" = "正在处理整合包...";
-"modpack.processing.subtitle" = "下载整合包文件并解析配置";
-"modpack.game.version" = "游戏版本";
-"modpack.game.version.placeholder" = "请选择游戏版本";
-"modpack.version" = "整合包版本";
-"modpack.files.title" = "整合包文件";
-"modpack.dependencies.title" = "整合包依赖";
-"modpack.overrides.title" = "overrides 文件夹";
-
-// Missing Error Keys
-"error.resource.no_downloadable_file" = "没有找到可下载的文件";
-"error.configuration.game_info_not_found" = "无法获取游戏信息，整合包依赖安装失败";
-"error.resource.modpack_dependencies_failed" = "整合包依赖安装失败";
-
-// Additional Missing Error Keys
-"error.authentication.minecraft" = "Minecraft 认证错误";
-"error.configuration.game_working_directory_not_found" = "无法获取游戏工作目录";
-"error.download.modrinth_project_version_failed" = "获取 Modrinth 项目版本失败";
-"error.filesystem.cocoa" = "文件系统错误";
-"error.filesystem.copy_failed" = "文件复制失败";
-"error.filesystem.destination_unavailable" = "目标路径不可用";
-"error.filesystem.download_file_move_failed" = "下载文件移动失败";
-"error.filesystem.file_selection_failed" = "文件选择失败";
-"error.filesystem.game_deletion_failed" = "游戏删除失败";
-"error.filesystem.game_directory_not_found" = "游戏目录未找到";
-"error.filesystem.security_scope_failed" = "安全作用域失败";
-"error.network.url" = "网络 URL 错误";
-"error.resource.invalid_file_type" = "无效的文件类型";
-"error.unknown.generic" = "未知错误";
-"error.validation.unsupported_skin_format" = "不支持的皮肤格式";

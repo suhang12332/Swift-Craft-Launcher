@@ -181,16 +181,9 @@ class MinecraftFileManager {
         }
         Logger.shared.info("开始下载库文件")
         let osxLibraries = manifest.libraries.filter { isLibraryAllowedOnOSX($0.rules) }
-        
-        // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GameSettingsManager.shared.concurrentDownloads)
-        
         try await withThrowingTaskGroup(of: Void.self) { group in
             for library in osxLibraries {
                 group.addTask { [weak self] in
-                    await semaphore.wait()
-                    defer { Task { await semaphore.signal() } }
-                    
                     try await self?.downloadLibrary(library, metaDirectory: metaDirectory)
                 }
             }
@@ -390,7 +383,35 @@ class MinecraftFileManager {
     }
     
     private func calculateFileSHA1(at url: URL) async throws -> String {
-        return try SHA1Calculator.sha1(ofFileAt: url)
+        do {
+            let fileHandle = try FileHandle(forReadingFrom: url)
+            defer { try? fileHandle.close() }
+            
+            var context = CC_SHA1_CTX()
+            CC_SHA1_Init(&context)
+            
+            while autoreleasepool(invoking: {
+                let data = fileHandle.readData(ofLength: Constants.memoryBufferSize)
+                if !data.isEmpty {
+                    data.withUnsafeBytes { bytes in
+                        _ = CC_SHA1_Update(&context, bytes.baseAddress, CC_LONG(data.count))
+                    }
+                    return true
+                }
+                return false
+            }) {}
+            
+            var digest = [UInt8](repeating: 0, count: Int(CC_SHA1_DIGEST_LENGTH))
+            _ = CC_SHA1_Final(&digest, &context)
+            
+            return digest.map { String(format: "%02hhx", $0) }.joined()
+        } catch {
+            throw GlobalError.fileSystem(
+                chineseMessage: "计算文件 SHA1 失败: \(error.localizedDescription)",
+                i18nKey: "error.filesystem.sha1_calculation_failed",
+                level: .notification
+            )
+        }
     }
     
     private func incrementCompletedFilesCount(fileName: String, type: DownloadType) {
@@ -420,9 +441,6 @@ class MinecraftFileManager {
         let objectsDirectory = metaDirectory.appendingPathComponent("assets/objects")
         let assets = Array(assetIndex.objects)
         
-        // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GameSettingsManager.shared.concurrentDownloads)
-        
         // Process assets in chunks to balance memory usage and performance
         for chunk in stride(from: 0, to: assets.count, by: Constants.assetChunkSize) {
             let end = min(chunk + Constants.assetChunkSize, assets.count)
@@ -431,9 +449,6 @@ class MinecraftFileManager {
             try await withThrowingTaskGroup(of: Void.self) { group in
                 for (path, asset) in currentChunk {
                     group.addTask { [weak self] in
-                        await semaphore.wait()
-                        defer { Task { await semaphore.signal() } }
-                        
                         try await self?.downloadAsset(asset: asset, path: path, objectsDirectory: objectsDirectory)
                     }
                 }

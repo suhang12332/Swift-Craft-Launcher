@@ -100,8 +100,6 @@ struct MainView: View {
             
             
         }
-        
-        .frame(minWidth: 900, minHeight: 500)
         .onChange(of: selectedItem) { oldValue, newValue in
             handleSidebarItemChange(from: oldValue, to: newValue)
         }

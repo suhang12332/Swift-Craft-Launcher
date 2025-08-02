@@ -38,23 +38,11 @@ struct MinecraftLaunchCommand {
     private func launchGameProcess(command: [String]) async throws {
         // 验证 Java 路径
         let javaPath = try validateJavaPath()
-        
-        // 获取游戏工作目录
-        guard let gameWorkingDirectory = AppPaths.profileDirectory(gameName: game.gameName) else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取游戏工作目录: \(game.gameName)",
-                i18nKey: "error.configuration.game_working_directory_not_found",
-                level: .popup
-            )
-        }
-        
         Logger.shared.info("启动游戏进程: \(javaPath) \(command.joined(separator: " "))")
-        Logger.shared.info("游戏工作目录: \(gameWorkingDirectory.path)")
         
         let process = Process()
         process.executableURL = URL(fileURLWithPath: javaPath + "/java")
         process.arguments = command
-        process.currentDirectoryURL = gameWorkingDirectory
         
         // 存储进程到管理器
         GameProcessManager.shared.storeProcess(gameId: game.id, process: process)

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SwiftUI
+
 
 
 
@@ -140,19 +140,4 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
         self.gameArguments = gameArguments
         self.javaVersion = javaVersion
     }
-    
-    /// 获取所有检测到的Java路径，key为版本号，value为路径
-    static var detectedJavaPaths: [String: String] {
-        GameSettingsManager.shared.allJavaPaths
-    }
-    
-    /// 按Java主版本号匹配的Java路径
-    var detectedJavaPath: String? {
-        GameSettingsManager.shared.allJavaPaths.first(where: { (key, _) in
-            if let intVer = Int(key.split(separator: ".").first ?? "") {
-                return intVer == self.javaVersion
-            }
-            return false
-        })?.value
-    }
-}
+} 

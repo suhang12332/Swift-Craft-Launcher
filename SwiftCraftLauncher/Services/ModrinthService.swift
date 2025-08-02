@@ -386,84 +386,30 @@ enum ModrinthService {
             return ModrinthProjectDependency(projects: [])
         }
         
-        // 2. 收集所有依赖的projectId和versionId
+        // 2. 收集所有依赖的projectId
         var dependencyProjectIds = Set<String>()
-        var dependencyVersionIds: [String: String] = [:] // projectId -> versionId
         
-        let missingDependencies = firstVersion.dependencies
+        let missingIds = firstVersion.dependencies
             .filter { $0.dependencyType == "required" }
-            .filter { !ModScanner.shared.isModInstalledSync(projectId: $0.projectId ?? "", in: cachePath) }
+            .compactMap(\.projectId)
+            .filter { !ModScanner.shared.isModInstalledSync(projectId: $0, in: cachePath) }
 
-        for dep in missingDependencies {
-            if let projectId = dep.projectId {
-                dependencyProjectIds.insert(projectId)
-                if let versionId = dep.versionId {
-                    dependencyVersionIds[projectId] = versionId
-                }
-            }
-        }
+        missingIds.forEach { dependencyProjectIds.insert($0) }
         
-        // 3. 获取所有依赖项目的兼容版本
-        var dependencyVersions: [ModrinthProjectDetailVersion] = []
+        // 3. 获取所有依赖项目详情
+        var dependencyProjects: [ModrinthProjectDetail] = []
         for depId in dependencyProjectIds {
             do {
-                let depVersion: ModrinthProjectDetailVersion
-                
-                if let versionId = dependencyVersionIds[depId] {
-                    // 如果有 versionId，直接获取指定版本
-                    depVersion = try await fetchProjectVersionThrowing(id: versionId)
-                } else {
-                    // 如果没有 versionId，使用过滤逻辑获取兼容版本
-                    let depVersions = try await fetchProjectVersionsFilter(
-                        id: depId,
-                        selectedVersions: selectedVersions,
-                        selectedLoaders: selectedLoaders,
-                        type: type
-                    )
-                    guard let firstDepVersion = depVersions.first else {
-                        Logger.shared.warning("未找到兼容的依赖版本 (ID: \(depId))")
-                        continue
-                    }
-                    depVersion = firstDepVersion
-                }
-                
-                dependencyVersions.append(depVersion)
+                let detail = try await fetchProjectDetailsThrowing(id: depId)
+                dependencyProjects.append(detail)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("获取依赖项目版本失败 (ID: \(depId)): \(globalError.chineseMessage)")
+                Logger.shared.error("获取依赖项目详情失败 (ID: \(depId)): \(globalError.chineseMessage)")
             }
         }
-        
-        return ModrinthProjectDependency(projects: dependencyVersions)
-    }
-    
-    /// 获取单个项目版本（抛出异常版本）
-    /// - Parameter id: 版本 ID
-    /// - Returns: 版本信息
-    /// - Throws: GlobalError 当操作失败时
-    static func fetchProjectVersionThrowing(id: String) async throws -> ModrinthProjectDetailVersion {
-        let url = URLConfig.API.Modrinth.versionId(versionId: id)
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw GlobalError.download(
-                    chineseMessage: "获取项目版本失败 (ID: \(id)): HTTP \(response)",
-                    i18nKey: "error.download.modrinth_project_version_failed",
-                    level: .notification
-                )
-            }
-            
-            let decoder = JSONDecoder()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
-            dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-            decoder.dateDecodingStrategy = .formatted(dateFormatter)
-            Logger.shared.info("Modrinth 版本 URL：\(url)")
-            return try decoder.decode(ModrinthProjectDetailVersion.self, from: data)
-        } catch {
-            let globalError = GlobalError.from(error)
-            throw globalError
-        }
+        // 4. 只返回第一个版本
+        let _: [ModrinthProjectDetailVersion] = [firstVersion]
+        return ModrinthProjectDependency(projects: dependencyProjects)
     }
     
     // 过滤出 primary == true 的文件
@@ -495,7 +441,7 @@ enum ModrinthService {
             
             Task {
                 do {
-                    let detail = try await ModrinthService.fetchProjectDetailsThrowing(id: version.projectId)
+                    let detail = try await ModrinthService.fetchProjectDetailsThrowing(id: version.id)
                     await MainActor.run {
                         completion(detail)
                     }

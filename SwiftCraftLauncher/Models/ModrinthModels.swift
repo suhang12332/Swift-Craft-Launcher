@@ -319,7 +319,7 @@ public struct ModrinthVersionDependency: Codable, Equatable, Hashable {
 
 
 public struct ModrinthProjectDependency: Codable,Hashable,Equatable {
-    public let projects: [ModrinthProjectDetailVersion]
+    public let projects: [ModrinthProjectDetail]
 }
 
 public extension ModrinthProject {

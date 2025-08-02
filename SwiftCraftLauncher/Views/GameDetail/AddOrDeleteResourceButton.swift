@@ -62,7 +62,6 @@ struct AddOrDeleteResourceButton: View {
     @State private var isDownloadingAllDependencies = false
     @State private var isDownloadingMainResourceOnly = false
     @State private var showGlobalResourceSheet = false
-    @State private var showModPackDownloadSheet = false // 新增：整合包下载 sheet
     @Binding var selectedItem: SidebarItem
 //    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
     var onResourceChanged: (() -> Void)?
@@ -186,18 +185,6 @@ struct AddOrDeleteResourceButton: View {
                 )
                 .environmentObject(gameRepository)
             }
-            // 新增：整合包下载 sheet
-            .sheet(isPresented: $showModPackDownloadSheet, onDismiss: {
-                addButtonState = .idle
-                scanResourcesIfAvailable()
-            }) {
-                ModPackDownloadSheet(
-                    projectId: project.projectId,
-                    gameInfo: gameInfo,
-                    query: query
-                )
-                .environmentObject(gameRepository)
-            }
         }
         .alert(isPresented: $showNoGameAlert) {
             Alert(
@@ -260,12 +247,6 @@ struct AddOrDeleteResourceButton: View {
         if case .game = selectedItem {
             switch addButtonState {
             case .idle:
-                // 新增：对整合包的特殊处理
-                if query == "modpack" {
-                    showModPackDownloadSheet = true
-                    return
-                }
-                
                 addButtonState = .loading
                 Task {
                     // 仅对 mod 类型检查依赖
@@ -318,16 +299,6 @@ struct AddOrDeleteResourceButton: View {
         } else if case .resource = selectedItem {
             switch addButtonState {
             case .idle:
-                // 新增：对整合包的特殊处理
-                if query == "modpack" {
-                    if gameRepository.games.isEmpty {
-                        showNoGameAlert = true
-                    } else {
-                        showModPackDownloadSheet = true
-                    }
-                    return
-                }
-                
                 addButtonState = .loading
                 Task {
                     if gameRepository.games.isEmpty {

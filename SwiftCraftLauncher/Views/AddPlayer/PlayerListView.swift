@@ -70,7 +70,7 @@ private struct PlayerSelectorLabel: View {
     var body: some View {
         if let selectedPlayer = selectedPlayer {
             HStack(spacing: 6) {
-                PlayerAvatarView(player: selectedPlayer, size: 24)
+                PlayerAvatarView(player: selectedPlayer, size: 26)
                 Text(selectedPlayer.name)
                     .foregroundColor(.primary)
                     .font(.system(size: 13))
@@ -87,6 +87,6 @@ private struct PlayerAvatarView: View {
     var size: CGFloat
 
     var body: some View {
-        MinecraftSkinUtils(type: player.isOnlineAccount ? .url : .asset, src: player.avatarName,size: size).id(player.id)
+        MinecraftSkinUtils(type: player.isOnlineAccount ? .url : .asset, src: player.avatarName,size: size).id(player.id).animation(.easeInOut, value: player.id)
     }
 }
