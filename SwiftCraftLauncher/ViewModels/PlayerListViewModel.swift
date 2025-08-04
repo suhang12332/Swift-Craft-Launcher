@@ -84,7 +84,7 @@ class PlayerListViewModel: ObservableObject {
     /// - Parameter profile: Minecraft 配置文件
     /// - Throws: GlobalError 当操作失败时
     func addOnlinePlayerThrowing(profile: MinecraftProfileResponse) throws {
-        try dataManager.addPlayer(name: profile.name, isOnline: true, avatarName: profile.skins[0].url.httpToHttps())
+        try dataManager.addPlayer(name: profile.name, uuid: profile.id, isOnline: true, avatarName: profile.skins[0].url.httpToHttps(), accToken: profile.accessToken, xuid: profile.authXuid)
         try loadPlayersThrowing()
         Logger.shared.debug("玩家 \(profile.name) 添加成功，列表已更新。")
         Logger.shared.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")

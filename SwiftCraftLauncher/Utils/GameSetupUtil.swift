@@ -47,7 +47,7 @@ class GameSetupUtil: ObservableObject {
     ) async {
         // 验证当前玩家（仅在提供了 playerListViewModel 时）
         if let playerListViewModel = playerListViewModel {
-            guard let currentPlayer = playerListViewModel.currentPlayer else {
+            guard let _ = playerListViewModel.currentPlayer else {
                 Logger.shared.error("无法保存游戏，因为没有选择当前玩家。")
                 onError(
                     GlobalError.configuration(
@@ -137,7 +137,6 @@ class GameSetupUtil: ObservableObject {
                 manifest: downloadedManifest,
                 selectedModLoader: selectedModLoader,
                 selectedGameVersion: selectedGameVersion,
-                username: playerListViewModel?.currentPlayer?.name ?? "Player", // 使用默认用户名
                 fabricResult: selectedModLoader.lowercased() == "fabric" ? modLoaderResult : nil,
                 forgeResult: selectedModLoader.lowercased() == "forge" ? modLoaderResult : nil,
                 neoForgeResult: selectedModLoader.lowercased() == "neoforge" ? modLoaderResult : nil,
@@ -336,7 +335,6 @@ class GameSetupUtil: ObservableObject {
         manifest: MinecraftVersionManifest,
         selectedModLoader: String,
         selectedGameVersion: String,
-        username: String,
         fabricResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil,
         forgeResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil,
         neoForgeResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil,
@@ -412,15 +410,12 @@ class GameSetupUtil: ObservableObject {
         }
         
         // 构建启动命令
-        let uuid = gameInfo.id
         let launcherBrand = Bundle.main.appName
         let launcherVersion = Bundle.main.fullVersion
         
         updatedGameInfo.launchCommand = MinecraftLaunchCommandBuilder.build(
             manifest: manifest,
             gameInfo: updatedGameInfo,
-            username: username,
-            uuid: uuid,
             launcherBrand: launcherBrand,
             launcherVersion: launcherVersion
         )

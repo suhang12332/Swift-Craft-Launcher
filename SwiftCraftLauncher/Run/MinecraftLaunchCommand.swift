@@ -29,7 +29,29 @@ struct MinecraftLaunchCommand {
     /// - Throws: GlobalError 当启动失败时
     public func launchGameThrowing() async throws {
         let command = game.launchCommand
-        try await launchGameProcess(command: command)
+        try await launchGameProcess(command: replaceAuthParameters(command: command))
+    }
+    
+    private func replaceAuthParameters(command: [String]) -> [String] {
+        guard let player = player else {
+            Logger.shared.warning("没有选择玩家，使用默认认证参数")
+            return command
+        }
+        
+        // 添加调试日志
+        Logger.shared.info("认证参数替换:")
+        Logger.shared.info("  auth_player_name: \(player.name)")
+        Logger.shared.info("  auth_uuid: \(player.id)")
+        Logger.shared.info("  auth_access_token: \(player.authAccessToken.prefix(10))...") // 只显示前10位
+        Logger.shared.info("  auth_xuid: \(player.authXuid)")
+        
+        return command.map { arg in
+            return arg
+                .replacingOccurrences(of: "${auth_player_name}", with: player.name)
+                .replacingOccurrences(of: "${auth_uuid}", with: player.id)
+                .replacingOccurrences(of: "${auth_access_token}", with: player.authAccessToken)
+                .replacingOccurrences(of: "${auth_xuid}", with: player.authXuid)
+        }
     }
     
     /// 启动游戏进程

@@ -524,7 +524,6 @@
 
 // GameResourceHandler Errors
 "error.filesystem.file_deletion_failed" = "删除文件失败";
-"error.resource.dependency_preparation_failed" = "准备依赖项失败";
 "error.download.dependencies_failed" = "下载依赖项失败";
 "error.download.main_resource_failed" = "下载主资源失败";
 "error.resource.version_id_missing" = "缺少版本ID";

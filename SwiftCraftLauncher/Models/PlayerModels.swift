@@ -12,7 +12,8 @@ struct Player: Identifiable, Codable, Equatable {
     var isOnlineAccount: Bool
     /// 玩家头像路径或URL
     let avatarName: String
-    
+    var authXuid: String
+    var authAccessToken: String
     /// 账号创建时间
     let createdAt: Date
     
@@ -38,9 +39,10 @@ struct Player: Identifiable, Codable, Equatable {
         gameRecords.values.sorted { $0.lastPlayed > $1.lastPlayed }
     }
 
-    /// 初始化玩家信息
+        /// 初始化玩家信息
     /// - Parameters:
     ///   - name: 玩家名称
+    ///   - uuid: 玩家UUID，如果为nil则生成离线UUID
     ///   - createdAt: 创建时间，默认当前时间
     ///   - lastPlayed: 最后游玩时间，默认当前时间
     ///   - isOnlineAccount: 是否在线账号，默认false
@@ -49,22 +51,32 @@ struct Player: Identifiable, Codable, Equatable {
     /// - Throws: 如果生成玩家ID失败则抛出错误
     init(
         name: String,
+        uuid: String? = nil,
         isOnlineAccount: Bool,
         avatarName: String,
+        authXuid: String,
+        authAccessToken: String,
         createdAt: Date = Date(),
         lastPlayed: Date = Date(),
         isCurrent: Bool = false,
         gameRecords: [String: PlayerGameRecord] = [:]
+        
     ) throws {
-        let uuid = try PlayerUtils.generateOfflineUUID(for: name)
-        self.id = uuid
+        // 如果提供了UUID则使用，否则生成离线UUID
+        if let providedUUID = uuid {
+            self.id = providedUUID
+        } else {
+            self.id = try PlayerUtils.generateOfflineUUID(for: name)
+        }
         self.name = name
         self.isOnlineAccount = isOnlineAccount
-        self.avatarName = isOnlineAccount ? avatarName : PlayerUtils.avatarName(for: uuid) ?? "steve"
+        self.avatarName = isOnlineAccount ? avatarName : PlayerUtils.avatarName(for: self.id) ?? "steve"
         self.createdAt = createdAt
         self.lastPlayed = lastPlayed
         self.isCurrent = isCurrent
         self.gameRecords = gameRecords
+        self.authAccessToken = authAccessToken
+        self.authXuid = authXuid
     }
     
     /// 更新指定游戏的记录

@@ -6,13 +6,16 @@ class PlayerDataManager {
     
     // MARK: - Public Methods
     
-    /// 添加新玩家
+        /// 添加新玩家
     /// - Parameters:
     ///   - name: 玩家名称
+    ///   - uuid: 玩家UUID，如果为nil则生成离线UUID
     ///   - isOnline: 是否为在线账户
     ///   - avatarName: 头像名称
+    ///   - accToken: 访问令牌，默认为空字符串
+    ///   - xuid: Xbox用户ID，默认为空字符串
     /// - Throws: GlobalError 当操作失败时
-    func addPlayer(name: String, isOnline: Bool, avatarName: String) throws {
+    func addPlayer(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", xuid: String = "") throws {
         var players = try loadPlayersThrowing()
         
         if playerExists(name: name) {
@@ -24,7 +27,7 @@ class PlayerDataManager {
         }
         
         do {
-            let newPlayer = try Player(name: name, isOnlineAccount: isOnline, avatarName: avatarName, isCurrent: players.isEmpty)
+            let newPlayer = try Player(name: name, uuid: uuid, isOnlineAccount: isOnline, avatarName: avatarName, authXuid: xuid,authAccessToken: accToken,isCurrent: players.isEmpty)
             players.append(newPlayer)
             try savePlayersThrowing(players)
             Logger.shared.debug("已添加新玩家: \(name)")
@@ -40,12 +43,15 @@ class PlayerDataManager {
     /// 添加新玩家（静默版本）
     /// - Parameters:
     ///   - name: 玩家名称
+    ///   - uuid: 玩家UUID，如果为nil则生成离线UUID
     ///   - isOnline: 是否为在线账户
     ///   - avatarName: 头像名称
+    ///   - accToken: 访问令牌，默认为空字符串
+    ///   - xuid: Xbox用户ID，默认为空字符串
     /// - Returns: 是否成功添加
-    func addPlayerSilently(name: String, isOnline: Bool, avatarName: String) -> Bool {
+    func addPlayerSilently(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", xuid: String = "") -> Bool {
         do {
-            try addPlayer(name: name, isOnline: isOnline, avatarName: avatarName)
+            try addPlayer(name: name, uuid: uuid, isOnline: isOnline, avatarName: avatarName,accToken: accToken,xuid: xuid)
             return true
         } catch {
             let globalError = GlobalError.from(error)

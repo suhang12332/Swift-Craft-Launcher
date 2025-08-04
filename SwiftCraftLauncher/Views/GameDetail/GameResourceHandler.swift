@@ -196,46 +196,38 @@ struct GameResourceHandler {
         
         depVM.isLoadingDependencies = true
         
-        do {
-            let missing = try await ModrinthDependencyDownloader.getMissingDependencies(
-                for: project.projectId,
-                gameInfo: gameInfo
-            )
-            
-            if missing.isEmpty {
-                depVM.isLoadingDependencies = false
-                return false
-            }
-            
-            var versionDict: [String: [ModrinthProjectDetailVersion]] = [:]
-            var selectedVersionDict: [String: String] = [:]
-            
-            for dep in missing {
-                let versions = await ModrinthService.fetchProjectVersions(id: dep.id)
-                
-                let filteredVersions = versions.filter {
-                    $0.loaders.contains(gameInfo.modLoader) && $0.gameVersions.contains(gameInfo.gameVersion)
-                }
-                
-                versionDict[dep.id] = filteredVersions
-                if let first = filteredVersions.first {
-                    selectedVersionDict[dep.id] = first.id
-                }
-            }
-            
-            depVM.missingDependencies = missing
-            depVM.dependencyVersions = versionDict
-            depVM.selectedDependencyVersion = selectedVersionDict
+        let missing = await ModrinthDependencyDownloader.getMissingDependencies(
+            for: project.projectId,
+            gameInfo: gameInfo
+        )
+        
+        if missing.isEmpty {
             depVM.isLoadingDependencies = false
-            depVM.resetDownloadStates()
-            return true
-        } catch {
-            throw GlobalError.resource(
-                chineseMessage: "准备依赖项失败: \(error.localizedDescription)",
-                i18nKey: "error.resource.dependency_preparation_failed",
-                level: .notification
-            )
+            return false
         }
+        
+        var versionDict: [String: [ModrinthProjectDetailVersion]] = [:]
+        var selectedVersionDict: [String: String] = [:]
+        
+        for dep in missing {
+            let versions = await ModrinthService.fetchProjectVersions(id: dep.id)
+            
+            let filteredVersions = versions.filter {
+                $0.loaders.contains(gameInfo.modLoader) && $0.gameVersions.contains(gameInfo.gameVersion)
+            }
+            
+            versionDict[dep.id] = filteredVersions
+            if let first = filteredVersions.first {
+                selectedVersionDict[dep.id] = first.id
+            }
+        }
+        
+        depVM.missingDependencies = missing
+        depVM.dependencyVersions = versionDict
+        depVM.selectedDependencyVersion = selectedVersionDict
+        depVM.isLoadingDependencies = false
+        depVM.resetDownloadStates()
+        return true
     }
 
     @MainActor

@@ -477,26 +477,21 @@ struct ModPackDependencyInstaller {
             return false
         }
         
-        do {
-            if let versionId = dep.versionId {
-                // 如果有指定版本ID，直接使用该版本
-                return await addProjectFromVersion(
-                    projectId: projectId,
-                    versionId: versionId,
-                    gameInfo: gameInfo,
-                    resourceDir: resourceDir
-                )
-            } else {
-                // 如果没有指定版本ID，获取最新兼容版本
-                return await addProjectFromLatestVersion(
-                    projectId: projectId,
-                    gameInfo: gameInfo,
-                    resourceDir: resourceDir
-                )
-            }
-        } catch {
-            Logger.shared.error("安装依赖失败: \(error.localizedDescription)")
-            return false
+        if let versionId = dep.versionId {
+            // 如果有指定版本ID，直接使用该版本
+            return await addProjectFromVersion(
+                projectId: projectId,
+                versionId: versionId,
+                gameInfo: gameInfo,
+                resourceDir: resourceDir
+            )
+        } else {
+            // 如果没有指定版本ID，获取最新兼容版本
+            return await addProjectFromLatestVersion(
+                projectId: projectId,
+                gameInfo: gameInfo,
+                resourceDir: resourceDir
+            )
         }
     }
     

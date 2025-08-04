@@ -64,8 +64,7 @@ class FabricLoaderService {
     static func fetchLatestStableLoaderVersion(for minecraftVersion: String) async throws -> ModrinthLoader {
 
         let allLoaders = await fetchAllLoaderVersions(for: minecraftVersion)
-        let result = allLoaders.first(where: { $0.loader.stable })!
-        let fabricVersion = result.loader.version
+        let fabricVersion = allLoaders.first!.loader.version
         // 1. 查全局缓存
         
         if let cached = AppCacheManager.shared.get(namespace: "fabric", key: fabricVersion, as: ModrinthLoader.self) {

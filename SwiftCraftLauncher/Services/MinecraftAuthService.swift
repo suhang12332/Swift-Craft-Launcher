@@ -11,8 +11,8 @@ class MinecraftAuthService: ObservableObject {
     
     var openURLHandler: ((URL) -> Void)?
     
-    private let clientId = "***"
-    private let scope = "XboxLive.signin offline_access"
+    private let clientId = AppConstants.clientId
+    private let scope = AppConstants.scope
     
     private init() {}
     
@@ -111,7 +111,7 @@ class MinecraftAuthService: ObservableObject {
                 // 获取完整的认证链
                 let xboxToken = try await getXboxLiveTokenThrowing(accessToken: tokenResponse.accessToken)
                 let minecraftToken = try await getMinecraftTokenThrowing(xboxToken: xboxToken.token, uhs: xboxToken.displayClaims.xui.first?.uhs ?? "")
-                let profile = try await getMinecraftProfileThrowing(accessToken: minecraftToken)
+                let profile = try await getMinecraftProfileThrowing(accessToken: minecraftToken, authXuid: xboxToken.displayClaims.xui.first?.uhs ?? "")
                 
                 await MainActor.run {
                     isLoading = false
@@ -409,10 +409,10 @@ class MinecraftAuthService: ObservableObject {
         return minecraftTokenResponse.accessToken
     }
     
-    // MARK: - 获取Minecraft用户资料（静默版本）
-    private func getMinecraftProfile(accessToken: String) async -> MinecraftProfileResponse? {
+        // MARK: - 获取Minecraft用户资料（静默版本）
+    private func getMinecraftProfile(accessToken: String, authXuid: String) async -> MinecraftProfileResponse? {
         do {
-            return try await getMinecraftProfileThrowing(accessToken: accessToken)
+            return try await getMinecraftProfileThrowing(accessToken: accessToken, authXuid: authXuid)
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Minecraft 用户资料失败: \(globalError.chineseMessage)")
@@ -422,7 +422,7 @@ class MinecraftAuthService: ObservableObject {
     }
     
     // MARK: - 获取Minecraft用户资料（抛出异常版本）
-    private func getMinecraftProfileThrowing(accessToken: String) async throws -> MinecraftProfileResponse {
+    private func getMinecraftProfileThrowing(accessToken: String, authXuid: String) async throws -> MinecraftProfileResponse {
         let url = URLConfig.API.Authentication.minecraftProfile
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
@@ -438,7 +438,16 @@ class MinecraftAuthService: ObservableObject {
         }
         
         do {
-            return try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
+            let profile = try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
+            // 由于 accessToken 和 authXuid 不是从 API 响应中获取的，我们需要手动设置
+            return MinecraftProfileResponse(
+                id: profile.id,
+                name: profile.name,
+                skins: profile.skins,
+                capes: profile.capes,
+                accessToken: accessToken,
+                authXuid: authXuid
+            )
         } catch {
             throw GlobalError.validation(
                 chineseMessage: "解析 Minecraft 用户资料响应失败: \(error.localizedDescription)",

@@ -191,7 +191,7 @@ struct GlobalResourceSheet: View {
             )
         }
         
-        let missing = try await ModrinthDependencyDownloader.getMissingDependencies(
+        let missing = await ModrinthDependencyDownloader.getMissingDependencies(
             for: project.projectId,
             gameInfo: game
         )

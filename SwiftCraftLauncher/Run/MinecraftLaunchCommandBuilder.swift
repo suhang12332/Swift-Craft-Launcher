@@ -6,8 +6,6 @@ struct MinecraftLaunchCommandBuilder {
     static func build(
         manifest: MinecraftVersionManifest,
         gameInfo: GameVersionInfo,
-        username: String,
-        uuid: String,
         launcherBrand: String,
         launcherVersion: String
     ) -> [String] {
@@ -15,8 +13,6 @@ struct MinecraftLaunchCommandBuilder {
             return try buildThrowing(
                 manifest: manifest,
                 gameInfo: gameInfo,
-                username: username,
-                uuid: uuid,
                 launcherBrand: launcherBrand,
                 launcherVersion: launcherVersion
             )
@@ -33,8 +29,6 @@ struct MinecraftLaunchCommandBuilder {
     static func buildThrowing(
         manifest: MinecraftVersionManifest,
         gameInfo: GameVersionInfo,
-        username: String,
-        uuid: String,
         launcherBrand: String,
         launcherVersion: String
     ) throws -> [String] {
@@ -52,15 +46,15 @@ struct MinecraftLaunchCommandBuilder {
 
         // 变量映射
         let variableMap: [String: String] = [
-            "auth_player_name": username,
+            "auth_player_name": "${auth_player_name}",
             "version_name": gameInfo.gameVersion,
             "game_directory": paths.gameDir,
             "assets_root": paths.assetsDir,
             "assets_index_name": gameInfo.assetIndex,
-            "auth_uuid": uuid,
-            "auth_access_token": uuid, // 或实际 accessToken
-            "clientid": "***",
-            "auth_xuid": "0",
+            "auth_uuid": "${auth_uuid}",
+            "auth_access_token": "${auth_access_token}",
+            "clientid": AppConstants.clientId,
+            "auth_xuid": "${auth_xuid}",
             "user_type": "msa",
             "version_type": "release",
             "natives_directory": paths.nativesDir,

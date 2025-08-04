@@ -5,6 +5,10 @@ enum AppConstants {
     static let modLoaders = ["vanilla", "fabric", "forge", "neoforge", "quilt"]
     static let defaultJava = "/usr/bin"
     
+    // Minecraft 客户端ID
+    static let clientId = "***"
+    static let scope = "XboxLive.signin offline_access"
+    
     // 缓存资源类型
     static let cacheResourceTypes = ["libraries", "natives", "assets", "versions"]
 }
@@ -25,8 +29,4 @@ extension Bundle {
     var appName: String {
         Bundle.main.infoDictionary?["CFBundleName"] as? String ?? "Swift Craft Launcher"
     }
-    var clientId: String {
-        Bundle.main.infoDictionary?["CFBundleName"] as? String ?? "Swift Craft Launcher"
-    }
 }
-    
