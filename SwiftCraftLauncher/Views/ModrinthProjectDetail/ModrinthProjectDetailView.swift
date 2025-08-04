@@ -117,8 +117,6 @@ struct ModrinthProjectDetailView: View {
                     versionTotal: $versionTotal,
                     projectId: project.id
                 )
-            case 2:
-                ModrinthProjectDetailDependencyView(projectId: project.id,query: "mod")
             default:
                 EmptyView()
             }

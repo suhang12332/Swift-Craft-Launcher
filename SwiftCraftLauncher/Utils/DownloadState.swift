@@ -1,6 +1,7 @@
 import Foundation
 
 // MARK: - Download State
+@MainActor
 class DownloadState: ObservableObject {
     @Published var isDownloading = false
     @Published var coreProgress: Double = 0

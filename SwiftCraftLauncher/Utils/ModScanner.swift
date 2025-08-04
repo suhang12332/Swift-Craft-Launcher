@@ -57,39 +57,12 @@ class ModScanner {
     
     /// 计算文件 SHA1 哈希值（静默版本）
     static func sha1Hash(of url: URL) -> String? {
-        do {
-            return try sha1HashThrowing(of: url)
-        } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error("计算文件哈希值失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
-            return nil
-        }
+        return SHA1Calculator.sha1Silent(ofFileAt: url)
     }
     
     /// 计算文件 SHA1 哈希值（抛出异常版本）
     static func sha1HashThrowing(of url: URL) throws -> String? {
-        guard FileManager.default.fileExists(atPath: url.path) else {
-            throw GlobalError.resource(
-                chineseMessage: "文件不存在: \(url.lastPathComponent)",
-                i18nKey: "error.resource.file_not_found",
-                level: .silent
-            )
-        }
-        
-        let data: Data
-        do {
-            data = try Data(contentsOf: url)
-        } catch {
-            throw GlobalError.fileSystem(
-                chineseMessage: "读取文件失败: \(url.lastPathComponent), 错误: \(error.localizedDescription)",
-                i18nKey: "error.filesystem.file_read_failed",
-                level: .silent
-            )
-        }
-        
-        let hash = Insecure.SHA1.hash(data: data)
-        return hash.map { String(format: "%02hhx", $0) }.joined()
+        return try SHA1Calculator.sha1(ofFileAt: url)
     }
 }
 
@@ -234,12 +207,30 @@ extension ModScanner {
             return []
         }
         
-        var results: [ModrinthProjectDetail] = []
-        for fileURL in jarFiles {
-            if let detail = try await getModrinthProjectDetailThrowing(for: fileURL) {
-                results.append(detail)
+        // 创建信号量控制并发数量
+        let semaphore = AsyncSemaphore(value: GameSettingsManager.shared.concurrentDownloads)
+        
+        // 使用 TaskGroup 并发扫描文件
+        let results = await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
+            for fileURL in jarFiles {
+                group.addTask {
+                    await semaphore.wait()
+                    defer { Task { await semaphore.signal() } }
+                    
+                    return try? await self.getModrinthProjectDetailThrowing(for: fileURL)
+                }
             }
+            
+            // 收集结果
+            var results: [ModrinthProjectDetail] = []
+            for await result in group {
+                if let detail = result {
+                    results.append(detail)
+                }
+            }
+            return results
         }
+        
         return results
     }
 }
