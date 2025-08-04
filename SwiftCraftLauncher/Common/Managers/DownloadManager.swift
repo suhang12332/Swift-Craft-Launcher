@@ -140,9 +140,10 @@ class DownloadManager {
             }
         }
         
-        // 下载文件
+        // 下载文件到临时位置
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (tempFileURL, response) = try await URLSession.shared.download(from: url)
+            defer { try? fileManager.removeItem(at: tempFileURL) }
             
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw GlobalError.download(
@@ -160,22 +161,11 @@ class DownloadManager {
                 )
             }
             
-            do {
-                try data.write(to: destinationURL)
-            } catch {
-                throw GlobalError.fileSystem(
-                    chineseMessage: "写入文件失败: \(error.localizedDescription)",
-                    i18nKey: "error.filesystem.download_file_write_failed",
-                    level: .notification
-                )
-            }
-            
             // SHA1 校验
             if shouldCheckSha1, let expectedSha1 = expectedSha1 {
                 do {
-                    let actualSha1 = try calculateFileSHA1(at: destinationURL)
+                    let actualSha1 = try calculateFileSHA1(at: tempFileURL)
                     if actualSha1 != expectedSha1 {
-                        try? fileManager.removeItem(at: destinationURL)
                         throw GlobalError.validation(
                             chineseMessage: "SHA1 校验失败，期望: \(expectedSha1)，实际: \(actualSha1)",
                             i18nKey: "error.validation.sha1_check_failed",
@@ -183,7 +173,6 @@ class DownloadManager {
                         )
                     }
                 } catch {
-                    try? fileManager.removeItem(at: destinationURL)
                     if error is GlobalError {
                         throw error
                     } else {
@@ -194,6 +183,17 @@ class DownloadManager {
                         )
                     }
                 }
+            }
+            
+            // 原子性地移动到最终位置
+            do {
+                try fileManager.moveItem(at: tempFileURL, to: destinationURL)
+            } catch {
+                throw GlobalError.fileSystem(
+                    chineseMessage: "移动文件失败: \(error.localizedDescription)",
+                    i18nKey: "error.filesystem.download_file_move_failed",
+                    level: .notification
+                )
             }
             
             return destinationURL
@@ -228,34 +228,6 @@ class DownloadManager {
     /// - Returns: SHA1 哈希字符串
     /// - Throws: GlobalError 当操作失败时
     static func calculateFileSHA1(at url: URL) throws -> String {
-        do {
-            let fileHandle = try FileHandle(forReadingFrom: url)
-            defer { try? fileHandle.close() }
-            
-            var context = CC_SHA1_CTX()
-            CC_SHA1_Init(&context)
-            
-            while autoreleasepool(invoking: {
-                let data = fileHandle.readData(ofLength: 1024 * 1024)
-                if !data.isEmpty {
-                    data.withUnsafeBytes { bytes in
-                        _ = CC_SHA1_Update(&context, bytes.baseAddress, CC_LONG(data.count))
-                    }
-                    return true
-                }
-                return false
-            }) {}
-            
-            var digest = [UInt8](repeating: 0, count: Int(CC_SHA1_DIGEST_LENGTH))
-            _ = CC_SHA1_Final(&digest, &context)
-            return digest.map { String(format: "%02hhx", $0) }.joined()
-            
-        } catch {
-            throw GlobalError.fileSystem(
-                chineseMessage: "计算文件 SHA1 失败: \(error.localizedDescription)",
-                i18nKey: "error.filesystem.sha1_calculation_failed",
-                level: .silent
-            )
-        }
+        return try SHA1Calculator.sha1(ofFileAt: url)
     }
 } 

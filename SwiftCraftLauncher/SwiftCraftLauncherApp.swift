@@ -29,6 +29,7 @@ struct SwiftCraftLauncherApp: App {
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
+        .defaultSize(width: 1200, height: 700)
         .windowResizability(.contentMinSize)
 
         Settings {

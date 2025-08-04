@@ -80,7 +80,14 @@ class GameRepository: ObservableObject {
     func getGame(by id: String) -> GameVersionInfo? {
         return games.first { $0.id == id }
     }
-
+    
+    /// 根据游戏名称查找游戏版本信息
+    /// - Parameter gameName: 游戏名称
+    /// - Returns: 匹配的 GameVersionInfo 对象，如果找不到则返回 nil
+    func getGameByName(by gameName: String) -> GameVersionInfo? {
+        return games.first { $0.gameName == gameName }
+    }
+    
     /// 根据 ID 更新游戏信息
     /// - Parameter game: 新的游戏信息
     /// - Throws: GlobalError 当操作失败时

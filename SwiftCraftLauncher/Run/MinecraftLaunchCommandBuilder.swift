@@ -64,7 +64,7 @@ struct MinecraftLaunchCommandBuilder {
             "user_type": "msa",
             "version_type": "release",
             "natives_directory": paths.nativesDir,
-            "launcher_name": launcherBrand,
+            "launcher_name": "SCL",
             "launcher_version": launcherVersion,
             "classpath": classpath
         ]

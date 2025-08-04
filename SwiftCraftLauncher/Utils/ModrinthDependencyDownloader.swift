@@ -45,54 +45,46 @@ struct ModrinthDependencyDownloader {
                 of: ModrinthProjectDetail?.self
             ) { group in
                 // 依赖
-                for var dep in dependencies.projects {
+                for depVersion in dependencies.projects {
                     group.addTask {
                         await semaphore.wait()  // 限制并发
                         defer { Task { await semaphore.signal() } }
 
-                        do {
-                            // 检查依赖是否有版本信息，如果有则直接使用
-                            // 没有版本信息，需要获取版本
-                            let versions =
-                                try await ModrinthService
-                                .fetchProjectVersionsFilter(
-                                    id: dep.id,
-                                    selectedVersions: [gameInfo.gameVersion],
-                                    selectedLoaders: [gameInfo.modLoader],
-                                    type: query
-                                )
-
-                            let result = ModrinthService.filterPrimaryFiles(
-                                from: versions.first?.files
-                            )
-                            if let file = result {
-                                let fileURL =
-                                    try? await DownloadManager.downloadResource(
-                                        for: gameInfo,
-                                        urlString: file.url,
-                                        resourceType: query,
-                                        expectedSha1: file.hashes.sha1
-                                    )
-                                dep.fileName = file.filename
-                                dep.type = query
-                                // 新增缓存
-                                if let fileURL = fileURL,
-                                    let hash = ModScanner.sha1Hash(of: fileURL)
-                                {
-                                    ModScanner.shared.saveToCache(
-                                        hash: hash,
-                                        detail: dep
-                                    )
-                                }
-                                return dep
-                            }
-                            return nil
-                        } catch {
-                            let globalError = GlobalError.from(error)
-                            Logger.shared.error("下载依赖 \(dep.id) 失败: \(globalError.chineseMessage)")
-                            GlobalErrorHandler.shared.handle(globalError)
+                        // 获取项目详情
+                        guard let projectDetail = await ModrinthService.fetchProjectDetails(id: depVersion.projectId) else {
+                            
+                            Logger.shared.error("无法获取依赖项目详情 (ID: \(depVersion.projectId))")
+                            Logger.shared.error("无法获取sss项目详情 (ID: \(depVersion.projectId))")
                             return nil
                         }
+                        
+                        // 使用版本中的文件信息
+                        let result = ModrinthService.filterPrimaryFiles(
+                            from: depVersion.files
+                        )
+                        if let file = result {
+                            let fileURL =
+                                try? await DownloadManager.downloadResource(
+                                    for: gameInfo,
+                                    urlString: file.url,
+                                    resourceType: query,
+                                    expectedSha1: file.hashes.sha1
+                                )
+                            var detailWithFile = projectDetail
+                            detailWithFile.fileName = file.filename
+                            detailWithFile.type = query
+                            // 新增缓存
+                            if let fileURL = fileURL,
+                                let hash = ModScanner.sha1Hash(of: fileURL)
+                            {
+                                ModScanner.shared.saveToCache(
+                                    hash: hash,
+                                    detail: detailWithFile
+                                )
+                            }
+                            return detailWithFile
+                        }
+                        return nil
                     }
                 }
                 // 主mod
@@ -159,14 +151,13 @@ struct ModrinthDependencyDownloader {
         }
     }
 
-    /// 获取当前项目缺失的直接依赖（不递归，仅一层）
+    /// 获取缺失的依赖项
     static func getMissingDependencies(
         for projectId: String,
-        gameInfo: GameVersionInfo,
-        query: String = "mod"
-    ) async throws -> [ModrinthProjectDetail] {
-        let resourceDir = AppPaths.resourceDirectory(
-            for: query,
+        gameInfo: GameVersionInfo
+    ) async -> [ModrinthProjectDetail] {
+        let query = "mod"
+        let resourceDir = AppPaths.modsDirectory(
             gameName: gameInfo.gameName
         )
         guard let resourceDirUnwrapped = resourceDir else { return [] }
@@ -178,7 +169,15 @@ struct ModrinthDependencyDownloader {
             selectedLoaders: [gameInfo.modLoader]
         )
         
-        return dependencies.projects
+        // 将 ModrinthProjectDetailVersion 转换为 ModrinthProjectDetail
+        var projectDetails: [ModrinthProjectDetail] = []
+        for depVersion in dependencies.projects {
+            if let projectDetail = await ModrinthService.fetchProjectDetails(id: depVersion.projectId) {
+                projectDetails.append(projectDetail)
+            }
+        }
+        
+        return projectDetails
     }
 
     /// 手动下载依赖和主mod（不递归，仅当前依赖和主mod）
