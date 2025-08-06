@@ -35,9 +35,8 @@ class QuiltLoaderService {
     /// 获取最新的可用 Quilt Loader 版本
     static func fetchLatestStableLoaderVersion(for minecraftVersion: String) async throws -> ModrinthLoader {
         let allLoaders = await fetchAllQuiltLoaders(for: minecraftVersion)
-        let stableLoaders = allLoaders.filter { $0.loader.stable }
-        let selectedLoader = !stableLoaders.isEmpty ? stableLoaders.first! : allLoaders.first!
-        let quiltVersion = selectedLoader.loader.version
+        let result = allLoaders.first!
+        let quiltVersion = result.loader.version
         let cacheKey = "\(minecraftVersion)-\(quiltVersion)"
         
         if let cached = AppCacheManager.shared.get(namespace: "quilt", key: cacheKey, as: ModrinthLoader.self) {

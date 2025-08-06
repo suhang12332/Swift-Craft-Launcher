@@ -68,13 +68,9 @@ struct ContentView: View {
     }
     
     private func localModeView(game: GameVersionInfo) -> some View {
-        // TODO: Implement local mode view
-//         HStack {
-//             MinecraftSkinRenderView(
-//                 skinName: playerListViewModel.currentPlayer?.avatarName
-//             ).frame(minWidth: 200, minHeight: 400)
-//         }
-        Label("development.in_progress".localized(), systemImage: "figure.outdoor.soccer")
+  
+        ProfilesView(gameName: game.gameName).id(gameId)
+
     }
     
     // MARK: - Resource Content View

@@ -47,7 +47,7 @@ public struct GameSettingsView: View {
                     ).labelsHidden()
                     Text("settings.dependencies.description".localized()).font(.footnote).foregroundColor(.secondary)
                 }
-                .frame(width: .infinity).gridColumnAlignment(.leading)
+                .gridColumnAlignment(.leading)
             }.padding(.bottom,20)
             GridRow {
                 Text("settings.default_java_path.label".localized()).gridColumnAlignment(.trailing)

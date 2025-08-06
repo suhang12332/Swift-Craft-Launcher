@@ -65,8 +65,14 @@ class FabricLoaderService {
 
         let allLoaders = await fetchAllLoaderVersions(for: minecraftVersion)
         let stableLoaders = allLoaders.filter { $0.loader.stable }
-        let selectedLoader = !stableLoaders.isEmpty ? stableLoaders.first! : allLoaders.first!
-        let fabricVersion = selectedLoader.loader.version
+        guard let firstStable = stableLoaders.first else {
+            throw GlobalError.validation(
+                chineseMessage: "未找到稳定版 Fabric 加载器",
+                i18nKey: "error.validation.fabric_loader_no_stable_found",
+                level: .notification
+            )
+        }
+        let fabricVersion = firstStable.loader.version
         let cacheKey = "\(minecraftVersion)-\(fabricVersion)"
         // 1. 查全局缓存
         

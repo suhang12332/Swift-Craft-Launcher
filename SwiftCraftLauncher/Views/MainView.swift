@@ -35,7 +35,9 @@ struct MainView: View {
     @State private var gameResourcesType = "mod"
     @State private var gameType = true  // false = local, true = server
     @State private var gameId: String?
-    @State private var gameInfoToRes: Bool = false
+    
+    @State private var showingInspector: Bool = false
+    
     // MARK: - Body
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -59,7 +61,7 @@ struct MainView: View {
                 gameType: $gameType,
                 gameId: $gameId
             )
-            .toolbar { ContentToolbarView() }.navigationSplitViewColumnWidth(min: 235, ideal: 240, max: .infinity)
+            .toolbar { ContentToolbarView() }.navigationSplitViewColumnWidth(min: 235, ideal: 240, max: 280)
         } detail: {
             
             DetailView(
@@ -99,6 +101,24 @@ struct MainView: View {
             }
             
             
+        }.inspector(isPresented: $showingInspector) {
+            ContentView(
+                selectedItem: selectedItem,
+                selectedVersions: $selectedVersions,
+                selectedLicenses: $selectedLicenses,
+                selectedCategories: $selectedCategories,
+                selectedFeatures: $selectedFeatures,
+                selectedResolutions: $selectedResolutions,
+                selectedPerformanceImpact: $selectedPerformanceImpact,
+                selectProjectId: $selectedProjectId,
+                loadedProjectDetail: $loadedProjectDetail,
+                gameResourcesType: $gameResourcesType,
+                selectedLoaders: $selectedLoaders,
+                gameType: $gameType,
+                gameId: $gameId
+            )
+            .toolbar {InspectorToolbar(showingInspector: $showingInspector)}.navigationSplitViewColumnWidth(min: 235, ideal: 240, max: .infinity)
+//            ContentView().toolbar {InspectorToolbar(showingInspector: $showingInspector)}
         }
         
         .frame(minWidth: 900, minHeight: 500)
