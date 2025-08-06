@@ -5,8 +5,15 @@ enum AppConstants {
     static let modLoaders = ["vanilla", "fabric", "forge", "neoforge", "quilt"]
     static let defaultJava = "/usr/bin"
     
-    // Minecraft 客户端ID
-    static let clientId = "***"
+    // Minecraft 客户端ID - 支持从环境变量读取
+    static let clientId: String = {
+        // 优先从环境变量读取（用于CI/CD）
+        if let envClientId = ProcessInfo.processInfo.environment["MINECRAFT_CLIENT_ID"] {
+            return envClientId
+        }
+        // 如果环境变量不存在，使用默认值
+        return "***"
+    }()
     static let scope = "XboxLive.signin offline_access"
     
     // 缓存资源类型
