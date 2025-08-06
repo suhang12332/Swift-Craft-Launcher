@@ -38,27 +38,17 @@ jobs:
       id: version
       run: |
         echo "提取版本信息..."
-        
-        # 从项目文件中提取目标级别的版本信息
-        # 查找目标配置中的MARKETING_VERSION（在PBXNativeTarget部分）
-        MARKETING_VERSION=$(grep -A20 "PBXNativeTarget.*SwiftCraftLauncher" SwiftCraftLauncher.xcodeproj/project.pbxproj | grep -A50 "buildConfigurations" | grep "MARKETING_VERSION" | head -1 | sed 's/.*= //' | sed 's/;//')
-        
-        # 查找目标配置中的CURRENT_PROJECT_VERSION
-        CURRENT_PROJECT_VERSION=$(grep -A20 "PBXNativeTarget.*SwiftCraftLauncher" SwiftCraftLauncher.xcodeproj/project.pbxproj | grep -A50 "buildConfigurations" | grep "CURRENT_PROJECT_VERSION" | head -1 | sed 's/.*= //' | sed 's/;//')
-        
-        echo "目标级别 Marketing Version: $MARKETING_VERSION"
-        echo "目标级别 Current Project Version: $CURRENT_PROJECT_VERSION"
-        
-        # 如果是tag触发，使用tag版本
+        MARKETING_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /MARKETING_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
+        CURRENT_PROJECT_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /CURRENT_PROJECT_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
+        echo "Release Marketing Version: $MARKETING_VERSION"
+        echo "Release Current Project Version: $CURRENT_PROJECT_VERSION"
         if [[ $GITHUB_REF == refs/tags/* ]]; then
           VERSION=${GITHUB_REF#refs/tags/}
           echo "使用Git tag版本: $VERSION"
         else
           VERSION="${MARKETING_VERSION}-${CURRENT_PROJECT_VERSION}"
-          echo "使用目标级别版本: $VERSION"
+          echo "使用Release版本: $VERSION"
         fi
-        
-        # 设置输出变量
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
         echo "build_version=$CURRENT_PROJECT_VERSION" >> $GITHUB_OUTPUT
@@ -68,7 +58,6 @@ jobs:
         MINECRAFT_CLIENT_ID: ${{ secrets.MINECRAFT_CLIENT_ID }}
       run: |
         echo "开始构建ARM架构版本..."
-        echo "使用MINECRAFT_CLIENT_ID环境变量"
         xcodebuild -project SwiftCraftLauncher.xcodeproj \
           -scheme SwiftCraftLauncher \
           -configuration Release \
@@ -143,6 +132,69 @@ jobs:
         path: Swift_Craft_Launcher_ARM_v${{ steps.version.outputs.version }}.dmg
         retention-days: 30
         
+    - name: Build for x86
+      env:
+        MINECRAFT_CLIENT_ID: ${{ secrets.MINECRAFT_CLIENT_ID }}
+      run: |
+        echo "开始构建x86架构版本..."
+        xcodebuild -project SwiftCraftLauncher.xcodeproj \
+          -scheme SwiftCraftLauncher \
+          -configuration Release \
+          -destination 'platform=macOS,arch=x86_64' \
+          -derivedDataPath build_x86 \
+          build
+
+    - name: Debug build_x86 output
+      run: |
+        echo "检查x86构建输出目录结构..."
+        find build_x86 -name "*.app" -type d 2>/dev/null || echo "未找到.app文件"
+        ls -la build_x86/ 2>/dev/null || echo "build_x86目录不存在"
+        ls -la build_x86/Build/ 2>/dev/null || echo "build_x86/Build目录不存在"
+        ls -la build_x86/Build/Products/ 2>/dev/null || echo "build_x86/Build/Products目录不存在"
+        ls -la build_x86/Build/Products/Release/ 2>/dev/null || echo "build_x86/Build/Products/Release目录不存在"
+
+    - name: Verify build_x86 output
+      run: |
+        echo "检查x86构建输出..."
+        APP_PATH_X86=$(find build_x86 -name "Swift Craft Launcher.app" -type d 2>/dev/null | head -1)
+        if [ -n "$APP_PATH_X86" ] && [ -d "$APP_PATH_X86" ]; then
+          echo "✅ x86应用构建成功，位置: $APP_PATH_X86"
+          file "$APP_PATH_X86/Contents/MacOS/Swift Craft Launcher"
+        else
+          echo "❌ x86应用构建失败，未找到应用文件"
+          echo "构建目录内容:"
+          find build_x86 -type f -name "*.app" 2>/dev/null || echo "未找到任何.app文件"
+          exit 1
+        fi
+
+    - name: Create x86 DMG
+      run: |
+        echo "开始创建x86 DMG文件..."
+        APP_PATH_X86=$(find build_x86 -name "Swift Craft Launcher.app" -type d 2>/dev/null | head -1)
+        if [ -z "$APP_PATH_X86" ]; then
+          echo "❌ 未找到x86应用文件，无法创建DMG"
+          exit 1
+        fi
+        mkdir -p dmg_temp_x86
+        cp -R "$APP_PATH_X86" dmg_temp_x86/
+        DMG_NAME_X86="Swift_Craft_Launcher_x86_v${{ steps.version.outputs.version }}.dmg"
+        echo "x86 DMG文件名: $DMG_NAME_X86"
+        hdiutil create -volname "Swift Craft Launcher" -srcfolder dmg_temp_x86 -ov -format UDZO "$DMG_NAME_X86"
+        if [ -f "$DMG_NAME_X86" ]; then
+          echo "✅ x86 DMG文件创建成功"
+          ls -lh "$DMG_NAME_X86"
+        else
+          echo "❌ x86 DMG文件创建失败"
+          exit 1
+        fi
+
+    - name: Upload x86 DMG artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Swift-Craft-Launcher-x86-v${{ steps.version.outputs.version }}
+        path: Swift_Craft_Launcher_x86_v${{ steps.version.outputs.version }}.dmg
+        retention-days: 30
+
     # - name: Create Release
     #   if: startsWith(github.ref, 'refs/tags/')
     #   id: create_release
@@ -185,3 +237,6 @@ jobs:
         rm -rf build
         rm -rf dmg_temp
         rm -f Swift_Craft_Launcher_ARM_v*.dmg
+        rm -rf build_x86
+        rm -rf dmg_temp_x86
+        rm -f Swift_Craft_Launcher_x86_v*.dmg
