@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91B2E313A67005A53F1 /* ZIPFoundation */; };
 		9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91E2E313A9C005A53F1 /* MarkdownUI */; };
+		90C51D072E421BAB0014D7B4 /* MinecraftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90C51D062E421BAB0014D7B4 /* MinecraftNBT */; };
 		90D8D76B2E33FB75008296D1 /* Sliders in Frameworks */ = {isa = PBXBuildFile; productRef = 90D8D76A2E33FB75008296D1 /* Sliders */; };
 /* End PBXBuildFile section */
 
@@ -30,6 +31,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				90D8D76B2E33FB75008296D1 /* Sliders in Frameworks */,
+				90C51D072E421BAB0014D7B4 /* MinecraftNBT in Frameworks */,
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
 				9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */,
 			);
@@ -69,6 +71,7 @@
 				9023D91B2E313A67005A53F1 /* ZIPFoundation */,
 				9023D91E2E313A9C005A53F1 /* MarkdownUI */,
 				90D8D76A2E33FB75008296D1 /* Sliders */,
+				90C51D062E421BAB0014D7B4 /* MinecraftNBT */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 9047CC782E3D333800AE31D1 /* Swift Craft Launcher.app */;
@@ -104,6 +107,7 @@
 				9023D91A2E313A67005A53F1 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 				9023D91D2E313A9C005A53F1 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 				90D8D7692E33FB75008296D1 /* XCRemoteSwiftPackageReference "swiftui-sliders" */,
+				90C51D052E421BAB0014D7B4 /* XCRemoteSwiftPackageReference "swift-nbt" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -195,7 +199,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Su";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.4;
-				MARKETING_VERSION = 0.0.1;
+				MARKETING_VERSION = 0.0.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -258,7 +262,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Su";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.4;
-				MARKETING_VERSION = 0.0.1;
+				MARKETING_VERSION = 0.0.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -368,6 +372,14 @@
 				minimumVersion = 2.4.1;
 			};
 		};
+		90C51D052E421BAB0014D7B4 /* XCRemoteSwiftPackageReference "swift-nbt" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ezfe/swift-nbt.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		90D8D7692E33FB75008296D1 /* XCRemoteSwiftPackageReference "swiftui-sliders" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/spacenation/swiftui-sliders.git";
@@ -388,6 +400,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9023D91D2E313A9C005A53F1 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
 			productName = MarkdownUI;
+		};
+		90C51D062E421BAB0014D7B4 /* MinecraftNBT */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 90C51D052E421BAB0014D7B4 /* XCRemoteSwiftPackageReference "swift-nbt" */;
+			productName = MinecraftNBT;
 		};
 		90D8D76A2E33FB75008296D1 /* Sliders */ = {
 			isa = XCSwiftPackageProductDependency;
