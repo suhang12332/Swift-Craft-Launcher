@@ -69,7 +69,6 @@
 "settings.default_memory_allocation.label" = "全局内存分配";
 "settings.game_resource_info.label" = "游戏资源";
 "settings.concurrent_downloads.label" = "下载并发数";
-"settings.auto_download_dependencies.label" = "自动下载前置Mod（依赖）";
 "settings.git_proxy_url.label" = "Git 代理地址";
 "settings.launcher_working_directory" = "工作目录";
 "settings.player.title" = "玩家";

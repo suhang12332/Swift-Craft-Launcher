@@ -70,7 +70,7 @@ struct MinecraftLaunchCommand {
             )
         }
         
-        Logger.shared.info("启动游戏进程: \(javaPath) \(command.joined(separator: " "))")
+//        Logger.shared.info("启动游戏进程: \(javaPath) \(command.joined(separator: " "))")
         Logger.shared.info("游戏工作目录: \(gameWorkingDirectory.path)")
         
         let process = Process()

@@ -25,15 +25,15 @@ public struct SettingsView: View {
             GeneralSettingsView()
                 .tabItem {
                     Label("settings.general.tab".localized(), systemImage: "gearshape")
-                }.frame(maxWidth: 500)
+                }
             PlayerSettingsView()
                 .tabItem {
                     Label("settings.player.tab".localized(), systemImage: "person.crop.circle")
-                }.frame(maxWidth: 500)
+                }
             GameSettingsView()
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
-                }.frame(maxWidth: 500)
+                }
 //            AcknowledgementsView()
 //                .tabItem {
 //                    Label("settings.acknowledgements.tab".localized(), systemImage: "star.bubble")

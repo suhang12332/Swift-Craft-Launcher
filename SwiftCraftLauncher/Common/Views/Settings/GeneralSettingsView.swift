@@ -15,99 +15,121 @@ public struct GeneralSettingsView: View {
     public init() {}
     
     public var body: some View {
-        Form {
-            VStack(alignment: .leading) {
-                Section {
-                    Picker("settings.language.picker".localized(), selection: $selectedLanguage) {
-                        ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
-                            Text(name).tag(code)
-                        }
-                    }
-                    .onChange(of: selectedLanguage) { oldValue, newValue in
-                        // 如果是取消操作导致的语言恢复，则不触发重启提示
-                        if newValue != LanguageManager.shared.selectedLanguage {
-                            showingRestartAlert = true
-                        }
-                    }.confirmationDialog(
-                        "settings.language.restart.title".localized(),
-                        isPresented: $showingRestartAlert,
-                        titleVisibility: .visible
-                    ) {
-                        Button("settings.language.restart.confirm".localized(), role: .destructive) {
-                            LanguageManager.shared.selectedLanguage = selectedLanguage
-                            restartAppSafely()
-                        }
-                        .keyboardShortcut(.defaultAction)
-                        Button("common.cancel".localized(), role: .cancel) {
-                            selectedLanguage = LanguageManager.shared.selectedLanguage
-                        }
-                    } message: {
-                        Text("settings.language.restart.message".localized())
-                    }
-                    Picker("settings.theme.picker".localized(), selection: $general.themeMode) {
-                        ForEach(ThemeMode.allCases, id: \.self) { mode in
-                            Text(mode.localizedName).tag(mode)
-                        }
+        Grid(alignment: .trailing) {
+            GridRow {
+                Text("settings.language.picker".localized()) // 长标题
+                    .gridColumnAlignment(.trailing) // 右对齐
+                Picker("", selection: $selectedLanguage) {
+                    ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
+                        Text(name).tag(code)
                     }
                 }
+                .frame(width: 200)
+                .gridColumnAlignment(.leading)
+                .labelsHidden()
+                .onChange(of: selectedLanguage) { oldValue, newValue in
+                    // 如果是取消操作导致的语言恢复，则不触发重启提示
+                    if newValue != LanguageManager.shared.selectedLanguage {
+                        showingRestartAlert = true
+                    }
+                }.confirmationDialog(
+                    "settings.language.restart.title".localized(),
+                    isPresented: $showingRestartAlert,
+                    titleVisibility: .visible
+                ) {
+                    Button("settings.language.restart.confirm".localized(), role: .destructive) {
+                        LanguageManager.shared.selectedLanguage = selectedLanguage
+                        restartAppSafely()
+                    }
+                    .keyboardShortcut(.defaultAction)
+                    Button("common.cancel".localized(), role: .cancel) {
+                        selectedLanguage = LanguageManager.shared.selectedLanguage
+                    }
+                } message: {
+                    Text("settings.language.restart.message".localized())
+                }
             }
-            .padding(.bottom, 20) // 只控制Section之间的垂直间距
             
-            Section {
-                LabeledContent {
-                    DirectorySettingRow(
-                        title: "settings.launcher_working_directory".localized(),
-                        path: general.launcherWorkingDirectory.isEmpty ? (AppPaths.launcherSupportDirectory?.path ?? "") : general.launcherWorkingDirectory,
-                        description: "settings.working_directory.description".localized(),
-                        onChoose: { showDirectoryPicker = true },
-                        onReset: {
-                            resetWorkingDirectorySafely()
-                        }
-                    )
-                } label: {
-                    Text("settings.launcher_working_directory".localized())
-                }
-                .fixedSize()
-                .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
-                    handleDirectoryImport(result)
-                }
-            }
-            .padding(.bottom, 20) // 只控制Section之间的垂直间距
-            Section {
-                LabeledContent {
-                    HStack {
-                        Slider(
-                            value: Binding(
-                                get: {
-                                    Double(gameSettings.concurrentDownloads)
-                                },
-                                set: {
-                                    gameSettings.concurrentDownloads = Int(
-                                        $0
-                                    )
-                                }
-                            ),
-                            in: 1...20,
-                            label: { EmptyView() },
-                            minimumValueLabel: { EmptyView() },
-                            maximumValueLabel: { EmptyView() }
-                        ).controlSize(.mini).frame(width: 200)
-                        .animation(.easeOut(duration: 0.5), value: gameSettings.concurrentDownloads)
-                        // 当前内存值显示（右对齐，固定宽度）
-                        Text("\(gameSettings.concurrentDownloads)").font(
-                            .subheadline
-                        ).foregroundColor(.secondary).fixedSize()
+            GridRow {
+                Text("settings.theme.picker".localized()) // 长标题
+                    .gridColumnAlignment(.trailing) // 右对齐
+                Picker("", selection: $general.themeMode) {
+                    ForEach(ThemeMode.allCases, id: \.self) { mode in
+                        Text(mode.localizedName).tag(mode)
                     }
-                } label: {
-                    Label("settings.concurrent_downloads.label".localized(),systemImage: "").labelStyle(.titleOnly)
+                }.frame(width: 200)
+                    .gridColumnAlignment(.leading)
+                    .labelsHidden()
+            }.padding(.bottom, 20)
+            
+            GridRow {
+                Text("settings.launcher_working_directory".localized()).gridColumnAlignment(.trailing)
+                DirectorySettingRow(
+                    title: "settings.launcher_working_directory".localized(),
+                    path: general.launcherWorkingDirectory.isEmpty ? (AppPaths.launcherSupportDirectory?.path ?? "") : general.launcherWorkingDirectory,
+                    description: "settings.working_directory.description".localized(),
+                    onChoose: { showDirectoryPicker = true },
+                    onReset: {
+                        resetWorkingDirectorySafely()
+                    }
+                ).fixedSize()
+                .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
+                        handleDirectoryImport(result)
                 }
+                
+            }.padding(.bottom, 20)
+            
+            GridRow {
+                Text("settings.concurrent_downloads.label".localized()).gridColumnAlignment(.trailing) // 右对齐
+                HStack {
+                    Slider(
+                        value: Binding(
+                            get: {
+                                Double(gameSettings.concurrentDownloads)
+                            },
+                            set: {
+                                gameSettings.concurrentDownloads = Int(
+                                    $0
+                                )
+                            }
+                        ),
+                        in: 1...20,
+                        label: { EmptyView() },
+                        minimumValueLabel: { EmptyView() },
+                        maximumValueLabel: { EmptyView() }
+                    ).controlSize(.mini)
+                    .animation(.easeOut(duration: 0.5), value: gameSettings.concurrentDownloads)
+                    // 当前内存值显示（右对齐，固定宽度）
+                    Text("\(gameSettings.concurrentDownloads)").font(
+                        .subheadline
+                    ).foregroundColor(.secondary).fixedSize()
+                }.frame(width: 200)
+                    .gridColumnAlignment(.leading)
+                    .labelsHidden()
             }
-            .padding(.bottom, 20) // 只控制Section之间的垂直间距
-            Section {
-                TextField("settings.minecraft_versions_url.label".localized(), text: $gameSettings.minecraftVersionManifestURL).focusable(false)
-                TextField("settings.modrinth_api_url.label".localized(), text: $gameSettings.modrinthAPIBaseURL).focusable(false)
-                TextField("settings.git_proxy_url.label".localized(), text: $gameSettings.gitProxyURL).focusable(false)
+            .padding(.bottom, 20)
+            
+            GridRow {
+                Text("settings.minecraft_versions_url.label".localized()).gridColumnAlignment(.trailing)
+                TextField("", text: $gameSettings.minecraftVersionManifestURL).focusable(false)
+                    .fixedSize()
+                
+                
             }
+            GridRow {
+                Text("settings.modrinth_api_url.label".localized()).gridColumnAlignment(.trailing)
+                TextField("", text: $gameSettings.modrinthAPIBaseURL).focusable(false)
+                    .fixedSize()
+                
+                
+            }
+            GridRow {
+                Text("settings.git_proxy_url.label".localized()).gridColumnAlignment(.trailing)
+                TextField("", text: $gameSettings.gitProxyURL).focusable(false)
+                    .fixedSize()
+                
+            }
+            
             
         }
         .alert("common.error".localized(), isPresented: $showingErrorAlert) {

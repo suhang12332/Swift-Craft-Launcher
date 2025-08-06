@@ -37,44 +37,30 @@ public struct GameSettingsView: View {
     }
 
     public var body: some View {
-        Form {
-            Section {
-                LabeledContent {
-                    VStack(alignment: .leading,spacing: 6) {
-                         Toggle(
-                             "settings.auto_download_dependencies.label".localized(),
-                             isOn: $gameSettings.autoDownloadDependencies
-                         )
-                         Text("settings.dependencies.description".localized()).font(.footnote).foregroundColor(.secondary)
-                     }
-                 } label: {
-                     Text("settings.auto_handle_dependencies".localized()).labelStyle(.titleOnly)
-                 }
-            }
-            .padding(.bottom, 20)
-            
-            Section {
-                LabeledContent {
-                    VStack(alignment: .leading, spacing: 2) {
-                        DirectorySettingRow(
-                            title: "settings.default_java_path.label".localized(),
-                            path: gameSettings.defaultJavaPath.isEmpty ? AppConstants.defaultJava+"/java" : gameSettings.defaultJavaPath+"/java",
-                            description: String(format: "settings.java_path.description".localized(), "\(gameSettings.defaultJavaPath.isEmpty ? AppConstants.defaultJava+"/java" : gameSettings.defaultJavaPath+"/java") \(javaVersion)"),
-                            onChoose: { showJavaPathPicker = true },
-                            onReset: {
-                                gameSettings.defaultJavaPath = AppConstants.defaultJava
-                            }
-                        )
-                        
-                        if let error = javaDetectionError {
-                            Text(error)
-                                .font(.caption)
-                                .foregroundColor(.red)
-                        }
-                    }
-                } label: {
-                    Text("settings.default_java_path.label".localized()).labelStyle(.titleOnly)
+        Grid(alignment: .trailing) {
+            GridRow {
+                Text("settings.auto_handle_dependencies".localized()).gridColumnAlignment(.trailing)
+                HStack {
+                    Toggle(
+                        "",
+                        isOn: $gameSettings.autoDownloadDependencies
+                    ).labelsHidden()
+                    Text("settings.dependencies.description".localized()).font(.footnote).foregroundColor(.secondary)
                 }
+                .frame(width: .infinity).gridColumnAlignment(.leading)
+            }.padding(.bottom,20)
+            GridRow {
+                Text("settings.default_java_path.label".localized()).gridColumnAlignment(.trailing)
+                DirectorySettingRow(
+                    title: "settings.default_java_path.label".localized(),
+                    path: gameSettings.defaultJavaPath.isEmpty ? AppConstants.defaultJava+"/java" : gameSettings.defaultJavaPath+"/java",
+                    description: String(format: "settings.java_path.description".localized(), "\(gameSettings.defaultJavaPath.isEmpty ? AppConstants.defaultJava+"/java" : gameSettings.defaultJavaPath+"/java") \(javaVersion)"),
+                    onChoose: { showJavaPathPicker = true },
+                    onReset: {
+                        gameSettings.defaultJavaPath = AppConstants.defaultJava
+                    }
+                )
+                .fixedSize()
                 .fileImporter(isPresented: $showJavaPathPicker,
                               allowedContentTypes: [.directory],
                               allowsMultipleSelection: false) { result in
@@ -97,62 +83,58 @@ public struct GameSettingsView: View {
                 .onChange(of: gameSettings.defaultJavaPath) { old,newPath in
                     checkJavaVersion(at: newPath.isEmpty ? AppConstants.defaultJava : newPath)
                 }
-            }
-            .padding(.bottom, 20)
-            
-            Section {
-                LabeledContent {
-                    HStack {
-                        RangeSlider(
-                            range: $globalMemoryRange,
-                            in: 512...Double(maximumMemoryAllocation),
-                            step: 1
+                if let error = javaDetectionError {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
+            }.padding(.bottom,20)
+            GridRow {
+                Text("settings.default_memory_allocation.label".localized()).gridColumnAlignment(.trailing)
+                HStack {
+                    RangeSlider(
+                        range: $globalMemoryRange,
+                        in: 512...Double(maximumMemoryAllocation),
+                        step: 1
+                    )
+                    .rangeSliderStyle(
+                        HorizontalRangeSliderStyle(
+                            track:
+                                HorizontalRangeTrack(
+                                    view: Capsule().foregroundColor(.accentColor)
+                                )
+                                .background(Capsule().foregroundColor(Color.gray.opacity(0.15)))
+                                .frame(height: 3),
+                            lowerThumb: Circle().foregroundColor(.white),
+                            upperThumb: Circle().foregroundColor(.white),
+                            lowerThumbSize: CGSize(width: 12, height: 12),
+                            upperThumbSize: CGSize(width: 12, height: 12)
                         )
-                        .rangeSliderStyle(
-                            HorizontalRangeSliderStyle(
-                                track:
-                                    HorizontalRangeTrack(
-                                        view: Capsule().foregroundColor(.accentColor)
-                                    )
-                                    .background(Capsule().foregroundColor(Color.gray.opacity(0.15)))
-                                    .frame(height: 3),
-                                lowerThumb: Circle().foregroundColor(.white),
-                                upperThumb: Circle().foregroundColor(.white),
-                                lowerThumbSize: CGSize(width: 12, height: 12),
-                                upperThumbSize: CGSize(width: 12, height: 12)
-                            )
-                        )
-                        .frame(width: 200,height: 20)
-                        .onChange(of: globalMemoryRange) { old, newValue in
-                            gameSettings.globalXms = Int(newValue.lowerBound)
-                            gameSettings.globalXmx = Int(newValue.upperBound)
-                        }
-                        .onAppear {
-                            globalMemoryRange = Double(gameSettings.globalXms)...Double(gameSettings.globalXmx)
-                        }
-                        Text("\(Int(globalMemoryRange.lowerBound)) MB - \(Int(globalMemoryRange.upperBound)) MB")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .fixedSize()
+                    )
+                    .frame(width: 200,height: 20)
+                    .onChange(of: globalMemoryRange) { old, newValue in
+                        gameSettings.globalXms = Int(newValue.lowerBound)
+                        gameSettings.globalXmx = Int(newValue.upperBound)
                     }
-                } label: {
-                    Text("settings.default_memory_allocation.label".localized()).labelStyle(.titleOnly)
+                    .onAppear {
+                        globalMemoryRange = Double(gameSettings.globalXms)...Double(gameSettings.globalXmx)
+                    }
+                    Text("\(Int(globalMemoryRange.lowerBound)) MB - \(Int(globalMemoryRange.upperBound)) MB")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .fixedSize()
                 }
-            }
-            .padding(.bottom, 20)
-            
-            Section {
-                LabeledContent {
-                    HStack {
-                        Label("\(cacheManager.cacheInfo.fileCount)",systemImage: "text.document")
-                        Divider().frame(height: 16)
-                        Label(cacheManager.cacheInfo.formattedSize, systemImage: "externaldrive")
-                    }.foregroundStyle(.secondary)
-                } label: {
-                    Label("settings.game_resource_info.label".localized(),systemImage: "").labelStyle(.titleOnly)
-                }
+            }.padding(.bottom,20)
+            GridRow {
+                Text("settings.game_resource_info.label".localized()).gridColumnAlignment(.trailing)
+                HStack {
+                    Label("\(cacheManager.cacheInfo.fileCount)",systemImage: "text.document")
+                    Divider().frame(height: 16)
+                    Label(cacheManager.cacheInfo.formattedSize, systemImage: "externaldrive")
+                }.foregroundStyle(.secondary)
             }
         }
+        
         .onAppear {
             calculateCacheInfoSafely()
         }

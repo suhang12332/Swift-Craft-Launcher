@@ -68,7 +68,7 @@ struct DirectorySettingRow: View {
 // 路径分段显示控件（Finder风格图标）
 struct PathBreadcrumbView: View {
     let path: String
-    let maxVisible: Int = 4  // 最多显示几段（含首尾）
+    let maxVisible: Int = 3  // 最多显示几段（含首尾）
 
     var body: some View {
         let components = path.split(separator: "/").map(String.init)
@@ -138,6 +138,5 @@ struct PathBreadcrumbView: View {
                 }
             }
         }
-        .frame(maxWidth: 300, alignment: .leading)
     }
 }
