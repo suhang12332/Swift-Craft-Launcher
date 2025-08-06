@@ -39,12 +39,15 @@ jobs:
       run: |
         echo "提取版本信息..."
         
-        # 从项目文件中提取版本信息
-        MARKETING_VERSION=$(grep -A1 "MARKETING_VERSION" SwiftCraftLauncher.xcodeproj/project.pbxproj | grep "=" | head -1 | sed 's/.*= //' | sed 's/;//')
-        CURRENT_PROJECT_VERSION=$(grep -A1 "CURRENT_PROJECT_VERSION" SwiftCraftLauncher.xcodeproj/project.pbxproj | grep "=" | head -1 | sed 's/.*= //' | sed 's/;//')
+        # 从项目文件中提取目标级别的版本信息
+        # 查找目标配置中的MARKETING_VERSION（在PBXNativeTarget部分）
+        MARKETING_VERSION=$(grep -A20 "PBXNativeTarget.*SwiftCraftLauncher" SwiftCraftLauncher.xcodeproj/project.pbxproj | grep -A50 "buildConfigurations" | grep "MARKETING_VERSION" | head -1 | sed 's/.*= //' | sed 's/;//')
         
-        echo "Marketing Version: $MARKETING_VERSION"
-        echo "Current Project Version: $CURRENT_PROJECT_VERSION"
+        # 查找目标配置中的CURRENT_PROJECT_VERSION
+        CURRENT_PROJECT_VERSION=$(grep -A20 "PBXNativeTarget.*SwiftCraftLauncher" SwiftCraftLauncher.xcodeproj/project.pbxproj | grep -A50 "buildConfigurations" | grep "CURRENT_PROJECT_VERSION" | head -1 | sed 's/.*= //' | sed 's/;//')
+        
+        echo "目标级别 Marketing Version: $MARKETING_VERSION"
+        echo "目标级别 Current Project Version: $CURRENT_PROJECT_VERSION"
         
         # 如果是tag触发，使用tag版本
         if [[ $GITHUB_REF == refs/tags/* ]]; then
@@ -52,7 +55,7 @@ jobs:
           echo "使用Git tag版本: $VERSION"
         else
           VERSION="${MARKETING_VERSION}-${CURRENT_PROJECT_VERSION}"
-          echo "使用项目版本: $VERSION"
+          echo "使用目标级别版本: $VERSION"
         fi
         
         # 设置输出变量
@@ -61,8 +64,11 @@ jobs:
         echo "build_version=$CURRENT_PROJECT_VERSION" >> $GITHUB_OUTPUT
         
     - name: Build for ARM
+      env:
+        MINECRAFT_CLIENT_ID: ${{ secrets.MINECRAFT_CLIENT_ID }}
       run: |
         echo "开始构建ARM架构版本..."
+        echo "使用MINECRAFT_CLIENT_ID环境变量"
         xcodebuild -project SwiftCraftLauncher.xcodeproj \
           -scheme SwiftCraftLauncher \
           -configuration Release \
