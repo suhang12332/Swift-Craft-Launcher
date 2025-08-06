@@ -1,6 +1,15 @@
 {
-  "originHash" : "c154eaba0c212f2f7317342573a099f15a8f4ae19cf3eb5ca3b1926c3fe6f84e",
+  "originHash" : "0d5c920d99effbb01733208753aeabfdef515704cc2c1cd6c7101bc5b1dbf947",
   "pins" : [
+    {
+      "identity" : "gzipswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/1024jp/GzipSwift.git",
+      "state" : {
+        "revision" : "7a7f17761c76a932662ab77028a4329f67d645a4",
+        "version" : "5.2.0"
+      }
+    },
     {
       "identity" : "networkimage",
       "kind" : "remoteSourceControl",
@@ -20,12 +29,30 @@
       }
     },
     {
+      "identity" : "swift-collections",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-collections.git",
+      "state" : {
+        "revision" : "8c0c0a8b49e080e54e5e328cc552821ff07cd341",
+        "version" : "1.2.1"
+      }
+    },
+    {
       "identity" : "swift-markdown-ui",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/gonzalezreal/swift-markdown-ui.git",
       "state" : {
         "revision" : "5f613358148239d0292c0cef674a3c2314737f9e",
         "version" : "2.4.1"
+      }
+    },
+    {
+      "identity" : "swift-nbt",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ezfe/swift-nbt.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "20349a3a0a7607352a1d3141160c44a3f0d9ada6"
       }
     },
     {
