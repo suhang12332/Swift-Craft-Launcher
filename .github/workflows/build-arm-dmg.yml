@@ -1,0 +1,87 @@
+name: Build ARM DMG
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.3'
+        
+    - name: Show Xcode version
+      run: |
+        xcodebuild -version
+        xcrun simctl list devices
+        
+    - name: Build for ARM
+      run: |
+        echo "开始构建ARM架构版本..."
+        xcodebuild -project SwiftCraftLauncher.xcodeproj \
+          -scheme SwiftCraftLauncher \
+          -configuration Release \
+          -destination 'platform=macOS,arch=arm64' \
+          -derivedDataPath build \
+          -showBuildSettings \
+          build
+          
+    - name: Verify build output
+      run: |
+        echo "检查构建输出..."
+        ls -la build/Build/Products/Release/
+        
+        if [ -d "build/Build/Products/Release/Swift Craft Launcher.app" ]; then
+          echo "✅ 应用构建成功"
+          file "build/Build/Products/Release/Swift Craft Launcher.app/Contents/MacOS/Swift Craft Launcher"
+        else
+          echo "❌ 应用构建失败"
+          exit 1
+        fi
+        
+    - name: Create DMG
+      run: |
+        echo "开始创建DMG文件..."
+        
+        # 创建临时目录
+        mkdir -p dmg_temp
+        
+        # 复制应用到临时目录
+        cp -R "build/Build/Products/Release/Swift Craft Launcher.app" dmg_temp/
+        
+        # 创建DMG
+        hdiutil create -volname "Swift Craft Launcher" -srcfolder dmg_temp -ov -format UDZO "Swift_Craft_Launcher_ARM.dmg"
+        
+        # 验证DMG文件
+        if [ -f "Swift_Craft_Launcher_ARM.dmg" ]; then
+          echo "✅ DMG文件创建成功"
+          ls -lh Swift_Craft_Launcher_ARM.dmg
+        else
+          echo "❌ DMG文件创建失败"
+          exit 1
+        fi
+        
+    - name: Upload DMG artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Swift-Craft-Launcher-ARM
+        path: Swift_Craft_Launcher_ARM.dmg
+        retention-days: 30
+        
+    - name: Clean up
+      if: always()
+      run: |
+        echo "清理临时文件..."
+        rm -rf build
+        rm -rf dmg_temp
+        rm -f Swift_Craft_Launcher_ARM.dmg
