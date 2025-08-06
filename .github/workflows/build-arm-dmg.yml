@@ -53,9 +53,15 @@ jobs:
         echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
         echo "build_version=$CURRENT_PROJECT_VERSION" >> $GITHUB_OUTPUT
         
+    - name: Create xcconfig file
+      run: |
+        echo "创建临时xcconfig文件..."
+        cat > build_config.xcconfig << EOF
+        INFOPLIST_KEY_MINECRAFT_CLIENT_ID = ${{ secrets.MINECRAFT_CLIENT_ID }}
+        EOF
+        echo "xcconfig文件已创建"
+
     - name: Build for ARM
-      env:
-        MINECRAFT_CLIENT_ID: ${{ secrets.MINECRAFT_CLIENT_ID }}
       run: |
         echo "开始构建ARM架构版本..."
         xcodebuild -project SwiftCraftLauncher.xcodeproj \
@@ -63,6 +69,7 @@ jobs:
           -configuration Release \
           -destination 'platform=macOS,arch=arm64' \
           -derivedDataPath build \
+          -xcconfig build_config.xcconfig \
           build
           
     - name: Debug build output
@@ -133,8 +140,6 @@ jobs:
         retention-days: 30
         
     - name: Build for x86
-      env:
-        MINECRAFT_CLIENT_ID: ${{ secrets.MINECRAFT_CLIENT_ID }}
       run: |
         echo "开始构建x86架构版本..."
         xcodebuild -project SwiftCraftLauncher.xcodeproj \
@@ -142,6 +147,7 @@ jobs:
           -configuration Release \
           -destination 'platform=macOS,arch=x86_64' \
           -derivedDataPath build_x86 \
+          -xcconfig build_config.xcconfig \
           build
 
     - name: Debug build_x86 output
@@ -240,3 +246,4 @@ jobs:
         rm -rf build_x86
         rm -rf dmg_temp_x86
         rm -f Swift_Craft_Launcher_x86_v*.dmg
+        rm -f build_config.xcconfig
