@@ -43,8 +43,9 @@ class NeoForgeLoaderService {
     static func fetchLatestNeoForgeProfile(for minecraftVersion: String) async throws -> ModrinthLoader {
         let result = try await fetchLatestNeoForgeVersion(for: minecraftVersion)
         let neoForgeVersion = result.id
+        let cacheKey = "\(minecraftVersion)-\(neoForgeVersion)"
         // 1. 查全局缓存
-        if let cached = AppCacheManager.shared.get(namespace: "neoforge", key: neoForgeVersion, as: ModrinthLoader.self) {
+        if let cached = AppCacheManager.shared.get(namespace: "neoforge", key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
         let (data, response) = try await URLSession.shared.data(from: URL(string: result.url)!)
@@ -63,7 +64,7 @@ class NeoForgeLoaderService {
                 .appendingPathComponent(neoForgeVersion))
         }
         loader.version = neoForgeVersion
-        AppCacheManager.shared.setSilently(namespace: "neoforge", key: neoForgeVersion, value: loader)
+        AppCacheManager.shared.setSilently(namespace: "neoforge", key: cacheKey, value: loader)
         return loader
     }
 

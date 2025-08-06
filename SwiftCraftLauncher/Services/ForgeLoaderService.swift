@@ -10,8 +10,9 @@ class ForgeLoaderService {
     static func fetchLatestForgeProfile(for minecraftVersion: String) async throws -> ModrinthLoader {
         let result = try await fetchLatestForgeVersion(for: minecraftVersion)
         let forgeVersion = result.id
+        let cacheKey = "\(minecraftVersion)-\(forgeVersion)"
         // 1. 查全局缓存
-        if let cached = AppCacheManager.shared.get(namespace: "forge", key: forgeVersion, as: ModrinthLoader.self) {
+        if let cached = AppCacheManager.shared.get(namespace: "forge", key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
         // 2. 直接下载 version.json
@@ -31,7 +32,7 @@ class ForgeLoaderService {
                 .appendingPathComponent(forgeVersion))
         }
         loader.version = forgeVersion
-        AppCacheManager.shared.setSilently(namespace: "forge", key: forgeVersion, value: loader)
+        AppCacheManager.shared.setSilently(namespace: "forge", key: cacheKey, value: loader)
         return loader
     }
 

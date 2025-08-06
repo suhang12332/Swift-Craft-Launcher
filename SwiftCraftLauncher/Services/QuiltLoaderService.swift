@@ -35,10 +35,12 @@ class QuiltLoaderService {
     /// 获取最新的可用 Quilt Loader 版本
     static func fetchLatestStableLoaderVersion(for minecraftVersion: String) async throws -> ModrinthLoader {
         let allLoaders = await fetchAllQuiltLoaders(for: minecraftVersion)
-        let result = allLoaders.first!
-        let quiltVersion = result.loader.version
+        let stableLoaders = allLoaders.filter { $0.loader.stable }
+        let selectedLoader = !stableLoaders.isEmpty ? stableLoaders.first! : allLoaders.first!
+        let quiltVersion = selectedLoader.loader.version
+        let cacheKey = "\(minecraftVersion)-\(quiltVersion)"
         
-        if let cached = AppCacheManager.shared.get(namespace: "quilt", key: quiltVersion, as: ModrinthLoader.self) {
+        if let cached = AppCacheManager.shared.get(namespace: "quilt", key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
         // 2. 直接下载 version.json
@@ -57,7 +59,7 @@ class QuiltLoaderService {
         // 处理 ${modrinth.gameVersion} 占位符
         loader = CommonService.processGameVersionPlaceholders(loader: loader, gameVersion: minecraftVersion)
         
-        AppCacheManager.shared.setSilently(namespace: "quilt", key: quiltVersion, value: loader)
+        AppCacheManager.shared.setSilently(namespace: "quilt", key: cacheKey, value: loader)
         return loader
     }
     

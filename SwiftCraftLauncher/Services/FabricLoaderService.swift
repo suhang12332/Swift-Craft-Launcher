@@ -64,10 +64,13 @@ class FabricLoaderService {
     static func fetchLatestStableLoaderVersion(for minecraftVersion: String) async throws -> ModrinthLoader {
 
         let allLoaders = await fetchAllLoaderVersions(for: minecraftVersion)
-        let fabricVersion = allLoaders.first!.loader.version
+        let stableLoaders = allLoaders.filter { $0.loader.stable }
+        let selectedLoader = !stableLoaders.isEmpty ? stableLoaders.first! : allLoaders.first!
+        let fabricVersion = selectedLoader.loader.version
+        let cacheKey = "\(minecraftVersion)-\(fabricVersion)"
         // 1. 查全局缓存
         
-        if let cached = AppCacheManager.shared.get(namespace: "fabric", key: fabricVersion, as: ModrinthLoader.self) {
+        if let cached = AppCacheManager.shared.get(namespace: "fabric", key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
         // 2. 直接下载 version.json
@@ -84,7 +87,7 @@ class FabricLoaderService {
         loader.version = fabricVersion
         // 处理 ${modrinth.gameVersion} 占位符
         loader = CommonService.processGameVersionPlaceholders(loader: loader, gameVersion: minecraftVersion)
-        AppCacheManager.shared.setSilently(namespace: "fabric", key: fabricVersion, value: loader)
+        AppCacheManager.shared.setSilently(namespace: "fabric", key: cacheKey, value: loader)
         return loader
                 
     }

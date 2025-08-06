@@ -272,8 +272,6 @@
 "log.minecraft.download.assets.start" = "开始下载 Minecraft 版本资源：%@";
 "log.minecraft.download.assets.complete" = "完成下载 Minecraft 版本资源：%@";
 
-// Development Status
-"development.in_progress" = "开发中...";
 
 // Common Actions
 "common.reset" = "重置";
