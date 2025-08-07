@@ -18,47 +18,55 @@ struct ModPackDownloadSheet: View {
    @State private var selectedGameVersion: String = ""
    @State private var selectedModPackVersion: ModrinthProjectDetailVersion?
    @State private var downloadTask: Task<Void, Error>? = nil
-   @State private var isProcessing = false // 下载和解析阶段
+   @State private var isProcessing = false
    @StateObject private var gameSetupService = GameSetupUtil()
    
    var body: some View {
        CommonSheetView(
-           header: {
-               HStack {
-                   Text("modpack.download.title".localized())
-                       .font(.headline)
-                       .frame(maxWidth: .infinity, alignment: .leading)
-               }
-           },
-           body: {
-               VStack(spacing: 20) {
-                   if isProcessing {
-                       processingView
-                   } else if let projectDetail = viewModel.projectDetail {
-                       ModrinthProjectTitleView(projectDetail: projectDetail)
-                           .padding(.bottom, 24)
-                       
-                       versionSelectionSection
-                       
-                       if shouldShowProgress {
-                           downloadProgressSection
-                       }
-                   }
-               }
-           },
-           footer: {
-               HStack {
-                   cancelButton
-                   Spacer()
-                   confirmButton
-               }
-           }
+           header: { headerView },
+           body: { bodyView },
+           footer: { footerView }
        )
        .onAppear {
            viewModel.setGameRepository(gameRepository)
            Task {
                await viewModel.loadProjectDetails(projectId: projectId)
            }
+       }
+   }
+   
+   // MARK: - View Components
+   
+   private var headerView: some View {
+       HStack {
+           Text("modpack.download.title".localized())
+               .font(.headline)
+               .frame(maxWidth: .infinity, alignment: .leading)
+       }
+   }
+   
+   private var bodyView: some View {
+       VStack(spacing: 20) {
+           if isProcessing {
+               processingView
+           } else if let projectDetail = viewModel.projectDetail {
+               ModrinthProjectTitleView(projectDetail: projectDetail)
+                   .padding(.bottom, 12)
+               
+               versionSelectionSection
+               
+               if shouldShowProgress {
+                   downloadProgressSection
+               }
+           }
+       }
+   }
+   
+   private var footerView: some View {
+       HStack {
+           cancelButton
+           Spacer()
+           confirmButton
        }
    }
    
@@ -76,7 +84,7 @@ struct ModPackDownloadSheet: View {
        isProcessing || gameSetupService.downloadState.isDownloading || viewModel.modPackInstallState.isInstalling
    }
    
-   // MARK: - Processing View
+   // MARK: - UI Components
    
    private var processingView: some View {
        VStack(spacing: 24) {
@@ -99,87 +107,42 @@ struct ModPackDownloadSheet: View {
        .padding()
    }
    
-   // MARK: - Download Progress Section
-   
    private var downloadProgressSection: some View {
        VStack(spacing: 24) {
-           // 游戏下载进度
            gameDownloadProgress
-           
-           // 模组加载器下载进度
            modLoaderDownloadProgress
-           
-           // 整合包安装进度
            modPackInstallProgress
        }
    }
    
    private var gameDownloadProgress: some View {
        Group {
-           FormSection {
-               DownloadProgressRow(
-                   title: "download.core.title".localized(),
-                   progress: gameSetupService.downloadState.coreProgress,
-                   currentFile: gameSetupService.downloadState.currentCoreFile,
-                   completed: gameSetupService.downloadState.coreCompletedFiles,
-                   total: gameSetupService.downloadState.coreTotalFiles,
-                   version: nil
-               )
-           }
-           FormSection {
-               DownloadProgressRow(
-                   title: "download.resources.title".localized(),
-                   progress: gameSetupService.downloadState.resourcesProgress,
-                   currentFile: gameSetupService.downloadState.currentResourceFile,
-                   completed: gameSetupService.downloadState.resourcesCompletedFiles,
-                   total: gameSetupService.downloadState.resourcesTotalFiles,
-                   version: nil
-               )
-           }
+           progressRow(
+               title: "download.core.title".localized(),
+               state: gameSetupService.downloadState,
+               type: .core
+           )
+           progressRow(
+               title: "download.resources.title".localized(),
+               state: gameSetupService.downloadState,
+               type: .resources
+           )
        }
    }
    
    private var modLoaderDownloadProgress: some View {
        Group {
            if let indexInfo = viewModel.lastParsedIndexInfo {
-               switch indexInfo.loaderType.lowercased() {
-               case "fabric", "quilt":
-                   FormSection {
-                       DownloadProgressRow(
-                           title: indexInfo.loaderType.lowercased() == "fabric"
-                               ? "fabric.loader.title".localized()
-                               : "quilt.loader.title".localized(),
-                           progress: gameSetupService.fabricDownloadState.coreProgress,
-                           currentFile: gameSetupService.fabricDownloadState.currentCoreFile,
-                           completed: gameSetupService.fabricDownloadState.coreCompletedFiles,
-                           total: gameSetupService.fabricDownloadState.coreTotalFiles,
-                           version: indexInfo.loaderVersion
-                       )
-                   }
-               case "forge":
-                   FormSection {
-                       DownloadProgressRow(
-                           title: "forge.loader.title".localized(),
-                           progress: gameSetupService.forgeDownloadState.coreProgress,
-                           currentFile: gameSetupService.forgeDownloadState.currentCoreFile,
-                           completed: gameSetupService.forgeDownloadState.coreCompletedFiles,
-                           total: gameSetupService.forgeDownloadState.coreTotalFiles,
-                           version: indexInfo.loaderVersion
-                       )
-                   }
-               case "neoforge":
-                   FormSection {
-                       DownloadProgressRow(
-                           title: "neoforge.loader.title".localized(),
-                           progress: gameSetupService.neoForgeDownloadState.coreProgress,
-                           currentFile: gameSetupService.neoForgeDownloadState.currentCoreFile,
-                           completed: gameSetupService.neoForgeDownloadState.coreCompletedFiles,
-                           total: gameSetupService.neoForgeDownloadState.coreTotalFiles,
-                           version: indexInfo.loaderVersion
-                       )
-                   }
-               default:
-                   EmptyView()
+               let loaderState = getLoaderDownloadState(for: indexInfo.loaderType)
+               let title = getLoaderTitle(for: indexInfo.loaderType)
+               
+               if let state = loaderState {
+                   progressRow(
+                       title: title,
+                       state: state,
+                       type: .core,
+                       version: indexInfo.loaderVersion
+                   )
                }
            }
        }
@@ -188,46 +151,22 @@ struct ModPackDownloadSheet: View {
    private var modPackInstallProgress: some View {
        Group {
            if viewModel.modPackInstallState.isInstalling {
-               FormSection {
-                   DownloadProgressRow(
-                       title: "modpack.files.title".localized(),
-                       progress: viewModel.modPackInstallState.filesProgress,
-                       currentFile: viewModel.modPackInstallState.currentFile,
-                       completed: viewModel.modPackInstallState.filesCompleted,
-                       total: viewModel.modPackInstallState.filesTotal,
-                       version: nil
-                   )
-               }
-               // 只有当依赖数量大于0时才显示依赖进度条
+               progressRow(
+                   title: "modpack.files.title".localized(),
+                   installState: viewModel.modPackInstallState,
+                   type: .files
+               )
+               
                if viewModel.modPackInstallState.dependenciesTotal > 0 {
-                   FormSection {
-                       DownloadProgressRow(
-                           title: "modpack.dependencies.title".localized(),
-                           progress: viewModel.modPackInstallState.dependenciesProgress,
-                           currentFile: viewModel.modPackInstallState.currentDependency,
-                           completed: viewModel.modPackInstallState.dependenciesCompleted,
-                           total: viewModel.modPackInstallState.dependenciesTotal,
-                           version: nil
-                       )
-                   }
-               }
-               if viewModel.modPackInstallState.overridesTotal > 0 {
-                   FormSection {
-                       DownloadProgressRow(
-                           title: "modpack.overrides.title".localized(),
-                           progress: viewModel.modPackInstallState.overridesProgress,
-                           currentFile: viewModel.modPackInstallState.currentOverride,
-                           completed: viewModel.modPackInstallState.overridesCompleted,
-                           total: viewModel.modPackInstallState.overridesTotal,
-                           version: nil
-                       )
-                   }
+                   progressRow(
+                       title: "modpack.dependencies.title".localized(),
+                       installState: viewModel.modPackInstallState,
+                       type: .dependencies
+                   )
                }
            }
        }
    }
-   
-   // MARK: - Version Selection Section
    
    private var versionSelectionSection: some View {
        VStack(alignment: .leading, spacing: 16) {
@@ -244,7 +183,7 @@ struct ModPackDownloadSheet: View {
            }
        }
        .pickerStyle(MenuPickerStyle())
-       .onChange(of: selectedGameVersion) { old, newValue in
+       .onChange(of: selectedGameVersion) { _, newValue in
            handleGameVersionChange(newValue)
        }
    }
@@ -269,8 +208,6 @@ struct ModPackDownloadSheet: View {
            }
        }
    }
-   
-   // MARK: - Footer Buttons
    
    private var cancelButton: some View {
        Button("common.cancel".localized()) {
@@ -299,6 +236,69 @@ struct ModPackDownloadSheet: View {
    }
    
    // MARK: - Helper Methods
+   
+   private func progressRow(
+       title: String,
+       state: DownloadState,
+       type: ProgressType,
+       version: String? = nil
+   ) -> some View {
+       FormSection {
+           DownloadProgressRow(
+               title: title,
+               progress: type == .core ? state.coreProgress : state.resourcesProgress,
+               currentFile: type == .core ? state.currentCoreFile : state.currentResourceFile,
+               completed: type == .core ? state.coreCompletedFiles : state.resourcesCompletedFiles,
+               total: type == .core ? state.coreTotalFiles : state.resourcesTotalFiles,
+               version: version
+           )
+       }
+   }
+   
+   private func progressRow(
+       title: String,
+       installState: ModPackInstallState,
+       type: InstallProgressType
+   ) -> some View {
+       FormSection {
+           DownloadProgressRow(
+               title: title,
+               progress: type == .files ? installState.filesProgress : installState.dependenciesProgress,
+               currentFile: type == .files ? installState.currentFile : installState.currentDependency,
+               completed: type == .files ? installState.filesCompleted : installState.dependenciesCompleted,
+               total: type == .files ? installState.filesTotal : installState.dependenciesTotal,
+               version: nil
+           )
+       }
+   }
+   
+   private func getLoaderDownloadState(for loaderType: String) -> DownloadState? {
+       switch loaderType.lowercased() {
+       case "fabric", "quilt":
+           return gameSetupService.fabricDownloadState
+       case "forge":
+           return gameSetupService.forgeDownloadState
+       case "neoforge":
+           return gameSetupService.neoForgeDownloadState
+       default:
+           return nil
+       }
+   }
+   
+   private func getLoaderTitle(for loaderType: String) -> String {
+       switch loaderType.lowercased() {
+       case "fabric":
+           return "fabric.loader.title".localized()
+       case "quilt":
+           return "quilt.loader.title".localized()
+       case "forge":
+           return "forge.loader.title".localized()
+       case "neoforge":
+           return "neoforge.loader.title".localized()
+       default:
+           return ""
+       }
+   }
    
    private func handleGameVersionChange(_ newValue: String) {
        if !newValue.isEmpty {
@@ -344,25 +344,23 @@ struct ModPackDownloadSheet: View {
        selectedVersion: ModrinthProjectDetailVersion,
        projectDetail: ModrinthProjectDetail
    ) async {
-       // 开始处理阶段
        isProcessing = true
-       
-//       defer {
-//           isProcessing = false
-//       }
        
        // 1. 下载整合包
        guard let downloadedPath = await downloadModPackFile(selectedVersion: selectedVersion, projectDetail: projectDetail) else {
+           isProcessing = false
            return
        }
        
        // 2. 解压整合包
        guard let extractedPath = await viewModel.extractModPack(modPackPath: downloadedPath) else {
+           isProcessing = false
            return
        }
        
        // 3. 解析 modrinth.index.json
        guard let indexInfo = await viewModel.parseModrinthIndex(extractedPath: extractedPath) else {
+           isProcessing = false
            return
        }
        
@@ -372,15 +370,84 @@ struct ModPackDownloadSheet: View {
            projectDetail: projectDetail,
            gameName: gameName
        )
+       
+       // 5. 创建 profile 文件夹
+       let profileCreated = await withCheckedContinuation { continuation in
+           Task {
+               let result = await createProfileDirectories(for: gameName)
+               continuation.resume(returning: result)
+           }
+       }
+       
+       if !profileCreated {
+           isProcessing = false
+           return
+       }
+       
+       // 6. 准备安装
+       let tempGameInfo = GameVersionInfo(
+           id: UUID(),
+           gameName: gameName,
+           gameIcon: iconPath ?? "",
+           gameVersion: selectedGameVersion,
+           assetIndex: "",
+           modLoader: indexInfo.loaderType,
+           isUserAdded: true
+       )
+       
+       let (filesToDownload, requiredDependencies) = calculateInstallationCounts(from: indexInfo)
+       
+       viewModel.modPackInstallState.startInstallation(
+           filesTotal: filesToDownload.count,
+           dependenciesTotal: requiredDependencies.count
+       )
+       
        isProcessing = false
        
-       // 5. 创建游戏配置并安装依赖
-       await createGameAndInstallDependencies(
-           gameName: gameName,
-           iconPath: iconPath,
+       // 7. 安装依赖
+       let dependencySuccess = await ModPackDependencyInstaller.installVersionDependencies(
            indexInfo: indexInfo,
-           extractedPath: extractedPath
+           gameInfo: tempGameInfo,
+           extractedPath: extractedPath,
+           onProgressUpdate: { fileName, completed, total, type in
+               Task { @MainActor in
+                   viewModel.objectWillChange.send()
+                   updateInstallProgress(fileName: fileName, completed: completed, total: total, type: type)
+               }
+           }
        )
+       
+       if !dependencySuccess {
+           handleInstallationResult(success: false, gameName: gameName)
+           return
+       }
+       
+       // 8. 安装游戏本体
+       let gameSuccess = await withCheckedContinuation { continuation in
+           Task {
+               await gameSetupService.saveGame(
+                   gameName: gameName,
+                   gameIcon: iconPath ?? "",
+                   selectedGameVersion: selectedGameVersion,
+                   selectedModLoader: indexInfo.loaderType,
+                   pendingIconData: nil,
+                   playerListViewModel: nil,
+                   gameRepository: gameRepository,
+                   onSuccess: {
+                       continuation.resume(returning: true)
+                   },
+                   onError: { error, message in
+                       Task { @MainActor in
+                           Logger.shared.error("游戏设置失败: \(message)")
+                           GlobalErrorHandler.shared.handle(error)
+                       }
+                       continuation.resume(returning: false)
+                   }
+               )
+           }
+       }
+       
+       handleInstallationResult(success: gameSuccess, gameName: gameName)
    }
    
    private func downloadModPackFile(
@@ -405,49 +472,31 @@ struct ModPackDownloadSheet: View {
        )
    }
    
-   private func createGameAndInstallDependencies(
-       gameName: String,
-       iconPath: String?,
-       indexInfo: ModrinthIndexInfo,
-       extractedPath: URL
-   ) async {
-       await gameSetupService.saveGame(
-           gameName: gameName,
-           gameIcon: iconPath ?? "",
-           selectedGameVersion: selectedGameVersion,
-           selectedModLoader: indexInfo.loaderType,
-           pendingIconData: nil,
-           playerListViewModel: nil,
-           gameRepository: gameRepository,
-           onSuccess: {
-               Task { @MainActor in
-                   await installModPackDependencies(
-                       gameName: gameName,
-                       indexInfo: indexInfo,
-                       extractedPath: extractedPath
-                   )
-               }
-           },
-           onError: { error, message in
-               Task { @MainActor in
-                   Logger.shared.error("游戏设置失败: \(message)")
-                   GlobalErrorHandler.shared.handle(error)
-               }
-           }
-       )
-   }
-   
-   private func installModPackDependencies(
-       gameName: String,
-       indexInfo: ModrinthIndexInfo,
-       extractedPath: URL
-   ) async {
-       guard let savedGame = gameRepository.getGameByName(by: gameName) else {
-           handleGameNotFound(gameName: gameName)
-           return
+   private func createProfileDirectories(for gameName: String) async -> Bool {
+       guard let profileDirectory = AppPaths.profileDirectory(gameName: gameName) else {
+           return false
        }
        
-       // 计算需要处理的文件数量
+       let subdirs = AppPaths.profileSubdirectories.map { profileDirectory.appendingPathComponent($0) }
+       
+       for dir in [profileDirectory] + subdirs {
+           do {
+               try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+           } catch {
+               Logger.shared.error("创建目录失败: \(dir.path), 错误: \(error.localizedDescription)")
+               GlobalErrorHandler.shared.handle(GlobalError.fileSystem(
+                   chineseMessage: "创建目录失败: \(dir.path)",
+                   i18nKey: "error.filesystem.directory_creation_failed",
+                   level: .notification
+               ))
+               return false
+           }
+       }
+       
+       return true
+   }
+   
+   private func calculateInstallationCounts(from indexInfo: ModrinthIndexInfo) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
        let filesToDownload = indexInfo.files.filter { file in
            if let env = file.env, let client = env.client, client.lowercased() == "unsupported" {
                return false
@@ -456,25 +505,7 @@ struct ModPackDownloadSheet: View {
        }
        let requiredDependencies = indexInfo.dependencies.filter { $0.dependencyType == "required" }
        
-       // 开始安装进度
-       viewModel.modPackInstallState.startInstallation(
-           filesTotal: filesToDownload.count,
-           dependenciesTotal: requiredDependencies.count
-       )
-       
-       let success = await ModPackDependencyInstaller.installVersionDependencies(
-           indexInfo: indexInfo,
-           gameInfo: savedGame,
-           extractedPath: extractedPath,
-           onProgressUpdate: { fileName, completed, total, type in
-               Task { @MainActor in
-                   viewModel.objectWillChange.send()
-                   updateInstallProgress(fileName: fileName, completed: completed, total: total, type: type)
-               }
-           }
-       )
-       
-       handleInstallationResult(success: success, gameName: gameName)
+       return (filesToDownload, requiredDependencies)
    }
    
    private func updateInstallProgress(fileName: String, completed: Int, total: Int, type: ModPackDependencyInstaller.DownloadType) {
@@ -492,27 +523,14 @@ struct ModPackDownloadSheet: View {
                total: total
            )
        case .overrides:
-           viewModel.modPackInstallState.updateOverridesProgress(
-               overrideName: fileName,
-               completed: completed,
-               total: total
-           )
+           break
        }
-   }
-   
-   private func handleGameNotFound(gameName: String) {
-       Logger.shared.error("无法从 gameRepository 获取游戏信息: \(gameName)")
-       let globalError = GlobalError.configuration(
-           chineseMessage: "无法获取游戏信息，整合包依赖安装失败",
-           i18nKey: "error.configuration.game_info_not_found",
-           level: .notification
-       )
-       GlobalErrorHandler.shared.handle(globalError)
    }
    
    private func handleInstallationResult(success: Bool, gameName: String) {
        if success {
            Logger.shared.info("整合包依赖安装完成: \(gameName)")
+           dismiss()
        } else {
            Logger.shared.error("整合包依赖安装失败: \(gameName)")
            let globalError = GlobalError.resource(
@@ -521,11 +539,21 @@ struct ModPackDownloadSheet: View {
                level: .notification
            )
            GlobalErrorHandler.shared.handle(globalError)
+           viewModel.modPackInstallState.reset()
+           gameSetupService.downloadState.reset()
        }
-       
-       viewModel.modPackInstallState.reset()
-       dismiss()
+       isProcessing = false
    }
+}
+
+// MARK: - Supporting Types
+
+private enum ProgressType {
+   case core, resources
+}
+
+private enum InstallProgressType {
+   case files, dependencies
 }
 
 // MARK: - Preview

@@ -4,6 +4,7 @@ struct DependencySheetView: View {
     @ObservedObject var viewModel: DependencySheetViewModel
     @Binding var isDownloadingAllDependencies: Bool
     @Binding var isDownloadingMainResourceOnly: Bool
+    let projectDetail: ModrinthProjectDetail
     @State private var error: GlobalError?
     
     let onDownloadAll: () async -> Void

@@ -360,22 +360,13 @@ struct ModPackDependencyInstaller {
             
             Logger.shared.info("overrides 文件夹包含 \(contents.count) 个项目")
             
-            // 通知开始处理
-            onProgressUpdate?("开始处理 overrides 文件夹", 0, contents.count, .overrides)
-            
-            // 逐个处理文件/文件夹
-            for (index, item) in contents.enumerated() {
+            // 逐个处理文件/文件夹（不显示进度）
+            for item in contents {
                 let itemName = item.lastPathComponent
                 let destinationPath = resourceDir.appendingPathComponent(itemName)
                 
                 try await processOverrideItem(item: item, destinationPath: destinationPath, itemName: itemName)
-                
-                // 处理完成后更新进度
-                onProgressUpdate?("正在处理: \(itemName)", index + 1, contents.count, .overrides)
             }
-            
-            // 通知处理完成
-            onProgressUpdate?("overrides 文件夹处理完成", contents.count, contents.count, .overrides)
             
             Logger.shared.info("overrides 文件夹处理完成")
             return true

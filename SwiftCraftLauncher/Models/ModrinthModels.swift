@@ -343,4 +343,47 @@ public extension ModrinthProject {
             serverSide: detail.serverSide
         )
     }
+    
+    /// 从 ModrinthProject 构建 ModrinthProjectDetail
+    func toDetail() -> ModrinthProjectDetail {
+        ModrinthProjectDetail(
+            slug: self.slug,
+            title: self.title,
+            description: self.description,
+            categories: self.categories,
+            clientSide: self.clientSide,
+            serverSide: self.serverSide,
+            body: "",
+            status: "approved",
+            requestedStatus: nil,
+            additionalCategories: self.displayCategories,
+            issuesUrl: nil,
+            sourceUrl: nil,
+            wikiUrl: nil,
+            discordUrl: nil,
+            donationUrls: nil,
+            projectType: self.projectType,
+            downloads: self.downloads,
+            iconUrl: self.iconUrl,
+            color: nil,
+            threadId: nil,
+            monetizationStatus: nil,
+            id: self.projectId,
+            team: self.author,
+            bodyUrl: nil,
+            moderatorMessage: nil,
+            published: Date(),
+            updated: Date(),
+            approved: Date(),
+            queued: nil,
+            followers: self.follows,
+            license: License(id: "", name: self.license, url: nil),
+            versions: self.versions,
+            gameVersions: [],
+            loaders: [],
+            gallery: nil,
+            type: nil,
+            fileName: nil
+        )
+    }
 }

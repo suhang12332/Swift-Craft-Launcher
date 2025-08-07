@@ -128,6 +128,7 @@ struct AddOrDeleteResourceButton: View {
                     viewModel: depVM,
                     isDownloadingAllDependencies: $isDownloadingAllDependencies,
                     isDownloadingMainResourceOnly: $isDownloadingMainResourceOnly,
+                    projectDetail: project.toDetail(),
                     onDownloadAll: {
                         if depVM.overallDownloadState == .failed {
                             // 如果是失败后点击"继续"

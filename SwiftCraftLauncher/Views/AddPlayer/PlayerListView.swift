@@ -41,7 +41,7 @@ struct PlayerListView: View {
                     .padding(.vertical, 6)
                 }
             }
-            .frame(width: 200)
+//            .frame(width: 200)
         }
         .confirmationDialog(
             "player.remove".localized(),
@@ -70,7 +70,7 @@ private struct PlayerSelectorLabel: View {
     var body: some View {
         if let selectedPlayer = selectedPlayer {
             HStack(spacing: 6) {
-                PlayerAvatarView(player: selectedPlayer, size: 32)
+                PlayerAvatarView(player: selectedPlayer, size: 30)
                 Text(selectedPlayer.name)
                     .foregroundColor(.primary)
                     .font(.system(size: 13).bold()).lineLimit(1)
