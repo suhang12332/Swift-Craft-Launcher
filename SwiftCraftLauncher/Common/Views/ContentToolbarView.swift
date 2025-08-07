@@ -6,14 +6,34 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var showingAddPlayerSheet = false
     @State private var playerName = ""
     @State private var isPlayerNameValid = false
+    @State private var showPlayerAlert = false
+    @State private var showingGameForm = false
+    @EnvironmentObject var gameRepository: GameRepository
 
+    
     public var body: some ToolbarContent {
         ToolbarItemGroup {
-            // 显示玩家列表（如有玩家）
-            if !playerListViewModel.players.isEmpty {
-                PlayerListView()
-                Spacer()
+            Button(action: {
+                if playerListViewModel.currentPlayer == nil {
+                    showPlayerAlert = true
+                } else {
+                    showingGameForm.toggle()
+                }
+            }) {
+                Label("game.form.title".localized(), systemImage: "gamecontroller")
             }
+            // 后台下载 待实现
+//            Button(action: {
+//                
+//            }) {
+//                Label("game.form.title".localized(), systemImage: "square.and.arrow.down.badge.clock")
+//                                Label("game.form.title".localized(), systemImage: "icloud.and.arrow.down.fill")
+//                
+//            }
+            
+            
+            
+            Spacer()
             // 添加玩家按钮
             Button(action: {
                 playerName = ""
@@ -49,6 +69,21 @@ public struct ContentToolbarView: ToolbarContent {
                         showingAddPlayerSheet = false
                     },
                     playerListViewModel: playerListViewModel
+                )
+            }
+            
+            .sheet(isPresented: $showingGameForm) {
+                GameFormView()
+                    .environmentObject(gameRepository)
+                    .environmentObject(playerListViewModel)
+                    .presentationDetents([.medium, .large])
+                    .presentationBackgroundInteraction(.automatic)
+            }
+            .alert(isPresented: $showPlayerAlert) {
+                Alert(
+                    title: Text("sidebar.alert.no_player.title".localized()),
+                    message: Text("sidebar.alert.no_player.message".localized()),
+                    dismissButton: .default(Text("common.confirm".localized()))
                 )
             }
         }

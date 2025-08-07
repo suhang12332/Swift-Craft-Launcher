@@ -38,6 +38,14 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(playerListViewModel)
                 .globalErrorHandler()
         }
+        // 右上角的状态栏(可以显示图标的)
+//        MenuBarExtra(content: {
+//            Button("Do something amazing") {
+//
+//            }
+//        }, label: {
+//            Label("",systemImage: "arrow.down.circle").labelStyle(.iconOnly).controlSize(.large)
+//        })
     }
 }
 

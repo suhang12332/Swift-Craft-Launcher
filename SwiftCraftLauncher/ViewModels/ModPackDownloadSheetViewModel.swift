@@ -373,6 +373,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
    
    private func determineLoaderInfo(from dependencies: ModrinthIndexDependencies) -> (type: String, version: String) {
        // 检查各种加载器，按优先级排序
+       // 优先检查带 -loader 后缀的格式
        if let forgeVersion = dependencies.forgeLoader {
            return ("forge", forgeVersion)
        } else if let fabricVersion = dependencies.fabricLoader {
@@ -381,9 +382,21 @@ class ModPackDownloadSheetViewModel: ObservableObject {
            return ("quilt", quiltVersion)
        } else if let neoforgeVersion = dependencies.neoforgeLoader {
            return ("neoforge", neoforgeVersion)
-       } else {
-           return ("vanilla", "unknown")
        }
+       
+       // 检查不带 -loader 后缀的格式
+       if let forgeVersion = dependencies.forge {
+           return ("forge", forgeVersion)
+       } else if let fabricVersion = dependencies.fabric {
+           return ("fabric", fabricVersion)
+       } else if let quiltVersion = dependencies.quilt {
+           return ("quilt", quiltVersion)
+       } else if let neoforgeVersion = dependencies.neoforge {
+           return ("neoforge", neoforgeVersion)
+       }
+       
+       // 默认返回 vanilla
+       return ("vanilla", "unknown")
    }
 }
 
@@ -436,6 +449,11 @@ struct ModrinthIndexDependencies: Codable {
    let fabricLoader: String?
    let quiltLoader: String?
    let neoforgeLoader: String?
+   // 添加不带 -loader 后缀的属性
+   let forge: String?
+   let fabric: String?
+   let quilt: String?
+   let neoforge: String?
    let dependencies: [ModrinthIndexProjectDependency]?
    
    enum CodingKeys: String, CodingKey {
@@ -444,6 +462,10 @@ struct ModrinthIndexDependencies: Codable {
        case fabricLoader = "fabric-loader"
        case quiltLoader = "quilt-loader"
        case neoforgeLoader = "neoforge-loader"
+       case forge
+       case fabric
+       case quilt
+       case neoforge
        case dependencies
    }
 }

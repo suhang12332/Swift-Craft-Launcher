@@ -15,7 +15,7 @@ struct PlayerListView: View {
             PlayerSelectorLabel(selectedPlayer: playerListViewModel.currentPlayer)
         }
         .buttonStyle(.borderless)
-        .popover(isPresented: $showingPlayerListPopover, arrowEdge: .trailing) {
+        .popover(isPresented: $showingPlayerListPopover, arrowEdge: .leading) {
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(playerListViewModel.players) { player in
                     HStack {
@@ -23,7 +23,7 @@ struct PlayerListView: View {
                             playerListViewModel.setCurrentPlayer(byID: player.id)
                             showingPlayerListPopover = false
                         } label: {
-                            PlayerAvatarView(player: player, size: 32)
+                            PlayerAvatarView(player: player, size: 36)
                             Text(player.name)
                         }
                         .buttonStyle(.plain)
@@ -70,10 +70,10 @@ private struct PlayerSelectorLabel: View {
     var body: some View {
         if let selectedPlayer = selectedPlayer {
             HStack(spacing: 6) {
-                PlayerAvatarView(player: selectedPlayer, size: 24)
+                PlayerAvatarView(player: selectedPlayer, size: 32)
                 Text(selectedPlayer.name)
                     .foregroundColor(.primary)
-                    .font(.system(size: 13))
+                    .font(.system(size: 13).bold()).lineLimit(1)
             }
         } else {
             EmptyView()

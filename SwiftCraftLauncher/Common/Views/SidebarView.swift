@@ -3,8 +3,6 @@ import SwiftUI
 /// 通用侧边栏视图组件，用于显示游戏列表和资源列表的导航
 public struct SidebarView: View {
     @Binding var selectedItem: SidebarItem
-    @State private var showingGameForm = false
-    @State private var showPlayerAlert = false
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
@@ -71,36 +69,16 @@ public struct SidebarView: View {
         }
         .searchable(text: $searchText, placement: .sidebar, prompt: "sidebar.search.games".localized())
         .safeAreaInset(edge: .bottom) {
-            Button(action: {
-                if playerListViewModel.currentPlayer == nil {
-                    showPlayerAlert = true
-                } else {
-                    showingGameForm.toggle()
-                }
-            }) {
-                Label("game.form.title".localized(), systemImage: "gamecontroller")
+            // 显示玩家列表（如有玩家）
+            if !playerListViewModel.players.isEmpty {
+                PlayerListView()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    
+                
             }
-            .buttonStyle(.borderless)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
         }
         .listStyle(.sidebar)
-        .sheet(isPresented: $showingGameForm) {
-            GameFormView()
-                .environmentObject(gameRepository)
-                .environmentObject(playerListViewModel)
-                .presentationDetents([.medium, .large])
-                .presentationBackgroundInteraction(.automatic)
-        }
-        .alert(isPresented: $showPlayerAlert) {
-            Alert(
-                title: Text("sidebar.alert.no_player.title".localized()),
-                message: Text("sidebar.alert.no_player.message".localized()),
-                dismissButton: .default(Text("common.confirm".localized()))
-            )
-        }
-    
-
     }
     
     // 只对游戏名做模糊搜索
