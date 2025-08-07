@@ -78,6 +78,7 @@ struct GlobalResourceSheet: View {
                         Text("global_resource.no_game_list".localized()).foregroundColor(.secondary).padding()
                     } else {
                         VStack {
+                            ModrinthProjectTitleView(projectDetail: projectDetail!).padding(.bottom,18)
                             CommonSheetGameBody(compatibleGames: compatibleGames, selectedGame: $selectedGame)
                             if let game = selectedGame {
                                 SpacerView()
@@ -96,6 +97,7 @@ struct GlobalResourceSheet: View {
                                     }
                                 )
                                 if resourceType == "mod" && !GameSettingsManager.shared.autoDownloadDependencies {
+                                    SpacerView()
                                     DependencySection(state: dependencyState)
                                 }
                             }
@@ -225,7 +227,7 @@ private struct DependencySection: View {
             ProgressView().controlSize(.small)
         } else if !state.dependencies.isEmpty {
             SpacerView()
-            VStack {
+            VStack(alignment: .leading, spacing: 12) {
                 ForEach(state.dependencies, id: \ .id) { dep in
                     VStack(alignment: .leading) {
                         Text(dep.title).font(.headline).bold()

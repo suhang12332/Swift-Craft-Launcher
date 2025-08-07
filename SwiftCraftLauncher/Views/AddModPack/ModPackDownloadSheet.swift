@@ -46,13 +46,15 @@ struct ModPackDownloadSheet: View {
    }
    
    private var bodyView: some View {
-       VStack(spacing: 20) {
+       VStack(alignment: .leading,spacing: 12) {
            if isProcessing {
                processingView
+           } else if viewModel.isLoadingProjectDetails {
+               ProgressView().controlSize(.small)
+               .frame(maxWidth: .infinity, minHeight: 130)
            } else if let projectDetail = viewModel.projectDetail {
                ModrinthProjectTitleView(projectDetail: projectDetail)
-                   .padding(.bottom, 12)
-               
+                   .padding(.bottom,18)
                versionSelectionSection
                
                if shouldShowProgress {
@@ -88,9 +90,7 @@ struct ModPackDownloadSheet: View {
    
    private var processingView: some View {
        VStack(spacing: 24) {
-           ProgressView()
-               .scaleEffect(1.5)
-               .padding(.bottom, 16)
+           ProgressView().controlSize(.small)
            
            Text("modpack.processing.title".localized())
                .font(.headline)
@@ -103,9 +103,11 @@ struct ModPackDownloadSheet: View {
            
            Spacer()
        }
-       .frame(maxWidth: .infinity, maxHeight: .infinity)
+       .frame(maxWidth: .infinity, minHeight: 130)
        .padding()
    }
+   
+
    
    private var downloadProgressSection: some View {
        VStack(spacing: 24) {
@@ -169,7 +171,7 @@ struct ModPackDownloadSheet: View {
    }
    
    private var versionSelectionSection: some View {
-       VStack(alignment: .leading, spacing: 16) {
+       VStack(alignment: .leading, spacing: 12) {
            gameVersionPicker
            modPackVersionPicker
        }
@@ -189,11 +191,11 @@ struct ModPackDownloadSheet: View {
    }
    
    private var modPackVersionPicker: some View {
-       VStack(alignment: .leading, spacing: 8) {
+       VStack(alignment: .leading, spacing: 12) {
            if viewModel.isLoadingModPackVersions {
                HStack {
                    ProgressView()
-                       .controlSize(.small)
+                       .controlSize(.small).frame(maxWidth: .infinity)
                }
            } else if !selectedGameVersion.isEmpty {
                Picker("modpack.version".localized(), selection: $selectedModPackVersion) {

@@ -17,7 +17,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
    @Published var filteredModPackVersions: [ModrinthProjectDetailVersion] = []
    @Published var isLoadingGameVersions = false
    @Published var isLoadingModPackVersions = false
-   @Published var isLoadingProjectDetails = false
+   @Published var isLoadingProjectDetails = true
    @Published var lastParsedIndexInfo: ModrinthIndexInfo?
    
    // 整合包安装进度状态

@@ -22,7 +22,8 @@ struct DependencySheetView: View {
                 if viewModel.isLoadingDependencies {
                     ProgressView().frame(height: 100).controlSize(.small)
                 } else {
-                    VStack {
+                    ModrinthProjectTitleView(projectDetail: projectDetail)
+                    VStack(alignment: .leading, spacing: 12) {
                         ForEach(viewModel.missingDependencies, id: \.id) { dep in
                             let versions = viewModel.dependencyVersions[dep.id] ?? []
                             if !versions.isEmpty {
