@@ -193,28 +193,24 @@ struct GlobalResourceSheet: View {
             )
         }
         
-        let missing = await ModrinthDependencyDownloader.getMissingDependencies(
+        // 获取缺失的依赖项（包含版本信息）
+        let missingWithVersions = await ModrinthDependencyDownloader.getMissingDependenciesWithVersions(
             for: project.projectId,
             gameInfo: game
         )
         
         var depVersions: [String: [ModrinthProjectDetailVersion]] = [:]
         var depSelected: [String: ModrinthProjectDetailVersion?] = [:]
+        var dependencies: [ModrinthProjectDetail] = []
         
-        for dep in missing {
-            let versions = await ModrinthService.fetchProjectVersions(id: dep.id)
-            
-            let filtered = versions.filter {
-                $0.loaders.contains(game.modLoader) &&
-                $0.gameVersions.contains(game.gameVersion)
-            }
-            
-            depVersions[dep.id] = filtered
-            depSelected[dep.id] = filtered.first
+        for (detail, versions) in missingWithVersions {
+            dependencies.append(detail)
+            depVersions[detail.id] = versions
+            depSelected[detail.id] = versions.first
         }
         
         _ = await MainActor.run {
-            dependencyState = DependencyState(dependencies: missing, versions: depVersions, selected: depSelected, isLoading: false)
+            dependencyState = DependencyState(dependencies: dependencies, versions: depVersions, selected: depSelected, isLoading: false)
         }
     }
 }
@@ -599,8 +595,6 @@ struct VersionPickerForSheet: View {
             )
         }
         
-        let allVersions = await ModrinthService.fetchProjectVersions(id: project.projectId)
-        
         guard let game = selectedGame else {
             _ = await MainActor.run {
                 availableVersions = []
@@ -610,26 +604,13 @@ struct VersionPickerForSheet: View {
             return
         }
         
-        let loader: String
-        if resourceType == "datapack" && game.modLoader.lowercased() == "vanilla" {
-            loader = "datapack"
-        } else if resourceType == "resourcepack" && game.modLoader.lowercased() == "vanilla" {
-            loader = "minecraft"
-        } else {
-            loader = game.modLoader
-        }
-        
-        let filtered: [ModrinthProjectDetailVersion]
-        if resourceType == "shader" || resourceType == "resourcepack" {
-            filtered = allVersions.filter {
-                $0.gameVersions.contains(game.gameVersion)
-            }
-        } else {
-            filtered = allVersions.filter {
-                $0.gameVersions.contains(game.gameVersion) &&
-                $0.loaders.contains(loader)
-            }
-        }
+        // 使用服务端的过滤方法，减少客户端过滤
+        let filtered = try await ModrinthService.fetchProjectVersionsFilter(
+            id: project.projectId,
+            selectedVersions: [game.gameVersion],
+            selectedLoaders: [game.modLoader],
+            type: resourceType
+        )
         
         _ = await MainActor.run {
             availableVersions = filtered

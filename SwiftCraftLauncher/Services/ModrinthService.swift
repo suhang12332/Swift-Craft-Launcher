@@ -322,7 +322,15 @@ enum ModrinthService {
             return versions.filter { version in
                 // 必须同时满足版本和 loader 匹配
                 let versionMatch = selectedVersions.isEmpty || !Set(version.gameVersions).isDisjoint(with: selectedVersions)
-                let loaderMatch = loaders.isEmpty || !Set(version.loaders).isDisjoint(with: selectedLoaders)
+                
+                // 对于shader和resourcepack，不检查loader匹配
+                let loaderMatch: Bool
+                if type == "shader" || type == "resourcepack" {
+                    loaderMatch = true
+                } else {
+                    loaderMatch = loaders.isEmpty || !Set(version.loaders).isDisjoint(with: loaders)
+                }
+                
                 return versionMatch && loaderMatch
             }
         }
@@ -403,35 +411,48 @@ enum ModrinthService {
             }
         }
         
-        // 3. 获取所有依赖项目的兼容版本
-        var dependencyVersions: [ModrinthProjectDetailVersion] = []
-        for depId in dependencyProjectIds {
-            do {
-                let depVersion: ModrinthProjectDetailVersion
-                
-                if let versionId = dependencyVersionIds[depId] {
-                    // 如果有 versionId，直接获取指定版本
-                    depVersion = try await fetchProjectVersionThrowing(id: versionId)
-                } else {
-                    // 如果没有 versionId，使用过滤逻辑获取兼容版本
-                    let depVersions = try await fetchProjectVersionsFilter(
-                        id: depId,
-                        selectedVersions: selectedVersions,
-                        selectedLoaders: selectedLoaders,
-                        type: type
-                    )
-                    guard let firstDepVersion = depVersions.first else {
-                        Logger.shared.warning("未找到兼容的依赖版本 (ID: \(depId))")
-                        continue
+        // 3. 并发获取所有依赖项目的兼容版本
+        let dependencyVersions: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
+            for depId in dependencyProjectIds {
+                group.addTask {
+                    do {
+                        let depVersion: ModrinthProjectDetailVersion
+                        
+                        if let versionId = dependencyVersionIds[depId] {
+                            // 如果有 versionId，直接获取指定版本
+                            depVersion = try await fetchProjectVersionThrowing(id: versionId)
+                        } else {
+                            // 如果没有 versionId，使用过滤逻辑获取兼容版本
+                            let depVersions = try await fetchProjectVersionsFilter(
+                                id: depId,
+                                selectedVersions: selectedVersions,
+                                selectedLoaders: selectedLoaders,
+                                type: type
+                            )
+                            guard let firstDepVersion = depVersions.first else {
+                                Logger.shared.warning("未找到兼容的依赖版本 (ID: \(depId))")
+                                return nil
+                            }
+                            depVersion = firstDepVersion
+                        }
+                        
+                        return depVersion
+                    } catch {
+                        let globalError = GlobalError.from(error)
+                        Logger.shared.error("获取依赖项目版本失败 (ID: \(depId)): \(globalError.chineseMessage)")
+                        return nil
                     }
-                    depVersion = firstDepVersion
                 }
-                
-                dependencyVersions.append(depVersion)
-            } catch {
-                let globalError = GlobalError.from(error)
-                Logger.shared.error("获取依赖项目版本失败 (ID: \(depId)): \(globalError.chineseMessage)")
             }
+            
+            var results: [ModrinthProjectDetailVersion] = []
+            for await result in group {
+                if let version = result {
+                    results.append(version)
+                }
+            }
+            
+            return results
         }
         
         return ModrinthProjectDependency(projects: dependencyVersions)

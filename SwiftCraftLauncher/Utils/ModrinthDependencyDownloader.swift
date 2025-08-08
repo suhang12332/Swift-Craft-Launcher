@@ -151,6 +151,56 @@ struct ModrinthDependencyDownloader {
         }
     }
 
+    /// 获取缺失的依赖项（包含版本信息）
+    static func getMissingDependenciesWithVersions(
+        for projectId: String,
+        gameInfo: GameVersionInfo
+    ) async -> [(detail: ModrinthProjectDetail, versions: [ModrinthProjectDetailVersion])] {
+        let query = "mod"
+        let resourceDir = AppPaths.modsDirectory(
+            gameName: gameInfo.gameName
+        )
+        guard let resourceDirUnwrapped = resourceDir else { return [] }
+        
+        let dependencies = await ModrinthService.fetchProjectDependencies(
+            type: query,
+            cachePath: resourceDirUnwrapped,
+            id: projectId,
+            selectedVersions: [gameInfo.gameVersion],
+            selectedLoaders: [gameInfo.modLoader]
+        )
+        
+        // 并发获取所有依赖项目的详情和版本信息
+        return await withTaskGroup(of: (ModrinthProjectDetail, [ModrinthProjectDetailVersion])?.self) { group in
+            for depVersion in dependencies.projects {
+                group.addTask {
+                    // 获取项目详情
+                    guard let projectDetail = await ModrinthService.fetchProjectDetails(id: depVersion.projectId) else {
+                        return nil
+                    }
+                    
+                    // 获取项目版本并过滤
+                    let allVersions = await ModrinthService.fetchProjectVersions(id: depVersion.projectId)
+                    let filteredVersions = allVersions.filter {
+                        $0.loaders.contains(gameInfo.modLoader) &&
+                        $0.gameVersions.contains(gameInfo.gameVersion)
+                    }
+                    
+                    return (projectDetail, filteredVersions)
+                }
+            }
+            
+            var results: [(detail: ModrinthProjectDetail, versions: [ModrinthProjectDetailVersion])] = []
+            for await result in group {
+                if let (detail, versions) = result {
+                    results.append((detail, versions))
+                }
+            }
+            
+            return results
+        }
+    }
+
     /// 获取缺失的依赖项
     static func getMissingDependencies(
         for projectId: String,
