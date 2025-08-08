@@ -96,7 +96,7 @@ jobs:
       run: |
         rm -rf build_${{ matrix.arch }}
         rm -rf dmg_temp_${{ matrix.arch }}
-        rm -f Swift_Craft_Launcher_${{ matrix.arch }}_v*.dmg
+        rm -f Swift_Craft_Launcher_${{ matrix.arch }}_*.dmg
 
   # 可选发布任务（只在 tag 推送时执行）
   release:
