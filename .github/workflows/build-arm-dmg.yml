@@ -74,7 +74,7 @@ jobs:
         mkdir -p "$DMG_DIR"
         cp -R "$APP_PATH" "$DMG_DIR/"
         
-        DMG_NAME="Swift_Craft_Launcher_${{ matrix.arch }}_v${{ steps.version.outputs.version }}.dmg"
+        DMG_NAME="Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg"
         hdiutil create -volname "Swift Craft Launcher" -srcfolder "$DMG_DIR" -ov -format UDZO "$DMG_NAME"
         
         if [[ -f "$DMG_NAME" ]]; then
