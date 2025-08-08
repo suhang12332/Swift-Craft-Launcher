@@ -87,8 +87,8 @@ jobs:
     - name: Upload DMG Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Swift-Craft-Launcher-${{ matrix.arch }}-v${{ steps.version.outputs.version }}
-        path: Swift_Craft_Launcher_${{ matrix.arch }}_v${{ steps.version.outputs.version }}.dmg
+        name: Swift-Craft-Launcher-${{ matrix.arch }}-${{ steps.version.outputs.version }}
+        path: Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg
         retention-days: 30
 
     - name: Clean up
@@ -118,6 +118,6 @@ jobs:
     - name: Upload to GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        文件: release-artifacts/**/*.dmg
+        files: release-artifacts/**/*.dmg
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
