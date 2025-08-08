@@ -3,7 +3,7 @@ name: Build macOS DMG
 on:
   push:
     branches: [main, master]
-    tags: ['v*']
+    tags: ['*']
   pull_request:
     branches: [main, master]
   workflow_dispatch:
