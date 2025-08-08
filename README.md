@@ -7,7 +7,7 @@
 ## 🚀 简介
 
 SwiftCraftLauncher 是一个现代化的 macOS 版 Minecraft 启动器，为用户提供快速、高效的 Minecraft 游戏启动体验。通过简洁的界面和智能的功能，让您的 Minecraft 游戏启动变得更加便捷。
-项目处理早期开发阶段：可以在[git action](https://github.com/suhang12332/Swift-Craft-Launcher/actions)中进行下载
+项目处理早期开发阶段：可以在[Release](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)中进行下载
 
 ## ✨ 主要特性
 
