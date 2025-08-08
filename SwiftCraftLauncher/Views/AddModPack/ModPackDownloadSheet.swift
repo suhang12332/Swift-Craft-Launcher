@@ -58,7 +58,8 @@ struct ModPackDownloadSheet: View {
                versionSelectionSection
                
                if shouldShowProgress {
-                   downloadProgressSection
+                   
+                   downloadProgressSection.padding(.top,18)
                }
            }
        }

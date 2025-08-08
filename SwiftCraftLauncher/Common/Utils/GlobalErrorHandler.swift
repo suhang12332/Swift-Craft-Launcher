@@ -359,6 +359,14 @@ class GlobalErrorHandler: ObservableObject {
         }
     }
     
+    /// 清理内存（用于应用退出时）
+    func cleanup() {
+        DispatchQueue.main.async {
+            self.currentError = nil
+            self.errorHistory.removeAll(keepingCapacity: false)
+        }
+    }
+    
     /// 记录错误到日志
     private func logError(_ error: GlobalError) {
         Logger.shared.error("[GlobalError] \(error.chineseMessage) | Key: \(error.i18nKey) | Level: \(error.level.rawValue)")

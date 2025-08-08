@@ -322,10 +322,9 @@ struct AddOrDeleteResourceButton: View {
                 // 新增：对整合包的特殊处理
                 if query == "modpack" {
                     if gameRepository.games.isEmpty {
-                        showNoGameAlert = true
-                    } else {
-                        showModPackDownloadSheet = true
+                        showNoGameAlert = false
                     }
+                    showModPackDownloadSheet = true
                     return
                 }
                 

@@ -15,7 +15,7 @@ struct PlayerListView: View {
             PlayerSelectorLabel(selectedPlayer: playerListViewModel.currentPlayer)
         }
         .buttonStyle(.borderless)
-        .popover(isPresented: $showingPlayerListPopover, arrowEdge: .leading) {
+        .popover(isPresented: $showingPlayerListPopover, arrowEdge: .top) {
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(playerListViewModel.players) { player in
                     HStack {

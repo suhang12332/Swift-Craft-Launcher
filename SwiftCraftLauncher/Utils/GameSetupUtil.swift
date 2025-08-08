@@ -310,8 +310,9 @@ class GameSetupUtil: ObservableObject {
         return await handler.setup(
             for: selectedGameVersion,
             gameInfo: gameInfo,
-            onProgressUpdate: { fileName, completed, total in
+            onProgressUpdate: { [weak self] fileName, completed, total in
                 Task { @MainActor in
+                    guard let self = self else { return }
                     self.objectWillChange.send()
                     switch loaderType {
                     case "fabric":

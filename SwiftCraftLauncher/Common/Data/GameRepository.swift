@@ -347,7 +347,7 @@ class GameRepository: ObservableObject {
                 throw GlobalError.validation(
                     chineseMessage: "加载游戏列表失败：\(error.localizedDescription)",
                     i18nKey: "error.validation.game_list_load_failed",
-                    level: .notification
+                    level: .silent
                 )
             }
             
