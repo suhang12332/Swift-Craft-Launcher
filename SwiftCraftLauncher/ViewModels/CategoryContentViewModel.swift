@@ -36,6 +36,7 @@ final class CategoryContentViewModel: ObservableObject {
     func loadData() async {
         guard shouldFetchData else { return }
         
+        loadTask?.cancel()
         loadTask = Task {
             await fetchData()
         }
@@ -62,8 +63,6 @@ final class CategoryContentViewModel: ObservableObject {
         error = nil
         
         do {
-            
-            
             async let categoriesTask = ModrinthService.fetchCategories()
             async let versionsTask = ModrinthService.fetchGameVersions()
             async let loadersTask = ModrinthService.fetchLoaders()
@@ -119,13 +118,13 @@ final class CategoryContentViewModel: ObservableObject {
     }
     
     private func resetData() {
-        categories.removeAll()
-        features.removeAll()
-        resolutions.removeAll()
-        performanceImpacts.removeAll()
-        versions.removeAll()
-        loaders.removeAll()
+        categories.removeAll(keepingCapacity: false)
+        features.removeAll(keepingCapacity: false)
+        resolutions.removeAll(keepingCapacity: false)
+        performanceImpacts.removeAll(keepingCapacity: false)
+        versions.removeAll(keepingCapacity: false)
+        loaders.removeAll(keepingCapacity: false)
+        error = nil
+        isLoading = false
     }
-    
-
 } 

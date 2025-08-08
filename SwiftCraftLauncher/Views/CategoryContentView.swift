@@ -66,6 +66,9 @@ struct CategoryContentView: View {
             await loadDataWithErrorHandling()
             setupDefaultSelections()
         }
+        .onDisappear {
+            viewModel.clearCache()
+        }
     }
     
     // MARK: - Setup Methods

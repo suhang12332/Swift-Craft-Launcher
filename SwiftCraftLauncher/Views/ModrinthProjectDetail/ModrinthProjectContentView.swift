@@ -302,6 +302,10 @@ struct ModrinthProjectContentView: View {
             }
         }
         .task(id: projectId) { await loadProjectDetails() }
+        .onDisappear {
+            projectDetail = nil
+            error = nil
+        }
     }
     
     private func loadProjectDetails() async {

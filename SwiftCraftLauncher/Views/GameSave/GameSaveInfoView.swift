@@ -36,6 +36,10 @@ struct GameSaveInfoView: View {
             .onAppear {
                 levelDataModel.loadLevelDat(from: levelDatPath)
             }
+            .onDisappear {
+                levelDataModel.levelData.removeAll(keepingCapacity: false)
+                levelDataModel.errorMessage = nil
+            }
         }
 }
 

@@ -12,6 +12,11 @@ class LevelDataModel: ObservableObject {
     @Published var levelData: [String: String] = [:]
     @Published var errorMessage: String? = nil
     
+    deinit {
+        levelData.removeAll(keepingCapacity: false)
+        errorMessage = nil
+    }
+    
     func loadLevelDat(from filePath: String) {
         let fileURL = URL(fileURLWithPath: filePath)
 
