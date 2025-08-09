@@ -112,7 +112,7 @@ jobs:
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: macos-15
 
     steps:
     - name: Download build artifacts
@@ -125,15 +125,124 @@ jobs:
         echo "Downloaded artifacts:"
         find release-artifacts -type f -name "*.dmg"
 
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.3'
+
+    - name: Setup Sparkle
+      uses: jozefizso/setup-sparkle@v1
+      with:
+        version: '2.5.2'
+
+    - name: Create private key file
+      run: |
+        echo '${{ secrets.SPARKLE_PRIVATE_KEY }}' > ed25519_priv.pem
+        chmod 600 ed25519_priv.pem
+
+    - name: Generate appcast for arm64
+      run: |
+        # 获取版本信息
+        VERSION=${GITHUB_REF#refs/tags/}
+        echo "版本: $VERSION"
+        
+        # 查找arm64 DMG文件
+        echo "查找 arm64 DMG 文件..."
+        ARM64_DMG=$(find . -name "*arm64*.dmg" 2>/dev/null | head -1)
+        
+        if [[ -z "$ARM64_DMG" ]]; then
+          echo "❌ 未找到 arm64 DMG 文件"
+          exit 1
+        fi
+        
+        echo "找到的 arm64 DMG 文件: $ARM64_DMG"
+        
+        # 生成arm64 appcast条目
+        sparkle-generate-appcast \
+          --private-key ed25519_priv.pem \
+          --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $ARM64_DMG)" \
+          --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
+          --verbose \
+          "$ARM64_DMG"
+        
+        # 创建arm64 appcast.xml文件
+        echo '<?xml version="1.0" encoding="utf-8"?>' > appcast-arm64.xml
+        echo '<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">' >> appcast-arm64.xml
+        echo '    <channel>' >> appcast-arm64.xml
+        echo '        <title>Swift Craft Launcher (ARM64)</title>' >> appcast-arm64.xml
+        echo '        <description>Most recent updates to Swift Craft Launcher for Apple Silicon</description>' >> appcast-arm64.xml
+        echo '        <language>en</language>' >> appcast-arm64.xml
+        echo '        <item>' >> appcast-arm64.xml
+        echo "            <title>Version $VERSION (ARM64)</title>" >> appcast-arm64.xml
+        echo '            <description><![CDATA[' >> appcast-arm64.xml
+        echo "                <h2>Version $VERSION (ARM64)</h2>" >> appcast-arm64.xml
+        echo '                <p>New release of Swift Craft Launcher for Apple Silicon</p>' >> appcast-arm64.xml
+        echo '            ]]></description>' >> appcast-arm64.xml
+        echo "            <pubDate>$(date -R)</pubDate>" >> appcast-arm64.xml
+        echo "            <enclosure url=\"https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $ARM64_DMG)\"" >> appcast-arm64.xml
+        echo "                       sparkle:version=\"$VERSION\"" >> appcast-arm64.xml
+        echo '                       sparkle:os="macos"' >> appcast-arm64.xml
+        echo '                       length="0"' >> appcast-arm64.xml
+        echo '                       type="application/octet-stream"/>' >> appcast-arm64.xml
+        echo '        </item>' >> appcast-arm64.xml
+        echo '    </channel>' >> appcast-arm64.xml
+        echo '</rss>' >> appcast-arm64.xml
+
+    - name: Generate appcast for x86_64
+      run: |
+        # 获取版本信息
+        VERSION=${GITHUB_REF#refs/tags/}
+        echo "版本: $VERSION"
+        
+        # 查找x86_64 DMG文件
+        echo "查找 x86_64 DMG 文件..."
+        X86_64_DMG=$(find . -name "*x86_64*.dmg" 2>/dev/null | head -1)
+        
+        if [[ -z "$X86_64_DMG" ]]; then
+          echo "❌ 未找到 x86_64 DMG 文件"
+          exit 1
+        fi
+        
+        echo "找到的 x86_64 DMG 文件: $X86_64_DMG"
+        
+        # 生成x86_64 appcast条目
+        sparkle-generate-appcast \
+          --private-key ed25519_priv.pem \
+          --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $X86_64_DMG)" \
+          --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
+          --verbose \
+          "$X86_64_DMG"
+        
+        # 创建x86_64 appcast.xml文件
+        echo '<?xml version="1.0" encoding="utf-8"?>' > appcast-x86_64.xml
+        echo '<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">' >> appcast-x86_64.xml
+        echo '    <channel>' >> appcast-x86_64.xml
+        echo '        <title>Swift Craft Launcher (Intel)</title>' >> appcast-x86_64.xml
+        echo '        <description>Most recent updates to Swift Craft Launcher for Intel Macs</description>' >> appcast-x86_64.xml
+        echo '        <language>en</language>' >> appcast-x86_64.xml
+        echo '        <item>' >> appcast-x86_64.xml
+        echo "            <title>Version $VERSION (Intel)</title>" >> appcast-x86_64.xml
+        echo '            <description><![CDATA[' >> appcast-x86_64.xml
+        echo "                <h2>Version $VERSION (Intel)</h2>" >> appcast-x86_64.xml
+        echo '                <p>New release of Swift Craft Launcher for Intel Macs</p>' >> appcast-x86_64.xml
+        echo '            ]]></description>' >> appcast-x86_64.xml
+        echo "            <pubDate>$(date -R)</pubDate>" >> appcast-x86_64.xml
+        echo "            <enclosure url=\"https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $X86_64_DMG)\"" >> appcast-x86_64.xml
+        echo "                       sparkle:version=\"$VERSION\"" >> appcast-x86_64.xml
+        echo '                       sparkle:os="macos"' >> appcast-x86_64.xml
+        echo '                       length="0"' >> appcast-x86_64.xml
+        echo '                       type="application/octet-stream"/>' >> appcast-x86_64.xml
+        echo '        </item>' >> appcast-x86_64.xml
+        echo '    </channel>' >> appcast-x86_64.xml
+        echo '</rss>' >> appcast-x86_64.xml
+
     - name: Upload to GitHub Release
       uses: softprops/action-gh-release@v1
       with:
-        files: release-artifacts/**/*.dmg
+        files: |
+          release-artifacts/**/*.dmg
+          appcast-arm64.xml
+          appcast-x86_64.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Wait for Sparkle workflow
-      run: |
-        # 等待Sparkle工作流完成
-        echo "等待Sparkle工作流完成..."
-        sleep 30
