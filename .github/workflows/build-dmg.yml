@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         arch: [arm64, x86_64]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -172,7 +172,6 @@ jobs:
           ./bin/generate_appcast \
             --ed-key-file ed25519_priv.pem \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
-            --version "$VERSION" \
             -o appcast-arm64.xml \
             "$(dirname $ARM64_DMG)"
           
@@ -199,7 +198,6 @@ jobs:
           ./bin/generate_appcast \
             --ed-key-file ed25519_priv.pem \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
-            --version "$VERSION" \
             -o appcast-x86_64.xml \
             "$(dirname $X86_64_DMG)"
           
