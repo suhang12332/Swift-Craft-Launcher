@@ -131,9 +131,12 @@ jobs:
         xcode-version: '16.3'
 
     - name: setup sparkle
-      uses: jozefizso/setup-sparkle@v1
-      with:
-        version: 2.6.2
+      run: |
+        SPARKLE_VERSION=2.7.1
+        curl -L "https://github.com/sparkle-project/Sparkle/releases/download/$SPARKLE_VERSION/Sparkle-$SPARKLE_VERSION.tar.xz" -o sparkle.tar.xz
+        tar -xf sparkle.tar.xz
+        sudo cp Sparkle-$SPARKLE_VERSION/bin/sparkle-generate-appcast /usr/local/bin/
+        echo "✅ Sparkle tools installed successfully"
 
     - name: Create private key file
       run: |
@@ -158,12 +161,12 @@ jobs:
         echo "找到的 arm64 DMG 文件: $ARM64_DMG"
         
         # 生成arm64 appcast条目
-        generate_appcast \
-          --private-key ed25519_priv.pem \
+        sparkle-generate-appcast \
+          --private-key-path ed25519_priv.pem \
           --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $ARM64_DMG)" \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
           --verbose \
-          "$ARM64_DMG"
+          "$(dirname $ARM64_DMG)"
         
         # 创建arm64 appcast.xml文件
         echo '<?xml version="1.0" encoding="utf-8"?>' > appcast-arm64.xml
@@ -206,12 +209,12 @@ jobs:
         echo "找到的 x86_64 DMG 文件: $X86_64_DMG"
         
         # 生成x86_64 appcast条目
-        generate_appcast \
-          --private-key ed25519_priv.pem \
+        sparkle-generate-appcast \
+          --private-key-path ed25519_priv.pem \
           --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $X86_64_DMG)" \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
           --verbose \
-          "$X86_64_DMG"
+          "$(dirname $X86_64_DMG)"
         
         # 创建x86_64 appcast.xml文件
         echo '<?xml version="1.0" encoding="utf-8"?>' > appcast-x86_64.xml
