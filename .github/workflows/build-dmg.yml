@@ -20,93 +20,93 @@ jobs:
         arch: [arm64, x86_64]
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Setup Xcode
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: '16.3'
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.3'
 
-    - name: Show Xcode version
-      run: |
-        xcodebuild -version
-        xcrun simctl list devices
+      - name: Show Xcode version
+        run: |
+          xcodebuild -version
+          xcrun simctl list devices
 
-    - name: Extract version info
-      id: version
-      run: |
-        MARKETING_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /MARKETING_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
-        BUILD_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /CURRENT_PROJECT_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
-        
-        if [[ $GITHUB_REF == refs/tags/* ]]; then
-          VERSION=${GITHUB_REF#refs/tags/}
-        else
-          VERSION="${MARKETING_VERSION}-${BUILD_VERSION}"
-        fi
+      - name: Extract version info
+        id: version
+        run: |
+          MARKETING_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /MARKETING_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
+          BUILD_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /CURRENT_PROJECT_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
+          
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          else
+            VERSION="${MARKETING_VERSION}-${BUILD_VERSION}"
+          fi
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
+          echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
 
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-        echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
-        echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
+      - name: Replace Info.plist variables
+        run: |
+          sed -i '' "s/\$(CLIENTID)/$CLIENTID/g" SwiftCraftLauncher/Info.plist
+          sed -i '' "s/\$(SPARKLE_PUBLIC_KEY)/$SPARKLE_PUBLIC_KEY/g" SwiftCraftLauncher/Info.plist
+          echo "✅ Info.plist 变量替换完成"
 
-    - name: Replace Info.plist variables
-      run: |
-        sed -i '' "s/\\$(CLIENTID)/$CLIENTID/g" SwiftCraftLauncher/Info.plist
-        sed -i '' "s/\\$(SPARKLE_PUBLIC_KEY)/$SPARKLE_PUBLIC_KEY/g" SwiftCraftLauncher/Info.plist
-        echo "✅ Info.plist 变量替换完成"
+      - name: Build app for ${{ matrix.arch }}
+        run: |
+          BUILD_DIR="build_${{ matrix.arch }}"
+          xcodebuild -project SwiftCraftLauncher.xcodeproj \
+            -scheme SwiftCraftLauncher \
+            -configuration Release \
+            -destination "platform=macOS,arch=${{ matrix.arch }}" \
+            -derivedDataPath "$BUILD_DIR" \
+            build
 
-    - name: Build app for ${{ matrix.arch }}
-      run: |
-        BUILD_DIR="build_${{ matrix.arch }}"
-        xcodebuild -project SwiftCraftLauncher.xcodeproj \
-          -scheme SwiftCraftLauncher \
-          -configuration Release \
-          -destination "platform=macOS,arch=${{ matrix.arch }}" \
-          -derivedDataPath "$BUILD_DIR" \
-          build
+      - name: Verify build output
+        run: |
+          APP_PATH=$(find build_${{ matrix.arch }} -name "Swift Craft Launcher.app" -type d | head -1)
+          if [[ -z "$APP_PATH" ]]; then
+            echo "❌ 未找到构建产物"
+            exit 1
+          fi
+          echo "✅ 应用构建成功: $APP_PATH"
+          file "$APP_PATH/Contents/MacOS/Swift Craft Launcher"
 
-    - name: Verify build output
-      run: |
-        APP_PATH=$(find build_${{ matrix.arch }} -name "Swift Craft Launcher.app" -type d | head -1)
-        if [[ -z "$APP_PATH" ]]; then
-          echo "❌ 未找到构建产物"
-          exit 1
-        fi
-        echo "✅ 应用构建成功: $APP_PATH"
-        file "$APP_PATH/Contents/MacOS/Swift Craft Launcher"
+      - name: Create DMG
+        run: |
+          APP_PATH=$(find build_${{ matrix.arch }} -name "Swift Craft Launcher.app" -type d | head -1)
+          DMG_DIR="dmg_temp_${{ matrix.arch }}"
+          mkdir -p "$DMG_DIR"
+          cp -R "$APP_PATH" "$DMG_DIR/"
+          
+          DMG_NAME="Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg"
+          hdiutil create -volname "Swift Craft Launcher" -srcfolder "$DMG_DIR" -ov -format UDZO "$DMG_NAME"
+          
+          if [[ -f "$DMG_NAME" ]]; then
+            echo "✅ DMG 创建成功: $DMG_NAME"
+          else
+            echo "❌ DMG 创建失败"
+            exit 1
+          fi
 
-    - name: Create DMG
-      run: |
-        APP_PATH=$(find build_${{ matrix.arch }} -name "Swift Craft Launcher.app" -type d | head -1)
-        DMG_DIR="dmg_temp_${{ matrix.arch }}"
-        mkdir -p "$DMG_DIR"
-        cp -R "$APP_PATH" "$DMG_DIR/"
-        
-        DMG_NAME="Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg"
-        hdiutil create -volname "Swift Craft Launcher" -srcfolder "$DMG_DIR" -ov -format UDZO "$DMG_NAME"
-        
-        if [[ -f "$DMG_NAME" ]]; then
-          echo "✅ DMG 创建成功: $DMG_NAME"
-        else
-          echo "❌ DMG 创建失败"
-          exit 1
-        fi
+      - name: Upload DMG Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Swift-Craft-Launcher-${{ matrix.arch }}-${{ steps.version.outputs.version }}
+          path: Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg
+          retention-days: 30
 
-    - name: Upload DMG Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Swift-Craft-Launcher-${{ matrix.arch }}-${{ steps.version.outputs.version }}
-        path: Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg
-        retention-days: 30
-
-    - name: Clean up
-      if: always()
-      run: |
-        rm -rf build_${{ matrix.arch }}
-        rm -rf dmg_temp_${{ matrix.arch }}
-        rm -f Swift_Craft_Launcher_${{ matrix.arch }}_*.dmg
+      - name: Clean up
+        if: always()
+        run: |
+          rm -rf build_${{ matrix.arch }}
+          rm -rf dmg_temp_${{ matrix.arch }}
+          rm -f Swift_Craft_Launcher_${{ matrix.arch }}_*.dmg
 
   # 可选发布任务（只在 tag 推送时执行）
   release:
@@ -115,103 +115,103 @@ jobs:
     runs-on: macos-15
 
     steps:
-    - name: Download build artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: release-artifacts
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
 
-    - name: Display downloaded artifacts
-      run: |
-        echo "Downloaded artifacts:"
-        find release-artifacts -type f -name "*.dmg"
+      - name: Display downloaded artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find release-artifacts -type f -name "*.dmg"
 
-    - name: Setup Xcode
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: '16.3'
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.3'
 
-    - name: setup sparkle
-      run: |
-        SPARKLE_VERSION=2.7.1
-        curl -L "https://github.com/sparkle-project/Sparkle/releases/download/$SPARKLE_VERSION/Sparkle-$SPARKLE_VERSION.tar.xz" -o sparkle.tar.xz
-        tar -xf sparkle.tar.xz
-        
-        
-        if [[ -f "bin/generate_appcast" ]]; then
-          echo "✅ generate_appcast binary found in bin/"
-          echo "Binary permissions:"
-          ls -la bin/generate_appcast
-        else
-          echo "❌ generate_appcast binary not found"
-          exit 1
-        fi
+      - name: setup sparkle
+        run: |
+          SPARKLE_VERSION=2.7.1
+          curl -L "https://github.com/sparkle-project/Sparkle/releases/download/$SPARKLE_VERSION/Sparkle-$SPARKLE_VERSION.tar.xz" -o sparkle.tar.xz
+          tar -xf sparkle.tar.xz
+          
+          
+          if [[ -f "bin/generate_appcast" ]]; then
+            echo "✅ generate_appcast binary found in bin/"
+            echo "Binary permissions:"
+            ls -la bin/generate_appcast
+          else
+            echo "❌ generate_appcast binary not found"
+            exit 1
+          fi
 
-    - name: Create private key file
-      run: |
-        echo '${{ secrets.SPARKLE_PRIVATE_KEY }}' > ed25519_priv.pem
-        chmod 600 ed25519_priv.pem
+      - name: Create private key file
+        run: |
+          echo '${{ secrets.SPARKLE_PRIVATE_KEY }}' > ed25519_priv.pem
+          chmod 600 ed25519_priv.pem
 
-    - name: Generate appcast for arm64
-      run: |
-        # 获取版本信息
-        VERSION=${GITHUB_REF#refs/tags/}
-        echo "版本: $VERSION"
-        
-        # 查找arm64 DMG文件
-        echo "查找 arm64 DMG 文件..."
-        ARM64_DMG=$(find . -name "*arm64*.dmg" 2>/dev/null | head -1)
-        
-        if [[ -z "$ARM64_DMG" ]]; then
-          echo "❌ 未找到 arm64 DMG 文件"
-          exit 1
-        fi
-        
-        echo "找到的 arm64 DMG 文件: $ARM64_DMG"
-        
-        # 生成arm64 appcast条目
-        ./bin/generate_appcast \
-          --ed-key-file ed25519_priv.pem \
-          --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
-          --version "$VERSION" \
-          -o appcast-arm64.xml \
-          "$(dirname $ARM64_DMG)"
-        
-        echo "✅ ARM64 appcast generated successfully"
+      - name: Generate appcast for arm64
+        run: |
+          # 获取版本信息
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "版本: $VERSION"
+          
+          # 查找arm64 DMG文件
+          echo "查找 arm64 DMG 文件..."
+          ARM64_DMG=$(find . -name "*arm64*.dmg" 2>/dev/null | head -1)
+          
+          if [[ -z "$ARM64_DMG" ]]; then
+            echo "❌ 未找到 arm64 DMG 文件"
+            exit 1
+          fi
+          
+          echo "找到的 arm64 DMG 文件: $ARM64_DMG"
+          
+          # 生成arm64 appcast条目
+          ./bin/generate_appcast \
+            --ed-key-file ed25519_priv.pem \
+            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
+            --version "$VERSION" \
+            -o appcast-arm64.xml \
+            "$(dirname $ARM64_DMG)"
+          
+          echo "✅ ARM64 appcast generated successfully"
 
-    - name: Generate appcast for x86_64
-      run: |
-        # 获取版本信息
-        VERSION=${GITHUB_REF#refs/tags/}
-        echo "版本: $VERSION"
-        
-        # 查找x86_64 DMG文件
-        echo "查找 x86_64 DMG 文件..."
-        X86_64_DMG=$(find . -name "*x86_64*.dmg" 2>/dev/null | head -1)
-        
-        if [[ -z "$X86_64_DMG" ]]; then
-          echo "❌ 未找到 x86_64 DMG 文件"
-          exit 1
-        fi
-        
-        echo "找到的 x86_64 DMG 文件: $X86_64_DMG"
-        
-        # 生成x86_64 appcast条目
-        ./bin/generate_appcast \
-          --ed-key-file ed25519_priv.pem \
-          --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
-          --version "$VERSION" \
-          -o appcast-x86_64.xml \
-          "$(dirname $X86_64_DMG)"
-        
-        echo "✅ x86_64 appcast generated successfully"
+      - name: Generate appcast for x86_64
+        run: |
+          # 获取版本信息
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "版本: $VERSION"
+          
+          # 查找x86_64 DMG文件
+          echo "查找 x86_64 DMG 文件..."
+          X86_64_DMG=$(find . -name "*x86_64*.dmg" 2>/dev/null | head -1)
+          
+          if [[ -z "$X86_64_DMG" ]]; then
+            echo "❌ 未找到 x86_64 DMG 文件"
+            exit 1
+          fi
+          
+          echo "找到的 x86_64 DMG 文件: $X86_64_DMG"
+          
+          # 生成x86_64 appcast条目
+          ./bin/generate_appcast \
+            --ed-key-file ed25519_priv.pem \
+            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
+            --version "$VERSION" \
+            -o appcast-x86_64.xml \
+            "$(dirname $X86_64_DMG)"
+          
+          echo "✅ x86_64 appcast generated successfully"
 
-    - name: Upload to GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: |
-          release-artifacts/**/*.dmg
-          appcast-arm64.xml
-          appcast-x86_64.xml
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release-artifacts/**/*.dmg
+            appcast-arm64.xml
+            appcast-x86_64.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
