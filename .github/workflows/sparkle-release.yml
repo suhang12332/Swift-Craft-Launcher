@@ -58,29 +58,27 @@ jobs:
         VERSION=${GITHUB_REF#refs/tags/}
         
         # 创建appcast.xml文件
-        cat > appcast.xml << EOF
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <channel>
-        <title>Swift Craft Launcher</title>
-        <description>Most recent updates to Swift Craft Launcher</description>
-        <language>en</language>
-        <item>
-            <title>Version $VERSION</title>
-            <description><![CDATA[
-                <h2>Version $VERSION</h2>
-                <p>New release of Swift Craft Launcher</p>
-            ]]></description>
-            <pubDate>$(date -R)</pubDate>
-            <enclosure url="https://github.com/${{ github.repository }}/releases/download/$VERSION/Swift_Craft_Launcher_arm64_$VERSION.dmg"
-                       sparkle:version="$VERSION"
-                       sparkle:os="macos"
-                       length="0"
-                       type="application/octet-stream"/>
-        </item>
-    </channel>
-</rss>
-EOF
+        echo '<?xml version="1.0" encoding="utf-8"?>' > appcast.xml
+        echo '<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">' >> appcast.xml
+        echo '    <channel>' >> appcast.xml
+        echo '        <title>Swift Craft Launcher</title>' >> appcast.xml
+        echo '        <description>Most recent updates to Swift Craft Launcher</description>' >> appcast.xml
+        echo '        <language>en</language>' >> appcast.xml
+        echo '        <item>' >> appcast.xml
+        echo "            <title>Version $VERSION</title>" >> appcast.xml
+        echo '            <description><![CDATA[' >> appcast.xml
+        echo "                <h2>Version $VERSION</h2>" >> appcast.xml
+        echo '                <p>New release of Swift Craft Launcher</p>' >> appcast.xml
+        echo '            ]]></description>' >> appcast.xml
+        echo "            <pubDate>$(date -R)</pubDate>" >> appcast.xml
+        echo "            <enclosure url=\"https://github.com/${{ github.repository }}/releases/download/$VERSION/Swift_Craft_Launcher_arm64_$VERSION.dmg\"" >> appcast.xml
+        echo "                       sparkle:version=\"$VERSION\"" >> appcast.xml
+        echo '                       sparkle:os="macos"' >> appcast.xml
+        echo '                       length="0"' >> appcast.xml
+        echo '                       type="application/octet-stream"/>' >> appcast.xml
+        echo '        </item>' >> appcast.xml
+        echo '    </channel>' >> appcast.xml
+        echo '</rss>' >> appcast.xml
 
     - name: Upload appcast.xml
       uses: actions/upload-artifact@v4
