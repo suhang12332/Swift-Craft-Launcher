@@ -141,29 +141,37 @@ jobs:
         ls -la
         echo "Bin directory contents:"
         ls -la bin/
-        echo "Looking for sparkle-generate-appcast binary..."
-        find . -name "*sparkle*" -type f
+        echo "Looking for generate-appcast binary..."
+        find . -name "*generate*" -type f
+        find . -name "*appcast*" -type f
         
         # Try to find and copy the binary
-        if [[ -f "bin/sparkle-generate-appcast" ]]; then
-          sudo cp "bin/sparkle-generate-appcast" /usr/local/bin/
+        if [[ -f "bin/generate-appcast" ]]; then
+          sudo cp "bin/generate-appcast" /usr/local/bin/
+          echo "✅ Copied generate-appcast from bin/"
         elif [[ -f "bin/generate_appcast" ]]; then
-          sudo cp "bin/generate_appcast" /usr/local/bin/sparkle-generate-appcast
-        elif [[ -f "sparkle-generate-appcast" ]]; then
-          sudo cp "sparkle-generate-appcast" /usr/local/bin/
+          sudo cp "bin/generate_appcast" /usr/local/bin/generate-appcast
+          echo "✅ Copied generate_appcast from bin/ and renamed"
+        elif [[ -f "generate-appcast" ]]; then
+          sudo cp "generate-appcast" /usr/local/bin/
+          echo "✅ Copied generate-appcast from root"
         else
-          echo "❌ Could not find sparkle-generate-appcast binary"
+          echo "❌ Could not find generate-appcast binary"
           echo "Trying to install via Homebrew as fallback..."
           brew install sparkle
-          if command -v sparkle-generate-appcast >/dev/null 2>&1; then
-            echo "✅ Sparkle tools installed via Homebrew"
-          else
-            echo "❌ Failed to install sparkle-generate-appcast"
-            exit 1
-          fi
         fi
         
-        echo "✅ Sparkle tools installed successfully"
+        # Verify the command is available
+        if command -v generate-appcast >/dev/null 2>&1; then
+          echo "✅ generate-appcast command is available"
+          generate-appcast --help
+        else
+          echo "❌ generate-appcast command not found in PATH"
+          echo "Current PATH: $PATH"
+          echo "Contents of /usr/local/bin:"
+          ls -la /usr/local/bin/ | grep -E "(generate|appcast|sparkle)"
+          exit 1
+        fi
 
     - name: Create private key file
       run: |
@@ -188,7 +196,7 @@ jobs:
         echo "找到的 arm64 DMG 文件: $ARM64_DMG"
         
         # 生成arm64 appcast条目
-        generate-appcast \
+        generate_appcast \
           --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $ARM64_DMG)" \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
           --verbose \
@@ -235,7 +243,7 @@ jobs:
         echo "找到的 x86_64 DMG 文件: $X86_64_DMG"
         
         # 生成x86_64 appcast条目
-        generate-appcast \
+        generate_appcast \
           --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $X86_64_DMG)" \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
           --verbose \
