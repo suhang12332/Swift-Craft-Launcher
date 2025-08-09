@@ -51,40 +51,10 @@ jobs:
           echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
           echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
 
-      - name: Check Info.plist file
-        run: |
-          if [[ -f "SwiftCraftLauncher/Info.plist" ]]; then
-            echo "✅ Info.plist 文件存在"
-            echo "文件内容预览:"
-            head -20 SwiftCraftLauncher/Info.plist
-          else
-            echo "❌ Info.plist 文件不存在"
-            exit 1
-          fi
-
       - name: Replace Info.plist variables
         run: |
-          # 调试环境变量
-          echo "CLIENTID: '$CLIENTID'"
-          echo "SPARKLE_PUBLIC_KEY: '$SPARKLE_PUBLIC_KEY'"
-          
-          # 使用更安全的方式替换变量，避免sed语法问题
-          if [[ -n "$CLIENTID" ]]; then
-            echo "正在替换 CLIENTID..."
-            sed -i '' "s/\\$(CLIENTID)/$CLIENTID/g" SwiftCraftLauncher/Info.plist
-            echo "✅ CLIENTID 替换完成"
-          else
-            echo "⚠️  CLIENTID 环境变量为空，跳过替换"
-          fi
-          
-          if [[ -n "$SPARKLE_PUBLIC_KEY" ]]; then
-            echo "正在替换 SPARKLE_PUBLIC_KEY..."
-            sed -i '' "s/\\$(SPARKLE_PUBLIC_KEY)/$SPARKLE_PUBLIC_KEY/g" SwiftCraftLauncher/Info.plist
-            echo "✅ SPARKLE_PUBLIC_KEY 替换完成"
-          else
-            echo "⚠️  SPARKLE_PUBLIC_KEY 环境变量为空，跳过替换"
-          fi
-          
+          sed -i '' "s/\$(CLIENTID)/$CLIENTID/g" SwiftCraftLauncher/Info.plist
+          sed -i '' "s/\$(SPARKLE_PUBLIC_KEY)/$SPARKLE_PUBLIC_KEY/g" SwiftCraftLauncher/Info.plist
           echo "✅ Info.plist 变量替换完成"
 
       - name: Build app for ${{ matrix.arch }}
