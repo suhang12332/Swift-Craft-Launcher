@@ -134,6 +134,10 @@ jobs:
       uses: jozefizso/setup-sparkle@v1
       with:
         version: '2.5.2'
+    - name: Add Sparkle to PATH
+      run: |
+        echo "$HOME/.sparkle/bin" >> $GITHUB_PATH
+        ls -l "$HOME/.sparkle/bin"
 
     - name: Create private key file
       run: |
