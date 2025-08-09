@@ -135,7 +135,25 @@ jobs:
         SPARKLE_VERSION=2.7.1
         curl -L "https://github.com/sparkle-project/Sparkle/releases/download/$SPARKLE_VERSION/Sparkle-$SPARKLE_VERSION.tar.xz" -o sparkle.tar.xz
         tar -xf sparkle.tar.xz
-        sudo cp Sparkle-$SPARKLE_VERSION/bin/sparkle-generate-appcast /usr/local/bin/
+        
+        # Debug: check what was extracted
+        echo "Extracted contents:"
+        ls -la
+        echo "Sparkle directory contents:"
+        ls -la Sparkle-$SPARKLE_VERSION/
+        echo "Looking for sparkle-generate-appcast binary..."
+        find . -name "*sparkle*" -type f
+        
+        # Try to find and copy the binary
+        if [[ -f "Sparkle-$SPARKLE_VERSION/bin/sparkle-generate-appcast" ]]; then
+          sudo cp "Sparkle-$SPARKLE_VERSION/bin/sparkle-generate-appcast" /usr/local/bin/
+        elif [[ -f "Sparkle-$SPARKLE_VERSION/sparkle-generate-appcast" ]]; then
+          sudo cp "Sparkle-$SPARKLE_VERSION/sparkle-generate-appcast" /usr/local/bin/
+        else
+          echo "❌ Could not find sparkle-generate-appcast binary"
+          exit 1
+        fi
+        
         echo "✅ Sparkle tools installed successfully"
 
     - name: Create private key file
