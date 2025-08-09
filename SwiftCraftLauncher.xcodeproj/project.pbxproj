@@ -11,6 +11,7 @@
 		9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91E2E313A9C005A53F1 /* MarkdownUI */; };
 		90C51D072E421BAB0014D7B4 /* MinecraftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90C51D062E421BAB0014D7B4 /* MinecraftNBT */; };
 		90D8D76B2E33FB75008296D1 /* Sliders in Frameworks */ = {isa = PBXBuildFile; productRef = 90D8D76A2E33FB75008296D1 /* Sliders */; };
+		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 				90C51D072E421BAB0014D7B4 /* MinecraftNBT in Frameworks */,
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
 				9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */,
+				90E123456789ABCD0001 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,6 +74,7 @@
 				9023D91E2E313A9C005A53F1 /* MarkdownUI */,
 				90D8D76A2E33FB75008296D1 /* Sliders */,
 				90C51D062E421BAB0014D7B4 /* MinecraftNBT */,
+				90E123456789ABCD0002 /* Sparkle */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90C521902E44E2E80014D7B4 /* Swift Craft Launcher.app */;
@@ -108,6 +111,7 @@
 				9023D91D2E313A9C005A53F1 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 				90D8D7692E33FB75008296D1 /* XCRemoteSwiftPackageReference "swiftui-sliders" */,
 				90C51D052E421BAB0014D7B4 /* XCRemoteSwiftPackageReference "swift-nbt" */,
+				90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -285,6 +289,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftCraftLauncher/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Su";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -316,6 +321,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftCraftLauncher/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Su";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -388,6 +394,14 @@
 				minimumVersion = 2.1.0;
 			};
 		};
+		90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -410,6 +424,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 90D8D7692E33FB75008296D1 /* XCRemoteSwiftPackageReference "swiftui-sliders" */;
 			productName = Sliders;
+		};
+		90E123456789ABCD0002 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

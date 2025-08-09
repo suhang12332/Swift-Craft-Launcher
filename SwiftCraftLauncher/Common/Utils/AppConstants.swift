@@ -5,9 +5,9 @@ enum AppConstants {
     static let modLoaders = ["vanilla", "fabric", "forge", "neoforge", "quilt"]
     static let defaultJava = "/usr/bin"
     
-    // Minecraft 客户端ID - 暂时先***
+    // Minecraft 客户端ID
     static let clientId: String = {
-        return "***"
+        return Bundle.main.object(forInfoDictionaryKey: "CLIENTID") as! String
     }()
     static let scope = "XboxLive.signin offline_access"
     

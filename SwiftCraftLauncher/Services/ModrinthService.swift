@@ -1,5 +1,4 @@
 import Foundation
-import os.log
 
 enum ModrinthService {
     private static let cacheExpiration: TimeInterval = 600 // 10分钟

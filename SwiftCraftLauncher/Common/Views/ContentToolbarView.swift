@@ -34,6 +34,7 @@ public struct ContentToolbarView: ToolbarContent {
             
             
             Spacer()
+            
             // 添加玩家按钮
             Button(action: {
                 playerName = ""

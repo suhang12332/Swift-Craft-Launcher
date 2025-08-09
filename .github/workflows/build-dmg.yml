@@ -8,6 +8,10 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+env:
+  CLIENTID: ${{ secrets.CLIENTID }}
+  SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
+
 jobs:
   build:
     runs-on: macos-15
@@ -46,6 +50,12 @@ jobs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
         echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
+
+    - name: Replace Info.plist variables
+      run: |
+        sed -i '' "s/\$(CLIENTID)/$CLIENTID/g" SwiftCraftLauncher/Info.plist
+        sed -i '' "s/\$(SPARKLE_PUBLIC_KEY)/$SPARKLE_PUBLIC_KEY/g" SwiftCraftLauncher/Info.plist
+        echo "✅ Info.plist 变量替换完成"
 
     - name: Build app for ${{ matrix.arch }}
       run: |
