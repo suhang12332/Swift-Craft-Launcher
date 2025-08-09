@@ -140,4 +140,12 @@ DerivedData/
 
 # Backup files
 *.bak
-*.backup 
+*.backup
+
+# Private keys and certificates
+*.pem
+*.p12
+*.key
+*.crt
+*.cer
+ed25519_priv.pem 

@@ -1,0 +1,106 @@
+name: Sparkle Release
+
+on:
+  push:
+    tags: ['*']
+  workflow_dispatch:
+
+env:
+  CLIENTID: ${{ secrets.CLIENTID }}
+  SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
+
+jobs:
+  sparkle-release:
+    runs-on: macos-15
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.3'
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: release-artifacts
+
+    - name: Setup Sparkle
+      uses: jozefizso/setup-sparkle@v1
+      with:
+        private-key: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+
+    - name: Generate appcast
+      run: |
+        # 获取版本信息
+        VERSION=${GITHUB_REF#refs/tags/}
+        
+        # 查找DMG文件
+        DMG_FILES=$(find release-artifacts -name "*.dmg")
+        
+        for DMG_FILE in $DMG_FILES; do
+          echo "处理 DMG 文件: $DMG_FILE"
+          
+          # 生成appcast条目
+          sparkle-generate-appcast \
+            --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $DMG_FILE)" \
+            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
+            --verbose \
+            "$DMG_FILE"
+        done
+
+    - name: Create appcast.xml
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        
+        # 创建appcast.xml文件
+        cat > appcast.xml << EOF
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <channel>
+        <title>Swift Craft Launcher</title>
+        <description>Most recent updates to Swift Craft Launcher</description>
+        <language>en</language>
+        <item>
+            <title>Version $VERSION</title>
+            <description><![CDATA[
+                <h2>Version $VERSION</h2>
+                <p>New release of Swift Craft Launcher</p>
+            ]]></description>
+            <pubDate>$(date -R)</pubDate>
+            <enclosure url="https://github.com/${{ github.repository }}/releases/download/$VERSION/Swift_Craft_Launcher_arm64_$VERSION.dmg"
+                       sparkle:version="$VERSION"
+                       sparkle:os="macos"
+                       length="0"
+                       type="application/octet-stream"/>
+        </item>
+    </channel>
+</rss>
+EOF
+
+    - name: Upload appcast.xml
+      uses: actions/upload-artifact@v4
+      with:
+        name: appcast-xml
+        path: appcast.xml
+        retention-days: 30
+
+    - name: Update GitHub Release with appcast
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        
+        # 获取release ID
+        RELEASE_ID=$(gh api repos/${{ github.repository }}/releases/tags/$VERSION --jq '.id')
+        
+        # 上传appcast.xml到release
+        gh api repos/${{ github.repository }}/releases/$RELEASE_ID/assets \
+          -F name=appcast.xml \
+          -F label="Appcast XML" \
+          -F "file=@appcast.xml"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 

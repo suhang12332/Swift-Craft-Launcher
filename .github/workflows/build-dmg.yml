@@ -131,3 +131,9 @@ jobs:
         files: release-artifacts/**/*.dmg
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Wait for Sparkle workflow
+      run: |
+        # 等待Sparkle工作流完成
+        echo "等待Sparkle工作流完成..."
+        sleep 30
