@@ -188,8 +188,7 @@ jobs:
         echo "找到的 arm64 DMG 文件: $ARM64_DMG"
         
         # 生成arm64 appcast条目
-        sparkle-generate-appcast \
-          --private-key-path ed25519_priv.pem \
+        generate-appcast \
           --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $ARM64_DMG)" \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
           --verbose \
@@ -236,8 +235,7 @@ jobs:
         echo "找到的 x86_64 DMG 文件: $X86_64_DMG"
         
         # 生成x86_64 appcast条目
-        sparkle-generate-appcast \
-          --private-key-path ed25519_priv.pem \
+        generate-appcast \
           --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $X86_64_DMG)" \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
           --verbose \
