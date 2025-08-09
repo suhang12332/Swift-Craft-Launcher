@@ -53,8 +53,9 @@ jobs:
 
       - name: Replace Info.plist variables
         run: |
-          sed -i '' "s/\$(CLIENTID)/$CLIENTID/g" SwiftCraftLauncher/Info.plist
-          sed -i '' "s/\$(SPARKLE_PUBLIC_KEY)/$SPARKLE_PUBLIC_KEY/g" SwiftCraftLauncher/Info.plist
+          # 使用更安全的方式替换变量，避免sed语法问题
+          sed -i '' "s/\\$(CLIENTID)/$CLIENTID/g" SwiftCraftLauncher/Info.plist
+          sed -i '' "s/\\$(SPARKLE_PUBLIC_KEY)/$SPARKLE_PUBLIC_KEY/g" SwiftCraftLauncher/Info.plist
           echo "✅ Info.plist 变量替换完成"
 
       - name: Build app for ${{ matrix.arch }}
