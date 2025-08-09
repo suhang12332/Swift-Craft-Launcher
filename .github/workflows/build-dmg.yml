@@ -137,7 +137,6 @@ jobs:
         tar -xf sparkle.tar.xz
         
         
-        # Verify the binary exists
         if [[ -f "bin/generate_appcast" ]]; then
           echo "✅ generate_appcast binary found in bin/"
           echo "Binary permissions:"
