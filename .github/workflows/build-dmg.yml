@@ -130,14 +130,10 @@ jobs:
       with:
         xcode-version: '16.3'
 
-    - name: Setup Sparkle
+    - name: setup sparkle
       uses: jozefizso/setup-sparkle@v1
       with:
-        version: '2.5.2'
-    - name: Add Sparkle to PATH
-      run: |
-        echo "$HOME/.sparkle/bin" >> $GITHUB_PATH
-        ls -l "$HOME/.sparkle/bin"
+        version: 2.6.2
 
     - name: Create private key file
       run: |
@@ -162,7 +158,7 @@ jobs:
         echo "找到的 arm64 DMG 文件: $ARM64_DMG"
         
         # 生成arm64 appcast条目
-        sparkle-generate-appcast \
+        generate_appcast \
           --private-key ed25519_priv.pem \
           --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $ARM64_DMG)" \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
@@ -210,7 +206,7 @@ jobs:
         echo "找到的 x86_64 DMG 文件: $X86_64_DMG"
         
         # 生成x86_64 appcast条目
-        sparkle-generate-appcast \
+        generate_appcast \
           --private-key ed25519_priv.pem \
           --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $X86_64_DMG)" \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
