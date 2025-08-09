@@ -32,7 +32,12 @@ jobs:
     - name: Setup Sparkle
       uses: jozefizso/setup-sparkle@v1
       with:
-        private-key: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        version: '2.5.2'
+
+    - name: Create private key file
+      run: |
+        echo '${{ secrets.SPARKLE_PRIVATE_KEY }}' > ed25519_priv.pem
+        chmod 600 ed25519_priv.pem
 
     - name: Generate appcast
       run: |
@@ -47,6 +52,7 @@ jobs:
           
           # 生成appcast条目
           sparkle-generate-appcast \
+            --private-key ed25519_priv.pem \
             --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $DMG_FILE)" \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
             --verbose \
