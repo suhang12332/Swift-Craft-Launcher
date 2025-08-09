@@ -29,8 +29,17 @@ jobs:
     - name: Download build artifacts from previous workflow
       uses: actions/download-artifact@v4
       with:
-        pattern: Swift-Craft-Launcher-*
+        name: Swift-Craft-Launcher-arm64-*
         path: release-artifacts
+
+    - name: List downloaded artifacts
+      run: |
+        echo "当前目录内容:"
+        ls -la
+        echo "release-artifacts 目录内容:"
+        ls -la release-artifacts || echo "release-artifacts 目录不存在"
+        echo "查找 DMG 文件:"
+        find . -name "*.dmg" 2>/dev/null || echo "未找到 DMG 文件"
 
     - name: Setup Sparkle
       uses: jozefizso/setup-sparkle@v1
@@ -46,9 +55,23 @@ jobs:
       run: |
         # 获取版本信息
         VERSION=${GITHUB_REF#refs/tags/}
+        echo "版本: $VERSION"
         
         # 查找DMG文件
-        DMG_FILES=$(find release-artifacts -name "*.dmg")
+        echo "查找 DMG 文件..."
+        DMG_FILES=$(find . -name "*.dmg" 2>/dev/null)
+        
+        if [[ -z "$DMG_FILES" ]]; then
+          echo "❌ 未找到 DMG 文件"
+          echo "当前目录内容:"
+          ls -la
+          echo "release-artifacts 目录内容:"
+          ls -la release-artifacts || echo "release-artifacts 目录不存在"
+          exit 1
+        fi
+        
+        echo "找到的 DMG 文件:"
+        echo "$DMG_FILES"
         
         for DMG_FILE in $DMG_FILES; do
           echo "处理 DMG 文件: $DMG_FILE"
