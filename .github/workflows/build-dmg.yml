@@ -141,35 +141,17 @@ jobs:
         ls -la
         echo "Bin directory contents:"
         ls -la bin/
-        echo "Looking for generate-appcast binary..."
+        echo "Looking for generate_appcast binary..."
         find . -name "*generate*" -type f
         find . -name "*appcast*" -type f
         
-        # Try to find and copy the binary
-        if [[ -f "bin/generate-appcast" ]]; then
-          sudo cp "bin/generate-appcast" /usr/local/bin/
-          echo "✅ Copied generate-appcast from bin/"
-        elif [[ -f "bin/generate_appcast" ]]; then
-          sudo cp "bin/generate_appcast" /usr/local/bin/generate-appcast
-          echo "✅ Copied generate_appcast from bin/ and renamed"
-        elif [[ -f "generate-appcast" ]]; then
-          sudo cp "generate-appcast" /usr/local/bin/
-          echo "✅ Copied generate-appcast from root"
+        # Verify the binary exists
+        if [[ -f "bin/generate_appcast" ]]; then
+          echo "✅ generate_appcast binary found in bin/"
+          echo "Binary permissions:"
+          ls -la bin/generate_appcast
         else
-          echo "❌ Could not find generate-appcast binary"
-          echo "Trying to install via Homebrew as fallback..."
-          brew install sparkle
-        fi
-        
-        # Verify the command is available
-        if command -v generate-appcast >/dev/null 2>&1; then
-          echo "✅ generate-appcast command is available"
-          generate-appcast --help
-        else
-          echo "❌ generate-appcast command not found in PATH"
-          echo "Current PATH: $PATH"
-          echo "Contents of /usr/local/bin:"
-          ls -la /usr/local/bin/ | grep -E "(generate|appcast|sparkle)"
+          echo "❌ generate_appcast binary not found"
           exit 1
         fi
 
@@ -196,7 +178,7 @@ jobs:
         echo "找到的 arm64 DMG 文件: $ARM64_DMG"
         
         # 生成arm64 appcast条目
-        generate_appcast \
+        ./bin/generate_appcast \
           --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $ARM64_DMG)" \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
           --verbose \
@@ -243,7 +225,7 @@ jobs:
         echo "找到的 x86_64 DMG 文件: $X86_64_DMG"
         
         # 生成x86_64 appcast条目
-        generate_appcast \
+        ./bin/generate_appcast \
           --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $X86_64_DMG)" \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
           --verbose \
