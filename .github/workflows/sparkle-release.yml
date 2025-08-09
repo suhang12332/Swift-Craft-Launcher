@@ -1,8 +1,10 @@
 name: Sparkle Release
 
 on:
-  push:
-    tags: ['*']
+  workflow_run:
+    workflows: ["Build macOS DMG"]
+    types: [completed]
+    branches: [main, master]
   workflow_dispatch:
 
 env:
@@ -24,9 +26,10 @@ jobs:
       with:
         xcode-version: '16.3'
 
-    - name: Download build artifacts
+    - name: Download build artifacts from previous workflow
       uses: actions/download-artifact@v4
       with:
+        pattern: Swift-Craft-Launcher-*
         path: release-artifacts
 
     - name: Setup Sparkle
