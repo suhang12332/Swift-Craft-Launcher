@@ -179,33 +179,12 @@ jobs:
         
         # 生成arm64 appcast条目
         ./bin/generate_appcast \
-          --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $ARM64_DMG)" \
+          --ed-key-file ed25519_priv.pem \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
-          --verbose \
+          -o appcast-arm64.xml \
           "$(dirname $ARM64_DMG)"
         
-        # 创建arm64 appcast.xml文件
-        echo '<?xml version="1.0" encoding="utf-8"?>' > appcast-arm64.xml
-        echo '<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">' >> appcast-arm64.xml
-        echo '    <channel>' >> appcast-arm64.xml
-        echo '        <title>Swift Craft Launcher (ARM64)</title>' >> appcast-arm64.xml
-        echo '        <description>Most recent updates to Swift Craft Launcher for Apple Silicon</description>' >> appcast-arm64.xml
-        echo '        <language>en</language>' >> appcast-arm64.xml
-        echo '        <item>' >> appcast-arm64.xml
-        echo "            <title>Version $VERSION (ARM64)</title>" >> appcast-arm64.xml
-        echo '            <description><![CDATA[' >> appcast-arm64.xml
-        echo "                <h2>Version $VERSION (ARM64)</h2>" >> appcast-arm64.xml
-        echo '                <p>New release of Swift Craft Launcher for Apple Silicon</p>' >> appcast-arm64.xml
-        echo '            ]]></description>' >> appcast-arm64.xml
-        echo "            <pubDate>$(date -R)</pubDate>" >> appcast-arm64.xml
-        echo "            <enclosure url=\"https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $ARM64_DMG)\"" >> appcast-arm64.xml
-        echo "                       sparkle:version=\"$VERSION\"" >> appcast-arm64.xml
-        echo '                       sparkle:os="macos"' >> appcast-arm64.xml
-        echo '                       length="0"' >> appcast-arm64.xml
-        echo '                       type="application/octet-stream"/>' >> appcast-arm64.xml
-        echo '        </item>' >> appcast-arm64.xml
-        echo '    </channel>' >> appcast-arm64.xml
-        echo '</rss>' >> appcast-arm64.xml
+        echo "✅ ARM64 appcast generated successfully"
 
     - name: Generate appcast for x86_64
       run: |
@@ -226,33 +205,12 @@ jobs:
         
         # 生成x86_64 appcast条目
         ./bin/generate_appcast \
-          --full-installer-url "https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $X86_64_DMG)" \
+          --ed-key-file ed25519_priv.pem \
           --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
-          --verbose \
+          -o appcast-x86_64.xml \
           "$(dirname $X86_64_DMG)"
         
-        # 创建x86_64 appcast.xml文件
-        echo '<?xml version="1.0" encoding="utf-8"?>' > appcast-x86_64.xml
-        echo '<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">' >> appcast-x86_64.xml
-        echo '    <channel>' >> appcast-x86_64.xml
-        echo '        <title>Swift Craft Launcher (Intel)</title>' >> appcast-x86_64.xml
-        echo '        <description>Most recent updates to Swift Craft Launcher for Intel Macs</description>' >> appcast-x86_64.xml
-        echo '        <language>en</language>' >> appcast-x86_64.xml
-        echo '        <item>' >> appcast-x86_64.xml
-        echo "            <title>Version $VERSION (Intel)</title>" >> appcast-x86_64.xml
-        echo '            <description><![CDATA[' >> appcast-x86_64.xml
-        echo "                <h2>Version $VERSION (Intel)</h2>" >> appcast-x86_64.xml
-        echo '                <p>New release of Swift Craft Launcher for Intel Macs</p>' >> appcast-x86_64.xml
-        echo '            ]]></description>' >> appcast-x86_64.xml
-        echo "            <pubDate>$(date -R)</pubDate>" >> appcast-x86_64.xml
-        echo "            <enclosure url=\"https://github.com/${{ github.repository }}/releases/download/$VERSION/$(basename $X86_64_DMG)\"" >> appcast-x86_64.xml
-        echo "                       sparkle:version=\"$VERSION\"" >> appcast-x86_64.xml
-        echo '                       sparkle:os="macos"' >> appcast-x86_64.xml
-        echo '                       length="0"' >> appcast-x86_64.xml
-        echo '                       type="application/octet-stream"/>' >> appcast-x86_64.xml
-        echo '        </item>' >> appcast-x86_64.xml
-        echo '    </channel>' >> appcast-x86_64.xml
-        echo '</rss>' >> appcast-x86_64.xml
+        echo "✅ x86_64 appcast generated successfully"
 
     - name: Upload to GitHub Release
       uses: softprops/action-gh-release@v1
