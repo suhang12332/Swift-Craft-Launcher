@@ -136,14 +136,6 @@ jobs:
         curl -L "https://github.com/sparkle-project/Sparkle/releases/download/$SPARKLE_VERSION/Sparkle-$SPARKLE_VERSION.tar.xz" -o sparkle.tar.xz
         tar -xf sparkle.tar.xz
         
-        # Debug: check what was extracted
-        echo "Extracted contents:"
-        ls -la
-        echo "Bin directory contents:"
-        ls -la bin/
-        echo "Looking for generate_appcast binary..."
-        find . -name "*generate*" -type f
-        find . -name "*appcast*" -type f
         
         # Verify the binary exists
         if [[ -f "bin/generate_appcast" ]]; then
