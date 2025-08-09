@@ -139,17 +139,28 @@ jobs:
         # Debug: check what was extracted
         echo "Extracted contents:"
         ls -la
+        echo "Bin directory contents:"
+        ls -la bin/
         echo "Looking for sparkle-generate-appcast binary..."
         find . -name "*sparkle*" -type f
         
         # Try to find and copy the binary
         if [[ -f "bin/sparkle-generate-appcast" ]]; then
           sudo cp "bin/sparkle-generate-appcast" /usr/local/bin/
+        elif [[ -f "bin/generate_appcast" ]]; then
+          sudo cp "bin/generate_appcast" /usr/local/bin/sparkle-generate-appcast
         elif [[ -f "sparkle-generate-appcast" ]]; then
           sudo cp "sparkle-generate-appcast" /usr/local/bin/
         else
           echo "❌ Could not find sparkle-generate-appcast binary"
-          exit 1
+          echo "Trying to install via Homebrew as fallback..."
+          brew install sparkle
+          if command -v sparkle-generate-appcast >/dev/null 2>&1; then
+            echo "✅ Sparkle tools installed via Homebrew"
+          else
+            echo "❌ Failed to install sparkle-generate-appcast"
+            exit 1
+          fi
         fi
         
         echo "✅ Sparkle tools installed successfully"
