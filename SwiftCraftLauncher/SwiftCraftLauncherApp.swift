@@ -12,6 +12,7 @@ struct SwiftCraftLauncherApp: App {
     @StateObject private var playerListViewModel = PlayerListViewModel()
     @StateObject private var gameRepository = GameRepository()
     @StateObject private var globalErrorHandler = GlobalErrorHandler.shared
+    @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
 
     init() {
         Task {
@@ -25,17 +26,27 @@ struct SwiftCraftLauncherApp: App {
             MainView()
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
+                .environmentObject(sparkleUpdateService)
                 .globalErrorHandler()
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
+        .commands {
+            CommandGroup(after: .appInfo) {
+                Button("检查更新") {
+                    sparkleUpdateService.checkForUpdatesWithUI()
+                }
+                .keyboardShortcut("u", modifiers: [.command, .shift])
+            }
+        }
 
         Settings {
             SettingsView()
                 .environmentObject(gameRepository)
                 .environmentObject(playerListViewModel)
+                .environmentObject(sparkleUpdateService)
                 .globalErrorHandler()
         }
         // 右上角的状态栏(可以显示图标的)
