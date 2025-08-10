@@ -51,18 +51,13 @@ public struct GeneralSettingsView: View {
                 } message: {
                     Text("settings.language.restart.message".localized())
                 }
-            }
+            }.padding(.bottom, 20)
             
             GridRow {
                 Text("settings.theme.picker".localized()) // 长标题
                     .gridColumnAlignment(.trailing) // 右对齐
-                Picker("", selection: $general.themeMode) {
-                    ForEach(ThemeMode.allCases, id: \.self) { mode in
-                        Text(mode.localizedName).tag(mode)
-                    }
-                }.frame(width: 200)
+                ThemeSelectorView(selectedTheme: $general.themeMode)
                     .gridColumnAlignment(.leading)
-                    .labelsHidden()
             }.padding(.bottom, 20)
             
             GridRow {
@@ -275,4 +270,82 @@ private func restartApp() throws {
 
 #Preview {
     GeneralSettingsView()
+}
+
+// MARK: - Theme Selector View
+struct ThemeSelectorView: View {
+    @Binding var selectedTheme: ThemeMode
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            ForEach(ThemeMode.allCases, id: \.self) { theme in
+                ThemeOptionView(
+                    theme: theme,
+                    isSelected: selectedTheme == theme
+                ) {
+                    selectedTheme = theme
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Theme Option View
+struct ThemeOptionView: View {
+    let theme: ThemeMode
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            // 主题图标
+            ZStack {
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(isSelected ? Color.accentColor.opacity(0.1) : Color.clear)
+                    .frame(width: 60, height: 40)
+                
+                RoundedRectangle(cornerRadius: 6)
+                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: isSelected ? 3 : 0)
+                    .frame(width: 61, height: 41)
+                
+                // 窗口图标内容
+                ThemeWindowIcon(theme: theme)
+                    .frame(width: 60, height: 40)
+            }
+            
+            // 主题标签
+            Text(theme.localizedName)
+                .font(.caption)
+                .foregroundColor(isSelected ? .primary : .secondary)
+        }
+        .onTapGesture {
+            onTap()
+        }
+//        .scaleEffect(isSelected ? 1.05 : 1.0)
+        .animation(.easeInOut(duration: 0.2), value: isSelected)
+    }
+}
+
+// MARK: - Theme Window Icon
+struct ThemeWindowIcon: View {
+    let theme: ThemeMode
+    
+    var body: some View {
+        Image(iconName)
+            .resizable()
+//            .aspectRatio(contentMode: .fit)
+            .frame(width: 60, height: 40)
+            .cornerRadius(6)
+    }
+    
+    private var iconName: String {
+        switch theme {
+        case .system:
+            return "AppearanceAuto_Normal"
+        case .light:
+            return "AppearanceLight_Normal"
+        case .dark:
+            return "AppearanceDark_Normal"
+        }
+    }
 }

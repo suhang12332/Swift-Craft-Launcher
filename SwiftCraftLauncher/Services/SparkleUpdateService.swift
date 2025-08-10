@@ -68,6 +68,13 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     func feedURLString(for updater: SPUUpdater) -> String? {
         let architecture = getSystemArchitecture()
         let appcastURL = URLConfig.API.GitHub.appcastURL(version: nil, architecture: architecture)
+        
+        // 拼接git代理地址
+        let proxy = GameSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !proxy.isEmpty && appcastURL.absoluteString.hasPrefix("https://github.com/") {
+            return proxy + "/" + appcastURL.absoluteString
+        }
+        
         return appcastURL.absoluteString
     }
     

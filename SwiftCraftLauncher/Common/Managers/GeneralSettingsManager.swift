@@ -2,9 +2,9 @@ import Foundation
 import SwiftUI
 
 public enum ThemeMode: String, CaseIterable {
-    case system = "system"
     case light = "light"
     case dark = "dark"
+    case system = "system"
     
     public var localizedName: String {
         "settings.theme.\(rawValue)".localized()

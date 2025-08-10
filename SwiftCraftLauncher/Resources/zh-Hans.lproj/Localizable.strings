@@ -50,27 +50,27 @@
 "language.en" = "English";
 
 // Settings
-"settings.language.picker" = "选择语言";
+"settings.language.picker" = "选择语言:";
 "settings.language.restart.title" = "需要重启";
 "settings.language.restart.confirm" = "重启应用";
 "settings.language.restart.message" = "更改语言需要重启应用才能生效";
 
-"settings.theme.picker" = "选择主题";
-"settings.theme.system" = "跟随系统";
+"settings.theme.picker" = "外观:";
+"settings.theme.system" = "自动";
 "settings.theme.light" = "浅色";
 "settings.theme.dark" = "深色";
 "settings.general.tab" = "通用";
 "settings.player.tab" = "玩家";
 "settings.game.tab" = "游戏";
 "settings.acknowledgements.tab" = "致谢";
-"settings.minecraft_versions_url.label" = "Minecraft版本地址";
-"settings.modrinth_api_url.label" = "Modrinth API 地址";
-"settings.default_java_path.label" = "默认Java路径";
-"settings.default_memory_allocation.label" = "全局内存分配";
-"settings.game_resource_info.label" = "游戏资源";
-"settings.concurrent_downloads.label" = "下载并发数";
-"settings.git_proxy_url.label" = "Git 代理地址";
-"settings.launcher_working_directory" = "工作目录";
+"settings.minecraft_versions_url.label" = "Minecraft版本地址:";
+"settings.modrinth_api_url.label" = "Modrinth API 地址:";
+"settings.default_java_path.label" = "默认Java路径:";
+"settings.default_memory_allocation.label" = "全局内存分配:";
+"settings.game_resource_info.label" = "游戏资源:";
+"settings.concurrent_downloads.label" = "下载并发数:";
+"settings.git_proxy_url.label" = "Git 代理地址:";
+"settings.launcher_working_directory" = "工作目录:";
 "settings.player.title" = "玩家";
 "settings.player.placeholder" = "玩家设置将显示在此处。";
 
@@ -279,7 +279,7 @@
 // Settings Descriptions
 "settings.working_directory.description" = "该路径的设置只会影响到游戏存档、mod、光影等其他资源的存储位置。";
 "settings.dependencies.description" = "该选项用于是否弹窗显示前置Mod(依赖)";
-"settings.auto_handle_dependencies" = "自动处理依赖";
+"settings.auto_handle_dependencies" = "自动处理依赖:";
 "settings.java_path.description" = "%@ 说明：全局配置，如果游戏没有配置路径的话，使用这个。";
 
 // Java Version Detection

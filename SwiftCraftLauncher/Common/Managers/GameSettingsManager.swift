@@ -54,8 +54,29 @@ class GameSettingsManager: ObservableObject {
         let pipe = Pipe()
         task.standardOutput = pipe
         task.standardError = pipe
+        
+        // 设置超时时间（秒）
+        let timeout: TimeInterval = 30.0
+        
         try task.run()
-        task.waitUntilExit()
+        
+        // 使用超时机制替代 waitUntilExit()
+        let group = DispatchGroup()
+        group.enter()
+        
+        DispatchQueue.global(qos: .utility).async {
+            task.waitUntilExit()
+            group.leave()
+        }
+        
+        // 等待任务完成或超时
+        let result = group.wait(timeout: .now() + timeout)
+        
+        if result == .timedOut {
+            task.terminate()
+            throw NSError(domain: "ShellTimeout", code: -1, userInfo: [NSLocalizedDescriptionKey: "Shell command timed out after \(timeout) seconds"])
+        }
+        
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         return String(data: data, encoding: .utf8) ?? ""
     }
