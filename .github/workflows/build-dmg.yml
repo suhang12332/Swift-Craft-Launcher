@@ -34,17 +34,17 @@ jobs:
         id: version
         run: |
           MARKETING_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /MARKETING_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
-          BUILD_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /CURRENT_PROJECT_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
+#          BUILD_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /CURRENT_PROJECT_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
           
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
           else
-            VERSION="${MARKETING_VERSION}-${BUILD_VERSION}"
+            VERSION="${MARKETING_VERSION}"
           fi
           
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
-          echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
+#          echo "build_version=$BUILD_VERSION" >> $GITHUB_OUTPUT
 
       - name: Replace Info.plist variables
         run: |
