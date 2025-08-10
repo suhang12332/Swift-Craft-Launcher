@@ -85,6 +85,7 @@
 "menu.sort.follows" = "关注数";
 "menu.sort.newest" = "最新";
 "menu.sort.updated" = "最近更新";
+"searh.resources" = "搜索资源名称";
 
 // Filter
 "filter.clear" = "清除筛选";

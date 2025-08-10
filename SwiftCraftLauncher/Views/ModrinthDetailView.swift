@@ -68,7 +68,7 @@ struct ModrinthDetailView: View {
             }
         }
         .onChange(of: viewModel.totalHits) { _, newValue in totalItems = newValue }
-        .searchable(text: $searchText)
+        .searchable(text: $searchText,placement: .toolbar,prompt: "searh.resources".localized())
         .onChange(of: searchText) { _, _ in
             debounceSearch()
         }

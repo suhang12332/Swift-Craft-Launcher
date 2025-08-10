@@ -241,8 +241,8 @@ struct GameInfoDetailView: View {
         }
         .searchable(
             text: $searchTextForResource,
-            placement: .automatic,
-            prompt: "搜索资源名称"
+            placement: .toolbar,
+            prompt: "searh.resources".localized()
         )
     }
 
