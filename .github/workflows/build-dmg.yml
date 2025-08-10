@@ -174,7 +174,6 @@ jobs:
           ./bin/generate_appcast \
             --ed-key-file ed25519_priv.pem \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
-            --versions "$VERSION" \
             -o appcast-arm64.xml \
             "$(dirname $ARM64_DMG)"
           
@@ -201,7 +200,6 @@ jobs:
           ./bin/generate_appcast \
             --ed-key-file ed25519_priv.pem \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
-            --versions "$VERSION" \
             -o appcast-x86_64.xml \
             "$(dirname $X86_64_DMG)"
           
