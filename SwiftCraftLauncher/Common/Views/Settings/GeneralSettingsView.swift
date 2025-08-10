@@ -4,6 +4,7 @@ public struct GeneralSettingsView: View {
     @ObservedObject private var general = GeneralSettingsManager.shared
     @ObservedObject private var gameSettings = GameSettingsManager.shared
     @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var sparkleUpdateService: SparkleUpdateService
     @State private var showDirectoryPicker = false
     @State private var showingRestartAlert = false
     @State private var previousLanguage: String = ""
@@ -38,6 +39,8 @@ public struct GeneralSettingsView: View {
                     titleVisibility: .visible
                 ) {
                     Button("settings.language.restart.confirm".localized(), role: .destructive) {
+                        // 在重启前更新 Sparkle 的语言设置
+                        sparkleUpdateService.updateSparkleLanguage(selectedLanguage)
                         LanguageManager.shared.selectedLanguage = selectedLanguage
                         restartAppSafely()
                     }

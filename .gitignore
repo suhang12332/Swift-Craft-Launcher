@@ -34,6 +34,8 @@ DerivedData/
 timeline.xctimeline
 playground.xcworkspace
 
+SwiftCraftLauncher/Info.plist
+
 # Swift Package Manager
 #
 # Add this line if you want to avoid checking in source code from Swift Package Manager dependencies.
@@ -148,4 +150,5 @@ DerivedData/
 *.key
 *.crt
 *.cer
-ed25519_priv.pem 
+ed25519_priv.pem
+

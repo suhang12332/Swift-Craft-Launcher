@@ -643,3 +643,6 @@
 "player.food.saturation" = "食物饱和度";
 "player.food.exhaustion" = "疲劳度";
 "player.position" = "位置坐标";
+
+// Menu Commands
+"menu.check.updates" = "检查更新";

@@ -15,7 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		90C521902E44E2E80014D7B4 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		90C548442E486EC20014D7B4 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -46,7 +46,7 @@
 			isa = PBXGroup;
 			children = (
 				9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */,
-				90C521902E44E2E80014D7B4 /* Swift Craft Launcher.app */,
+				90C548442E486EC20014D7B4 /* Swift Craft Launcher.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -77,7 +77,7 @@
 				90E123456789ABCD0002 /* Sparkle */,
 			);
 			productName = SwiftCraftLauncher;
-			productReference = 90C521902E44E2E80014D7B4 /* Swift Craft Launcher.app */;
+			productReference = 90C548442E486EC20014D7B4 /* Swift Craft Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -179,7 +179,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -203,7 +203,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Su";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.4;
-				MARKETING_VERSION = "0.0.1-beta";
+				MARKETING_VERSION = "0.0.2-beta";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -248,7 +248,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -266,7 +266,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Su";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.4;
-				MARKETING_VERSION = "0.0.1-beta";
+				MARKETING_VERSION = "0.0.2-beta";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -285,7 +285,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -296,7 +296,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = "0.0.1-beta";
+				MARKETING_VERSION = "0.0.2-beta";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
@@ -317,7 +317,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -328,7 +328,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = "0.0.1-beta";
+				MARKETING_VERSION = "0.0.2-beta";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
