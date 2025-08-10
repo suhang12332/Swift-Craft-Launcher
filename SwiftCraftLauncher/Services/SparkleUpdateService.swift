@@ -44,10 +44,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
             updater?.updateCheckInterval = 24 * 60 * 60 // 24小时检查一次
             updater?.sendsSystemProfile = false
             
-            Logger.shared.info("update.updater.initialization.success".localized())
-            Logger.shared.info(String(format: "update.system.architecture".localized() + ": %@", getSystemArchitecture()))
-            
-            // 移除调试信息，保持代码简洁
             
         } catch {
             Logger.shared.error(String(format: "update.updater.initialization.failed".localized() + ": %@", error.localizedDescription))
@@ -58,14 +54,12 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     private func setSparkleLanguage() {
         let selectedLanguage = LanguageManager.shared.selectedLanguage
         UserDefaults.standard.set([selectedLanguage], forKey: "AppleLanguages")
-        Logger.shared.info(String(format: "update.sparkle.language.set".localized() + ": %@", selectedLanguage))
     }
     
     /// 公共方法：设置 Sparkle 的语言
     /// - Parameter language: 语言代码
     public func updateSparkleLanguage(_ language: String) {
         UserDefaults.standard.set([language], forKey: "AppleLanguages")
-        Logger.shared.info(String(format: "update.sparkle.language.updated".localized() + ": %@", language))
     }
     
     // MARK: - SPUUpdaterDelegate
@@ -74,10 +68,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     func feedURLString(for updater: SPUUpdater) -> String? {
         let architecture = getSystemArchitecture()
         let appcastURL = URLConfig.API.GitHub.appcastURL(version: nil, architecture: architecture)
-        
-        Logger.shared.info(String(format: "update.appcast.file".localized() + ": appcast-\(architecture).xml"))
-        Logger.shared.info(String(format: "update.appcast.url".localized() + ": %@", appcastURL.absoluteString))
-        
         return appcastURL.absoluteString
     }
     
@@ -104,7 +94,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
             return
         }
         
-        Logger.shared.info("update.manual.check.started".localized())
         updater.checkForUpdates()
     }
     
@@ -114,7 +103,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
             Logger.shared.error("update.updater.not.initialized".localized())
             return
         }
-        Logger.shared.info("update.silent.check.started".localized())
         updater.checkForUpdatesInBackground()
     }
 }
