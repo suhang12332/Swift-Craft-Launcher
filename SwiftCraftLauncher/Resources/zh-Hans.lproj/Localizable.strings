@@ -85,7 +85,7 @@
 "menu.sort.follows" = "关注数";
 "menu.sort.newest" = "最新";
 "menu.sort.updated" = "最近更新";
-"searh.resources" = "搜索资源名称";
+"search.resources" = "搜索资源";
 
 // Filter
 "filter.clear" = "清除筛选";
@@ -281,7 +281,6 @@
 "settings.working_directory.description" = "该路径的设置只会影响到游戏存档、mod、光影等其他资源的存储位置。";
 "settings.dependencies.description" = "该选项用于是否弹窗显示前置Mod(依赖)";
 "settings.auto_handle_dependencies" = "自动处理依赖:";
-"settings.java_path.description" = "%@ 说明：全局配置，如果游戏没有配置路径的话，使用这个。";
 
 // Java Version Detection
 "java.version.not_detected" = "未检测";
@@ -560,6 +559,7 @@
 // Play and Stop Actions
 "play.fill" = "启动";
 "stop.fill" = "停止";
+"game.path" = "路径";
 
 // ModPack Download
 "modpack.download.title" = "下载整合包";

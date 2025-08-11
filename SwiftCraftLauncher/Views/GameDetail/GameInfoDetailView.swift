@@ -242,8 +242,8 @@ struct GameInfoDetailView: View {
         .searchable(
             text: $searchTextForResource,
             placement: .toolbar,
-            prompt: "searh.resources".localized()
-        )
+            prompt: "search.resources".localized()
+        ).help("search.resources".localized())
     }
 
     private func scanResources() {

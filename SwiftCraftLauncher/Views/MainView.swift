@@ -43,7 +43,7 @@ struct MainView: View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             // 侧边栏
             SidebarView(selectedItem: $selectedItem)
-                .navigationSplitViewColumnWidth(min: 160, ideal: 160, max: 160)
+                .navigationSplitViewColumnWidth(min: 168, ideal: 168, max: 168)
         } content: {
             
             ContentView(

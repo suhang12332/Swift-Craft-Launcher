@@ -7,7 +7,9 @@ enum AppConstants {
     
     // Minecraft 客户端ID
     static let clientId: String = {
-        return Bundle.main.object(forInfoDictionaryKey: "CLIENTID") as! String
+        let encrypted = Bundle.main.object(forInfoDictionaryKey: "CLIENTID") as? String
+        let obfuscator = ClientIDObfuscator(encryptedString: encrypted!)
+        return obfuscator.getClientID()
     }()
     static let scope = "XboxLive.signin offline_access"
     

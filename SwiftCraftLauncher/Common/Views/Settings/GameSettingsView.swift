@@ -54,7 +54,7 @@ public struct GameSettingsView: View {
                 DirectorySettingRow(
                     title: "settings.default_java_path.label".localized(),
                     path: gameSettings.defaultJavaPath.isEmpty ? AppConstants.defaultJava+"/java" : gameSettings.defaultJavaPath+"/java",
-                    description: String(format: "settings.java_path.description".localized(), "\(gameSettings.defaultJavaPath.isEmpty ? AppConstants.defaultJava+"/java" : gameSettings.defaultJavaPath+"/java") \(javaVersion)"),
+                    description: gameSettings.defaultJavaPath.isEmpty ? AppConstants.defaultJava+"/java" : gameSettings.defaultJavaPath+"/java" + javaVersion,
                     onChoose: { showJavaPathPicker = true },
                     onReset: {
                         gameSettings.defaultJavaPath = AppConstants.defaultJava

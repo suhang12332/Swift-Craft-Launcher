@@ -119,7 +119,7 @@ public struct DetailToolbarView: ToolbarContent {
                             )
                         }
                     }) {
-                        Label("play.fill".localized(), systemImage: "folder")
+                        Label("game.path".localized(), systemImage: "folder")
                     }
                 }
             case .resource:
