@@ -1,6 +1,5 @@
 import Foundation
 import SwiftUI
-import Sliders
 
 public struct GameSettingsView: View {
     @StateObject private var cacheManager = CacheManager()
@@ -92,38 +91,22 @@ public struct GameSettingsView: View {
             GridRow {
                 Text("settings.default_memory_allocation.label".localized()).gridColumnAlignment(.trailing)
                 HStack {
-                    RangeSlider(
-                        range: $globalMemoryRange,
-                        in: 512...Double(maximumMemoryAllocation),
-                        step: 1
-                    )
-                    .rangeSliderStyle(
-                        HorizontalRangeSliderStyle(
-                            track:
-                                HorizontalRangeTrack(
-                                    view: Capsule().foregroundColor(.accentColor)
-                                )
-                                .background(Capsule().foregroundColor(Color.gray.opacity(0.15)))
-                                .frame(height: 3),
-                            lowerThumb: Circle().foregroundColor(.white),
-                            upperThumb: Circle().foregroundColor(.white),
-                            lowerThumbSize: CGSize(width: 12, height: 12),
-                            upperThumbSize: CGSize(width: 12, height: 12)
-                        )
-                    )
-                    .frame(width: 200,height: 20)
-                    .onChange(of: globalMemoryRange) { old, newValue in
-                        gameSettings.globalXms = Int(newValue.lowerBound)
-                        gameSettings.globalXmx = Int(newValue.upperBound)
-                    }
-                    .onAppear {
-                        globalMemoryRange = Double(gameSettings.globalXms)...Double(gameSettings.globalXmx)
-                    }
+                    MiniRangeSlider(range: $globalMemoryRange, bounds: 512...Double(maximumMemoryAllocation))
+                        .frame(width: 200,height: 20)
+                        .onChange(of: globalMemoryRange) { old, newValue in
+                            gameSettings.globalXms = Int(newValue.lowerBound)
+                            gameSettings.globalXmx = Int(newValue.upperBound)
+                        }
+                        .onAppear {
+                            globalMemoryRange = Double(gameSettings.globalXms)...Double(gameSettings.globalXmx)
+                        }
                     Text("\(Int(globalMemoryRange.lowerBound)) MB - \(Int(globalMemoryRange.upperBound)) MB")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                        .fixedSize()
+                        .lineLimit(1)
+                        .truncationMode(.tail)
                 }
+                .gridColumnAlignment(.leading)
             }.padding(.bottom,20)
             GridRow {
                 Text("settings.game_resource_info.label".localized()).gridColumnAlignment(.trailing)

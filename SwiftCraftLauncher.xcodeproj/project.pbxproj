@@ -10,7 +10,6 @@
 		9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91B2E313A67005A53F1 /* ZIPFoundation */; };
 		9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91E2E313A9C005A53F1 /* MarkdownUI */; };
 		90C51D072E421BAB0014D7B4 /* MinecraftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90C51D062E421BAB0014D7B4 /* MinecraftNBT */; };
-		90D8D76B2E33FB75008296D1 /* Sliders in Frameworks */ = {isa = PBXBuildFile; productRef = 90D8D76A2E33FB75008296D1 /* Sliders */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
 
@@ -31,7 +30,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				90D8D76B2E33FB75008296D1 /* Sliders in Frameworks */,
 				90C51D072E421BAB0014D7B4 /* MinecraftNBT in Frameworks */,
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
 				9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */,
@@ -72,7 +70,6 @@
 			packageProductDependencies = (
 				9023D91B2E313A67005A53F1 /* ZIPFoundation */,
 				9023D91E2E313A9C005A53F1 /* MarkdownUI */,
-				90D8D76A2E33FB75008296D1 /* Sliders */,
 				90C51D062E421BAB0014D7B4 /* MinecraftNBT */,
 				90E123456789ABCD0002 /* Sparkle */,
 			);
@@ -109,7 +106,6 @@
 			packageReferences = (
 				9023D91A2E313A67005A53F1 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 				9023D91D2E313A9C005A53F1 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
-				90D8D7692E33FB75008296D1 /* XCRemoteSwiftPackageReference "swiftui-sliders" */,
 				90C51D052E421BAB0014D7B4 /* XCRemoteSwiftPackageReference "swift-nbt" */,
 				90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
@@ -179,7 +175,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -203,7 +199,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Su";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.4;
-				MARKETING_VERSION = "0.0.3-beta";
+				MARKETING_VERSION = "0.0.4-beta";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -248,7 +244,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -266,7 +262,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Su";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.4;
-				MARKETING_VERSION = "0.0.3-beta";
+				MARKETING_VERSION = "0.0.4-beta";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -285,7 +281,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -296,7 +292,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = "0.0.3-beta";
+				MARKETING_VERSION = "0.0.4-beta";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
@@ -317,7 +313,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -328,7 +324,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = "0.0.3-beta";
+				MARKETING_VERSION = "0.0.4-beta";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
@@ -386,14 +382,6 @@
 				kind = branch;
 			};
 		};
-		90D8D7692E33FB75008296D1 /* XCRemoteSwiftPackageReference "swiftui-sliders" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/spacenation/swiftui-sliders.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.1.0;
-			};
-		};
 		90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
@@ -419,11 +407,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 90C51D052E421BAB0014D7B4 /* XCRemoteSwiftPackageReference "swift-nbt" */;
 			productName = MinecraftNBT;
-		};
-		90D8D76A2E33FB75008296D1 /* Sliders */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 90D8D7692E33FB75008296D1 /* XCRemoteSwiftPackageReference "swiftui-sliders" */;
-			productName = Sliders;
 		};
 		90E123456789ABCD0002 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;

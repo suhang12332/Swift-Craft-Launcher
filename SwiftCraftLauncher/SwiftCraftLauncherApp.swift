@@ -55,7 +55,7 @@ struct SwiftCraftLauncherApp: App {
 //
 //            }
 //        }, label: {
-//            Label("",systemImage: "arrow.down.circle").labelStyle(.iconOnly).controlSize(.large)
+//            Label("SCL",systemImage: "arrow.down.circle").labelStyle(.titleOnly).controlSize(.large)
 //        })
     }
 }

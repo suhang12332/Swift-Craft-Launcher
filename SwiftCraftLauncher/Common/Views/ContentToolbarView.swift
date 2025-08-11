@@ -20,7 +20,7 @@ public struct ContentToolbarView: ToolbarContent {
                     showingGameForm.toggle()
                 }
             }) {
-                Label("game.form.title".localized(), systemImage: "gamecontroller")
+                Label("game.form.title".localized(), systemImage: "plus")
             }
             // 后台下载 待实现
 //            Button(action: {

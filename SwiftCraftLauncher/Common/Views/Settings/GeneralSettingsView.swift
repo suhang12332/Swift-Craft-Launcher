@@ -92,9 +92,9 @@ public struct GeneralSettingsView: View {
                             }
                         ),
                         in: 1...20,
-                        label: { EmptyView() },
-                        minimumValueLabel: { EmptyView() },
-                        maximumValueLabel: { EmptyView() }
+//                        label: { EmptyView() },
+//                        minimumValueLabel: { EmptyView() },
+//                        maximumValueLabel: { EmptyView() }
                     ).controlSize(.mini)
                     .animation(.easeOut(duration: 0.5), value: gameSettings.concurrentDownloads)
                     // 当前内存值显示（右对齐，固定宽度）
