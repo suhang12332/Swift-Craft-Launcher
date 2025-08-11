@@ -25,7 +25,8 @@ public struct GeneralSettingsView: View {
                         Text(name).tag(code)
                     }
                 }
-                .frame(width: 200)
+                .fixedSize()
+                .frame(width: ProcessInfo.processInfo.operatingSystemVersion.majorVersion >= 26 ? nil : 200)
                 .gridColumnAlignment(.leading)
                 .labelsHidden()
                 .onChange(of: selectedLanguage) { oldValue, newValue in
@@ -339,13 +340,18 @@ struct ThemeWindowIcon: View {
     }
     
     private var iconName: String {
+        let isSystem26 = ProcessInfo.processInfo.operatingSystemVersion.majorVersion == 26
         switch theme {
         case .system:
-            return "AppearanceAuto_Normal"
+            return isSystem26 ? "AppearanceAuto_Normal_Normal" : "AppearanceAuto_Normal"
         case .light:
-            return "AppearanceLight_Normal"
+            return isSystem26 ? "AppearanceLight_Normal_Normal" : "AppearanceLight_Normal"
         case .dark:
-            return "AppearanceDark_Normal"
+            return isSystem26 ? "AppearanceDark_Normal_Normal" : "AppearanceDark_Normal"
         }
     }
+}
+
+#Preview {
+    GeneralSettingsView()
 }
