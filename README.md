@@ -1,4 +1,10 @@
-# SwiftCraftLauncher
+# 
+
+<div align="center">
+  <img src="SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac1024.png" alt="SwiftCraftLauncher Icon" width="128" height="128">
+  
+  # Swift Craft Launcher
+</div>
 
 > 本项目采用 [GNU Affero General Public License v3.0](https://www.gnu.org/licenses/agpl-3.0.txt) 许可证开源。
 
@@ -8,6 +14,9 @@
 
 SwiftCraftLauncher 是一个现代化的 macOS 版 Minecraft 启动器，为用户提供快速、高效的 Minecraft 游戏启动体验。通过简洁的界面和智能的功能，让您的 Minecraft 游戏启动变得更加便捷。
 项目处理早期开发阶段：可以在[Release](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)中进行下载
+
+<img src="https://s2.loli.net/2025/08/12/pTPxSJh1bCzmGKo.png" alt="SwiftCraftLauncher Screenshot" style="border-radius: 12px; max-width: 100%; height: auto;">
+
 
 ## ✨ 主要特性
 

@@ -25,8 +25,9 @@ public struct GeneralSettingsView: View {
                         Text(name).tag(code)
                     }
                 }
-                .fixedSize()
-                .frame(width: ProcessInfo.processInfo.operatingSystemVersion.majorVersion >= 26 ? nil : 200)
+                .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
+                    view.fixedSize()
+                }
                 .gridColumnAlignment(.leading)
                 .labelsHidden()
                 .onChange(of: selectedLanguage) { oldValue, newValue in
