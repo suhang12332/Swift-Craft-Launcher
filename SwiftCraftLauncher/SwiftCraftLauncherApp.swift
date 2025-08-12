@@ -13,6 +13,11 @@ struct SwiftCraftLauncherApp: App {
     @StateObject private var gameRepository = GameRepository()
     @StateObject private var globalErrorHandler = GlobalErrorHandler.shared
     @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
+    @StateObject private var generalSettingsManager = GeneralSettingsManager.shared
+    @Environment(\.openWindow) private var openWindow
+
+    // 关于页面状态
+    @State private var showAboutWindow = false
 
     init() {
         Task {
@@ -22,18 +27,43 @@ struct SwiftCraftLauncherApp: App {
     
     // MARK: - Body
     var body: some Scene {
+        
         WindowGroup {
             MainView()
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .environmentObject(sparkleUpdateService)
+                .environmentObject(generalSettingsManager)
+                .environment(\.colorScheme, generalSettingsManager.themeMode.colorScheme ?? .light)
                 .globalErrorHandler()
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
+//        WindowGroup("About", id: "aboutWindow") {
+//            AboutView()
+//                .environmentObject(generalSettingsManager)
+//                .environment(\.colorScheme, generalSettingsManager.themeMode.colorScheme ?? .light)
+//                .background(WindowAccessor { window in
+//                    window.styleMask.remove(.resizable) // 禁止调整大小
+//                    window.collectionBehavior.remove(.fullScreenPrimary) // 禁用全屏
+//                            
+//                            // 获取最小化按钮并禁用
+//                    if let miniButton = window.standardWindowButton(.miniaturizeButton) {
+//                        miniButton.isEnabled = false
+//                    }
+//                })
+//        }
+//        .windowResizability(.contentSize)
         .commands {
+//            CommandGroup(replacing: .appInfo) {
+//                Button(String(format: "menu.about".localized(), Bundle.main.appName)) {
+//                    openWindow(id: "aboutWindow")
+//                    
+//                }
+//                .keyboardShortcut("a", modifiers: [.command, .shift])
+//            }
             CommandGroup(after: .appInfo) {
                 Button("menu.check.updates".localized()) {
                     sparkleUpdateService.checkForUpdatesWithUI()
@@ -47,6 +77,8 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(gameRepository)
                 .environmentObject(playerListViewModel)
                 .environmentObject(sparkleUpdateService)
+                .environmentObject(generalSettingsManager)
+                .environment(\.colorScheme, generalSettingsManager.themeMode.colorScheme ?? .light)
                 .globalErrorHandler()
         }
         // 右上角的状态栏(可以显示图标的)
@@ -63,3 +95,18 @@ struct SwiftCraftLauncherApp: App {
     
 
 
+struct WindowAccessor: NSViewRepresentable {
+    var callback: (NSWindow) -> Void
+
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            if let window = view.window {
+                callback(window)
+            }
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {}
+}

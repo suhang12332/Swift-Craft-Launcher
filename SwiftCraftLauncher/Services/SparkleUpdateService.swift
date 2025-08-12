@@ -78,6 +78,41 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         return appcastURL.absoluteString
     }
     
+    
+    /// 更新检查完成（无更新）
+    func updaterDidNotFindUpdate(_ updater: SPUUpdater) {
+        Logger.shared.info("检查完成，未发现新版本")
+        isCheckingForUpdates = false
+        updateAvailable = false
+    }
+    
+    /// 更新检查完成（有更新）
+    func updater(_ updater: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
+        Logger.shared.info("发现新版本：\(item.versionString)")
+        isCheckingForUpdates = false
+        updateAvailable = true
+        latestVersion = item.versionString
+        updateDescription = item.itemDescription ?? ""
+    }
+    
+    /// 更新检查失败
+    func updater(_ updater: SPUUpdater, didFailToCheckForUpdatesWithError error: Error) {
+        Logger.shared.error("更新检查失败：\(error.localizedDescription)")
+        isCheckingForUpdates = false
+        updateAvailable = false
+    }
+    
+    /// 更新会话开始
+    func updater(_ updater: SPUUpdater, willInstallUpdate item: SUAppcastItem) {
+        Logger.shared.info("开始安装更新：\(item.versionString)")
+        isCheckingForUpdates = false
+    }
+    
+    /// 更新会话结束
+    func updater(_ updater: SPUUpdater, didFinishLoading appcast: SUAppcast) {
+        Logger.shared.info("更新清单加载完成")
+    }
+    
     /// 获取系统架构
     private func getSystemArchitecture() -> String {
         #if arch(arm64)
@@ -94,12 +129,29 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         return getSystemArchitecture()
     }
     
+    /// 检查更新器状态
+    func getUpdaterStatus() -> (isInitialized: Bool, sessionInProgress: Bool, isChecking: Bool) {
+        guard let updater = updater else {
+            return (isInitialized: false, sessionInProgress: false, isChecking: isCheckingForUpdates)
+        }
+        return (isInitialized: true, sessionInProgress: updater.sessionInProgress, isChecking: isCheckingForUpdates)
+    }
+    
     /// 手动检查更新（显示Sparkle标准UI）
     func checkForUpdatesWithUI() {
         guard let updater = updater else {
             Logger.shared.error("更新器尚未初始化")
             return
         }
+        
+        // 检查是否正在进行更新会话
+        if updater.sessionInProgress {
+            Logger.shared.warning("更新会话正在进行中，跳过重复的更新检查")
+            return
+        }
+        
+        // 设置检查状态
+        isCheckingForUpdates = true
         
         updater.checkForUpdates()
     }
@@ -110,6 +162,16 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
             Logger.shared.error("更新器尚未初始化")
             return
         }
+        
+        // 检查是否正在进行更新会话
+        if updater.sessionInProgress {
+            Logger.shared.warning("更新会话正在进行中，跳过重复的更新检查")
+            return
+        }
+        
+        // 设置检查状态
+        isCheckingForUpdates = true
+        
         updater.checkForUpdatesInBackground()
     }
 }

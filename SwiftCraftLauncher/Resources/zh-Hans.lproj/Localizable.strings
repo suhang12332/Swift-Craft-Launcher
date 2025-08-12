@@ -616,7 +616,6 @@
 "loading" = "加载中...";
 "no.saves" = "当前游戏没有任何存档";
 "save.info" = "存档信息";
-"read.saves.failed" = "读取存档文件夹失败: %@";
 "game.rules" = "游戏规则";
 "no.game.rules" = "暂无游戏规则数据";
 "no.saves.data" = "暂无存档数据";
@@ -647,3 +646,16 @@
 
 // Menu Commands
 "menu.check.updates" = "检查更新";
+"menu.about" = "关于%@";
+
+
+"about.contributors" = "贡献者";
+"about.view.acknowledgements" = "查看致谢";
+"about.close" = "关闭";
+
+// Contributors
+"contributor.role.main_developer" = "主开发者";
+"contributor.role.test_contributor" = "测试贡献者";
+"contributor.description.main_developer" = "项目架构设计、核心功能开发";
+"contributor.description.test_contributor" = "功能测试、Bug 报告";
+"contributor.description.test_contributor_2" = "兼容性测试、用户体验优化";
