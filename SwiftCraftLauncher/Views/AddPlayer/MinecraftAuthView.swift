@@ -1,5 +1,5 @@
 import SwiftUI
-
+import AppKit // macOS 剪贴板 API
 struct MinecraftAuthView: View {
     @StateObject private var authService = MinecraftAuthService.shared
     var onLoginSuccess: ((MinecraftProfileResponse) -> Void)?
@@ -10,8 +10,6 @@ struct MinecraftAuthView: View {
             switch authService.authState {
             case .notAuthenticated:
                 notAuthenticatedView
-//                waitingForUserView(userCode: "userCode", verificationUri: "verificationUri")
-//                authenticatingView
                 
             case .requestingCode:
                 requestingCodeView
@@ -27,7 +25,6 @@ struct MinecraftAuthView: View {
                 
             case .error(let message):
                 errorView(message: message)
-
             }
         }
         .padding()
@@ -83,10 +80,15 @@ struct MinecraftAuthView: View {
                 Text(userCode)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .padding()
+                    .padding(10)
                     .background(Color.gray.opacity(0.1))
                     .cornerRadius(8)
                     .textSelection(.enabled)
+                    .onAppear {
+                        let pasteboard = NSPasteboard.general
+                        pasteboard.clearContents()
+                        pasteboard.setString(userCode, forType: .string)
+                    }
             }
             
             VStack(spacing: 8) {
@@ -185,4 +187,8 @@ struct MinecraftAuthView: View {
                 .multilineTextAlignment(.center)
         }
     }
+}
+
+#Preview {
+    MinecraftAuthView()
 }
