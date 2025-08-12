@@ -33,4 +33,7 @@ extension Bundle {
     var appName: String {
         Bundle.main.infoDictionary?["CFBundleName"] as? String ?? "Swift Craft Launcher"
     }
+    var copyright: String {
+        return infoDictionary?["Copyright"] as? String ?? "Copyright © 2025 \(appName)"
+    }
 }

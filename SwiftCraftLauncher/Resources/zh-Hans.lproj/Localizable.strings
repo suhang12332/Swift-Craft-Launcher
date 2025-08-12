@@ -655,7 +655,33 @@
 
 // Contributors
 "contributor.role.main_developer" = "主开发者";
-"contributor.role.test_contributor" = "测试贡献者";
-"contributor.description.main_developer" = "项目架构设计、核心功能开发";
-"contributor.description.test_contributor" = "功能测试、Bug 报告";
-"contributor.description.test_contributor_2" = "兼容性测试、用户体验优化";
+
+// About View
+"about.acknowledgements" = "致谢";
+"about.version.format" = "版本 %@ (%@)";
+
+// Contributors
+"contributor.name.zhang_san" = "张三";
+"contributor.name.li_si" = "李四";
+"contributor.name.wang_mazi" = "王麻子";
+"contributor.role.main_developer_architect" = "主开发,架构设计";
+"contributor.role.design_contributor" = "参与设计";
+"contributor.contribution.code" = "代码";
+"contributor.contribution.design" = "设计";
+"contributor.contribution.test" = "测试";
+"contributor.contribution.feedback" = "反馈";
+"contributor.contribution.documentation" = "文档";
+"contributor.contribution.infra" = "基础设施";
+
+// Acknowledgements
+"acknowledgements.open_source_libraries" = "开源库";
+"acknowledgements.library.modrinth" = "Modrinth";
+"acknowledgements.library.fabric" = "Fabric";
+"acknowledgements.library.quilt" = "Quilt";
+"acknowledgements.library.neoforge" = "NeoForge";
+"acknowledgements.library.minecraft_forge" = "Minecraft Forge";
+"acknowledgements.library.zipfoundation" = "ZIPFoundation";
+"acknowledgements.library.markdownui" = "MarkdownUI";
+"acknowledgements.library.minecraftnbt" = "MinecraftNBT";
+"acknowledgements.library.sparkle" = "Sparkle";
+

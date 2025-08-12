@@ -56,9 +56,9 @@ struct MinecraftLaunchCommandBuilder {
             "clientid": AppConstants.clientId,
             "auth_xuid": "${auth_xuid}",
             "user_type": "msa",
-            "version_type": "release",
+            "version_type": "SCL",
             "natives_directory": paths.nativesDir,
-            "launcher_name": "SCL",
+            "launcher_name": Bundle.main.appName,
             "launcher_version": launcherVersion,
             "classpath": classpath
         ]

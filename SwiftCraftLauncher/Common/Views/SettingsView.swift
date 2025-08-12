@@ -34,13 +34,9 @@ public struct SettingsView: View {
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
-//            AcknowledgementsView()
-//                .tabItem {
-//                    Label("settings.acknowledgements.tab".localized(), systemImage: "star.bubble")
-//                }
         }
         .padding(.vertical, 24)
-        .frame(maxWidth: 840)
+        .frame(minWidth: 840)
         .preferredColorScheme(general.themeMode.colorScheme)
     }
 }

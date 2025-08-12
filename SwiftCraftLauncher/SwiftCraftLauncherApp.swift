@@ -41,29 +41,30 @@ struct SwiftCraftLauncherApp: App {
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
-//        WindowGroup("About", id: "aboutWindow") {
-//            AboutView()
-//                .environmentObject(generalSettingsManager)
-//                .environment(\.colorScheme, generalSettingsManager.themeMode.colorScheme ?? .light)
-//                .background(WindowAccessor { window in
-//                    window.styleMask.remove(.resizable) // 禁止调整大小
-//                    window.collectionBehavior.remove(.fullScreenPrimary) // 禁用全屏
-//                            
-//                            // 获取最小化按钮并禁用
-//                    if let miniButton = window.standardWindowButton(.miniaturizeButton) {
-//                        miniButton.isEnabled = false
-//                    }
-//                })
-//        }
-//        .windowResizability(.contentSize)
+        WindowGroup("About", id: "aboutWindow") {
+            AboutView()
+                .environmentObject(generalSettingsManager)
+                .environment(\.colorScheme, generalSettingsManager.themeMode.colorScheme ?? .light)
+                .background(WindowAccessor { window in
+                    // 移除关闭、最小化、最大化按钮
+                    window.styleMask.remove([.miniaturizable, .resizable])
+                    // 禁用全屏
+                    window.collectionBehavior.remove(.fullScreenPrimary)
+                })
+        }
+        .windowResizability(.contentSize)
+//        .windowStyle(.hiddenTitleBar)
+        .windowStyle(.titleBar).windowToolbarStyle(.unified(showsTitle: false))
+        
+        
         .commands {
-//            CommandGroup(replacing: .appInfo) {
-//                Button(String(format: "menu.about".localized(), Bundle.main.appName)) {
-//                    openWindow(id: "aboutWindow")
-//                    
-//                }
-//                .keyboardShortcut("a", modifiers: [.command, .shift])
-//            }
+            CommandGroup(replacing: .appInfo) {
+                Button(String(format: "menu.about".localized(), Bundle.main.appName)) {
+                    openWindow(id: "aboutWindow")
+                    
+                }
+                .keyboardShortcut("a", modifiers: [.command, .shift])
+            }
             CommandGroup(after: .appInfo) {
                 Button("menu.check.updates".localized()) {
                     sparkleUpdateService.checkForUpdatesWithUI()
