@@ -93,7 +93,7 @@ open SwiftCraftLauncher.xcodeproj
 
 ## 📧 联系方式
 
-如有任何问题或建议，请随时联系我。
+qq官方群：[Swift Craft Launcher 官方群](https://qm.qq.com/q/sSfzVKxR2U)
 
 ## 🆕 近期更新
 
