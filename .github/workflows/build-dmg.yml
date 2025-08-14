@@ -77,6 +77,35 @@ jobs:
           echo "✅ 应用构建成功: $APP_PATH"
           file "$APP_PATH/Contents/MacOS/Swift Craft Launcher"
 
+      - name: Install create-dmg
+        run: |
+          # Install create-dmg using Homebrew
+          brew install create-dmg
+          
+          # Verify installation
+          create-dmg --version
+
+      - name: Prepare DMG assets
+        run: |
+          # Create background image directory
+          mkdir -p dmg_background
+          
+          # Copy app icon for volume icon
+          cp "SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" "dmg_background/volume_icon.png"
+          
+          # Copy the existing background image (assuming it's in the project root)
+          if [[ -f "dmg_background.png" ]]; then
+            cp "dmg_background.png" "dmg_background/background.png"
+          elif [[ -f ".github/assets/dmg/dmg_background.png" ]]; then
+            cp ".github/assets/dmg/dmg_background.png" "dmg_background/background.png"
+          else
+            echo "⚠️  未找到背景图片，将使用默认背景"
+            # Fallback: use app icon as background
+            cp "SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" "dmg_background/background.png"
+          fi
+          
+          echo "✅ DMG assets prepared"
+
       - name: Create DMG
         run: |
           APP_PATH=$(find build_${{ matrix.arch }} -name "Swift Craft Launcher.app" -type d | head -1)
@@ -85,10 +114,27 @@ jobs:
           cp -R "$APP_PATH" "$DMG_DIR/"
           
           DMG_NAME="Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg"
-          hdiutil create -volname "Swift Craft Launcher" -srcfolder "$DMG_DIR" -ov -format UDZO "$DMG_NAME"
+          
+          # Use create-dmg for professional DMG creation
+          create-dmg \
+            --volname "Swift Craft Launcher" \
+            --volicon "dmg_background/volume_icon.png" \
+            --background "dmg_background/background.png" \
+            --window-pos 200 120 \
+            --window-size 600 430 \
+            --icon-size 64 \
+            --icon "Swift Craft Launcher.app" 150 180 \
+            --app-drop-link 450 180 \
+            --hide-extension "Swift Craft Launcher.app" \
+            --text-size 12 \
+            --no-internet-enable \
+            "$DMG_NAME" \
+            "$DMG_DIR"
           
           if [[ -f "$DMG_NAME" ]]; then
             echo "✅ DMG 创建成功: $DMG_NAME"
+            # Show DMG info
+            hdiutil info "$DMG_NAME" | head -20
           else
             echo "❌ DMG 创建失败"
             exit 1
@@ -106,6 +152,7 @@ jobs:
         run: |
           rm -rf build_${{ matrix.arch }}
           rm -rf dmg_temp_${{ matrix.arch }}
+          rm -rf dmg_background
           rm -f Swift_Craft_Launcher_${{ matrix.arch }}_*.dmg
 
   # 可选发布任务（只在 tag 推送时执行）
