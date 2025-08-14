@@ -95,13 +95,13 @@ jobs:
           
           # Copy the existing background image (assuming it's in the project root)
           if [[ -f "dmg_background@2x.png" ]]; then
-            cp "dmg_background@2x.png" "dmg_background/background.png"
+            cp "dmg_background@2x.png" "dmg_background/background@2x.png"
           elif [[ -f ".github/assets/dmg/dmg_background@2x.png" ]]; then
-            cp ".github/assets/dmg/dmg_background@2x.png" "dmg_background/background.png"
+            cp ".github/assets/dmg/dmg_background@2x.png" "dmg_background/background@2x.png"
           else
             echo "⚠️  未找到背景图片，将使用默认背景"
             # Fallback: use app icon as background
-            cp "SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" "dmg_background/background.png"
+            cp "SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" "dmg_background/background@2x.png"
           fi
           
           echo "✅ DMG assets prepared"
@@ -119,7 +119,7 @@ jobs:
           create-dmg \
             --volname "Swift Craft Launcher" \
             --volicon "dmg_background/volume_icon.png" \
-            --background "dmg_background/background.png" \
+            --background "dmg_background/background@2x.png" \
             --window-pos 200 120 \
             --window-size 600 430 \
             --icon-size 64 \
