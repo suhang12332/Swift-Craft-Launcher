@@ -94,10 +94,10 @@ jobs:
           cp "SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" "dmg_background/volume_icon.png"
           
           # Copy the existing background image (assuming it's in the project root)
-          if [[ -f "dmg_background.png" ]]; then
-            cp "dmg_background.png" "dmg_background/background.png"
-          elif [[ -f ".github/assets/dmg/dmg_background.png" ]]; then
-            cp ".github/assets/dmg/dmg_background.png" "dmg_background/background.png"
+          if [[ -f "dmg_background@2x.png" ]]; then
+            cp "dmg_background@2x.png" "dmg_background/background.png"
+          elif [[ -f ".github/assets/dmg/dmg_background@2x.png" ]]; then
+            cp ".github/assets/dmg/dmg_background@2x.png" "dmg_background/background.png"
           else
             echo "⚠️  未找到背景图片，将使用默认背景"
             # Fallback: use app icon as background
