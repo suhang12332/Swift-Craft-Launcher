@@ -1,7 +1,7 @@
 # 
 
 <div align="center">
-  <img src="SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac1024.png" alt="SwiftCraftLauncher Icon" width="128" height="128">
+  <img src="SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="SwiftCraftLauncher Icon" width="128" height="128">
   
   # Swift Craft Launcher
 </div>
