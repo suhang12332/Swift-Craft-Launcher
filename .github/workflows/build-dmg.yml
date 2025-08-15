@@ -68,6 +68,7 @@ jobs:
             -destination "platform=macOS,arch=${{ matrix.arch }}" \
             -derivedDataPath "$BUILD_DIR" \
             -archivePath "$ARCHIVE_PATH" \
+            EXCLUDED_ARCHS=${{ matrix.arch }} \
             archive
 
       - name: Verify build output
@@ -81,6 +82,61 @@ jobs:
           fi
           echo "✅ 应用构建成功: $APP_PATH"
           file "$APP_PATH/Contents/MacOS/Swift Craft Launcher"
+
+      - name: Process app with archify
+        run: |
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
+          PROCESSED_DIR="processed_app_${{ matrix.arch }}"
+          
+          echo "🔧 开始使用 archify 处理应用..."
+          echo "原始应用路径: $APP_PATH"
+          echo "目标架构: ${{ matrix.arch }}"
+          echo "输出目录: $PROCESSED_DIR"
+          
+          # Verify app exists
+          if [[ ! -d "$APP_PATH" ]]; then
+            echo "❌ 应用不存在: $APP_PATH"
+            exit 1
+          fi
+          
+          # Create output directory
+          mkdir -p "$PROCESSED_DIR"
+          
+          # Show archify help for debugging
+          echo "📋 archify 帮助信息:"
+          python3 .github/scripts/archify.py --help | head -20
+          
+          # Process app with archify
+          echo "🚀 执行 archify 命令..."
+          python3 .github/scripts/archify.py \
+            -app "$APP_PATH" \
+            -o "$PROCESSED_DIR" \
+            -arch "${{ matrix.arch }}" \
+            -Ns \
+            -l
+          
+          # Check if processing was successful
+          PROCESSED_APP="$PROCESSED_DIR/Swift Craft Launcher.app"
+          if [[ -d "$PROCESSED_APP" ]]; then
+            echo "✅ archify 处理成功"
+            echo "处理后的应用路径: $PROCESSED_APP"
+            
+            # Show file info for comparison
+            echo "原始应用大小:"
+            du -sh "$APP_PATH"
+            echo "处理后应用大小:"
+            du -sh "$PROCESSED_APP"
+            
+            # Replace original app with processed app
+            rm -rf "$APP_PATH"
+            cp -R "$PROCESSED_APP" "$APP_PATH"
+            echo "✅ 已用处理后的应用替换原始应用"
+          else
+            echo "❌ archify 处理失败，使用原始应用"
+            echo "检查输出目录内容:"
+            ls -la "$PROCESSED_DIR" || echo "输出目录不存在"
+          fi
 
       - name: Install create-dmg
         run: |
@@ -160,6 +216,7 @@ jobs:
           rm -rf dmg_temp_${{ matrix.arch }}
           rm -rf dmg_background
           rm -f Swift_Craft_Launcher_${{ matrix.arch }}_*.dmg
+          rm -rf processed_app_${{ matrix.arch }}
 
   # 可选发布任务（只在 tag 推送时执行）
   release:

@@ -46,18 +46,6 @@ public struct AcknowledgementsView: View {
     public var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                // 开源库列表标题
-                HStack {
-                    Text("acknowledgements.open_source_libraries".localized())
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                    Spacer()
-                }
-                
-                Divider()
-                    .padding(.horizontal, 16)
                 
                 // 开源库列表
                 ForEach(Array(openSourceLibraries.enumerated()), id: \.element.name) { index, library in

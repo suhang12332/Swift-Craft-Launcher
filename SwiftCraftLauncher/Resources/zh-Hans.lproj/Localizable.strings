@@ -674,7 +674,6 @@
 "contributor.contribution.infra" = "基础设施";
 
 // Acknowledgements
-"acknowledgements.open_source_libraries" = "开源库";
 "acknowledgements.library.modrinth" = "Modrinth";
 "acknowledgements.library.fabric" = "Fabric";
 "acknowledgements.library.quilt" = "Quilt";
