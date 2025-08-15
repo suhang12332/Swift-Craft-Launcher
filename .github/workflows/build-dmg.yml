@@ -132,6 +132,7 @@ jobs:
             -app "$APP_PATH" \
             -o "$PROCESSED_DIR" \
             -arch "${{ matrix.arch }}" \
+            --codesign \
             -l
           
           # Check if processing was successful
