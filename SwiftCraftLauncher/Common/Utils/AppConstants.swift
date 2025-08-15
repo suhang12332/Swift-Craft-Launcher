@@ -5,10 +5,10 @@ enum AppConstants {
     static let modLoaders = ["vanilla", "fabric", "forge", "neoforge", "quilt"]
     static let defaultJava = "/usr/bin"
     
-    // Minecraft 客户端ID
+    // Minecraft 客户端ID - 构建时会被替换
     static let clientId: String = {
-        let encrypted = Bundle.main.object(forInfoDictionaryKey: "CLIENTID") as? String
-        let obfuscator = ClientIDObfuscator(encryptedString: encrypted!)
+        let encrypted = "$(CLIENTID)"
+        let obfuscator = ClientIDObfuscator(encryptedString: encrypted)
         return obfuscator.getClientID()
     }()
     static let scope = "XboxLive.signin offline_access"

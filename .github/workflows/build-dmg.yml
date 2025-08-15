@@ -46,16 +46,11 @@ jobs:
 
       - name: Replace Info.plist variables
         run: |
-          # 转义 CLIENTID
+          # 替换 AppConstants.swift 中的 CLIENTID 变量
           SAFE_CLIENTID=$(printf '%s' "$CLIENTID" | sed 's/[\/&]/\\&/g')
-          # 转义 SPARKLE_PUBLIC_KEY
-          SAFE_KEY=$(printf '%s' "$SPARKLE_PUBLIC_KEY" | sed 's/[\/&]/\\&/g')
-          
-          # 替换 Info.plist 中的变量
-          sed -i '' "s/\$(CLIENTID)/$SAFE_CLIENTID/g" SwiftCraftLauncher/Info.plist
-          sed -i '' "s/\$(SPARKLE_PUBLIC_KEY)/$SAFE_KEY/g" SwiftCraftLauncher/Info.plist
+          sed -i '' "s/\$(CLIENTID)/$SAFE_CLIENTID/g" "SwiftCraftLauncher/Common/Utils/AppConstants.swift"
 
-          echo "✅ Info.plist 变量替换完成（安全处理特殊字符）"
+          echo "✅ CLIENTID 已替换到 AppConstants.swift"
 
       - name: Build app for ${{ matrix.arch }}
         run: |
@@ -77,6 +72,23 @@ jobs:
             -archivePath "$ARCHIVE_PATH" \
             EXCLUDED_ARCHS="$EXCLUDED_ARCHS" \
             archive
+
+      - name: Add Sparkle public key to generated Info.plist
+        run: |
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
+          INFO_PLIST_PATH="$APP_PATH/Contents/Info.plist"
+          
+          if [[ ! -f "$INFO_PLIST_PATH" ]]; then
+            echo "❌ 未找到生成的 Info.plist: $INFO_PLIST_PATH"
+            exit 1
+          fi
+          
+          echo "📝 向生成的 Info.plist 添加 Sparkle 公钥..."
+          /usr/libexec/PlistBuddy -c "Add :SUPublicEDKey string $SPARKLE_PUBLIC_KEY" "$INFO_PLIST_PATH" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :SUPublicEDKey $SPARKLE_PUBLIC_KEY" "$INFO_PLIST_PATH"
+          
+          echo "✅ Sparkle 公钥已添加到生成的 Info.plist"
 
       - name: Verify build output
         run: |
