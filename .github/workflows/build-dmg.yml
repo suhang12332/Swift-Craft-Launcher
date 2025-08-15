@@ -60,18 +60,23 @@ jobs:
       - name: Build app for ${{ matrix.arch }}
         run: |
           BUILD_DIR="build_${{ matrix.arch }}"
+          ARCHIVE_PATH="$BUILD_DIR/SwiftCraftLauncher.xcarchive"
+          
           xcodebuild -project SwiftCraftLauncher.xcodeproj \
             -scheme SwiftCraftLauncher \
             -configuration Release \
             -destination "platform=macOS,arch=${{ matrix.arch }}" \
             -derivedDataPath "$BUILD_DIR" \
-            build
+            -archivePath "$ARCHIVE_PATH" \
+            archive
 
       - name: Verify build output
         run: |
-          APP_PATH=$(find build_${{ matrix.arch }} -name "Swift Craft Launcher.app" -type d | head -1)
-          if [[ -z "$APP_PATH" ]]; then
-            echo "❌ 未找到构建产物"
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
+          
+          if [[ ! -d "$APP_PATH" ]]; then
+            echo "❌ 未找到构建产物: $APP_PATH"
             exit 1
           fi
           echo "✅ 应用构建成功: $APP_PATH"
@@ -108,7 +113,8 @@ jobs:
 
       - name: Create DMG
         run: |
-          APP_PATH=$(find build_${{ matrix.arch }} -name "Swift Craft Launcher.app" -type d | head -1)
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
           DMG_DIR="dmg_temp_${{ matrix.arch }}"
           mkdir -p "$DMG_DIR"
           cp -R "$APP_PATH" "$DMG_DIR/"
