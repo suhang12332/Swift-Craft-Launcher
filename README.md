@@ -124,3 +124,9 @@ qq官方群：[Swift Craft Launcher 官方群](https://qm.qq.com/q/sSfzVKxR2U)
   - SwiftUI 兼容性与循环依赖修复
   - 游戏图标存储优化，支持图片选择和拖入
   - 缓存机制优化，按命名空间拆分缓存文件
+
+## 🙏 致谢
+
+感谢以下开源项目对本项目的贡献：
+
+- **[Archify](https://github.com/Oct4Pie/archify)** - 一个用于将通用二进制文件转换为原生架构以节省磁盘空间的工具，为 macOS 应用优化提供了重要参考。
