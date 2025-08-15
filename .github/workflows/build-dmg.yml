@@ -62,13 +62,20 @@ jobs:
           BUILD_DIR="build_${{ matrix.arch }}"
           ARCHIVE_PATH="$BUILD_DIR/SwiftCraftLauncher.xcarchive"
           
+          # 设置要排除的架构（排除非目标架构）
+          if [[ "${{ matrix.arch }}" == "arm64" ]]; then
+            EXCLUDED_ARCHS="x86_64"
+          else
+            EXCLUDED_ARCHS="arm64"
+          fi
+          
           xcodebuild -project SwiftCraftLauncher.xcodeproj \
             -scheme SwiftCraftLauncher \
             -configuration Release \
             -destination "platform=macOS,arch=${{ matrix.arch }}" \
             -derivedDataPath "$BUILD_DIR" \
             -archivePath "$ARCHIVE_PATH" \
-            EXCLUDED_ARCHS=${{ matrix.arch }} \
+            EXCLUDED_ARCHS="$EXCLUDED_ARCHS" \
             archive
 
       - name: Verify build output
@@ -113,7 +120,6 @@ jobs:
             -app "$APP_PATH" \
             -o "$PROCESSED_DIR" \
             -arch "${{ matrix.arch }}" \
-            -Ns \
             -l
           
           # Check if processing was successful
