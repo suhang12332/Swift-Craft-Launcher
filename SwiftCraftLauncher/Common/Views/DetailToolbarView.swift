@@ -41,43 +41,43 @@ public struct DetailToolbarView: ToolbarContent {
             switch selectedItem {
             case .game:
                 if let game = currentGame {
-                    if !gameType {
-                        if let iconURL = AppPaths.profileDirectory(
-                            gameName: game.gameName
-                        )?.appendingPathComponent(game.gameIcon),
-                            FileManager.default.fileExists(atPath: iconURL.path)
-                        {
-                            AsyncImage(url: iconURL) { phase in
-                                switch phase {
-                                case .empty:
-                                    ProgressView()
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .interpolation(.none)
-                                        .frame(width: 22, height: 22)
-                                        .cornerRadius(6)
-                                case .failure:
-                                    Image("default_game_icon")
-                                        .resizable()
-                                        .interpolation(.none)
-                                        .frame(width: 22, height: 22)
-                                        .cornerRadius(6)
-                                @unknown default:
-                                    EmptyView()
-                                }
-                            }
-                        } else {
-                            Image("default_game_icon")
-                                .resizable()
-                                .interpolation(.none)
-                                .frame(width: 22, height: 22)
-                                .cornerRadius(6)
-                        }
-                        Text(game.gameName)
-                            .font(.headline)
-                        Spacer()
-                    }
+//                    if !gameType {
+//                        if let iconURL = AppPaths.profileDirectory(
+//                            gameName: game.gameName
+//                        )?.appendingPathComponent(game.gameIcon),
+//                            FileManager.default.fileExists(atPath: iconURL.path)
+//                        {
+//                            AsyncImage(url: iconURL) { phase in
+//                                switch phase {
+//                                case .empty:
+//                                    ProgressView()
+//                                case .success(let image):
+//                                    image
+//                                        .resizable()
+//                                        .interpolation(.none)
+//                                        .frame(width: 22, height: 22)
+//                                        .cornerRadius(6)
+//                                case .failure:
+//                                    Image("default_game_icon")
+//                                        .resizable()
+//                                        .interpolation(.none)
+//                                        .frame(width: 22, height: 22)
+//                                        .cornerRadius(6)
+//                                @unknown default:
+//                                    EmptyView()
+//                                }
+//                            }
+//                        } else {
+//                            Image("default_game_icon")
+//                                .resizable()
+//                                .interpolation(.none)
+//                                .frame(width: 22, height: 22)
+//                                .cornerRadius(6)
+//                        }
+//                        Text(game.gameName)
+//                            .font(.headline)
+//                        Spacer()
+//                    }
                     resourcesTypeMenu
                     resourcesMenu
                     if gameType {
@@ -108,7 +108,9 @@ public struct DetailToolbarView: ToolbarContent {
                             game.isRunning ? "stop.fill".localized() : "play.fill".localized(),
                             systemImage: game.isRunning ? "stop.fill" : "play.fill"
                         )
-                    }.animation(.linear, value: game.isRunning)
+                    }
+                    .help((game.isRunning ? "stop.fill" : "play.fill").localized())
+                    .animation(.linear, value: game.isRunning)
                     Button(action: {
                         if let gameDir = AppPaths.profileDirectory(
                             gameName: game.gameName
@@ -119,8 +121,8 @@ public struct DetailToolbarView: ToolbarContent {
                             )
                         }
                     }) {
-                        Label("game.path".localized(), systemImage: "folder")
-                    }
+                        Label("game.path".localized(), systemImage: "folder").foregroundStyle(.primary)
+                    }.help("game.path".localized())
                 }
             case .resource:
                 if selectProjectId != nil {
@@ -171,9 +173,9 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Text(currentSortTitle)
-        }
-        .help("player.add".localized())
+            Label(currentSortTitle,systemImage: "").labelStyle(.titleOnly)
+        }.help("menu.sort.help".localized())
+        
     }
 
     private var resourcesMenu: some View {
@@ -184,9 +186,9 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Text(currentResourceTitle)
-        }
-        .help("player.add".localized())
+            Label(currentResourceTitle,systemImage: "").labelStyle(.titleOnly)
+        }.help("resource.content.type.help".localized())
+        
     }
 
     private var resourcesTypeMenu: some View {
@@ -197,15 +199,16 @@ public struct DetailToolbarView: ToolbarContent {
                 currentResourceTypeTitle,
                 systemImage: gameType
                     ? "tray.and.arrow.down" : "icloud.and.arrow.down"
-            )
-        }
-        .help("view.mode.title".localized())
+            ).foregroundStyle(.primary)
+            
+        }.help("resource.content.location.help".localized())
+            .animation(.linear, value: gameType)
     }
 
     private var paginationControls: some View {
         HStack(spacing: 8) {
             Button(action: { handlePageChange(-1) }) {
-                Image(systemName: "chevron.left")
+                Label("pagination.help".localized(),systemImage: "chevron.left")
             }
             .disabled(currentPage == 1)
             HStack(spacing: 8) {
@@ -221,10 +224,12 @@ public struct DetailToolbarView: ToolbarContent {
             .font(.subheadline)
             .foregroundStyle(.secondary)
             Button(action: { handlePageChange(1) }) {
-                Image(systemName: "chevron.right")
+                Label("pagination.help".localized(),systemImage: "chevron.right")
+                    
             }
+            
             .disabled(currentPage == totalPages)
-        }
+        }.help("pagination.help".localized())
     }
 
     private var resourceTypesForCurrentGame: [String] {

@@ -21,90 +21,97 @@ struct ModrinthProjectDetailToolbarView: View {
         backButton
         
         if selectedTab == 1 {
+            Spacer()
             versionPaginationControls
         }
         Spacer()
-        projectIconAndTitle
-        Spacer()
+//        projectIconAndTitle
+//        Spacer()
         
         tabPicker
     }
     
-    // MARK: - UI Components
-    private var projectIconAndTitle: some View {
-        Group {
-            if let project = projectDetail {
-                HStack(spacing: Constants.spacing) {
-                    projectIcon
-                    Text(project.title)
-                        .font(.headline)
-                }
-            } else {
-                ProgressView()
-                    .controlSize(.small)
-            }
-        }
-    }
+//    // MARK: - UI Components
+//    private var projectIconAndTitle: some View {
+//        Group {
+//            if let project = projectDetail {
+//                HStack(spacing: Constants.spacing) {
+//                    projectIcon
+//                    Text(project.title)
+//                        .font(.headline)
+//                }
+//            } else {
+//                ProgressView()
+//                    .controlSize(.small)
+//            }
+//        }
+//    }
+//    
+//    private var projectIcon: some View {
+//        Group {
+//            if let project = projectDetail,
+//               let iconUrl = project.iconUrl,
+//               let url = URL(string: iconUrl) {
+//                AsyncImage(url: url) { phase in
+//                    switch phase {
+//                    case .empty:
+//                        Color.gray.opacity(0.2)
+//                    case .success(let image):
+//                        image
+//                            .resizable()
+//                            .aspectRatio(contentMode: .fill)
+//                    case .failure:
+//                        Image(systemName: "photo")
+//                            .foregroundColor(.secondary)
+//                    @unknown default:
+//                        EmptyView()
+//                    }
+//                }
+//                .frame(width: Constants.iconSize, height: Constants.iconSize)
+//                .cornerRadius(Constants.cornerRadius)
+//                .clipped()
+//            } else {
+//                Image(systemName: "photo")
+//                    .resizable()
+//                    .aspectRatio(contentMode: .fit)
+//                    .frame(width: Constants.iconSize, height: Constants.iconSize)
+//                    .foregroundColor(.secondary)
+//            }
+//        }
+//    }
+//
     
-    private var projectIcon: some View {
-        Group {
-            if let project = projectDetail,
-               let iconUrl = project.iconUrl,
-               let url = URL(string: iconUrl) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        Color.gray.opacity(0.2)
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    case .failure:
-                        Image(systemName: "photo")
-                            .foregroundColor(.secondary)
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
-                .frame(width: Constants.iconSize, height: Constants.iconSize)
-                .cornerRadius(Constants.cornerRadius)
-                .clipped()
-            } else {
-                Image(systemName: "photo")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: Constants.iconSize, height: Constants.iconSize)
-                    .foregroundColor(.secondary)
-            }
-        }
-    }
     
     private var versionPaginationControls: some View {
         HStack(spacing: Constants.spacing) {
             Button(action: { versionCurrentPage -= 1 }) {
-                Image(systemName: "chevron.left")
+                Label("pagination.help".localized(),systemImage: "chevron.left")
             }
             .disabled(versionCurrentPage <= 1)
             
             HStack(spacing: Constants.spacing) {
-                Text("第 \(versionCurrentPage) 页")
-                Divider()
-                    .frame(height: 16)
-                Text("共 \(versionTotalPages) 页")
+                Text(
+                    String(
+                        format: "pagination.current".localized(),
+                        versionCurrentPage
+                    )
+                )
+                Divider().frame(height: 16)
+                Text(String(format: "pagination.total".localized(), versionTotalPages))
             }
             .font(.subheadline)
             .foregroundStyle(.secondary)
             
             Button(action: { versionCurrentPage += 1 }) {
-                Image(systemName: "chevron.right")
+                Label("pagination.help".localized(),systemImage: "chevron.right")
             }
             .disabled(versionCurrentPage == versionTotalPages)
-        }
+        }.help("pagination.help".localized())
     }
     
     private var backButton: some View {
         Button(action: onBack) {
-            Image(systemName: "chevron.backward")
+            Label("return".localized(),systemImage: "return").help("return".localized())
         }
     }
     
@@ -119,6 +126,7 @@ struct ModrinthProjectDetailToolbarView: View {
                     .tag(2)
             }
         }
+        .help("view.mode.title".localized())
         .pickerStyle(.segmented)
         .background(.clear)
     }

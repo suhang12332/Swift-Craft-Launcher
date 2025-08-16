@@ -208,7 +208,7 @@ struct GameInfoDetailView: View {
                 Button(action: { 
                     showAdvancedSettings.toggle()
                 }) {
-                    Text((showAdvancedSettings ? "common.profile.save" : "common.settings").localized()).font(.subheadline)
+                    Text((showAdvancedSettings ? "common.profile.save" : "common.settings").localized())
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(Color.accentColor)

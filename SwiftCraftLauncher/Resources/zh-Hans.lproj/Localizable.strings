@@ -3,7 +3,7 @@
 "common.close" = "关闭";
 "common.continue" = "继续";
 "common.loading" = "正在加载...";
-
+"return" = "返回";
 // Player Errors
 "error.invalid_username" = "无效的用户名";
 "error.encoding" = "字符串编码错误";
@@ -43,6 +43,8 @@
 "resource.content.type.modpack" = "整合包";
 "resource.content.type.server" = "资源库";
 "resource.content.type.local" = "已安装";
+"resource.content.type.help" = "资源类型";
+"resource.content.location.help" = "资源位置";
 
 // Language Selection
 "language.zh-Hans" = "简体中文";
@@ -86,6 +88,7 @@
 "menu.sort.newest" = "最新";
 "menu.sort.updated" = "最近更新";
 "search.resources" = "搜索资源";
+"menu.sort.help" = "排序规则";
 
 // Filter
 "filter.clear" = "清除筛选";
@@ -151,7 +154,7 @@
 "game.form.name.duplicate" = "该游戏名已存在，请更换";
 "game.form.version" = "游戏版本";
 "game.form.version.placeholder" = "请选择游戏版本";
-"game.form.modloader" = "mod加载器";
+"game.form.modloader" = "Mod加载器";
 
 
 // Download Progress
@@ -191,6 +194,7 @@
 // Pagination
 "pagination.current" = "第 %d 页";
 "pagination.total" = "共 %d 页";
+"pagination.help" = "分页";
 
 // Dependency
 "dependency.required_mods.title" = "待下载的前置mod(必须)";
@@ -223,7 +227,7 @@
 "release.time.prefix" = "发布于: ";
 
 // View Mode
-"view.mode.title" = "视图模式";
+"view.mode.title" = "操作";
 "view.mode.details" = "详情";
 "view.mode.downloads" = "下载";
 

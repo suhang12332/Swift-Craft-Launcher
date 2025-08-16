@@ -21,7 +21,8 @@ public struct ContentToolbarView: ToolbarContent {
                 }
             }) {
                 Label("game.form.title".localized(), systemImage: "plus")
-            }
+            }.help("game.form.title".localized())
+            
             // 后台下载 待实现
 //            Button(action: {
 //                
@@ -42,8 +43,8 @@ public struct ContentToolbarView: ToolbarContent {
                 showingAddPlayerSheet = true
             }) {
                 Label("player.add".localized(), systemImage: "person.badge.plus")
-            }
-            .help("player.add".localized())
+            }.help("player.add".localized())
+            
             .sheet(isPresented: $showingAddPlayerSheet) {
                 AddPlayerSheetView(
                     playerName: $playerName,
