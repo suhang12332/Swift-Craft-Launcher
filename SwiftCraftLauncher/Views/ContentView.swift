@@ -38,7 +38,7 @@ struct ContentView: View {
                 resourceContentView(type: type)
             }
         }
-        .onChange(of: selectedItem) { _ in
+        .onChange(of: selectedItem) { _,_ in
             // 切换游戏时重置高级设置状态
             showAdvancedSettings = false
         }
