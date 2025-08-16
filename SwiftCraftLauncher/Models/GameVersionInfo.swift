@@ -72,6 +72,9 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
 
     /// 启动参数（如 --launchTarget forge_client 等）
     var gameArguments: [String] = []
+    
+    /// 环境变量设置
+    var environmentVariables: String
 
     /// 初始化游戏版本信息
     /// - Parameters:
@@ -95,6 +98,7 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
     ///   - resources: 游戏资源列表，默认空数组
     ///   - mainClass: 游戏主类，默认空字符串
     ///   - gameArguments: 启动参数，默认空数组
+    ///   - environmentVariables: 环境变量，默认空字符串
     init(
         id: UUID = UUID(),
         gameName: String,
@@ -112,11 +116,12 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
         javaPath: String = "",
         jvmArguments: String = "",
         launchCommand: [String] = [],
-        xms: Int = 2048,
-        xmx: Int = 2048,
+        xms: Int = 0,
+        xmx: Int = 0,
         javaVersion: Int = 8,
         mainClass: String = "",
-        gameArguments: [String] = []
+        gameArguments: [String] = [],
+        environmentVariables: String = ""
     ) {
         self.id = id.uuidString
         self.gameName = gameName
@@ -139,6 +144,7 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
         self.mainClass = mainClass
         self.gameArguments = gameArguments
         self.javaVersion = javaVersion
+        self.environmentVariables = environmentVariables
     }
     
     /// 获取所有检测到的Java路径，key为版本号，value为路径

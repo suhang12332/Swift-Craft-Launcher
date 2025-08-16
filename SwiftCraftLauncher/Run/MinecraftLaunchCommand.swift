@@ -35,22 +35,33 @@ struct MinecraftLaunchCommand {
     private func replaceAuthParameters(command: [String]) -> [String] {
         guard let player = player else {
             Logger.shared.warning("没有选择玩家，使用默认认证参数")
-            return command
+            return replaceGameParameters(command: command)
         }
+
+
         
-        // 添加调试日志
-        Logger.shared.info("认证参数替换:")
-        Logger.shared.info("  auth_player_name: \(player.name)")
-        Logger.shared.info("  auth_uuid: \(player.id)")
-        Logger.shared.info("  auth_access_token: \(player.authAccessToken.prefix(10))...") // 只显示前10位
-        Logger.shared.info("  auth_xuid: \(player.authXuid)")
-        
-        return command.map { arg in
+        let authReplacedCommand = command.map { arg in
             return arg
                 .replacingOccurrences(of: "${auth_player_name}", with: player.name)
                 .replacingOccurrences(of: "${auth_uuid}", with: player.id)
                 .replacingOccurrences(of: "${auth_access_token}", with: player.authAccessToken)
                 .replacingOccurrences(of: "${auth_xuid}", with: player.authXuid)
+        }
+        
+        return replaceGameParameters(command: authReplacedCommand)
+    }
+    
+    private func replaceGameParameters(command: [String]) -> [String] {
+        let settings = GameSettingsManager.shared
+        
+        // 内存设置：优先使用游戏配置，游戏没配置则使用全局
+        let xms = game.xms > 0 ? game.xms : settings.globalXms
+        let xmx = game.xmx > 0 ? game.xmx : settings.globalXmx
+        
+        return command.map { arg in
+            return arg
+                .replacingOccurrences(of: "${xms}", with: "\(xms)")
+                .replacingOccurrences(of: "${xmx}", with: "\(xmx)")
         }
     }
     

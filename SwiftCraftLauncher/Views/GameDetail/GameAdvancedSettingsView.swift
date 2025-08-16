@@ -13,10 +13,6 @@ struct GameAdvancedSettingsView: View {
     @EnvironmentObject var gameRepository: GameRepository
     @Environment(\.dismiss) private var dismiss
     
-    // 窗口设置
-    @State private var windowWidth: Int = 1280
-    @State private var windowHeight: Int = 720
-    @State private var isFullscreen: Bool = false
     
     // Java和内存设置
     @State private var memoryRange: ClosedRange<Double> = 2048...4096
@@ -39,49 +35,7 @@ struct GameAdvancedSettingsView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // 窗口设置
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("settings.game.window.title".localized())
-                        .font(.headline)
-                        
-                    
-                    VStack(spacing: 8) {
-                        HStack {
-                            Text("settings.game.window.width".localized())
-                            Spacer()
-                            HStack(spacing: 4) {
-                                TextField("", value: $windowWidth, format: .number)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .frame(width: 80)
-                                Text("px")
-                                    .foregroundColor(.secondary)
-                                    .font(.caption)
-                            }
-                        }
-                        
-                        HStack {
-                            Text("settings.game.window.height".localized())
-                            Spacer()
-                            HStack(spacing: 4) {
-                                TextField("", value: $windowHeight, format: .number)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .frame(width: 80)
-                                Text("px")
-                                    .foregroundColor(.secondary)
-                                    .font(.caption)
-                            }
-                        }
-                        
-                        HStack {
-                            Text("settings.game.window.fullscreen".localized())
-                            Spacer()
-                            Toggle("", isOn: $isFullscreen)        .toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                                .labelsHidden().controlSize(.small)
-                        }
-                    }
-                }
-
-
+                
                 
                 // 内存设置
                 VStack(alignment: .leading, spacing: 12) {
@@ -179,14 +133,11 @@ struct GameAdvancedSettingsView: View {
     // MARK: - Private Methods
     
     private func loadCurrentSettings() {
-        // 加载当前游戏的设置
-        windowWidth = 1280  // 默认值，实际应该从游戏配置中读取
-        windowHeight = 720
-        isFullscreen = false
+
         
         memoryRange = Double(game.xms)...Double(game.xmx)
         jvmArguments = game.jvmArguments
-        environmentVariables = ""  // 默认值，实际应该从游戏配置中读取
+        environmentVariables = game.environmentVariables
     }
     
 
@@ -218,7 +169,11 @@ struct GameAdvancedSettingsView: View {
                 var updatedGame = game
                 updatedGame.xms = xms
                 updatedGame.xmx = xmx
-                updatedGame.jvmArguments = jvmArguments
+//                updatedGame.jvmArguments = jvmArguments
+//                updatedGame.windowWidth = windowWidth
+//                updatedGame.windowHeight = windowHeight
+//                updatedGame.isFullscreen = isFullscreen
+                updatedGame.environmentVariables = environmentVariables
                 
                 // 保存到游戏仓库
                 try await gameRepository.updateGame(updatedGame)
@@ -249,9 +204,7 @@ struct GameAdvancedSettingsView: View {
     }
     
     private func resetToDefaults() {
-        windowWidth = 1280
-        windowHeight = 720
-        isFullscreen = false
+
         
         memoryRange = 2048...4096
         jvmArguments = ""
@@ -266,7 +219,7 @@ struct GameAdvancedSettingsView: View {
         gameVersion: "1.20.1",
         assetIndex: "1.20.1",
         modLoader: "Fabric",
-        isUserAdded: true,
+        isUserAdded: true
     ))
     .environmentObject(GameRepository())
 }

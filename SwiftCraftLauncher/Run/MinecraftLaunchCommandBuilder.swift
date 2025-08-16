@@ -70,11 +70,8 @@ struct MinecraftLaunchCommandBuilder {
             .map { substituteVariables($0, with: variableMap) } ?? []
 
         // 额外拼接 JVM 内存参数
-        let globalXms = GameSettingsManager.shared.globalXms
-        let globalXmx = GameSettingsManager.shared.globalXmx
-        let useGameMemory = gameInfo.xms > 0 && gameInfo.xmx > 0
-        let xmsArg = "-Xms\((useGameMemory ? gameInfo.xms : globalXms))M"
-        let xmxArg = "-Xmx\((useGameMemory ? gameInfo.xmx : globalXmx))M"
+        let xmsArg = "-Xms${xms}M"
+        let xmxArg = "-Xmx${xmx}M"
         jvmArgs.insert(contentsOf: [xmsArg, xmxArg], at: 0)
         
         // 添加 macOS 特定的 JVM 参数

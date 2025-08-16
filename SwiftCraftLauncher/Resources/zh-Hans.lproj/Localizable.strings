@@ -688,3 +688,25 @@
 "acknowledgements.library.minecraftnbt" = "MinecraftNBT";
 "acknowledgements.library.sparkle" = "Sparkle";
 
+// Game Advanced Settings (zh-Hans)
+
+"settings.game.java.memory" = "内存设置";
+"settings.game.java.jvm_args" = "JVM 参数";
+"settings.game.java.env_vars" = "环境变量";
+
+"settings.game.save.success" = "设置已保存";
+"settings.game.reset.confirm" = "确定要恢复默认设置吗？";
+
+
+"common.save" = "保存";
+"common.ok" = "好的";
+"common.back" = "返回";
+"common.settings" = "设置";
+"common.profile.save" = "设置";
+
+// Game Advanced Settings Errors (zh-Hans)
+
+"error.unknown.settings_save_failed" = "保存设置失败";
+"error.validation.invalid_memory_settings" = "内存设置无效";
+"error.validation.xms_greater_than_xmx" = "XMS不能大于XMX";
+
