@@ -56,7 +56,7 @@
 "settings.language.restart.message" = "更改语言需要重启应用才能生效";
 
 "settings.theme.picker" = "外观:";
-"settings.theme.system" = "自动";
+"settings.theme.system" = "跟随系统";
 "settings.theme.light" = "浅色";
 "settings.theme.dark" = "深色";
 "settings.general.tab" = "通用";

@@ -27,6 +27,7 @@ struct GameInfoDetailView: View {
     @Binding var selectedProjectId: String?
     @Binding var selectedLoaders: [String]
     @Binding var gameType: Bool  // false = local, true = server
+    @Binding var showAdvancedSettings: Bool
     @EnvironmentObject var gameRepository: GameRepository
     @State private var searchTextForResource = ""
     @State private var showDeleteAlert = false
@@ -131,6 +132,7 @@ struct GameInfoDetailView: View {
             }
             Spacer()
             importButton
+            settingsButton
             deleteButton
         }
     }
@@ -198,6 +200,34 @@ struct GameInfoDetailView: View {
             gameName: game.gameName,
             onResourceChanged: { scanResources() }
         )
+    }
+
+    private var settingsButton: some View {
+        Group {
+            if hasSaves {
+                Button(action: { 
+                    showAdvancedSettings.toggle()
+                }) {
+                    Text((showAdvancedSettings ? "common.profile.save" : "common.settings").localized()).font(.subheadline)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Color.accentColor)
+                .controlSize(.large)
+            }
+        }
+    }
+    
+    private var hasSaves: Bool {
+        guard let savesDir = AppPaths.savesDirectory(gameName: game.gameName) else {
+            return false
+        }
+        
+        do {
+            let contents = try FileManager.default.contentsOfDirectory(at: savesDir, includingPropertiesForKeys: nil)
+            return !contents.isEmpty
+        } catch {
+            return false
+        }
     }
 
     private var localResourceList: some View {

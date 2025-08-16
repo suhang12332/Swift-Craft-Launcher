@@ -26,6 +26,7 @@ struct DetailView: View {
     @Binding var versionTotal: Int
     @Binding var gameType: Bool
     @Binding var selectedLoader: [String]
+    @Binding var showAdvancedSettings: Bool
     
     @EnvironmentObject var gameRepository: GameRepository
     
@@ -59,6 +60,7 @@ struct DetailView: View {
                 selectedProjectId: $selectedProjectId,
                 selectedLoaders: $selectedLoader,
                 gameType: $gameType,
+                showAdvancedSettings: $showAdvancedSettings,
                 selectedItem: $selectedItem
             )
         }
