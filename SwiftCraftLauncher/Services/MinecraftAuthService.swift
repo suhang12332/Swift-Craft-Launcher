@@ -11,8 +11,8 @@ class MinecraftAuthService: ObservableObject {
     
     var openURLHandler: ((URL) -> Void)?
     
-    private let clientId = AppConstants.clientId
-    private let scope = AppConstants.scope
+    private let clientId = AppConstants.minecraftClientId
+    private let scope = AppConstants.minecraftScope
     
     private init() {}
     

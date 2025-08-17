@@ -123,6 +123,7 @@ enum AuthenticationState {
     case waitingForUser(userCode: String, verificationUri: String)
     case authenticating
     case authenticated(profile: MinecraftProfileResponse)
+    case authenticatedYggdrasil(profile: YggdrasilProfileResponse)
     case error(String)
 }
 
