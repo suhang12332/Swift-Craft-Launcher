@@ -83,13 +83,17 @@ struct SwiftCraftLauncherApp: App {
                 .globalErrorHandler()
         }
         // 右上角的状态栏(可以显示图标的)
-//        MenuBarExtra(content: {
-//            Button("Do something amazing") {
-//
-//            }
-//        }, label: {
-//            Label("SCL",systemImage: "arrow.down.circle").labelStyle(.titleOnly).controlSize(.large)
-//        })
+        MenuBarExtra(content: {
+            Button("menu.statusbar.placeholder".localized()) {
+
+            }
+        }, label: {
+            Image("menu-png").resizable()
+                .renderingMode(.template)
+                .scaledToFit()
+                .frame(width: 18, height: 18) // 菜单栏常见大小
+                     // 推荐保持模板模式
+        })
     }
 }
 

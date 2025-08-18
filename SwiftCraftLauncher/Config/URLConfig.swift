@@ -93,12 +93,12 @@ enum URLConfig {
         
         // Forge API
         enum Forge {
-            static let gitReleasesBase = URL(string: "https://github.com/\(URLConfig.API.GitHub.repositoryName)/forge-client/releases/download/")!
+            static let gitReleasesBase = URL(string: "https://github.com/\(URLConfig.API.GitHub.repositoryOwner)/forge-client/releases/download/")!
         }
 
         // NeoForge API
         enum NeoForge {
-            static let gitReleasesBase = URL(string: "https://github.com/\(URLConfig.API.GitHub.repositoryName)/neoforge-client/releases/download/")!
+            static let gitReleasesBase = URL(string: "https://github.com/\(URLConfig.API.GitHub.repositoryOwner)/neoforge-client/releases/download/")!
         }
 
         // Quilt API
