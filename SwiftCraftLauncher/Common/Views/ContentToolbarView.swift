@@ -70,6 +70,9 @@ public struct ContentToolbarView: ToolbarContent {
                         let _ = playerListViewModel.addOnlinePlayer(profile: profile)
                         showingAddPlayerSheet = false
                     },
+                    onYggLogin: { profile in
+                        Logger.shared.debug("Yggdrasil登录成功!")
+                    },
                     playerListViewModel: playerListViewModel
                 )
             }

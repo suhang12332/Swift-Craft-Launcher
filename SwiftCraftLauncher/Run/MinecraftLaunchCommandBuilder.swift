@@ -53,7 +53,7 @@ struct MinecraftLaunchCommandBuilder {
             "assets_index_name": gameInfo.assetIndex,
             "auth_uuid": "${auth_uuid}",
             "auth_access_token": "${auth_access_token}",
-            "clientid": AppConstants.clientId,
+            "clientid": AppConstants.minecraftClientId,
             "auth_xuid": "${auth_xuid}",
             "user_type": "msa",
             "version_type": "SCL",

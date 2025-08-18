@@ -6,12 +6,17 @@ enum AppConstants {
     static let defaultJava = "/usr/bin"
     
     // Minecraft 客户端ID - 构建时会被替换
-    static let clientId: String = {
+    // Minecraft/Xbox认证
+    static let minecraftClientId: String = {
         let encrypted = "$(CLIENTID)"
         let obfuscator = ClientIDObfuscator(encryptedString: encrypted)
         return obfuscator.getClientID()
     }()
-    static let scope = "XboxLive.signin offline_access"
+    static let minecraftScope = "XboxLive.signin offline_access"
+    
+    // Yggdrasil/LittleSkin认证
+    static let yggdrasilClientId = "1182" // 替换为你的实际LittleSkin客户端ID
+    static let yggdrasilScope = "openid Yggdrasil.PlayerProfiles.Select" // 按需调整
     
     // 缓存资源类型
     static let cacheResourceTypes = ["libraries", "natives", "assets", "versions"]

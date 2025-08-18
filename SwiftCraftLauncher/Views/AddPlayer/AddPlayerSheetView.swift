@@ -6,28 +6,49 @@ struct AddPlayerSheetView: View {
     var onAdd: () -> Void
     var onCancel: () -> Void
     var onLogin: (MinecraftProfileResponse) -> Void
+    var onYggLogin: (YggdrasilProfileResponse) -> Void
+    enum PlayerProfile {
+        case minecraft(MinecraftProfileResponse)
+        case yggdrasil(YggdrasilProfileResponse)
+    }
     @ObservedObject var playerListViewModel: PlayerListViewModel
     @State private var isPremium: Bool = false
     @State private var authenticatedProfile: MinecraftProfileResponse?
     @StateObject private var authService = MinecraftAuthService.shared
+    @StateObject private var yggdrasilAuthService = YggdrasilAuthService.shared
     @Environment(\.openURL) private var openURL
+    @State private var selectedAuthType: AccountAuthType = .offline
+
     var body: some View {
         CommonSheetView(
             header: {
                 HStack {
-                    Text((isPremium ? "addplayer.title.online" : "addplayer.title.offline").localized())
+                    Text("addplayer.title".localized())
                         .font(.headline)
                     Spacer()
-                    Toggle(isPremium ? "addplayer.auth.microsoft".localized() : "addplayer.auth.offline".localized(), isOn: $isPremium)
-                        .toggleStyle(SwitchToggleStyle())
-                        .font(.headline)
-                        .controlSize(.mini).disabled(authService.isLoading)
+                    Menu {
+                        ForEach(AccountAuthType.allCases) { type in
+                            Button(action: { selectedAuthType = type }) {
+                                Label(type.displayName, systemImage: selectedAuthType == type ? "checkmark" : "")
+                            }
+                        }
+                    } label: {
+                        Label(selectedAuthType.displayName, systemImage: "person.crop.circle.badge.questionmark")
+                            .font(.headline)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color(NSColor.controlBackgroundColor))
+                            .cornerRadius(8)
+                    }
                 }
             },
             body: {
-                if isPremium {
+                switch selectedAuthType {
+                case .premium:
                     MinecraftAuthView(onLoginSuccess: onLogin)
-                } else {
+                case .yggdrasil:
+                    YggdrasilAuthView()
+                case .offline:
                     VStack(alignment: .leading) {
                         playerInfoSection
                             .padding(.bottom, 10)
@@ -42,7 +63,7 @@ struct AddPlayerSheetView: View {
                         onCancel()
                     })
                     Spacer()
-                    if isPremium {
+                    if selectedAuthType == .premium {
                         // 根据认证状态显示不同的按钮
                         switch authService.authState {
                         case .notAuthenticated:
@@ -71,7 +92,30 @@ struct AddPlayerSheetView: View {
                         default:
                             ProgressView().controlSize(.small)
                         }
-                        
+                    } else if selectedAuthType == .yggdrasil {
+                        switch yggdrasilAuthService.authState {
+                        case .notAuthenticated:
+                            Button("addplayer.auth.start_login".localized()) {
+                                Task {
+                                    await yggdrasilAuthService.startAuthentication()
+                                }
+                            }
+                            .keyboardShortcut(.defaultAction)
+                        case .authenticatedYggdrasil(let profile):
+                            Button("addplayer.auth.add".localized()) {
+                                onYggLogin(profile)
+                            }
+                            .keyboardShortcut(.defaultAction)
+                        case .error:
+                            Button("addplayer.auth.retry".localized()) {
+                                Task {
+                                    await yggdrasilAuthService.startAuthentication()
+                                }
+                            }
+                            .keyboardShortcut(.defaultAction)
+                        default:
+                            ProgressView().controlSize(.small)
+                        }
                     } else {
                         Button("addplayer.create".localized(), action: {
                             authService.isLoading = false
@@ -86,6 +130,9 @@ struct AddPlayerSheetView: View {
         .onAppear {
             // 设置URL打开回调
             authService.openURLHandler = { url in
+                openURL(url)
+            }
+            yggdrasilAuthService.openURLHandler = { url in
                 openURL(url)
             }
         }
@@ -152,3 +199,22 @@ struct AddPlayerSheetView: View {
     }
 } 
 
+// Assuming AccountAuthType is defined as:
+enum AccountAuthType: String, CaseIterable, Identifiable {
+    var id: String { rawValue }
+
+    case offline
+    case premium
+    case yggdrasil
+
+    var displayName: String {
+        switch self {
+        case .offline:
+            return "addplayer.auth.offline".localized()
+        case .premium:
+            return "addplayer.auth.microsoft".localized()
+        case .yggdrasil:
+            return "addplayer.auth.yggdrasil".localized()
+        }
+    }
+}
