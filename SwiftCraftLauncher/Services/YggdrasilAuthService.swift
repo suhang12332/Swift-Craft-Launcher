@@ -41,7 +41,7 @@ class YggdrasilAuthService: ObservableObject {
             }
             // 自动打开带 code 的验证页面
             if let verificationUriComplete = deviceCodeResponse.verificationUriComplete, let url = URL(string: verificationUriComplete) {
-                print("完整授权链接: \(url)")
+                Logger.shared.info("完整授权链接: \(url)")
                 await MainActor.run {
                     openURLHandler?(url)
                 }
@@ -82,7 +82,7 @@ class YggdrasilAuthService: ObservableObject {
         var attempts = 0
         while attempts < maxAttempts {
             do {
-                let tokenResponse = try await requestTokenThrowing(deviceCode: deviceCode)
+                let _ = try await requestTokenThrowing(deviceCode: deviceCode)
                 await MainActor.run {
                     isLoading = false
                     //authState = .authenticated(profile: tokenResponse) 

@@ -39,7 +39,7 @@ struct AddPlayerSheetView: View {
                             .padding(.vertical, 6)
                             .background(Color(NSColor.controlBackgroundColor))
                             .cornerRadius(8)
-                    }
+                    }.fixedSize()
                 }
             },
             body: {

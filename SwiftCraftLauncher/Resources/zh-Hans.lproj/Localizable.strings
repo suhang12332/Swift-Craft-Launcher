@@ -251,6 +251,8 @@
 "addplayer.auth.retry" = "重试";
 "addplayer.auth.microsoft" = "微软";
 "addplayer.auth.offline" = "离线";
+"addplayer.auth.yggdrasil" = "LittleSkin";
+"addplayer.title" = "添加用户";
 
 // MinecraftAuthView
 "minecraft.auth.title" = "使用 Microsoft 账户登录 Minecraft";
@@ -709,4 +711,26 @@
 "error.unknown.settings_save_failed" = "保存设置失败";
 "error.validation.invalid_memory_settings" = "内存设置无效";
 "error.validation.xms_greater_than_xmx" = "XMS不能大于XMX";
+
+// Menu Commands (extra)
+"menu.statusbar.placeholder" = "执行一些操作";
+
+// YggdrasilAuthView
+"yggdrasil.auth.title" = "使用 LittleSkin 账户登录";
+"yggdrasil.auth.subtitle" = "请点击下方的\"开始登录\"按钮开始认证流程";
+"yggdrasil.auth.requesting_code" = "正在获取设备代码...";
+"yggdrasil.auth.requesting_code.subtitle" = "请稍候，正在与 LittleSkin 服务器通信";
+"yggdrasil.auth.waiting_verification" = "请在浏览器中输入下方的验证代码完成验证";
+"yggdrasil.auth.step1" = "1. 在验证页面输入上面的验证代码";
+"yggdrasil.auth.step2" = "2. 使用 LittleSkin 账户登录";
+"yggdrasil.auth.step3" = "3. 授权访问";
+"yggdrasil.auth.authenticating" = "正在验证身份...";
+"yggdrasil.auth.authenticating.subtitle" = "请稍候，正在获取您的资料";
+"yggdrasil.auth.success" = "登录成功！";
+"yggdrasil.auth.uuid" = "UUID：%@";
+"yggdrasil.auth.selected_profile" = "已选择角色：%@";
+"yggdrasil.auth.confirm_login" = "请点击下方的\"登录\"按钮确认使用此账户";
+"yggdrasil.auth.success_legacy" = "登录成功！";
+"yggdrasil.auth.failed" = "登录失败";
+"yggdrasil.auth.retry_message" = "请点击下方的\"重试\"按钮重新开始认证";
 

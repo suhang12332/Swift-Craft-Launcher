@@ -21,7 +21,7 @@ final class DependencySheetViewModel: ObservableObject {
 
     enum OverallDownloadState {
         case idle // 初始状态，或全部下载成功后
-        case failed // 首次"全部下载"操作中，有任何文件失败
+        case failed // 首次"全部下载"操作中，有任何文件失败；/
         case retrying // 用户正在重试失败项
     }
     
