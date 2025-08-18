@@ -82,7 +82,7 @@ class YggdrasilAuthService: ObservableObject {
         var attempts = 0
         while attempts < maxAttempts {
             do {
-                let _ = try await requestTokenThrowing(deviceCode: deviceCode)
+                let tokenResponse = try await requestTokenThrowing(deviceCode: deviceCode)
                 await MainActor.run {
                     isLoading = false
                     //authState = .authenticated(profile: tokenResponse) 
