@@ -5,7 +5,6 @@ struct JarDownloadTask {
     let url: URL
     let destinationPath: String // 相对于 metaLibrariesDir 的路径
     let expectedSha1: String?
-    let skip: Bool
 }
 
 class BatchJarDownloader {
@@ -32,8 +31,7 @@ class BatchJarDownloader {
                     _ = try await DownloadManager.downloadFile(
                         urlString: task.url.absoluteString,
                         destinationURL: destinationURL,
-                        expectedSha1: task.expectedSha1,
-                        skipOnFailure: task.skip
+                        expectedSha1: task.expectedSha1
                     )
                     let completed = await counter.increment()
                     await MainActor.run {

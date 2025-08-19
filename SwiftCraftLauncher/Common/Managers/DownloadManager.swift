@@ -83,10 +83,9 @@ class DownloadManager {
     ///   - urlString: 下载地址
     ///   - destinationURL: 目标文件路径
     ///   - expectedSha1: 预期 SHA1 值
-    ///   - skipOnFailure: 失败时是否跳过
     /// - Returns: 下载到的本地文件 URL
     /// - Throws: GlobalError 当操作失败时
-    static func downloadFile(urlString: String, destinationURL: URL, expectedSha1: String? = nil, skipOnFailure: Bool = false) async throws -> URL {
+    static func downloadFile(urlString: String, destinationURL: URL, expectedSha1: String? = nil) async throws -> URL {
         Logger.shared.info("下载文件 \(urlString) -> \(destinationURL.path)")
         
         var finalURLString = urlString
@@ -203,11 +202,6 @@ class DownloadManager {
             return destinationURL
             
         } catch {
-            if skipOnFailure {
-                Logger.shared.warning("下载失败，已跳过: \(urlString)")
-                return destinationURL
-            }
-            
             // 转换错误为 GlobalError
             if let globalError = error as? GlobalError {
                 throw globalError

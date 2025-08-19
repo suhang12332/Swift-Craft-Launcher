@@ -54,16 +54,14 @@ struct ModrinthLoaderLibrary: Codable {
     var name: String
     var includeInClasspath: Bool
     var downloadable: Bool
-    var skip: Bool?
     var url: URL?
     
     // 自定义初始化器，用于直接创建实例
-    init(downloads: LibraryDownloads?, name: String, includeInClasspath: Bool, downloadable: Bool,skip: Bool) {
+    init(downloads: LibraryDownloads?, name: String, includeInClasspath: Bool, downloadable: Bool) {
         self.downloads = downloads
         self.name = name
         self.includeInClasspath = includeInClasspath
         self.downloadable = downloadable
-        self.skip = skip
     }
     
     enum CodingKeys: String, CodingKey {

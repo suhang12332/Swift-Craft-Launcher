@@ -56,8 +56,7 @@ class CommonFileManager {
                     name: lib.name,
                     url: artifactUrl,
                     destinationPath: downloads.artifact.path,
-                    expectedSha1: downloads.artifact.sha1.isEmpty ? nil : downloads.artifact.sha1,
-                    skip: lib.skip ?? false
+                    expectedSha1: downloads.artifact.sha1.isEmpty ? nil : downloads.artifact.sha1
                 )
             }
             
@@ -67,8 +66,7 @@ class CommonFileManager {
                 name: lib.name,
                 url: CommonService.mavenCoordinateToURL(lib: lib),
                 destinationPath: CommonService.mavenCoordinateToDefaultPath(lib.name),
-                expectedSha1: nil,
-                skip: lib.skip ?? false
+                expectedSha1: nil
             )
         }
         
@@ -120,8 +118,7 @@ class CommonFileManager {
                 name: lib.name,
                 url: result,
                 destinationPath: CommonService.mavenCoordinateToDefaultPath(lib.name),
-                expectedSha1: "",
-                skip: lib.skip == nil ? false : true
+                expectedSha1: ""
             )
         }
         

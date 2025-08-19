@@ -29,7 +29,7 @@ class ProcessorExecutor {
         guard let relativePath = CommonService.mavenCoordinateToRelativePath(jar) else {
             throw GlobalError.validation(
                 chineseMessage: "无效的Maven坐标: \(jar)",
-                i18nKey: "error.validation.invalid_maven_coordinate",
+                i18nKey: String(format:"error.validation.invalid_maven_coordinate", jar),
                 level: .notification
             )
         }
@@ -37,7 +37,7 @@ class ProcessorExecutor {
         guard FileManager.default.fileExists(atPath: jarPath.path) else {
             throw GlobalError.resource(
                 chineseMessage: "找不到处理器JAR文件: \(jar)",
-                i18nKey: "error.resource.processor_jar_not_found",
+                i18nKey: String(format:"error.resource.processor_jar_not_found", jar),
                 level: .notification
             )
         }
