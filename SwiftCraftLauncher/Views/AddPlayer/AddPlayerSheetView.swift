@@ -25,21 +25,20 @@ struct AddPlayerSheetView: View {
                 HStack {
                     Text("addplayer.title".localized())
                         .font(.headline)
+                    Image(systemName: selectedAuthType.symbol.name)
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                        .symbolRenderingMode(selectedAuthType.symbol.mode)
+                        .symbolVariant(.none)
                     Spacer()
-                    Menu {
+                    Picker("", selection: $selectedAuthType) {
                         ForEach(AccountAuthType.allCases) { type in
-                            Button(action: { selectedAuthType = type }) {
-                                Label(type.displayName, systemImage: selectedAuthType == type ? "checkmark" : "")
-                            }
+                            Text(type.displayName).tag(type)
                         }
-                    } label: {
-                        Label(selectedAuthType.displayName, systemImage: "person.crop.circle.badge.questionmark")
-                            .font(.headline)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color(NSColor.controlBackgroundColor))
-                            .cornerRadius(8)
-                    }.fixedSize()
+                    }
+                    .pickerStyle(.menu) // 用下拉菜单样式
+                    .labelStyle(.titleOnly)
+                    .fixedSize()
                 }
             },
             body: {
@@ -209,12 +208,28 @@ enum AccountAuthType: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .offline:
-            return "addplayer.auth.offline".localized()
         case .premium:
             return "addplayer.auth.microsoft".localized()
         case .yggdrasil:
             return "addplayer.auth.yggdrasil".localized()
+        default:
+            return "addplayer.auth.offline".localized()
         }
     }
 }
+
+// 1. 给 AccountAuthType 扩展一个 symbol 配置
+extension AccountAuthType {
+    var symbol: (name: String, mode: SymbolRenderingMode) {
+        switch self {
+        case .premium:
+            return ("person.crop.circle.badge.plus", .multicolor)
+        case .yggdrasil:
+            return ("person.crop.circle.badge.questionmark", .multicolor)
+        default:
+            return ("person.crop.circle.badge.minus", .multicolor)
+        }
+        
+    }
+}
+

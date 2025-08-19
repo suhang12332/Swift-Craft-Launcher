@@ -35,7 +35,7 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(sparkleUpdateService)
                 .environmentObject(generalSettingsManager)
                 .preferredColorScheme(generalSettingsManager.themeMode.effectiveColorScheme)
-                .globalErrorHandler()
+                .errorAlert()
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
@@ -80,7 +80,7 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(sparkleUpdateService)
                 .environmentObject(generalSettingsManager)
                 .preferredColorScheme(generalSettingsManager.themeMode.effectiveColorScheme)
-                .globalErrorHandler()
+                .errorAlert()
         }
         // 右上角的状态栏(可以显示图标的)
         MenuBarExtra(content: {

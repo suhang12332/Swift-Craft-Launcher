@@ -37,9 +37,11 @@ struct YggdrasilAuthView: View {
     // MARK: - 未认证状态
     private var notAuthenticatedView: some View {
         VStack(spacing: 16) {
-            Image(systemName: "person.circle")
+            Image(systemName: "person.crop.circle.badge.questionmark")
                 .font(.system(size: 60))
-                .foregroundColor(.gray)
+                .symbolRenderingMode(.multicolor)
+                .symbolVariant(.none)
+                .foregroundColor(.secondary)
             Text("yggdrasil.auth.title".localized())
                 .font(.headline)
                 .multilineTextAlignment(.center)

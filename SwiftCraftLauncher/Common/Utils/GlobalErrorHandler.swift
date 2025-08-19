@@ -314,9 +314,9 @@ class GlobalErrorHandler: ObservableObject {
     private func handleErrorByLevel(_ error: GlobalError) {
         switch error.level {
         case .popup:
-            // 弹窗显示 - 这里可以触发弹窗显示逻辑
+            // 弹窗显示 - 通过 @Published 属性触发 UI 更新
             Logger.shared.error("[GlobalError-Popup] \(error.chineseMessage)")
-            // TODO: 实现弹窗显示逻辑
+            // 弹窗显示逻辑由 ErrorAlertModifier 处理
             
         case .notification:
             // 发送通知
@@ -375,7 +375,7 @@ class GlobalErrorHandler: ObservableObject {
 
 // MARK: - Error Handling View Modifier
 
-/// 错误处理视图修饰符
+/// 错误处理视图修饰符（已废弃，使用 errorAlert() 替代）
 struct GlobalErrorHandlerModifier: ViewModifier {
     @ObservedObject private var errorHandler = GlobalErrorHandler.shared
     
@@ -383,8 +383,7 @@ struct GlobalErrorHandlerModifier: ViewModifier {
         content
             .onReceive(errorHandler.$currentError) { error in
                 if let error = error {
-                    // 这里可以添加错误显示逻辑，比如Toast通知
-                    // 由于要求不弹窗，这里只记录日志
+                    // 只记录日志，弹窗由 ErrorAlertModifier 处理
                     Logger.shared.error("Global error occurred: \(error.chineseMessage)")
                 }
             }
@@ -394,7 +393,7 @@ struct GlobalErrorHandlerModifier: ViewModifier {
 // MARK: - View Extension
 
 extension View {
-    /// 添加全局错误处理
+    /// 添加全局错误处理（已废弃，使用 errorAlert() 替代）
     func globalErrorHandler() -> some View {
         self.modifier(GlobalErrorHandlerModifier())
     }

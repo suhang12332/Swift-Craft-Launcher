@@ -252,7 +252,7 @@
 "addplayer.auth.microsoft" = "微软";
 "addplayer.auth.offline" = "离线";
 "addplayer.auth.yggdrasil" = "LittleSkin";
-"addplayer.title" = "添加用户";
+"addplayer.title" = "添加账户";
 
 // MinecraftAuthView
 "minecraft.auth.title" = "使用 Microsoft 账户登录 Minecraft";
@@ -269,7 +269,7 @@
 "minecraft.auth.authenticating.subtitle" = "请稍候，正在获取您的 Minecraft 资料";
 "minecraft.auth.success" = "登录成功！";
 "minecraft.auth.uuid" = "UUID：%@";
-"minecraft.auth.confirm_login" = "请点击下方的\"登录\"按钮确认使用此账户";
+"minecraft.auth.confirm_login" = "请点击下方的\"添加\"按钮确认使用此账户";
 "minecraft.auth.failed" = "登录失败";
 "minecraft.auth.retry_message" = "请点击下方的\"重试\"按钮重新开始认证";
 
