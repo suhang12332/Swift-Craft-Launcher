@@ -94,14 +94,12 @@ class ProcessorExecutor {
         }
         
         classpath.append(jarPath.path)
-        Logger.shared.info("Processor classpath: \(classpath.joined(separator: ":"))")
-        
+
         return classpath
     }
     
     private static func getMavenPath(_ coordinate: String, librariesDir: URL) throws -> URL {
         guard let relativePath = CommonService.mavenCoordinateToRelativePath(coordinate) else {
-            Logger.shared.warning("跳过无效的classpath坐标: \(coordinate)")
             throw GlobalError.validation(
                 chineseMessage: "无效的Maven坐标: \(coordinate)",
                 i18nKey: String(format: "error.validation.invalid_maven_coordinate", coordinate),
@@ -134,7 +132,6 @@ class ProcessorExecutor {
             command.append(contentsOf: processedArgs)
         }
         
-        Logger.shared.info("完整Java命令: \(command.joined(separator: " "))")
         return command
     }
     
@@ -169,7 +166,6 @@ class ProcessorExecutor {
                         : value
                     
                     processedArg = processedArg.replacingOccurrences(of: placeholder, with: replacementValue)
-                    Logger.shared.info("替换占位符 \(placeholder) -> \(replacementValue)")
                 }
             }
         }
@@ -208,7 +204,6 @@ class ProcessorExecutor {
             errorPipe.fileHandleForReading.readabilityHandler = nil
             
             if process.terminationStatus != 0 {
-                Logger.shared.error("处理器执行失败，退出码: \(process.terminationStatus)")
                 throw GlobalError.download(
                     chineseMessage: "处理器执行失败 (退出码: \(process.terminationStatus))",
                     i18nKey: "error.download.processor_execution_failed",
@@ -216,10 +211,8 @@ class ProcessorExecutor {
                 )
             }
             
-            Logger.shared.info("处理器执行成功，退出码: \(process.terminationStatus)")
-            
+
         } catch {
-            Logger.shared.error("启动处理器失败: \(error.localizedDescription)")
             throw GlobalError.download(
                 chineseMessage: "启动处理器失败: \(error.localizedDescription)",
                 i18nKey: "error.download.processor_start_failed",
@@ -232,14 +225,12 @@ class ProcessorExecutor {
         outputPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             if !data.isEmpty, let output = String(data: data, encoding: .utf8) {
-                Logger.shared.info("处理器输出: \(output.trimmingCharacters(in: .whitespacesAndNewlines))")
             }
         }
         
         errorPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             if !data.isEmpty, let errorOutput = String(data: data, encoding: .utf8) {
-                Logger.shared.warning("处理器错误输出: \(errorOutput.trimmingCharacters(in: .whitespacesAndNewlines))")
             }
         }
     }
@@ -274,7 +265,6 @@ class ProcessorExecutor {
         }
         
         guard let manifestEntry = archive["META-INF/MANIFEST.MF"] else {
-            Logger.shared.warning("JAR文件中没有找到MANIFEST.MF")
             throw GlobalError.download(
                 chineseMessage: "无法从processor JAR文件中获取主类: \(jarPath.lastPathComponent)",
                 i18nKey: "error.download.processor_main_class_not_found",
@@ -301,12 +291,10 @@ class ProcessorExecutor {
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)
             if trimmedLine.hasPrefix("Main-Class:") {
                 let mainClass = trimmedLine.dropFirst("Main-Class:".count).trimmingCharacters(in: .whitespaces)
-                Logger.shared.info("从MANIFEST.MF解析到主类: \(mainClass)")
                 return mainClass
             }
         }
         
-        Logger.shared.warning("MANIFEST.MF中没有找到Main-Class")
         throw GlobalError.download(
             chineseMessage: "无法从processor JAR文件中获取主类: \(jarPath.lastPathComponent)",
             i18nKey: "error.download.processor_main_class_not_found",
