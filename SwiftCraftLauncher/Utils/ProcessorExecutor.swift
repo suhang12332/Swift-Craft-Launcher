@@ -17,7 +17,38 @@ class ProcessorExecutor {
         gameVersion: String,
         data: [String: String]? = nil
     ) async throws {
-        guard let jar = processor.jar else {
+        // 1. 验证和准备JAR文件
+        let jarPath = try validateAndGetJarPath(processor.jar, librariesDir: librariesDir)
+        
+        // 2. 构建classpath
+        let classpath = try buildClasspath(processor.classpath, jarPath: jarPath, librariesDir: librariesDir)
+        
+        // 3. 获取主类
+        let mainClass = try getMainClassFromJar(jarPath: jarPath)
+        
+        // 4. 构建Java命令
+        let command = buildJavaCommand(
+            classpath: classpath,
+            mainClass: mainClass,
+            args: processor.args,
+            gameVersion: gameVersion,
+            librariesDir: librariesDir,
+            data: data
+        )
+        
+        // 5. 执行Java命令
+        try await executeJavaCommand(command, workingDir: librariesDir)
+        
+        // 6. 处理输出文件
+        if let outputs = processor.outputs {
+            try await processOutputs(outputs, workingDir: librariesDir)
+        }
+    }
+    
+    // MARK: - Private Helper Methods
+    
+    private static func validateAndGetJarPath(_ jar: String?, librariesDir: URL) throws -> URL {
+        guard let jar = jar else {
             throw GlobalError.validation(
                 chineseMessage: "处理器缺少JAR文件配置",
                 i18nKey: "error.validation.processor_missing_jar",
@@ -25,39 +56,34 @@ class ProcessorExecutor {
             )
         }
         
-        // 1. 找到processor的JAR文件
         guard let relativePath = CommonService.mavenCoordinateToRelativePath(jar) else {
             throw GlobalError.validation(
                 chineseMessage: "无效的Maven坐标: \(jar)",
-                i18nKey: String(format:"error.validation.invalid_maven_coordinate", jar),
-                level: .notification
-            )
-        }
-        let jarPath = librariesDir.appendingPathComponent(relativePath)
-        guard FileManager.default.fileExists(atPath: jarPath.path) else {
-            throw GlobalError.resource(
-                chineseMessage: "找不到处理器JAR文件: \(jar)",
-                i18nKey: String(format:"error.resource.processor_jar_not_found", jar),
+                i18nKey: String(format: "error.validation.invalid_maven_coordinate", jar),
                 level: .notification
             )
         }
         
-        // 2. 构建classpath
-        var classpath: [String] = []  // 初始化为空数组
-        if let processorClasspath = processor.classpath {
+        let jarPath = librariesDir.appendingPathComponent(relativePath)
+        guard FileManager.default.fileExists(atPath: jarPath.path) else {
+            throw GlobalError.resource(
+                chineseMessage: "找不到处理器JAR文件: \(jar)",
+                i18nKey: String(format: "error.resource.processor_jar_not_found", jar),
+                level: .notification
+            )
+        }
+        
+        return jarPath
+    }
+    
+    private static func buildClasspath(_ processorClasspath: [String]?, jarPath: URL, librariesDir: URL) throws -> [String] {
+        var classpath: [String] = []
+        
+        if let processorClasspath = processorClasspath {
             for cp in processorClasspath {
-                let cpPath: URL
-                if cp.contains(":") {
-                    // 这是Maven坐标，需要转换为路径
-                    guard let relativePath = CommonService.mavenCoordinateToRelativePath(cp) else {
-                        Logger.shared.warning("跳过无效的classpath坐标: \(cp)")
-                        continue
-                    }
-                    cpPath = librariesDir.appendingPathComponent(relativePath)
-                } else {
-                    // 这已经是相对路径
-                    cpPath = librariesDir.appendingPathComponent(cp)
-                }
+                let cpPath = cp.contains(":") 
+                    ? try getMavenPath(cp, librariesDir: librariesDir)
+                    : librariesDir.appendingPathComponent(cp)
                 
                 if FileManager.default.fileExists(atPath: cpPath.path) {
                     classpath.append(cpPath.path)
@@ -67,96 +93,99 @@ class ProcessorExecutor {
             }
         }
         
-        // 添加processor的主JAR文件到classpath
         classpath.append(jarPath.path)
         Logger.shared.info("Processor classpath: \(classpath.joined(separator: ":"))")
         
-        // 3. 构建Java命令
-        var command = ["-cp", classpath.joined(separator: ":")]
-        
-        // 获取processor的主类
-        let mainClass = try getMainClassFromJar(jarPath: jarPath)
-        guard let mainClass = mainClass else {
-            throw GlobalError.download(
-                chineseMessage: "无法从processor JAR文件中获取主类: \(jarPath.lastPathComponent)",
-                i18nKey: "error.download.processor_main_class_not_found",
+        return classpath
+    }
+    
+    private static func getMavenPath(_ coordinate: String, librariesDir: URL) throws -> URL {
+        guard let relativePath = CommonService.mavenCoordinateToRelativePath(coordinate) else {
+            Logger.shared.warning("跳过无效的classpath坐标: \(coordinate)")
+            throw GlobalError.validation(
+                chineseMessage: "无效的Maven坐标: \(coordinate)",
+                i18nKey: String(format: "error.validation.invalid_maven_coordinate", coordinate),
                 level: .notification
             )
         }
-        
-        // 添加主类
+        return librariesDir.appendingPathComponent(relativePath)
+    }
+    
+    private static func buildJavaCommand(
+        classpath: [String],
+        mainClass: String,
+        args: [String]?,
+        gameVersion: String,
+        librariesDir: URL,
+        data: [String: String]?
+    ) -> [String] {
+        var command = ["-cp", classpath.joined(separator: ":")]
         command.append(mainClass)
-        Logger.shared.info("使用主类执行processor: \(mainClass)")
         
-        Logger.shared.info("使用-cp方式执行processor")
-        
-        // 添加处理器参数
-        if let args = processor.args {
-            Logger.shared.info("开始处理processor参数")
-            
+        if let args = args {
             let processedArgs = args.map { arg in
-                var processedArg = arg
-                
-                // 基础占位符替换
-                processedArg = processedArg.replacingOccurrences(of: "{SIDE}", with: "client")
-                    .replacingOccurrences(of: "{VERSION}", with: gameVersion)
-                    .replacingOccurrences(of: "{VERSION_NAME}", with: gameVersion)
-                    .replacingOccurrences(of: "{LIBRARY_DIR}", with: librariesDir.path)
-                    .replacingOccurrences(of: "{WORKING_DIR}", with: librariesDir.path)
-                
-                // 处理data字段的占位符替换
-                if let data = data {
-                    for (key, value) in data {
-                        let placeholder = "{\(key)}"
-                        if processedArg.contains(placeholder) {
-                            // 如果值是Maven坐标，转换为文件路径
-                            let replacementValue: String
-                            if value.contains(":") && !value.hasPrefix("/") {
-                                // 这是Maven坐标，需要转换为路径
-                                if let relativePath = CommonService.mavenCoordinateToRelativePath(value) {
-                                    replacementValue = librariesDir.appendingPathComponent(relativePath).path
-                                    Logger.shared.info("转换Maven坐标 \(value) -> \(replacementValue)")
-                                } else {
-                                    replacementValue = value
-                                    Logger.shared.warning("无法转换Maven坐标: \(value)")
-                                }
-                            } else {
-                                replacementValue = value
-                            }
-                            
-                            processedArg = processedArg.replacingOccurrences(of: placeholder, with: replacementValue)
-                            Logger.shared.info("替换占位符 \(placeholder) -> \(replacementValue)")
-                        }
-                    }
-                } else {
-                    Logger.shared.warning("没有data字段，无法进行占位符替换")
-                }
-                
-                return processedArg
+                processPlaceholders(
+                    CommonFileManager.extractClientValue(from: arg)!,
+                    gameVersion: gameVersion,
+                    librariesDir: librariesDir,
+                    data: data
+                )
             }
             command.append(contentsOf: processedArgs)
         }
         
         Logger.shared.info("完整Java命令: \(command.joined(separator: " "))")
-        Logger.shared.info("工作目录: \(librariesDir.path)")
-        Logger.shared.info("库目录: \(librariesDir.path)")
-        Logger.shared.info("Processor JAR路径: \(jarPath.path)")
-        Logger.shared.info("Processor配置: jar=\(processor.jar ?? "nil"), sides=\(processor.sides ?? []), args=\(processor.args ?? [])")
-        Logger.shared.info("Processor classpath: \(processor.classpath ?? [])")
-        Logger.shared.info("Processor outputs: \(processor.outputs ?? [:])")
-        Logger.shared.info("Classpath字符串: \(classpath.joined(separator: ":"))")
+        return command
+    }
+    
+    private static func processPlaceholders(
+        _ arg: String,
+        gameVersion: String,
+        librariesDir: URL,
+        data: [String: String]?
+    ) -> String {
+        var processedArg = arg
         
-        // 4. 执行Java命令
+        // 基础占位符替换
+        let basicReplacements = [
+            "{SIDE}": "client",
+            "{VERSION}": gameVersion,
+            "{VERSION_NAME}": gameVersion,
+            "{LIBRARY_DIR}": librariesDir.path,
+            "{WORKING_DIR}": librariesDir.path
+        ]
+        
+        for (placeholder, value) in basicReplacements {
+            processedArg = processedArg.replacingOccurrences(of: placeholder, with: value)
+        }
+        
+        // 处理data字段的占位符替换
+        if let data = data {
+            for (key, value) in data {
+                let placeholder = "{\(key)}"
+                if processedArg.contains(placeholder) {
+                    let replacementValue = value.contains(":") && !value.hasPrefix("/")
+                        ? (CommonFileManager.extractClientValue(from: value).map { librariesDir.appendingPathComponent($0).path } ?? value)
+                        : value
+                    
+                    processedArg = processedArg.replacingOccurrences(of: placeholder, with: replacementValue)
+                    Logger.shared.info("替换占位符 \(placeholder) -> \(replacementValue)")
+                }
+            }
+        }
+        
+        return processedArg
+    }
+    
+    private static func executeJavaCommand(_ command: [String], workingDir: URL) async throws {
         let process = Process()
-        
-        // 直接使用java命令
         process.executableURL = URL(fileURLWithPath: "/usr/bin/java")
         process.arguments = command
-        process.currentDirectoryURL = librariesDir
+        process.currentDirectoryURL = workingDir
         
         // 设置环境变量
         var environment = ProcessInfo.processInfo.environment
-        environment["LIBRARY_DIR"] = librariesDir.path
+        environment["LIBRARY_DIR"] = workingDir.path
         process.environment = environment
         
         // 捕获输出
@@ -165,42 +194,18 @@ class ProcessorExecutor {
         process.standardOutput = outputPipe
         process.standardError = errorPipe
         
-        // 打印完整的Java命令（包括java可执行文件）
-        let fullCommand = ["/usr/bin/java"] + command
-        Logger.shared.info("执行处理器命令: \(fullCommand.joined(separator: " "))")
         
         do {
             try process.run()
             
             // 实时读取输出
-            let outputHandle = outputPipe.fileHandleForReading
-            let errorHandle = errorPipe.fileHandleForReading
-            
-            // 设置输出读取
-            outputHandle.readabilityHandler = { handle in
-                let data = handle.availableData
-                if !data.isEmpty {
-                    if let output = String(data: data, encoding: .utf8) {
-                        Logger.shared.info("处理器输出: \(output.trimmingCharacters(in: .whitespacesAndNewlines))")
-                    }
-                }
-            }
-            
-            // 设置错误输出读取
-            errorHandle.readabilityHandler = { handle in
-                let data = handle.availableData
-                if !data.isEmpty {
-                    if let errorOutput = String(data: data, encoding: .utf8) {
-                        Logger.shared.warning("处理器错误输出: \(errorOutput.trimmingCharacters(in: .whitespacesAndNewlines))")
-                    }
-                }
-            }
+            setupOutputHandlers(outputPipe: outputPipe, errorPipe: errorPipe)
             
             process.waitUntilExit()
             
             // 清理handlers
-            outputHandle.readabilityHandler = nil
-            errorHandle.readabilityHandler = nil
+            outputPipe.fileHandleForReading.readabilityHandler = nil
+            errorPipe.fileHandleForReading.readabilityHandler = nil
             
             if process.terminationStatus != 0 {
                 Logger.shared.error("处理器执行失败，退出码: \(process.terminationStatus)")
@@ -213,11 +218,6 @@ class ProcessorExecutor {
             
             Logger.shared.info("处理器执行成功，退出码: \(process.terminationStatus)")
             
-            // 5. 处理输出文件（如果需要）
-            if let outputs = processor.outputs {
-                try await processOutputs(outputs, workingDir: librariesDir)
-            }
-            
         } catch {
             Logger.shared.error("启动处理器失败: \(error.localizedDescription)")
             throw GlobalError.download(
@@ -228,11 +228,22 @@ class ProcessorExecutor {
         }
     }
     
-    /// 处理输出文件
-    /// - Parameters:
-    ///   - outputs: 输出文件映射
-    ///   - workingDir: 工作目录
-    /// - Throws: GlobalError 当处理失败时
+    private static func setupOutputHandlers(outputPipe: Pipe, errorPipe: Pipe) {
+        outputPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            if !data.isEmpty, let output = String(data: data, encoding: .utf8) {
+                Logger.shared.info("处理器输出: \(output.trimmingCharacters(in: .whitespacesAndNewlines))")
+            }
+        }
+        
+        errorPipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            if !data.isEmpty, let errorOutput = String(data: data, encoding: .utf8) {
+                Logger.shared.warning("处理器错误输出: \(errorOutput.trimmingCharacters(in: .whitespacesAndNewlines))")
+            }
+        }
+    }
+    
     private static func processOutputs(_ outputs: [String: String], workingDir: URL) async throws {
         let fileManager = FileManager.default
         
@@ -253,11 +264,7 @@ class ProcessorExecutor {
         }
     }
     
-    /// 从JAR文件中解析MANIFEST.MF获取主类
-    /// - Parameter jarPath: JAR文件路径
-    /// - Returns: 主类名，如果没有则返回nil
-    /// - Throws: GlobalError 当解析失败时
-    private static func getMainClassFromJar(jarPath: URL) throws -> String? {
+    private static func getMainClassFromJar(jarPath: URL) throws -> String {
         guard let archive = Archive(url: jarPath, accessMode: .read) else {
             throw GlobalError.download(
                 chineseMessage: "无法打开JAR文件: \(jarPath.lastPathComponent)",
@@ -266,13 +273,15 @@ class ProcessorExecutor {
             )
         }
         
-        // 查找MANIFEST.MF文件
         guard let manifestEntry = archive["META-INF/MANIFEST.MF"] else {
             Logger.shared.warning("JAR文件中没有找到MANIFEST.MF")
-            return nil
+            throw GlobalError.download(
+                chineseMessage: "无法从processor JAR文件中获取主类: \(jarPath.lastPathComponent)",
+                i18nKey: "error.download.processor_main_class_not_found",
+                level: .notification
+            )
         }
         
-        // 读取MANIFEST.MF内容
         var manifestData = Data()
         _ = try archive.extract(manifestEntry) { data in
             manifestData.append(data)
@@ -298,6 +307,10 @@ class ProcessorExecutor {
         }
         
         Logger.shared.warning("MANIFEST.MF中没有找到Main-Class")
-        return nil
+        throw GlobalError.download(
+            chineseMessage: "无法从processor JAR文件中获取主类: \(jarPath.lastPathComponent)",
+            i18nKey: "error.download.processor_main_class_not_found",
+            level: .notification
+        )
     }
 }

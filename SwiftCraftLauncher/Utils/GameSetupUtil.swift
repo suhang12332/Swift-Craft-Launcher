@@ -110,13 +110,7 @@ class GameSetupUtil: ObservableObject {
                 return
             }
             
-            // 设置模组加载器
-            let modLoaderResult = try await setupModLoaderIfNeeded(
-                selectedModLoader: selectedModLoader,
-                selectedGameVersion: selectedGameVersion,
-                gameName: gameName,
-                gameIcon: gameIcon
-            )
+            
             
             // 下载 Mojang manifest
             let downloadedManifest = try await fetchMojangManifest(from: mojangVersion.url)
@@ -130,7 +124,13 @@ class GameSetupUtil: ObservableObject {
                 manifest: downloadedManifest,
                 gameName: gameName
             )
-            
+            // 设置模组加载器
+            let modLoaderResult = try await setupModLoaderIfNeeded(
+                selectedModLoader: selectedModLoader,
+                selectedGameVersion: selectedGameVersion,
+                gameName: gameName,
+                gameIcon: gameIcon
+            )
             // 完善游戏信息
             gameInfo = await finalizeGameInfo(
                 gameInfo: gameInfo,

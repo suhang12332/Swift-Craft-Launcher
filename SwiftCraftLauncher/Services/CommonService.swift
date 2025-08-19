@@ -185,29 +185,70 @@ class CommonService {
         return coordinate
     }
     
-    /// 处理包含@符号的Maven坐标
+    /// 解析包含@符号的Maven坐标的公共逻辑
     /// - Parameter coordinate: Maven坐标
-    /// - Returns: 文件路径
-    static func convertMavenCoordinateWithAtSymbol(_ coordinate: String) -> String {
+    /// - Returns: 相对路径
+    private static func parseMavenCoordinateWithAtSymbol(_ coordinate: String) -> String {
         let parts = coordinate.components(separatedBy: ":")
         guard parts.count >= 3 else { return coordinate }
         
         let groupId = parts[0]
         let artifactId = parts[1]
-        let version = parts[2]
-        let classifier = parts.count > 3 ? parts[3] : ""
+        
+        // 处理版本部分，可能包含@符号
+        var version = parts[2]
+        var classifier = ""
+        var classifierName = ""
+        
+        // 检查版本部分是否包含@符号
+        if version.contains("@") {
+            let versionParts = version.components(separatedBy: "@")
+            if versionParts.count >= 2 {
+                version = versionParts[0]
+                classifier = versionParts[1]
+            }
+        } else if parts.count > 3 {
+            // 如果没有@符号在版本中，但有额外的部分，则作为classifier处理
+            let classifierPart = parts[3]
+            // 检查classifier部分是否包含@符号（如 client@lzma）
+            if classifierPart.contains("@") {
+                let classifierParts = classifierPart.components(separatedBy: "@")
+                if classifierParts.count >= 2 {
+                    classifierName = classifierParts[0] // 取@前面的部分作为classifier名称
+                    classifier = classifierParts[1] // 取@后面的部分作为扩展名
+                }
+            } else {
+                classifier = classifierPart
+            }
+        }
         
         // 构建文件名
         var fileName = "\(artifactId)-\(version)"
-        if !classifier.isEmpty {
-            let processedClassifier = classifier.replacingOccurrences(of: "@", with: ".")
-            fileName += "-\(processedClassifier)"
+        
+        // 如果有classifier名称，添加到文件名中
+        if !classifierName.isEmpty {
+            fileName += "-\(classifierName)"
         }
         
-        // 包含@符号的Maven坐标不添加.jar扩展名
-        // 构建完整路径
+        // 根据classifier添加相应的文件扩展名
+        if !classifier.isEmpty {
+            // 对于包含@符号的坐标，@后面的部分直接作为文件扩展名
+            fileName += ".\(classifier)"
+        } else {
+            // 没有classifier时，默认添加.jar扩展名
+            fileName += ".jar"
+        }
+        
+        // 构建相对路径
         let groupPath = groupId.replacingOccurrences(of: ".", with: "/")
-        let relativePath = "\(groupPath)/\(artifactId)/\(version)/\(fileName)"
+        return "\(groupPath)/\(artifactId)/\(version)/\(fileName)"
+    }
+    
+    /// 处理包含@符号的Maven坐标
+    /// - Parameter coordinate: Maven坐标
+    /// - Returns: 文件路径
+    static func convertMavenCoordinateWithAtSymbol(_ coordinate: String) -> String {
+        let relativePath = parseMavenCoordinateWithAtSymbol(coordinate)
         
         guard let librariesDir = AppPaths.librariesDirectory else {
             return relativePath
@@ -269,25 +310,7 @@ class CommonService {
     /// - Parameter coordinate: Maven坐标
     /// - Returns: 相对路径
     static func convertMavenCoordinateWithAtSymbolForURL(_ coordinate: String) -> String {
-        let parts = coordinate.components(separatedBy: ":")
-        guard parts.count >= 3 else { return coordinate }
-        
-        let groupId = parts[0]
-        let artifactId = parts[1]
-        let version = parts[2]
-        let classifier = parts.count > 3 ? parts[3] : ""
-        
-        // 构建文件名
-        var fileName = "\(artifactId)-\(version)"
-        if !classifier.isEmpty {
-            let processedClassifier = classifier.replacingOccurrences(of: "@", with: ".")
-            fileName += "-\(processedClassifier)"
-        }
-        
-        // 包含@符号的Maven坐标不添加.jar扩展名
-        // 构建相对路径（不包含本地目录）
-        let groupPath = groupId.replacingOccurrences(of: ".", with: "/")
-        return "\(groupPath)/\(artifactId)/\(version)/\(fileName)"
+        return parseMavenCoordinateWithAtSymbol(coordinate)
     }
     
     /// Maven 坐标转 FabricMC Maven 仓库 URL

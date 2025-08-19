@@ -191,7 +191,7 @@ class CommonFileManager {
         // 解析version.json中的data字段
         if let data = data {
             for (key, sidedEntry) in data {
-                processorData[key] = extractClientValue(from: sidedEntry.client) ?? sidedEntry.client
+                processorData[key] = CommonFileManager.extractClientValue(from: sidedEntry.client) ?? sidedEntry.client
             }
         }
         
@@ -228,7 +228,7 @@ class CommonFileManager {
     /// 从data字段值中提取client端的数据
     /// - Parameter value: data字段的值
     /// - Returns: client端的数据，如果无法解析则返回nil
-    private func extractClientValue(from value: String) -> String? {
+    static public func extractClientValue(from value: String) -> String? {
         // 如果是Maven坐标格式，直接转换为路径
         if value.contains(":") && !value.hasPrefix("[") && !value.hasPrefix("{") {
             return CommonService.convertMavenCoordinateToPath(value)

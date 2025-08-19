@@ -58,11 +58,7 @@ class NeoForgeLoaderService {
         }
         
         var loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
-        // 替换指定library的artifact.url
-        if let dataJsonString = String(data: data, encoding: .utf8) {
-            CommonService.parseDataFieldAndAddLibraries(to: &loader, dataJsonString: dataJsonString,url: URLConfig.API.NeoForge.gitReleasesBase
-                .appendingPathComponent(neoForgeVersion))
-        }
+    
         loader.version = neoForgeVersion
         AppCacheManager.shared.setSilently(namespace: "neoforge", key: cacheKey, value: loader)
         return loader
@@ -84,7 +80,21 @@ class NeoForgeLoaderService {
         }
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
         fileManager.onProgressUpdate = onProgressUpdate
+        
+        // 第一步：下载所有downloadable=true的库文件
         await fileManager.downloadForgeJars(libraries: neoForgeProfile.libraries)
+        
+        // 第二步：执行processors（如果存在）
+        if let processors = neoForgeProfile.processors, !processors.isEmpty {
+                        
+            try await fileManager.executeProcessors(
+                processors: processors,
+                librariesDir: librariesDirectory,
+                gameVersion: gameVersion,
+                data: neoForgeProfile.data,
+                gameName: gameInfo.gameName
+            )
+        }
         
         let classpathString = CommonService.generateClasspath(from: neoForgeProfile, librariesDir: librariesDirectory)
         let mainClass = neoForgeProfile.mainClass

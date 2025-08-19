@@ -734,3 +734,11 @@
 "yggdrasil.auth.failed" = "登录失败";
 "yggdrasil.auth.retry_message" = "请点击下方的\"重试\"按钮重新开始认证";
 
+"error.download.processor_start_failed" = "执行处理器失败";
+"error.validation.processor_missing_jar" = "处理器缺少JAR文件配置";
+"error.validation.invalid_maven_coordinate" = "无效的Maven坐标: %@";
+"error.resource.processor_jar_not_found" = "找不到处理器JAR文件: %@";
+"error.download.processor_execution_failed" = "处理器执行失败 (退出码: %d)";
+"error.download.processor_main_class_not_found" = "无法从processor JAR文件中获取主类: %@";
+"error.download.jar_open_failed" = "无法打开JAR文件: %@";
+"error.download.manifest_parse_failed" = "无法解析MANIFEST.MF内容";
