@@ -161,131 +161,160 @@ class CommonService {
     }
 
     
-    /// 解析 ModrinthLoader 的 data 字段，提取 client 库并追加到 libraries
-    static func parseDataFieldAndAddLibraries(to loader: inout ModrinthLoader, dataJsonString: String, url: URL) {
-        guard let data = dataJsonString.data(using: .utf8) else { 
-            Logger.shared.error("解析 data 字段失败: 无法将字符串转换为数据")
-            return 
+    
+    
+    
+    /// 将Maven坐标转换为文件路径（支持classifier和@符号）
+    /// - Parameter coordinate: Maven坐标
+    /// - Returns: 文件路径
+    static func convertMavenCoordinateToPath(_ coordinate: String) -> String {
+        // 检查是否包含@符号，需要特殊处理
+        if coordinate.contains("@") {
+            return convertMavenCoordinateWithAtSymbol(coordinate)
         }
         
-        do {
-            // 解析 data 字段的 JSON
-            let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
-            
-            // 检查是否为字典类型
-            guard let jsonDict = jsonObject as? [String: Any] else { 
-                Logger.shared.error("解析 data 字段失败: JSON 不是字典类型")
-                return 
+        // 对于标准Maven坐标，使用CommonService的方法
+        if let relativePath = mavenCoordinateToRelativePath(coordinate) {
+            guard let librariesDir = AppPaths.librariesDirectory else {
+                return relativePath
             }
-            
-            // 先将 jsonDict["data"] 转为 [String: Any]，再遍历
-            if let dataDict = jsonDict["data"] as? [String: Any] {
-                for (_, value) in dataDict {
-                guard let objectDict = value as? [String: Any] else { continue }
-                
-                if let clientValue = objectDict["client"] {
-                        // 1. 直接是 [String]
-                         if let clientString = clientValue as? String {
-                            // 去除单引号和双引号
-                            let trimmed = clientString.trimmingCharacters(in: CharacterSet(charactersIn: "'\""))
-                            // 尝试解析为数组
-                            if trimmed.hasPrefix("[") && trimmed.hasSuffix("]") {
-                                // 去除前后中括号
-                                let inner = trimmed.dropFirst().dropLast()
-                                // 按逗号分割并去除空格
-                                let coordinates = inner.split(separator: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-                                for clientCoordinate in coordinates {
-                                    if !clientCoordinate.isEmpty, let library = createLibraryFromCoordinate(clientCoordinate,url) {
-                                        if let idx = loader.libraries.firstIndex(where: { $0.name.contains(library.name) }) {
-                                            if loader.libraries[idx].downloads != nil {
-                                                // 只替换 url 如果此处还能拼接上，说明这个文件需要下载
-                                                loader.libraries[idx].downloads!.artifact.url = library.downloads!.artifact.url
-                                                loader.libraries[idx].downloadable = true
-                                            }
-                                        } else {
-                                            loader.libraries.append(library)
-                                        }
-                                    }
-                                }
-                            }
-                            // 3. 不是数组，是 hash 或其他，跳过
-                        }
-                    }
-                }
-            }
-        } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error("解析 data 字段失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            return librariesDir.appendingPathComponent(relativePath).path
         }
+        
+        // 如果CommonService方法失败，可能是非标准格式，返回原值
+        return coordinate
     }
     
-    /// 从坐标创建 ModrinthLoaderLibrary 对象
-    private static func createLibraryFromCoordinate(_ coordinate: String,_ url: URL) -> ModrinthLoaderLibrary? {
-        // 解析坐标格式：net.minecraft:client:1.21.8:mappings@tsrg
+    /// 处理包含@符号的Maven坐标
+    /// - Parameter coordinate: Maven坐标
+    /// - Returns: 文件路径
+    static func convertMavenCoordinateWithAtSymbol(_ coordinate: String) -> String {
         let parts = coordinate.components(separatedBy: ":")
-        guard parts.count >= 3 else { return nil }
+        guard parts.count >= 3 else { return coordinate }
         
-        let groupId = parts[0] // net.minecraft
-        let artifactId = parts[1] // client
-        let version = parts[2] // 1.21.8
+        let groupId = parts[0]
+        let artifactId = parts[1]
+        let version = parts[2]
+        let classifier = parts.count > 3 ? parts[3] : ""
         
-        // 检查是否有 @ 分隔符
-        let artifactAndClassifier = parts.count > 3 ? parts[3] : ""
-        let artifactClassifierParts = artifactAndClassifier.components(separatedBy: "@")
-        let classifier = artifactClassifierParts.first ?? ""
-        let fileExtension = artifactClassifierParts.count > 1 ? artifactClassifierParts[1] : "jar"
-        
-        // 构建路径：net/minecraftforge/forge/1.21.8-58.0.1/forge-1.21.8-58.0.1-client.jar
+        // 构建文件名
         var fileName = "\(artifactId)-\(version)"
         if !classifier.isEmpty {
-            fileName += "-\(classifier)"
+            let processedClassifier = classifier.replacingOccurrences(of: "@", with: ".")
+            fileName += "-\(processedClassifier)"
         }
-        fileName += ".\(fileExtension)"
-        let finalPath = "\(groupId.replacingOccurrences(of: ".", with: "/"))/\(artifactId)/\(version)/\(fileName)"
         
-        // 创建 LibraryArtifact
-        let artifact = LibraryArtifact(
-            path: finalPath,
-            sha1: "", // data 字段中通常没有 sha1
-            size: 0,  // data 字段中通常没有 size
-            url:  url.appendingPathComponent(fileName) // data 字段中通常没有 url
-        )
+        // 包含@符号的Maven坐标不添加.jar扩展名
+        // 构建完整路径
+        let groupPath = groupId.replacingOccurrences(of: ".", with: "/")
+        let relativePath = "\(groupPath)/\(artifactId)/\(version)/\(fileName)"
         
-        // 创建 LibraryDownloads
-        let downloads = LibraryDownloads(artifact: artifact,classifiers: nil)
-        
-        // 创建 ModrinthLoaderLibrary
-        return ModrinthLoaderLibrary(
-            downloads: downloads,
-            name: coordinate,
-            includeInClasspath: false,
-            downloadable: true,
-            skip: true,
-
-        )
+        guard let librariesDir = AppPaths.librariesDirectory else {
+            return relativePath
+        }
+        return librariesDir.appendingPathComponent(relativePath).path
     }
-    
     /// Maven 坐标转相对路径
     /// - Parameter coordinate: Maven 坐标
     /// - Returns: 相对路径
     static func mavenCoordinateToRelativePath(_ coordinate: String) -> String? {
         let parts = coordinate.split(separator: ":")
-        guard parts.count == 3 else { return nil }
+        guard parts.count >= 3 else { return nil }
+        
         let group = parts[0].replacingOccurrences(of: ".", with: "/")
         let artifact = parts[1]
+        
+        var version = ""
+        var classifier: String? = nil
+        
+        if parts.count == 3 {
+            // group:artifact:version
+            version = String(parts[2])
+        } else if parts.count == 4 {
+            // group:artifact:version:classifier  (MC这种情况)
+            version = String(parts[2])
+            classifier = String(parts[3])
+        } else if parts.count == 5 {
+            // group:artifact:packaging:classifier:version
+            version = String(parts[4])
+            classifier = String(parts[3])
+        }
+        
+        if let classifier = classifier {
+            return "\(group)/\(artifact)/\(version)/\(artifact)-\(version)-\(classifier).jar"
+        } else {
+            return "\(group)/\(artifact)/\(version)/\(artifact)-\(version).jar"
+        }
+    }
+    
+    /// Maven 坐标转相对路径（支持特殊格式）
+    /// - Parameter coordinate: Maven 坐标
+    /// - Returns: 相对路径
+    static func mavenCoordinateToRelativePathForURL(_ coordinate: String) -> String {
+        // 检查是否包含@符号，需要特殊处理
+        if coordinate.contains("@") {
+            return convertMavenCoordinateWithAtSymbolForURL(coordinate)
+        }
+        
+        // 对于标准Maven坐标，使用标准方法
+        if let relativePath = mavenCoordinateToRelativePath(coordinate) {
+            return relativePath
+        }
+        
+        // 如果标准方法失败，可能是非标准格式，返回原值
+        return coordinate
+    }
+    
+    /// 处理包含@符号的Maven坐标（用于URL构建）
+    /// - Parameter coordinate: Maven坐标
+    /// - Returns: 相对路径
+    static func convertMavenCoordinateWithAtSymbolForURL(_ coordinate: String) -> String {
+        let parts = coordinate.components(separatedBy: ":")
+        guard parts.count >= 3 else { return coordinate }
+        
+        let groupId = parts[0]
+        let artifactId = parts[1]
         let version = parts[2]
-        return "\(group)/\(artifact)/\(version)/\(artifact)-\(version).jar"
+        let classifier = parts.count > 3 ? parts[3] : ""
+        
+        // 构建文件名
+        var fileName = "\(artifactId)-\(version)"
+        if !classifier.isEmpty {
+            let processedClassifier = classifier.replacingOccurrences(of: "@", with: ".")
+            fileName += "-\(processedClassifier)"
+        }
+        
+        // 包含@符号的Maven坐标不添加.jar扩展名
+        // 构建相对路径（不包含本地目录）
+        let groupPath = groupId.replacingOccurrences(of: ".", with: "/")
+        return "\(groupPath)/\(artifactId)/\(version)/\(fileName)"
     }
     
     /// Maven 坐标转 FabricMC Maven 仓库 URL
     /// - Parameter coordinate: Maven 坐标
     /// - Returns: Maven 仓库 URL
-    static func mavenCoordinateToURL(lib: ModrinthLoaderLibrary) -> URL? {
-        guard let relPath = mavenCoordinateToRelativePath(lib.name) else { return nil }
-        return lib.url!.appendingPathComponent(relPath)
+    static func mavenCoordinateToURL(lib: ModrinthLoaderLibrary) -> URL {
+        // 使用相对路径而不是完整路径来构建URL
+        let relativePath = mavenCoordinateToRelativePathForURL(lib.name)
+        return lib.url!.appendingPathComponent(relativePath)
     }
     
+    /// Maven 坐标转默认 Minecraft 库 URL
+    /// - Parameter coordinate: Maven 坐标
+    /// - Returns: Minecraft 库 URL
+    static func mavenCoordinateToDefaultURL(_ coordinate: String,url: URL) -> URL {
+        // 使用相对路径而不是完整路径来构建URL
+        let relativePath = mavenCoordinateToRelativePathForURL(coordinate)
+        return url.appendingPathComponent(relativePath)
+    }
+    
+    /// Maven 坐标转默认路径（用于本地文件路径）
+    /// - Parameter coordinate: Maven 坐标
+    /// - Returns: 本地文件路径
+    static func mavenCoordinateToDefaultPath(_ coordinate: String) -> String {
+        // 使用相对路径而不是完整路径来构建URL
+        return mavenCoordinateToRelativePathForURL(coordinate)
+    }
     /// 根据 FabricLoader 生成 classpath 字符串
     /// - Parameters:
     ///   - loader: Fabric 加载器
@@ -300,22 +329,7 @@ class CommonService {
         return jarPaths.joined(separator: ":")
     }
     
-    /// 将 Maven URL 转换为 Maven 路径
-    /// - Parameter url: Maven URL
-    /// - Returns: Maven 路径
-    static func mavenURLToMavenPath(url: URL) -> String {
-        let path = url.path
-        // 1. 将路径按 "/" 分割成组件
-        var components = path.split(separator: "/", omittingEmptySubsequences: true).map(String.init)
-            
-        // 2. 找到第一个 "maven" 并移除（如果存在）
-        if let index = components.firstIndex(of: "maven") {
-            components.remove(at: index)
-        }
-            
-        // 3. 重新拼接为路径字符串
-        return components.joined(separator: "/")
-    }
+    
     
     /// 处理 ModrinthLoader 中的游戏版本占位符
     /// - Parameters:

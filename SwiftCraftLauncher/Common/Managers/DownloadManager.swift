@@ -187,6 +187,10 @@ class DownloadManager {
             
             // 原子性地移动到最终位置
             do {
+                // 如果目标文件已存在，先删除它
+                if fileManager.fileExists(atPath: destinationURL.path) {
+                    try fileManager.removeItem(at: destinationURL)
+                }
                 try fileManager.moveItem(at: tempFileURL, to: destinationURL)
             } catch {
                 throw GlobalError.fileSystem(

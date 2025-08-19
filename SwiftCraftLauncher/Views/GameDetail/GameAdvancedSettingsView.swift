@@ -15,7 +15,7 @@ struct GameAdvancedSettingsView: View {
     
     
     // Java和内存设置
-    @State private var memoryRange: ClosedRange<Double> = 2048...4096
+    @State private var memoryRange: ClosedRange<Double> = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
     @State private var jvmArguments: String = ""
     @State private var environmentVariables: String = ""
     
@@ -24,13 +24,7 @@ struct GameAdvancedSettingsView: View {
     @State private var showResetAlert = false
     @State private var error: GlobalError?
     
-    private var maximumMemoryAllocation: Int {
-        let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
-        let physicalMemoryMB = physicalMemoryBytes / 1_048_576
-        let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
-        let roundedMax = (calculatedMax / 512) * 512
-        return max(roundedMax, 512)
-    }
+
     
     var body: some View {
         ScrollView {
@@ -52,7 +46,7 @@ struct GameAdvancedSettingsView: View {
                     }
                     
                     VStack(alignment: .leading, spacing: 12) {
-                        MiniRangeSlider(range: $memoryRange, bounds: 512...Double(maximumMemoryAllocation))
+                        MiniRangeSlider(range: $memoryRange, bounds: 512...Double(GameSettingsManager.shared.maximumMemoryAllocation))
                             .frame(height: 20)
                             .onChange(of: memoryRange) { old, newValue in
                                 // 实时更新内存值
@@ -133,9 +127,11 @@ struct GameAdvancedSettingsView: View {
     // MARK: - Private Methods
     
     private func loadCurrentSettings() {
-
+        // 如果游戏没有自定义内存设置（xms或xmx为0），则显示全局设置
+        let xms = game.xms == 0 ? GameSettingsManager.shared.globalXms : game.xms
+        let xmx = game.xmx == 0 ? GameSettingsManager.shared.globalXmx : game.xmx
         
-        memoryRange = Double(game.xms)...Double(game.xmx)
+        memoryRange = Double(xms)...Double(xmx)
         jvmArguments = game.jvmArguments
         environmentVariables = game.environmentVariables
     }
@@ -204,9 +200,8 @@ struct GameAdvancedSettingsView: View {
     }
     
     private func resetToDefaults() {
-
-        
-        memoryRange = 2048...4096
+        // 重置为全局默认设置
+        memoryRange = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
         jvmArguments = ""
         environmentVariables = ""
     }

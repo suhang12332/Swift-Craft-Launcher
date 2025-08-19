@@ -9,6 +9,12 @@ import Foundation
 
 
 
+// MARK: - SidedDataEntry
+struct SidedDataEntry: Codable {
+    let client: String
+    let server: String
+}
+
 // MARK: - ModrinthLoader
 struct ModrinthLoader: Codable {
     let id, inheritsFrom, releaseTime, time: String
@@ -18,13 +24,12 @@ struct ModrinthLoader: Codable {
     let type: String
     var version: String?
     
-    // 忽略这些字段，不需要反序列化
-    private let data: String?
-    private let processors: String?
+    // 添加对processors和data的支持
+    let processors: [Processor]?
+    let data: [String: SidedDataEntry]?
     
     enum CodingKeys: String, CodingKey {
-        case id, inheritsFrom, releaseTime, time, mainClass, arguments, libraries, type, version
-        // 不包含 data 和 processors
+        case id, inheritsFrom, releaseTime, time, mainClass, arguments, libraries, type, version, processors, data
     }
     
     init(from decoder: Decoder) throws {
@@ -38,13 +43,8 @@ struct ModrinthLoader: Codable {
         libraries = try container.decode([ModrinthLoaderLibrary].self, forKey: .libraries)
         type = try container.decode(String.self, forKey: .type)
         version = try container.decodeIfPresent(String.self, forKey: .version)
-        
-        // 过滤掉 downloads 为 nil 的库
-        // libraries = libraries.filter { $0.downloads != nil }
-        
-        // 忽略 data 和 processors 字段
-        data = nil
-        processors = nil
+        processors = try container.decodeIfPresent([Processor].self, forKey: .processors)
+        data = try container.decodeIfPresent([String: SidedDataEntry].self, forKey: .data)
     }
 }
 
@@ -98,4 +98,17 @@ struct LoaderInfo: Decodable {
     let id: String
     let url: String
     let stable: Bool
+}
+
+// MARK: - Processor
+struct Processor: Codable {
+    let sides: [String]?
+    let jar: String?
+    let classpath: [String]?
+    let args: [String]?
+    let outputs: [String: String]?
+    
+    enum CodingKeys: String, CodingKey {
+        case sides, jar, classpath, args, outputs
+    }
 }

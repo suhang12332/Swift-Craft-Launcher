@@ -26,11 +26,6 @@ class ForgeLoaderService {
         }
         
         var loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
-        // 替换指定library的artifact.url
-        if let dataJsonString = String(data: data, encoding: .utf8) {
-            CommonService.parseDataFieldAndAddLibraries(to: &loader, dataJsonString: dataJsonString,url: URLConfig.API.Forge.gitReleasesBase
-                .appendingPathComponent(forgeVersion))
-        }
         loader.version = forgeVersion
         AppCacheManager.shared.setSilently(namespace: "forge", key: cacheKey, value: loader)
         return loader
@@ -86,7 +81,24 @@ class ForgeLoaderService {
         }
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
         fileManager.onProgressUpdate = onProgressUpdate
+        
+        // 第一步：下载所有downloadable=true的库文件
         await fileManager.downloadForgeJars(libraries: forgeProfile.libraries)
+        
+        // 第二步：执行processors（如果存在）
+        if let processors = forgeProfile.processors, !processors.isEmpty {
+            // 使用version.json中的原始data字段
+
+            
+            try await fileManager.executeProcessors(
+                processors: processors,
+                librariesDir: librariesDirectory,
+                gameVersion: gameVersion,
+                data: forgeProfile.data,
+                gameName: gameInfo.gameName
+            )
+        }
+        
         let classpathString = CommonService.generateClasspath(from: forgeProfile, librariesDir: librariesDirectory)
         let mainClass = forgeProfile.mainClass
         return (loaderVersion: forgeProfile.version!, classpath: classpathString, mainClass: mainClass)

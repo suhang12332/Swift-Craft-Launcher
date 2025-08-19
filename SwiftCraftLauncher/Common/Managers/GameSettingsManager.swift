@@ -99,10 +99,7 @@ class GameSettingsManager: ObservableObject {
     @AppStorage("defaultJavaPath") public var defaultJavaPath: String = "/usr/bin" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("defaultMemoryAllocation") public var defaultMemoryAllocation: Int = 512 {
-        didSet { objectWillChange.send() }
-    }
-    @AppStorage("concurrentDownloads") public var concurrentDownloads: Int = 4 {
+    @AppStorage("concurrentDownloads") public var concurrentDownloads: Int = 64 {
         didSet {
             if concurrentDownloads < 1 {
                 concurrentDownloads = 1
@@ -130,6 +127,15 @@ class GameSettingsManager: ObservableObject {
     }
     @AppStorage("globalXmx") public var globalXmx: Int = 4096 {
         didSet { objectWillChange.send() }
+    }
+    
+    /// 计算系统最大可用内存分配（基于物理内存的70%）
+    public var maximumMemoryAllocation: Int {
+        let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
+        let physicalMemoryMB = physicalMemoryBytes / 1_048_576
+        let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
+        let roundedMax = (calculatedMax / 512) * 512
+        return max(roundedMax, 512)
     }
     
     private init() {

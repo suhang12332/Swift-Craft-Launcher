@@ -10,8 +10,7 @@ private enum Constants {
         "assets/indexes",
         "assets/objects"
     ]
-    static let maxConcurrentDownloads = 8
-    static let assetChunkSize = 50
+    static let assetChunkSize = 200
     static let downloadTimeout: TimeInterval = 30
     static let retryCount = 3
     static let retryDelay: TimeInterval = 2

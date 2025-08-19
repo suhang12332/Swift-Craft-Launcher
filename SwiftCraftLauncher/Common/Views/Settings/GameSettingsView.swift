@@ -9,13 +9,7 @@ public struct GameSettingsView: View {
     @State private var javaVersion: String = "java.version.not_detected".localized()
     @State private var javaDetectionError: String?
 
-    private var maximumMemoryAllocation: Int {
-        let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
-        let physicalMemoryMB = physicalMemoryBytes / 1_048_576
-        let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
-        let roundedMax = (calculatedMax / 512) * 512
-        return max(roundedMax, 512)
-    }
+
     
     // 内存区间
     @State private var globalMemoryRange: ClosedRange<Double> = 512...4096
@@ -91,7 +85,7 @@ public struct GameSettingsView: View {
             GridRow {
                 Text("settings.default_memory_allocation.label".localized()).gridColumnAlignment(.trailing)
                 HStack {
-                    MiniRangeSlider(range: $globalMemoryRange, bounds: 512...Double(maximumMemoryAllocation))
+                    MiniRangeSlider(range: $globalMemoryRange, bounds: 512...Double(gameSettings.maximumMemoryAllocation))
                         .frame(width: 200,height: 20)
                         .onChange(of: globalMemoryRange) { old, newValue in
                             gameSettings.globalXms = Int(newValue.lowerBound)

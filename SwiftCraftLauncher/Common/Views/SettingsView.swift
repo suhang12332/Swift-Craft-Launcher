@@ -7,16 +7,6 @@ public struct SettingsView: View {
     @ObservedObject private var general = GeneralSettingsManager.shared
     
     
-    /// 计算最大允许的内存分配 (MB)
-    private var maximumMemoryAllocation: Int {
-        let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
-        let physicalMemoryMB = physicalMemoryBytes / 1048576 // 将字节转换为 MB
-        // 计算总内存的 70%，并确保至少为 512MB
-        let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
-        // 确保最大值也是 512 的倍数
-        let roundedMax = (calculatedMax / 512) * 512
-        return max(roundedMax, 512)
-    }
     
     public init() {}
     
