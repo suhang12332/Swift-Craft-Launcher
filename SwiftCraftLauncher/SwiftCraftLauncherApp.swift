@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import AppKit
 
 @main
 struct SwiftCraftLauncherApp: App {
@@ -22,6 +23,16 @@ struct SwiftCraftLauncherApp: App {
     init() {
         Task {
             await NotificationManager.requestAuthorizationIfNeeded()
+        }
+        
+        // 移除文件菜单
+        DispatchQueue.main.async {
+            if let mainMenu = NSApplication.shared.mainMenu {
+                // 查找文件菜单
+                if let fileMenuIndex = mainMenu.items.firstIndex(where: { $0.title == "File" || $0.title == "文件" }) {
+                    mainMenu.removeItem(at: fileMenuIndex)
+                }
+            }
         }
     }
     
@@ -71,6 +82,12 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("u", modifiers: [.command, .shift])
             }
+            CommandGroup(after: .help) {
+                Button("menu.open.log".localized()) {
+                    openLogFile()
+                }
+                .keyboardShortcut("l", modifiers: [.command, .shift])
+            }
         }
 
         Settings {
@@ -94,6 +111,34 @@ struct SwiftCraftLauncherApp: App {
                 .frame(width: 18, height: 18) // 菜单栏常见大小
                      // 推荐保持模板模式
         })
+    }
+    
+    // MARK: - Helper Methods
+    private func openLogFile() {
+        // 生成当前日期的日志文件名
+        let appName = Bundle.main.appName.replacingOccurrences(of: " ", with: "-").lowercased()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        let dateString = dateFormatter.string(from: Date())
+        let logFileName = "\(appName)-\(dateString).log"
+        
+        // 获取日志文件路径
+        let logPath = AppPaths.logsDirectory!.appendingPathComponent(logFileName)
+        
+        // 检查文件是否存在
+        if FileManager.default.fileExists(atPath: logPath.path) {
+            // 使用系统默认应用打开日志文件
+            NSWorkspace.shared.open(logPath)
+        } else {
+            // 如果日志文件不存在，创建并打开
+            do {
+                try FileManager.default.createDirectory(at: AppPaths.logsDirectory!, withIntermediateDirectories: true)
+                try "日志文件已创建 - \(dateString)".write(to: logPath, atomically: true, encoding: .utf8)
+                NSWorkspace.shared.open(logPath)
+            } catch {
+                Logger.shared.error("无法创建或打开日志文件: \(error)")
+            }
+        }
     }
 }
 

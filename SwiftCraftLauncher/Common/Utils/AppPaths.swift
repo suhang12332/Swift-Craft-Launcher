@@ -50,6 +50,15 @@ struct AppPaths {
     }
     
     static let profileSubdirectories = ["shaderpacks", "resourcepacks", "mods", "datapacks", "crash-reports"]
+    
+    /// 日志文件目录 - 使用系统标准日志目录
+    static var logsDirectory: URL? {
+        guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+        return libraryDirectory.appendingPathComponent("Logs", isDirectory: true)
+            .appendingPathComponent(Bundle.main.appName, isDirectory: true)
+    }
 }
 
 extension AppPaths {

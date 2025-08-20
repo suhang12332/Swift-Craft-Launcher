@@ -4,13 +4,13 @@ import os.log
 class Logger {
     static let shared = Logger()
     private let logger = OSLog(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.launcher",
-        category: "Launcher"
+        subsystem: Bundle.main.identifier,
+        category: Bundle.main.appCategory
     )
     
     // 文件日志相关属性
     private var logFileHandle: FileHandle?
-    private let logQueue = DispatchQueue(label: "com.launcher.logger", qos: .utility)
+    private let logQueue = DispatchQueue(label: AppConstants.logTag, qos: .utility)
     private let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
@@ -229,7 +229,7 @@ class Logger {
         let logMessage = "\(prefix) [\(fileName):\(line)] \(function): \(message)"
         
         // 输出到控制台。 本地调试可以开启
-        // os_log("%{public}@", log: logger, type: type, logMessage)
+         os_log("%{public}@", log: logger, type: type, logMessage)
         
         // 写入到文件
         writeToLogFile(logMessage)

@@ -20,6 +20,8 @@ enum AppConstants {
     
     // 缓存资源类型
     static let cacheResourceTypes = ["libraries", "natives", "assets", "versions"]
+    
+    static let logTag = Bundle.main.identifier+".logger"
 }
 
 // MARK: - Bundle Extension
@@ -36,9 +38,17 @@ extension Bundle {
         return "\(appVersion)-\(buildNumber)"
     }
     var appName: String {
-        Bundle.main.infoDictionary?["CFBundleName"] as? String ?? "Swift Craft Launcher"
+        return Bundle.main.infoDictionary?["CFBundleName"] as? String ?? "Swift Craft Launcher"
     }
     var copyright: String {
-        return infoDictionary?["Copyright"] as? String ?? "Copyright © 2025 \(appName)"
+        return infoDictionary?["NSHumanReadableCopyright"] as? String ?? "Copyright © 2025 \(appName)"
+    }
+    
+    var identifier: String {
+        return infoDictionary?["CFBundleIdentifier"] as? String ?? "com.su.code.SwiftCraftLauncher"
+    }
+    
+    var appCategory: String {
+        return infoDictionary?["LSApplicationCategoryType"] as? String ?? "public.app-category.games"
     }
 }

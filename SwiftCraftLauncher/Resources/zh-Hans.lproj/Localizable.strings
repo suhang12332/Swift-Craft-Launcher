@@ -652,6 +652,7 @@
 
 // Menu Commands
 "menu.check.updates" = "检查更新";
+"menu.open.log" = "打开日志";
 "menu.about" = "关于%@";
 
 
