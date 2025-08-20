@@ -153,9 +153,10 @@ class CommonFileManager {
     ///   - librariesDir: 库目录
     ///   - gameVersion: 游戏版本
     ///   - data: 数据字段，用于占位符替换
-    ///   - onProgressUpdate: 进度更新回调
+    ///   - gameName: 游戏名称（可选）
+    ///   - onProgressUpdate: 进度更新回调（可选，包含当前处理器索引和总处理器数量）
     /// - Throws: GlobalError 当处理失败时
-    func executeProcessors(processors: [Processor], librariesDir: URL, gameVersion: String, data: [String: SidedDataEntry]? = nil, gameName: String? = nil) async throws {
+    func executeProcessors(processors: [Processor], librariesDir: URL, gameVersion: String, data: [String: SidedDataEntry]? = nil, gameName: String? = nil, onProgressUpdate: ((String, Int, Int) -> Void)? = nil) async throws {
         // 过滤出client端的processor
         let clientProcessors = processors.filter { processor in
             guard let sides = processor.sides else { return true } // 如果没有指定sides，默认执行
@@ -195,9 +196,12 @@ class CommonFileManager {
             }
         }
         
-        for processor in clientProcessors {
+        for (index, processor) in clientProcessors.enumerated() {
             do {
-                try await executeProcessor(processor, librariesDir: librariesDir, gameVersion: gameVersion, data: processorData)
+                let processorName = processor.jar ?? "processor.unknown".localized()
+                let message = String(format: "processor.executing".localized(), index + 1, clientProcessors.count, processorName)
+                onProgressUpdate?(message, index + 1, clientProcessors.count)
+                try await executeProcessor(processor, librariesDir: librariesDir, gameVersion: gameVersion, data: processorData, onProgressUpdate: onProgressUpdate)
             } catch {
                 Logger.shared.error("执行处理器失败: \(error.localizedDescription)")
                 throw GlobalError.download(
@@ -215,8 +219,9 @@ class CommonFileManager {
     ///   - librariesDir: 库目录
     ///   - gameVersion: 游戏版本
     ///   - data: 数据字段，用于占位符替换
+    ///   - onProgressUpdate: 进度更新回调（可选，包含当前处理器索引和总处理器数量）
     /// - Throws: GlobalError 当处理失败时
-    private func executeProcessor(_ processor: Processor, librariesDir: URL, gameVersion: String, data: [String: String]? = nil) async throws {
+    private func executeProcessor(_ processor: Processor, librariesDir: URL, gameVersion: String, data: [String: String]? = nil, onProgressUpdate: ((String, Int, Int) -> Void)? = nil) async throws {
         try await ProcessorExecutor.executeProcessor(
             processor,
             librariesDir: librariesDir,

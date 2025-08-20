@@ -196,13 +196,13 @@ class ProcessorExecutor {
             
             // 实时读取输出
             setupOutputHandlers(outputPipe: outputPipe, errorPipe: errorPipe)
-            
+
             process.waitUntilExit()
-            
+
             // 清理handlers
             outputPipe.fileHandleForReading.readabilityHandler = nil
             errorPipe.fileHandleForReading.readabilityHandler = nil
-            
+
             if process.terminationStatus != 0 {
                 throw GlobalError.download(
                     chineseMessage: "处理器执行失败 (退出码: \(process.terminationStatus))",
@@ -210,7 +210,7 @@ class ProcessorExecutor {
                     level: .notification
                 )
             }
-            
+
 
         } catch {
             throw GlobalError.download(
@@ -224,13 +224,15 @@ class ProcessorExecutor {
     private static func setupOutputHandlers(outputPipe: Pipe, errorPipe: Pipe) {
         outputPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
-            if !data.isEmpty, let output = String(data: data, encoding: .utf8) {
+            if !data.isEmpty, let _ = String(data: data, encoding: .utf8) {
+                // 输出数据已读取，防止管道阻塞
             }
         }
         
         errorPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
-            if !data.isEmpty, let errorOutput = String(data: data, encoding: .utf8) {
+            if !data.isEmpty, let _ = String(data: data, encoding: .utf8) {
+                // 错误输出数据已读取，防止管道阻塞
             }
         }
     }
@@ -256,7 +258,10 @@ class ProcessorExecutor {
     }
     
     private static func getMainClassFromJar(jarPath: URL) throws -> String {
-        guard let archive = Archive(url: jarPath, accessMode: .read) else {
+        let archive: Archive
+        do {
+            archive = try Archive(url: jarPath, accessMode: .read)
+        } catch {
             throw GlobalError.download(
                 chineseMessage: "无法打开JAR文件: \(jarPath.lastPathComponent)",
                 i18nKey: "error.download.jar_open_failed",

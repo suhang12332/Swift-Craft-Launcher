@@ -83,19 +83,26 @@ class ForgeLoaderService {
         fileManager.onProgressUpdate = onProgressUpdate
         
         // 第一步：下载所有downloadable=true的库文件
+        let downloadableLibraries = forgeProfile.libraries.filter { $0.downloads != nil }
+        let totalDownloads = downloadableLibraries.count
         await fileManager.downloadForgeJars(libraries: forgeProfile.libraries)
         
         // 第二步：执行processors（如果存在）
         if let processors = forgeProfile.processors, !processors.isEmpty {
             // 使用version.json中的原始data字段
-
-            
             try await fileManager.executeProcessors(
                 processors: processors,
                 librariesDir: librariesDirectory,
                 gameVersion: gameVersion,
                 data: forgeProfile.data,
-                gameName: gameInfo.gameName
+                gameName: gameInfo.gameName,
+                onProgressUpdate: { message, currentProcessor, totalProcessors in
+                    // 将处理器进度消息转换为下载进度格式
+                    // 总任务数 = 下载数 + 处理器数
+                    let totalTasks = totalDownloads + totalProcessors
+                    let completedTasks = totalDownloads + currentProcessor
+                    onProgressUpdate(message, completedTasks, totalTasks)
+                }
             )
         }
         

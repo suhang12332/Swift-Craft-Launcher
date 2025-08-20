@@ -742,3 +742,7 @@
 "error.download.processor_main_class_not_found" = "无法从processor JAR文件中获取主类: %@";
 "error.download.jar_open_failed" = "无法打开JAR文件: %@";
 "error.download.manifest_parse_failed" = "无法解析MANIFEST.MF内容";
+
+// Processor Progress Messages
+"processor.executing" = "执行处理器 %d/%d: %@";
+"processor.unknown" = "未知";
