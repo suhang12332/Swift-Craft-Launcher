@@ -50,7 +50,8 @@ struct MiniRangeSlider: View {
                         DragGesture()
                             .onChanged { value in
                                 let newValue = valueToRangeValue(value.location.x, width: width)
-                                if newValue < range.upperBound && newValue >= bounds.lowerBound {
+                                let minUpperBound = newValue + (bounds.upperBound - bounds.lowerBound) * (thumbDiameter / (width - thumbDiameter))
+                                if newValue < range.upperBound && newValue >= bounds.lowerBound && range.upperBound >= minUpperBound {
                                     range = newValue...range.upperBound
                                 }
                             }
@@ -70,7 +71,8 @@ struct MiniRangeSlider: View {
                         DragGesture()
                             .onChanged { value in
                                 let newValue = valueToRangeValue(value.location.x, width: width)
-                                if newValue > range.lowerBound && newValue <= bounds.upperBound {
+                                let maxLowerBound = newValue - (bounds.upperBound - bounds.lowerBound) * (thumbDiameter / (width - thumbDiameter))
+                                if newValue > range.lowerBound && newValue <= bounds.upperBound && range.lowerBound <= maxLowerBound {
                                     range = range.lowerBound...newValue
                                 }
                             }

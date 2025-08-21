@@ -697,6 +697,42 @@
 "settings.game.java.jvm_args" = "JVM 参数";
 "settings.game.java.env_vars" = "环境变量";
 
+// JVM Advanced Settings
+"settings.game.java.garbage_collector" = "垃圾回收器";
+"settings.game.java.performance_optimization" = "性能优化";
+"settings.game.java.custom_parameters" = "自定义参数";
+"settings.game.java.environment_variables" = "环境变量";
+
+"settings.game.java.gc.g1gc" = "G1GC (推荐)";
+"settings.game.java.gc.zgc" = "ZGC (低延迟)";
+"settings.game.java.gc.shenandoah" = "Shenandoah (低暂停)";
+"settings.game.java.gc.parallel" = "ParallelGC (高吞吐量)";
+"settings.game.java.gc.serial" = "SerialGC (单线程)";
+
+"settings.game.java.gc.g1gc.desc" = "G1垃圾回收器，平衡性能和延迟，适合大多数场景";
+"settings.game.java.gc.zgc.desc" = "ZGC垃圾回收器，极低延迟，适合对响应时间要求极高的场景";
+"settings.game.java.gc.shenandoah.desc" = "Shenandoah垃圾回收器，低暂停时间，适合需要稳定性能的场景";
+"settings.game.java.gc.parallel.desc" = "并行垃圾回收器，高吞吐量，适合后台处理任务";
+"settings.game.java.gc.serial.desc" = "串行垃圾回收器，单线程，适合小内存应用";
+
+
+
+
+
+
+
+
+"settings.game.java.enable_jvm_optimization" = "启用JVM优化";
+"settings.game.java.enable_aikar_flags" = "启用Aikar优化参数";
+"settings.game.java.enable_client_optimization" = "启用客户端优化";
+"settings.game.java.enable_memory_optimization" = "启用内存优化";
+"settings.game.java.enable_thread_optimization" = "启用线程优化";
+
+
+"settings.game.java.custom_parameters.note" = "注意: 自定义参数会覆盖上面的优化设置";
+"settings.game.java.debugging.note" = "注意: 调试和性能分析模式会降低游戏性能";
+"settings.game.java.memory.recommendation" = "当前设置:";
+
 "settings.game.save.success" = "设置已保存";
 "settings.game.reset.confirm" = "确定要恢复默认设置吗？";
 
