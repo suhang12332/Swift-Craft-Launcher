@@ -208,7 +208,7 @@ extension ModScanner {
         }
         
         // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GameSettingsManager.shared.concurrentDownloads)
+        let semaphore = AsyncSemaphore(value: 4)
         
         // 使用 TaskGroup 并发扫描文件
         let results = await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
