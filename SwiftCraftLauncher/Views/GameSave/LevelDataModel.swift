@@ -160,8 +160,9 @@ class LevelDataModel: ObservableObject {
     func loadWeatherData() {
         guard let inner = dataCompound else { return }
         
+        // 只提取实际使用的天气字段
         let weatherKeys: Set<String> = [
-            "raining", "thundering", "rainTime", "thunderTime"
+            "raining", "thundering"
         ]
         
         var weatherData: [String: String] = [:]
@@ -177,10 +178,7 @@ class LevelDataModel: ObservableObject {
         }
     }
     
-    func loadLevelDat() {
-        // 兼容旧接口，默认路径
-        loadLevelDat(from: "/Users/su/Downloads/level.dat")
-    }
+
     
     private func formatMappedValue(key: String, value: String) -> String {
         switch key {
