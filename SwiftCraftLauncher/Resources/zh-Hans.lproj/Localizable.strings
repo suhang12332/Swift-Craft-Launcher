@@ -783,3 +783,21 @@
 // Processor Progress Messages
 "processor.executing" = "执行处理器 %d/%d: %@";
 "processor.unknown" = "未知";
+
+// Loading states for GameSave widgets
+"loading.world.settings" = "正在加载世界设置...";
+"loading.player.data" = "正在加载玩家数据...";
+"loading.weather.data" = "正在加载天气数据...";
+
+// NBT Error Messages
+"error.nbt.read.failed" = "NBT数据读取失败";
+"error.data.tag.notfound" = "未找到Data标签";
+
+
+
+// NBT Display
+"nbt.items" = "items";
+
+// Time Units
+"time.second" = "秒";
+

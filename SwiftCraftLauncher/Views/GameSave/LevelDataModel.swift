@@ -12,9 +12,14 @@ class LevelDataModel: ObservableObject {
     @Published var levelData: [String: String] = [:]
     @Published var errorMessage: String? = nil
     
+    private var nbtStructure: NBTStructure?
+    private var dataCompound: NBTCompound?
+    
     deinit {
         levelData.removeAll(keepingCapacity: false)
         errorMessage = nil
+        nbtStructure = nil
+        dataCompound = nil
     }
     
     func loadLevelDat(from filePath: String) {
@@ -30,85 +35,145 @@ class LevelDataModel: ObservableObject {
                 return
             }
 
-            let dataTag = structure.tag
-            // Logger.shared.debug("成功读取结构，字段: \(structure.tag.contents.keys)")
-
-            var parsed: [String: String] = [:]
-
-            let keysToShow: Set<String> = [
-                "LevelName", "GameType", "Difficulty", "hardcore", "allowCommands",
-                "Time", "DayTime", "LastPlayed",
-                "seed", "WorldGenSettings",
-                "raining", "thundering", "rainTime", "thunderTime",
-                "Player", "GameRules"
-            ]
-
-            guard let outer = dataTag[""] as? NBTCompound,
+            guard let outer = structure.tag[""] as? NBTCompound,
                   let inner = outer["Data"] as? NBTCompound else {
                 self.errorMessage = "error.data.tag.notfound".localized()
                 Logger.shared.error("未找到名为 Data 的标签（请确认结构是否为有效的 level.dat 文件）: \(filePath)")
                 return
             }
-
-            for (key, value) in inner.contents where keysToShow.contains(key) {
-                if key == "Player", let playerCompound = value as? NBTCompound {
-                    // 只展示指定的重要玩家字段
-                    let importantPlayerFields = [
-                        "Health": "生命值",
-                        "XpLevel": "经验等级",
-                        "XpTotal": "总经验值",
-                        "XpP": "当前等级进度",
-                        "Dimension": "当前维度",
-                        "foodLevel": "饥饿值",
-                        "foodSaturationLevel": "食物饱和度",
-                        "foodExhaustionLevel": "疲劳度"
-                    ]
-
-                    for (pKey, pVal) in playerCompound.contents {
-                        if importantPlayerFields.keys.contains(pKey) {
-                            let displayName = importantPlayerFields[pKey] ?? pKey
-                            parsed["Player.\(displayName)"] = formatNBTValue(pVal, key: "Player.\(pKey)")
-                        }
-
-                        // 特殊处理坐标，分解为X、Y、Z
-                        if pKey == "Pos", let posList = pVal as? NBTList, posList.elements.count == 3 {
-                            if let x = posList.elements[0] as? NBTDouble,
-                               let y = posList.elements[1] as? NBTDouble,
-                               let z = posList.elements[2] as? NBTDouble {
-                                // 优化坐标显示格式为 [X, Y, Z]
-                                let xCoord = String(format: "%.1f", x)
-                                let yCoord = String(format: "%.1f", y)
-                                let zCoord = String(format: "%.1f", z)
-                                parsed["Player.位置坐标"] = "[\(xCoord), \(yCoord), \(zCoord)]"
-                            }
-                        }
-                    }
-                } else if key == "GameRules", let rulesCompound = value as? NBTCompound {
-                    // 只展示 keepInventory 游戏规则
-                    if let keepInventoryValue = rulesCompound["keepInventory"] {
-                        parsed["GameRules.keepInventory"] = formatNBTValue(keepInventoryValue, key: "GameRules.keepInventory")
-                    }
-                } else if key == "WorldGenSettings", let worldGenCompound = value as? NBTCompound {
-                    // 处理 WorldGenSettings 中的种子字段
-                    if let seedValue = worldGenCompound["seed"] {
-                        parsed["seed"] = formatNBTValue(seedValue, key: "seed")
-                    }
-                } else {
-                    parsed[key] = formatNBTValue(value, key: key)
-                }
-            }
-            Logger.shared.debug("已提取字段: \(parsed.keys.joined(separator: ", "))")
-
-            DispatchQueue.main.async {
-                self.levelData = parsed
-                self.errorMessage = nil
-            }
-
+            
+            // 存储NBT结构以供后续使用
+            self.nbtStructure = structure
+            self.dataCompound = inner
+            
+            // 只加载基础信息，其他数据按需加载
+            loadBasicInfo()
+            
         } catch {
             Logger.shared.error("level.dat 读取失败: \(filePath)，错误: \(error.localizedDescription)")
             DispatchQueue.main.async {
                 self.errorMessage = error.localizedDescription
             }
+        }
+    }
+    
+    // 加载基础信息（世界名称、游戏模式等）
+    private func loadBasicInfo() {
+        guard let inner = dataCompound else { return }
+        
+        let basicKeys: Set<String> = [
+            "LevelName", "GameType", "Difficulty", "hardcore", "allowCommands"
+        ]
+        
+        var basicData: [String: String] = [:]
+        
+        for key in basicKeys {
+            if let value = inner[key] {
+                basicData[key] = formatNBTValue(value, key: key)
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.levelData = basicData
+            self.errorMessage = nil
+        }
+    }
+    
+    // 按需加载世界设置数据
+    func loadWorldSettingsData() {
+        guard let inner = dataCompound else { return }
+        
+        let worldSettingsKeys: Set<String> = [
+            "Time", "DayTime", "LastPlayed", "seed", "WorldGenSettings", "GameRules"
+        ]
+        
+        var worldSettingsData: [String: String] = [:]
+        
+        for key in worldSettingsKeys {
+            if let value = inner[key] {
+                if key == "GameRules", let rulesCompound = value as? NBTCompound {
+                    // 只展示 keepInventory 游戏规则
+                    if let keepInventoryValue = rulesCompound["keepInventory"] {
+                        worldSettingsData["GameRules.keepInventory"] = formatNBTValue(keepInventoryValue, key: "GameRules.keepInventory")
+                    }
+                } else if key == "WorldGenSettings", let worldGenCompound = value as? NBTCompound {
+                    // 处理 WorldGenSettings 中的种子字段
+                    if let seedValue = worldGenCompound["seed"] {
+                        worldSettingsData["seed"] = formatNBTValue(seedValue, key: "seed")
+                    }
+                } else {
+                    worldSettingsData[key] = formatNBTValue(value, key: key)
+                }
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.levelData.merge(worldSettingsData) { _, new in new }
+        }
+    }
+    
+    // 按需加载玩家数据
+    func loadPlayerData() {
+        guard let inner = dataCompound else { return }
+        
+        if let playerCompound = inner["Player"] as? NBTCompound {
+            let importantPlayerFields = [
+                "Health": "player.health".localized(),
+                "XpLevel": "player.xp.level".localized(),
+                "XpTotal": "player.xp.total".localized(),
+                "XpP": "player.xp.progress".localized(),
+                "Dimension": "player.dimension".localized(),
+                "foodLevel": "player.food.level".localized(),
+                "foodSaturationLevel": "player.food.saturation".localized(),
+                "foodExhaustionLevel": "player.food.exhaustion".localized()
+            ]
+
+            var playerData: [String: String] = [:]
+
+            for (pKey, pVal) in playerCompound.contents {
+                if importantPlayerFields.keys.contains(pKey) {
+                    let displayName = importantPlayerFields[pKey] ?? pKey
+                    playerData["Player.\(displayName)"] = formatNBTValue(pVal, key: "Player.\(pKey)")
+                }
+
+                // 特殊处理坐标，分解为X、Y、Z
+                if pKey == "Pos", let posList = pVal as? NBTList, posList.elements.count == 3 {
+                    if let x = posList.elements[0] as? NBTDouble,
+                       let y = posList.elements[1] as? NBTDouble,
+                       let z = posList.elements[2] as? NBTDouble {
+                        // 优化坐标显示格式为 [X, Y, Z]
+                        let xCoord = String(format: "%.1f", x)
+                        let yCoord = String(format: "%.1f", y)
+                        let zCoord = String(format: "%.1f", z)
+                        playerData["Player.\("player.position".localized())"] = "[\(xCoord), \(yCoord), \(zCoord)]"
+                    }
+                }
+            }
+            
+            DispatchQueue.main.async {
+                self.levelData.merge(playerData) { _, new in new }
+            }
+        }
+    }
+    
+    // 按需加载天气数据
+    func loadWeatherData() {
+        guard let inner = dataCompound else { return }
+        
+        let weatherKeys: Set<String> = [
+            "raining", "thundering", "rainTime", "thunderTime"
+        ]
+        
+        var weatherData: [String: String] = [:]
+        
+        for key in weatherKeys {
+            if let value = inner[key] {
+                weatherData[key] = formatNBTValue(value, key: key)
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.levelData.merge(weatherData) { _, new in new }
         }
     }
     
@@ -121,18 +186,18 @@ class LevelDataModel: ObservableObject {
         switch key {
         case "GameType":
             switch value {
-            case "0": return "生存模式 (Survival)"
-            case "1": return "创造模式 (Creative)"
-            case "2": return "极限模式 (Hardcore)"
-            case "3": return "旁观者 (Spectator)"
+            case "0": return "survival".localized()
+            case "1": return "creative".localized()
+            case "2": return "hardcore".localized()
+            case "3": return "spectator".localized()
             default: return value
             }
         case "Difficulty":
             switch value {
-            case "0": return "和平 (Peaceful)"
-            case "1": return "简单 (Easy)"
-            case "2": return "普通 (Normal)"
-            case "3": return "困难 (Hard)"
+            case "0": return "peaceful".localized()
+            case "1": return "easy".localized()
+            case "2": return "normal".localized()
+            case "3": return "hard".localized()
             default: return value
             }
         
@@ -152,7 +217,7 @@ class LevelDataModel: ObservableObject {
             case let float as NBTFloat: return "\(float)"
             case let double as NBTDouble: return "\(double)"
             case let string as NBTString: return string
-            case let list as NBTList: return "[\(list.elements.count) items]"
+            case let list as NBTList: return "[\(list.elements.count) \("nbt.items".localized())]"
             case let compound as NBTCompound:
                 let inner = compound.contents.map { "\($0.key): \(formatNBTValue($0.value))" }.joined(separator: ", ")
                 return "{\(inner)}"
@@ -176,7 +241,7 @@ class LevelDataModel: ObservableObject {
                     formatter.allowedUnits = [.day, .hour, .minute, .second]
                     formatter.unitsStyle = .abbreviated
                     formatter.maximumUnitCount = 2
-                    return formatter.string(from: seconds) ?? "\(Int(seconds))秒"
+                    return formatter.string(from: seconds) ?? "\(Int(seconds))\("time.second".localized())"
                 }
             }
 
@@ -188,23 +253,23 @@ class LevelDataModel: ObservableObject {
             }
 
             // 玩家字段友好显示
-            if lastKey == "生命值" {
+            if lastKey == "player.health".localized() {
                 if let health = Float(stringValue) {
                     return String(format: "%.1f", health)
                 }
             }
 
-            if lastKey == "位置坐标" {
+            if lastKey == "player.position".localized() {
                 // 保持原始格式显示
                 return stringValue
             }
 
-            if lastKey == "当前维度" {
+            if lastKey == "player.dimension".localized() {
                 // 维度名称中文显示
                 switch stringValue {
-                case "minecraft:overworld": return "主世界"
-                case "minecraft:the_nether": return "下界"
-                case "minecraft:the_end": return "末地"
+                case "minecraft:overworld": return "main.world".localized()
+                case "minecraft:the_nether": return "nether".localized()
+                case "minecraft:the_end": return "the.end".localized()
                 default: return stringValue.replacingOccurrences(of: "minecraft:", with: "")
                 }
             }
@@ -212,20 +277,20 @@ class LevelDataModel: ObservableObject {
             if lastKey == "Dimension" {
                 // 维度名称中文显示
                 switch stringValue {
-                case "minecraft:overworld": return "主世界"
-                case "minecraft:the_nether": return "下界"
-                case "minecraft:the_end": return "末地"
+                case "minecraft:overworld": return "main.world".localized()
+                case "minecraft:the_nether": return "nether".localized()
+                case "minecraft:the_end": return "the.end".localized()
                 default: return stringValue.replacingOccurrences(of: "minecraft:", with: "")
                 }
             }
             
             // 天气状态友好显示
             if lastKey == "raining" {
-                return stringValue == "1" ? "正在下雨" : "晴天"
+                return stringValue == "1" ? "raining".localized() : "clear".localized()
             }
             
             if lastKey == "thundering" {
-                return stringValue == "1" ? "正在打雷" : "无雷暴"
+                return stringValue == "1" ? "thundering".localized() : "no.thunder".localized()
             }
 
             // 其他映射

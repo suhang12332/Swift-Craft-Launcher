@@ -66,6 +66,12 @@ struct WorldSettingsWidget: View {
             .map { (key: $0.key.replacingOccurrences(of: "GameRules.", with: ""), value: $0.value) }
     }
     
+    // 检查是否有世界设置数据
+    var hasWorldSettingsData: Bool {
+        return data["Time"] != nil || data["DayTime"] != nil || data["LastPlayed"] != nil || 
+               data["seed"] != nil || !gameRules.isEmpty
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             WidgetHeader(title: "world.data".localized(), icon: "globe", color: .blue)
@@ -138,8 +144,7 @@ struct WorldSettingsWidget: View {
             }
             
             // 时间相关
-            if data["Time"] != nil || data["DayTime"] != nil || data["LastPlayed"] != nil {
-
+            if hasWorldSettingsData {
                 VStack(spacing: 4) {
                     if let time = data["Time"] {
                         WidgetRow(title: "world.time".localized(), value: time)
@@ -151,42 +156,53 @@ struct WorldSettingsWidget: View {
                         WidgetRow(title: "last.played".localized(), value: lastPlayed)
                     }
                 }
-            }
-            
-            // 游戏规则部分
-            if !gameRules.isEmpty {
-                ForEach(gameRules, id: \.0) { key, value in
-                    let displayKey = key == "keepInventory" ? "keep.inventory".localized() : key
-                    if key == "keepInventory" {
-                        if value == "true" || value == "1" {
-                            HStack(spacing: 8) {
-                                Text(displayKey)
-                                    .font(.system(size: 12))
-                                    .foregroundColor(.primary)
-                                    .frame(width: 80, alignment: .leading)
-                                Image(systemName: "checkmark.circle")
-                                    .foregroundColor(.green)
-                                Spacer()
+                
+                // 游戏规则部分
+                if !gameRules.isEmpty {
+                    ForEach(gameRules, id: \.0) { key, value in
+                        let displayKey = key == "keepInventory" ? "keep.inventory".localized() : key
+                        if key == "keepInventory" {
+                            if value == "true" || value == "1" {
+                                HStack(spacing: 8) {
+                                    Text(displayKey)
+                                        .font(.system(size: 12))
+                                        .foregroundColor(.primary)
+                                        .frame(width: 80, alignment: .leading)
+                                    Image(systemName: "checkmark.circle")
+                                        .foregroundColor(.green)
+                                    Spacer()
+                                }
+                                .padding(.vertical, 1)
+                            } else if value == "false" || value == "0" {
+                                HStack(spacing: 8) {
+                                    Text(displayKey)
+                                        .font(.system(size: 12))
+                                        .foregroundColor(.primary)
+                                        .frame(width: 80, alignment: .leading)
+                                    Image(systemName: "xmark.circle")
+                                        .foregroundColor(.red)
+                                    Spacer()
+                                }
+                                .padding(.vertical, 1)
+                            } else {
+                                WidgetRow(title: displayKey, value: value)
                             }
-                            .padding(.vertical, 1)
-                        } else if value == "false" || value == "0" {
-                            HStack(spacing: 8) {
-                                Text(displayKey)
-                                    .font(.system(size: 12))
-                                    .foregroundColor(.primary)
-                                    .frame(width: 80, alignment: .leading)
-                                Image(systemName: "xmark.circle")
-                                    .foregroundColor(.red)
-                                Spacer()
-                            }
-                            .padding(.vertical, 1)
                         } else {
                             WidgetRow(title: displayKey, value: value)
                         }
-                    } else {
-                        WidgetRow(title: displayKey, value: value)
                     }
                 }
+            } else {
+                // 显示加载状态
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .scaleEffect(0.6)
+                    Text("loading.world.settings".localized())
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.vertical, 4)
             }
         }.padding(.top,10)
     }
@@ -201,21 +217,32 @@ struct PlayerWidget: View {
             .map { (key: $0.key.replacingOccurrences(of: "Player.", with: ""), value: $0.value) }
     }
     
+    // 检查是否有玩家数据
+    var hasPlayerData: Bool {
+        return !playerData.isEmpty
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             WidgetHeader(title: "player.data".localized(), icon: "person.fill", color: .purple)
             
-            if playerData.isEmpty {
-                Text("no.player.data".localized())
-                    .font(.system(size: 12))
-                    .foregroundColor(.secondary)
-                    .italic()
-            } else {
+            if hasPlayerData {
                 VStack(spacing: 4) {
                     ForEach(playerData, id: \.0) { key, value in
                         WidgetRow(title: key, value: value)
                     }
                 }
+            } else {
+                // 显示加载状态
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .scaleEffect(0.6)
+                    Text("loading.player.data".localized())
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.vertical, 4)
             }
         }.padding(.top,10)
     }
@@ -224,13 +251,31 @@ struct PlayerWidget: View {
 struct WeatherWidget: View {
     let data: [String: String]
     
+    // 检查是否有天气数据
+    var hasWeatherData: Bool {
+        return data["raining"] != nil || data["thundering"] != nil
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             WidgetHeader(title: "weather.status".localized(), icon: "cloud.rain", color: .cyan)
             
-            VStack(spacing: 4) {
-                WidgetRow(title: "raining.status".localized(), value: data["raining"])
-                WidgetRow(title: "thundering.status".localized(), value: data["thundering"])
+            if hasWeatherData {
+                VStack(spacing: 4) {
+                    WidgetRow(title: "raining.status".localized(), value: data["raining"])
+                    WidgetRow(title: "thundering.status".localized(), value: data["thundering"])
+                }
+            } else {
+                // 显示加载状态
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .scaleEffect(0.6)
+                    Text("loading.weather.data".localized())
+                        .font(.system(size: 12))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+                .padding(.vertical, 4)
             }
         }.padding(.top,10)
     }
