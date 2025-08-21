@@ -46,73 +46,100 @@ enum ModrinthConstants {
 final class ModrinthSearchViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published private(set) var results: [ModrinthProject] = []
-    @Published private(set) var isLoading = false
-    @Published private(set) var totalHits = 0
+    @Published private(set) var isLoading: Bool = false
     @Published private(set) var error: GlobalError?
+    @Published private(set) var totalHits: Int = 0
     
-    // MARK: - Properties
-    let pageSize = ModrinthConstants.UI.pageSize
+    // MARK: - Private Properties
     private var searchTask: Task<Void, Never>?
+    private var currentPage: Int = 1
+    private let pageSize: Int = 20
+    
+    // MARK: - Initialization
+    init() {}
+    
+    deinit {
+        searchTask?.cancel()
+    }
     
     // MARK: - Public Methods
-    /// 执行搜索
-    /// - Parameters:
-    ///   - projectType: 项目类型
-    ///   - page: 页码
-    ///   - sortIndex: 排序索引
-    ///   - versions: 版本列表
-    ///   - categories: 分类列表
-    ///   - features: 特性列表
-    ///   - resolutions: 分辨率列表
-    ///   - performanceImpact: 性能影响列表
-    ///   - loaders: 加载器列表
     func search(
+        query: String,
         projectType: String,
-        page: Int = 1,
-        query: String?,
+        versions: [String],
+        categories: [String],
+        features: [String],
+        resolutions: [String],
+        performanceImpact: [String],
+        loaders: [String],
         sortIndex: String,
-        versions: [String] = [],
-        categories: [String] = [],
-        features: [String] = [],
-        resolutions: [String] = [],
-        performanceImpact: [String] = [],
-        loaders: [String] = []
+        page: Int = 1
     ) async {
         // Cancel any existing search task
         searchTask?.cancel()
         
         searchTask = Task {
-            isLoading = true
-            error = nil
-            
-            let offset = (page - 1) * pageSize
-            let facets = buildFacets(
-                projectType: projectType,
-                versions: versions,
-                categories: categories,
-                features: features,
-                resolutions: resolutions,
-                performanceImpact: performanceImpact,
-                loaders: loaders
-            )
-            
-            let result = await ModrinthService.searchProjects(
-                facets: facets,
-                index: sortIndex,
-                offset: offset,
-                limit: pageSize,
-                query: query
-            )
-            
-            if !Task.isCancelled {
-                results = result.hits
-                totalHits = result.totalHits
-            }
-            
-            if !Task.isCancelled {
-                isLoading = false
+            do {
+                isLoading = true
+                error = nil
+                
+                // 检查任务是否被取消
+                try Task.checkCancellation()
+                
+                let offset = (page - 1) * pageSize
+                let facets = buildFacets(
+                    projectType: projectType,
+                    versions: versions,
+                    categories: categories,
+                    features: features,
+                    resolutions: resolutions,
+                    performanceImpact: performanceImpact,
+                    loaders: loaders
+                )
+                
+                try Task.checkCancellation()
+                
+                let result = await ModrinthService.searchProjects(
+                    facets: facets,
+                    index: sortIndex,
+                    offset: offset,
+                    limit: pageSize,
+                    query: query
+                )
+                
+                try Task.checkCancellation()
+                
+                if !Task.isCancelled {
+                    results = result.hits
+                    totalHits = result.totalHits
+                }
+                
+                try Task.checkCancellation()
+                
+                if !Task.isCancelled {
+                    isLoading = false
+                }
+            } catch is CancellationError {
+                // 任务被取消，不需要处理
+                return
+            } catch {
+                let globalError = GlobalError.from(error)
+                if !Task.isCancelled {
+                    self.error = globalError
+                    self.isLoading = false
+                }
+                Logger.shared.error("搜索失败: \(globalError.chineseMessage)")
+                GlobalErrorHandler.shared.handle(globalError)
             }
         }
+    }
+    
+    func clearResults() {
+        searchTask?.cancel()
+        results.removeAll()
+        totalHits = 0
+        error = nil
+        isLoading = false
     }
     
     // MARK: - Private Methods
@@ -179,49 +206,22 @@ final class ModrinthSearchViewModel: ObservableObject {
         let hasClient = features.contains("client")
         let hasServer = features.contains("server")
         
-        let clientFacets: [String]
-        let serverFacets: [String]
+        var clientFacets: [String] = []
+        var serverFacets: [String] = []
         
-        if hasClient && hasServer {
-            clientFacets = ["\(ModrinthConstants.API.FacetType.clientSide):\(ModrinthConstants.API.FacetValue.required)"]
-            serverFacets = ["\(ModrinthConstants.API.FacetType.serverSide):\(ModrinthConstants.API.FacetValue.required)"]
-        } else if hasClient {
-            clientFacets = [
-                "\(ModrinthConstants.API.FacetType.clientSide):\(ModrinthConstants.API.FacetValue.optional)",
-                "\(ModrinthConstants.API.FacetType.clientSide):\(ModrinthConstants.API.FacetValue.required)",
-            ]
-            serverFacets = [
-                "\(ModrinthConstants.API.FacetType.serverSide):\(ModrinthConstants.API.FacetValue.optional)",
-                "\(ModrinthConstants.API.FacetType.serverSide):\(ModrinthConstants.API.FacetValue.unsupported)",
-            ]
+        if hasClient {
+            clientFacets.append("client_side:required")
         } else if hasServer {
-            clientFacets = [
-                "\(ModrinthConstants.API.FacetType.clientSide):\(ModrinthConstants.API.FacetValue.optional)",
-                "\(ModrinthConstants.API.FacetType.clientSide):\(ModrinthConstants.API.FacetValue.unsupported)",
-            ]
-            serverFacets = [
-                "\(ModrinthConstants.API.FacetType.serverSide):\(ModrinthConstants.API.FacetValue.optional)",
-                "\(ModrinthConstants.API.FacetType.serverSide):\(ModrinthConstants.API.FacetValue.required)",
-            ]
-        } else {
-            clientFacets = []
-            serverFacets = []
+            clientFacets.append("client_side:optional")
+        }
+        
+        if hasServer {
+            serverFacets.append("server_side:required")
+        } else if hasClient {
+            serverFacets.append("server_side:optional")
         }
         
         return (clientFacets, serverFacets)
-    }
-    
-    private func handleError(_ error: Error) {
-        let globalError = GlobalError.from(error)
-        Logger.shared.error("Modrinth 搜索错误: \(globalError.chineseMessage)")
-        GlobalErrorHandler.shared.handle(globalError)
-        Task { @MainActor in
-            self.error = globalError
-        }
-    }
-    
-    deinit {
-        searchTask?.cancel()
     }
 } 
  

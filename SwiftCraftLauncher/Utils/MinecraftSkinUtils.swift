@@ -40,6 +40,11 @@ private actor ImageCache {
     }
     
     func clear() { cache.removeAll() }
+    
+    // 添加清理方法，避免内存泄漏
+    func cleanup() {
+        cache.removeAll()
+    }
 }
 
 // MARK: - Main Component
@@ -51,6 +56,7 @@ struct MinecraftSkinUtils: View {
     
     @State private var image: CIImage?
     @State private var error: String?
+    @State private var loadTask: Task<Void, Never>?
     
     private static let ciContext = CIContext()
     private static let imageCache = ImageCache()
@@ -73,6 +79,11 @@ struct MinecraftSkinUtils: View {
         }
         .frame(width: size, height: size)
         .onAppear { loadSkinData() }
+        .onDisappear {
+            // 取消正在进行的任务，避免内存泄漏
+            loadTask?.cancel()
+            loadTask = nil
+        }
     }
     
     @ViewBuilder
@@ -99,12 +110,18 @@ struct MinecraftSkinUtils: View {
     }
     
     private func loadSkinData() {
-        
         error = nil
         
-        Task {
+        // 取消之前的任务
+        loadTask?.cancel()
+        
+        loadTask = Task {
             do {
+                // 检查任务是否被取消
+                try Task.checkCancellation()
+                
                 if let cachedImage = await Self.imageCache.get(for: src) {
+                    try Task.checkCancellation()
                     await MainActor.run {
                         self.image = cachedImage
                     }
@@ -112,6 +129,8 @@ struct MinecraftSkinUtils: View {
                 }
                 
                 let data = try await loadData()
+                
+                try Task.checkCancellation()
                 
                 guard let ciImage = CIImage(data: data) else {
                     throw GlobalError.validation(
@@ -130,12 +149,19 @@ struct MinecraftSkinUtils: View {
                     )
                 }
                 
+                try Task.checkCancellation()
+                
                 await Self.imageCache.set(ciImage, for: src)
+                
+                try Task.checkCancellation()
                 
                 await MainActor.run {
                     self.image = ciImage
                 }
                 
+            } catch is CancellationError {
+                // 任务被取消，不需要处理
+                return
             } catch {
                 let globalError = GlobalError.from(error)
                 await MainActor.run {
@@ -190,6 +216,7 @@ struct MinecraftSkinUtils: View {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = Constants.networkTimeout
         config.timeoutIntervalForResource = Constants.networkTimeout
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
         
         let session = URLSession(configuration: config)
         let (data, response) = try await session.data(from: url)

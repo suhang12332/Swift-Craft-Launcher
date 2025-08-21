@@ -41,7 +41,7 @@ struct ModrinthDetailCardView: View {
     private var iconView: some View {
         Group {
             if let iconUrl = project.iconUrl, let url = URL(string: iconUrl) {
-                AsyncImage(url: url) { phase in
+                AsyncImage(url: url, transaction: Transaction(animation: .easeInOut(duration: 0.2))) { phase in
                     switch phase {
                     case .empty:
                         placeholderIcon
@@ -49,6 +49,7 @@ struct ModrinthDetailCardView: View {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
+                            .transition(.opacity)
                     case .failure:
                         placeholderIcon
                     @unknown default:
@@ -58,6 +59,10 @@ struct ModrinthDetailCardView: View {
                 .frame(width: ModrinthConstants.UI.iconSize, height: ModrinthConstants.UI.iconSize)
                 .cornerRadius(ModrinthConstants.UI.cornerRadius)
                 .clipped()
+                .onDisappear {
+                    // 清理图片缓存，避免内存泄漏
+                    URLCache.shared.removeCachedResponse(for: URLRequest(url: url))
+                }
             } else {
                 placeholderIcon
             }

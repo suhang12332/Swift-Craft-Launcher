@@ -153,16 +153,16 @@ struct ModrinthDetailView: View {
         
         lastSearchParams = params
         await viewModel.search(
-            projectType: query,
-            page: currentPage,
             query: searchText,
-            sortIndex: sortIndex,
+            projectType: query,
             versions: selectedVersions,
             categories: selectedCategories,
             features: selectedFeatures,
             resolutions: selectedResolutions,
             performanceImpact: selectedPerformanceImpact,
-            loaders: selectedLoader
+            loaders: selectedLoader,
+            sortIndex: sortIndex,
+            page: currentPage
         )
     }
 

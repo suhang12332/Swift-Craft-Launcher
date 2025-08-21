@@ -339,6 +339,7 @@ struct GameFormView: View {
     
     private var confirmButton: some View {
         Button {
+            downloadTask?.cancel()
             downloadTask = Task {
                 await saveGame()
             }
