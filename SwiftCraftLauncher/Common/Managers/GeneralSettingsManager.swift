@@ -1,6 +1,6 @@
 import Foundation
 import SwiftUI
-import AppKit
+
 
 public enum ThemeMode: String, CaseIterable {
     case light = "light"

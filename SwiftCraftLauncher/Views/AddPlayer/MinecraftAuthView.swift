@@ -1,5 +1,5 @@
 import SwiftUI
-import AppKit // macOS 剪贴板 API
+
 struct MinecraftAuthView: View {
     @StateObject private var authService = MinecraftAuthService.shared
     var onLoginSuccess: ((MinecraftProfileResponse) -> Void)?

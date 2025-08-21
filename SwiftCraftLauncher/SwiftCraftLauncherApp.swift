@@ -5,7 +5,7 @@
 //
 
 import SwiftUI
-import AppKit
+
 
 @main
 struct SwiftCraftLauncherApp: App {
