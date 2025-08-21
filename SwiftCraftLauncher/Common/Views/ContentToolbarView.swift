@@ -12,7 +12,7 @@ public struct ContentToolbarView: ToolbarContent {
 
     
     public var body: some ToolbarContent {
-        ToolbarItemGroup {
+        ToolbarItemGroup(placement: .primaryAction) {
             Button(action: {
                 if playerListViewModel.currentPlayer == nil {
                     showPlayerAlert = true

@@ -49,7 +49,7 @@ struct GameAdvancedSettingsView: View {
                         .font(.headline)
                         
                     Spacer()
-                    Text("暂不可用").foregroundColor(.red).font(.subheadline)
+                    Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
                 }
                 
                 VStack(alignment: .leading, spacing: 12) {
@@ -82,7 +82,7 @@ struct GameAdvancedSettingsView: View {
                     Text("settings.game.java.garbage_collector".localized())
                         .font(.headline)
                     Spacer()
-                    Text("暂不可用").foregroundColor(.red).font(.subheadline)
+                    Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
 
                 }
                 
@@ -124,7 +124,7 @@ struct GameAdvancedSettingsView: View {
                     Text("settings.game.java.performance_optimization".localized())
                         .font(.headline)
                     Spacer()
-                    Text("暂不可用").foregroundColor(.red).font(.subheadline)
+                    Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
 
                 }
                 
@@ -168,7 +168,7 @@ struct GameAdvancedSettingsView: View {
                     Text("settings.game.java.custom_parameters".localized())
                         .font(.headline)
                     Spacer()
-                    Text("暂不可用").foregroundColor(.red).font(.subheadline)
+                    Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
 
                 }
                 
@@ -196,7 +196,7 @@ struct GameAdvancedSettingsView: View {
                     Text("settings.game.java.environment_variables".localized())
                         .font(.headline)
                     Spacer()
-                    Text("暂不可用").foregroundColor(.red).font(.subheadline)
+                    Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
 
                 }
                 
