@@ -121,7 +121,7 @@ struct WorldSettingsWidget: View {
                         HStack(spacing: 8) {
                             Text("allow.commands".localized())
                                 .font(.system(size: 12))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.primary)
                                 .frame(width: 80, alignment: .leading)
                             Image(systemName: "xmark.circle")
                                 .foregroundColor(.red)
