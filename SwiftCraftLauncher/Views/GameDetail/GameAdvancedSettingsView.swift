@@ -190,7 +190,7 @@ struct GameAdvancedSettingsView: View {
             // 环境变量设置
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Image(systemName: "environment")
+                    Image(systemName: "gearshape.2")
                         .foregroundColor(.teal)
                         .font(.system(size: 16, weight: .medium))
                     Text("settings.game.java.environment_variables".localized())
