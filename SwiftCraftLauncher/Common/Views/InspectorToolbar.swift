@@ -20,8 +20,6 @@ struct InspectorToolbar: View {
         }) {
             Image(systemName: showingInspector ? "sidebar.right" : "sidebar.left")
         }
-//        .help(showingInspector ?
-//            NSLocalizedString("game.version.inspector.hide", comment: "") :
-//            NSLocalizedString("game.version.inspector.show", comment: ""))
+        .help((showingInspector ? "game.version.inspector.hide" : "game.version.inspector.show").localized())
     }
 }
