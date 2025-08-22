@@ -43,7 +43,8 @@
             "value" : "About"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "about.acknowledgements" : {
       "comment" : "About View",
@@ -651,7 +652,8 @@
             "value" : "by %@"
           }
         }
-      }
+      },
+      "shouldTranslate" : false
     },
     "clear" : {
       "extractionState" : "manual",
@@ -5454,7 +5456,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "分类"
           }
         }
@@ -5472,7 +5474,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "清除筛选"
           }
         }
@@ -5489,7 +5491,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "环境"
           }
         }
@@ -5506,7 +5508,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "加载器"
           }
         }
@@ -5523,7 +5525,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "性能要求"
           }
         }
@@ -5540,7 +5542,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "分辨率"
           }
         }
@@ -5557,7 +5559,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "游戏版本"
           }
         }
@@ -5574,7 +5576,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Forge 加载器"
           }
         }
@@ -5591,7 +5593,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "上次游玩"
           }
         }
@@ -5889,8 +5891,15 @@
       }
     },
     "game.version.inspector.hide" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hide"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hide"
@@ -5899,8 +5908,15 @@
       }
     },
     "game.version.inspector.show" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Show"
@@ -8235,7 +8251,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "资源库"
           }
         }
@@ -9311,7 +9327,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "游戏列表"
           }
         }
@@ -9329,7 +9345,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "资源列表"
           }
         }
@@ -9346,7 +9362,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "搜索游戏"
           }
         }
@@ -10026,6 +10042,12 @@
             "state" : "translated",
             "value" : "For example: `-XX:+UseG1GC`"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For example: `-XX:+UseG1GC`"
+          }
         }
       }
     },
@@ -10036,11 +10058,17 @@
             "state" : "translated",
             "value" : "For example: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For example: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+          }
         }
       }
     },
     "暂不可用" : {
-
+      "shouldTranslate" : false
     }
   },
   "version" : "1.1"
