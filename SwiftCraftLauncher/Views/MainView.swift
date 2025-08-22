@@ -134,7 +134,6 @@ struct MainView: View {
                 loadedProjectDetail = nil
             }
         }
-        .preferredColorScheme(general.themeMode.effectiveColorScheme)
     }
 
     // MARK: - Sidebar Item Change Handlers

@@ -27,7 +27,6 @@ public struct SettingsView: View {
         }
         .padding(.vertical, 24)
         .frame(minWidth: 840)
-        .preferredColorScheme(general.themeMode.effectiveColorScheme)
     }
 }
 

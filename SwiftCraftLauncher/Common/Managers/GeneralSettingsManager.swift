@@ -53,8 +53,10 @@ class GeneralSettingsManager: ObservableObject {
     private var appearanceObserver: NSKeyValueObservation?
     
     private init() {
-        // 确保应用启动时就应用一次外观，以影响 Sparkle 等 AppKit 组件
-        applyAppAppearance()
+        // 延迟应用外观设置，确保 NSApp 已完全初始化
+        DispatchQueue.main.async { [weak self] in
+            self?.applyAppAppearance()
+        }
         
         // 监听系统外观变化
         setupAppearanceObserver()
@@ -87,5 +89,11 @@ class GeneralSettingsManager: ObservableObject {
                 NSApp.appearance = appearance
             }
         }
+    }
+    
+    /// 获取当前有效的 ColorScheme，用于 @Environment(\.colorScheme) 的替代方案
+    /// 当主题模式为 system 时，返回系统当前的主题
+    public var currentColorScheme: ColorScheme? {
+        return themeMode.effectiveColorScheme
     }
 }

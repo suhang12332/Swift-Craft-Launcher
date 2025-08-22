@@ -45,7 +45,7 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(gameRepository)
                 .environmentObject(sparkleUpdateService)
                 .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.themeMode.effectiveColorScheme)
+                .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
         }
         .windowStyle(.titleBar)
@@ -55,7 +55,7 @@ struct SwiftCraftLauncherApp: App {
         WindowGroup("About", id: "aboutWindow") {
             AboutView()
                 .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.themeMode.effectiveColorScheme)
+                .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .background(WindowAccessor { window in
                     // 移除关闭、最小化、最大化按钮
                     window.styleMask.remove([.miniaturizable, .resizable])
@@ -96,7 +96,7 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(playerListViewModel)
                 .environmentObject(sparkleUpdateService)
                 .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.themeMode.effectiveColorScheme)
+                .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
         }
         // 右上角的状态栏(可以显示图标的)
