@@ -14,7 +14,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		90ED06C32E56BFDF006D91FC /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Swift Craft Launcher.app"; path = "/Users/su/Development/XCodeProjects/SwiftCraftLauncher/build/Debug/Swift Craft Launcher.app"; sourceTree = "<absolute>"; };
+		034EF9842E57D0BF0024CF1A /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -44,6 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */,
+				034EF9842E57D0BF0024CF1A /* Swift Craft Launcher.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -73,7 +74,7 @@
 				90E123456789ABCD0002 /* Sparkle */,
 			);
 			productName = SwiftCraftLauncher;
-			productReference = 90ED06C32E56BFDF006D91FC /* Swift Craft Launcher.app */;
+			productReference = 034EF9842E57D0BF0024CF1A /* Swift Craft Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -204,6 +205,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -266,6 +268,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};
