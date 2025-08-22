@@ -478,7 +478,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Offline Account Information:"
           }
         },
         "zh-Hans" : {
@@ -495,7 +495,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Duplicate"
+            "value" : "Player name already exists"
           }
         },
         "zh-Hans" : {
@@ -512,7 +512,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Empty"
+            "value" : "Player name cannot be empty"
           }
         },
         "zh-Hans" : {
@@ -529,7 +529,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Invalid"
+            "value" : "Invalid player name"
           }
         },
         "zh-Hans" : {
@@ -546,7 +546,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Label"
+            "value" : "Player Name"
           }
         },
         "zh-Hans" : {
@@ -563,7 +563,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Placeholder"
+            "value" : "Enter player name that will be used as your display name in game"
           }
         },
         "zh-Hans" : {
@@ -580,7 +580,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Add Account"
           }
         },
         "zh-Hans" : {
@@ -598,7 +598,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Offline"
+            "value" : "Create Offline Account"
           }
         },
         "zh-Hans" : {
@@ -615,7 +615,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Online"
+            "value" : "Login to Microsoft Account"
           }
         },
         "zh-Hans" : {
@@ -632,7 +632,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Commands"
+            "value" : "Allow Cheats"
           }
         },
         "zh-Hans" : {
@@ -1121,7 +1121,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Time"
+            "value" : "Daytime"
           }
         },
         "zh-Hans" : {
@@ -1138,7 +1138,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Confirm"
+            "value" : "Are you sure you want to delete game \"%@\" and all its data? (This will take a long time)"
           }
         },
         "zh-Hans" : {
@@ -1156,7 +1156,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Delete Game Version"
           }
         },
         "zh-Hans" : {
@@ -1207,7 +1207,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Help"
+            "value" : "Retry Download"
           }
         },
         "zh-Hans" : {
@@ -1242,7 +1242,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Required mods to download"
           }
         },
         "zh-Hans" : {
@@ -1259,7 +1259,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Picker"
+            "value" : "Select version:"
           }
         },
         "zh-Hans" : {
@@ -1294,7 +1294,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Core Files"
           }
         },
         "zh-Hans" : {
@@ -1311,7 +1311,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "File"
+            "value" : "Current file: %@"
           }
         },
         "zh-Hans" : {
@@ -1328,7 +1328,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Files"
+            "value" : "Files: %d/%d"
           }
         },
         "zh-Hans" : {
@@ -1345,7 +1345,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Progress"
+            "value" : "Progress: %d%%"
           }
         },
         "zh-Hans" : {
@@ -1362,7 +1362,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Resource Files"
           }
         },
         "zh-Hans" : {
@@ -1985,7 +1985,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Notfound"
+            "value" : "Data tag not found"
           }
         },
         "zh-Hans" : {
@@ -8998,7 +8998,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Label"
+            "value" : "Git Proxy URL:"
           }
         },
         "zh-Hans" : {
@@ -9016,7 +9016,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Picker"
+            "value" : "Select Language:"
           }
         },
         "zh-Hans" : {
@@ -9033,7 +9033,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Confirm"
+            "value" : "Restart App"
           }
         },
         "zh-Hans" : {
@@ -9050,7 +9050,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Message"
+            "value" : "Language change requires app restart to take effect"
           }
         },
         "zh-Hans" : {
@@ -9067,7 +9067,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Restart Required"
           }
         },
         "zh-Hans" : {
@@ -9101,7 +9101,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Label"
+            "value" : "Minecraft Versions URL:"
           }
         },
         "zh-Hans" : {
@@ -9118,7 +9118,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Label"
+            "value" : "Modrinth API URL:"
           }
         },
         "zh-Hans" : {
@@ -9135,7 +9135,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Placeholder"
+            "value" : "Player settings will be displayed here."
           }
         },
         "zh-Hans" : {
@@ -9152,7 +9152,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tab"
+            "value" : "Player"
           }
         },
         "zh-Hans" : {
@@ -9169,7 +9169,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Player"
           }
         },
         "zh-Hans" : {
@@ -9220,7 +9220,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Picker"
+            "value" : "Appearance:"
           }
         },
         "zh-Hans" : {
@@ -9237,7 +9237,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "System"
+            "value" : "Follow System"
           }
         },
         "zh-Hans" : {
@@ -9255,7 +9255,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Description"
+            "value" : "This path setting will only affect the storage location of game saves, mods, shaders, and other resources."
           }
         },
         "zh-Hans" : {
@@ -9272,7 +9272,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Message"
+            "value" : "No player information. Please add player information first before adding games."
           }
         },
         "zh-Hans" : {
@@ -9289,7 +9289,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "No Player"
           }
         },
         "zh-Hans" : {
@@ -9306,7 +9306,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Game List"
           }
         },
         "zh-Hans" : {
@@ -9324,7 +9324,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Game list"
+            "value" : "Resource List"
           }
         },
         "zh-Hans" : {
@@ -9341,7 +9341,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Search"
+            "value" : "Search Games"
           }
         },
         "zh-Hans" : {
@@ -9375,7 +9375,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fill"
+            "value" : "Stop"
           }
         },
         "zh-Hans" : {
@@ -9443,7 +9443,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Status"
+            "value" : "Thunder Status"
           }
         },
         "zh-Hans" : {
@@ -9461,7 +9461,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hours Minutes"
+            "value" : "%d hours %d minutes"
           }
         },
         "zh-Hans" : {
@@ -9496,7 +9496,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Date"
+            "value" : "Release Date"
           }
         },
         "zh-Hans" : {
@@ -9548,7 +9548,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Name"
+            "value" : "Version"
           }
         },
         "zh-Hans" : {
@@ -9565,7 +9565,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Operate"
+            "value" : "Actions"
           }
         },
         "zh-Hans" : {
@@ -9616,7 +9616,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Download"
+            "value" : "Downloads"
           }
         },
         "zh-Hans" : {
@@ -9634,7 +9634,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Action"
+            "value" : "Actions"
           }
         },
         "zh-Hans" : {
@@ -9651,7 +9651,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Weather"
+            "value" : "Weather Status"
           }
         },
         "zh-Hans" : {
@@ -9669,7 +9669,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Data"
+            "value" : "World Data"
           }
         },
         "zh-Hans" : {
@@ -9686,7 +9686,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Name"
+            "value" : "World Name"
           }
         },
         "zh-Hans" : {
@@ -9720,7 +9720,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Time"
+            "value" : "World Time"
           }
         },
         "zh-Hans" : {
@@ -9754,7 +9754,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Subtitle"
+            "value" : "Please wait, retrieving your profile"
           }
         },
         "zh-Hans" : {
@@ -9787,7 +9787,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Failed"
+            "value" : "Login Failed"
           }
         },
         "zh-Hans" : {
@@ -9804,7 +9804,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Requesting Code"
+            "value" : "Requesting Device Code..."
           }
         },
         "zh-Hans" : {
@@ -9821,7 +9821,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Subtitle"
+            "value" : "Please wait, communicating with LittleSkin server"
           }
         },
         "zh-Hans" : {
@@ -9838,7 +9838,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Retry Message"
+            "value" : "Please click the \"Retry\" button below to restart authentication"
           }
         },
         "zh-Hans" : {
@@ -9855,7 +9855,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Selected Profile"
+            "value" : "Selected character: %@"
           }
         },
         "zh-Hans" : {
@@ -9923,7 +9923,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Subtitle"
+            "value" : "Please click the \"Start Login\" button below to begin the authentication process"
           }
         },
         "zh-Hans" : {
@@ -9956,7 +9956,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Success Legacy"
+            "value" : "Login Successful!"
           }
         },
         "zh-Hans" : {
@@ -9974,7 +9974,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Login with LittleSkin Account"
           }
         },
         "zh-Hans" : {
@@ -9991,7 +9991,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uuid"
+            "value" : "UUID: %@"
           }
         },
         "zh-Hans" : {
@@ -10008,7 +10008,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Waiting Verification"
+            "value" : "Please enter the verification code below in your browser to complete verification"
           }
         },
         "zh-Hans" : {
