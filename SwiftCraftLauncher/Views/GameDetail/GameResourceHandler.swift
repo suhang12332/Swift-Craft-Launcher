@@ -282,6 +282,7 @@ struct GameResourceHandler {
             selectedVersions: selectedVersions,
             dependencyVersions: dependencyVersions,
             mainProjectId: project.projectId,
+            mainProjectVersionId: nil, // 使用最新版本
             gameInfo: gameInfo,
             query: query,
             gameRepository: gameRepository,
