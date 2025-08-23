@@ -74,7 +74,7 @@ class CommonFileManager {
         do {
             try await BatchJarDownloader.download(
                 tasks: tasks,
-                metaLibrariesDir: AppPaths.metaDirectory,
+                metaLibrariesDir: AppPaths.librariesDirectory,
                 onProgressUpdate: self.onProgressUpdate
             )
         } catch {
@@ -117,7 +117,7 @@ class CommonFileManager {
         do {
             try await BatchJarDownloader.download(
                 tasks: tasks,
-                metaLibrariesDir: AppPaths.metaDirectory,
+                metaLibrariesDir: AppPaths.librariesDirectory,
                 onProgressUpdate: self.onProgressUpdate
             )
         } catch {
