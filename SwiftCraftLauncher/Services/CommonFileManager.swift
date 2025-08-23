@@ -70,19 +70,11 @@ class CommonFileManager {
             )
         }
         
-        guard let metaLibrariesDir = AppPaths.metaDirectory?
-            .appendingPathComponent("libraries") else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取元数据目录路径",
-                i18nKey: "error.configuration.meta_directory_not_found",
-                level: .notification
-            )
-        }
         
         do {
             try await BatchJarDownloader.download(
                 tasks: tasks,
-                metaLibrariesDir: metaLibrariesDir,
+                metaLibrariesDir: AppPaths.metaDirectory,
                 onProgressUpdate: self.onProgressUpdate
             )
         } catch {
@@ -122,19 +114,10 @@ class CommonFileManager {
             )
         }
         
-        guard let metaLibrariesDir = AppPaths.metaDirectory?
-            .appendingPathComponent("libraries") else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取元数据目录路径",
-                i18nKey: "error.configuration.meta_directory_not_found",
-                level: .notification
-            )
-        }
-        
         do {
             try await BatchJarDownloader.download(
                 tasks: tasks,
-                metaLibrariesDir: metaLibrariesDir,
+                metaLibrariesDir: AppPaths.metaDirectory,
                 onProgressUpdate: self.onProgressUpdate
             )
         } catch {
@@ -179,10 +162,8 @@ class CommonFileManager {
         processorData["LIBRARY_DIR"] = librariesDir.path
         
         // 添加Minecraft JAR路径
-        if let versionsDir = AppPaths.versionsDirectory {
-            let minecraftJarPath = versionsDir.appendingPathComponent(gameVersion).appendingPathComponent("\(gameVersion).jar")
-            processorData["MINECRAFT_JAR"] = minecraftJarPath.path
-        }
+        let minecraftJarPath = AppPaths.versionsDirectory.appendingPathComponent(gameVersion).appendingPathComponent("\(gameVersion).jar")
+        processorData["MINECRAFT_JAR"] = minecraftJarPath.path
         
         // 添加实例路径（profile目录）
         if let gameName = gameName, let profileDir = AppPaths.profileDirectory(gameName: gameName) {

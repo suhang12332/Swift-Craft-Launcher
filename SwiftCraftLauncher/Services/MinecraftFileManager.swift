@@ -10,7 +10,7 @@ private enum Constants {
         "assets/indexes",
         "assets/objects"
     ]
-    static let assetChunkSize = 200
+    static let assetChunkSize = 500
     static let downloadTimeout: TimeInterval = 30
     static let retryCount = 3
     static let retryDelay: TimeInterval = 2
@@ -95,8 +95,7 @@ class MinecraftFileManager {
     }
     
     private func createDirectories(manifestId: String, gameName: String) throws {
-        guard let metaDirectory = AppPaths.metaDirectory,
-              let profileDirectory = AppPaths.profileDirectory(gameName: gameName) else {
+        guard let profileDirectory = AppPaths.profileDirectory(gameName: gameName) else {
             throw GlobalError.configuration(
                 chineseMessage: "无法获取必要的目录路径",
                 i18nKey: "error.configuration.required_directories_not_found",
@@ -104,9 +103,9 @@ class MinecraftFileManager {
             )
         }
         let directoriesToCreate = Constants.metaSubdirectories.map {
-            metaDirectory.appendingPathComponent($0)
+            AppPaths.metaDirectory.appendingPathComponent($0)
         } + [
-            metaDirectory.appendingPathComponent("versions").appendingPathComponent(manifestId),
+            AppPaths.metaDirectory.appendingPathComponent("versions").appendingPathComponent(manifestId),
             profileDirectory
         ]
         let profileSubfolders = AppPaths.profileSubdirectories.map { profileDirectory.appendingPathComponent($0) }
@@ -147,14 +146,7 @@ class MinecraftFileManager {
     }
     
     private func downloadClientJar(manifest: MinecraftVersionManifest) async throws {
-        guard let metaDirectory = AppPaths.metaDirectory else { 
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 meta 目录路径",
-                i18nKey: "error.configuration.meta_directory_not_found",
-                level: .notification
-            )
-        }
-        let versionDir = metaDirectory.appendingPathComponent("versions").appendingPathComponent(manifest.id)
+        let versionDir = AppPaths.versionsDirectory.appendingPathComponent(manifest.id)
         let destinationURL = versionDir.appendingPathComponent("\(manifest.id).jar")
         
         do {
@@ -171,13 +163,7 @@ class MinecraftFileManager {
     }
     
     private func downloadLibraries(manifest: MinecraftVersionManifest) async throws {
-        guard let metaDirectory = AppPaths.metaDirectory else { 
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 meta 目录路径",
-                i18nKey: "error.configuration.meta_directory_not_found",
-                level: .notification
-            )
-        }
+        
         Logger.shared.info("开始下载库文件")
         let osxLibraries = manifest.libraries.filter { isLibraryAllowedOnOSX($0.rules) }
         
@@ -190,7 +176,7 @@ class MinecraftFileManager {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
                     
-                    try await self?.downloadLibrary(library, metaDirectory: metaDirectory)
+                    try await self?.downloadLibrary(library, metaDirectory: AppPaths.metaDirectory)
                 }
             }
             try await group.waitForAll()
@@ -265,14 +251,8 @@ class MinecraftFileManager {
     }
     
     private func downloadAssetIndex(manifest: MinecraftVersionManifest) async throws -> DownloadedAssetIndex {
-        guard let metaDirectory = AppPaths.metaDirectory else { 
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 meta 目录路径",
-                i18nKey: "error.configuration.meta_directory_not_found",
-                level: .notification
-            )
-        }
-        let destinationURL = metaDirectory.appendingPathComponent("assets/indexes").appendingPathComponent("\(manifest.assetIndex.id).json")
+        
+        let destinationURL = AppPaths.metaDirectory.appendingPathComponent("assets/indexes").appendingPathComponent("\(manifest.assetIndex.id).json")
         
         do {
             _ = try await DownloadManager.downloadFile(urlString: manifest.assetIndex.url.absoluteString, destinationURL: destinationURL, expectedSha1: manifest.assetIndex.sha1)
@@ -300,15 +280,9 @@ class MinecraftFileManager {
     }
     
     private func downloadLoggingConfig(manifest: MinecraftVersionManifest) async throws {
-        guard let metaDirectory = AppPaths.metaDirectory else { 
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 meta 目录路径",
-                i18nKey: "error.configuration.meta_directory_not_found",
-                level: .notification
-            )
-        }
+       
         let loggingFile = manifest.logging.client.file
-        let versionDir = metaDirectory.appendingPathComponent("versions").appendingPathComponent(manifest.id)
+        let versionDir = AppPaths.metaDirectory.appendingPathComponent("versions").appendingPathComponent(manifest.id)
         let destinationURL = versionDir.appendingPathComponent(loggingFile.id)
         
         do {
@@ -409,14 +383,8 @@ class MinecraftFileManager {
     }
     
     private func downloadAllAssets(assetIndex: DownloadedAssetIndex) async throws {
-        guard let metaDirectory = AppPaths.metaDirectory else { 
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 meta 目录路径",
-                i18nKey: "error.configuration.meta_directory_not_found",
-                level: .notification
-            )
-        }
-        let objectsDirectory = metaDirectory.appendingPathComponent("assets/objects")
+        
+        let objectsDirectory = AppPaths.metaDirectory.appendingPathComponent("assets/objects")
         let assets = Array(assetIndex.objects)
         
         // 创建信号量控制并发数量

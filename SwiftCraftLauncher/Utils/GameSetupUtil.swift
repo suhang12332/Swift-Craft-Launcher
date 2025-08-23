@@ -201,8 +201,8 @@ class GameSetupUtil: ObservableObject {
     
     private func setupFileManager(manifest: MinecraftVersionManifest, modLoader: String) async throws -> MinecraftFileManager {
         let nativesDir = AppPaths.nativesDirectory
-        try FileManager.default.createDirectory(at: nativesDir!, withIntermediateDirectories: true)
-        Logger.shared.info("创建目录：\(nativesDir!.path)")
+        try FileManager.default.createDirectory(at: nativesDir, withIntermediateDirectories: true)
+        Logger.shared.info("创建目录：\(nativesDir.path)")
         return MinecraftFileManager()
     }
     
@@ -239,14 +239,8 @@ class GameSetupUtil: ObservableObject {
     }
     
     private func downloadAssetIndex(manifest: MinecraftVersionManifest) async throws -> DownloadedAssetIndex {
-        guard let metaDirectory = AppPaths.metaDirectory else { 
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 meta 目录路径",
-                i18nKey: "error.configuration.meta_directory_not_found",
-                level: .notification
-            )
-        }
-        let destinationURL = metaDirectory.appendingPathComponent("assets/indexes").appendingPathComponent("\(manifest.assetIndex.id).json")
+        
+        let destinationURL = AppPaths.metaDirectory.appendingPathComponent("assets/indexes").appendingPathComponent("\(manifest.assetIndex.id).json")
         
         do {
             _ = try await DownloadManager.downloadFile(urlString: manifest.assetIndex.url.absoluteString, destinationURL: destinationURL, expectedSha1: manifest.assetIndex.sha1)
@@ -382,7 +376,7 @@ class GameSetupUtil: ObservableObject {
                     updatedGameInfo.modJvm = jvmArgs.map { arg in
                         arg.replacingOccurrences(of: "${version_name}", with: selectedGameVersion)
                             .replacingOccurrences(of: "${classpath_separator}", with: ":")
-                            .replacingOccurrences(of: "${library_directory}", with: AppPaths.librariesDirectory!.path)
+                            .replacingOccurrences(of: "${library_directory}", with: AppPaths.librariesDirectory.path)
                     }
                 }
             }
@@ -401,7 +395,7 @@ class GameSetupUtil: ObservableObject {
                     updatedGameInfo.modJvm = jvmArgs.map { arg in
                         arg.replacingOccurrences(of: "${version_name}", with: selectedGameVersion)
                             .replacingOccurrences(of: "${classpath_separator}", with: ":")
-                            .replacingOccurrences(of: "${library_directory}", with: AppPaths.librariesDirectory!.path)
+                            .replacingOccurrences(of: "${library_directory}", with: AppPaths.librariesDirectory.path)
                     }
                 }
             }

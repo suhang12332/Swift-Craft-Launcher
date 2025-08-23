@@ -175,10 +175,8 @@ class CommonService {
         
         // 对于标准Maven坐标，使用CommonService的方法
         if let relativePath = mavenCoordinateToRelativePath(coordinate) {
-            guard let librariesDir = AppPaths.librariesDirectory else {
-                return relativePath
-            }
-            return librariesDir.appendingPathComponent(relativePath).path
+        
+            return AppPaths.librariesDirectory.appendingPathComponent(relativePath).path
         }
         
         // 如果CommonService方法失败，可能是非标准格式，返回原值
@@ -250,10 +248,7 @@ class CommonService {
     static func convertMavenCoordinateWithAtSymbol(_ coordinate: String) -> String {
         let relativePath = parseMavenCoordinateWithAtSymbol(coordinate)
         
-        guard let librariesDir = AppPaths.librariesDirectory else {
-            return relativePath
-        }
-        return librariesDir.appendingPathComponent(relativePath).path
+        return AppPaths.librariesDirectory.appendingPathComponent(relativePath).path
     }
     /// Maven 坐标转相对路径
     /// - Parameter coordinate: Maven 坐标

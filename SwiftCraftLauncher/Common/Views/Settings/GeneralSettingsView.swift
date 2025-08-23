@@ -66,7 +66,7 @@ public struct GeneralSettingsView: View {
                 Text("settings.launcher_working_directory".localized()).gridColumnAlignment(.trailing)
                 DirectorySettingRow(
                     title: "settings.launcher_working_directory".localized(),
-                    path: general.launcherWorkingDirectory.isEmpty ? (AppPaths.launcherSupportDirectory?.path ?? "") : general.launcherWorkingDirectory,
+                    path: general.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : general.launcherWorkingDirectory,
                     description: "settings.working_directory.description".localized(),
                     onChoose: { showDirectoryPicker = true },
                     onReset: {

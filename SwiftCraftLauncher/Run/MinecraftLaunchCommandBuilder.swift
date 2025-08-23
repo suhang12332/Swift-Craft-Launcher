@@ -99,32 +99,7 @@ struct MinecraftLaunchCommandBuilder {
     /// - Returns: 验证后的路径集合
     /// - Throws: GlobalError 当路径无效时
     private static func validateAndGetPaths(gameInfo: GameVersionInfo, manifest: MinecraftVersionManifest) throws -> (nativesDir: String, librariesDir: URL, assetsDir: String, gameDir: String, clientJarPath: String) {
-        // 验证 natives 目录
-        guard let nativesDir = AppPaths.nativesDirectory?.path else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 natives 目录路径",
-                i18nKey: "error.configuration.natives_directory_not_found",
-                level: .popup
-            )
-        }
         
-        // 验证 libraries 目录
-        guard let librariesDir = AppPaths.librariesDirectory else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 libraries 目录路径",
-                i18nKey: "error.configuration.libraries_directory_not_found",
-                level: .popup
-            )
-        }
-        
-        // 验证 assets 目录
-        guard let assetsDir = AppPaths.assetsDirectory?.path else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 assets 目录路径",
-                i18nKey: "error.configuration.assets_directory_not_found",
-                level: .popup
-            )
-        }
         
         // 验证游戏目录
         guard let gameDir = AppPaths.profileDirectory(gameName: gameInfo.gameName)?.path else {
@@ -135,17 +110,9 @@ struct MinecraftLaunchCommandBuilder {
             )
         }
         
-        // 验证 versions 目录
-        guard let versionsDir = AppPaths.versionsDirectory else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 versions 目录路径",
-                i18nKey: "error.configuration.versions_directory_not_found",
-                level: .popup
-            )
-        }
         
         // 验证客户端 JAR 文件
-        let clientJarPath = versionsDir.appendingPathComponent(manifest.id).appendingPathComponent("\(manifest.id).jar").path
+        let clientJarPath = AppPaths.versionsDirectory.appendingPathComponent(manifest.id).appendingPathComponent("\(manifest.id).jar").path
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: clientJarPath) else {
             throw GlobalError.resource(
@@ -154,8 +121,8 @@ struct MinecraftLaunchCommandBuilder {
                 level: .popup
             )
         }
-        
-        return (nativesDir: nativesDir, librariesDir: librariesDir, assetsDir: assetsDir, gameDir: gameDir, clientJarPath: clientJarPath)
+
+        return (nativesDir: AppPaths.nativesDirectory.path, librariesDir: AppPaths.librariesDirectory, assetsDir: AppPaths.assetsDirectory.path, gameDir: gameDir, clientJarPath: clientJarPath)
     }
 
     private static func substituteVariables(_ arg: String, with map: [String: String]) -> String {

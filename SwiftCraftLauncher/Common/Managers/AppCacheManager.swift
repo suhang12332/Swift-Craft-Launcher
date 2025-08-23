@@ -5,16 +5,9 @@ class AppCacheManager {
     private let queue = DispatchQueue(label: "AppCacheManager.queue")
 
     private func fileURL(for namespace: String) throws -> URL {
-        guard let dir = AppPaths.appCache else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取缓存目录",
-                i18nKey: "error.configuration.cache_directory_not_found",
-                level: .popup
-            )
-        }
         
         do {
-            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: AppPaths.appCache, withIntermediateDirectories: true)
         } catch {
             throw GlobalError.fileSystem(
                 chineseMessage: "创建缓存目录失败: \(error.localizedDescription)",
@@ -23,7 +16,7 @@ class AppCacheManager {
             )
         }
         
-        return dir.appendingPathComponent("\(namespace).json")
+        return AppPaths.appCache.appendingPathComponent("\(namespace).json")
     }
 
     // MARK: - Public API
@@ -142,16 +135,10 @@ class AppCacheManager {
     /// - Throws: GlobalError 当操作失败时
     func clearAll() throws {
         try queue.sync {
-            guard let dir = AppPaths.appCache else {
-                throw GlobalError.configuration(
-                    chineseMessage: "无法获取缓存目录",
-                    i18nKey: "error.configuration.cache_directory_not_found",
-                    level: .popup
-                )
-            }
+            
             
             do {
-                let files = try FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil)
+                let files = try FileManager.default.contentsOfDirectory(at: AppPaths.appCache, includingPropertiesForKeys: nil)
                 for file in files where file.pathExtension == "json" {
                     try FileManager.default.removeItem(at: file)
                 }

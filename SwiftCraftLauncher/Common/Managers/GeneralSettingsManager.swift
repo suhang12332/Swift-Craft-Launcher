@@ -45,7 +45,7 @@ class GeneralSettingsManager: ObservableObject {
         }
     }
     // 新增：启动器工作目录
-    @AppStorage("launcherWorkingDirectory") public var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory?.path ?? "" {
+    @AppStorage("launcherWorkingDirectory") public var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
         didSet { objectWillChange.send() }
     }
     

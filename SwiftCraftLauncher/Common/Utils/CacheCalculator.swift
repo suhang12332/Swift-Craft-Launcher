@@ -29,20 +29,12 @@ class CacheCalculator {
     /// 计算游戏资源缓存信息
     /// - Throws: GlobalError 当操作失败时
     func calculateMetaCacheInfo() throws -> CacheInfo {
-        guard let metaDir = AppPaths.metaDirectory else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取元数据目录",
-                i18nKey: "error.configuration.meta_directory_not_found",
-                level: .notification
-            )
-        }
-        
         let resourceTypes = AppConstants.cacheResourceTypes
         var totalFileCount = 0
         var totalSize: Int64 = 0
         
         for type in resourceTypes {
-            let typeDir = metaDir.appendingPathComponent(type)
+            let typeDir = AppPaths.metaDirectory.appendingPathComponent(type)
             let (fileCount, size) = try calculateDirectorySize(typeDir)
             totalFileCount += fileCount
             totalSize += size
@@ -54,15 +46,7 @@ class CacheCalculator {
     /// 计算应用缓存信息
     /// - Throws: GlobalError 当操作失败时
     func calculateCacheInfo() throws -> CacheInfo {
-        guard let cacheDir = AppPaths.appCache else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取应用缓存目录",
-                i18nKey: "error.configuration.app_cache_directory_not_found",
-                level: .notification
-            )
-        }
-        
-        let (fileCount, size) = try calculateDirectorySize(cacheDir)
+        let (fileCount, size) = try calculateDirectorySize(AppPaths.appCache)
         return CacheInfo(fileCount: fileCount, totalSize: size)
     }
     

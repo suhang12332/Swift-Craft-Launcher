@@ -2,26 +2,26 @@ import Foundation
 
 struct AppPaths {
     
-    static var launcherSupportDirectory: URL? {
-        guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
-            return nil
-        }
-        return appSupport.appendingPathComponent(Bundle.main.appName)
+    static var launcherSupportDirectory: URL {
+//        guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+//            return nil
+//        }
+        return .applicationSupportDirectory.appendingPathComponent(Bundle.main.appName)
     }
-    static var metaDirectory: URL? {
-        launcherSupportDirectory?.appendingPathComponent("meta")
+    static var metaDirectory: URL {
+        launcherSupportDirectory.appendingPathComponent("meta")
     }
-    static var librariesDirectory: URL? {
-        metaDirectory?.appendingPathComponent("libraries")
+    static var librariesDirectory: URL {
+        metaDirectory.appendingPathComponent("libraries")
     }
-    static var nativesDirectory: URL? {
-        metaDirectory?.appendingPathComponent("natives")
+    static var nativesDirectory: URL {
+        metaDirectory.appendingPathComponent("natives")
     }
-    static var assetsDirectory: URL? {
-        metaDirectory?.appendingPathComponent("assets")
+    static var assetsDirectory: URL {
+        metaDirectory.appendingPathComponent("assets")
     }
-    static var versionsDirectory: URL? {
-        metaDirectory?.appendingPathComponent("versions")
+    static var versionsDirectory: URL {
+        metaDirectory.appendingPathComponent("versions")
     }
     static var profileRootDirectory: URL? {
         let customPath = GeneralSettingsManager.shared.launcherWorkingDirectory
@@ -72,7 +72,7 @@ extension AppPaths {
         }
     }
     /// 全局缓存文件路径
-    static var appCache: URL? {
-        launcherSupportDirectory?.appendingPathComponent("cache")
+    static var appCache: URL {
+        launcherSupportDirectory.appendingPathComponent("cache")
     }
 }

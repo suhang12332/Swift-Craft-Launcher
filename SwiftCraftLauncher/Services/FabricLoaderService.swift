@@ -134,13 +134,7 @@ class FabricLoaderService {
         onProgressUpdate: @escaping (String, Int, Int) -> Void
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         let fabricProfile = try await fetchLatestStableLoaderVersion(for: gameVersion)
-        guard let librariesDirectory = AppPaths.librariesDirectory else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取库目录路径",
-                i18nKey: "error.configuration.libraries_directory_not_found",
-                level: .notification
-            )
-        }
+        let librariesDirectory = AppPaths.librariesDirectory
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
         fileManager.onProgressUpdate = onProgressUpdate
         await fileManager.downloadFabricJars(libraries: fabricProfile.libraries)

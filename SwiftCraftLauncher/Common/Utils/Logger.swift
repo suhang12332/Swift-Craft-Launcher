@@ -37,9 +37,7 @@ class Logger {
             return appLogsDirectory.appendingPathComponent("\(appName)-\(today).log")
         }
         
-        // 备用方案：使用Application Support目录
-        guard let appSupport = AppPaths.launcherSupportDirectory else { return nil }
-        let logsDirectory = appSupport.appendingPathComponent("logs", isDirectory: true)
+        let logsDirectory = AppPaths.launcherSupportDirectory.appendingPathComponent("logs", isDirectory: true)
         
         // 确保logs目录存在
         try? FileManager.default.createDirectory(at: logsDirectory, withIntermediateDirectories: true)
