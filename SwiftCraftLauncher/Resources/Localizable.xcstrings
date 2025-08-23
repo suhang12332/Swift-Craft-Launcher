@@ -2,37 +2,9 @@
   "sourceLanguage" : "en",
   "strings" : {
     "" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        }
-      },
       "shouldTranslate" : false
     },
     "…" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "…"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "…"
-          }
-        }
-      },
       "shouldTranslate" : false
     },
     "%@ (%@)" : {
@@ -42,31 +14,11 @@
             "state" : "new",
             "value" : "%1$@ (%2$@)"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ (%2$@)"
-          }
         }
       },
       "shouldTranslate" : false
     },
     "%lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld"
-          }
-        }
-      },
       "shouldTranslate" : false
     },
     "%lld MB - %lld MB" : {
@@ -76,31 +28,11 @@
             "state" : "new",
             "value" : "%1$lld MB - %2$lld MB"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld MB - %2$lld MB"
-          }
         }
       },
       "shouldTranslate" : false
     },
     "+%lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+%lld"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+%lld"
-          }
-        }
-      },
       "shouldTranslate" : false
     },
     "About" : {
@@ -111,10 +43,10 @@
             "value" : "About"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "About"
+            "value" : "關於"
           }
         }
       },
@@ -137,12 +69,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "致謝"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "致謝"
@@ -170,12 +96,6 @@
             "state" : "translated",
             "value" : "關閉"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "關閉"
-          }
         }
       }
     },
@@ -195,12 +115,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "貢獻者"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "貢獻者"
@@ -228,12 +142,6 @@
             "state" : "translated",
             "value" : "版本 %@ (%@)"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "版本 %@（%@）"
-          }
         }
       }
     },
@@ -257,12 +165,6 @@
             "state" : "translated",
             "value" : "查看致謝"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檢視致謝名單"
-          }
         }
       }
     },
@@ -281,7 +183,7 @@
             "value" : "Fabric"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fabric"
@@ -309,12 +211,6 @@
             "state" : "translated",
             "value" : "MarkdownUI"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MarkdownUI"
-          }
         }
       }
     },
@@ -333,7 +229,7 @@
             "value" : "Minecraft Forge"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Minecraft Forge"
@@ -361,12 +257,6 @@
             "state" : "translated",
             "value" : "MinecraftNBT"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MinecraftNBT"
-          }
         }
       }
     },
@@ -386,7 +276,7 @@
             "value" : "Modrinth"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modrinth"
@@ -414,12 +304,6 @@
             "state" : "translated",
             "value" : "NeoForge"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "NeoForge"
-          }
         }
       }
     },
@@ -438,7 +322,7 @@
             "value" : "Quilt"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quilt"
@@ -461,10 +345,10 @@
             "value" : "Sparkle"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "閃耀"
+            "value" : "Sparkle"
           }
         }
       }
@@ -489,12 +373,6 @@
             "state" : "translated",
             "value" : "ZIPFoundation"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ZIPFoundation"
-          }
         }
       }
     },
@@ -513,10 +391,10 @@
             "value" : "添加"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "新增"
+            "value" : "添加"
           }
         }
       }
@@ -536,10 +414,10 @@
             "value" : "微软"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Microsoft"
+            "value" : "微軟"
           }
         }
       }
@@ -559,7 +437,7 @@
             "value" : "离线"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "離線"
@@ -587,12 +465,6 @@
             "state" : "translated",
             "value" : "重試"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重試"
-          }
         }
       }
     },
@@ -616,12 +488,6 @@
             "state" : "translated",
             "value" : "開始登錄"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "開始登入"
-          }
         }
       }
     },
@@ -640,7 +506,7 @@
             "value" : "LittleSkin"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "LittleSkin"
@@ -668,12 +534,6 @@
             "state" : "translated",
             "value" : "創建賬戶"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "建立帳戶"
-          }
         }
       }
     },
@@ -692,10 +552,10 @@
             "value" : "• 离线账户无需网络验证，可以在没有网络的情况下游戏"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 離線帳號無需網絡驗證，可在無網絡連接下遊玩"
+            "value" : "• 離線賬戶無需網絡驗證，可以在沒有網絡的情況下遊戲"
           }
         }
       }
@@ -715,10 +575,10 @@
             "value" : "• 玩家名长度为1-16个字符，只能包含字母、数字和下划线"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 玩家名稱長度為 1-16 個字元，只能包含字母、數字和底線。"
+            "value" : "• 玩家名長度為1-16個字符，只能包含字母、數字和下劃線"
           }
         }
       }
@@ -738,10 +598,10 @@
             "value" : "• 离线账户无法在正版服务器中使用"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 離線帳戶不能在官方伺服器上使用。"
+            "value" : "• 離線賬戶無法在正版伺服器中使用"
           }
         }
       }
@@ -761,10 +621,10 @@
             "value" : "• 每个玩家名只能创建一个离线账户"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 每個玩家名稱只能建立一個離線帳號"
+            "value" : "• 每個玩家名只能創建一個離線賬戶"
           }
         }
       }
@@ -789,12 +649,6 @@
             "state" : "translated",
             "value" : "離線賬戶說明："
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "離線帳戶資訊"
-          }
         }
       }
     },
@@ -817,12 +671,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "玩家名已存在"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "玩家名稱已存在"
           }
         }
       }
@@ -847,12 +695,6 @@
             "state" : "translated",
             "value" : "玩家名不能為空"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "玩家名稱不能為空"
-          }
         }
       }
     },
@@ -875,12 +717,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "玩家名無效"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "玩家名稱無效"
           }
         }
       }
@@ -905,12 +741,6 @@
             "state" : "translated",
             "value" : "玩家名"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "玩家名稱"
-          }
         }
       }
     },
@@ -933,12 +763,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請輸入玩家名將用作您在遊戲中的顯示名稱"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "輸入玩家名稱作為你在遊戲中的顯示名稱"
           }
         }
       }
@@ -963,12 +787,6 @@
             "state" : "translated",
             "value" : "添加賬戶"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新增帳戶"
-          }
         }
       }
     },
@@ -988,7 +806,7 @@
             "value" : "创建离线账户"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "離線"
@@ -1011,10 +829,10 @@
             "value" : "登录微软账户"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在線"
+            "value" : "線上"
           }
         }
       }
@@ -1039,12 +857,6 @@
             "state" : "translated",
             "value" : "允許作弊"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "允許作弊"
-          }
         }
       }
     },
@@ -1056,10 +868,10 @@
             "value" : "by %@"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "by %@"
+            "value" : "由 %@"
           }
         }
       },
@@ -1085,12 +897,6 @@
             "state" : "translated",
             "value" : "晴天"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清除"
-          }
         }
       }
     },
@@ -1110,12 +916,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "返回"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "返回"
@@ -1143,12 +943,6 @@
             "state" : "translated",
             "value" : "取消"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "取消"
-          }
         }
       }
     },
@@ -1168,12 +962,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "關閉"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "關閉"
@@ -1201,12 +989,6 @@
             "state" : "translated",
             "value" : "確認"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "確認"
-          }
         }
       }
     },
@@ -1226,12 +1008,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "繼續"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "繼續"
@@ -1259,12 +1035,6 @@
             "state" : "translated",
             "value" : "刪除"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "刪除"
-          }
         }
       }
     },
@@ -1287,12 +1057,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "導入"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "匯入"
           }
         }
       }
@@ -1317,12 +1081,6 @@
             "state" : "translated",
             "value" : "正在載入..."
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "載入中"
-          }
         }
       }
     },
@@ -1345,12 +1103,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "好的"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "確定"
           }
         }
       }
@@ -1375,12 +1127,6 @@
             "state" : "translated",
             "value" : "存檔"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "儲存"
-          }
         }
       }
     },
@@ -1400,10 +1146,10 @@
             "value" : "重置"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重設"
+            "value" : "重置"
           }
         }
       }
@@ -1428,12 +1174,6 @@
             "state" : "translated",
             "value" : "保存"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "儲存"
-          }
         }
       }
     },
@@ -1457,12 +1197,6 @@
             "state" : "translated",
             "value" : "設置"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定"
-          }
         }
       }
     },
@@ -1481,10 +1215,10 @@
             "value" : "代码"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "程式碼"
+            "value" : "代碼"
           }
         }
       }
@@ -1504,7 +1238,7 @@
             "value" : "设计"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "設計"
@@ -1527,10 +1261,10 @@
             "value" : "文档"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件"
+            "value" : "文檔"
           }
         }
       }
@@ -1550,10 +1284,10 @@
             "value" : "反馈"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "意見反饋"
+            "value" : "反饋"
           }
         }
       }
@@ -1573,7 +1307,7 @@
             "value" : "基础设施"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "基礎設施"
@@ -1596,7 +1330,7 @@
             "value" : "测试"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "測試"
@@ -1619,7 +1353,7 @@
             "value" : "李四"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "李四"
@@ -1642,7 +1376,7 @@
             "value" : "王麻子"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "王麻子"
@@ -1666,7 +1400,7 @@
             "value" : "张三"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "張三"
@@ -1689,10 +1423,10 @@
             "value" : "参与设计"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "設計貢獻者"
+            "value" : "參與設計"
           }
         }
       }
@@ -1713,10 +1447,10 @@
             "value" : "主开发者"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主要開發者"
+            "value" : "主開發者"
           }
         }
       }
@@ -1736,10 +1470,10 @@
             "value" : "主开发,架构设计"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主開發架構師"
+            "value" : "主開發,架構設計"
           }
         }
       }
@@ -1759,10 +1493,10 @@
             "value" : "创造模式"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "創意模式"
+            "value" : "創造模式"
           }
         }
       }
@@ -1782,10 +1516,10 @@
             "value" : "白天时间"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "時間"
+            "value" : "白天時間"
           }
         }
       }
@@ -1809,12 +1543,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "確定要刪除遊戲\"%@\"及其所有數據嗎？(真的很久)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你確定要刪除遊戲「%@」及其所有數據嗎？（這將需要很長時間）"
           }
         }
       }
@@ -1840,12 +1568,6 @@
             "state" : "translated",
             "value" : "刪除遊戲版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "刪除遊戲版本"
-          }
         }
       }
     },
@@ -1864,10 +1586,10 @@
             "value" : "下载所有依赖并继续"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部下載並繼續"
+            "value" : "下載所有依賴並繼續"
           }
         }
       }
@@ -1887,7 +1609,7 @@
             "value" : "重试"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "重試"
@@ -1915,12 +1637,6 @@
             "state" : "translated",
             "value" : "重試下載"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重試下載"
-          }
         }
       }
     },
@@ -1939,7 +1655,7 @@
             "value" : "成功"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "成功"
@@ -1968,12 +1684,6 @@
             "state" : "translated",
             "value" : "待下載的前置mod(必須)"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "需要下載的依賴模組"
-          }
         }
       }
     },
@@ -1997,12 +1707,6 @@
             "state" : "translated",
             "value" : "選擇版本:"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選擇版本："
-          }
         }
       }
     },
@@ -2021,7 +1725,7 @@
             "value" : "难度"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "難度"
@@ -2050,12 +1754,6 @@
             "state" : "translated",
             "value" : "核心文件"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "核心檔案"
-          }
         }
       }
     },
@@ -2078,12 +1776,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "當前文件：%@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目前檔案：%@"
           }
         }
       }
@@ -2108,12 +1800,6 @@
             "state" : "translated",
             "value" : "文件：%d/%d"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檔案：%d/%d"
-          }
         }
       }
     },
@@ -2133,12 +1819,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "進度：%d%%"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "進度：%d%%"
@@ -2166,12 +1846,6 @@
             "state" : "translated",
             "value" : "資源文件"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資源檔案"
-          }
         }
       }
     },
@@ -2191,12 +1865,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "簡單"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "簡單"
@@ -2225,12 +1893,6 @@
             "state" : "translated",
             "value" : "客戶端"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "客戶端"
-          }
         }
       }
     },
@@ -2254,12 +1916,6 @@
             "state" : "translated",
             "value" : "服務端"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "伺服器"
-          }
         }
       }
     },
@@ -2279,12 +1935,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "錯誤"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "錯誤"
@@ -2312,12 +1962,6 @@
             "state" : "translated",
             "value" : "用戶拒絕了授權"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "授權已拒絕"
-          }
         }
       }
     },
@@ -2340,12 +1984,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "授權待處理，請完成瀏覽器驗證"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "授權待處理"
           }
         }
       }
@@ -2370,12 +2008,6 @@
             "state" : "translated",
             "value" : "令牌已過期"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Token 已過期"
-          }
         }
       }
     },
@@ -2399,12 +2031,6 @@
             "state" : "translated",
             "value" : "認證錯誤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一般錯誤"
-          }
         }
       }
     },
@@ -2427,12 +2053,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無效的設備代碼"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "裝置代碼無效"
           }
         }
       }
@@ -2458,12 +2078,6 @@
             "state" : "translated",
             "value" : "Minecraft 認證錯誤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft 驗證錯誤"
-          }
         }
       }
     },
@@ -2486,12 +2100,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請求過於頻繁，請稍後再試"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請減慢速度"
           }
         }
       }
@@ -2516,12 +2124,6 @@
             "state" : "translated",
             "value" : "無法獲取應用緩存目錄"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到應用程式快取目錄"
-          }
         }
       }
     },
@@ -2544,12 +2146,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "所有重啟方法都失敗了"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "應用程式重啟失敗"
           }
         }
       }
@@ -2575,12 +2171,6 @@
             "state" : "translated",
             "value" : "無法獲取應用支持目錄"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到 App 支援目錄"
-          }
         }
       }
     },
@@ -2603,12 +2193,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法獲取assets目錄路徑"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到資源目錄"
           }
         }
       }
@@ -2634,12 +2218,6 @@
             "state" : "translated",
             "value" : "無法獲取緩存目錄"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到緩存目錄"
-          }
         }
       }
     },
@@ -2664,12 +2242,6 @@
             "state" : "translated",
             "value" : "無法刪除文件：遊戲信息或資源目錄無效"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "刪除檔案失敗"
-          }
         }
       }
     },
@@ -2692,12 +2264,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法獲取遊戲目錄路徑"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到遊戲目錄"
           }
         }
       }
@@ -2722,12 +2288,6 @@
             "state" : "translated",
             "value" : "無法獲取遊戲信息，整合包依賴安裝失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到遊戲資訊"
-          }
         }
       }
     },
@@ -2750,12 +2310,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法獲取遊戲配置目錄"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到遊戲設定檔目錄"
           }
         }
       }
@@ -2781,12 +2335,6 @@
             "state" : "translated",
             "value" : "無法獲取遊戲配置根目錄"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到遊戲設定檔根目錄"
-          }
         }
       }
     },
@@ -2810,12 +2358,6 @@
             "state" : "translated",
             "value" : "無法獲取遊戲工作目錄"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到遊戲工作目錄"
-          }
         }
       }
     },
@@ -2838,12 +2380,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Java可執行文件沒有執行權限"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Java 執行檔無權限"
           }
         }
       }
@@ -2869,12 +2405,6 @@
             "state" : "translated",
             "value" : "Java可執行文件不存在"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到 Java 執行檔"
-          }
         }
       }
     },
@@ -2897,12 +2427,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Java路徑未設置"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未設定 Java 路徑"
           }
         }
       }
@@ -2927,12 +2451,6 @@
             "state" : "translated",
             "value" : "Java版本檢測失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Java 版本偵測失敗"
-          }
         }
       }
     },
@@ -2955,12 +2473,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法獲取libraries目錄路徑"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到 Libraries 目錄"
           }
         }
       }
@@ -2986,12 +2498,6 @@
             "state" : "translated",
             "value" : "無法獲取元數據目錄"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到 Meta 目錄"
-          }
         }
       }
     },
@@ -3016,12 +2522,6 @@
             "state" : "translated",
             "value" : "無法獲取natives目錄路徑"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到 Natives 目錄"
-          }
         }
       }
     },
@@ -3044,12 +2544,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有選擇當前玩家"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有當前玩家"
           }
         }
       }
@@ -3074,12 +2568,6 @@
             "state" : "translated",
             "value" : "用戶拒絕了通知權限"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通知權限已被拒絕"
-          }
         }
       }
     },
@@ -3102,12 +2590,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請求通知權限失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通知權限請求失敗"
           }
         }
       }
@@ -3133,12 +2615,6 @@
             "state" : "translated",
             "value" : "無法獲取必要的目錄路徑"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到所需目錄"
-          }
         }
       }
     },
@@ -3163,12 +2639,6 @@
             "state" : "translated",
             "value" : "無法獲取資源目錄路徑"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到資源目錄"
-          }
         }
       }
     },
@@ -3191,12 +2661,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法獲取versions目錄路徑"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到版本目錄"
           }
         }
       }
@@ -3221,12 +2685,6 @@
             "state" : "translated",
             "value" : "未找到Data標籤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到資料標籤"
-          }
         }
       }
     },
@@ -3249,12 +2707,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請求訪問令牌失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "存取權杖請求失敗"
           }
         }
       }
@@ -3279,12 +2731,6 @@
             "state" : "translated",
             "value" : "下載資源文件失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資產檔案失敗"
-          }
         }
       }
     },
@@ -3307,12 +2753,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載資源索引失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資產索引失敗"
           }
         }
       }
@@ -3337,12 +2777,6 @@
             "state" : "translated",
             "value" : "下載客戶端JAR文件失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "客戶端 Jar 失敗"
-          }
         }
       }
     },
@@ -3366,12 +2800,6 @@
             "state" : "translated",
             "value" : "下載依賴項失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "依賴項失敗"
-          }
         }
       }
     },
@@ -3392,12 +2820,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "依賴下載失敗"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "依賴下載失敗"
@@ -3426,12 +2848,6 @@
             "state" : "translated",
             "value" : "請求設備代碼失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "裝置代碼請求失敗"
-          }
         }
       }
     },
@@ -3454,12 +2870,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "獲取Fabric加載器版本失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric Loader 擷取失敗"
           }
         }
       }
@@ -3484,12 +2894,6 @@
             "state" : "translated",
             "value" : "獲取Fabric profile失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric 配置檔獲取失敗"
-          }
         }
       }
     },
@@ -3512,12 +2916,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載文件失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檔案下載失敗"
           }
         }
       }
@@ -3542,12 +2940,6 @@
             "state" : "translated",
             "value" : "獲取Forge profile失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forge 配置檔獲取失敗"
-          }
         }
       }
     },
@@ -3570,12 +2962,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一般失敗"
           }
         }
       }
@@ -3600,12 +2986,6 @@
             "state" : "translated",
             "value" : "HTTP響應錯誤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "HTTP 回應錯誤"
-          }
         }
       }
     },
@@ -3628,12 +3008,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "HTTP請求失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "HTTP 狀態錯誤"
           }
         }
       }
@@ -3658,12 +3032,6 @@
             "state" : "translated",
             "value" : "無效的HTTP響應"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無效的 HTTP 回應"
-          }
         }
       }
     },
@@ -3686,12 +3054,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載JAR文件失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "JAR 下載失敗"
           }
         }
       }
@@ -3716,12 +3078,6 @@
             "state" : "translated",
             "value" : "無法打開JAR文件: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無法開啟 JAR 檔案：%@"
-          }
         }
       }
     },
@@ -3744,12 +3100,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載庫文件失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "庫下載失敗"
           }
         }
       }
@@ -3774,12 +3124,6 @@
             "state" : "translated",
             "value" : "獲取加載器版本清單失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "載入器清單失敗"
-          }
         }
       }
     },
@@ -3802,12 +3146,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載日誌配置文件失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "日誌設定失敗"
           }
         }
       }
@@ -3832,12 +3170,6 @@
             "state" : "translated",
             "value" : "下載主資源失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "主要資源失敗"
-          }
         }
       }
     },
@@ -3860,12 +3192,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法解析MANIFEST.MF內容"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清單解析失敗"
           }
         }
       }
@@ -3890,12 +3216,6 @@
             "state" : "translated",
             "value" : "手動下載依賴項失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手動依賴失敗"
-          }
         }
       }
     },
@@ -3918,12 +3238,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "獲取Minecraft用戶資料失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft 個人檔案失敗"
           }
         }
       }
@@ -3948,12 +3262,6 @@
             "state" : "translated",
             "value" : "獲取Minecraft訪問令牌失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft Token 驗證失敗"
-          }
         }
       }
     },
@@ -3976,12 +3284,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載Minecraft版本文件失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft 版本失敗"
           }
         }
       }
@@ -4006,12 +3308,6 @@
             "state" : "translated",
             "value" : "獲取Modrinth分類列表失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modrinth 分類加載失敗"
-          }
         }
       }
     },
@@ -4034,12 +3330,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "獲取Modrinth遊戲版本列表失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modrinth 遊戲版本獲取失敗"
           }
         }
       }
@@ -4064,12 +3354,6 @@
             "state" : "translated",
             "value" : "獲取Modrinth加載器列表失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modrinth 載入器失敗"
-          }
         }
       }
     },
@@ -4092,12 +3376,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "獲取Modrinth項目詳情失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modrinth 專案詳情失敗"
           }
         }
       }
@@ -4122,12 +3400,6 @@
             "state" : "translated",
             "value" : "獲取 Modrinth 項目版本失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modrinth 專案版本獲取失敗"
-          }
         }
       }
     },
@@ -4150,12 +3422,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "獲取Modrinth項目版本列表失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modrinth 項目版本獲取失敗"
           }
         }
       }
@@ -4181,12 +3447,6 @@
             "state" : "translated",
             "value" : "搜索Modrinth項目失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modrinth 搜尋失敗"
-          }
         }
       }
     },
@@ -4209,12 +3469,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "獲取Mojang版本清單失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mojang 清單擷取失敗"
           }
         }
       }
@@ -4239,12 +3493,6 @@
             "state" : "translated",
             "value" : "下載原生庫文件失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "原生函式庫失敗"
-          }
         }
       }
     },
@@ -4268,12 +3516,6 @@
             "state" : "translated",
             "value" : "獲取NeoForge profile失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "NeoForge 配置擷取失敗"
-          }
         }
       }
     },
@@ -4293,12 +3535,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "網絡請求失敗"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "網絡請求失敗"
@@ -4326,12 +3562,6 @@
             "state" : "translated",
             "value" : "網絡請求超時"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "網絡連線逾時"
-          }
         }
       }
     },
@@ -4354,12 +3584,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "處理器執行失敗 (退出碼: %d)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "處理器執行失敗（退出代碼：%d）"
           }
         }
       }
@@ -4384,12 +3608,6 @@
             "state" : "translated",
             "value" : "無法從processor JAR文件中獲取主類: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無法從處理器 JAR 檔案獲取主類別：%@"
-          }
         }
       }
     },
@@ -4412,12 +3630,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "執行處理器失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "處理器啟動失敗"
           }
         }
       }
@@ -4442,12 +3654,6 @@
             "state" : "translated",
             "value" : "獲取Quilt加載器列表失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quilt 載入器獲取失敗"
-          }
         }
       }
     },
@@ -4470,12 +3676,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "獲取Quilt profile失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quilt 個人檔案獲取失敗"
           }
         }
       }
@@ -4500,12 +3700,6 @@
             "state" : "translated",
             "value" : "下載資源失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資源下載失敗"
-          }
         }
       }
     },
@@ -4529,12 +3723,6 @@
             "state" : "translated",
             "value" : "SHA1校驗失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SHA1 驗證失敗"
-          }
         }
       }
     },
@@ -4554,12 +3742,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "皮膚下載失敗"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "皮膚下載失敗"
@@ -4588,12 +3770,6 @@
             "state" : "translated",
             "value" : "獲取版本清單失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "版本清單獲取失敗"
-          }
         }
       }
     },
@@ -4616,12 +3792,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "獲取Xbox Live令牌失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Xbox Live Token 驗證失敗"
           }
         }
       }
@@ -4646,12 +3816,6 @@
             "state" : "translated",
             "value" : "獲取XSTS令牌失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "XSTS 權杖失敗"
-          }
         }
       }
     },
@@ -4674,12 +3838,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "字符串編碼錯誤"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "字串編碼錯誤"
           }
         }
       }
@@ -4704,12 +3862,6 @@
             "state" : "translated",
             "value" : "清空緩存文件失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "快取清除失敗"
-          }
         }
       }
     },
@@ -4732,12 +3884,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "創建緩存目錄失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "快取目錄建立失敗"
           }
         }
       }
@@ -4762,12 +3908,6 @@
             "state" : "translated",
             "value" : "讀取緩存文件失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "快取讀取失敗"
-          }
         }
       }
     },
@@ -4790,12 +3930,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "寫入緩存文件失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "快取寫入失敗"
           }
         }
       }
@@ -4820,12 +3954,6 @@
             "state" : "translated",
             "value" : "文件系統錯誤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檔案系統錯誤"
-          }
         }
       }
     },
@@ -4848,12 +3976,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "文件複製失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "複製失敗"
           }
         }
       }
@@ -4878,12 +4000,6 @@
             "state" : "translated",
             "value" : "計算數據緩存信息失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資料快取計算失敗"
-          }
         }
       }
     },
@@ -4906,12 +4022,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "目標路徑不可用"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目的地不可用"
           }
         }
       }
@@ -4936,12 +4046,6 @@
             "state" : "translated",
             "value" : "創建目錄失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目錄建立失敗"
-          }
         }
       }
     },
@@ -4964,12 +4068,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法枚舉目錄"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目錄列舉失敗"
           }
         }
       }
@@ -4994,12 +4092,6 @@
             "state" : "translated",
             "value" : "讀取目錄失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目錄讀取失敗"
-          }
         }
       }
     },
@@ -5022,12 +4114,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇目錄失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目錄選擇失敗"
           }
         }
       }
@@ -5052,12 +4138,6 @@
             "state" : "translated",
             "value" : "創建下載目錄失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載目錄建立失敗"
-          }
         }
       }
     },
@@ -5081,12 +4161,6 @@
             "state" : "translated",
             "value" : "下載文件移動失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載檔案移動失敗"
-          }
         }
       }
     },
@@ -5109,12 +4183,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "寫入下載文件失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載檔案寫入失敗"
           }
         }
       }
@@ -5140,12 +4208,6 @@
             "state" : "translated",
             "value" : "無法訪問所選文件"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檔案存取失敗"
-          }
         }
       }
     },
@@ -5170,12 +4232,6 @@
             "state" : "translated",
             "value" : "刪除文件失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檔案刪除失敗"
-          }
         }
       }
     },
@@ -5198,12 +4254,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "移動文件失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檔案移動失敗"
           }
         }
       }
@@ -5229,12 +4279,6 @@
             "state" : "translated",
             "value" : "讀取文件失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檔案讀取失敗"
-          }
         }
       }
     },
@@ -5257,12 +4301,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "文件選擇失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檔案選擇失敗"
           }
         }
       }
@@ -5287,12 +4325,6 @@
             "state" : "translated",
             "value" : "計算遊戲緩存信息失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲快取計算失敗"
-          }
         }
       }
     },
@@ -5312,12 +4344,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲刪除失敗"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲刪除失敗"
@@ -5345,12 +4371,6 @@
             "state" : "translated",
             "value" : "遊戲目錄未找到"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到遊戲目錄"
-          }
         }
       }
     },
@@ -5373,12 +4393,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法讀取圖片文件"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "圖片讀取失敗"
           }
         }
       }
@@ -5403,12 +4417,6 @@
             "state" : "translated",
             "value" : "圖片保存失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "圖片儲存失敗"
-          }
         }
       }
     },
@@ -5431,12 +4439,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇的路徑不是可讀的目錄"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選擇的目錄無效"
           }
         }
       }
@@ -5462,12 +4464,6 @@
             "state" : "translated",
             "value" : "選擇Java目錄失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Java 目錄選擇失敗"
-          }
         }
       }
     },
@@ -5490,12 +4486,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "計算元數據緩存信息失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Meta 快取計算失敗"
           }
         }
       }
@@ -5520,12 +4510,6 @@
             "state" : "translated",
             "value" : "安全作用域失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "安全範圍失敗"
-          }
         }
       }
     },
@@ -5548,12 +4532,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "計算文件SHA1失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SHA1 計算失敗"
           }
         }
       }
@@ -5579,12 +4557,6 @@
             "state" : "translated",
             "value" : "啟動遊戲進程失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "處理失敗"
-          }
         }
       }
     },
@@ -5607,12 +4579,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "圖片訪問失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "圖片存取失敗"
           }
         }
       }
@@ -5637,12 +4603,6 @@
             "state" : "translated",
             "value" : "加載拖拽圖片失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "載入拖曳圖片失敗"
-          }
         }
       }
     },
@@ -5662,12 +4622,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "圖片選擇失敗"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "圖片選擇失敗"
@@ -5695,12 +4649,6 @@
             "state" : "translated",
             "value" : "無法讀取圖片文件"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "讀取圖片檔案失敗"
-          }
         }
       }
     },
@@ -5723,12 +4671,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "圖片保存失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "儲存圖片失敗"
           }
         }
       }
@@ -5754,12 +4696,6 @@
             "state" : "translated",
             "value" : "無效的用戶名"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用戶名稱無效"
-          }
         }
       }
     },
@@ -5784,12 +4720,6 @@
             "state" : "translated",
             "value" : "NBT數據讀取失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "讀取 NBT 資料失敗"
-          }
         }
       }
     },
@@ -5812,12 +4742,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "網絡 URL 錯誤"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "網絡網址錯誤"
           }
         }
       }
@@ -5842,12 +4766,6 @@
             "state" : "translated",
             "value" : "沒有選擇當前玩家"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未選擇當前玩家"
-          }
         }
       }
     },
@@ -5867,12 +4785,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "認證錯誤"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "認證錯誤"
@@ -5900,12 +4812,6 @@
             "state" : "translated",
             "value" : "配置錯誤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定錯誤"
-          }
         }
       }
     },
@@ -5925,12 +4831,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載錯誤"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載錯誤"
@@ -5958,12 +4858,6 @@
             "state" : "translated",
             "value" : "文件系統錯誤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檔案系統錯誤"
-          }
         }
       }
     },
@@ -5987,12 +4881,6 @@
             "state" : "translated",
             "value" : "遊戲啟動錯誤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲啟動錯誤"
-          }
         }
       }
     },
@@ -6012,12 +4900,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "安裝錯誤"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "安裝錯誤"
@@ -6046,12 +4928,6 @@
             "state" : "translated",
             "value" : "網絡錯誤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "網絡錯誤"
-          }
         }
       }
     },
@@ -6075,12 +4951,6 @@
             "state" : "translated",
             "value" : "玩家錯誤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "播放器錯誤"
-          }
         }
       }
     },
@@ -6100,12 +4970,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資源錯誤"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "資源錯誤"
@@ -6133,12 +4997,6 @@
             "state" : "translated",
             "value" : "未知錯誤"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未知錯誤"
-          }
         }
       }
     },
@@ -6158,12 +5016,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "驗證錯誤"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "驗證錯誤"
@@ -6191,12 +5043,6 @@
             "state" : "translated",
             "value" : "玩家已存在"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已存在"
-          }
         }
       }
     },
@@ -6219,12 +5065,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "玩家創建失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "建立失敗"
           }
         }
       }
@@ -6250,12 +5090,6 @@
             "state" : "translated",
             "value" : "無效的用戶名：用戶名不能為空"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無效的用戶名稱，為空"
-          }
         }
       }
     },
@@ -6278,12 +5112,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "玩家不存在"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到"
           }
         }
       }
@@ -6308,12 +5136,6 @@
             "state" : "translated",
             "value" : "無法獲取應用資源路徑"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到應用程式執行檔"
-          }
         }
       }
     },
@@ -6336,12 +5158,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Asset資源未找到"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到資產"
           }
         }
       }
@@ -6367,12 +5183,6 @@
             "state" : "translated",
             "value" : "無法獲取分類數據"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到分類"
-          }
         }
       }
     },
@@ -6395,12 +5205,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "客戶端JAR文件不存在"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到 Client Jar"
           }
         }
       }
@@ -6425,12 +5229,6 @@
             "state" : "translated",
             "value" : "目錄不存在"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到目錄"
-          }
         }
       }
     },
@@ -6453,12 +5251,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未找到Fabric加載器版本"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到 Fabric Loader 版本"
           }
         }
       }
@@ -6484,12 +5276,6 @@
             "state" : "translated",
             "value" : "文件不存在"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到檔案"
-          }
         }
       }
     },
@@ -6512,12 +5298,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未找到要刪除的文件"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到要刪除的檔案"
           }
         }
       }
@@ -6542,12 +5322,6 @@
             "state" : "translated",
             "value" : "未找到Forge加載器版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到 Forge 載入器版本"
-          }
         }
       }
     },
@@ -6570,12 +5344,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法獲取遊戲版本數據"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到遊戲版本"
           }
         }
       }
@@ -6600,12 +5368,6 @@
             "state" : "translated",
             "value" : "無效的文件類型"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無效的檔案類型"
-          }
         }
       }
     },
@@ -6629,12 +5391,6 @@
             "state" : "translated",
             "value" : "未找到加載器版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到載入器版本"
-          }
         }
       }
     },
@@ -6657,12 +5413,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "整合包依賴安裝失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模組包依賴失敗"
           }
         }
       }
@@ -6688,12 +5438,6 @@
             "state" : "translated",
             "value" : "未找到NeoForge加載器版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到 NeoForge Loader 版本"
-          }
         }
       }
     },
@@ -6717,12 +5461,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有找到可下載的文件"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有可下載的檔案"
           }
         }
       }
@@ -6748,12 +5486,6 @@
             "state" : "translated",
             "value" : "沒有可用的版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有可用版本"
-          }
         }
       }
     },
@@ -6778,12 +5510,6 @@
             "state" : "translated",
             "value" : "發送通知失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通知發送失敗"
-          }
         }
       }
     },
@@ -6807,12 +5533,6 @@
             "state" : "translated",
             "value" : "找不到主文件"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "主要檔案未找到"
-          }
         }
       }
     },
@@ -6835,12 +5555,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "找不到處理器JAR文件: %@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到 Processor Jar"
           }
         }
       }
@@ -6866,12 +5580,6 @@
             "state" : "translated",
             "value" : "無法獲取項目詳情"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到專案詳情"
-          }
         }
       }
     },
@@ -6896,12 +5604,6 @@
             "state" : "translated",
             "value" : "未找到Quilt加載器版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到 Quilt Loader 版本"
-          }
         }
       }
     },
@@ -6924,12 +5626,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "皮膚資源未找到"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到皮膚"
           }
         }
       }
@@ -6955,12 +5651,6 @@
             "state" : "translated",
             "value" : "未知的資源類型"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未知類型"
-          }
         }
       }
     },
@@ -6983,12 +5673,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "缺少版本ID"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "缺少版本 ID"
           }
         }
       }
@@ -7013,12 +5697,6 @@
             "state" : "translated",
             "value" : "缺少版本信息"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "缺少版本資訊"
-          }
         }
       }
     },
@@ -7041,12 +5719,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "找不到指定版本"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到版本"
           }
         }
       }
@@ -7071,12 +5743,6 @@
             "state" : "translated",
             "value" : "未找到版本時間信息"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到版本時間"
-          }
         }
       }
     },
@@ -7099,12 +5765,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知錯誤"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一般"
           }
         }
       }
@@ -7130,12 +5790,6 @@
             "state" : "translated",
             "value" : "保存設置失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定儲存失敗"
-          }
         }
       }
     },
@@ -7158,12 +5812,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "UUID生成失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "UUID 產生失敗"
           }
         }
       }
@@ -7188,12 +5836,6 @@
             "state" : "translated",
             "value" : "解析訪問令牌響應失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "存取權杖解析失敗"
-          }
         }
       }
     },
@@ -7216,12 +5858,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法打開壓縮包: %@, 錯誤: %@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "開啟壓縮檔失敗"
           }
         }
       }
@@ -7246,12 +5882,6 @@
             "state" : "translated",
             "value" : "解碼緩存數據失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "快取資料解碼失敗"
-          }
         }
       }
     },
@@ -7274,12 +5904,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "緩存數據編碼失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "快取資料編碼失敗"
           }
         }
       }
@@ -7304,12 +5928,6 @@
             "state" : "translated",
             "value" : "解析設備代碼響應失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "裝置代碼解析失敗"
-          }
         }
       }
     },
@@ -7332,12 +5950,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法創建下載任務列表"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載任務建立失敗"
           }
         }
       }
@@ -7362,12 +5974,6 @@
             "state" : "translated",
             "value" : "Fabric JAR URL 列表不能為空"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric JAR URL 為空"
-          }
         }
       }
     },
@@ -7390,12 +5996,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "解析 Fabric 加載器版本數據失敗: %@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric Loader 解析失敗"
           }
         }
       }
@@ -7420,12 +6020,6 @@
             "state" : "translated",
             "value" : "提取 fabric.mod.json 失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric Mod JSON 擷取失敗"
-          }
         }
       }
     },
@@ -7448,12 +6042,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "fabric.mod.json 缺少必要的字段"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric Mod JSON 缺少欄位"
           }
         }
       }
@@ -7478,12 +6066,6 @@
             "state" : "translated",
             "value" : "解析 fabric.mod.json 失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric Mod JSON 解析失敗"
-          }
         }
       }
     },
@@ -7506,12 +6088,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法計算文件哈希值"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檔案雜湊計算失敗"
           }
         }
       }
@@ -7537,12 +6113,6 @@
             "state" : "translated",
             "value" : "遊戲信息缺失"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "缺少遊戲資訊"
-          }
         }
       }
     },
@@ -7565,12 +6135,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "加載遊戲列表失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲清單載入失敗"
           }
         }
       }
@@ -7595,12 +6159,6 @@
             "state" : "translated",
             "value" : "保存遊戲列表失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲列表儲存失敗"
-          }
         }
       }
     },
@@ -7623,12 +6181,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "找不到要刪除的遊戲"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到遊戲，請刪除"
           }
         }
       }
@@ -7653,12 +6205,6 @@
             "state" : "translated",
             "value" : "找不到要更新Java路徑的遊戲"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到遊戲 Java"
-          }
         }
       }
     },
@@ -7681,12 +6227,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "找不到要更新JVM參數的遊戲"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到遊戲 JVM"
           }
         }
       }
@@ -7711,12 +6251,6 @@
             "state" : "translated",
             "value" : "找不到要更新內存大小的遊戲"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到遊戲記憶體"
-          }
         }
       }
     },
@@ -7739,12 +6273,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "找不到要更新狀態的遊戲"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到遊戲狀態"
           }
         }
       }
@@ -7769,12 +6297,6 @@
             "state" : "translated",
             "value" : "找不到要更新的遊戲"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到遊戲更新"
-          }
         }
       }
     },
@@ -7797,12 +6319,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無效的下載地址"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無效的下載網址"
           }
         }
       }
@@ -7828,12 +6344,6 @@
             "state" : "translated",
             "value" : "無效的圖像數據"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無效的圖片數據"
-          }
         }
       }
     },
@@ -7856,12 +6366,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無效的Maven坐標: %@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無效的 Maven 坐標"
           }
         }
       }
@@ -7886,12 +6390,6 @@
             "state" : "translated",
             "value" : "無效的內存參數"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "記憶體參數無效"
-          }
         }
       }
     },
@@ -7914,12 +6412,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "內存設置無效"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "記憶體設定無效"
           }
         }
       }
@@ -7944,12 +6436,6 @@
             "state" : "translated",
             "value" : "無效的URL"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無效的 URL"
-          }
         }
       }
     },
@@ -7972,12 +6458,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法識別Java版本輸出"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無法識別 Java 版本"
           }
         }
       }
@@ -8002,12 +6482,6 @@
             "state" : "translated",
             "value" : "mcmod.info 為空"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mcmod 資訊為空"
-          }
         }
       }
     },
@@ -8030,12 +6504,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提取 mcmod.info 失敗: %@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mcmod 資訊擷取失敗"
           }
         }
       }
@@ -8060,12 +6528,6 @@
             "state" : "translated",
             "value" : "mcmod.info 缺少必要的字段"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mcmod 資訊缺少欄位"
-          }
         }
       }
     },
@@ -8088,12 +6550,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "解析 mcmod.info 失敗: %@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mcmod 資訊解析失敗"
           }
         }
       }
@@ -8118,12 +6574,6 @@
             "state" : "translated",
             "value" : "解析 Minecraft 用戶資料響應失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft 設定檔解析失敗"
-          }
         }
       }
     },
@@ -8146,12 +6596,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "序列化 Minecraft 認證請求失敗: %@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft 請求序列化失敗"
           }
         }
       }
@@ -8176,12 +6620,6 @@
             "state" : "translated",
             "value" : "解析 Minecraft 訪問令牌響應失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft Token 解析失敗"
-          }
         }
       }
     },
@@ -8204,12 +6642,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法解碼 mods.toml 內容"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模組 TOML 解碼失敗"
           }
         }
       }
@@ -8234,12 +6666,6 @@
             "state" : "translated",
             "value" : "提取 mods.toml 失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mods TOML 擷取失敗"
-          }
         }
       }
     },
@@ -8262,12 +6688,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未選擇文件"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未選擇檔案"
           }
         }
       }
@@ -8292,12 +6712,6 @@
             "state" : "translated",
             "value" : "加載玩家數據失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "玩家資料載入失敗"
-          }
         }
       }
     },
@@ -8321,12 +6735,6 @@
             "state" : "translated",
             "value" : "保存玩家數據失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "玩家資料儲存失敗"
-          }
         }
       }
     },
@@ -8349,12 +6757,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "處理器缺少JAR文件配置"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "處理器缺少 JAR"
           }
         }
       }
@@ -8380,12 +6782,6 @@
             "state" : "translated",
             "value" : "項目ID不能為空"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "專案 ID 為空"
-          }
         }
       }
     },
@@ -8409,12 +6805,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "項目類型不能為空"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "專案類型為空"
           }
         }
       }
@@ -8440,12 +6830,6 @@
             "state" : "translated",
             "value" : "查詢類型不能為空"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "查詢類型為空"
-          }
         }
       }
     },
@@ -8468,12 +6852,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法構建Quilt JAR文件的URL列表"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quilt JAR 網址生成失敗"
           }
         }
       }
@@ -8498,12 +6876,6 @@
             "state" : "translated",
             "value" : "Quilt JAR URL列表不能為空"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quilt JAR URL 為空"
-          }
         }
       }
     },
@@ -8526,12 +6898,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "編碼搜索條件失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "搜尋條件編碼失敗"
           }
         }
       }
@@ -8556,12 +6922,6 @@
             "state" : "translated",
             "value" : "構建搜索URL失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "搜尋 URL 建立失敗"
-          }
         }
       }
     },
@@ -8584,12 +6944,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SHA1校驗失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SHA1 檢查錯誤"
           }
         }
       }
@@ -8614,12 +6968,6 @@
             "state" : "translated",
             "value" : "SHA1校驗失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SHA1 驗證失敗"
-          }
         }
       }
     },
@@ -8643,12 +6991,6 @@
             "state" : "translated",
             "value" : "不支持的皮膚格式"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不支援的皮膚格式"
-          }
         }
       }
     },
@@ -8668,12 +7010,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用戶名編碼失敗"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "用戶名編碼失敗"
@@ -8701,12 +7037,6 @@
             "state" : "translated",
             "value" : "解析 %@ 版本清單失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "版本清單解析失敗"
-          }
         }
       }
     },
@@ -8729,12 +7059,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "序列化 Xbox Live 認證請求失敗: %@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Xbox Live 請求序列化失敗"
           }
         }
       }
@@ -8759,12 +7083,6 @@
             "state" : "translated",
             "value" : "解析 Xbox Live 令牌響應失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Xbox Live 權杖解析失敗"
-          }
         }
       }
     },
@@ -8787,12 +7105,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "XMS不能大於XMX"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "XMS 大於 XMX"
           }
         }
       }
@@ -8817,12 +7129,6 @@
             "state" : "translated",
             "value" : "序列化 XSTS 認證請求失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "XSTS 請求序列化失敗"
-          }
         }
       }
     },
@@ -8846,12 +7152,6 @@
             "state" : "translated",
             "value" : "解析 XSTS 令牌響應失敗: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "XSTS 權杖解析失敗"
-          }
         }
       }
     },
@@ -8874,12 +7174,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "版本未找到"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未找到版本"
           }
         }
       }
@@ -8905,12 +7199,6 @@
             "state" : "translated",
             "value" : "Fabric 加載器"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric 載入器"
-          }
         }
       }
     },
@@ -8933,12 +7221,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "資源文件：%@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資產"
           }
         }
       }
@@ -8964,12 +7246,6 @@
             "state" : "translated",
             "value" : "客戶端文件"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Client JAR"
-          }
         }
       }
     },
@@ -8992,12 +7268,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "庫文件：%@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資料庫"
           }
         }
       }
@@ -9022,12 +7292,6 @@
             "state" : "translated",
             "value" : "日誌配置"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "日誌設定"
-          }
         }
       }
     },
@@ -9050,12 +7314,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "原生庫：%@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "原生"
           }
         }
       }
@@ -9080,12 +7338,6 @@
             "state" : "translated",
             "value" : "行為"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "行為"
-          }
         }
       }
     },
@@ -9105,12 +7357,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "分類"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "分類"
@@ -9139,12 +7385,6 @@
             "state" : "translated",
             "value" : "清除篩選"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清除"
-          }
         }
       }
     },
@@ -9164,12 +7404,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "環境"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "環境"
@@ -9197,12 +7431,6 @@
             "state" : "translated",
             "value" : "加載器"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "載入器"
-          }
         }
       }
     },
@@ -9225,12 +7453,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "性能要求"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能"
           }
         }
       }
@@ -9255,12 +7477,6 @@
             "state" : "translated",
             "value" : "分辨率"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "解析度"
-          }
         }
       }
     },
@@ -9283,12 +7499,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲版本"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "版本"
           }
         }
       }
@@ -9313,12 +7523,6 @@
             "state" : "translated",
             "value" : "Forge 加載器"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forge 載入器"
-          }
         }
       }
     },
@@ -9338,12 +7542,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "上次遊玩"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "上次遊玩"
@@ -9371,12 +7569,6 @@
             "state" : "translated",
             "value" : "開始遊戲"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "開始遊戲按鈕"
-          }
         }
       }
     },
@@ -9399,12 +7591,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲時長"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊玩時間"
           }
         }
       }
@@ -9429,12 +7615,6 @@
             "state" : "translated",
             "value" : "遊戲設置"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定按鈕"
-          }
         }
       }
     },
@@ -9455,12 +7635,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲內容"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲內容"
@@ -9488,12 +7662,6 @@
             "state" : "translated",
             "value" : "版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "版本"
-          }
         }
       }
     },
@@ -9516,12 +7684,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲圖標"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "圖示"
           }
         }
       }
@@ -9546,12 +7708,6 @@
             "state" : "translated",
             "value" : "為遊戲選擇圖標"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "描述"
-          }
         }
       }
     },
@@ -9574,12 +7730,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mod加載器"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模組加載器"
           }
         }
       }
@@ -9604,12 +7754,6 @@
             "state" : "translated",
             "value" : "遊戲名稱"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "名稱"
-          }
         }
       }
     },
@@ -9633,12 +7777,6 @@
             "state" : "translated",
             "value" : "該遊戲名已存在，請更換"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重複"
-          }
         }
       }
     },
@@ -9661,12 +7799,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請輸入遊戲名稱"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "輸入遊戲名稱"
           }
         }
       }
@@ -9692,12 +7824,6 @@
             "state" : "translated",
             "value" : "添加遊戲"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新增遊戲"
-          }
         }
       }
     },
@@ -9720,12 +7846,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲版本"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "版本"
           }
         }
       }
@@ -9750,12 +7870,6 @@
             "state" : "translated",
             "value" : "請選擇遊戲版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選擇遊戲版本"
-          }
         }
       }
     },
@@ -9779,12 +7893,6 @@
             "state" : "translated",
             "value" : "遊戲模式"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模式"
-          }
         }
       }
     },
@@ -9804,12 +7912,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "路徑"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "路徑"
@@ -9837,12 +7939,6 @@
             "state" : "translated",
             "value" : "遊戲規則"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "規則"
-          }
         }
       }
     },
@@ -9862,12 +7958,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隱藏"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "隱藏"
@@ -9895,12 +7985,6 @@
             "state" : "translated",
             "value" : "顯示"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "顯示"
-          }
         }
       }
     },
@@ -9923,12 +8007,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加資源"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新增"
           }
         }
       }
@@ -9953,12 +8031,6 @@
             "state" : "translated",
             "value" : "為%@添加資源"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "為遊戲新增"
-          }
         }
       }
     },
@@ -9982,12 +8054,6 @@
             "state" : "translated",
             "value" : "依賴版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "相依版本"
-          }
         }
       }
     },
@@ -10007,12 +8073,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載"
@@ -10040,12 +8100,6 @@
             "state" : "translated",
             "value" : "全部下載"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "全部下載"
-          }
         }
       }
     },
@@ -10068,12 +8122,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "只下載資源"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "僅下載主程式"
           }
         }
       }
@@ -10098,12 +8146,6 @@
             "state" : "translated",
             "value" : "暫無可用的遊戲列表"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有遊戲列表"
-          }
         }
       }
     },
@@ -10126,12 +8168,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無可用版本"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有版本"
           }
         }
       }
@@ -10156,12 +8192,6 @@
             "state" : "translated",
             "value" : "暫無可用版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有可用版本"
-          }
         }
       }
     },
@@ -10181,12 +8211,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請選擇遊戲"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "請選擇遊戲"
@@ -10215,12 +8239,6 @@
             "state" : "translated",
             "value" : "選擇遊戲"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選擇遊戲"
-          }
         }
       }
     },
@@ -10240,12 +8258,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選擇版本"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇版本"
@@ -10273,12 +8285,6 @@
             "state" : "translated",
             "value" : "困難"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "困難"
-          }
         }
       }
     },
@@ -10298,12 +8304,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "極限模式"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "極限模式"
@@ -10331,12 +8331,6 @@
             "state" : "translated",
             "value" : "極限模式"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模式"
-          }
         }
       }
     },
@@ -10359,12 +8353,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "檢測失敗"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "偵測失敗"
           }
         }
       }
@@ -10390,12 +8378,6 @@
             "state" : "translated",
             "value" : "未檢測"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未偵測到"
-          }
         }
       }
     },
@@ -10418,12 +8400,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法識別"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未識別"
           }
         }
       }
@@ -10448,12 +8424,6 @@
             "state" : "translated",
             "value" : "死亡不掉落"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保留物品欄"
-          }
         }
       }
     },
@@ -10477,12 +8447,6 @@
             "state" : "translated",
             "value" : "English"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "英文"
-          }
         }
       }
     },
@@ -10503,12 +8467,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "簡體中文"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "簡體中文"
@@ -10536,12 +8494,6 @@
             "state" : "translated",
             "value" : "繁體中文"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "繁體中文"
-          }
         }
       }
     },
@@ -10564,12 +8516,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最後遊玩"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "上次遊玩"
           }
         }
       }
@@ -10594,12 +8540,6 @@
             "state" : "translated",
             "value" : "載入中..."
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "載入中"
-          }
         }
       }
     },
@@ -10623,12 +8563,6 @@
             "state" : "translated",
             "value" : "正在載入玩家數據..."
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在載入玩家資料..."
-          }
         }
       }
     },
@@ -10651,12 +8585,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在載入天氣數據..."
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在載入天氣資料..."
           }
         }
       }
@@ -10682,12 +8610,6 @@
             "state" : "translated",
             "value" : "正在載入世界設置..."
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在載入世界設定..."
-          }
         }
       }
     },
@@ -10710,12 +8632,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "完成下載 Minecraft 版本資源：%@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已完成下載 Minecraft 版本資源：%@"
           }
         }
       }
@@ -10740,12 +8656,6 @@
             "state" : "translated",
             "value" : "開始下載 Minecraft 版本資源：%@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已開始下載 Minecraft 版本資源：%@"
-          }
         }
       }
     },
@@ -10768,12 +8678,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "完成下載 Minecraft 版本文件：%@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已完成下載 Minecraft 版本檔案：%@"
           }
         }
       }
@@ -10799,12 +8703,6 @@
             "state" : "translated",
             "value" : "開始下載 Minecraft 版本：%@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已開始下載 Minecraft 版本：%@"
-          }
         }
       }
     },
@@ -10824,12 +8722,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "主世界"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "主世界"
@@ -10857,12 +8749,6 @@
             "state" : "translated",
             "value" : "關於%@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "關於 %@"
-          }
         }
       }
     },
@@ -10883,12 +8769,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檢查更新"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "檢查更新"
@@ -10916,12 +8796,6 @@
             "state" : "translated",
             "value" : "打開日誌"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "開啟日誌"
-          }
         }
       }
     },
@@ -10944,12 +8818,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載量"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載"
           }
         }
       }
@@ -10974,12 +8842,6 @@
             "state" : "translated",
             "value" : "關注數"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "關注中"
-          }
         }
       }
     },
@@ -11003,12 +8865,6 @@
             "state" : "translated",
             "value" : "排序規則"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "排序規則"
-          }
         }
       }
     },
@@ -11028,12 +8884,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最新"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "最新"
@@ -11062,12 +8912,6 @@
             "state" : "translated",
             "value" : "相關度"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "相關性"
-          }
         }
       }
     },
@@ -11087,12 +8931,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最近更新"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "最近更新"
@@ -11121,12 +8959,6 @@
             "state" : "translated",
             "value" : "執行一些操作"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "執行一些操作"
-          }
         }
       }
     },
@@ -11149,12 +8981,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在驗證身份..."
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在驗證"
           }
         }
       }
@@ -11179,12 +9005,6 @@
             "state" : "translated",
             "value" : "請稍候，正在獲取您的 Minecraft 資料"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請稍候，我們正在擷取你的 Minecraft 個人檔案"
-          }
         }
       }
     },
@@ -11207,12 +9027,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請點擊下方的「添加」按鈕確認使用此帳戶"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請點擊下方「新增」按鈕以確認使用此帳戶"
           }
         }
       }
@@ -11237,12 +9051,6 @@
             "state" : "translated",
             "value" : "登錄失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登入失敗"
-          }
         }
       }
     },
@@ -11265,12 +9073,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在獲取設備代碼..."
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在請求裝置代碼"
           }
         }
       }
@@ -11295,12 +9097,6 @@
             "state" : "translated",
             "value" : "請稍候，正在與 Microsoft 伺服器通信"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在與 Microsoft 伺服器通訊，請稍候"
-          }
         }
       }
     },
@@ -11323,12 +9119,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請點擊下方的「重試」按鈕重新開始認證"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請點擊下方「重試」按鈕以重新啟動驗證"
           }
         }
       }
@@ -11353,12 +9143,6 @@
             "state" : "translated",
             "value" : "1. 在驗證頁面輸入上面的驗證代碼"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1. 在驗證頁面輸入上方驗證碼"
-          }
         }
       }
     },
@@ -11381,12 +9165,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "2. 使用 Microsoft 帳戶登錄"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. 使用 Microsoft 帳戶登入"
           }
         }
       }
@@ -11411,12 +9189,6 @@
             "state" : "translated",
             "value" : "3. 授權 Minecraft 訪問"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3. 授權 Minecraft 存取權限"
-          }
         }
       }
     },
@@ -11440,12 +9212,6 @@
             "state" : "translated",
             "value" : "請點擊下方的「開始登錄」按鈕開始認證流程"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請點擊下方的「開始登入」按鈕以開始驗證"
-          }
         }
       }
     },
@@ -11468,12 +9234,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "登錄成功！"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登入成功！"
           }
         }
       }
@@ -11499,12 +9259,6 @@
             "state" : "translated",
             "value" : "使用 Microsoft 帳戶登錄 Minecraft"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "使用 Microsoft 帳戶登入 Minecraft"
-          }
         }
       }
     },
@@ -11527,12 +9281,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "UUID：%@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "UUID: %@"
           }
         }
       }
@@ -11557,12 +9305,6 @@
             "state" : "translated",
             "value" : "驗證頁面地址：%@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "驗證網址：%@"
-          }
         }
       }
     },
@@ -11585,12 +9327,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請在瀏覽器中輸入下方的驗證代碼完成驗證"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請在瀏覽器中輸入下方驗證碼以完成驗證"
           }
         }
       }
@@ -11615,12 +9351,6 @@
             "state" : "translated",
             "value" : "整合包依賴"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模組包相依性"
-          }
         }
       }
     },
@@ -11640,12 +9370,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載"
@@ -11674,12 +9398,6 @@
             "state" : "translated",
             "value" : "下載整合包"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載模組包"
-          }
         }
       }
     },
@@ -11703,12 +9421,6 @@
             "state" : "translated",
             "value" : "整合包文件"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模組包檔案"
-          }
         }
       }
     },
@@ -11728,12 +9440,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲版本"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲版本"
@@ -11761,12 +9467,6 @@
             "state" : "translated",
             "value" : "請選擇遊戲版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選擇遊戲版本"
-          }
         }
       }
     },
@@ -11789,12 +9489,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "overrides 資料夾"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Overrides 資料夾"
           }
         }
       }
@@ -11819,12 +9513,6 @@
             "state" : "translated",
             "value" : "下載整合包文件並解析配置"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在下載模組包檔案並解析設定"
-          }
         }
       }
     },
@@ -11848,12 +9536,6 @@
             "state" : "translated",
             "value" : "正在處理整合包..."
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在處理模組包..."
-          }
         }
       }
     },
@@ -11876,12 +9558,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "整合包版本"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模組包版本"
           }
         }
       }
@@ -11907,12 +9583,6 @@
             "state" : "translated",
             "value" : "items"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "物品"
-          }
         }
       }
     },
@@ -11935,12 +9605,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "NeoForge 加載器"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "NeoForge 載入器"
           }
         }
       }
@@ -11965,12 +9629,6 @@
             "state" : "translated",
             "value" : "下界"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "地獄"
-          }
         }
       }
     },
@@ -11994,12 +9652,6 @@
             "state" : "translated",
             "value" : "請先添加本地遊戲後再進行此操作。"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請先新增本地遊戲，再執行此操作。"
-          }
         }
       }
     },
@@ -12020,12 +9672,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有本地遊戲"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有本地遊戲"
@@ -12053,12 +9699,6 @@
             "state" : "translated",
             "value" : "暫無遊戲規則數據"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有遊戲規則數據"
-          }
         }
       }
     },
@@ -12081,12 +9721,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暫無玩家數據"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有玩家資料"
           }
         }
       }
@@ -12111,12 +9745,6 @@
             "state" : "translated",
             "value" : "當前遊戲沒有任何存檔"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有存檔"
-          }
         }
       }
     },
@@ -12140,12 +9768,6 @@
             "state" : "translated",
             "value" : "暫無存檔數據"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有存檔數據"
-          }
         }
       }
     },
@@ -12165,12 +9787,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無雷暴"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "無雷暴"
@@ -12198,12 +9814,6 @@
             "state" : "translated",
             "value" : "普通"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一般"
-          }
         }
       }
     },
@@ -12227,12 +9837,6 @@
             "state" : "translated",
             "value" : "%@ (版本: %@, 加載器: %@) 已成功下載。"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@（版本：%@，加載器：%@）已成功下載。"
-          }
         }
       }
     },
@@ -12253,12 +9857,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載完成"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載完成"
@@ -12287,12 +9885,6 @@
             "state" : "translated",
             "value" : "第 %d 頁"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "第 %d 頁"
-          }
         }
       }
     },
@@ -12312,12 +9904,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "分頁"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "分頁"
@@ -12345,12 +9931,6 @@
             "state" : "translated",
             "value" : "共 %d 頁"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "共 %d 頁"
-          }
         }
       }
     },
@@ -12374,12 +9954,6 @@
             "state" : "translated",
             "value" : "和平"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "和平"
-          }
         }
       }
     },
@@ -12399,12 +9973,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "可選"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "可選"
@@ -12433,12 +10001,6 @@
             "state" : "translated",
             "value" : "必需"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "必需"
-          }
         }
       }
     },
@@ -12458,12 +10020,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不支援"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "不支援"
@@ -12491,12 +10047,6 @@
             "state" : "translated",
             "value" : "可選"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "可選"
-          }
         }
       }
     },
@@ -12516,12 +10066,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "必需"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "必需"
@@ -12549,12 +10093,6 @@
             "state" : "translated",
             "value" : "不支援"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不支援"
-          }
         }
       }
     },
@@ -12574,12 +10112,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平台支援"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "平台支援"
@@ -12608,12 +10140,6 @@
             "state" : "translated",
             "value" : "啟動"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "開始"
-          }
         }
       }
     },
@@ -12638,12 +10164,6 @@
             "state" : "translated",
             "value" : "添加玩家"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新增玩家"
-          }
         }
       }
     },
@@ -12663,12 +10183,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "玩家數據"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "玩家數據"
@@ -12696,12 +10210,6 @@
             "state" : "translated",
             "value" : "當前維度"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "當前維度"
-          }
         }
       }
     },
@@ -12725,12 +10233,6 @@
             "state" : "translated",
             "value" : "疲勞度"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "疲勞"
-          }
         }
       }
     },
@@ -12750,12 +10252,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "飢餓值"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "飢餓值"
@@ -12783,12 +10279,6 @@
             "state" : "translated",
             "value" : "食物飽和度"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "食物飽和度"
-          }
         }
       }
     },
@@ -12808,12 +10298,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "生命值"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "生命值"
@@ -12841,12 +10325,6 @@
             "state" : "translated",
             "value" : "位置座標"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "位置座標"
-          }
         }
       }
     },
@@ -12866,12 +10344,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "移除玩家"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "移除玩家"
@@ -12899,12 +10371,6 @@
             "state" : "translated",
             "value" : "確定要移除 %@ 嗎？"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你確定要移除 %@ 嗎？"
-          }
         }
       }
     },
@@ -12924,12 +10390,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "經驗等級"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "經驗等級"
@@ -12957,12 +10417,6 @@
             "state" : "translated",
             "value" : "當前等級進度"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "當前等級進度"
-          }
         }
       }
     },
@@ -12982,12 +10436,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "總經驗值"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "總經驗值"
@@ -13016,12 +10464,6 @@
             "state" : "translated",
             "value" : "執行處理器 %d/%d: %@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在執行處理器 %d/%d：%@"
-          }
         }
       }
     },
@@ -13041,12 +10483,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未知"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "未知"
@@ -13075,12 +10511,6 @@
             "state" : "translated",
             "value" : "相容性"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "兼容性"
-          }
         }
       }
     },
@@ -13103,12 +10533,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "詳情"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "詳細資料"
           }
         }
       }
@@ -13133,12 +10557,6 @@
             "state" : "translated",
             "value" : "許可證"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "授權"
-          }
         }
       }
     },
@@ -13161,12 +10579,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "發布時間"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "發佈日期"
           }
         }
       }
@@ -13191,12 +10603,6 @@
             "state" : "translated",
             "value" : "更新時間"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更新日期"
-          }
         }
       }
     },
@@ -13216,12 +10622,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "連結"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "連結"
@@ -13249,12 +10649,6 @@
             "state" : "translated",
             "value" : "加入 Discord"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "加入 Discord"
-          }
         }
       }
     },
@@ -13277,12 +10671,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "捐贈"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "捐助"
           }
         }
       }
@@ -13307,12 +10695,6 @@
             "state" : "translated",
             "value" : "報告問題"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "回報問題"
-          }
         }
       }
     },
@@ -13335,12 +10717,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "查看源碼"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "檢視原始碼"
           }
         }
       }
@@ -13365,12 +10741,6 @@
             "state" : "translated",
             "value" : "訪問維基"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "瀏覽Wiki"
-          }
         }
       }
     },
@@ -13390,12 +10760,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft："
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Minecraft："
@@ -13423,12 +10787,6 @@
             "state" : "translated",
             "value" : "Java 版"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Java 版本"
-          }
         }
       }
     },
@@ -13452,12 +10810,6 @@
             "state" : "translated",
             "value" : "Mod 加載器："
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模組加載器："
-          }
         }
       }
     },
@@ -13477,12 +10829,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "版本："
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "版本："
@@ -13510,12 +10856,6 @@
             "state" : "translated",
             "value" : "QuiltMC 加載器"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "QuiltMC Loader"
-          }
         }
       }
     },
@@ -13539,12 +10879,6 @@
             "state" : "translated",
             "value" : "正在下雨"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下雨中"
-          }
         }
       }
     },
@@ -13564,12 +10898,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "降雨狀態"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "降雨狀態"
@@ -13598,12 +10926,6 @@
             "state" : "translated",
             "value" : "發布於: "
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "發佈時間： "
-          }
         }
       }
     },
@@ -13623,12 +10945,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "安裝"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "安裝"
@@ -13656,12 +10972,6 @@
             "state" : "translated",
             "value" : "資源位置"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資源位置"
-          }
         }
       }
     },
@@ -13684,12 +10994,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "數據包"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資料包"
           }
         }
       }
@@ -13714,12 +11018,6 @@
             "state" : "translated",
             "value" : "資源類型"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資源類型"
-          }
         }
       }
     },
@@ -13739,12 +11037,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已安裝"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "已安裝"
@@ -13773,12 +11065,6 @@
             "state" : "translated",
             "value" : "模組"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模組"
-          }
         }
       }
     },
@@ -13802,12 +11088,6 @@
             "state" : "translated",
             "value" : "整合包"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模組包"
-          }
         }
       }
     },
@@ -13827,12 +11107,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資源包"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "資源包"
@@ -13860,12 +11134,6 @@
             "state" : "translated",
             "value" : "資源庫"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資源庫"
-          }
         }
       }
     },
@@ -13888,12 +11156,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "光影"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "著色器"
           }
         }
       }
@@ -13918,12 +11180,6 @@
             "state" : "translated",
             "value" : "確定要刪除「%@」嗎？刪除可能會導致遊戲啟動失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你確定要刪除「%@」嗎？刪除可能導致遊戲啟動失敗"
-          }
         }
       }
     },
@@ -13943,12 +11199,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已安裝"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "已安裝"
@@ -13977,12 +11227,6 @@
             "state" : "translated",
             "value" : "查詢結果為空"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到結果"
-          }
         }
       }
     },
@@ -14006,12 +11250,6 @@
             "state" : "translated",
             "value" : "😩查詢錯誤，請稍後再試！"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 查詢錯誤，請稍後再試！"
-          }
         }
       }
     },
@@ -14031,12 +11269,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "返回"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "返回"
@@ -14064,12 +11296,6 @@
             "state" : "translated",
             "value" : "存檔信息"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "存檔資訊"
-          }
         }
       }
     },
@@ -14093,12 +11319,6 @@
             "state" : "translated",
             "value" : "搜索資源"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "搜尋資源"
-          }
         }
       }
     },
@@ -14118,12 +11338,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "致謝"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "致謝"
@@ -14151,12 +11365,6 @@
             "state" : "translated",
             "value" : "自動處理依賴："
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自動處理依賴："
-          }
         }
       }
     },
@@ -14179,12 +11387,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載並發數："
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "同時下載數："
           }
         }
       }
@@ -14209,12 +11411,6 @@
             "state" : "translated",
             "value" : "預設Java路徑："
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "預設 Java 路徑："
-          }
         }
       }
     },
@@ -14234,12 +11430,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "全域記憶體分配："
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "全域記憶體分配："
@@ -14267,12 +11457,6 @@
             "state" : "translated",
             "value" : "該選項用於是否彈窗顯示前置Mod(依賴)"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此選項控制是否在彈出視窗中顯示依賴模組"
-          }
         }
       }
     },
@@ -14292,12 +11476,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲資源："
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲資源："
@@ -14325,12 +11503,6 @@
             "state" : "translated",
             "value" : "自定義參數"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自訂參數"
-          }
         }
       }
     },
@@ -14353,12 +11525,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "注意：自定義參數會覆蓋上面的優化設置"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "注意：自訂參數將會覆蓋上述優化設定"
           }
         }
       }
@@ -14383,12 +11549,6 @@
             "state" : "translated",
             "value" : "注意：調試和性能分析模式會降低遊戲性能"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "注意：偵錯和分析模式會降低遊戲效能"
-          }
         }
       }
     },
@@ -14412,12 +11572,6 @@
             "state" : "translated",
             "value" : "啟用Aikar優化參數"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "啟用 Aikar 參數"
-          }
         }
       }
     },
@@ -14437,12 +11591,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "啟用客戶端優化"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "啟用客戶端優化"
@@ -14470,12 +11618,6 @@
             "state" : "translated",
             "value" : "啟用JVM優化"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "啟用 JVM 優化"
-          }
         }
       }
     },
@@ -14495,12 +11637,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "啟用記憶體優化"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "啟用記憶體優化"
@@ -14528,12 +11664,6 @@
             "state" : "translated",
             "value" : "啟用線程優化"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "啟用執行緒優化"
-          }
         }
       }
     },
@@ -14557,12 +11687,6 @@
             "state" : "translated",
             "value" : "環境變數"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "環境變數"
-          }
         }
       }
     },
@@ -14582,12 +11706,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "環境變數"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "環境變數"
@@ -14616,12 +11734,6 @@
             "state" : "translated",
             "value" : "垃圾回收器"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "垃圾回收器"
-          }
         }
       }
     },
@@ -14644,12 +11756,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "G1GC (推薦)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "G1GC（建議）"
           }
         }
       }
@@ -14674,12 +11780,6 @@
             "state" : "translated",
             "value" : "G1垃圾回收器，平衡性能和延遲，適合大多數場景"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "G1 垃圾回收器，平衡效能與延遲，適用於大多數情境"
-          }
         }
       }
     },
@@ -14702,12 +11802,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ParallelGC (高吞吐量)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ParallelGC（高吞吐量）"
           }
         }
       }
@@ -14732,12 +11826,6 @@
             "state" : "translated",
             "value" : "並行垃圾回收器，高吞吐量，適合後台處理任務"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "並行垃圾回收器，高吞吐量，適合背景處理任務"
-          }
         }
       }
     },
@@ -14760,12 +11848,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SerialGC (單線程)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SerialGC（單線程）"
           }
         }
       }
@@ -14790,12 +11872,6 @@
             "state" : "translated",
             "value" : "串行垃圾回收器，單線程，適合小記憶體應用"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serial 垃圾回收器，單執行緒，適合小型記憶體應用程式"
-          }
         }
       }
     },
@@ -14818,12 +11894,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Shenandoah (低暫停)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shenandoah（低暫停）"
           }
         }
       }
@@ -14848,12 +11918,6 @@
             "state" : "translated",
             "value" : "Shenandoah垃圾回收器，低暫停時間，適合需要穩定性能的場景"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shenandoah 垃圾回收器，低延遲，適合需要穩定效能的場景"
-          }
         }
       }
     },
@@ -14876,12 +11940,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ZGC (低延遲)"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ZGC（低延遲）"
           }
         }
       }
@@ -14906,12 +11964,6 @@
             "state" : "translated",
             "value" : "ZGC垃圾回收器，極低延遲，適合對響應時間要求極高的場景"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ZGC 垃圾回收器，極低延遲，適用於對響應時間要求極高的場景"
-          }
         }
       }
     },
@@ -14931,12 +11983,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "JVM 參數"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "JVM 參數"
@@ -14965,12 +12011,6 @@
             "state" : "translated",
             "value" : "記憶體設置"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "記憶體設定"
-          }
         }
       }
     },
@@ -14993,12 +12033,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "當前設置："
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "當前設定："
           }
         }
       }
@@ -15023,12 +12057,6 @@
             "state" : "translated",
             "value" : "性能優化"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "效能優化"
-          }
         }
       }
     },
@@ -15051,12 +12079,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "確定要恢復預設設置嗎？"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你確定要還原為預設設定嗎？"
           }
         }
       }
@@ -15081,12 +12103,6 @@
             "state" : "translated",
             "value" : "設置已保存"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定已儲存"
-          }
         }
       }
     },
@@ -15106,12 +12122,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲"
@@ -15139,12 +12149,6 @@
             "state" : "translated",
             "value" : "通用"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一般"
-          }
         }
       }
     },
@@ -15168,12 +12172,6 @@
             "state" : "translated",
             "value" : "Git 代理地址："
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Git 代理 URL："
-          }
         }
       }
     },
@@ -15194,12 +12192,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選擇語言："
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇語言："
@@ -15227,12 +12219,6 @@
             "state" : "translated",
             "value" : "重啟應用"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重新啟動應用程式"
-          }
         }
       }
     },
@@ -15255,12 +12241,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更改語言需要重啟應用才能生效"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更改語言需要重新啟動應用程式才會生效"
           }
         }
       }
@@ -15285,12 +12265,6 @@
             "state" : "translated",
             "value" : "需要重啟"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "需要重新啟動"
-          }
         }
       }
     },
@@ -15310,12 +12284,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工作目錄："
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "工作目錄："
@@ -15343,12 +12311,6 @@
             "state" : "translated",
             "value" : "Minecraft版本地址："
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Minecraft 版本網址："
-          }
         }
       }
     },
@@ -15367,7 +12329,7 @@
             "value" : "Modrinth API 地址:"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "標籤"
@@ -15390,7 +12352,7 @@
             "value" : "玩家设置将显示在此处。"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "佔位符"
@@ -15413,7 +12375,7 @@
             "value" : "玩家"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "標籤頁"
@@ -15436,7 +12398,7 @@
             "value" : "玩家"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "標題"
@@ -15459,7 +12421,7 @@
             "value" : "深色"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "深色"
@@ -15482,7 +12444,7 @@
             "value" : "浅色"
           }
         },
-        "zh-HK" : {
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "淺色"
@@ -15510,12 +12472,6 @@
             "state" : "translated",
             "value" : "外觀："
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "外觀："
-          }
         }
       }
     },
@@ -15535,12 +12491,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "跟隨系統"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "跟隨系統"
@@ -15569,12 +12519,6 @@
             "state" : "translated",
             "value" : "該路徑的設置只會影響到遊戲存檔、mod、光影等其他資源的儲存位置。"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此路徑設定只會影響遊戲存檔、模組、著色器及其他資源的儲存位置。"
-          }
         }
       }
     },
@@ -15597,12 +12541,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有玩家信息，先添加玩家信息後，才可以添加遊戲"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有玩家資訊。請先新增玩家資訊再新增遊戲"
           }
         }
       }
@@ -15627,12 +12565,6 @@
             "state" : "translated",
             "value" : "沒有玩家"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有玩家"
-          }
         }
       }
     },
@@ -15652,12 +12584,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲列表"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲列表"
@@ -15686,12 +12612,6 @@
             "state" : "translated",
             "value" : "資源列表"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資源清單"
-          }
         }
       }
     },
@@ -15715,12 +12635,6 @@
             "state" : "translated",
             "value" : "搜索遊戲"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "搜尋遊戲"
-          }
         }
       }
     },
@@ -15740,12 +12654,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "旁觀者"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "旁觀者"
@@ -15773,12 +12681,6 @@
             "state" : "translated",
             "value" : "停止"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "停止"
-          }
         }
       }
     },
@@ -15801,12 +12703,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "生存模式"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "生存"
           }
         }
       }
@@ -15831,12 +12727,6 @@
             "state" : "translated",
             "value" : "末地"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "結束"
-          }
         }
       }
     },
@@ -15860,12 +12750,6 @@
             "state" : "translated",
             "value" : "正在打雷"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打雷中"
-          }
         }
       }
     },
@@ -15885,12 +12769,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "雷暴狀態"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "雷暴狀態"
@@ -15919,12 +12797,6 @@
             "state" : "translated",
             "value" : "%d小時%d分鐘"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d 小時 %d 分鐘"
-          }
         }
       }
     },
@@ -15945,12 +12817,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "秒"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "秒"
@@ -15978,12 +12844,6 @@
             "state" : "translated",
             "value" : "發布日期"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "發佈日期"
-          }
         }
       }
     },
@@ -16007,12 +12867,6 @@
             "state" : "translated",
             "value" : "下載量"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載"
-          }
         }
       }
     },
@@ -16032,12 +12886,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲版本"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲版本"
@@ -16066,12 +12914,6 @@
             "state" : "translated",
             "value" : "版本"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "版本"
-          }
         }
       }
     },
@@ -16091,12 +12933,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "操作"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "操作"
@@ -16124,12 +12960,6 @@
             "state" : "translated",
             "value" : "平台"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平台"
-          }
         }
       }
     },
@@ -16153,12 +12983,6 @@
             "state" : "translated",
             "value" : "詳情"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "詳細資料"
-          }
         }
       }
     },
@@ -16178,12 +13002,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載"
@@ -16212,12 +13030,6 @@
             "state" : "translated",
             "value" : "操作"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "操作"
-          }
         }
       }
     },
@@ -16237,12 +13049,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "天氣狀態"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "天氣狀態"
@@ -16271,12 +13077,6 @@
             "state" : "translated",
             "value" : "世界數據"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "世界數據"
-          }
         }
       }
     },
@@ -16296,12 +13096,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "世界名稱"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "世界名稱"
@@ -16329,12 +13123,6 @@
             "state" : "translated",
             "value" : "世界種子"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "世界種子"
-          }
         }
       }
     },
@@ -16354,12 +13142,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "世界時間"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "世界時間"
@@ -16387,12 +13169,6 @@
             "state" : "translated",
             "value" : "正在驗證身份..."
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在驗證..."
-          }
         }
       }
     },
@@ -16416,12 +13192,6 @@
             "state" : "translated",
             "value" : "請稍候，正在獲取您的資料"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請稍候，正在獲取您的個人資料"
-          }
         }
       }
     },
@@ -16443,12 +13213,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請點擊下方的「登錄」按鈕確認使用此帳戶"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請點擊下方的「登入」按鈕以確認使用此帳戶"
           }
         }
       }
@@ -16473,12 +13237,6 @@
             "state" : "translated",
             "value" : "登錄失敗"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登入失敗"
-          }
         }
       }
     },
@@ -16501,12 +13259,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在獲取設備代碼..."
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在請求裝置代碼..."
           }
         }
       }
@@ -16531,12 +13283,6 @@
             "state" : "translated",
             "value" : "請稍候，正在與 LittleSkin 伺服器通信"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請稍候，正在與 LittleSkin 伺服器通訊"
-          }
         }
       }
     },
@@ -16559,12 +13305,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請點擊下方的「重試」按鈕重新開始認證"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請點擊下方的「重試」按鈕以重新開始驗證"
           }
         }
       }
@@ -16589,12 +13329,6 @@
             "state" : "translated",
             "value" : "已選擇角色：%@"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已選擇的設定檔：%@"
-          }
         }
       }
     },
@@ -16617,12 +13351,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1. 在驗證頁面輸入上面的驗證代碼"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1. 在驗證頁面輸入上方驗證碼"
           }
         }
       }
@@ -16647,12 +13375,6 @@
             "state" : "translated",
             "value" : "2. 使用 LittleSkin 帳戶登錄"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "2. 使用 LittleSkin 帳號登入"
-          }
         }
       }
     },
@@ -16675,12 +13397,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "3. 授權訪問"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "3. 已授權存取"
           }
         }
       }
@@ -16705,12 +13421,6 @@
             "state" : "translated",
             "value" : "請點擊下方的「開始登錄」按鈕開始認證流程"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請點擊下方「開始登入」按鈕以開始驗證流程"
-          }
         }
       }
     },
@@ -16732,12 +13442,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "登錄成功！"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登入成功！"
           }
         }
       }
@@ -16761,12 +13465,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "登錄成功！"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "登入成功！"
           }
         }
       }
@@ -16792,12 +13490,6 @@
             "state" : "translated",
             "value" : "使用 LittleSkin 帳戶登錄"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "使用 LittleSkin 帳戶登入"
-          }
         }
       }
     },
@@ -16820,12 +13512,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "UUID：%@"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "UUID: %@"
           }
         }
       }
@@ -16850,12 +13536,6 @@
             "state" : "translated",
             "value" : "請在瀏覽器中輸入下方的驗證代碼完成驗證"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請在瀏覽器中輸入以下驗證碼以完成驗證"
-          }
         }
       }
     },
@@ -16874,12 +13554,6 @@
           }
         },
         "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "例如：`-XX:+UseG1GC`"
-          }
-        },
-        "zh-HK" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "例如：`-XX:+UseG1GC`"
@@ -16906,32 +13580,12 @@
             "state" : "translated",
             "value" : "例如：`JAVA_OPTS=-Dfile.encoding=UTF-8`"
           }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "例如：`JAVA_OPTS=-Dfile.encoding=UTF-8`"
-          }
         }
       }
     },
     "暂不可用" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "暂不可用"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "暂不可用"
-          }
-        }
-      },
       "shouldTranslate" : false
     }
   },
-  "version" : "1.0"
+  "version" : "1.1"
 }

@@ -22,7 +22,8 @@ public class LanguageManager {
     /// 支持的语言列表
     public let languages: [(String, String)] = [
         ("🇨🇳 简体中文", "zh-Hans"),
-        ("🇨🇳 繁體中文", "zh-Hant"),
+        ("🇨🇳 繁體中文(HK)", "zh-HK"),
+        ("🇨🇳 繁體中文(TW)", "zh-Hant"),
         ("🇺🇸 English", "en"),
        ]
 
