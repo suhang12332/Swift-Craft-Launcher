@@ -236,6 +236,7 @@ struct ModrinthDependencyDownloader {
         selectedVersions: [String: String],
         dependencyVersions: [String: [ModrinthProjectDetailVersion]],
         mainProjectId: String,
+        mainProjectVersionId: String?,
         gameInfo: GameVersionInfo,
         query: String,
         gameRepository: GameRepository,
@@ -326,6 +327,7 @@ struct ModrinthDependencyDownloader {
                 Logger.shared.error("无法获取主项目详情 (ID: \(mainProjectId))")
                 return false
             }
+            
             let selectedLoaders = [gameInfo.modLoader]
             let filteredVersions =
                 try await ModrinthService.fetchProjectVersionsFilter(
@@ -334,11 +336,23 @@ struct ModrinthDependencyDownloader {
                     selectedLoaders: selectedLoaders,
                     type: query
                 )
-            guard let latestVersion = filteredVersions.first,
-                let primaryFile = ModrinthService.filterPrimaryFiles(
-                    from: latestVersion.files
-                )
-            else {
+            
+            // 如果指定了版本ID，使用指定版本；否则使用最新版本
+            let targetVersion: ModrinthProjectDetailVersion
+            if let mainProjectVersionId = mainProjectVersionId,
+               let specifiedVersion = filteredVersions.first(where: { $0.id == mainProjectVersionId }) {
+                targetVersion = specifiedVersion
+            } else if let latestVersion = filteredVersions.first {
+                targetVersion = latestVersion
+            } else {
+                Logger.shared.error("无法找到合适的版本")
+                return false
+            }
+            
+            guard let primaryFile = ModrinthService.filterPrimaryFiles(
+                from: targetVersion.files
+            ) else {
+                Logger.shared.error("无法找到主文件")
                 return false
             }
 
