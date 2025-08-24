@@ -177,7 +177,7 @@ struct GameAdvancedSettingsView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
-                    TextField("例如: -XX:+UseG1GC", text: $customJvmArguments, axis: .vertical)
+                    TextField("example: -XX:+UseG1GC", text: $customJvmArguments, axis: .vertical)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .lineLimit(3...6)
                     
@@ -201,7 +201,7 @@ struct GameAdvancedSettingsView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 12) {
-                    TextField("例如: JAVA_OPTS=-Dfile.encoding=UTF-8", text: $environmentVariables, axis: .vertical)
+                    TextField("example: JAVA_OPTS=-Dfile.encoding=UTF-8", text: $environmentVariables, axis: .vertical)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .lineLimit(2...4)
                 }

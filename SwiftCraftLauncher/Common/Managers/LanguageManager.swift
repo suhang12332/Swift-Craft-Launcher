@@ -21,10 +21,28 @@ public class LanguageManager {
 
     /// 支持的语言列表
     public let languages: [(String, String)] = [
-        ("🇨🇳 简体中文", "zh-Hans"),
-        ("🇨🇳 繁體中文(HK)", "zh-HK"),
-        ("🇨🇳 繁體中文(TW)", "zh-Hant"),
+        ("🇸🇦 العربية", "ar"),
+        ("🇩🇰 Dansk", "da"),
+        ("🇩🇪 Deutsch", "de"),
         ("🇺🇸 English", "en"),
+        ("🇪🇸 Español", "es"),
+        ("🇫🇮 Suomi", "fi"),
+        ("🇫🇷 Français", "fr"),
+        ("🇮🇳 हिन्दी", "hi"),
+        ("🇮🇹 Italiano", "it"),
+        ("🇯🇵 日本語", "ja"),
+        ("🇰🇷 한국어", "ko"),
+        ("🇳🇴 Norsk Bokmål", "nb"),
+        ("🇳🇱 Nederlands", "nl"),
+        ("🇵🇱 Polski", "pl"),
+        ("🇵🇹 Português", "pt"),
+        ("🇷🇺 Русский", "ru"),
+        ("🇸🇪 Svenska", "sv"),
+        ("🇹🇭 ไทย", "th"),
+        ("🇹🇷 Türkçe", "tr"),
+        ("🇻🇳 Tiếng Việt", "vi"),
+        ("🇨🇳 简体中文", "zh-Hans"),
+        ("🇨🇳 繁體中文", "zh-Hant"),
        ]
 
     /// 获取当前语言的 Bundle
@@ -62,8 +80,26 @@ public class LanguageManager {
                     // 默认简体中文
                     return "zh-Hans"
                 }
-            case "en":
-                return "en"
+            case "ar": return "ar"
+            case "da": return "da"
+            case "de": return "de"
+            case "en": return "en"
+            case "es": return "es"
+            case "fi": return "fi"
+            case "fr": return "fr"
+            case "hi": return "hi"
+            case "it": return "it"
+            case "ja": return "ja"
+            case "ko": return "ko"
+            case "nb", "no": return "nb"  // Norwegian
+            case "nl": return "nl"
+            case "pl": return "pl"
+            case "pt": return "pt"
+            case "ru": return "ru"
+            case "sv": return "sv"
+            case "th": return "th"
+            case "tr": return "tr"
+            case "vi": return "vi"
             default:
                 continue
             }
