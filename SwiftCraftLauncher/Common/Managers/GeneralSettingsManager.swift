@@ -56,10 +56,10 @@ class GeneralSettingsManager: ObservableObject {
         // 延迟应用外观设置，确保 NSApp 已完全初始化
         DispatchQueue.main.async { [weak self] in
             self?.applyAppAppearance()
+            self?.setupAppearanceObserver()
         }
         
-        // 监听系统外观变化
-        setupAppearanceObserver()
+
     }
     
     deinit {

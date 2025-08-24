@@ -93,7 +93,7 @@ public struct GeneralSettingsView: View {
                                 )
                             }
                         ),
-                        in: 1...20,
+                        in: 1...20
 //                        label: { EmptyView() },
 //                        minimumValueLabel: { EmptyView() },
 //                        maximumValueLabel: { EmptyView() }
