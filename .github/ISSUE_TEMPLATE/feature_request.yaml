@@ -1,0 +1,132 @@
+name: Feature Request
+description: Suggest a new feature or enhancement for Swift Craft Launcher
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new feature! Please provide as much detail as possible to help us understand your request.
+        
+        **Before submitting, please make sure:**
+        - You are familiar with the current version of Swift Craft Launcher
+        - You have searched existing Issues to confirm this isn't a duplicate request
+        - This is a feature request and not a bug report (use Bug Report template for bugs)
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details (Optional)
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+      
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: A clear and concise description of the feature you'd like to see
+      placeholder: Describe the feature you want to be added...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem or Use Case
+      description: What problem does this feature solve? What use case does it address?
+      placeholder: |
+        For example:
+        - I'm always frustrated when...
+        - It would be helpful if...
+        - Users often need to...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your ideal solution in detail
+      placeholder: |
+        Describe how you envision this feature working:
+        - What would the user interface look like?
+        - How would users interact with it?
+        - What would be the expected behavior?
+    validations:
+      required: true
+      
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Alternative Solutions
+      description: Describe any alternative solutions or workarounds you've considered
+      placeholder: |
+        For example:
+        - I tried using... but it doesn't work because...
+        - Another approach could be... but...
+        - Currently I work around this by...
+    validations:
+      required: false
+      
+  - type: dropdown
+    id: feature-category
+    attributes:
+      label: Feature Category
+      description: Which area of the launcher does this feature relate to?
+      options:
+        - User Interface/Experience
+        - Game Management
+        - Mod Management
+        - Player/Account Management
+        - Performance/Optimization
+        - Settings/Configuration
+        - Authentication
+        - File Management
+        - Other
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority Level
+      description: How important is this feature to you?
+      options:
+        - Nice to have
+        - Would be helpful
+        - Important
+        - Critical
+    validations:
+      required: true
+      
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, mockups, screenshots, or examples about the feature request here
+      placeholder: |
+        You can include:
+        - Screenshots or mockups of how it might look
+        - Links to similar features in other applications
+        - User stories or scenarios
+        - Any other relevant information
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have searched existing Issues to confirm this is not a duplicate request
+          required: true
+        - label: This is a feature request, not a bug report
+          required: true
+        - label: I have provided enough detail to understand the requested feature
+          required: true
+        - label: I understand this is a suggestion and may not be implemented immediately
+          required: true
