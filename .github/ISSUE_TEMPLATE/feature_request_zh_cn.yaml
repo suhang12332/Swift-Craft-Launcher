@@ -1,0 +1,104 @@
+name: 功能请求
+description: 为 Swift Craft Launcher 建议新功能或改进
+title: "[功能]: "
+labels: ["enhancement", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您花时间建议新功能！请尽可能提供详细信息，帮助我们理解您的请求。
+        
+        **提交前，请确保：**
+        - 您熟悉当前版本的 Swift Craft Launcher
+        - 您已搜索现有问题以确认这不是重复请求
+        - 这是功能请求而不是错误报告（错误请使用错误报告模板）
+
+  - type: input
+    id: contact
+    attributes:
+      label: 联系方式（可选）
+      description: 如果我们需要更多信息，如何联系您？
+      placeholder: 例如：email@example.com
+    validations:
+      required: false
+      
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: 功能描述
+      description: 清楚简洁地描述您希望看到的功能
+      placeholder: 描述您希望添加的功能...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: 问题或使用场景
+      description: 这个功能解决什么问题？它解决什么使用场景？
+      placeholder: |
+        例如：
+        - 我总是在...时感到困扰
+        - 如果能...就好了
+        - 用户经常需要...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: 建议的解决方案
+      description: 详细描述您理想的解决方案
+      placeholder: |
+        描述您如何设想这个功能：
+        - 用户界面会是什么样子？
+        - 用户如何与它交互？
+        - 预期的行为是什么？
+    validations:
+      required: true
+      
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: 考虑的替代方案
+      description: 描述您考虑过的任何替代解决方案或变通方法
+      placeholder: |
+        例如：
+        - 我尝试使用...但它不起作用，因为...
+        - 另一种方法可能是...但是...
+        - 目前我通过...来解决这个问题
+    validations:
+      required: false
+      
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 附加信息
+      description: 在此添加关于功能请求的任何其他信息、模型图、截图或示例
+      placeholder: |
+        您可以包括：
+        - 功能可能样子的截图或模型图
+        - 其他应用程序中类似功能的链接
+        - 用户故事或场景
+        - 任何其他相关信息
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 检查清单
+      description: 请确认以下内容
+      options:
+        - label: 我已搜索现有问题以确认这不是重复请求
+          required: true
+        - label: 这是功能请求，不是错误报告
+          required: true
+        - label: 我已提供足够的详细信息来理解所请求的功能
+          required: true
+        - label: 我理解这是一个建议，可能不会立即实施
+          required: true
+
+
