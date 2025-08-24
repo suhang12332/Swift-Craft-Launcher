@@ -1,7 +1,7 @@
 <div align="center">
   <img src="../SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="SwiftCraftLauncher" width="128" height="128">
   
-  # SwiftCraft Launcher
+  # Swift Craft Launcher
   
   **現代化的 macOS Minecraft 啟動器**
   
@@ -12,6 +12,7 @@
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
   [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
   [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://developer.apple.com/macos/)
+  [![Homebrew](https://img.shields.io/badge/Homebrew-available-green.svg)](https://formulae.brew.sh/cask/swiftcraft-launcher)
   [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&style=flat-square)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
   
   [官網](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [下載](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文檔](https://github.com/suhang12332/Swift-Craft-Launcher/wiki)
@@ -54,6 +55,18 @@ Swift Craft Launcher 是一款採用 SwiftUI 構建的原生 macOS Minecraft 啟
 - **Java**: 8 或更高版本（用於 Minecraft 執行時）
 
 ## 安裝方式
+
+### 使用 Homebrew Tap (推薦)
+```bash
+# 方法 1：新增專案作為 Tap
+brew tap suhang12332/Swift-Craft-Launcher
+brew install --cask swift-craft-launcher
+
+# 方法 2：一鍵安裝
+brew install --cask suhang12332/Swift-Craft-Launcher/swift-craft-launcher
+```
+
+> **💡 提示**: 本專案同時作為程式碼儲存庫和 Homebrew Tap 使用
 
 ### 預編譯版本
 從 [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) 下載最新版本。

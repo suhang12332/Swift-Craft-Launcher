@@ -1,7 +1,7 @@
 <div align="center">
   <img src="../SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="SwiftCraftLauncher" width="128" height="128">
   
-  # SwiftCraft Launcher
+  # Swift Craft Launcher
   
   **A modern Minecraft launcher for macOS**
   
@@ -12,6 +12,7 @@
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
   [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
   [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://developer.apple.com/macos/)
+  [![Homebrew](https://img.shields.io/badge/Homebrew-available-green.svg)](https://formulae.brew.sh/cask/swiftcraft-launcher)
   [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&style=flat-square)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
   
   [Website](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [Download](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [Documentation](https://github.com/suhang12332/Swift-Craft-Launcher/wiki)
@@ -54,6 +55,18 @@ Swift Craft Launcher is a native macOS Minecraft launcher built with SwiftUI, of
 - **Java**: 8 or later (for Minecraft runtime)
 
 ## Installation
+
+### Using Homebrew Tap (Recommended)
+```bash
+# Method 1: Add project as Tap
+brew tap suhang12332/Swift-Craft-Launcher
+brew install --cask swift-craft-launcher
+
+# Method 2: One-command install
+brew install --cask suhang12332/Swift-Craft-Launcher/swift-craft-launcher
+```
+
+> **💡 Tip**: This project serves as both code repository and Homebrew Tap
 
 ### Pre-built Release
 Download the latest version from [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest).
