@@ -1,17 +1,22 @@
 <div align="center">
-  <img src="SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="SwiftCraftLauncher" width="128" height="128">
+  <img src="../SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="SwiftCraftLauncher" width="128" height="128">
   
   # SwiftCraft Launcher
   
   **A modern Minecraft launcher for macOS**
   
+  [![SCL](https://img.shields.io/badge/SCL-Swift%20Craft%20Launcher-orange.svg)](https://github.com/suhang12332/Swift-Craft-Launcher)
+  [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg)](https://swift.org/)
+  [![QQ Group](https://img.shields.io/badge/QQ%20Group-1057517524-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
+  
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-  [![Latest Release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
+  [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
   [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://developer.apple.com/macos/)
+  [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&style=flat-square)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
   
   [Website](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [Download](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [Documentation](https://github.com/suhang12332/Swift-Craft-Launcher/wiki)
   
-  [简体中文](README.md) | [繁體中文](README_zh-TW.md) | **English**
+  [简体中文](../README.md) | [繁體中文](README_zh-TW.md) | **English**
 </div>
 
 ---
@@ -84,17 +89,17 @@ Download the latest version from [GitHub Releases](https://github.com/suhang1233
 
 ## License
 
-This project is licensed under the GNU Affero General Public License v3.0. See [LICENSE](LICENSE) for details.
+This project is licensed under the GNU Affero General Public License v3.0. See [LICENSE](../LICENSE) for details.
 
 ## Community & Support
 
-- **Official QQ Group**: [Swift Craft Launcher 官方群](https://qm.qq.com/q/sSfzVKxR2U)
+- **Official QQ Group**: [1057517524](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
 - **Issues & Bug Reports**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
 - **Feature Requests**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on:
+We welcome contributions! Please see our [Contributing Guidelines](../CONTRIBUTING.md) for details on:
 - Code style and standards
 - Pull request process
 - Issue reporting guidelines

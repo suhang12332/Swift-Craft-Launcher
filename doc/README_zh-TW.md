@@ -1,17 +1,22 @@
 <div align="center">
-  <img src="SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="SwiftCraftLauncher" width="128" height="128">
+  <img src="../SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="SwiftCraftLauncher" width="128" height="128">
   
   # SwiftCraft Launcher
   
   **現代化的 macOS Minecraft 啟動器**
   
+  [![SCL](https://img.shields.io/badge/SCL-Swift%20Craft%20Launcher-orange.svg)](https://github.com/suhang12332/Swift-Craft-Launcher)
+  [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg)](https://swift.org/)
+  [![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-1057517524-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
+  
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-  [![Latest Release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
+  [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
   [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://developer.apple.com/macos/)
+  [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&style=flat-square)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
   
   [官網](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [下載](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文檔](https://github.com/suhang12332/Swift-Craft-Launcher/wiki)
   
-  [简体中文](README.md) | **繁體中文** | [English](README_en.md)
+  [简体中文](../README.md) | **繁體中文** | [English](README_en.md)
 </div>
 
 ---
@@ -84,17 +89,17 @@ Swift Craft Launcher 是一款採用 SwiftUI 構建的原生 macOS Minecraft 啟
 
 ## 開源授權
 
-本專案採用 GNU Affero General Public License v3.0 開源授權。詳細資訊請查看 [LICENSE](LICENSE) 檔案。
+本專案採用 GNU Affero General Public License v3.0 開源授權。詳細資訊請查看 [LICENSE](../LICENSE) 檔案。
 
 ## 社群與支援
 
-- **官方 QQ 群**: [Swift Craft Launcher 官方群](https://qm.qq.com/q/sSfzVKxR2U)
+- **官方 QQ 群**: [1057517524](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
 - **問題回報**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
 - **功能建議**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
 
 ## 參與貢獻
 
-我們歡迎各種形式的貢獻！請查看我們的 [貢獻指南](CONTRIBUTING.md) 了解以下內容：
+我們歡迎各種形式的貢獻！請查看我們的 [貢獻指南](../CONTRIBUTING.md) 了解以下內容：
 - 程式碼風格和標準
 - Pull Request 流程
 - 問題回報指南

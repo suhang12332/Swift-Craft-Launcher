@@ -5,13 +5,18 @@
   
   **现代化的 macOS Minecraft 启动器**
   
+  [![Swift Craft Launcher](https://img.shields.io/badge/Swift%20Craft%20Launcher-SCL-orange.svg)](https://github.com/suhang12332/Swift-Craft-Launcher)
+  [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg)](https://swift.org/)
+  [![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-1057517524-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
+  
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-  [![Latest Release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
+  [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
   [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://developer.apple.com/macos/)
+  [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&style=flat-square)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
   
   [官网](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [下载](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文档](https://github.com/suhang12332/Swift-Craft-Launcher/wiki)
   
-  **简体中文** | [繁體中文](README_zh-TW.md) | [English](README_en.md)
+  **简体中文** | [繁體中文](doc/README_zh-TW.md) | [English](doc/README_en.md)
 </div>
 
 ---
@@ -88,7 +93,7 @@ Swift Craft Launcher 是一款采用 SwiftUI 构建的原生 macOS Minecraft 启
 
 ## 社区与支持
 
-- **官方 QQ 群**: [Swift Craft Launcher 官方群](https://qm.qq.com/q/sSfzVKxR2U)
+- **官方 QQ 群**: [1057517524](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
 - **问题反馈**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
 - **功能建议**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
 
