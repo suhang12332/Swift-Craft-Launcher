@@ -71,37 +71,7 @@ body:
     validations:
       required: false
       
-  - type: dropdown
-    id: feature-category
-    attributes:
-      label: Feature Category
-      description: Which area of the launcher does this feature relate to?
-      options:
-        - User Interface/Experience
-        - Game Management
-        - Mod Management
-        - Player/Account Management
-        - Performance/Optimization
-        - Settings/Configuration
-        - Authentication
-        - File Management
-        - Other
-    validations:
-      required: true
-      
-  - type: dropdown
-    id: priority
-    attributes:
-      label: Priority Level
-      description: How important is this feature to you?
-      options:
-        - Nice to have
-        - Would be helpful
-        - Important
-        - Critical
-    validations:
-      required: true
-      
+
   - type: textarea
     id: additional-context
     attributes:
