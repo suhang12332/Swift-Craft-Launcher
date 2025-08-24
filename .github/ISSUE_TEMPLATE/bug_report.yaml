@@ -1,64 +1,185 @@
 name: Bug Report
-description: File a bug report.
+description: Report a bug or issue with Swift Craft Launcher
 title: "[Bug]: "
 labels: ["bug", "triage"]
-projects: ["octo-org/1", "octo-org/44"]
-assignees:
-  - octocat
+assignees: []
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
+        Thanks for taking the time to fill out this bug report! Please provide as much detail as possible to help us quickly identify and fix the issue.
+        
+        **Before submitting, please make sure:**
+        - You are using the latest version of Swift Craft Launcher
+        - You have searched existing Issues to confirm this isn't a duplicate
+        - You have tried restarting the launcher and game
+  
   - type: input
     id: contact
     attributes:
-      label: Contact Details
+      label: Contact Details (Optional)
       description: How can we get in touch with you if we need more info?
       placeholder: ex. email@example.com
     validations:
       required: false
+      
   - type: textarea
-    id: what-happened
+    id: bug-description
     attributes:
-      label: What happened?
-      description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
-      value: "A bug happened!"
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: Clearly describe what happened...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen
+      placeholder: Describe what should happen normally...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Provide detailed steps to reproduce the issue
+      placeholder: |
+        1. Open Swift Craft Launcher
+        2. Click on '...'
+        3. See error
+      value: |
+        1. 
+        2. 
+        3. 
     validations:
       required: true
   - type: dropdown
-    id: version
+    id: launcher-version
     attributes:
-      label: Version
-      description: What version of our software are you running?
+      label: Launcher Version
+      description: Which version of Swift Craft Launcher are you using?
       options:
-        - 1.0.2 (Default)
-        - 1.0.3 (Edge)
+        - Latest Release
+        - Development Version
+        - Other (please specify below)
       default: 0
     validations:
       required: true
+      
+  - type: input
+    id: launcher-version-specific
+    attributes:
+      label: Specific Version Number (if known)
+      description: Can be found in the launcher's about page or title bar
+      placeholder: e.g. v1.2.3 or commit hash
+    validations:
+      required: false
+      
   - type: dropdown
-    id: browsers
+    id: operating-system
     attributes:
-      label: What browsers are you seeing the problem on?
-      multiple: true
+      label: Operating System
+      description: Which operating system are you experiencing this issue on?
+      multiple: false
       options:
-        - Firefox
-        - Chrome
-        - Safari
-        - Microsoft Edge
+        - Windows 11
+        - Windows 10
+        - macOS (Intel)
+        - macOS (Apple Silicon)
+        - Linux (Ubuntu/Debian)
+        - Linux (Other Distribution)
+        - Other
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: minecraft-version
+    attributes:
+      label: Minecraft Version
+      description: Which Minecraft version were you using when the issue occurred?
+      options:
+        - 1.20.1
+        - 1.19.4
+        - 1.19.2
+        - 1.18.2
+        - 1.16.5
+        - 1.12.2
+        - Other (please specify)
+      default: 0
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: modloader
+    attributes:
+      label: Mod Loader
+      description: Which mod loader are you using?
+      options:
+        - Forge
+        - Fabric
+        - Quilt
+        - NeoForge
+        - Vanilla (No Mods)
+        - Other
+    validations:
+      required: true
   - type: textarea
-    id: logs
+    id: mods-list
     attributes:
-      label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      label: Mod List (if applicable)
+      description: If using mods, please list relevant mods and their versions
+      placeholder: |
+        For example:
+        - JEI 15.2.0.27
+        - OptiFine HD U I5
+        - JourneyMap 5.9.7
+      render: text
+    validations:
+      required: false
+      
+  - type: textarea
+    id: launcher-logs
+    attributes:
+      label: Launcher Logs
+      description: Please paste relevant launcher log output. Can be found in the launcher's log window or log files.
+      placeholder: Paste launcher log content here...
       render: shell
-  - type: checkboxes
-    id: terms
+    validations:
+      required: false
+      
+  - type: textarea
+    id: game-logs
     attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com). 
+      label: Game Logs (if applicable)
+      description: If the issue is related to game execution, please paste the game's latest.log or crash report
+      placeholder: Paste game logs or crash reports here...
+      render: shell
+    validations:
+      required: false
+      
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here, such as screenshots, video links, etc.
+      placeholder: Any other useful information...
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      description: Please confirm the following
       options:
-        - label: I agree to follow this project's Code of Conduct
+        - label: I have searched existing Issues to confirm this is not a duplicate report
+          required: true
+        - label: I have tried restarting the launcher and game
+          required: true
+        - label: I am using the latest version of the launcher (or have specified the exact version)
+          required: true
+        - label: I have provided enough information to reproduce this issue
           required: true
