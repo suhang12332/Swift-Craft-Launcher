@@ -58,15 +58,15 @@ Swift Craft Launcher is a native macOS Minecraft launcher built with SwiftUI, of
 
 ### Using Homebrew Tap (Recommended)
 ```bash
-# Method 1: Add project as Tap
-brew tap suhang12332/Swift-Craft-Launcher
-brew install --cask swift-craft-launcher
+# Method 1: One-command install
+brew install --cask suhang12332/swiftcraftlauncher/swift-craft-launcher
 
-# Method 2: One-command install
-brew install --cask suhang12332/Swift-Craft-Launcher/swift-craft-launcher
+# Method 2: Add Tap then install
+brew tap suhang12332/swiftcraftlauncher
+brew install --cask swift-craft-launcher
 ```
 
-> **💡 Tip**: This project serves as both code repository and Homebrew Tap
+> **💡 Tip**: We created a dedicated [Homebrew Tap](https://github.com/suhang12332/homebrew-swiftcraftlauncher) for SwiftCraft Launcher
 
 ### Pre-built Release
 Download the latest version from [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest).
