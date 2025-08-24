@@ -1,5 +1,28 @@
 import Foundation
 
+// MARK: - JSONDecoder Extension for Modrinth Date Handling
+private extension JSONDecoder {
+    /// Configures the decoder with Modrinth's custom date decoding strategy
+    func configureForModrinth() {
+        self.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let dateStr = try container.decode(String.self)
+
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            formatter.timeZone = TimeZone(secondsFromGMT: 0)
+
+            if let date = formatter.date(from: dateStr) {
+                return date
+            }
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Invalid date: \(dateStr)"
+            )
+        }
+    }
+}
+
 enum ModrinthService {
     private static let cacheExpiration: TimeInterval = 600 // 10分钟
     
@@ -315,10 +338,7 @@ enum ModrinthService {
             }
             
             let decoder = JSONDecoder()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
-            dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-            decoder.dateDecodingStrategy = .formatted(dateFormatter)
+            decoder.configureForModrinth()
             Logger.shared.info("Modrinth 搜索 URL：\(url)")
             let detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
             projectDetailCache.setObject(ModrinthProjectDetailWrapper(detail: detail), forKey: key)
@@ -360,10 +380,7 @@ enum ModrinthService {
             }
             
             let decoder = JSONDecoder()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
-            dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-            decoder.dateDecodingStrategy = .formatted(dateFormatter)
+            decoder.configureForModrinth()
             Logger.shared.info("Modrinth 搜索 URL：\(url)")
             return try decoder.decode([ModrinthProjectDetailVersion].self, from: data)
         } catch {
@@ -549,10 +566,7 @@ enum ModrinthService {
             }
             
             let decoder = JSONDecoder()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
-            dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-            decoder.dateDecodingStrategy = .formatted(dateFormatter)
+            decoder.configureForModrinth()
             Logger.shared.info("Modrinth 版本 URL：\(url)")
             return try decoder.decode(ModrinthProjectDetailVersion.self, from: data)
         } catch {
@@ -578,10 +592,7 @@ enum ModrinthService {
             }
             
             let decoder = JSONDecoder()
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
-            dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
-            decoder.dateDecodingStrategy = .formatted(dateFormatter)
+            decoder.configureForModrinth()
             
             guard let version = try? decoder.decode(ModrinthProjectDetailVersion.self, from: data) else {
                 completion(nil)
