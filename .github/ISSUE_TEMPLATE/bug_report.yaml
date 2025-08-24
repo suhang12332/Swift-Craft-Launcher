@@ -56,62 +56,45 @@ body:
         3. 
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: launcher-version
     attributes:
       label: Launcher Version
-      description: Which version of Swift Craft Launcher are you using?
-      options:
-        - Latest Release
-        - Development Version
-        - Other (please specify below)
-      default: 0
+      description: |
+        Which version of Swift Craft Launcher are you using? 
+        You can find this in the launcher's title bar or About section.
+        Latest: 0.1.6-beta
+      placeholder: e.g. 0.1.6-beta, 0.1.5-beta, or commit hash for development builds
     validations:
       required: true
       
-  - type: input
-    id: launcher-version-specific
-    attributes:
-      label: Specific Version Number (if known)
-      description: Can be found in the launcher's about page or title bar
-      placeholder: e.g. v1.2.3 or commit hash
-    validations:
-      required: false
-      
   - type: dropdown
-    id: operating-system
+    id: mac-architecture
     attributes:
-      label: Operating System
-      description: Which operating system are you experiencing this issue on?
+      label: Mac Architecture
+      description: Which Mac architecture are you using?
       multiple: false
       options:
-        - Windows 11
-        - Windows 10
-        - macOS (Intel)
-        - macOS (Apple Silicon)
-        - Linux (Ubuntu/Debian)
-        - Linux (Other Distribution)
-        - Other
+        - Apple Silicon (M1/M2/M3/M4)
+        - Intel (x86_64)
+        - Unknown (check About This Mac)
     validations:
       required: true
       
   - type: dropdown
-    id: minecraft-version
+    id: macos-version
     attributes:
-      label: Minecraft Version
-      description: Which Minecraft version were you using when the issue occurred?
+      label: macOS Version
+      description: Which version of macOS are you running?
       options:
-        - 1.20.1
-        - 1.19.4
-        - 1.19.2
-        - 1.18.2
-        - 1.16.5
-        - 1.12.2
+        - macOS Sequoia 26 
+        - macOS Sequoia 15.x (Latest)
+        - macOS Sonoma 14.x
         - Other (please specify)
-      default: 0
     validations:
       required: true
       
+
   - type: dropdown
     id: modloader
     attributes:
@@ -126,20 +109,7 @@ body:
         - Other
     validations:
       required: true
-  - type: textarea
-    id: mods-list
-    attributes:
-      label: Mod List (if applicable)
-      description: If using mods, please list relevant mods and their versions
-      placeholder: |
-        For example:
-        - JEI 15.2.0.27
-        - OptiFine HD U I5
-        - JourneyMap 5.9.7
-      render: text
-    validations:
-      required: false
-      
+
   - type: textarea
     id: launcher-logs
     attributes:
