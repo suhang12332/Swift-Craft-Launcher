@@ -11,7 +11,7 @@
   
   [官網](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [下載](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文檔](https://github.com/suhang12332/Swift-Craft-Launcher/wiki)
   
-  [English](README.md) | [简体中文](README_zh-CN.md) | **繁體中文**
+  [简体中文](README.md) | **繁體中文** | [English](README_en.md)
 </div>
 
 ---

@@ -3,110 +3,110 @@
   
   # SwiftCraft Launcher
   
-  **A modern Minecraft launcher for macOS**
+  **现代化的 macOS Minecraft 启动器**
   
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
   [![Latest Release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
   [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://developer.apple.com/macos/)
   
-  [Website](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [Download](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [Documentation](https://github.com/suhang12332/Swift-Craft-Launcher/wiki)
+  [官网](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [下载](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文档](https://github.com/suhang12332/Swift-Craft-Launcher/wiki)
   
-  **English** | [简体中文](README_zh-CN.md) | [繁體中文](README_zh-TW.md)
+  **简体中文** | [繁體中文](README_zh-TW.md) | [English](README_en.md)
 </div>
 
 ---
 
-## Overview
+## 项目概述
 
-Swift Craft Launcher is a native macOS Minecraft launcher built with SwiftUI, offering a streamlined and efficient gaming experience. Designed for modern macOS systems, it provides comprehensive mod loader support, Microsoft authentication, and intuitive game management.
+Swift Craft Launcher 是一款采用 SwiftUI 构建的原生 macOS Minecraft 启动器，提供流畅高效的游戏体验。专为现代 macOS 系统设计，集成全面的模组加载器支持、Microsoft 账户认证和直观的游戏管理功能。
 
 <div align="center">
-  <img src="https://s2.loli.net/2025/08/12/pTPxSJh1bCzmGKo.png" alt="SwiftCraftLauncher Screenshot" width="800">
+  <img src="https://s2.loli.net/2025/08/12/pTPxSJh1bCzmGKo.png" alt="SwiftCraftLauncher 截图" width="800">
 </div>
 
-## Key Features
+## 核心特性
 
-### Core Functionality
-- **Multi-version Minecraft Support** - ARM: 1.19+, Intel: untested
-- **Microsoft Authentication** - Secure OAuth integration with device code flow
-- **Mod Loader Support** - Fabric, Quilt, Forge, and NeoForge with automatic installation
-- **Resource Management** - One-click installation of mods, datapacks, shaders, and resource packs
+### 基础功能
+- **多版本 Minecraft 支持** - ARM: 1.19+，Intel: 未测试
+- **Microsoft 账户认证** - 安全的 OAuth 集成，支持设备代码流程
+- **模组加载器支持** - Fabric、Quilt、Forge 和 NeoForge，自动安装
+- **资源管理** - 一键安装模组、数据包、光影和资源包
 
-### User Experience
-- **Native macOS Design** - SwiftUI-based interface following Apple Human Interface Guidelines
-- **Multi-language Support** - Localized interface with flag indicators
-- **Smart Path Management** - Finder-style breadcrumb navigation with auto-truncation
-- **Performance Optimized** - Efficient caching and memory management
+### 用户体验
+- **原生 macOS 设计** - 基于 SwiftUI，遵循 Apple 人机界面指南
+- **多语言支持** - 本地化界面，支持国旗标识
+- **智能路径管理** - Finder 风格的面包屑导航，自动截断长路径
+- **性能优化** - 高效的缓存和内存管理机制
 
-### Advanced Configuration
-- **Java Management** - Per-profile Java path configuration with version detection
-- **Memory Allocation** - Visual range slider for Xms/Xmx settings *(Coming Soon)*
-- **Custom Launch Parameters** - JVM and game argument customization *(Coming Soon)*
+### 高级配置
+- **Java 管理** - 每个配置文件独立的 Java 路径配置，版本自动检测
+- **内存分配** - 可视化范围滑块设置 Xms/Xmx 参数 *(即将推出)*
+- **自定义启动参数** - JVM 和游戏参数自定义 *(即将推出)*
 
-## System Requirements
+## 系统要求
 
-- **macOS**: 14.0 or later
-- **Java**: 8 or later (for Minecraft runtime)
+- **macOS**: 14.0 或更高版本
+- **Java**: 8 或更高版本（用于 Minecraft 运行时）
 
-## Installation
+## 安装方式
 
-### Pre-built Release
-Download the latest version from [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest).
+### 预编译版本
+从 [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) 下载最新版本。
 
-> **⚠️ Note**: The current available downloads are test versions. Stable releases are coming soon.
+> **⚠️ 注意**: 当前可下载的版本均为测试版本，稳定版本即将发布。
 
-### Build from Source
-1. **Clone the repository**
+### 从源码构建
+1. **克隆仓库**
    ```bash
    git clone https://github.com/suhang12332/Swift-Craft-Launcher.git
    cd Swift-Craft-Launcher
    ```
 
-2. **Open in Xcode**
+2. **在 Xcode 中打开**
    ```bash
    open SwiftCraftLauncher.xcodeproj
    ```
 
-3. **Build and run** using Xcode (⌘R)
+3. **构建并运行** 使用 Xcode (⌘R)
 
-**Requirements for building:**
+**构建要求：**
 - Xcode 13.0+
 - Swift 5.5+
 
-## Technical Architecture
+## 技术架构
 
-| Component | Technology |
-|-----------|------------|
-| **UI Framework** | SwiftUI |
-| **Language** | Swift |
-| **Reactive Programming** | Combine |
-| **Target Platform** | macOS 14.0+ |
+| 组件 | 技术 |
+|------|------|
+| **UI 框架** | SwiftUI |
+| **开发语言** | Swift |
+| **响应式编程** | Combine |
+| **目标平台** | macOS 14.0+ |
 
-## License
+## 开源协议
 
-This project is licensed under the GNU Affero General Public License v3.0. See [LICENSE](LICENSE) for details.
+本项目采用 GNU Affero General Public License v3.0 开源协议。详细信息请查看 [LICENSE](LICENSE) 文件。
 
-## Community & Support
+## 社区与支持
 
-- **Official QQ Group**: [Swift Craft Launcher 官方群](https://qm.qq.com/q/sSfzVKxR2U)
-- **Issues & Bug Reports**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
-- **Feature Requests**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
+- **官方 QQ 群**: [Swift Craft Launcher 官方群](https://qm.qq.com/q/sSfzVKxR2U)
+- **问题反馈**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
+- **功能建议**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
 
-## Contributing
+## 参与贡献
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on:
-- Code style and standards
-- Pull request process
-- Issue reporting guidelines
+我们欢迎各种形式的贡献！请查看我们的 [贡献指南](CONTRIBUTING.md) 了解以下内容：
+- 代码风格和标准
+- Pull Request 流程
+- 问题报告指南
 
-## Acknowledgments
+## 致谢
 
-Special thanks to the following projects that have contributed to this launcher:
+特别感谢以下项目对本启动器的贡献：
 
-- **[Archify](https://github.com/Oct4Pie/archify)** - Universal binary optimization tool for macOS applications
+- **[Archify](https://github.com/Oct4Pie/archify)** - macOS 应用程序通用二进制优化工具
 
 ---
 
 <div align="center">
-  <strong>Made with ❤️ for the Minecraft community</strong>
+  <strong>为 Minecraft 社区用心制作 ❤️</strong>
 </div>
