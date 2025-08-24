@@ -53,11 +53,13 @@ Swift Craft Launcher is a native macOS Minecraft launcher built with SwiftUI, of
 ### Pre-built Release
 Download the latest version from [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest).
 
+> **⚠️ Note**: The current available downloads are test versions. Stable releases are coming soon.
+
 ### Build from Source
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/suhang12332/SwiftCraftLauncher.git
-   cd SwiftCraftLauncher
+   git clone https://github.com/suhang12332/Swift-Craft-Launcher.git
+   cd Swift-Craft-Launcher
    ```
 
 2. **Open in Xcode**

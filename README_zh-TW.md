@@ -53,11 +53,13 @@ Swift Craft Launcher 是一款採用 SwiftUI 構建的原生 macOS Minecraft 啟
 ### 預編譯版本
 從 [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) 下載最新版本。
 
+> **⚠️ 注意**: 當前可下載的版本均為測試版本，穩定版本即將發佈。
+
 ### 從原始碼建置
 1. **複製儲存庫**
    ```bash
-   git clone https://github.com/suhang12332/SwiftCraftLauncher.git
-   cd SwiftCraftLauncher
+   git clone https://github.com/suhang12332/Swift-Craft-Launcher.git
+   cd Swift-Craft-Launcher
    ```
 
 2. **在 Xcode 中開啟**
