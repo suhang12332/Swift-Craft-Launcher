@@ -18,7 +18,7 @@
 
 ## Overview
 
-SwiftCraft Launcher is a native macOS Minecraft launcher built with SwiftUI, offering a streamlined and efficient gaming experience. Designed for modern macOS systems, it provides comprehensive mod loader support, Microsoft authentication, and intuitive game management.
+Swift Craft Launcher is a native macOS Minecraft launcher built with SwiftUI, offering a streamlined and efficient gaming experience. Designed for modern macOS systems, it provides comprehensive mod loader support, Microsoft authentication, and intuitive game management.
 
 <div align="center">
   <img src="https://s2.loli.net/2025/08/12/pTPxSJh1bCzmGKo.png" alt="SwiftCraftLauncher Screenshot" width="800">
