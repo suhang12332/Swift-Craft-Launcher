@@ -3,44 +3,36 @@ import SwiftUI
 public struct AcknowledgementsView: View {
     public init() {}
     
-    // 开源库列表
-    private let openSourceLibraries = [
+    // 项目使用的开源库列表
+    private let allLibraries = [
         OpenSourceLibrary(
-            name: "acknowledgements.library.modrinth".localized(),
-            url: "https://modrinth.com/"
-        ),
-        OpenSourceLibrary(
-            name: "acknowledgements.library.fabric".localized(),
-            url: "https://fabricmc.net/"
-        ),
-        OpenSourceLibrary(
-            name: "acknowledgements.library.quilt".localized(),
-            url: "https://quiltmc.org/"
-        ),
-        OpenSourceLibrary(
-            name: "acknowledgements.library.neoforge".localized(),
-            url: "https://neoforged.net/"
-        ),
-        OpenSourceLibrary(
-            name: "acknowledgements.library.minecraft_forge".localized(),
-            url: "https://files.minecraftforge.net/"
-        ),
-        OpenSourceLibrary(
-            name: "acknowledgements.library.zipfoundation".localized(),
-            url: "https://github.com/weichsel/ZIPFoundation"
-        ),
-        OpenSourceLibrary(
-            name: "acknowledgements.library.markdownui".localized(),
-            url: "https://github.com/gonzalezreal/swift-markdown-ui"
-        ),
-        OpenSourceLibrary(
-            name: "acknowledgements.library.minecraftnbt".localized(),
-            url: "https://github.com/ezfe/swift-nbt"
-        ),
-        OpenSourceLibrary(
-            name: "acknowledgements.library.sparkle".localized(),
-            url: "https://github.com/sparkle-project/Sparkle"
-        )
+                    name: "Modrinth",
+                    url: "https://modrinth.com/"
+                ),
+                OpenSourceLibrary(
+                    name: "Fabric",
+                    url: "https://fabricmc.net/"
+                ),
+                OpenSourceLibrary(
+                    name: "Quilt".localized(),
+                    url: "https://quiltmc.org/"
+                ),
+                OpenSourceLibrary(
+                    name: "Neoforge".localized(),
+                    url: "https://neoforged.net/"
+                ),
+                OpenSourceLibrary(
+                    name: "MinecraftForge".localized(),
+                    url: "https://files.minecraftforge.net/"
+                ),
+        OpenSourceLibrary(name: "GzipSwift", url: "https://github.com/1024jp/GzipSwift"),
+        OpenSourceLibrary(name: "NetworkImage", url: "https://github.com/gonzalezreal/NetworkImage"),
+        OpenSourceLibrary(name: "Sparkle", url: "https://github.com/sparkle-project/Sparkle"),
+        OpenSourceLibrary(name: "swift-cmark", url: "https://github.com/swiftlang/swift-cmark"),
+        OpenSourceLibrary(name: "swift-collections", url: "https://github.com/apple/swift-collections"),
+        OpenSourceLibrary(name: "swift-markdown-ui", url: "https://github.com/gonzalezreal/swift-markdown-ui"),
+        OpenSourceLibrary(name: "swift-nbt", url: "https://github.com/ezfe/swift-nbt"),
+        OpenSourceLibrary(name: "ZIPFoundation", url: "https://github.com/weichsel/ZIPFoundation")
     ]
     
     public var body: some View {
@@ -48,7 +40,7 @@ public struct AcknowledgementsView: View {
             VStack(spacing: 0) {
                 
                 // 开源库列表
-                ForEach(Array(openSourceLibraries.enumerated()), id: \.element.name) { index, library in
+                ForEach(Array(allLibraries.enumerated()), id: \.element.name) { index, library in
                     VStack(spacing: 0) {
                         HStack {
                             Text(library.name)
@@ -65,7 +57,7 @@ public struct AcknowledgementsView: View {
                         .padding(.vertical, 12)
                         
                         // 分隔线
-                        if index < openSourceLibraries.count - 1 {
+                        if index < allLibraries.count - 1 {
                             Divider()
                                 .padding(.horizontal, 16)
                         }
