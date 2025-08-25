@@ -9,6 +9,9 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var showPlayerAlert = false
     @State private var showingGameForm = false
     @EnvironmentObject var gameRepository: GameRepository
+    
+    // MARK: - Startup Info State
+    @State private var showStartupInfo = false
 
     
     public var body: some ToolbarContent {
@@ -44,6 +47,14 @@ public struct ContentToolbarView: ToolbarContent {
             }) {
                 Label("player.add".localized(), systemImage: "person.badge.plus")
             }.help("player.add".localized())
+            
+            // 启动信息按钮
+            Button(action: {
+                showStartupInfo = true
+            }) {
+                Label("startup.info.title".localized(), systemImage: "bell.badge")
+            }
+            .help("startup.info.title".localized())
             
             .sheet(isPresented: $showingAddPlayerSheet) {
                 AddPlayerSheetView(
@@ -83,6 +94,9 @@ public struct ContentToolbarView: ToolbarContent {
                     .environmentObject(playerListViewModel)
                     .presentationDetents([.medium, .large])
                     .presentationBackgroundInteraction(.automatic)
+            }
+            .sheet(isPresented: $showStartupInfo) {
+                StartupInfoSheetView()
             }
             .alert(isPresented: $showPlayerAlert) {
                 Alert(

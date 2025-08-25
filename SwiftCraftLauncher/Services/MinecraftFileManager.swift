@@ -233,13 +233,7 @@ class MinecraftFileManager {
     }
     
     private func downloadAssets(manifest: MinecraftVersionManifest) async throws {
-        guard AppPaths.metaDirectory != nil else { 
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取 meta 目录路径",
-                i18nKey: "error.configuration.meta_directory_not_found",
-                level: .notification
-            )
-        }
+
         Logger.shared.info(String(format: "log.minecraft.download.assets.start".localized(), manifest.id))
         
         let assetIndex = try await downloadAssetIndex(manifest: manifest)
