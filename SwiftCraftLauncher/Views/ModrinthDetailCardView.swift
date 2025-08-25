@@ -40,7 +40,10 @@ struct ModrinthDetailCardView: View {
     // MARK: - View Components
     private var iconView: some View {
         Group {
-            if let iconUrl = project.iconUrl, let url = URL(string: iconUrl) {
+            if project.author == "local" {
+                // 本地资源显示 questionmark.circle 图标
+                localResourceIcon
+            } else if let iconUrl = project.iconUrl, let url = URL(string: iconUrl) {
                 AsyncImage(url: url, transaction: Transaction(animation: .easeInOut(duration: 0.2))) { phase in
                     switch phase {
                     case .empty:
@@ -72,6 +75,15 @@ struct ModrinthDetailCardView: View {
     private var placeholderIcon: some View {
         Color.gray.opacity(0.2)
             .frame(width: ModrinthConstants.UI.iconSize, height: ModrinthConstants.UI.iconSize)
+            .cornerRadius(ModrinthConstants.UI.cornerRadius)
+    }
+    
+    private var localResourceIcon: some View {
+        Image(systemName: "questionmark.circle")
+            .font(.system(size: ModrinthConstants.UI.iconSize * 0.6))
+            .foregroundColor(.secondary)
+            .frame(width: ModrinthConstants.UI.iconSize, height: ModrinthConstants.UI.iconSize)
+            .background(Color.gray.opacity(0.2))
             .cornerRadius(ModrinthConstants.UI.cornerRadius)
     }
     

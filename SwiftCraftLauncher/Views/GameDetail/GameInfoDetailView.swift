@@ -261,9 +261,12 @@ struct GameInfoDetailView: View {
                         EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
                     )
                     .onTapGesture {
-                        selectedProjectId = mod.projectId
-                        if let type = ResourceType(rawValue: query) {
-                            selectedItem = .resource(type)
+                        // 本地资源不跳转详情页面
+                        if mod.author != "local" {
+                            selectedProjectId = mod.projectId
+                            if let type = ResourceType(rawValue: query) {
+                                selectedItem = .resource(type)
+                            }
                         }
                     }
                 }
