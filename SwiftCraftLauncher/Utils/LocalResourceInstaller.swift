@@ -15,12 +15,9 @@ struct LocalResourceInstaller {
             }
         }
         
-        /// 支持的文件扩展名
+        /// 支持的文件扩展名 - 统一支持 jar 和 zip
         var allowedExtensions: [String] {
-            switch self {
-            case .mod: return ["jar"]
-            case .datapack, .resourcepack: return ["zip"]
-            }
+            return ["jar", "zip"]
         }
     }
     
@@ -105,18 +102,13 @@ extension LocalResourceInstaller {
                 .fileImporter(
                     isPresented: $showImporter,
                     allowedContentTypes: {
-                        if #available(macOS 11.0, *) {
-                            var types: [UTType] = []
-                            if query == "mod", let jarType = UTType(filenameExtension: "jar") {
-                                types.append(jarType)
-                            }
-                            if query == "datapack" || query == "resourcepack" {
-                                types.append(.zip)
-                            }
-                            return types
-                        } else {
-                            return []
+                        var types: [UTType] = []
+                        // 统一支持 jar 和 zip 文件
+                        if let jarType = UTType(filenameExtension: "jar") {
+                            types.append(jarType)
                         }
+                        types.append(.zip)
+                        return types
                     }(),
                     allowsMultipleSelection: false
                 ) { result in
@@ -133,13 +125,8 @@ extension LocalResourceInstaller {
                             return
                         }
                         
-                        // 兼容原有扩展名校验
-                        let allowedExtensions: [String]
-                        switch query {
-                        case "mod": allowedExtensions = ["jar"]
-                        case "datapack", "resourcepack": allowedExtensions = ["zip"]
-                        default: allowedExtensions = []
-                        }
+                        // 简化扩展名校验 - 统一支持 jar 和 zip
+                        let allowedExtensions = ["jar", "zip"]
                         
                         do {
                             guard let ext = fileURL.pathExtension.lowercased() as String?, allowedExtensions.contains(ext) else {

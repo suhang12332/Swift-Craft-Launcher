@@ -41,10 +41,17 @@ class ModScanner {
         } else {
             // 尝试本地解析
             let (modid, version) = try ModMetadataParser.parseModMetadataThrowing(fileURL: fileURL)
-            guard let _ = modid, let _ = version else {
-                return nil // 无法识别的 mod
+            if let modid = modid, let version = version {
+                // 使用解析到的元数据创建兜底对象
+                let fallbackDetail = createFallbackDetail(fileURL: fileURL, modid: modid, version: version)
+                saveToCache(hash: hash, detail: fallbackDetail)
+                return fallbackDetail
+            } else {
+                // 最终兜底策略：使用文件名创建基础信息
+                let fallbackDetail = createFallbackDetailFromFileName(fileURL: fileURL)
+                saveToCache(hash: hash, detail: fallbackDetail)
+                return fallbackDetail
             }
-            return nil // 如有后续逻辑可补充
         }
     }
     
@@ -63,6 +70,100 @@ class ModScanner {
     /// 计算文件 SHA1 哈希值（抛出异常版本）
     static func sha1HashThrowing(of url: URL) throws -> String? {
         return try SHA1Calculator.sha1(ofFileAt: url)
+    }
+    
+    // MARK: - Fallback Methods
+    
+    /// 使用解析到的元数据创建兜底 ModrinthProjectDetail
+    private func createFallbackDetail(fileURL: URL, modid: String, version: String) -> ModrinthProjectDetail {
+        let fileName = fileURL.lastPathComponent
+        let baseFileName = fileName.replacingOccurrences(of: ".\(fileURL.pathExtension)", with: "")
+        
+        return ModrinthProjectDetail(
+            slug: modid,
+            title: baseFileName, // 使用去除扩展名的文件名作为标题
+            description: "local：\(fileName)",
+            categories: ["unknown"],
+            clientSide: "optional",
+            serverSide: "optional",
+            body: "",
+            status: "approved",
+            requestedStatus: nil,
+            additionalCategories: nil,
+            issuesUrl: nil,
+            sourceUrl: nil,
+            wikiUrl: nil,
+            discordUrl: nil,
+            donationUrls: nil,
+            projectType: "mod",
+            downloads: 0,
+            iconUrl: nil,
+            color: nil,
+            threadId: nil,
+            monetizationStatus: nil,
+            id: "local_\(modid)_\(UUID().uuidString.prefix(8))", // 生成唯一ID
+            team: "local",
+            bodyUrl: nil,
+            moderatorMessage: nil,
+            published: Date(),
+            updated: Date(),
+            approved: Date(),
+            queued: nil,
+            followers: 0,
+            license: nil,
+            versions: [version],
+            gameVersions: [],
+            loaders: [],
+            gallery: nil,
+            type: nil,
+            fileName: fileName
+        )
+    }
+    
+    /// 使用文件名创建最基础的兜底 ModrinthProjectDetail
+    private func createFallbackDetailFromFileName(fileURL: URL) -> ModrinthProjectDetail {
+        let fileName = fileURL.lastPathComponent
+        let baseFileName = fileName.replacingOccurrences(of: ".\(fileURL.pathExtension)", with: "")
+        
+        return ModrinthProjectDetail(
+            slug: baseFileName.lowercased().replacingOccurrences(of: " ", with: "-"),
+            title: baseFileName, // 使用去除扩展名的文件名作为标题
+            description: "local：\(fileName)",
+            categories: ["unknown"],
+            clientSide: "optional",
+            serverSide: "optional",
+            body: "",
+            status: "approved",
+            requestedStatus: nil,
+            additionalCategories: nil,
+            issuesUrl: nil,
+            sourceUrl: nil,
+            wikiUrl: nil,
+            discordUrl: nil,
+            donationUrls: nil,
+            projectType: "mod",
+            downloads: 0,
+            iconUrl: nil,
+            color: nil,
+            threadId: nil,
+            monetizationStatus: nil,
+            id: "file_\(baseFileName)_\(UUID().uuidString.prefix(8))", // 生成唯一ID
+            team: "local",
+            bodyUrl: nil,
+            moderatorMessage: nil,
+            published: Date(),
+            updated: Date(),
+            approved: Date(),
+            queued: nil,
+            followers: 0,
+            license: nil,
+            versions: ["unknown"],
+            gameVersions: [],
+            loaders: [],
+            gallery: nil,
+            type: nil,
+            fileName: fileName
+        )
     }
 }
 
@@ -103,7 +204,15 @@ extension ModScanner {
         let jarFiles = files.filter { ["jar", "zip"].contains($0.pathExtension.lowercased()) }
         return jarFiles.compactMap { fileURL in
             if let hash = ModScanner.sha1Hash(of: fileURL) {
-                let detail = AppCacheManager.shared.get(namespace: "mod", key: hash, as: ModrinthProjectDetail.self)
+                var detail = AppCacheManager.shared.get(namespace: "mod", key: hash, as: ModrinthProjectDetail.self)
+                
+                // 如果缓存中没有找到，使用兜底策略创建基础信息
+                if detail == nil {
+                    detail = createFallbackDetailFromFileName(fileURL: fileURL)
+                    // 保存兜底信息到缓存，避免重复创建
+                    saveToCache(hash: hash, detail: detail!)
+                }
+                
                 return (file: fileURL, hash: hash, detail: detail)
             }
             return nil
