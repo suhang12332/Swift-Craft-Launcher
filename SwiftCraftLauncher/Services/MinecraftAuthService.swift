@@ -466,4 +466,21 @@ class MinecraftAuthService: ObservableObject {
     func cancelAuthentication() {
         authState = .notAuthenticated
     }
+    
+    // MARK: - 清理认证状态和内存信息
+    func clearAuthenticationData() {
+        // 重置认证状态到初始状态
+        authState = .notAuthenticated
+        
+        // 停止加载状态
+        isLoading = false
+        
+        // 清理 Combine 订阅，释放内存
+        cancellables.removeAll()
+        
+        // 清理 URL 处理器回调，避免内存泄漏
+        openURLHandler = nil
+        
+        Logger.shared.debug("Microsoft 认证数据已清理，下次添加账户将显示初始状态")
+    }
 } 

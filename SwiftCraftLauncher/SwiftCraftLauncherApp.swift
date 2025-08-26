@@ -62,7 +62,9 @@ struct SwiftCraftLauncherApp: App {
                                     window.collectionBehavior.remove(.fullScreenPrimary)
                                 })
         }
-        
+        .windowStyle(.titleBar)
+        .windowToolbarStyle(.unified(showsTitle: true))
+        .windowResizability(.contentSize)
         .commands {
             CommandGroup(after: .appInfo) {
                 Button("menu.check.updates".localized()) {

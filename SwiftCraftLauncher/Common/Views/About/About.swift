@@ -19,7 +19,6 @@ public struct AboutView: View {
             contentSection
             footerSection
         }
-//        .padding(.horizontal, 24)
         .padding(.vertical, 16)
         .frame(width: 280,height: 600)
     }
