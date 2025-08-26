@@ -26,7 +26,7 @@ struct ModrinthDependencyDownloader {
                     cachePath: resourceDirUnwrapped,
                     id: projectId,
                     selectedVersions: [gameInfo.gameVersion],
-                    selectedLoaders: [gameInfo.modLoader],
+                    selectedLoaders: [gameInfo.modLoader]
                 )
             
             // 2. 获取主mod详情
