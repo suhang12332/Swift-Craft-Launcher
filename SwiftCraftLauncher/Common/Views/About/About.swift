@@ -21,7 +21,7 @@ public struct AboutView: View {
         }
 //        .padding(.horizontal, 24)
         .padding(.vertical, 16)
-        .frame(width: 280)
+        .frame(width: 280,height: 600)
     }
     
     // MARK: - Header Section

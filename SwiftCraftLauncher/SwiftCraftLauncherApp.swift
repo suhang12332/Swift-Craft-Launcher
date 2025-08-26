@@ -62,10 +62,6 @@ struct SwiftCraftLauncherApp: App {
                                     window.collectionBehavior.remove(.fullScreenPrimary)
                                 })
         }
-        .windowStyle(.titleBar)
-        .windowToolbarStyle(.unified(showsTitle: true))
-        .defaultSize(width: 600, height: 500)
-        .windowResizability(.contentSize)
         
         .commands {
             CommandGroup(after: .appInfo) {
