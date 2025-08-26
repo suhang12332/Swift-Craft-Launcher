@@ -34,8 +34,14 @@ class ModScanner {
             return cached
         }
         
-        // 使用新的 ModrinthService API
-        if let detail = await ModrinthService.fetchProjectDetails(id: hash) {
+        // 使用 fetchModrinthDetail 通过文件 hash 查询
+        let detail = await withCheckedContinuation { continuation in
+            ModrinthService.fetchModrinthDetail(by: hash) { detail in
+                continuation.resume(returning: detail)
+            }
+        }
+        
+        if let detail = detail {
             saveToCache(hash: hash, detail: detail)
             return detail
         } else {
