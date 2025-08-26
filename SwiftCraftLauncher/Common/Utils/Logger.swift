@@ -1,5 +1,6 @@
 import Foundation
 import os.log
+import AppKit
 
 class Logger {
     static let shared = Logger()
@@ -258,6 +259,36 @@ class Logger {
     /// 手动触发日志清理
     func manualCleanup() {
         cleanupOldLogs()
+    }
+    
+    /// 打开当前日志文件
+    func openLogFile() {
+        guard let logURL = logFileURL else {
+            Logger.shared.error("无法获取日志文件路径")
+            return
+        }
+        
+        // 检查文件是否存在
+        if FileManager.default.fileExists(atPath: logURL.path) {
+            // 使用系统默认应用打开日志文件
+            NSWorkspace.shared.open(logURL)
+        } else {
+            // 如果日志文件不存在，创建并打开
+            do {
+                // 确保目录存在
+                try FileManager.default.createDirectory(at: logURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+                
+                // 创建日志文件
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+                let dateString = dateFormatter.string(from: Date())
+                
+                try "日志文件已创建 - \(dateString)".write(to: logURL, atomically: true, encoding: .utf8)
+                NSWorkspace.shared.open(logURL)
+            } catch {
+                Logger.shared.error("无法创建或打开日志文件: \(error)")
+            }
+        }
     }
     
     /// 清理旧日志文件（保留最近7天的日志）
