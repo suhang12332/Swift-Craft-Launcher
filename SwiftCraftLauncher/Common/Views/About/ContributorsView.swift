@@ -62,6 +62,14 @@ public struct ContributorsView: View {
             }
             .padding(.vertical, 8)
         }
+        .onAppear {
+            // 只有在视图出现时才获取贡献者数据
+            if viewModel.contributors.isEmpty && !viewModel.isLoading {
+                Task {
+                    await viewModel.fetchContributors()
+                }
+            }
+        }
     }
     
     // MARK: - Loading View
