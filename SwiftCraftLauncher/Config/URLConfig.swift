@@ -29,8 +29,22 @@ enum URLConfig {
             static let repositoryOwner = "suhang12332"
             static let repositoryName = "Swift-Craft-Launcher"
             
+            // 私有方法：构建仓库基础路径
+            private static var repositoryBaseURL: URL {
+                baseURL
+                    .appendingPathComponent("repos")
+                    .appendingPathComponent(repositoryOwner)
+                    .appendingPathComponent(repositoryName)
+            }
+            
             static func latestRelease() -> URL {
-                baseURL.appendingPathComponent("repos/\(repositoryOwner)/\(repositoryName)/releases/latest")
+                repositoryBaseURL.appendingPathComponent("releases/latest")
+            }
+            
+            static func contributors(perPage: Int = 50) -> URL {
+                repositoryBaseURL
+                    .appendingPathComponent("contributors")
+                    .appending(queryItems: [URLQueryItem(name: "per_page", value: "\(perPage)")])
             }
             
             // Appcast 相关

@@ -15,7 +15,6 @@ public struct ContributorsView: View {
     
     private let staticContributors: [StaticContributor] = [
         StaticContributor(name: "【喵凹条】喵凹条",url: "", avatar: "🎨", contributions: [.design]),
-        StaticContributor(name: "Yaoluna", url: "",avatar: "📚", contributions: [.documentation, .infra]),
         StaticContributor(name: "CarnonLee", url: "",avatar: "👨‍💻", contributions: [.code]),
         StaticContributor(name: "逗趣狂想", url: "",avatar: "🔧", contributions: [.infra]),
         StaticContributor(name: "Nzcorz", url: "",avatar: "👩‍💻", contributions: [.code]),

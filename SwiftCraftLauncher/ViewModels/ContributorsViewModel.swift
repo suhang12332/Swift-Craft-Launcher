@@ -11,10 +11,6 @@ public class ContributorsViewModel: ObservableObject {
     // MARK: - Private Properties
     private let gitHubService = GitHubService.shared
     
-    // MARK: - Repository Configuration
-    private let repositoryOwner = URLConfig.API.GitHub.repositoryOwner
-    private let repositoryName = URLConfig.API.GitHub.repositoryName
-    
     // MARK: - Initialization
     public init() {
         Task {
@@ -29,11 +25,7 @@ public class ContributorsViewModel: ObservableObject {
         isLoading = true
         
         do {
-            let contributorsList = try await gitHubService.fetchContributors(
-                owner: repositoryOwner,
-                repo: repositoryName,
-                perPage: 50  // 获取前50个贡献者
-            )
+            let contributorsList = try await gitHubService.fetchContributors(perPage: 50)
             contributors = contributorsList
         } catch {
             // 静默处理错误
