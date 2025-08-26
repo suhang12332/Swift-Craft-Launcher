@@ -42,19 +42,24 @@ public struct AcknowledgementsView: View {
                 // 开源库列表
                 ForEach(Array(allLibraries.enumerated()), id: \.element.name) { index, library in
                     VStack(spacing: 0) {
-                        HStack {
-                            Text(library.name)
-                                .foregroundColor(.secondary)
+                        Link(destination: URL(string: library.url)!) {
+                            HStack {
+                                Text(library.name)
+                                    .foregroundColor(.primary)
 
-                            Spacer()
-                            
-                            HStack(spacing: 8) {
-                                Image(systemName: "arrow.right.circle.fill")
-                                    .foregroundColor(.secondary)
+                                Spacer()
+                                
+                                HStack(spacing: 8) {
+                                    Image(systemName: "globe")
+                                        .foregroundColor(.secondary)
+                                        .font(.system(size: 16))
+                                }
                             }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(Color.clear)
+                            .contentShape(Rectangle())
                         }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
                         
                         // 分隔线
                         if index < allLibraries.count - 1 {
