@@ -80,7 +80,12 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("l", modifiers: [.command, .shift])
             }
-            
+            CommandGroup(after: .help) {
+                Button("about.contributors".localized()) {
+                    openWindow(id: "aboutWindow", value: false)
+                }
+                .keyboardShortcut("c", modifiers: [.command, .shift])
+            }
             CommandGroup(after: .help) {
                 Button("about.acknowledgements".localized()) {
                     openWindow(id: "aboutWindow", value: true)
@@ -88,12 +93,7 @@ struct SwiftCraftLauncherApp: App {
                 .keyboardShortcut("a", modifiers: [.command, .shift])
             }
             
-            CommandGroup(after: .help) {
-                Button("about.contributors".localized()) {
-                    openWindow(id: "aboutWindow", value: false)
-                }
-                .keyboardShortcut("c", modifiers: [.command, .shift])
-            }
+           
         }
 
         Settings {
