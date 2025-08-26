@@ -16,10 +16,7 @@ struct SwiftCraftLauncherApp: App {
     @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
     @StateObject private var generalSettingsManager = GeneralSettingsManager.shared
     @Environment(\.openWindow) private var openWindow
-
-    // 关于页面状态
-    @State private var showAboutWindow = false
-
+    
     init() {
         Task {
             await NotificationManager.requestAuthorizationIfNeeded()
@@ -52,30 +49,25 @@ struct SwiftCraftLauncherApp: App {
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
-        WindowGroup("About", id: "aboutWindow") {
-            AboutView()
+        
+        // 关于窗口（共享的 WindowGroup，通过 value 区分）
+        WindowGroup("", id: "aboutWindow", for: Bool.self) { $showingAcknowledgements in
+            AboutView(showingAcknowledgements: showingAcknowledgements ?? false)
                 .environmentObject(generalSettingsManager)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .background(WindowAccessor { window in
-                    // 移除关闭、最小化、最大化按钮
-                    window.styleMask.remove([.miniaturizable, .resizable])
-                    // 禁用全屏
-                    window.collectionBehavior.remove(.fullScreenPrimary)
-                })
+                                    // 移除关闭、最小化、最大化按钮
+                                    window.styleMask.remove([.miniaturizable, .resizable])
+                                    // 禁用全屏
+                                    window.collectionBehavior.remove(.fullScreenPrimary)
+                                })
         }
+        .windowStyle(.titleBar)
+        .windowToolbarStyle(.unified(showsTitle: true))
+        .defaultSize(width: 600, height: 500)
         .windowResizability(.contentSize)
-//        .windowStyle(.hiddenTitleBar)
-        .windowStyle(.titleBar).windowToolbarStyle(.unified(showsTitle: false))
-        
         
         .commands {
-            CommandGroup(replacing: .appInfo) {
-                Button(String(format: "menu.about".localized(), Bundle.main.appName)) {
-                    openWindow(id: "aboutWindow")
-                    
-                }
-                .keyboardShortcut("a", modifiers: [.command, .shift])
-            }
             CommandGroup(after: .appInfo) {
                 Button("menu.check.updates".localized()) {
                     sparkleUpdateService.checkForUpdatesWithUI()
@@ -84,9 +76,23 @@ struct SwiftCraftLauncherApp: App {
             }
             CommandGroup(after: .help) {
                 Button("menu.open.log".localized()) {
-                    openLogFile()
+                    Logger.shared.openLogFile()
                 }
                 .keyboardShortcut("l", modifiers: [.command, .shift])
+            }
+            
+            CommandGroup(after: .help) {
+                Button("about.acknowledgements".localized()) {
+                    openWindow(id: "aboutWindow", value: true)
+                }
+                .keyboardShortcut("a", modifiers: [.command, .shift])
+            }
+            
+            CommandGroup(after: .help) {
+                Button("about.contributors".localized()) {
+                    openWindow(id: "aboutWindow", value: false)
+                }
+                .keyboardShortcut("c", modifiers: [.command, .shift])
             }
         }
 
@@ -113,37 +119,8 @@ struct SwiftCraftLauncherApp: App {
         })
     }
     
-    // MARK: - Helper Methods
-    private func openLogFile() {
-        // 生成当前日期的日志文件名
-        let appName = Bundle.main.appName.replacingOccurrences(of: " ", with: "-").lowercased()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        let dateString = dateFormatter.string(from: Date())
-        let logFileName = "\(appName)-\(dateString).log"
-        
-        // 获取日志文件路径
-        let logPath = AppPaths.logsDirectory!.appendingPathComponent(logFileName)
-        
-        // 检查文件是否存在
-        if FileManager.default.fileExists(atPath: logPath.path) {
-            // 使用系统默认应用打开日志文件
-            NSWorkspace.shared.open(logPath)
-        } else {
-            // 如果日志文件不存在，创建并打开
-            do {
-                try FileManager.default.createDirectory(at: AppPaths.logsDirectory!, withIntermediateDirectories: true)
-                try "日志文件已创建 - \(dateString)".write(to: logPath, atomically: true, encoding: .utf8)
-                NSWorkspace.shared.open(logPath)
-            } catch {
-                Logger.shared.error("无法创建或打开日志文件: \(error)")
-            }
-        }
-    }
+
 }
-
-    
-
 
 struct WindowAccessor: NSViewRepresentable {
     var callback: (NSWindow) -> Void
