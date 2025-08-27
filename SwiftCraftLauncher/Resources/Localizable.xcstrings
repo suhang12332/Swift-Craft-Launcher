@@ -1270,7 +1270,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重試"
+            "value" : "再試一次"
           }
         }
       }
@@ -1407,7 +1407,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開始登錄"
+            "value" : "開始登入"
           }
         }
       }
@@ -1818,7 +1818,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 離線賬戶無需網絡驗證，可以在沒有網絡的情況下遊戲"
+            "value" : "• 離線賬戶無需網路驗證，可以在沒有網路的情況下遊戲"
           }
         }
       }
@@ -5679,7 +5679,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "代碼"
+            "value" : "程式碼"
           }
         }
       }
@@ -7598,7 +7598,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重試"
+            "value" : "再試一次"
           }
         }
       }
@@ -8004,13 +8004,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "待下载的前置mod(必须)"
+            "value" : "待下载的前置Mod(必须)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "待下載的前置mod(必須)"
+            "value" : "待下載的前置Mod(必須)"
           }
         }
       }
@@ -8147,7 +8147,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇版本:"
+            "value" : "選取版本:"
           }
         }
       }
@@ -8422,7 +8422,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "核心文件"
+            "value" : "核心檔案"
           }
         }
       }
@@ -8433,133 +8433,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "الملف الحالي: %@"
+            "value" : "الخطوة الحالية: %@"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nuværende fil: %@"
+            "value" : "Nuværende trin: %@"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktuelle Datei: %@"
+            "value" : "Aktueller Schritt: %@"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Current File: %@"
+            "value" : "Current Step: %@"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Archivo actual: %@"
+            "value" : "Paso actual: %@"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nykyinen tiedosto: %@"
+            "value" : "Nykyinen vaihe: %@"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fichier actuel : %@"
+            "value" : "Étape actuelle : %@"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "वर्तमान फ़ाइल: %@"
+            "value" : "वर्तमान चरण: %@"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "File corrente: %@"
+            "value" : "Passaggio corrente: %@"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "現在のファイル：%@"
+            "value" : "現在のステップ：%@"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "현재 파일：%@"
+            "value" : "현재 단계：%@"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gjeldende fil: %@"
+            "value" : "Gjeldende trinn: %@"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Huidig bestand: %@"
+            "value" : "Huidige stap: %@"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bieżący plik: %@"
+            "value" : "Bieżący krok: %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arquivo atual: %@"
+            "value" : "Passo atual: %@"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Текущий файл: %@"
+            "value" : "Текущий шаг: %@"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktuell fil: %@"
+            "value" : "Aktuellt steg: %@"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ไฟล์ปัจจุบัน: %@"
+            "value" : "ขั้นตอนปัจจุบัน: %@"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mevcut dosya: %@"
+            "value" : "Mevcut adım: %@"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tệp hiện tại: %@"
+            "value" : "Bước hiện tại: %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "当前文件：%@"
+            "value" : "当前步骤：%@"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "當前文件：%@"
+            "value" : "當前步驟：%@"
           }
         }
       }
@@ -8696,7 +8696,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件：%d/%d"
+            "value" : "檔案：%d/%d"
           }
         }
       }
@@ -8970,7 +8970,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "資源文件"
+            "value" : "資源檔案"
           }
         }
       }
@@ -10204,7 +10204,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無效的設備代碼"
+            "value" : "無效的裝置代碼"
           }
         }
       }
@@ -10892,7 +10892,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法刪除文件：遊戲信息或資源目錄無效"
+            "value" : "無法刪除檔案：遊戲資訊或資源目錄無效"
           }
         }
       }
@@ -11029,7 +11029,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法獲取遊戲信息，整合包依賴安裝失敗"
+            "value" : "無法獲取遊戲資訊，整合包依賴安裝失敗"
           }
         }
       }
@@ -11578,7 +11578,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java可執行文件沒有執行權限"
+            "value" : "Java可執行檔案沒有執行權限"
           }
         }
       }
@@ -11716,7 +11716,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Java可執行文件不存在"
+            "value" : "Java可執行檔案不存在"
           }
         }
       }
@@ -12127,7 +12127,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "沒有選擇當前玩家"
+            "value" : "沒有選取當前玩家"
           }
         }
       }
@@ -13088,7 +13088,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載資源文件失敗"
+            "value" : "下載資源檔案失敗"
           }
         }
       }
@@ -13362,7 +13362,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載客戶端JAR文件失敗"
+            "value" : "下載客戶端JAR檔案失敗"
           }
         }
       }
@@ -13775,7 +13775,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請求設備代碼失敗"
+            "value" : "請求裝置代碼失敗"
           }
         }
       }
@@ -14186,7 +14186,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載文件失敗"
+            "value" : "下載檔案失敗"
           }
         }
       }
@@ -15008,7 +15008,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載JAR文件失敗"
+            "value" : "下載JAR檔案失敗"
           }
         }
       }
@@ -15145,7 +15145,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法打開JAR文件: %@"
+            "value" : "無法打開JAR檔案: %@"
           }
         }
       }
@@ -15282,7 +15282,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載庫文件失敗"
+            "value" : "下載庫檔案失敗"
           }
         }
       }
@@ -15556,7 +15556,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載日誌配置文件失敗"
+            "value" : "下載日誌配置檔案失敗"
           }
         }
       }
@@ -16104,7 +16104,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "獲取Minecraft用戶資料失敗"
+            "value" : "獲取Minecraft帳戶資料失敗"
           }
         }
       }
@@ -16378,7 +16378,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載Minecraft版本文件失敗"
+            "value" : "下載Minecraft版本檔案失敗"
           }
         }
       }
@@ -17612,7 +17612,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載原生庫文件失敗"
+            "value" : "下載原生庫檔案失敗"
           }
         }
       }
@@ -17886,7 +17886,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "網絡請求失敗"
+            "value" : "網路請求失敗"
           }
         }
       }
@@ -18023,7 +18023,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "網絡請求超時"
+            "value" : "網路請求超時"
           }
         }
       }
@@ -18297,7 +18297,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法從processor JAR文件中獲取主類: %@"
+            "value" : "無法從processor JAR檔案中獲取主類: %@"
           }
         }
       }
@@ -19805,7 +19805,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "清空緩存文件失敗"
+            "value" : "清空緩存檔案失敗"
           }
         }
       }
@@ -20079,7 +20079,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "讀取緩存文件失敗"
+            "value" : "讀取緩存檔案失敗"
           }
         }
       }
@@ -20216,7 +20216,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "寫入緩存文件失敗"
+            "value" : "寫入緩存檔案失敗"
           }
         }
       }
@@ -20353,7 +20353,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件系統錯誤"
+            "value" : "檔案系統錯誤"
           }
         }
       }
@@ -20490,7 +20490,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件複製失敗"
+            "value" : "檔案複製失敗"
           }
         }
       }
@@ -20627,7 +20627,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "計算數據緩存信息失敗"
+            "value" : "計算數據緩存資訊失敗"
           }
         }
       }
@@ -21312,7 +21312,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇目錄失敗"
+            "value" : "選取目錄失敗"
           }
         }
       }
@@ -21586,7 +21586,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載文件移動失敗"
+            "value" : "下載檔案移動失敗"
           }
         }
       }
@@ -21723,7 +21723,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "寫入下載文件失敗"
+            "value" : "寫入下載檔案失敗"
           }
         }
       }
@@ -21861,7 +21861,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法訪問所選文件"
+            "value" : "無法訪問所選檔案"
           }
         }
       }
@@ -21999,7 +21999,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刪除文件失敗"
+            "value" : "刪除檔案失敗"
           }
         }
       }
@@ -22136,7 +22136,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "移動文件失敗"
+            "value" : "移動檔案失敗"
           }
         }
       }
@@ -22274,7 +22274,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "讀取文件失敗"
+            "value" : "讀取檔案失敗"
           }
         }
       }
@@ -22411,7 +22411,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件選擇失敗"
+            "value" : "檔案選取失敗"
           }
         }
       }
@@ -22548,7 +22548,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "計算遊戲緩存信息失敗"
+            "value" : "計算遊戲緩存資訊失敗"
           }
         }
       }
@@ -22959,7 +22959,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法讀取圖片文件"
+            "value" : "無法讀取圖片檔案"
           }
         }
       }
@@ -23233,7 +23233,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇的路徑不是可讀的目錄"
+            "value" : "選取的路徑不是可讀的目錄"
           }
         }
       }
@@ -23371,7 +23371,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇Java目錄失敗"
+            "value" : "選取Java目錄失敗"
           }
         }
       }
@@ -23508,7 +23508,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "計算元數據緩存信息失敗"
+            "value" : "計算元數據緩存資訊失敗"
           }
         }
       }
@@ -23782,7 +23782,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "計算文件SHA1失敗"
+            "value" : "計算檔案SHA1失敗"
           }
         }
       }
@@ -24331,7 +24331,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "圖片選擇失敗"
+            "value" : "圖片選取失敗"
           }
         }
       }
@@ -24468,7 +24468,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法讀取圖片文件"
+            "value" : "無法讀取圖片檔案"
           }
         }
       }
@@ -25018,7 +25018,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "網絡 URL 錯誤"
+            "value" : "網路 URL 錯誤"
           }
         }
       }
@@ -25155,7 +25155,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "沒有選擇當前玩家"
+            "value" : "沒有選取當前玩家"
           }
         }
       }
@@ -25703,7 +25703,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件系統錯誤"
+            "value" : "檔案系統錯誤"
           }
         }
       }
@@ -26115,7 +26115,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "網絡錯誤"
+            "value" : "網路錯誤"
           }
         }
       }
@@ -27761,7 +27761,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "客戶端JAR文件不存在"
+            "value" : "客戶端JAR檔案不存在"
           }
         }
       }
@@ -28173,7 +28173,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "文件不存在"
+            "value" : "檔案不存在"
           }
         }
       }
@@ -28310,7 +28310,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未找到要刪除的文件"
+            "value" : "未找到要刪除的檔案"
           }
         }
       }
@@ -29682,7 +29682,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "找不到主文件"
+            "value" : "找不到主檔案"
           }
         }
       }
@@ -29819,7 +29819,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "找不到處理器JAR文件: %@"
+            "value" : "找不到處理器JAR檔案: %@"
           }
         }
       }
@@ -30780,7 +30780,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析設備代碼響應失敗: %@"
+            "value" : "解析裝置代碼響應失敗: %@"
           }
         }
       }
@@ -31739,7 +31739,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法計算文件哈希值"
+            "value" : "無法計算檔案哈希值"
           }
         }
       }
@@ -31877,7 +31877,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "遊戲信息缺失"
+            "value" : "遊戲資訊缺失"
           }
         }
       }
@@ -34618,7 +34618,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "解析 Minecraft 用戶資料響應失敗: %@"
+            "value" : "解析 Minecraft 帳戶資料響應失敗: %@"
           }
         }
       }
@@ -35303,7 +35303,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未選擇文件"
+            "value" : "未選取檔案"
           }
         }
       }
@@ -35714,7 +35714,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "處理器缺少JAR文件配置"
+            "value" : "處理器缺少JAR檔案配置"
           }
         }
       }
@@ -36265,7 +36265,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法構建Quilt JAR文件的URL列表"
+            "value" : "無法構建Quilt JAR檔案的URL列表"
           }
         }
       }
@@ -38732,7 +38732,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "資源文件：%@"
+            "value" : "資源檔案：%@"
           }
         }
       }
@@ -38870,7 +38870,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "客戶端文件"
+            "value" : "客戶端檔案"
           }
         }
       }
@@ -39007,7 +39007,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "庫文件：%@"
+            "value" : "庫檔案：%@"
           }
         }
       }
@@ -40241,7 +40241,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "分辨率"
+            "value" : "解析度"
           }
         }
       }
@@ -41612,7 +41612,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "為遊戲選擇圖標"
+            "value" : "為遊戲選取圖標"
           }
         }
       }
@@ -42572,7 +42572,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請選擇遊戲版本"
+            "value" : "請選取遊戲版本"
           }
         }
       }
@@ -44627,7 +44627,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請選擇遊戲"
+            "value" : "請選取遊戲"
           }
         }
       }
@@ -44765,7 +44765,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇遊戲"
+            "value" : "選取遊戲"
           }
         }
       }
@@ -44902,7 +44902,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇版本"
+            "value" : "選取版本"
           }
         }
       }
@@ -47371,7 +47371,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "完成下載 Minecraft 版本文件：%@"
+            "value" : "完成下載 Minecraft 版本檔案：%@"
           }
         }
       }
@@ -49430,7 +49430,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "登錄失敗"
+            "value" : "登入失敗"
           }
         }
       }
@@ -49567,7 +49567,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在獲取設備代碼..."
+            "value" : "正在獲取裝置代碼..."
           }
         }
       }
@@ -50115,7 +50115,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請點擊下方的「開始登錄」按鈕開始認證流程"
+            "value" : "請點擊下方的「開始登入」按鈕開始認證流程"
           }
         }
       }
@@ -50252,7 +50252,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "登錄成功！"
+            "value" : "登入成功！"
           }
         }
       }
@@ -50390,7 +50390,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用 Microsoft 帳戶登錄 Minecraft"
+            "value" : "使用 Microsoft 帳戶登入 Minecraft"
           }
         }
       }
@@ -51350,7 +51350,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "整合包文件"
+            "value" : "整合包檔案"
           }
         }
       }
@@ -51624,7 +51624,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請選擇遊戲版本"
+            "value" : "請選取遊戲版本"
           }
         }
       }
@@ -51898,7 +51898,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載整合包文件並解析配置"
+            "value" : "下載整合包檔案並解析配置"
           }
         }
       }
@@ -52584,7 +52584,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下界"
+            "value" : "地獄"
           }
         }
       }
@@ -67668,7 +67668,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇語言："
+            "value" : "選取語言："
           }
         }
       }
@@ -69724,7 +69724,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "沒有玩家信息，先添加玩家信息後，才可以添加遊戲"
+            "value" : "沒有玩家資訊，先添加玩家資訊後，才可以添加遊戲"
           }
         }
       }
@@ -71232,7 +71232,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "末地"
+            "value" : "終界"
           }
         }
       }
@@ -74113,7 +74113,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請點擊下方的「登錄」按鈕確認使用此帳戶"
+            "value" : "請點擊下方的「登入」按鈕確認使用此帳戶"
           }
         }
       }
@@ -74250,7 +74250,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "登錄失敗"
+            "value" : "登入失敗"
           }
         }
       }
@@ -74387,7 +74387,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在獲取設備代碼..."
+            "value" : "正在獲取裝置代碼..."
           }
         }
       }
@@ -74798,7 +74798,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已選擇角色：%@"
+            "value" : "已選取角色：%@"
           }
         }
       }
@@ -75072,7 +75072,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "2. 使用 LittleSkin 帳戶登錄"
+            "value" : "2. 使用 LittleSkin 帳戶登入"
           }
         }
       }
@@ -75346,7 +75346,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請點擊下方的「開始登錄」按鈕開始認證流程"
+            "value" : "請點擊下方的「開始登入」按鈕開始認證流程"
           }
         }
       }
@@ -75482,7 +75482,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "登錄成功！"
+            "value" : "登入成功！"
           }
         }
       }
@@ -75619,7 +75619,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "登錄成功！"
+            "value" : "登入成功！"
           }
         }
       }
@@ -75757,7 +75757,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "使用 LittleSkin 帳戶登錄"
+            "value" : "使用 LittleSkin 帳戶登入"
           }
         }
       }
