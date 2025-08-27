@@ -96,9 +96,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             let savePath = tempDir.appendingPathComponent(file.filename)
 
             // 下载文件
-            let (tempFileURL, response) = try await URLSession.shared.download(
-                from: url
-            )
+           let (tempFileURL, response) = try await NetworkManager.shared.download(from: url)
             defer { try? FileManager.default.removeItem(at: tempFileURL) }
 
             // 验证响应
@@ -167,9 +165,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             let iconPath = gameDirectory.appendingPathComponent(iconFileName)
 
             // 下载图标文件
-            let (tempFileURL, response) = try await URLSession.shared.download(
-                from: url
-            )
+           let (tempFileURL, response) = try await NetworkManager.shared.download(from: url)
             defer { try? FileManager.default.removeItem(at: tempFileURL) }
 
             // 验证响应

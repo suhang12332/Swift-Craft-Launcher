@@ -14,15 +14,23 @@ struct ModrinthProjectTitleView: View {
         VStack {
             HStack {
                 // 项目图标
-                if let iconUrl = projectDetail.iconUrl,
-                    let url = URL(string: iconUrl) {
-                    AsyncImage(url: url) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.secondary.opacity(0.2))
+                if let iconUrl = projectDetail.iconUrl, let url = URL(string: iconUrl) {
+                    ProxyAsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        case .empty:
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.secondary.opacity(0.2))
+                        case .failure(_):
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.secondary.opacity(0.2))
+                        @unknown default:
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.secondary.opacity(0.2))
+                        }
                     }
                     .frame(width: 64, height: 64)
                     .cornerRadius(8)

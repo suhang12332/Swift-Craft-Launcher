@@ -22,6 +22,10 @@ public struct SettingsView: View {
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
+            ProxySettingsView()
+                .tabItem {
+                    Label("settings.proxy.tab".localized(), systemImage: "network")
+                }
         }
         .padding(.vertical, 24)
         .frame(minWidth: 840)

@@ -196,7 +196,7 @@ enum ModrinthService {
             )
         }
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await NetworkManager.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
                     chineseMessage: "搜索项目失败: HTTP \(response)",
@@ -232,7 +232,8 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchLoadersThrowing() async throws -> [Loader] {
         do {
-            let (data, response) = try await URLSession.shared.data(
+            let (data, response) = try await NetworkManager.shared.data(
+            let (data, response) = try await NetworkManager.shared.data(
                 from: URLConfig.API.Modrinth.loaderTag
             )
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
@@ -268,7 +269,7 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchCategoriesThrowing() async throws -> [Category] {
         do {
-            let (data, response) = try await URLSession.shared.data(
+            let (data, response) = try await NetworkManager.shared.data(
                 from: URLConfig.API.Modrinth.categoryTag
             )
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
@@ -304,7 +305,7 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchGameVersionsThrowing() async throws -> [GameVersion] {
         do {
-            let (data, response) = try await URLSession.shared.data(
+            let (data, response) = try await NetworkManager.shared.data(
                 from: URLConfig.API.Modrinth.gameVersionTag
             )
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
@@ -343,7 +344,7 @@ enum ModrinthService {
     static func fetchProjectDetailsThrowing(id: String) async throws -> ModrinthProjectDetail {
         let url = URLConfig.API.Modrinth.project(id: id)
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await NetworkManager.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
                     chineseMessage: "获取项目详情失败 (ID: \(id)): HTTP \(response)",
@@ -383,7 +384,7 @@ enum ModrinthService {
     static func fetchProjectVersionsThrowing(id: String) async throws -> [ModrinthProjectDetailVersion] {
         let url = URLConfig.API.Modrinth.version(id: id)
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await NetworkManager.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
                     chineseMessage: "获取项目版本列表失败 (ID: \(id)): HTTP \(response)",
@@ -568,7 +569,7 @@ enum ModrinthService {
     static func fetchProjectVersionThrowing(id: String) async throws -> ModrinthProjectDetailVersion {
         let url = URLConfig.API.Modrinth.versionId(versionId: id)
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await NetworkManager.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
                     chineseMessage: "获取项目版本失败 (ID: \(id)): HTTP \(response)",
@@ -596,7 +597,7 @@ enum ModrinthService {
     /// - Parameter completion: 完成回调
     static func fetchModrinthDetail(by hash: String, completion: @escaping (ModrinthProjectDetail?) -> Void) {
         let url = URLConfig.API.Modrinth.versionFile(hash: hash)
-        let task = URLSession.shared.dataTask(with: url) { data, _, _ in
+        let task = NetworkManager.shared.urlSession.dataTask(with: url) { data, response, error in
             guard let data = data else {
                 completion(nil)
                 return

@@ -1,6 +1,31 @@
 import Foundation
 
 enum ForgeLoaderService {
+
+    static func fetchLatestForgeProfile(for minecraftVersion: String) async throws -> ModrinthLoader {
+        let result = try await fetchLatestForgeVersion(for: minecraftVersion)
+        let forgeVersion = result.id
+        let cacheKey = "\(minecraftVersion)-\(forgeVersion)"
+        // 1. 查全局缓存
+        if let cached = AppCacheManager.shared.get(namespace: "forge", key: cacheKey, as: ModrinthLoader.self) {
+            return cached
+        }
+        // 2. 直接下载 version.json
+        let (data, response) = try await NetworkManager.shared.data(from: URL(string: result.url)!)
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw GlobalError.download(
+                chineseMessage: "获取 Forge profile 失败: HTTP \(response)",
+                i18nKey: "error.download.forge_profile_fetch_failed",
+                level: .notification
+            )
+        }
+        
+        var loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
+        loader.version = forgeVersion
+        AppCacheManager.shared.setSilently(namespace: "forge", key: cacheKey, value: loader)
+        return loader
+    }
+
     /// 通过Modrinth API获取所有可用Forge版本详细信息
     static func fetchAllForgeVersions(for minecraftVersion: String) async throws -> LoaderVersion {
         guard let result = await CommonService.fetchAllLoaderVersions(type: "forge", minecraftVersion: minecraftVersion) else {
