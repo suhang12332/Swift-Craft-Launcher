@@ -16,10 +16,11 @@ public struct ContributorsView: View {
     private let staticContributors: [StaticContributor] = [
         StaticContributor(name: "【喵凹条】喵凹条",url: "", avatar: "🎨", contributions: [.design]),
         StaticContributor(name: "CarnonLee", url: "",avatar: "👨‍💻", contributions: [.code]),
-        StaticContributor(name: "逗趣狂想", url: "",avatar: "🔧", contributions: [.infra]),
+        StaticContributor(name: "jiangyin14", url: "https://github.com/jiangyin14",avatar: "👨‍💻", contributions: [.code]),
+        StaticContributor(name: "逗趣狂想", url: "https://space.bilibili.com/3493127828540221",avatar: "🔧", contributions: [.infra]),
         StaticContributor(name: "Nzcorz", url: "",avatar: "👩‍💻", contributions: [.code]),
         StaticContributor(name: "桜子ちゃん", url: "",avatar: "👩‍💻", contributions: [.code]),
-        StaticContributor(name: "ZeroSnow", url: "",avatar: "🎨", contributions: [.design]),
+        StaticContributor(name: "ZeroSnow", url: "https://github.com/chencomcdyun",avatar: "🎨", contributions: [.design]),
         StaticContributor(name: "小希Lusiey_", url: "",avatar: "👩‍💻", contributions: [.test]),
         StaticContributor(name: "骑老奶奶过马路", url: "",avatar: "👩‍💻", contributions: [.test]),
         StaticContributor(name: "laiTM", url: "",avatar: "👩‍💻", contributions: [.test])
