@@ -1,0 +1,157 @@
+name: 错误报告
+description: 报告 Swift Craft Launcher 的错误或问题
+title: "[错误]: "
+labels: ["bug", "triage"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢您花时间填写这个错误报告！请尽可能提供详细信息，帮助我们快速识别和修复问题。
+        
+        **提交前，请确保：**
+        - 您正在使用最新版本的 Swift Craft Launcher
+        - 您已搜索现有问题以确认这不是重复报告
+        - 您已尝试重启启动器和游戏
+  
+  - type: input
+    id: contact
+    attributes:
+      label: 联系方式（可选）
+      description: 如果我们需要更多信息，如何联系您？
+      placeholder: 例如：email@example.com
+    validations:
+      required: false
+      
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: 错误描述
+      description: 清楚简洁地描述错误是什么
+      placeholder: 清楚地描述发生了什么...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 预期行为
+      description: 清楚简洁地描述您期望发生什么
+      placeholder: 描述正常情况下应该发生什么...
+    validations:
+      required: true
+      
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: 重现步骤
+      description: 提供详细的步骤来重现问题
+      placeholder: |
+        1. 打开 Swift Craft Launcher
+        2. 点击 '...'
+        3. 看到错误
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+  - type: input
+    id: launcher-version
+    attributes:
+      label: 启动器版本
+      description: |
+        您正在使用哪个版本的 Swift Craft Launcher？
+        您可以在启动器的标题栏或关于部分找到此信息。
+        最新版本：0.1.6-beta
+      placeholder: 例如：0.1.6-beta、0.1.5-beta，或开发版本的提交哈希
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: mac-architecture
+    attributes:
+      label: Mac 架构
+      description: 您使用的是哪种 Mac 架构？
+      multiple: false
+      options:
+        - Apple Silicon (M1/M2/M3/M4)
+        - Intel (x86_64)
+        - 未知（请检查关于本机）
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: macos-version
+    attributes:
+      label: macOS 版本
+      description: 您运行的是哪个版本的 macOS？
+      options:
+        - macOS Sequoia 26 
+        - macOS Sequoia 15.x（最新）
+        - macOS Sonoma 14.x
+        - 其他（请说明）
+    validations:
+      required: true
+      
+
+  - type: dropdown
+    id: modloader
+    attributes:
+      label: 模组加载器
+      description: 您使用的是哪个模组加载器？
+      options:
+        - Forge
+        - Fabric
+        - Quilt
+        - NeoForge
+        - Vanilla（无模组）
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: launcher-logs
+    attributes:
+      label: 启动器日志
+      description: 请粘贴相关的启动器日志输出。可以在启动器的日志窗口或日志文件中找到。
+      placeholder: 在此粘贴启动器日志内容...
+      render: shell
+    validations:
+      required: false
+      
+  - type: textarea
+    id: game-logs
+    attributes:
+      label: 游戏日志（如适用）
+      description: 如果问题与游戏执行相关，请粘贴游戏的 latest.log 或崩溃报告
+      placeholder: 在此粘贴游戏日志或崩溃报告...
+      render: shell
+    validations:
+      required: false
+      
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 附加信息
+      description: 在此添加关于问题的任何其他信息，如截图、视频链接等。
+      placeholder: 任何其他有用的信息...
+    validations:
+      required: false
+      
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 检查清单
+      description: 请确认以下内容
+      options:
+        - label: 我已搜索现有问题以确认这不是重复报告
+          required: true
+        - label: 我已尝试重启启动器和游戏
+          required: true
+        - label: 我正在使用最新版本的启动器（或已指定确切版本）
+          required: true
+        - label: 我已提供足够的信息来重现此问题
+          required: true
+
+
