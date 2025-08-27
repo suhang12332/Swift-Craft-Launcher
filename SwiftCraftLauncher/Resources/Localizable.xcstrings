@@ -68638,133 +68638,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "علامة التبويب"
+            "value" : "اللاعب"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fane"
+            "value" : "Spiller"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Registerkarte"
+            "value" : "Spieler"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tab"
+            "value" : "Player"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pestaña"
+            "value" : "Jugador"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Välilehti"
+            "value" : "Pelaaja"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Onglet"
+            "value" : "Joueur"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "टैब"
+            "value" : "खिलाड़ी"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Scheda"
+            "value" : "Giocatore"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "タブ"
+            "value" : "プレイヤー"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "탭"
+            "value" : "플레이어"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fane"
+            "value" : "Spiller"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tabblad"
+            "value" : "Speler"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Karta"
+            "value" : "Gracz"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aba"
+            "value" : "Jogador"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Вкладка"
+            "value" : "Игрок"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flik"
+            "value" : "Spelare"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "แท็บ"
+            "value" : "ผู้เล่น"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sekme"
+            "value" : "Oyuncu"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tab"
+            "value" : "Người chơi"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "标签页"
+            "value" : "玩家"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "標籤頁"
+            "value" : "玩家"
           }
         }
       }
@@ -68775,133 +68775,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "العنوان"
+            "value" : "إعدادات اللاعب"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titel"
+            "value" : "Spillerindstillinger"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titel"
+            "value" : "Spielereinstellungen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Title"
+            "value" : "Player Settings"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Título"
+            "value" : "Configuración del jugador"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Otsikko"
+            "value" : "Pelaajan asetukset"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titre"
+            "value" : "Paramètres du joueur"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "शीर्षक"
+            "value" : "खिलाड़ी सेटिंग्स"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titolo"
+            "value" : "Impostazioni giocatore"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "タイトル"
+            "value" : "プレイヤー設定"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "제목"
+            "value" : "플레이어 설정"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tittel"
+            "value" : "Spillerinnstillinger"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titel"
+            "value" : "Spelerinstellingen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tytuł"
+            "value" : "Ustawienia gracza"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Título"
+            "value" : "Configurações do jogador"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Заголовок"
+            "value" : "Настройки игрока"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titel"
+            "value" : "Spelarinställningar"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ชื่อเรื่อง"
+            "value" : "การตั้งค่าผู้เล่น"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Başlık"
+            "value" : "Oyuncu ayarları"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tiêu đề"
+            "value" : "Cài đặt người chơi"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "标题"
+            "value" : "玩家设置"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "標題"
+            "value" : "玩家設定"
           }
         }
       }
