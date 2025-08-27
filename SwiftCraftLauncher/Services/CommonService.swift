@@ -186,7 +186,7 @@ class CommonService {
     /// 解析包含@符号的Maven坐标的公共逻辑
     /// - Parameter coordinate: Maven坐标
     /// - Returns: 相对路径
-    private static func parseMavenCoordinateWithAtSymbol(_ coordinate: String) -> String {
+    static func parseMavenCoordinateWithAtSymbol(_ coordinate: String) -> String {
         let parts = coordinate.components(separatedBy: ":")
         guard parts.count >= 3 else { return coordinate }
         

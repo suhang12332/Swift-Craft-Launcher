@@ -99,13 +99,24 @@ class ProcessorExecutor {
     }
     
     private static func getMavenPath(_ coordinate: String, librariesDir: URL) throws -> URL {
-        guard let relativePath = CommonService.mavenCoordinateToRelativePath(coordinate) else {
-            throw GlobalError.validation(
-                chineseMessage: "无效的Maven坐标: \(coordinate)",
-                i18nKey: String(format: "error.validation.invalid_maven_coordinate", coordinate),
-                level: .notification
-            )
+        // 使用支持@符号的方法来处理Maven坐标
+        let relativePath: String
+        
+        if coordinate.contains("@") {
+            // 对于包含@符号的坐标（如 org.ow2.asm:asm:9.3@jar），使用特殊处理方法
+            relativePath = CommonService.parseMavenCoordinateWithAtSymbol(coordinate)
+        } else {
+            // 对于标准坐标，使用原有方法
+            guard let path = CommonService.mavenCoordinateToRelativePath(coordinate) else {
+                throw GlobalError.validation(
+                    chineseMessage: "无效的Maven坐标: \(coordinate)",
+                    i18nKey: String(format: "error.validation.invalid_maven_coordinate", coordinate),
+                    level: .notification
+                )
+            }
+            relativePath = path
         }
+        
         return librariesDir.appendingPathComponent(relativePath)
     }
     
