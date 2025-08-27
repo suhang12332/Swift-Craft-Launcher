@@ -15,7 +15,7 @@
   [![Homebrew](https://img.shields.io/badge/Homebrew-available-green.svg)](https://formulae.brew.sh/cask/swiftcraft-launcher)
   [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&style=flat-square)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
   
-  [官网](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [下载](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文档](https://github.com/suhang12332/Swift-Craft-Launcher/wiki)
+  [官网](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [下载](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文档](https://imreak.github.io)
   
   **简体中文** | [繁體中文](doc/README_zh-TW.md) | [English](doc/README_en.md)
 </div>
