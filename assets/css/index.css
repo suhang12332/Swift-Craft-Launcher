@@ -1,0 +1,691 @@
+:root {
+    --bg-dark: #000;
+    --text-light: #f5f5f7;
+    --accent-blue: #2997ff;
+    --accent-blue-light: rgba(41, 151, 255, 0.15);
+    --gray-light: #86868b;
+    --gray-medium: #333338;
+    --nav-height: 52px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-weight: 400;
+}
+
+body {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro SC", "SF Pro Text", "PingFang SC", "Helvetica Neue", sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* 加载动画 */
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg-dark);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s, visibility 0.5s;
+}
+
+.loader-spinner {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.cube {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: var(--accent-blue);
+    animation: rotate 2s infinite ease-in-out;
+    border-radius: 4px;
+}
+
+.cube:nth-child(2) {
+    animation-delay: -1s;
+}
+
+@keyframes rotate {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(50px, 0);
+    }
+
+    50% {
+        transform: translate(50px, 50px);
+    }
+
+    75% {
+        transform: translate(0, 50px);
+    }
+}
+
+/* 苹果式导航栏 - 菜单左对齐 */
+nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: var(--nav-height);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5%;
+    z-index: 1000;
+    transition: all 0.4s ease;
+}
+
+nav.scrolled {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-logo img {
+    height: 32px;
+    width: 32px;
+    border-radius: 6px;
+}
+
+.nav-logo span {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.8rem;
+}
+
+.nav-links a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 0.92rem;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    gap: 8px;
+}
+
+.nav-links a:hover {
+    opacity: 1;
+}
+
+.nav-links a::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent-blue);
+    transition: width 0.3s;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+/* 加大GitHub图标 */
+.nav-github {
+    font-size: 1.4rem;
+    color: var(--text-light);
+    opacity: 0.8;
+    transition: all 0.3s;
+}
+
+.nav-github:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.nav-download {
+    background: var(--accent-blue);
+    color: white;
+    font-size: 0.85rem;
+    padding: 7px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.nav-download:hover {
+    background: #0077ed;
+    transform: scale(1.05);
+}
+
+/* 苹果式巨型标题区域 */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 15vh 5% var(--nav-height);
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at 20% 30%, rgba(41, 151, 255, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(41, 151, 255, 0.1) 0%, transparent 40%),
+        radial-gradient(circle, rgba(45, 45, 50, 0.2) 0%, rgba(0, 0, 0, 1) 70%);
+}
+
+.hero h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    margin-bottom: 1rem;
+    background: linear-gradient(to right, #fff, #aaa);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero h2 {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    color: var(--gray-light);
+    font-weight: 400;
+    margin-bottom: 3rem;
+    max-width: 800px;
+}
+
+/* 使用Apple设计资源的MacBook Pro样式设备框 */
+.macbook-frame {
+    width: 100%;
+    max-width: 900px;
+    margin: 3rem auto 0;
+    position: relative;
+}
+
+.macbook-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* 使用Apple官方设计资源中的MacBook Pro外壳 */
+.macbook-shell {
+    width: 100%;
+    display: block;
+    filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.5));
+}
+
+.macbook-screen-content {
+    position: absolute;
+    top: 5.5%;
+    left: 11.5%;
+    width: 77%;
+    height: 80.5%;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #0d0d10;
+}
+
+.macbook-header {
+    height: 30px;
+    background: rgba(30, 30, 35, 0.8);
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.macbook-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.dot-red {
+    background: #ff5f56;
+}
+
+.dot-yellow {
+    background: #ffbd2e;
+}
+
+.dot-green {
+    background: #27c93f;
+}
+
+.macbook-content {
+    background: #1a1a1f;
+    height: calc(100% - 30px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.macbook-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* 核心体验卡片 */
+.features {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 15vh 5%;
+}
+
+.section-title {
+    text-align: center;
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 10vh;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.feature-card {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20vh;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1s ease, transform 1s ease;
+}
+
+.feature-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.feature-text {
+    flex: 1;
+    padding: 0 5%;
+}
+
+.feature-visual {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.feature-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    margin-bottom: 1.5rem;
+    line-height: 1.1;
+}
+
+.feature-desc {
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    color: var(--gray-light);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.8;
+}
+
+/* 进度条样式 */
+.progress-bar {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 2rem;
+}
+
+.progress-container {
+    margin-bottom: 2rem;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.progress-track {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-blue), #0077ed);
+    border-radius: 6px;
+    transition: width 1.5s ease-out;
+}
+
+/* 技术模块 */
+.tech {
+    max-width: 1600px;
+    margin: 15vh auto;
+    padding: 0 5%;
+    text-align: center;
+}
+
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 4rem;
+    margin-top: 5rem;
+}
+
+.tech-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+    padding: 2rem;
+    border-radius: 20px;
+    background: rgba(30, 30, 35, 0.5);
+    border: 1px solid transparent;
+}
+
+.tech-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tech-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(41, 151, 255, 0.3);
+}
+
+.tech-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--accent-blue);
+}
+
+.tech-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+/* 目标用户宣言 */
+.audience {
+    max-width: 900px;
+    margin: 20vh auto;
+    padding: 0 5%;
+    text-align: center;
+    background: linear-gradient(45deg, rgba(41, 151, 255, 0.05), transparent);
+    padding: 5rem 2rem;
+    border-radius: 30px;
+}
+
+.audience-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 3rem;
+    font-weight: 600;
+}
+
+.audience-list {
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    line-height: 1.8;
+    color: var(--gray-light);
+}
+
+.audience-list p {
+    margin: 1.5rem 0;
+    padding: 0.5rem 0;
+    position: relative;
+}
+
+.audience-list p::before {
+    content: "•";
+    position: absolute;
+    left: -1.5rem;
+    color: var(--accent-blue);
+}
+
+/* 下载区域 */
+.download {
+    text-align: center;
+    padding: 15vh 5%;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 1));
+    position: relative;
+    overflow: hidden;
+}
+
+.download::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(41, 151, 255, 0.1) 0%, transparent 70%);
+    z-index: -1;
+}
+
+.cta-title {
+    font-size: clamp(3rem, 6vw, 4rem);
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.cta-subtitle {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--gray-light);
+    margin-bottom: 3rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-button {
+    display: inline-block;
+    background: var(--accent-blue);
+    color: white;
+    font-size: 1.25rem;
+    padding: 15px 50px;
+    border-radius: 30px;
+    text-decoration: none;
+    margin: 2rem 0;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.cta-button:hover {
+    background: #0077ed;
+    transform: scale(1.05);
+}
+
+.github-link {
+    color: var(--gray-light);
+    font-size: 1.1rem;
+    display: block;
+    margin-top: 1rem;
+    text-decoration: none;
+}
+
+.github-link:hover {
+    text-decoration: underline;
+}
+
+/* 系统要求 */
+.system-requirements {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    color: var(--gray-light);
+}
+
+.system-requirements i {
+    color: var(--accent-blue);
+    margin-right: 8px;
+}
+
+/* 页脚水印 */
+.footer {
+    text-align: center;
+    padding: 5vh 5% 10vh;
+    font-size: 0.9rem;
+    color: var(--gray-light);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-content {
+    max-width: 800px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    text-align: left;
+}
+
+.footer-column h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-light);
+    opacity: 0.9;
+}
+
+.footer-column ul {
+    list-style: none;
+}
+
+.footer-column li {
+    margin-bottom: 0.7rem;
+}
+
+.footer-column a {
+    color: var(--gray-light);
+    text-decoration: none;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-column a:hover {
+    color: var(--accent-blue);
+    text-decoration: none;
+}
+
+.bilibili-icon {
+    color: #00a1d6;
+    font-size: 1.2rem;
+}
+
+.copyright {
+    margin-top: 3rem;
+    opacity: 0.6;
+}
+
+/* 回到顶部按钮 */
+#back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#back-to-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .feature-card {
+        flex-direction: column;
+        text-align: center;
+        margin-bottom: 10vh;
+    }
+
+    .feature-text {
+        order: 2;
+        padding: 10% 0;
+    }
+
+    .feature-visual {
+        order: 1;
+    }
+
+    .tech-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .macbook-frame {
+        max-width: 95%;
+    }
+
+    .macbook-screen-content {
+        top: 5%;
+        left: 10%;
+        width: 80%;
+        height: 80%;
+    }
+
+    .hero h1 {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+    }
+
+    .system-requirements {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}

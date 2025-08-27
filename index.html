@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swift Craft Launcher - 为 macOS 而生的 Minecraft 启动器</title>
+    <link rel="stylesheet" href="/assets/css/font-awesome.css">
+    <link rel="stylesheet" href="/assets/css/index.css" />
+</head>
+
+<body>
+    <!-- 加载动画 - 已恢复 -->
+    <div class="loader">
+        <div class="loader-spinner">
+            <div class="cube"></div>
+            <div class="cube"></div>
+        </div>
+    </div>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" aria-label="回到顶部">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 苹果风格导航栏 - 菜单左对齐 -->
+    <nav id="navbar">
+        <div class="nav-left">
+            <div class="nav-logo">
+                <img src="/assets/images/logo.png"
+                    alt="Swift Craft Launcher Logo">
+                <span>Swift Craft Launcher</span>
+            </div>
+
+            <div class="nav-links">
+                <a href="#features"><i class="fas fa-star"></i> 概述</a>
+                <a href="#tech"><i class="fas fa-microchip"></i> 技术</a>
+                <a href="#audience"><i class="fas fa-lightbulb"></i> 设计理念</a>
+                <a href="#download"><i class="fas fa-download"></i> 下载</a>
+                <a href="#support"><i class="fas fa-question-circle"></i> 支持</a>
+            </div>
+        </div>
+
+        <div class="nav-actions">
+            <a href="https://github.com/suhang12332/Swift-Craft-Launcher" class="nav-github">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest" class="nav-download">
+                下载
+            </a>
+        </div>
+    </nav>
+
+    <!-- 主视觉区域 -->
+    <section class="hero">
+        <h1>Swift Craft Launcher</h1>
+        <h2>为 Minecraft 而生。<br>为 macOS 而造。</h2>
+
+        <div class="feature-desc" style="margin-top: 2rem; max-width: 600px;">
+            原生 Swift 开发，专为 Apple Silicon 优化，提供极致的 macOS 游戏体验
+        </div>
+
+        <!-- 使用Apple设计资源的MacBook Pro设备框 -->
+        <div class="macbook-frame">
+            <div class="macbook-container">
+                <!-- 使用Apple设计资源中的MacBook Pro外壳图片 -->
+                <img src="/assets/images/mbp.m4.16.png" alt="MacBook Pro" class="macbook-shell">
+
+                <!-- 屏幕内容区域 -->
+                <div class="macbook-screen-content">
+                    <div class="macbook-header">
+                        <div class="macbook-dot dot-red"></div>
+                        <div class="macbook-dot dot-yellow"></div>
+                        <div class="macbook-dot dot-green"></div>
+                    </div>
+                    <div class="macbook-content">
+                        <img src="/assets/images/logo.png"
+                            alt="Swift Craft Launcher界面" style="max-height: 90%;">
+                        <p style="margin-top: 15px; color: #86868b;">Swift Craft Launcher 主界面</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 核心体验模块 -->
+    <section class="features" id="features">
+        <h2 class="section-title">体验原生之力</h2>
+
+        <!-- 原生性能 -->
+        <div class="feature-card">
+            <div class="feature-text">
+                <div class="feature-icon">⚡️</div>
+                <h3 class="feature-title">原生，迅捷如风。</h3>
+                <p class="feature-desc">告别 Java 启动器的臃肿迟缓。Swift 驱动，Apple Silicon 优化，启动瞬间完成，资源占用轻盈。</p>
+                <p class="feature-title">快，是新的起点。</p>
+
+                <!-- 进度条展示性能数据 -->
+                <div class="progress-bar">
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>启动时间减少</span>
+                            <span>65%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" data-width="65%"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>内存占用降低</span>
+                            <span>40%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" data-width="40%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-visual">
+                <div
+                    style="width: 100%; max-width: 500px; height: 400px; background: linear-gradient(135deg, rgba(41,151,255,0.1), rgba(41,151,255,0.05)); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #2997ff; border: 1px solid rgba(41,151,255,0.2);">
+                    <i class="fas fa-bolt" style="font-size: 5rem; margin-bottom: 2rem;"></i>
+                    <div style="font-size: 1.8rem; text-align: center; max-width: 300px;">
+                        极致性能优化
+                    </div>
+                    <div style="font-size: 1.2rem; opacity: 0.7; margin-top: 1rem;">
+                        专为 Apple Silicon 设计
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- macOS 整合 -->
+        <div class="feature-card">
+            <div class="feature-visual">
+                <div class="macbook-container" style="max-width: 550px;">
+                    <!-- 使用Apple设计资源中的MacBook Pro外壳图片 -->
+                    <img src="/assets/images/mbp.m4.16.png" alt="MacBook Pro" class="macbook-shell">
+
+                    <!-- 屏幕内容区域 -->
+                    <div class="macbook-screen-content">
+                        <div class="macbook-header">
+                            <div class="macbook-dot dot-red"></div>
+                            <div class="macbook-dot dot-yellow"></div>
+                            <div class="macbook-dot dot-green"></div>
+                        </div>
+                        <div class="macbook-content">
+                            <img src="/assets/images/logo.png"
+                                alt="macOS浑然天成" style="max-height: 90%;">
+                            <p style="margin-top: 15px; color: #86868b;">macOS深度整合界面</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="feature-text">
+                <div class="feature-icon">🍎</div>
+                <h3 class="feature-title">macOS，浑然天成。</h3>
+                <p class="feature-desc">深色模式自动切换，优雅交互动画，原生触控板手势支持，每一像素都遵循 macOS 设计规范。</p>
+                <p class="feature-title">熟悉，更非凡。</p>
+
+                <div style="margin-top: 2rem; display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-palette" style="color: var(--accent-blue);"></i>
+                        <span>深色模式</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-hand-pointer" style="color: var(--accent-blue);"></i>
+                        <span>手势支持</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-sync" style="color: var(--accent-blue);"></i>
+                        <span>流畅动画</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技术基石 -->
+    <section class="tech" id="tech">
+        <h2 class="section-title">技术基石</h2>
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fa-brands fa-swift"></i></div>
+                <h3 class="tech-title">Swift 之力</h3>
+                <p class="feature-desc">Apple 原生语言，极致性能</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fas fa-paint-brush"></i></div>
+                <h3 class="tech-title">SwiftUI 之美</h3>
+                <p class="feature-desc">现代框架，优雅界面</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fas fa-code-branch"></i></div>
+                <h3 class="tech-title">开源之心</h3>
+                <p class="feature-desc">免费共享，社区共创</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 目标用户 -->
+    <section class="audience" id="audience">
+        <h2 class="audience-title">为</h2>
+        <div class="audience-list">
+            <p>苛求 macOS 纯粹体验的玩家</p>
+            <p>手握 Apple Silicon 追求极致的探险家</p>
+            <p>钟爱简约美学与高效之道的创造者</p>
+        </div>
+        <h2 class="audience-title">而来</h2>
+    </section>
+
+    <!-- 下载区域 -->
+    <section class="download" id="download">
+        <h2 class="cta-title">即刻启程</h2>
+        <p class="cta-subtitle">体验专为 macOS 打造的 Minecraft 启动器，释放你的创造力</p>
+        <a href="https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest" class="cta-button">下载</a>
+        <span class="version">v0.1.2-beta 现已推出</span>
+        <a href="https://github.com/suhang12332/Swift-Craft-Launcher" class="github-link">在 GitHub 上探索项目</a>
+
+        <!-- 系统要求 -->
+        <div class="system-requirements">
+            <p><i class="fas fa-check-circle"></i> 要求 macOS 11.0+</p>
+            <p><i class="fas fa-check-circle"></i> 要求 Java 8+（用于运行 Minecraft）</p>
+            <p><i class="fas fa-microchip"></i> Apple Silicon & Intel 双兼容</p>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer" id="support">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>项目</h3>
+                <ul>
+                    <li><a href="https://suhang12332.github.io/swift-craft-launcher-web.github.io/">概述</a></li>
+                    <li><a href="https://github.com/suhang12332/Swift-Craft-Launcher/releases/tag/0.1.2-beta">下载</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>支持</h3>
+                <ul>
+                    <li><a href="https://github.com/suhang12332/Swift-Craft-Launcher">使用指南</a></li>
+                    <li><a
+                            href="https://qun.qq.com/universal-share/share?ac=1&authKey=G/b0o68j7Cj3t6xcVpzPM9Qq4FzgHmsblh3VS8%2BHFMjdsd7QXJkudPbwUKppw1U8&busi_data=eyJncm91cENvZGUiOiIxMDU3NTE3NTI0IiwidG9rZW4iOiJjQ3FkcHVpLzNmWlhVcUFyQUlMQ3BEank5aXRRS0d1VHRpaG55YVMzMmh1LzJCOXpNMkkyeWpBMXkzYUppcXA3IiwidWluIjoiMTU1Mjg5OTMwMSJ9&data=8kB_pdfGTancNHN54uJgx8Ws-2VnDRqoSNwBNwp_GNcDBUJKO6LwLYY1jztCjC8QhCuSn3zPVxZArh7F6YSzUkDYKB-iji2iSDa9pSuYvGc&svctype=5&tempid=h5_group_info">问题反馈</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>开发</h3>
+                <ul>
+                    <li><a href="https://github.com/suhang12332/Swift-Craft-Launcher">GitHub 仓库</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>社区</h3>
+                <ul>
+                    <li>
+                        <a href="https://space.bilibili.com/627351279?spm_id_from=333.1387.0.0">
+                            <i class="fab fa-bilibili bilibili-icon"></i>
+                            Bilibili
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/suhang12332">
+                            <i class="fab fa-github"></i>
+                            GitHub
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="copyright">
+            <p>Swift Craft Launcher 是开源项目，遵循 MIT 许可证</p>
+            <p>© 2025 Swift Craft Launcher | Minecraft 是 Mojang Studios 的商标</p>
+        </div>
+    </footer>
+
+    <script type="module" src="/assets/js/index.js"></script>
+</body>
+
+</html>
