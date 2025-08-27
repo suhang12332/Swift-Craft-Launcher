@@ -13,9 +13,10 @@ class PlayerDataManager {
     ///   - isOnline: 是否为在线账户
     ///   - avatarName: 头像名称
     ///   - accToken: 访问令牌，默认为空字符串
+    ///   - refreshToken: 刷新令牌，默认为空字符串
     ///   - xuid: Xbox用户ID，默认为空字符串
     /// - Throws: GlobalError 当操作失败时
-    func addPlayer(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", xuid: String = "") throws {
+    func addPlayer(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", refreshToken: String = "", xuid: String = "") throws {
         var players = try loadPlayersThrowing()
         
         if playerExists(name: name) {
@@ -27,7 +28,7 @@ class PlayerDataManager {
         }
         
         do {
-            let newPlayer = try Player(name: name, uuid: uuid, isOnlineAccount: isOnline, avatarName: avatarName, authXuid: xuid,authAccessToken: accToken,isCurrent: players.isEmpty)
+            let newPlayer = try Player(name: name, uuid: uuid, isOnlineAccount: isOnline, avatarName: avatarName, authXuid: xuid, authAccessToken: accToken, authRefreshToken: refreshToken, isCurrent: players.isEmpty)
             players.append(newPlayer)
             try savePlayersThrowing(players)
             Logger.shared.debug("已添加新玩家: \(name)")
@@ -47,11 +48,12 @@ class PlayerDataManager {
     ///   - isOnline: 是否为在线账户
     ///   - avatarName: 头像名称
     ///   - accToken: 访问令牌，默认为空字符串
+    ///   - refreshToken: 刷新令牌，默认为空字符串
     ///   - xuid: Xbox用户ID，默认为空字符串
     /// - Returns: 是否成功添加
-    func addPlayerSilently(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", xuid: String = "") -> Bool {
+    func addPlayerSilently(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", refreshToken: String = "", xuid: String = "") -> Bool {
         do {
-            try addPlayer(name: name, uuid: uuid, isOnline: isOnline, avatarName: avatarName,accToken: accToken,xuid: xuid)
+            try addPlayer(name: name, uuid: uuid, isOnline: isOnline, avatarName: avatarName, accToken: accToken, refreshToken: refreshToken, xuid: xuid)
             return true
         } catch {
             let globalError = GlobalError.from(error)
@@ -181,6 +183,40 @@ class PlayerDataManager {
                 i18nKey: "error.validation.player_data_save_failed",
                 level: .notification
             )
+        }
+    }
+    
+    /// 更新指定玩家的信息
+    /// - Parameter updatedPlayer: 更新后的玩家对象
+    /// - Throws: GlobalError 当操作失败时
+    func updatePlayer(_ updatedPlayer: Player) throws {
+        var players = try loadPlayersThrowing()
+        
+        guard let index = players.firstIndex(where: { $0.id == updatedPlayer.id }) else {
+            throw GlobalError.player(
+                chineseMessage: "要更新的玩家不存在: \(updatedPlayer.name)",
+                i18nKey: "error.player.not_found_for_update",
+                level: .notification
+            )
+        }
+        
+        players[index] = updatedPlayer
+        try savePlayersThrowing(players)
+        Logger.shared.debug("已更新玩家信息: \(updatedPlayer.name)")
+    }
+    
+    /// 更新指定玩家的信息（静默版本）
+    /// - Parameter updatedPlayer: 更新后的玩家对象
+    /// - Returns: 是否成功更新
+    func updatePlayerSilently(_ updatedPlayer: Player) -> Bool {
+        do {
+            try updatePlayer(updatedPlayer)
+            return true
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("更新玩家信息失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return false
         }
     }
 } 

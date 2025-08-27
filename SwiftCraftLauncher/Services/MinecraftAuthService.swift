@@ -111,7 +111,7 @@ class MinecraftAuthService: ObservableObject {
                 // 获取完整的认证链
                 let xboxToken = try await getXboxLiveTokenThrowing(accessToken: tokenResponse.accessToken)
                 let minecraftToken = try await getMinecraftTokenThrowing(xboxToken: xboxToken.token, uhs: xboxToken.displayClaims.xui.first?.uhs ?? "")
-                let profile = try await getMinecraftProfileThrowing(accessToken: minecraftToken, authXuid: xboxToken.displayClaims.xui.first?.uhs ?? "")
+                let profile = try await getMinecraftProfileThrowing(accessToken: minecraftToken, authXuid: xboxToken.displayClaims.xui.first?.uhs ?? "", refreshToken: tokenResponse.refreshToken ?? "")
                 
                 await MainActor.run {
                     isLoading = false
@@ -422,7 +422,7 @@ class MinecraftAuthService: ObservableObject {
     }
     
     // MARK: - 获取Minecraft用户资料（抛出异常版本）
-    private func getMinecraftProfileThrowing(accessToken: String, authXuid: String) async throws -> MinecraftProfileResponse {
+    private func getMinecraftProfileThrowing(accessToken: String, authXuid: String, refreshToken: String = "") async throws -> MinecraftProfileResponse {
         let url = URLConfig.API.Authentication.minecraftProfile
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
@@ -439,14 +439,15 @@ class MinecraftAuthService: ObservableObject {
         
         do {
             let profile = try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
-            // 由于 accessToken 和 authXuid 不是从 API 响应中获取的，我们需要手动设置
+            // 由于 accessToken、authXuid 和 refreshToken 不是从 API 响应中获取的，我们需要手动设置
             return MinecraftProfileResponse(
                 id: profile.id,
                 name: profile.name,
                 skins: profile.skins,
                 capes: profile.capes,
                 accessToken: accessToken,
-                authXuid: authXuid
+                authXuid: authXuid,
+                refreshToken: refreshToken
             )
         } catch {
             throw GlobalError.validation(
@@ -465,6 +466,191 @@ class MinecraftAuthService: ObservableObject {
     // MARK: - 取消认证
     func cancelAuthentication() {
         authState = .notAuthenticated
+    }
+    
+    // MARK: - Token验证和刷新相关方法
+    
+    /// 验证并尝试刷新玩家Token
+    /// - Parameter player: 玩家对象
+    /// - Returns: 验证/刷新后的玩家对象，如果失败返回nil
+    func validateAndRefreshPlayerToken(for player: Player) async -> Player? {
+        do {
+            return try await validateAndRefreshPlayerTokenThrowing(for: player)
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("验证/刷新玩家Token失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return nil
+        }
+    }
+    
+    /// 验证并尝试刷新玩家Token（抛出异常版本）
+    /// - Parameter player: 玩家对象
+    /// - Returns: 验证/刷新后的玩家对象
+    /// - Throws: GlobalError 当操作失败时
+    func validateAndRefreshPlayerTokenThrowing(for player: Player) async throws -> Player {
+        // 如果不是在线账户，直接返回原玩家
+        guard player.isOnlineAccount else {
+            return player
+        }
+        
+        // 如果没有访问令牌，抛出错误要求重新登录
+        guard !player.authAccessToken.isEmpty else {
+            throw GlobalError.authentication(
+                chineseMessage: "玩家 \(player.name) 缺少访问令牌，请重新登录",
+                i18nKey: "error.authentication.missing_token",
+                level: .notification
+            )
+        }
+        
+        Logger.shared.info("验证玩家 \(player.name) 的Token")
+        
+        // 首先尝试验证当前token是否有效
+        let isTokenValid = await validateToken(player.authAccessToken, authXuid: player.authXuid)
+        
+        if isTokenValid {
+            Logger.shared.info("玩家 \(player.name) 的Token仍然有效")
+            return player
+        }
+        
+        Logger.shared.info("玩家 \(player.name) 的Token已过期，尝试刷新")
+        
+        // Token无效，尝试使用refresh token刷新
+        guard !player.authRefreshToken.isEmpty else {
+            Logger.shared.warning("玩家 \(player.name) 缺少刷新令牌，需要重新登录")
+            throw GlobalError.authentication(
+                chineseMessage: "玩家 \(player.name) 的登录已过期，请重新登录该账户",
+                i18nKey: "error.authentication.token_expired_relogin_required",
+                level: .popup
+            )
+        }
+        
+        do {
+            // 使用refresh token刷新访问令牌
+            let refreshedTokens = try await refreshTokenThrowing(refreshToken: player.authRefreshToken)
+            
+            // 使用新的访问令牌获取完整的认证链
+            let xboxToken = try await getXboxLiveTokenThrowing(accessToken: refreshedTokens.accessToken)
+            let minecraftToken = try await getMinecraftTokenThrowing(xboxToken: xboxToken.token, uhs: xboxToken.displayClaims.xui.first?.uhs ?? "")
+            
+            // 创建更新后的玩家对象
+            let updatedPlayer = try Player(
+                name: player.name,
+                uuid: player.id,
+                isOnlineAccount: player.isOnlineAccount,
+                avatarName: player.avatarName,
+                authXuid: xboxToken.displayClaims.xui.first?.uhs ?? player.authXuid,
+                authAccessToken: minecraftToken,
+                authRefreshToken: refreshedTokens.refreshToken ?? player.authRefreshToken,
+                tokenExpiresAt: Calendar.current.date(byAdding: .second, value: refreshedTokens.expiresIn, to: Date()),
+                createdAt: player.createdAt,
+                lastPlayed: player.lastPlayed,
+                isCurrent: player.isCurrent,
+                gameRecords: player.gameRecords
+            )
+            
+            Logger.shared.info("成功刷新玩家 \(player.name) 的Token")
+            return updatedPlayer
+            
+        } catch {
+            Logger.shared.warning("刷新玩家 \(player.name) 的Token失败: \(error.localizedDescription)")
+            throw GlobalError.authentication(
+                chineseMessage: "玩家 \(player.name) 的登录已过期，请重新登录该账户",
+                i18nKey: "error.authentication.token_expired_relogin_required",
+                level: .popup
+            )
+        }
+    }
+    
+    /// 使用refresh token刷新访问令牌（抛出异常版本）
+    /// - Parameter refreshToken: 刷新令牌
+    /// - Returns: 新的令牌响应
+    /// - Throws: GlobalError 当刷新失败时
+    private func refreshTokenThrowing(refreshToken: String) async throws -> TokenResponse {
+        let url = URLConfig.API.Authentication.token
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        
+        let body = "grant_type=refresh_token&client_id=\(clientId)&refresh_token=\(refreshToken)"
+        request.httpBody = body.data(using: .utf8)
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw GlobalError.download(
+                chineseMessage: "刷新访问令牌失败: 无效的 HTTP 响应",
+                i18nKey: "error.download.refresh_token_request_failed",
+                level: .notification
+            )
+        }
+        
+        // 检查OAuth错误
+        if let errorResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let error = errorResponse["error"] as? String {
+            switch error {
+            case "invalid_grant":
+                throw GlobalError.authentication(
+                    chineseMessage: "刷新令牌已过期或无效",
+                    i18nKey: "error.authentication.invalid_refresh_token",
+                    level: .notification
+                )
+            default:
+                throw GlobalError.authentication(
+                    chineseMessage: "刷新令牌错误: \(error)",
+                    i18nKey: "error.authentication.refresh_token_error",
+                    level: .notification
+                )
+            }
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            throw GlobalError.download(
+                chineseMessage: "刷新访问令牌失败: HTTP \(httpResponse.statusCode)",
+                i18nKey: "error.download.refresh_token_request_failed",
+                level: .notification
+            )
+        }
+        
+        do {
+            return try JSONDecoder().decode(TokenResponse.self, from: data)
+        } catch {
+            throw GlobalError.validation(
+                chineseMessage: "解析刷新令牌响应失败: \(error.localizedDescription)",
+                i18nKey: "error.validation.refresh_token_parse_failed",
+                level: .notification
+            )
+        }
+    }
+    
+    /// 验证Token是否有效
+    /// - Parameters:
+    ///   - accessToken: 访问令牌
+    ///   - authXuid: Xbox用户ID
+    /// - Returns: 是否有效
+    func validateToken(_ accessToken: String, authXuid: String) async -> Bool {
+        do {
+            _ = try await getMinecraftProfileThrowing(accessToken: accessToken, authXuid: authXuid)
+            return true
+        } catch {
+            Logger.shared.debug("Token验证失败: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    /// 提示用户重新登录指定玩家
+    /// - Parameter player: 需要重新登录的玩家
+    func promptForReauth(player: Player) {
+        Logger.shared.info("提示用户为玩家 \(player.name) 重新登录")
+        
+        // 显示通知提示用户重新登录
+        let notification = GlobalError.authentication(
+            chineseMessage: "玩家 \(player.name) 的登录已过期，请在玩家管理中重新登录该账户后再启动游戏",
+            i18nKey: "error.authentication.reauth_required",
+            level: .notification
+        )
+        
+        GlobalErrorHandler.shared.handle(notification)
     }
     
     // MARK: - 清理认证状态和内存信息

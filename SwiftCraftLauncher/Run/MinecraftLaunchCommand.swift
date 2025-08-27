@@ -28,17 +28,57 @@ struct MinecraftLaunchCommand {
     /// 启动游戏（抛出异常版本）
     /// - Throws: GlobalError 当启动失败时
     public func launchGameThrowing() async throws {
+        // 在启动游戏前验证并刷新Token（如果需要）
+        let validatedPlayer = try await validatePlayerTokenBeforeLaunch()
+        
         let command = game.launchCommand
-        try await launchGameProcess(command: replaceAuthParameters(command: command))
+        try await launchGameProcess(command: replaceAuthParameters(command: command, with: validatedPlayer))
     }
     
-    private func replaceAuthParameters(command: [String]) -> [String] {
+    /// 在启动游戏前验证玩家Token
+    /// - Returns: 验证后的玩家对象
+    /// - Throws: GlobalError 当验证失败时
+    private func validatePlayerTokenBeforeLaunch() async throws -> Player? {
         guard let player = player else {
             Logger.shared.warning("没有选择玩家，使用默认认证参数")
+            return nil
+        }
+        
+        // 如果是离线账户，直接返回
+        guard player.isOnlineAccount else {
+            return player
+        }
+        
+        Logger.shared.info("启动游戏前验证玩家 \(player.name) 的Token")
+        
+        // 验证并尝试刷新Token
+        let authService = MinecraftAuthService.shared
+        let validatedPlayer = try await authService.validateAndRefreshPlayerTokenThrowing(for: player)
+        
+        // 如果Token被更新了，需要保存到PlayerDataManager
+        if validatedPlayer.authAccessToken != player.authAccessToken {
+            Logger.shared.info("玩家 \(player.name) 的Token已更新，保存到数据管理器")
+            await updatePlayerInDataManager(validatedPlayer)
+        }
+        
+        return validatedPlayer
+    }
+    
+    /// 更新PlayerDataManager中的玩家信息
+    /// - Parameter updatedPlayer: 更新后的玩家对象
+    private func updatePlayerInDataManager(_ updatedPlayer: Player) async {
+        let dataManager = PlayerDataManager()
+        let success = dataManager.updatePlayerSilently(updatedPlayer)
+        if success {
+            Logger.shared.debug("已更新玩家数据管理器中的Token信息")
+        }
+    }
+    
+    private func replaceAuthParameters(command: [String], with validatedPlayer: Player?) -> [String] {
+        guard let player = validatedPlayer else {
+            Logger.shared.warning("没有验证的玩家，使用默认认证参数")
             return replaceGameParameters(command: command)
         }
-
-
         
         let authReplacedCommand = command.map { arg in
             return arg
@@ -49,6 +89,11 @@ struct MinecraftLaunchCommand {
         }
         
         return replaceGameParameters(command: authReplacedCommand)
+    }
+    
+    // 保留原有的方法作为后备
+    private func replaceAuthParameters(command: [String]) -> [String] {
+        return replaceAuthParameters(command: command, with: player)
     }
     
     private func replaceGameParameters(command: [String]) -> [String] {

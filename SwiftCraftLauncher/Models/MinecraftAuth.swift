@@ -71,6 +71,7 @@ struct MinecraftProfileResponse: Codable {
     let capes: [Cape]?
     let accessToken: String
     let authXuid: String
+    let refreshToken: String
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -89,15 +90,17 @@ struct MinecraftProfileResponse: Codable {
         // 这些字段将在外部设置
         accessToken = ""
         authXuid = ""
+        refreshToken = ""
     }
     
-    init(id: String, name: String, skins: [Skin], capes: [Cape]?, accessToken: String, authXuid: String) {
+    init(id: String, name: String, skins: [Skin], capes: [Cape]?, accessToken: String, authXuid: String, refreshToken: String = "") {
         self.id = id
         self.name = name
         self.skins = skins
         self.capes = capes
         self.accessToken = accessToken
         self.authXuid = authXuid
+        self.refreshToken = refreshToken
     }
 }
 
