@@ -119,7 +119,7 @@ struct GameFormView: View {
     private var iconContainer: some View {
         ZStack {
             if let url = pendingIconURL {
-                AsyncImage(url: url) { phase in
+                ProxyAsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
                         ProgressView()

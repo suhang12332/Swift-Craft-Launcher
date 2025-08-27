@@ -20,7 +20,7 @@ enum MinecraftService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchVersionManifestThrowing() async throws -> MojangVersionManifest {
         do {
-            let (data, response) = try await URLSession.shared.data(
+            let (data, response) = try await NetworkManager.shared.data(
                 from: URLConfig.API.Minecraft.versionList
             )
             
@@ -132,7 +132,7 @@ enum MinecraftService {
         Logger.shared.info("正在从以下地址获取 Mojang 版本清单：\(url.absoluteString)")
         
         do {
-            let (manifestData, response) = try await URLSession.shared.data(from: url)
+            let (manifestData, response) = try await NetworkManager.shared.data(from: url)
             
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(

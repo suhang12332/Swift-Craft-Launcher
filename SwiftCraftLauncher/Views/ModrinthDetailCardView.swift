@@ -44,7 +44,7 @@ struct ModrinthDetailCardView: View {
                 // 本地资源显示 questionmark.circle 图标
                 localResourceIcon
             } else if let iconUrl = project.iconUrl, let url = URL(string: iconUrl) {
-                AsyncImage(url: url, transaction: Transaction(animation: .easeInOut(duration: 0.2))) { phase in
+                ProxyAsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
                         placeholderIcon
@@ -52,7 +52,6 @@ struct ModrinthDetailCardView: View {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                            .transition(.opacity)
                     case .failure:
                         placeholderIcon
                     @unknown default:
@@ -62,10 +61,6 @@ struct ModrinthDetailCardView: View {
                 .frame(width: ModrinthConstants.UI.iconSize, height: ModrinthConstants.UI.iconSize)
                 .cornerRadius(ModrinthConstants.UI.cornerRadius)
                 .clipped()
-                .onDisappear {
-                    // 清理图片缓存，避免内存泄漏
-                    URLCache.shared.removeCachedResponse(for: URLRequest(url: url))
-                }
             } else {
                 placeholderIcon
             }

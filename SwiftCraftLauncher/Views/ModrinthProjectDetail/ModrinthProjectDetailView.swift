@@ -54,7 +54,7 @@ struct ModrinthProjectDetailView: View {
     private func projectIcon(_ project: ModrinthProjectDetail) -> some View {
         Group {
             if let iconUrl = project.iconUrl, let url = URL(string: iconUrl) {
-                AsyncImage(url: url) { phase in
+                ProxyAsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
                         ProgressView()

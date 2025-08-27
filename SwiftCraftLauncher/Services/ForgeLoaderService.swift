@@ -16,7 +16,7 @@ class ForgeLoaderService {
             return cached
         }
         // 2. 直接下载 version.json
-        let (data, response) = try await URLSession.shared.data(from: URL(string: result.url)!)
+        let (data, response) = try await NetworkManager.shared.data(from: URL(string: result.url)!)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Forge profile 失败: HTTP \(response)",

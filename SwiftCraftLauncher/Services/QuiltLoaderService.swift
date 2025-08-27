@@ -19,7 +19,7 @@ class QuiltLoaderService {
     /// 获取所有可用 Quilt Loader 版本
     static func fetchAllQuiltLoadersThrowing(for minecraftVersion: String) async throws -> [QuiltLoaderResponse] {
         let url = URLConfig.API.Quilt.loaderBase.appendingPathComponent(minecraftVersion)
-        let (data, response) = try await URLSession.shared.data(from: url)
+        let (data, response) = try await NetworkManager.shared.data(from: url)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Quilt 加载器列表失败: HTTP \(response)",
@@ -43,7 +43,7 @@ class QuiltLoaderService {
             return cached
         }
         // 2. 直接下载 version.json
-        let (data, response) = try await URLSession.shared.data(from: URLConfig.API.Modrinth.loaderProfile(loader: "quilt", version: quiltVersion))
+        let (data, response) = try await NetworkManager.shared.data(from: URLConfig.API.Modrinth.loaderProfile(loader: "quilt", version: quiltVersion))
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Quilt profile 失败: HTTP \(response)",

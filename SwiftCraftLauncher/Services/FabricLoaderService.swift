@@ -22,7 +22,7 @@ class FabricLoaderService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchAllLoaderVersionsThrowing(for minecraftVersion: String) async throws -> [FabricLoader] {
         let url = URLConfig.API.Fabric.loader.appendingPathComponent(minecraftVersion)
-        let (data, response) = try await URLSession.shared.data(from: url)
+        let (data, response) = try await NetworkManager.shared.data(from: url)
         
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
@@ -80,7 +80,7 @@ class FabricLoaderService {
             return cached
         }
         // 2. 直接下载 version.json
-        let (data, response) = try await URLSession.shared.data(from: URLConfig.API.Modrinth.loaderProfile(loader: "fabric", version: fabricVersion))
+        let (data, response) = try await NetworkManager.shared.data(from: URLConfig.API.Modrinth.loaderProfile(loader: "fabric", version: fabricVersion))
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Fabric profile 失败: HTTP \(response)",

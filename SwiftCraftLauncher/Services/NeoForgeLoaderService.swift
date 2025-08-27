@@ -48,7 +48,7 @@ class NeoForgeLoaderService {
         if let cached = AppCacheManager.shared.get(namespace: "neoforge", key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
-        let (data, response) = try await URLSession.shared.data(from: URL(string: result.url)!)
+        let (data, response) = try await NetworkManager.shared.data(from: URL(string: result.url)!)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 NeoForge profile 失败: HTTP \(response)",

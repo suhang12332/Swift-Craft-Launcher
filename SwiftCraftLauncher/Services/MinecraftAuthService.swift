@@ -74,7 +74,7 @@ class MinecraftAuthService: ObservableObject {
         let body = "client_id=\(clientId)&scope=\(scope.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? scope)"
         request.httpBody = body.data(using: .utf8)
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await NetworkManager.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
@@ -173,7 +173,7 @@ class MinecraftAuthService: ObservableObject {
         let body = "grant_type=urn:ietf:params:oauth:grant-type:device_code&client_id=\(clientId)&device_code=\(deviceCode)"
         request.httpBody = body.data(using: .utf8)
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await NetworkManager.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.download(
@@ -284,7 +284,7 @@ class MinecraftAuthService: ObservableObject {
             )
         }
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await NetworkManager.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
@@ -344,7 +344,7 @@ class MinecraftAuthService: ObservableObject {
             )
         }
         
-        let (xstsData, xstsResponse) = try await URLSession.shared.data(for: xstsRequest)
+        let (xstsData, xstsResponse) = try await NetworkManager.shared.data(for: xstsRequest)
         
         guard let xstsHttpResponse = xstsResponse as? HTTPURLResponse, xstsHttpResponse.statusCode == 200 else {
             throw GlobalError.download(
@@ -385,7 +385,7 @@ class MinecraftAuthService: ObservableObject {
             )
         }
         
-        let (minecraftData, minecraftResponse) = try await URLSession.shared.data(for: minecraftRequest)
+        let (minecraftData, minecraftResponse) = try await NetworkManager.shared.data(for: minecraftRequest)
         
         guard let minecraftHttpResponse = minecraftResponse as? HTTPURLResponse, minecraftHttpResponse.statusCode == 200 else {
             throw GlobalError.download(
@@ -427,7 +427,7 @@ class MinecraftAuthService: ObservableObject {
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await NetworkManager.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
@@ -575,7 +575,7 @@ class MinecraftAuthService: ObservableObject {
         let body = "grant_type=refresh_token&client_id=\(clientId)&refresh_token=\(refreshToken)"
         request.httpBody = body.data(using: .utf8)
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await NetworkManager.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.download(
