@@ -41,16 +41,19 @@ class YggdrasilAuthService: ObservableObject {
             }
             // 自动打开带 code 的验证页面
             if let verificationUriComplete = deviceCodeResponse.verificationUriComplete, let url = URL(string: verificationUriComplete) {
-                Logger.shared.info("完整授权链接: \(url)")
+                Logger.shared.info(String(format: "yggdrasil.auth.complete_verification".localized(), url.absoluteString))
                 await MainActor.run {
                     openURLHandler?(url)
                 }
             }
             await pollForToken(deviceCode: deviceCodeResponse.deviceCode, interval: deviceCodeResponse.interval)
         } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error(String(format: "yggdrasil.auth.failed".localized(), globalError.chineseMessage))
+            GlobalErrorHandler.shared.handle(globalError)
             await MainActor.run {
                 isLoading = false
-                authState = .error(error.localizedDescription)
+                authState = .error(globalError.localizedDescription)
             }
         }
     }
@@ -58,7 +61,11 @@ class YggdrasilAuthService: ObservableObject {
     // MARK: - 请求设备代码
     private func requestDeviceCodeThrowing() async throws -> YggdrasilDeviceCodeResponse {
         guard let url = URL(string: "https://open.littleskin.cn/oauth/device_code") else {
-            throw NSError(domain: "YggdrasilAuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "无效的设备代码请求 URL"])
+            throw GlobalError.validation(
+                chineseMessage: "无效的设备代码请求 URL",
+                i18nKey: "error.validation.invalid_device_code_url",
+                level: .popup
+            )
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -67,12 +74,20 @@ class YggdrasilAuthService: ObservableObject {
         request.httpBody = body.data(using: .utf8)
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw NSError(domain: "YggdrasilAuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "请求设备代码失败: HTTP \((response as? HTTPURLResponse)?.statusCode ?? -1)"])
+            throw GlobalError.network(
+                chineseMessage: "请求设备代码失败: HTTP \((response as? HTTPURLResponse)?.statusCode ?? -1)",
+                i18nKey: "error.network.device_code_request_failed",
+                level: .popup
+            )
         }
         do {
             return try JSONDecoder().decode(YggdrasilDeviceCodeResponse.self, from: data)
         } catch {
-            throw NSError(domain: "YggdrasilAuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "解析设备代码响应失败: \(error.localizedDescription)"])
+            throw GlobalError.validation(
+                chineseMessage: "解析设备代码响应失败: \(error.localizedDescription)",
+                i18nKey: "error.validation.device_code_parse_failed",
+                level: .popup
+            )
         }
     }
     
@@ -88,39 +103,58 @@ class YggdrasilAuthService: ObservableObject {
                     //authState = .authenticated(profile: tokenResponse) 
                 }
                 return
-            } catch let error as YggdrasilAuthError {
-                switch error {
-                case .authorizationPending:
-                    break // 继续轮询
-                case .slowDown:
+            } catch let globalError as GlobalError {
+                // 检查是否是轮询期间的特殊状态
+                if globalError.i18nKey == "error.authentication.authorization_pending" {
+                    // 继续轮询，不做任何处理
+                    break
+                } else if globalError.i18nKey == "error.authentication.slow_down" {
+                    // 减慢轮询速度
                     try? await Task.sleep(nanoseconds: UInt64((interval + 5) * 1_000_000_000))
-                default:
+                } else {
+                    // 其他认证错误，停止轮询
+                    Logger.shared.error(String(format: "yggdrasil.auth.polling_failed".localized(), globalError.chineseMessage))
+                    GlobalErrorHandler.shared.handle(globalError)
                     await MainActor.run {
                         isLoading = false
-                        authState = .error(error.localizedDescription)
+                        authState = .error(globalError.localizedDescription)
                     }
                     return
                 }
             } catch {
+                let globalError = GlobalError.from(error)
+                Logger.shared.error(String(format: "yggdrasil.auth.polling_failed".localized(), globalError.chineseMessage))
+                GlobalErrorHandler.shared.handle(globalError)
                 await MainActor.run {
                     isLoading = false
-                    authState = .error(error.localizedDescription)
+                    authState = .error(globalError.localizedDescription)
                 }
                 return
             }
             attempts += 1
             try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
         }
+        let timeoutError = GlobalError.authentication(
+            chineseMessage: "认证超时，请重试",
+            i18nKey: "error.authentication.timeout",
+            level: .popup
+        )
+        Logger.shared.error("yggdrasil.auth.timeout".localized())
+        GlobalErrorHandler.shared.handle(timeoutError)
         await MainActor.run {
             isLoading = false
-            authState = .error("认证超时，请重试")
+            authState = .error(timeoutError.localizedDescription)
         }
     }
     
     // MARK: - 请求访问令牌
     private func requestTokenThrowing(deviceCode: String) async throws -> YggdrasilTokenResponse {
         guard let url = URL(string: "https://open.littleskin.cn/oauth/token") else {
-            throw NSError(domain: "YggdrasilAuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "无效的访问令牌请求 URL"])
+            throw GlobalError.validation(
+                chineseMessage: "无效的访问令牌请求 URL",
+                i18nKey: "error.validation.invalid_token_url",
+                level: .popup
+            )
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -129,28 +163,56 @@ class YggdrasilAuthService: ObservableObject {
         request.httpBody = body.data(using: .utf8)
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw NSError(domain: "YggdrasilAuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "无效的 HTTP 响应"])
+            throw GlobalError.network(
+                chineseMessage: "无效的 HTTP 响应",
+                i18nKey: "error.network.invalid_http_response",
+                level: .popup
+            )
         }
         // 检查 OAuth 错误
         if let errorResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let error = errorResponse["error"] as? String {
             switch error {
             case "authorization_pending":
-                throw YggdrasilAuthError.authorizationPending
+                throw GlobalError.authentication(
+                    chineseMessage: "授权待处理，请完成浏览器验证",
+                    i18nKey: "error.authentication.authorization_pending",
+                    level: .silent  // 轮询期间的正常状态，不需要显示错误
+                )
             case "expired_token":
-                throw YggdrasilAuthError.expiredToken
+                throw GlobalError.authentication(
+                    chineseMessage: "令牌已过期",
+                    i18nKey: "error.authentication.expired_token",
+                    level: .popup
+                )
             case "slow_down":
-                throw YggdrasilAuthError.slowDown
+                throw GlobalError.authentication(
+                    chineseMessage: "请求过于频繁，请稍后再试",
+                    i18nKey: "error.authentication.slow_down",
+                    level: .silent  // 轮询期间的正常状态，不需要显示错误
+                )
             default:
-                throw YggdrasilAuthError.general(error)
+                throw GlobalError.authentication(
+                    chineseMessage: "认证错误: \(error)",
+                    i18nKey: "error.authentication.yggdrasil_general",
+                    level: .popup
+                )
             }
         }
         guard httpResponse.statusCode == 200 else {
-            throw NSError(domain: "YggdrasilAuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "请求访问令牌失败: HTTP \(httpResponse.statusCode)"])
+            throw GlobalError.network(
+                chineseMessage: "请求访问令牌失败: HTTP \(httpResponse.statusCode)",
+                i18nKey: "error.network.token_request_failed",
+                level: .popup
+            )
         }
         do {
             return try JSONDecoder().decode(YggdrasilTokenResponse.self, from: data)
         } catch {
-            throw NSError(domain: "YggdrasilAuthService", code: 0, userInfo: [NSLocalizedDescriptionKey: "解析访问令牌响应失败: \(error.localizedDescription)"])
+            throw GlobalError.validation(
+                chineseMessage: "解析访问令牌响应失败: \(error.localizedDescription)",
+                i18nKey: "error.validation.token_parse_failed",
+                level: .popup
+            )
         }
     }
     
@@ -198,26 +260,5 @@ struct YggdrasilTokenResponse: Codable {
         case accessToken = "access_token"
         case refreshToken = "refresh_token"
         case idToken = "id_token"
-    }
-}
-
-// MARK: - Yggdrasil OAuth 错误
-enum YggdrasilAuthError: Error, LocalizedError {
-    case authorizationPending
-    case expiredToken
-    case slowDown
-    case general(String)
-    
-    var errorDescription: String? {
-        switch self {
-        case .authorizationPending:
-            return "授权待处理，请完成浏览器验证"
-        case .expiredToken:
-            return "令牌已过期"
-        case .slowDown:
-            return "请求过于频繁，请稍后再试"
-        case .general(let desc):
-            return "认证错误: \(desc)"
-        }
     }
 }
