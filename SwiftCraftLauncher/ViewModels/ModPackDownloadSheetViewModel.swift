@@ -15,7 +15,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
    @Published var projectDetail: ModrinthProjectDetail?
    @Published var availableGameVersions: [String] = []
    @Published var filteredModPackVersions: [ModrinthProjectDetailVersion] = []
-   @Published var isLoadingGameVersions = false
    @Published var isLoadingModPackVersions = false
    @Published var isLoadingProjectDetails = true
    @Published var lastParsedIndexInfo: ModrinthIndexInfo?
@@ -37,27 +36,13 @@ class ModPackDownloadSheetViewModel: ObservableObject {
        
        do {
            projectDetail = try await ModrinthService.fetchProjectDetailsThrowing(id: projectId)
-           await loadGameVersions()
+           availableGameVersions = projectDetail!.gameVersions
        } catch {
            let globalError = GlobalError.from(error)
            GlobalErrorHandler.shared.handle(globalError)
        }
        
        isLoadingProjectDetails = false
-   }
-   
-   private func loadGameVersions() async {
-       isLoadingGameVersions = true
-       
-       do {
-           let gameVersions = try await ModrinthService.fetchGameVersionsThrowing()
-           availableGameVersions = gameVersions.map { $0.version }
-       } catch {
-           let globalError = GlobalError.from(error)
-           GlobalErrorHandler.shared.handle(globalError)
-       }
-       
-       isLoadingGameVersions = false
    }
    
    func loadModPackVersions(for gameVersion: String) async {
