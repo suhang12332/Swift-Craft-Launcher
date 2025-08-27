@@ -255,7 +255,7 @@ enum ModrinthService {
     /// - Returns: 游戏版本列表，失败时返回空数组
     static func fetchGameVersions() async -> [GameVersion] {
         do {
-            return try await fetchGameVersionsThrowing(forceRefresh: false)
+            return try await fetchGameVersionsThrowing(forceRefresh: false).filter { $0.version_type == "release" }
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Modrinth 游戏版本列表失败: \(globalError.chineseMessage)")

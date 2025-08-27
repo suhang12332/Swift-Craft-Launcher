@@ -70,7 +70,11 @@ class GameSettingsManager: ObservableObject {
                 timeoutTimer.setEventHandler {
                     if task.isRunning {
                         task.terminate()
-                        let taskError = NSError(domain: "ShellTimeout", code: -1, userInfo: [NSLocalizedDescriptionKey: "Shell command timed out after \(timeout) seconds"])
+                        let taskError = GlobalError.configuration(
+                            chineseMessage: "Shell 命令执行超时，已等待 \(timeout) 秒",
+                            i18nKey: "error.configuration.shell_timeout",
+                            level: .notification
+                        )
                         continuation.resume(throwing: taskError)
                     }
                 }
