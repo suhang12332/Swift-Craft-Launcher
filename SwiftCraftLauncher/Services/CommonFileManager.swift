@@ -211,7 +211,7 @@ class CommonFileManager {
     /// 从data字段值中提取client端的数据
     /// - Parameter value: data字段的值
     /// - Returns: client端的数据，如果无法解析则返回nil
-    static public func extractClientValue(from value: String) -> String? {
+    static func extractClientValue(from value: String) -> String? {
         // 如果是Maven坐标格式，直接转换为路径
         if value.contains(":") && !value.hasPrefix("[") && !value.hasPrefix("{") {
             return CommonService.convertMavenCoordinateToPath(value)

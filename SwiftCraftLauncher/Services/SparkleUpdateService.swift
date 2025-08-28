@@ -58,7 +58,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
 
     /// 公共方法：设置 Sparkle 的语言
     /// - Parameter language: 语言代码
-    public func updateSparkleLanguage(_ language: String) {
+    func updateSparkleLanguage(_ language: String) {
         UserDefaults.standard.set([language], forKey: "AppleLanguages")
     }
 

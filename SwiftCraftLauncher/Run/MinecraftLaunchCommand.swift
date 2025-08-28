@@ -27,7 +27,7 @@ struct MinecraftLaunchCommand {
 
     /// 启动游戏（抛出异常版本）
     /// - Throws: GlobalError 当启动失败时
-    public func launchGameThrowing() async throws {
+    func launchGameThrowing() async throws {
         // 在启动游戏前验证并刷新Token（如果需要）
         let validatedPlayer = try await validatePlayerTokenBeforeLaunch()
 

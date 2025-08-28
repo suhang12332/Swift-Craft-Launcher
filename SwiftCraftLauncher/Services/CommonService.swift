@@ -345,7 +345,7 @@ class CommonService {
     ///   - loader: 原始加载器数据
     ///   - gameVersion: 游戏版本
     /// - Returns: 处理后的加载器数据
-    public static func processGameVersionPlaceholders(loader: ModrinthLoader, gameVersion: String) -> ModrinthLoader {
+    static func processGameVersionPlaceholders(loader: ModrinthLoader, gameVersion: String) -> ModrinthLoader {
         var processedLoader = loader
 
         // 处理 libraries 中的 URL 占位符
