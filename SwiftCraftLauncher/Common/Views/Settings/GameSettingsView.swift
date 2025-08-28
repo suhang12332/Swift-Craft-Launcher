@@ -30,10 +30,10 @@ public struct GameSettingsView: View {
     }
 
     public var body: some View {
-        VStack(spacing: 20) {
-            HStack {
+        Grid(alignment: .center, horizontalSpacing: 10, verticalSpacing: 20) {
+            GridRow {
                 Text("settings.auto_handle_dependencies".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 HStack {
                     Toggle("", isOn: $gameSettings.autoDownloadDependencies)
                         .labelsHidden()
@@ -41,12 +41,12 @@ public struct GameSettingsView: View {
                         .font(.footnote)
                         .foregroundColor(.secondary)
                 }
-                Spacer()
+                .gridColumnAlignment(.leading)
             }
             
-            HStack {
+            GridRow {
                 Text("settings.default_java_path.label".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 DirectorySettingRow(
                     title: "settings.default_java_path.label".localized(),
                     path: gameSettings.defaultJavaPath.isEmpty ? AppConstants.defaultJava+"/java" : gameSettings.defaultJavaPath+"/java",
@@ -56,7 +56,6 @@ public struct GameSettingsView: View {
                         gameSettings.defaultJavaPath = AppConstants.defaultJava
                     }
                 )
-                .fixedSize()
                 .fileImporter(isPresented: $showJavaPathPicker,
                               allowedContentTypes: [.directory],
                               allowsMultipleSelection: false) { result in
@@ -79,23 +78,23 @@ public struct GameSettingsView: View {
                 .onChange(of: gameSettings.defaultJavaPath) { old,newPath in
                     checkJavaVersion(at: newPath.isEmpty ? AppConstants.defaultJava : newPath)
                 }
-                Spacer()
+                .gridColumnAlignment(.leading)
             }
             
             if let error = javaDetectionError {
-                HStack {
-                    Spacer()
-                        .frame(width: 200)
+                GridRow {
+                    Text("")
+                        .gridColumnAlignment(.trailing)
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.red)
-                    Spacer()
+                        .gridColumnAlignment(.leading)
                 }
             }
             
-            HStack {
+            GridRow {
                 Text("settings.default_memory_allocation.label".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 HStack {
                     MiniRangeSlider(range: $globalMemoryRange, bounds: 512...Double(gameSettings.maximumMemoryAllocation))
                         .frame(width: 200,height: 20)
@@ -112,18 +111,19 @@ public struct GameSettingsView: View {
                         .lineLimit(1)
                         .truncationMode(.tail)
                 }
-                Spacer()
+                .gridColumnAlignment(.leading)
             }
             
-            HStack {
+            GridRow {
                 Text("settings.game_resource_info.label".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 HStack {
                     Label("\(cacheManager.cacheInfo.fileCount)",systemImage: "text.document")
                     Divider().frame(height: 16)
                     Label(cacheManager.cacheInfo.formattedSize, systemImage: "externaldrive")
-                }.foregroundStyle(.secondary)
-                Spacer()
+                }
+                .foregroundStyle(.secondary)
+                .gridColumnAlignment(.leading)
             }
         }
         
