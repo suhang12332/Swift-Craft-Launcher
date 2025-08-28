@@ -94,7 +94,7 @@ public struct GameSettingsView: View {
                             : gameSettings.defaultJavaPath
                     )
                 }
-                .onChange(of: gameSettings.defaultJavaPath) { old, newPath in
+                .onChange(of: gameSettings.defaultJavaPath) { _, newPath in
                     checkJavaVersion(
                         at: newPath.isEmpty ? AppConstants.defaultJava : newPath
                     )
@@ -116,7 +116,7 @@ public struct GameSettingsView: View {
                             512...Double(gameSettings.maximumMemoryAllocation)
                     )
                     .frame(width: 200, height: 20)
-                    .onChange(of: globalMemoryRange) { old, newValue in
+                    .onChange(of: globalMemoryRange) { _, newValue in
                         gameSettings.globalXms = Int(newValue.lowerBound)
                         gameSettings.globalXmx = Int(newValue.upperBound)
                     }

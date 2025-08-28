@@ -586,7 +586,7 @@ enum ModrinthService {
     /// - Parameter completion: 完成回调
     static func fetchModrinthDetail(by hash: String, completion: @escaping (ModrinthProjectDetail?) -> Void) {
         let url = URLConfig.API.Modrinth.versionFile(hash: hash)
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+        let task = URLSession.shared.dataTask(with: url) { data, _, _ in
             guard let data = data else {
                 completion(nil)
                 return

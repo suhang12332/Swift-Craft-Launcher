@@ -280,7 +280,7 @@ struct GameFormView: View {
                 .disabled(gameSetupService.downloadState.isDownloading)
             }
         }
-        .onChange(of: gameName) { old, newName in
+        .onChange(of: gameName) { _, newName in
             Task {
                 let isDuplicate = await checkGameNameDuplicate(newName)
                 if isDuplicate != isGameNameDuplicate {

@@ -86,7 +86,7 @@ public struct ContentToolbarView: ToolbarContent {
 
                         showingAddPlayerSheet = false
                     },
-                    onYggLogin: { profile in
+                    onYggLogin: { _ in
                         Logger.shared.debug("Yggdrasil登录成功!")
                     },
                     playerListViewModel: playerListViewModel

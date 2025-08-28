@@ -30,7 +30,7 @@ public struct GeneralSettingsView: View {
                 }
                 .gridColumnAlignment(.leading)
                 .labelsHidden()
-                .onChange(of: selectedLanguage) { oldValue, newValue in
+                .onChange(of: selectedLanguage) { _, newValue in
                     // 如果是取消操作导致的语言恢复，则不触发重启提示
                     if newValue != LanguageManager.shared.selectedLanguage {
                         showingRestartAlert = true

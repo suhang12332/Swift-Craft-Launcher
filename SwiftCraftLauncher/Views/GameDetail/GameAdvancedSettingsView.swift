@@ -65,7 +65,7 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
                             )
                     )
                     .frame(height: 20)
-                    .onChange(of: memoryRange) { old, newValue in
+                    .onChange(of: memoryRange) { _, _ in
                         // 实时更新内存值
                     }
 
