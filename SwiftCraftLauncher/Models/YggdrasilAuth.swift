@@ -26,3 +26,40 @@ struct YggdrasilSelectedProfile: Codable {
     let legacy: Bool?
     let demo: Bool?
 }
+
+
+// MARK: - Yggdrasil 设备代码响应模型
+struct YggdrasilDeviceCodeResponse: Codable {
+    let userCode: String
+    let deviceCode: String
+    let verificationUri: String
+    let verificationUriComplete: String?
+    let expiresIn: Int
+    let interval: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case userCode = "user_code"
+        case deviceCode = "device_code"
+        case verificationUri = "verification_uri"
+        case verificationUriComplete = "verification_uri_complete"
+        case expiresIn = "expires_in"
+        case interval
+    }
+}
+
+// MARK: - Yggdrasil 令牌响应模型
+struct YggdrasilTokenResponse: Codable {
+    let tokenType: String
+    let expiresIn: Int
+    let accessToken: String
+    let refreshToken: String?
+    let idToken: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case tokenType = "token_type"
+        case expiresIn = "expires_in"
+        case accessToken = "access_token"
+        case refreshToken = "refresh_token"
+        case idToken = "id_token"
+    }
+}

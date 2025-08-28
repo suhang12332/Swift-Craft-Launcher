@@ -16,6 +16,11 @@ enum URLConfig {
             // Minecraft Services
             static let minecraftLogin = URL(string: "https://api.minecraftservices.com/authentication/login_with_xbox")!
             static let minecraftProfile = URL(string: "https://api.minecraftservices.com/minecraft/profile")!
+            
+            // LittleSkin / Yggdrasil OAuth
+            static let yggdrasilDeviceCode = URL(string: "https://open.littleskin.cn/oauth/device_code")!
+            static let yggdrasilToken = URL(string: "https://open.littleskin.cn/oauth/token")!
+            static let yggdrasilUserInfo = URL(string: "https://open.littleskin.cn/oauth/userinfo")!
         }
 
         // Minecraft API

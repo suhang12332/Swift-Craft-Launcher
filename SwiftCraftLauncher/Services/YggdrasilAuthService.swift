@@ -60,13 +60,7 @@ class YggdrasilAuthService: ObservableObject {
     
     // MARK: - 请求设备代码
     private func requestDeviceCodeThrowing() async throws -> YggdrasilDeviceCodeResponse {
-        guard let url = URL(string: "https://open.littleskin.cn/oauth/device_code") else {
-            throw GlobalError.validation(
-                chineseMessage: "无效的设备代码请求 URL",
-                i18nKey: "error.validation.invalid_device_code_url",
-                level: .popup
-            )
-        }
+        let url = URLConfig.API.Authentication.yggdrasilDeviceCode
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -98,16 +92,17 @@ class YggdrasilAuthService: ObservableObject {
         while attempts < maxAttempts {
             do {
                 let tokenResponse = try await requestTokenThrowing(deviceCode: deviceCode)
+                // 获取用户档案信息
+                let profile = try await fetchYggdrasilProfileThrowing(accessToken: tokenResponse.accessToken, tokenResponse: tokenResponse)
                 await MainActor.run {
                     isLoading = false
-                    //authState = .authenticated(profile: tokenResponse) 
+                    authState = .authenticatedYggdrasil(profile: profile)
                 }
                 return
             } catch let globalError as GlobalError {
                 // 检查是否是轮询期间的特殊状态
                 if globalError.i18nKey == "error.authentication.authorization_pending" {
                     // 继续轮询，不做任何处理
-                    break
                 } else if globalError.i18nKey == "error.authentication.slow_down" {
                     // 减慢轮询速度
                     try? await Task.sleep(nanoseconds: UInt64((interval + 5) * 1_000_000_000))
@@ -149,13 +144,7 @@ class YggdrasilAuthService: ObservableObject {
     
     // MARK: - 请求访问令牌
     private func requestTokenThrowing(deviceCode: String) async throws -> YggdrasilTokenResponse {
-        guard let url = URL(string: "https://open.littleskin.cn/oauth/token") else {
-            throw GlobalError.validation(
-                chineseMessage: "无效的访问令牌请求 URL",
-                i18nKey: "error.validation.invalid_token_url",
-                level: .popup
-            )
-        }
+        let url = URLConfig.API.Authentication.yggdrasilToken
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
@@ -216,6 +205,70 @@ class YggdrasilAuthService: ObservableObject {
         }
     }
     
+    // MARK: - 获取Yggdrasil用户档案
+    private func fetchYggdrasilProfileThrowing(accessToken: String, tokenResponse: YggdrasilTokenResponse) async throws -> YggdrasilProfileResponse {
+        let url = URLConfig.API.Authentication.yggdrasilUserInfo
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw GlobalError.network(
+                chineseMessage: "无效的 HTTP 响应",
+                i18nKey: "error.network.invalid_http_response",
+                level: .popup
+            )
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            throw GlobalError.network(
+                chineseMessage: "获取用户档案失败: HTTP \(httpResponse.statusCode)",
+                i18nKey: "error.network.yggdrasil_profile_request_failed",
+                level: .popup
+            )
+        }
+        
+        do {
+            // 解析OpenID Connect userinfo响应
+            let userInfo = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
+            
+            // 提取用户信息
+            Logger.shared.info(userInfo)
+            let sub = userInfo["sub"] as? String ?? ""
+            let username = userInfo["preferred_username"] as? String ?? ""
+            
+            // 解析Yggdrasil profiles（如果存在）
+            var selectedProfile: YggdrasilSelectedProfile?
+            if let profiles = userInfo["Yggdrasil.PlayerProfiles"] as? [[String: Any]], let firstProfile = profiles.first {
+                let profileId = firstProfile["id"] as? String ?? ""
+                let profileName = firstProfile["name"] as? String ?? ""
+                selectedProfile = YggdrasilSelectedProfile(
+                    id: profileId,
+                    name: profileName,
+                    legacy: firstProfile["legacy"] as? Bool,
+                    demo: firstProfile["demo"] as? Bool
+                )
+            }
+            
+            return YggdrasilProfileResponse(
+                id: sub,
+                username: username,
+                selectedProfile: selectedProfile,
+                accessToken: accessToken,
+                refreshToken: tokenResponse.refreshToken,
+                idToken: tokenResponse.idToken
+            )
+        } catch {
+            throw GlobalError.validation(
+                chineseMessage: "解析用户档案响应失败: \(error.localizedDescription)",
+                i18nKey: "error.validation.yggdrasil_profile_parse_failed",
+                level: .popup
+            )
+        }
+    }
+    
     // MARK: - 登出
     func logout() {
         authState = .notAuthenticated
@@ -227,38 +280,3 @@ class YggdrasilAuthService: ObservableObject {
     }
 }
 
-// MARK: - Yggdrasil 设备代码响应模型
-struct YggdrasilDeviceCodeResponse: Codable {
-    let userCode: String
-    let deviceCode: String
-    let verificationUri: String
-    let verificationUriComplete: String?
-    let expiresIn: Int
-    let interval: Int
-    
-    enum CodingKeys: String, CodingKey {
-        case userCode = "user_code"
-        case deviceCode = "device_code"
-        case verificationUri = "verification_uri"
-        case verificationUriComplete = "verification_uri_complete"
-        case expiresIn = "expires_in"
-        case interval
-    }
-}
-
-// MARK: - Yggdrasil 令牌响应模型
-struct YggdrasilTokenResponse: Codable {
-    let tokenType: String
-    let expiresIn: Int
-    let accessToken: String
-    let refreshToken: String?
-    let idToken: String?
-    
-    enum CodingKeys: String, CodingKey {
-        case tokenType = "token_type"
-        case expiresIn = "expires_in"
-        case accessToken = "access_token"
-        case refreshToken = "refresh_token"
-        case idToken = "id_token"
-    }
-}
