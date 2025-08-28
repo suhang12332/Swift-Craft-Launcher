@@ -79,9 +79,10 @@ enum URLConfig {
             }
 
             // Appcast 相关
-            static func appcastURL(version: String? = nil, architecture: String)
-                -> URL
-            {
+            static func appcastURL(
+                version: String? = nil,
+                architecture: String
+            ) -> URL {
                 let appcastFileName = "appcast-\(architecture).xml"
                 if let version = version, !version.isEmpty {
                     return URL(

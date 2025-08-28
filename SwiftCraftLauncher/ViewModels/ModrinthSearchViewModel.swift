@@ -201,8 +201,7 @@ final class ModrinthSearchViewModel: ObservableObject {
 
         // Add loaders if any (as categories)
         if !loaders.isEmpty && projectType != "resourcepack"
-            && projectType != "datapack"
-        {
+            && projectType != "datapack" {
             var loadersToUse = loaders
             if let first = loaders.first, first.lowercased() == "vanilla" {
                 loadersToUse = ["minecraft"]

@@ -22,9 +22,9 @@ class CommonService {
     /// - Parameter loader: 加载器类型
     /// - Returns: 兼容的版本列表
     /// - Throws: GlobalError 当操作失败时
-    static func compatibleVersionsThrowing(for loader: String) async throws
-        -> [String]
-    {
+    static func compatibleVersionsThrowing(
+        for loader: String
+    ) async throws -> [String] {
         var result: [String] = []
         switch loader.lowercased() {
         case "fabric", "forge", "quilt", "neoforge":
@@ -99,9 +99,10 @@ class CommonService {
     ///   - type: 加载器类型
     ///   - minecraftVersion: Minecraft 版本
     /// - Returns: 加载器版本信息，失败时返回 nil
-    static func fetchAllLoaderVersions(type: String, minecraftVersion: String)
-        async -> LoaderVersion?
-    {
+    static func fetchAllLoaderVersions(
+        type: String,
+        minecraftVersion: String
+    ) async -> LoaderVersion? {
         do {
             return try await fetchAllLoaderVersionsThrowing(
                 type: type,
@@ -163,9 +164,9 @@ class CommonService {
     /// - Parameter type: 加载器类型
     /// - Returns: 版本列表
     /// - Throws: GlobalError 当操作失败时
-    static func fetchAllVersionThrowing(type: String) async throws
-        -> [LoaderVersion]
-    {
+    static func fetchAllVersionThrowing(
+        type: String
+    ) async throws -> [LoaderVersion] {
         // 首先获取版本清单
         let manifestURL = URLConfig.API.Modrinth.loaderManifest(loader: type)
         let (manifestData, manifestResponse) = try await URLSession.shared.data(
@@ -229,8 +230,9 @@ class CommonService {
     /// 解析包含@符号的Maven坐标的公共逻辑
     /// - Parameter coordinate: Maven坐标
     /// - Returns: 相对路径
-    static func parseMavenCoordinateWithAtSymbol(_ coordinate: String) -> String
-    {
+    static func parseMavenCoordinateWithAtSymbol(
+        _ coordinate: String
+    ) -> String {
         let parts = coordinate.components(separatedBy: ":")
         guard parts.count >= 3 else { return coordinate }
 
@@ -291,9 +293,9 @@ class CommonService {
     /// 处理包含@符号的Maven坐标
     /// - Parameter coordinate: Maven坐标
     /// - Returns: 文件路径
-    static func convertMavenCoordinateWithAtSymbol(_ coordinate: String)
-        -> String
-    {
+    static func convertMavenCoordinateWithAtSymbol(
+        _ coordinate: String
+    ) -> String {
         let relativePath = parseMavenCoordinateWithAtSymbol(coordinate)
 
         return AppPaths.librariesDirectory.appendingPathComponent(relativePath)
@@ -336,9 +338,7 @@ class CommonService {
     /// Maven 坐标转相对路径（支持特殊格式）
     /// - Parameter coordinate: Maven 坐标
     /// - Returns: 相对路径
-    static func mavenCoordinateToRelativePathForURL(_ coordinate: String)
-        -> String
-    {
+    static func mavenCoordinateToRelativePathForURL(_ coordinate: String) -> String {
         // 检查是否包含@符号，需要特殊处理
         if coordinate.contains("@") {
             return convertMavenCoordinateWithAtSymbolForURL(coordinate)
@@ -356,9 +356,9 @@ class CommonService {
     /// 处理包含@符号的Maven坐标（用于URL构建）
     /// - Parameter coordinate: Maven坐标
     /// - Returns: 相对路径
-    static func convertMavenCoordinateWithAtSymbolForURL(_ coordinate: String)
-        -> String
-    {
+    static func convertMavenCoordinateWithAtSymbolForURL(
+        _ coordinate: String
+    ) -> String {
         return parseMavenCoordinateWithAtSymbol(coordinate)
     }
 
@@ -374,9 +374,7 @@ class CommonService {
     /// Maven 坐标转默认 Minecraft 库 URL
     /// - Parameter coordinate: Maven 坐标
     /// - Returns: Minecraft 库 URL
-    static func mavenCoordinateToDefaultURL(_ coordinate: String, url: URL)
-        -> URL
-    {
+    static func mavenCoordinateToDefaultURL(_ coordinate: String, url: URL) -> URL {
         // 使用相对路径而不是完整路径来构建URL
         let relativePath = mavenCoordinateToRelativePathForURL(coordinate)
         return url.appendingPathComponent(relativePath)

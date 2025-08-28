@@ -151,8 +151,7 @@ struct GameInfoDetailView: View {
         Group {
             if let iconURL = AppPaths.profileDirectory(gameName: game.gameName)?
                 .appendingPathComponent(game.gameIcon),
-                FileManager.default.fileExists(atPath: iconURL.path)
-            {
+                FileManager.default.fileExists(atPath: iconURL.path) {
                 AsyncImage(url: iconURL) { phase in
                     switch phase {
                     case .empty:

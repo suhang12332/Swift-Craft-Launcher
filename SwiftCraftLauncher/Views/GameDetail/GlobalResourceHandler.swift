@@ -34,8 +34,7 @@ func filterCompatibleGames(
             ModScanner.shared.isModInstalledSync(
                 projectId: projectId,
                 in: modsDir
-            )
-        {
+            ) {
             return nil
         }
         return game
@@ -137,10 +136,7 @@ struct GlobalResourceSheet: View {
                                         }
                                     }
                                 )
-                                if resourceType == "mod"
-                                    && !GameSettingsManager.shared
-                                        .autoDownloadDependencies
-                                {
+                                if resourceType == "mod" && !GameSettingsManager.shared.autoDownloadDependencies {
                                     spacerView()
                                     DependencySection(state: $dependencyState)
                                 }
@@ -290,12 +286,11 @@ private struct DependencySection: View {
                     VStack(alignment: .leading) {
                         Text(dep.title).font(.headline).bold()
                         if let versions = state.versions[dep.id],
-                            !versions.isEmpty
-                        {
+                            !versions.isEmpty {
                             Picker(
-                                "global_resource.dependency_version"
-                                    .localized(),
-                                selection: Binding(
+                                "global_resource.dependency_version".localized(),
+                                selection:
+                                    Binding(
                                     get: {
                                         state.selected[dep.id] ?? versions.first
                                     },

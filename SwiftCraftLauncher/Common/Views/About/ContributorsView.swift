@@ -299,9 +299,7 @@ public struct ContributorsView: View {  // swiftlint:disable:this type_body_leng
     }
 
     // MARK: - Contributor Avatar
-    private func contributorAvatar(_ contributor: GitHubContributor)
-        -> some View
-    {
+    private func contributorAvatar(_ contributor: GitHubContributor) -> some View {
         AsyncImage(url: URL(string: contributor.avatarUrl)) { phase in
             switch phase {
             case .empty:
@@ -372,12 +370,11 @@ public struct ContributorsView: View {  // swiftlint:disable:this type_body_leng
     }
 
     // MARK: - Static Contributor Row
-    private func staticContributorRow(_ contributor: StaticContributor)
-        -> some View
-    {
+    private func staticContributorRow(
+        _ contributor: StaticContributor
+    ) -> some View {
         Group {
-            if !contributor.url.isEmpty, let url = URL(string: contributor.url)
-            {
+            if !contributor.url.isEmpty, let url = URL(string: contributor.url) {
                 Link(destination: url) {
                     staticContributorContent(contributor)
                 }
@@ -387,9 +384,9 @@ public struct ContributorsView: View {  // swiftlint:disable:this type_body_leng
         }
     }
 
-    private func staticContributorContent(_ contributor: StaticContributor)
-        -> some View
-    {
+    private func staticContributorContent(
+        _ contributor: StaticContributor
+    ) -> some View {
         HStack(spacing: 12) {
             // 头像（emoji）
             Text(contributor.avatar)

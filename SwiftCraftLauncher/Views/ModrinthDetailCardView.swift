@@ -44,8 +44,7 @@ struct ModrinthDetailCardView: View {
                 // 本地资源显示 questionmark.circle 图标
                 localResourceIcon
             } else if let iconUrl = project.iconUrl,
-                let url = URL(string: iconUrl)
-            {
+                let url = URL(string: iconUrl) {
                 AsyncImage(
                     url: url,
                     transaction: Transaction(

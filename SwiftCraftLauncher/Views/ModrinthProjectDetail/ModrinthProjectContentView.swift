@@ -243,8 +243,7 @@ private struct LinksSection: View {
                 }
 
                 if let donationUrls = project.donationUrls,
-                    !donationUrls.isEmpty
-                {
+                    !donationUrls.isEmpty {
                     ForEach(donationUrls, id: \.id) { donation in
                         ProjectLink(
                             text: "project.info.links.donate".localized(),

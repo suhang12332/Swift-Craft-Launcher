@@ -187,9 +187,7 @@ struct License: Codable, Equatable, Hashable {
 }
 
 /// Modrinth version model
-public struct ModrinthProjectDetailVersion: Codable, Identifiable, Equatable,
-    Hashable
-{
+public struct ModrinthProjectDetailVersion: Codable, Identifiable, Equatable, Hashable {
     /// Game versions this version supports
     public let gameVersions: [String]
 

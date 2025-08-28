@@ -421,10 +421,7 @@ class ModPackDownloadSheetViewModel: ObservableObject { // swiftlint:disable:thi
 
             if let expectedSize = httpResponse.value(
                 forHTTPHeaderField: "Content-Length"
-            ),
-                let expectedSizeInt = Int64(expectedSize),
-                actualSize != expectedSizeInt
-            {
+            ), let expectedSizeInt = Int64(expectedSize), actualSize != expectedSizeInt {
                 handleDownloadError(
                     "文件大小不匹配，预期: \(expectedSizeInt)，实际: \(actualSize)",
                     "error.resource.size_mismatch"
@@ -441,9 +438,10 @@ class ModPackDownloadSheetViewModel: ObservableObject { // swiftlint:disable:thi
         }
     }
 
-    private func validateFileIntegrity(tempFileURL: URL, expectedSha1: String)
-        -> Bool
-    {
+    private func validateFileIntegrity(
+        tempFileURL: URL,
+        expectedSha1: String
+    ) -> Bool {
         do {
             let actualSha1 = try SHA1Calculator.sha1(ofFileAt: tempFileURL)
             if actualSha1 != expectedSha1 {

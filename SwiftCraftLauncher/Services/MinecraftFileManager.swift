@@ -117,14 +117,14 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
     }
 
     // MARK: - Private Methods
-    private func calculateTotalFiles(_ manifest: MinecraftVersionManifest)
-        -> Int
-    {
+    private func calculateTotalFiles(_ manifest: MinecraftVersionManifest) -> Int {
         1 + manifest.libraries.count + 1 + 1  // Client JAR + Libraries + Asset index + Logging config
     }
 
-    private func createDirectories(manifestId: String, gameName: String) throws
-    {
+    private func createDirectories(
+        manifestId: String,
+        gameName: String
+    ) throws {
         guard
             let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
         else {
@@ -167,9 +167,7 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         }
     }
 
-    private func downloadCoreFiles(manifest: MinecraftVersionManifest)
-        async throws
-    {
+    private func downloadCoreFiles(manifest: MinecraftVersionManifest) async throws {
         coreTotalFiles = calculateTotalFiles(manifest)
 
         try await withThrowingTaskGroup(of: Void.self) { group in
@@ -187,9 +185,9 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         }
     }
 
-    private func downloadClientJar(manifest: MinecraftVersionManifest)
-        async throws
-    {
+    private func downloadClientJar(
+        manifest: MinecraftVersionManifest
+    ) async throws {
         let versionDir = AppPaths.versionsDirectory.appendingPathComponent(
             manifest.id
         )
@@ -217,9 +215,9 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         }
     }
 
-    private func downloadLibraries(manifest: MinecraftVersionManifest)
-        async throws
-    {
+    private func downloadLibraries(
+        manifest: MinecraftVersionManifest
+    ) async throws {
 
         Logger.shared.info("开始下载库文件")
         let osxLibraries = manifest.libraries.filter {
@@ -248,9 +246,10 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         Logger.shared.info("完成下载库文件")
     }
 
-    private func downloadLibrary(_ library: Library, metaDirectory: URL)
-        async throws
-    {
+    private func downloadLibrary(
+        _ library: Library,
+        metaDirectory: URL
+    ) async throws {
         let destinationURL = metaDirectory.appendingPathComponent("libraries")
             .appendingPathComponent(library.downloads.artifact.path)
 
@@ -300,9 +299,7 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
             let osClassifier = nil
         #endif
 
-        if let classifierKey = osClassifier,
-            let nativeArtifact = classifiers[classifierKey]
-        {
+        if let classifierKey = osClassifier, let nativeArtifact = classifiers[classifierKey] {
             let destinationURL = metaDirectory.appendingPathComponent("natives")
                 .appendingPathComponent(nativeArtifact.path)
 
@@ -331,9 +328,9 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         }
     }
 
-    private func downloadAssets(manifest: MinecraftVersionManifest) async throws
-    {
-
+    private func downloadAssets(
+        manifest: MinecraftVersionManifest
+    ) async throws {
         Logger.shared.info(
             String(
                 format: "log.minecraft.download.assets.start".localized(),
@@ -504,9 +501,10 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         }
     }
 
-    private func verifyExistingFile(at url: URL, expectedSha1: String)
-        async throws -> Bool
-    {
+    private func verifyExistingFile(
+        at url: URL,
+        expectedSha1: String
+    ) async throws -> Bool {
         let fileSha1 = try await calculateFileSHA1(at: url)
         return fileSha1 == expectedSha1
     }
@@ -534,9 +532,9 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         onProgressUpdate?(fileName, currentCount, total, type)
     }
 
-    private func downloadAllAssets(assetIndex: DownloadedAssetIndex)
-        async throws
-    {
+    private func downloadAllAssets(
+        assetIndex: DownloadedAssetIndex
+    ) async throws {
 
         let objectsDirectory = AppPaths.metaDirectory.appendingPathComponent(
             "assets/objects"

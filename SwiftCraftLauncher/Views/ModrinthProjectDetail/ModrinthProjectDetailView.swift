@@ -30,9 +30,7 @@ struct ModrinthProjectDetailView: View {
     }
 
     // MARK: - Project Detail View
-    private func projectDetailView(_ project: ModrinthProjectDetail)
-        -> some View
-    {
+    private func projectDetailView(_ project: ModrinthProjectDetail) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             projectHeader(project)
             projectContent(project)
@@ -127,10 +125,9 @@ struct ModrinthProjectDetailView: View {
         .padding(.bottom, Constants.spacing)
     }
 
-    private func descriptionView(_ project: ModrinthProjectDetail) -> some View
-    {
+    private func descriptionView(_ project: ModrinthProjectDetail) -> some View {
         Markdown(project.body)
-        //        EmptyView()
+        // EmptyView()
     }
 }
 

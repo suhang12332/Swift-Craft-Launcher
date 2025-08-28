@@ -366,9 +366,7 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
 
     private func generateJvmArguments() -> String {
         // 如果用户输入了自定义参数，优先使用自定义参数
-        if !customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines)
-            .isEmpty
-        {
+        if !customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return customJvmArguments
         }
 

@@ -96,8 +96,7 @@ class LevelDataModel: ObservableObject {
 
         for key in worldSettingsKeys {
             if let value = inner[key] {
-                if key == "GameRules", let rulesCompound = value as? NBTCompound
-                {
+                if key == "GameRules", let rulesCompound = value as? NBTCompound {
                     // 只展示 keepInventory 游戏规则
                     if let keepInventoryValue = rulesCompound["keepInventory"] {
                         worldSettingsData["GameRules.keepInventory"] =
@@ -107,8 +106,7 @@ class LevelDataModel: ObservableObject {
                             )
                     }
                 } else if key == "WorldGenSettings",
-                    let worldGenCompound = value as? NBTCompound
-                {
+                    let worldGenCompound = value as? NBTCompound {
                     // 处理 WorldGenSettings 中的种子字段
                     if let seedValue = worldGenCompound["seed"] {
                         worldSettingsData["seed"] = formatNBTValue(
@@ -156,12 +154,10 @@ class LevelDataModel: ObservableObject {
 
                 // 特殊处理坐标，分解为X、Y、Z
                 if pKey == "Pos", let posList = pVal as? NBTList,
-                    posList.elements.count == 3
-                {
+                    posList.elements.count == 3 {
                     if let x = posList.elements[0] as? NBTDouble,
                         let y = posList.elements[1] as? NBTDouble,
-                        let z = posList.elements[2] as? NBTDouble
-                    {
+                        let z = posList.elements[2] as? NBTDouble {
                         // 优化坐标显示格式为 [X, Y, Z]
                         let xCoord = String(format: "%.1f", x)
                         let yCoord = String(format: "%.1f", y)

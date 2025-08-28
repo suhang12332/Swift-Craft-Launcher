@@ -20,9 +20,9 @@ public class ContributorsViewModel: ObservableObject {
         }
     }
 
-    public func getContributorProfileURL(_ contributor: GitHubContributor)
-        -> URL?
-    {
+    public func getContributorProfileURL(
+        _ contributor: GitHubContributor
+    ) -> URL? {
         URL(string: contributor.htmlUrl)
     }
 

@@ -387,8 +387,7 @@ struct AddOrDeleteResourceButton: View {
             let resourceDir = AppPaths.resourceDirectory(
                 for: query,
                 gameName: gameInfo.gameName
-            )
-        {
+            ) {
             if ModScanner.shared.isModInstalledSync(
                 projectId: project.projectId,
                 in: resourceDir

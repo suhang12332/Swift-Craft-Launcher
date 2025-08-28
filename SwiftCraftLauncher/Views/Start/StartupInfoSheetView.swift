@@ -30,9 +30,7 @@ struct StartupInfoSheetView: View {
                         // 应用图标
                         HStack {
                             Spacer()
-                            if let appIcon = NSApplication.shared
-                                .applicationIconImage
-                            {
+                            if let appIcon = NSApplication.shared.applicationIconImage {
                                 Image(nsImage: appIcon)
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)

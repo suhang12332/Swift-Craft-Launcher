@@ -109,9 +109,10 @@ class ModMetadataParser {
         }
     }
 
-    private static func parseForgeTomlThrowing(archive: Archive, entry: Entry)
-        throws -> (String, String)?
-    {
+    private static func parseForgeTomlThrowing(
+        archive: Archive,
+        entry: Entry
+    ) throws -> (String, String)? {
         var data = Data()
         do {
             try _ = archive.extract(entry) { chunk in
@@ -159,9 +160,10 @@ class ModMetadataParser {
         }
     }
 
-    private static func parseFabricJsonThrowing(archive: Archive, entry: Entry)
-        throws -> (String, String)?
-    {
+    private static func parseFabricJsonThrowing(
+        archive: Archive,
+        entry: Entry
+    ) throws -> (String, String)? {
         var data = Data()
         do {
             try _ = archive.extract(entry) { chunk in
@@ -213,9 +215,10 @@ class ModMetadataParser {
         }
     }
 
-    private static func parseMcmodInfoThrowing(archive: Archive, entry: Entry)
-        throws -> (String, String)?
-    {
+    private static func parseMcmodInfoThrowing(
+        archive: Archive,
+        entry: Entry
+    ) throws -> (String, String)? {
         var data = Data()
         do {
             try _ = archive.extract(entry) { chunk in
@@ -265,8 +268,10 @@ class ModMetadataParser {
         return (modid, version)
     }
 
-    private static func matchFirst(in text: String, pattern: String) -> String?
-    {
+    private static func matchFirst(
+        in text: String,
+        pattern: String
+    ) -> String? {
         let regex = try? NSRegularExpression(pattern: pattern)
         let nsrange = NSRange(text.startIndex..., in: text)
         guard let match = regex?.firstMatch(in: text, range: nsrange),

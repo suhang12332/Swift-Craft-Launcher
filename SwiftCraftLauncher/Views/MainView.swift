@@ -239,8 +239,7 @@ struct MainView: View {
             self.gameId = nil
         }
         if self.loadedProjectDetail != nil && self.gameId != nil
-            && self.selectedProjectId != nil
-        {
+            && self.selectedProjectId != nil {
             self.gameId = nil
             self.loadedProjectDetail = nil
             self.selectedProjectId = nil

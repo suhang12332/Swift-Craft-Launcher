@@ -113,9 +113,7 @@ struct DependencySheetView: View {
                                     isDownloadingAllDependencies = false
                                 }
                             } label: {
-                                if isDownloadingAllDependencies
-                                    || hasDownloading
-                                {
+                                if isDownloadingAllDependencies || hasDownloading {
                                     ProgressView().controlSize(.small)
                                 } else {
                                     Text(
@@ -137,9 +135,7 @@ struct DependencySheetView: View {
                                     isDownloadingAllDependencies = false
                                 }
                             } label: {
-                                if isDownloadingAllDependencies
-                                    || hasDownloading
-                                {
+                                if isDownloadingAllDependencies || hasDownloading {
                                     ProgressView().controlSize(.small)
                                 } else {
                                     Text("common.continue".localized())
@@ -180,9 +176,9 @@ struct DependencySheetView: View {
     }
 
     @ViewBuilder
-    private func dependencyDownloadStatusView(dep: ModrinthProjectDetail)
-        -> some View
-    {
+    private func dependencyDownloadStatusView(
+        dep: ModrinthProjectDetail
+    ) -> some View {
         let state = viewModel.dependencyDownloadStates[dep.id] ?? .idle
         switch state {
         case .idle:

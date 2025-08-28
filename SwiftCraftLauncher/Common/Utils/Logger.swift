@@ -355,8 +355,7 @@ class Logger { // swiftlint:disable:this type_body_length
             let encoder = JSONEncoder()
             encoder.outputFormatting = .prettyPrinted
             if let data = try? encoder.encode(AnyEncodable(codable)),
-               let json = String(data: data, encoding: .utf8)
-            {
+               let json = String(data: data, encoding: .utf8) {
                 return json
             }
             return "\(codable)"

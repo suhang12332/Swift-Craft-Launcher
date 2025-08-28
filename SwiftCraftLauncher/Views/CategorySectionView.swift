@@ -89,9 +89,9 @@ struct CategorySectionView: View {
         }
     }
 
-    private func overflowPopoverContent(overflowItems: [FilterItem])
-        -> some View
-    {
+    private func overflowPopoverContent(
+        overflowItems: [FilterItem]
+    ) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if isLoading {
                 loadingPlaceholder
@@ -214,9 +214,7 @@ struct CategorySectionView: View {
                 * CategorySectionConstants.estimatedCharWidth
                 + CategorySectionConstants.chipPadding
 
-            if currentRowWidth + estimatedWidth
-                > CategorySectionConstants.maxWidth, !currentRow.isEmpty
-            {
+            if currentRowWidth + estimatedWidth > CategorySectionConstants.maxWidth, !currentRow.isEmpty {
                 rows.append(currentRow)
                 currentRow = [item]
                 currentRowWidth = estimatedWidth
@@ -237,8 +235,9 @@ struct CategorySectionView: View {
         return (visibleItems, overflowItems)
     }
 
-    private func groupVersions(_ items: [FilterItem]) -> [String: [FilterItem]]
-    {
+    private func groupVersions(
+        _ items: [FilterItem]
+    ) -> [String: [FilterItem]] {
         Dictionary(grouping: items) { item in
             let components = item.name.split(separator: ".")
             if components.count >= 2 {

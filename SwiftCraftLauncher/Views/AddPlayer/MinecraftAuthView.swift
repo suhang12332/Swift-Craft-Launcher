@@ -71,9 +71,10 @@ struct MinecraftAuthView: View {
     }
 
     // MARK: - 等待用户验证状态
-    private func waitingForUserView(userCode: String, verificationUri: String)
-        -> some View
-    {
+    private func waitingForUserView(
+        userCode: String,
+        verificationUri: String
+    ) -> some View {
         VStack(spacing: 20) {
             Image(systemName: "person.badge.clock.fill")
                 .font(.system(size: 60))
@@ -133,9 +134,9 @@ struct MinecraftAuthView: View {
     }
 
     // MARK: - 认证成功状态
-    private func authenticatedView(profile: MinecraftProfileResponse)
-        -> some View
-    {
+    private func authenticatedView(
+        profile: MinecraftProfileResponse
+    ) -> some View {
         VStack(spacing: 20) {
             // 用户头像
             if let skinUrl = profile.skins.first?.url {
@@ -178,9 +179,9 @@ struct MinecraftAuthView: View {
         }
     }
 
-    private func authenticatedYggdrasilView(profile: YggdrasilProfileResponse)
-        -> some View
-    {
+    private func authenticatedYggdrasilView(
+        profile: YggdrasilProfileResponse
+    ) -> some View {
         VStack(spacing: 20) {
             Circle()
                 .fill(Color.green.opacity(0.3))

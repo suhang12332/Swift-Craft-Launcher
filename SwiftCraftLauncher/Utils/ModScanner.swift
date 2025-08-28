@@ -28,9 +28,9 @@ class ModScanner {
     }
 
     /// 主入口：获取 ModrinthProjectDetail（抛出异常版本）
-    func getModrinthProjectDetailThrowing(for fileURL: URL) async throws
-        -> ModrinthProjectDetail?
-    {
+    func getModrinthProjectDetailThrowing(
+        for fileURL: URL
+    ) async throws -> ModrinthProjectDetail? {
         guard let hash = try Self.sha1HashThrowing(of: fileURL) else {
             throw GlobalError.validation(
                 chineseMessage: "无法计算文件哈希值",
@@ -158,9 +158,9 @@ class ModScanner {
     }
 
     /// 使用文件名创建最基础的兜底 ModrinthProjectDetail
-    private func createFallbackDetailFromFileName(fileURL: URL)
-        -> ModrinthProjectDetail
-    {
+    private func createFallbackDetailFromFileName(
+        fileURL: URL
+    ) -> ModrinthProjectDetail {
         let fileName = fileURL.lastPathComponent
         let baseFileName = fileName.replacingOccurrences(
             of: ".\(fileURL.pathExtension)",
@@ -294,9 +294,10 @@ extension ModScanner {
     }
 
     /// 同步：仅查缓存（抛出异常版本）
-    func isModInstalledSyncThrowing(projectId: String, in modsDir: URL) throws
-        -> Bool
-    {
+    func isModInstalledSyncThrowing(
+        projectId: String,
+        in modsDir: URL
+    ) throws -> Bool {
         for (_, _, detail) in try localModDetailsThrowing(in: modsDir) {
             if let detail = detail, detail.id == projectId {
                 return true
@@ -330,9 +331,10 @@ extension ModScanner {
     }
 
     /// 异步：查缓存+API+本地解析（抛出异常版本）
-    func isModInstalledThrowing(projectId: String, in modsDir: URL) async throws
-        -> Bool
-    {
+    func isModInstalledThrowing(
+        projectId: String,
+        in modsDir: URL
+    ) async throws -> Bool {
         let files: [URL]
         do {
             files = try FileManager.default.contentsOfDirectory(
@@ -358,9 +360,7 @@ extension ModScanner {
         for fileURL in jarFiles {
             if let detail = try await getModrinthProjectDetailThrowing(
                 for: fileURL
-            ),
-                detail.id == projectId
-            {
+            ), detail.id == projectId {
                 return true
             }
         }
@@ -386,9 +386,9 @@ extension ModScanner {
     }
 
     /// 扫描目录，返回所有已识别的 ModrinthProjectDetail（抛出异常版本）
-    func scanResourceDirectoryThrowing(_ dir: URL) async throws
-        -> [ModrinthProjectDetail]
-    {
+    func scanResourceDirectoryThrowing(
+        _ dir: URL
+    ) async throws -> [ModrinthProjectDetail] {
         let files: [URL]
         do {
             files = try FileManager.default.contentsOfDirectory(

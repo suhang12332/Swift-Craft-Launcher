@@ -54,9 +54,10 @@ class ProcessorExecutor {
 
     // MARK: - Private Helper Methods
 
-    private static func validateAndGetJarPath(_ jar: String?, librariesDir: URL)
-        throws -> URL
-    {
+    private static func validateAndGetJarPath(
+        _ jar: String?,
+        librariesDir: URL
+    ) throws -> URL {
         guard let jar = jar else {
             throw GlobalError.validation(
                 chineseMessage: "处理器缺少JAR文件配置",
@@ -120,9 +121,10 @@ class ProcessorExecutor {
         return classpath
     }
 
-    private static func getMavenPath(_ coordinate: String, librariesDir: URL)
-        throws -> URL
-    {
+    private static func getMavenPath(
+        _ coordinate: String,
+        librariesDir: URL
+    ) throws -> URL {
         // 使用支持@符号的方法来处理Maven坐标
         let relativePath: String
 
@@ -210,10 +212,10 @@ class ProcessorExecutor {
                 if processedArg.contains(placeholder) {
                     let replacementValue =
                         value.contains(":") && !value.hasPrefix("/")
-                        ? (CommonFileManager.extractClientValue(from: value).map
-                        { librariesDir.appendingPathComponent($0).path }
-                            ?? value)
-                        : value
+                    ? (
+                        CommonFileManager.extractClientValue(from: value).map {
+                            librariesDir.appendingPathComponent($0).path
+                        } ?? value) : value
 
                     processedArg = processedArg.replacingOccurrences(
                         of: placeholder,
@@ -226,9 +228,10 @@ class ProcessorExecutor {
         return processedArg
     }
 
-    private static func executeJavaCommand(_ command: [String], workingDir: URL)
-        async throws
-    {
+    private static func executeJavaCommand(
+        _ command: [String],
+        workingDir: URL
+    ) async throws {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/java")
         process.arguments = command

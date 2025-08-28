@@ -15,8 +15,7 @@ struct ModrinthProjectTitleView: View {
             HStack {
                 // 项目图标
                 if let iconUrl = projectDetail.iconUrl,
-                    let url = URL(string: iconUrl)
-                {
+                    let url = URL(string: iconUrl) {
                     AsyncImage(url: url) { image in
                         image
                             .resizable()

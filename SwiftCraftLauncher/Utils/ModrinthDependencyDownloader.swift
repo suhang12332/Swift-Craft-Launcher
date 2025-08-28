@@ -87,8 +87,7 @@ struct ModrinthDependencyDownloader {
                             detailWithFile.type = query
                             // 新增缓存
                             if let fileURL = fileURL,
-                                let hash = ModScanner.sha1Hash(of: fileURL)
-                            {
+                                let hash = ModScanner.sha1Hash(of: fileURL) {
                                 ModScanner.shared.saveToCache(
                                     hash: hash,
                                     detail: detailWithFile
@@ -136,8 +135,7 @@ struct ModrinthDependencyDownloader {
                             mainProjectDetail.type = query
                             // 新增缓存
                             if let fileURL = fileURL,
-                                let hash = ModScanner.sha1Hash(of: fileURL)
-                            {
+                                let hash = ModScanner.sha1Hash(of: fileURL) {
                                 ModScanner.shared.saveToCache(
                                     hash: hash,
                                     detail: mainProjectDetail
@@ -383,8 +381,7 @@ struct ModrinthDependencyDownloader {
             if let mainProjectVersionId = mainProjectVersionId,
                 let specifiedVersion = filteredVersions.first(where: {
                     $0.id == mainProjectVersionId
-                })
-            {
+                }) {
                 targetVersion = specifiedVersion
             } else if let latestVersion = filteredVersions.first {
                 targetVersion = latestVersion

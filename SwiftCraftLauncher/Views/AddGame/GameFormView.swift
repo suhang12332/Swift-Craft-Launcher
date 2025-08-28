@@ -158,8 +158,7 @@ struct GameFormView: View {
             )?
             .appendingPathComponent(AppConstants.defaultGameIcon),
 
-                FileManager.default.fileExists(atPath: iconURL.path)
-            {
+            FileManager.default.fileExists(atPath: iconURL.path) {
                 AsyncImage(url: iconURL) { phase in
                     switch phase {
                     case .empty:
@@ -315,9 +314,8 @@ struct GameFormView: View {
                     version: nil
                 )
             }
-            if selectedModLoader.lowercased() == "fabric"
-                || selectedModLoader.lowercased() == "quilt"
-            {
+
+            if selectedModLoader.lowercased() == "fabric" || selectedModLoader.lowercased() == "quilt" {
                 FormSection {
                     DownloadProgressRow(
                         title: (selectedModLoader.lowercased() == "fabric"
@@ -417,8 +415,7 @@ struct GameFormView: View {
         await MainActor.run {
             self.availableVersions = versions
             // 如果当前选中的版本不在兼容版本列表中，选择第一个兼容版本
-            if !versions.contains(self.selectedGameVersion) && !versions.isEmpty
-            {
+            if !versions.contains(self.selectedGameVersion) && !versions.isEmpty {
                 self.selectedGameVersion = versions.first!
             }
         }

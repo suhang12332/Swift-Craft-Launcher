@@ -297,9 +297,9 @@ struct ModPackDownloadSheet: View {
         }
     }
 
-    private func getLoaderDownloadState(for loaderType: String)
-        -> DownloadState?
-    {
+    private func getLoaderDownloadState(
+        for loaderType: String
+    ) -> DownloadState? {
         switch loaderType.lowercased() {
         case "fabric", "quilt":
             return gameSetupService.fabricDownloadState
@@ -339,8 +339,7 @@ struct ModPackDownloadSheet: View {
 
     private func selectFirstModPackVersion() {
         if !viewModel.filteredModPackVersions.isEmpty
-            && selectedModPackVersion == nil
-        {
+            && selectedModPackVersion == nil {
             selectedModPackVersion = viewModel.filteredModPackVersions[0]
         }
     }
@@ -562,13 +561,12 @@ struct ModPackDownloadSheet: View {
         return true
     }
 
-    private func calculateInstallationCounts(from indexInfo: ModrinthIndexInfo)
-        -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency])
-    {
+    private func calculateInstallationCounts(
+        from indexInfo: ModrinthIndexInfo
+    ) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
         let filesToDownload = indexInfo.files.filter { file in
             if let env = file.env, let client = env.client,
-                client.lowercased() == "unsupported"
-            {
+                client.lowercased() == "unsupported" {
                 return false
             }
             return true

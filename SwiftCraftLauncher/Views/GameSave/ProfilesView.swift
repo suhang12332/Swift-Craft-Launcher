@@ -74,9 +74,7 @@ struct ProfilesView: View {
                 ), isDir.boolValue {
                     if let attrs = try? FileManager.default.attributesOfItem(
                         atPath: fullPath
-                    ),
-                        let date = attrs[.modificationDate] as? Date
-                    {
+                    ), let date = attrs[.modificationDate] as? Date {
                         return (name, date)
                     }
                 }
