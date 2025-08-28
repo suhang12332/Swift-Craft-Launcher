@@ -95,7 +95,7 @@ struct CustomVersionPicker: View {
     private var versionPopoverContent: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                ForEach(groupedVersions, id: \.0) { (major, versions) in
+                ForEach(groupedVersions, id: \.0) { major, versions in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(major)
                             .font(.headline)
