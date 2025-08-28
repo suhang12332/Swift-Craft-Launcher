@@ -2,8 +2,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 import UserNotifications
 
-
-
 // MARK: - Constants
 private enum Constants {
     static let formSpacing: CGFloat = 16
@@ -18,6 +16,7 @@ private enum Constants {
 }
 
 // MARK: - GameFormView
+// swiftlint:disable:next type_body_length
 struct GameFormView: View {
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
@@ -43,7 +42,11 @@ struct GameFormView: View {
 
     // MARK: - Body
     var body: some View {
-        CommonSheetView(header: {headerView}, body: {formContentView}, footer: {footerView})
+        CommonSheetView(
+            header: { headerView },
+            body: { formContentView },
+            footer: { footerView }
+        )
         .fileImporter(
             isPresented: $showImagePicker,
             allowedContentTypes: [.png, .jpeg, .gif],
@@ -101,7 +104,8 @@ struct GameFormView: View {
                         showImagePicker = true
                     }
                 }
-                .onDrop(of: [UTType.image.identifier], isTargeted: nil) { providers in
+                .onDrop(of: [UTType.image.identifier], isTargeted: nil) {
+                    providers in
                     if !gameSetupService.downloadState.isDownloading {
                         handleImageDrop(providers)
                     } else {
@@ -115,7 +119,7 @@ struct GameFormView: View {
         }
         .disabled(gameSetupService.downloadState.isDownloading)
     }
-    
+
     private var iconContainer: some View {
         ZStack {
             if let url = pendingIconURL {
@@ -128,12 +132,22 @@ struct GameFormView: View {
                             .resizable()
                             .interpolation(.none)
                             .scaledToFill()
-                            .frame(width: Constants.iconSize, height: Constants.iconSize)
-                            .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
+                            .frame(
+                                width: Constants.iconSize,
+                                height: Constants.iconSize
+                            )
+                            .clipShape(
+                                RoundedRectangle(
+                                    cornerRadius: Constants.cornerRadius
+                                )
+                            )
                             .contentShape(Rectangle())
                     case .failure:
                         RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                            .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
+                            .stroke(
+                                Color.accentColor.opacity(0.3),
+                                lineWidth: 1
+                            )
                             .background(Color.gray.opacity(0.08))
                     @unknown default:
                         EmptyView()
@@ -151,22 +165,31 @@ struct GameFormView: View {
                             .resizable()
                             .interpolation(.none)
                             .scaledToFill()
-                            .frame(width: Constants.iconSize, height: Constants.iconSize)
-                            .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
+                            .frame(
+                                width: Constants.iconSize,
+                                height: Constants.iconSize
+                            )
+                            .clipShape(
+                                RoundedRectangle(
+                                    cornerRadius: Constants.cornerRadius
+                                )
+                            )
                             .contentShape(Rectangle())
                     case .failure:
                         RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                            .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
+                            .stroke(
+                                Color.accentColor.opacity(0.3),
+                                lineWidth: 1
+                            )
                             .background(Color.gray.opacity(0.08))
                     @unknown default:
                         EmptyView()
                     }
                 }
-                } else {
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
-                        .background(Color.gray.opacity(0.08))
-                }
+            } else {
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
+                    .background(Color.gray.opacity(0.08))
             }
         }
         .frame(width: Constants.iconSize, height: Constants.iconSize)
@@ -180,18 +203,18 @@ struct GameFormView: View {
         }
     }
 
-   private var versionPicker: some View {
-       CustomVersionPicker(
-           selected: $selectedGameVersion,
-           availableVersions: availableVersions,
-           time: $versionTime,
-           onVersionSelected: { version in
-               await MinecraftService.fetchVersionTime(for: version)
-           }
-       )
-       .disabled(gameSetupService.downloadState.isDownloading)
-   }
-    
+    private var versionPicker: some View {
+        CustomVersionPicker(
+            selected: $selectedGameVersion,
+            availableVersions: availableVersions,
+            time: $versionTime,
+            onVersionSelected: { version in
+                await MinecraftService.fetchVersionTime(for: version)
+            }
+        )
+        .disabled(gameSetupService.downloadState.isDownloading)
+    }
+
     private var modLoaderPicker: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("game.form.modloader".localized())
@@ -207,13 +230,17 @@ struct GameFormView: View {
             .disabled(gameSetupService.downloadState.isDownloading)
             .onChange(of: selectedModLoader) { _, new in
                 Task {
-                    let compatibleVersions = await CommonService.compatibleVersions(for: new)
+                    let compatibleVersions =
+                        await CommonService.compatibleVersions(for: new)
                     await updateAvailableVersions(compatibleVersions)
                 }
             }
             .onAppear {
                 Task {
-                    let compatibleVersions = await CommonService.compatibleVersions(for: selectedModLoader)
+                    let compatibleVersions =
+                        await CommonService.compatibleVersions(
+                            for: selectedModLoader
+                        )
                     await updateAvailableVersions(compatibleVersions)
                 }
             }
@@ -221,7 +248,7 @@ struct GameFormView: View {
     }
 
     private var gameNameSection: some View {
-        
+
         FormSection {
             HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 8) {
@@ -237,18 +264,19 @@ struct GameFormView: View {
                                 .padding(.trailing, 4)
                         }
                     }
-                    TextField("game.form.name.placeholder".localized(), text: $gameName)
-                        .textFieldStyle(.roundedBorder)
-                        .foregroundColor(.primary)
-                        .focused($isGameNameFocused)
-                        .disabled(gameSetupService.downloadState.isDownloading)
+                    TextField(
+                        "game.form.name.placeholder".localized(),
+                        text: $gameName
+                    )
+                    .textFieldStyle(.roundedBorder)
+                    .foregroundColor(.primary)
+                    .focused($isGameNameFocused)
+                    .disabled(gameSetupService.downloadState.isDownloading)
                 }
                 .disabled(gameSetupService.downloadState.isDownloading)
-                
-                
             }
         }
-        .onChange(of: gameName) { old,newName in
+        .onChange(of: gameName) { _, newName in
             Task {
                 let isDuplicate = await checkGameNameDuplicate(newName)
                 if isDuplicate != isGameNameDuplicate {
@@ -265,7 +293,8 @@ struct GameFormView: View {
                     title: "download.core.title".localized(),
                     progress: gameSetupService.downloadState.coreProgress,
                     currentFile: gameSetupService.downloadState.currentCoreFile,
-                    completed: gameSetupService.downloadState.coreCompletedFiles,
+                    completed: gameSetupService.downloadState
+                        .coreCompletedFiles,
                     total: gameSetupService.downloadState.coreTotalFiles,
                     version: nil
                 )
@@ -274,20 +303,29 @@ struct GameFormView: View {
                 DownloadProgressRow(
                     title: "download.resources.title".localized(),
                     progress: gameSetupService.downloadState.resourcesProgress,
-                    currentFile: gameSetupService.downloadState.currentResourceFile,
-                    completed: gameSetupService.downloadState.resourcesCompletedFiles,
+                    currentFile: gameSetupService.downloadState
+                        .currentResourceFile,
+                    completed: gameSetupService.downloadState
+                        .resourcesCompletedFiles,
                     total: gameSetupService.downloadState.resourcesTotalFiles,
                     version: nil
                 )
             }
+
             if selectedModLoader.lowercased() == "fabric" || selectedModLoader.lowercased() == "quilt" {
                 FormSection {
                     DownloadProgressRow(
-                        title: (selectedModLoader.lowercased() == "fabric" ? "fabric.loader.title" : "quilt.loader.title").localized(),
-                        progress: gameSetupService.fabricDownloadState.coreProgress,
-                        currentFile: gameSetupService.fabricDownloadState.currentCoreFile,
-                        completed: gameSetupService.fabricDownloadState.coreCompletedFiles,
-                        total: gameSetupService.fabricDownloadState.coreTotalFiles,
+                        title: (selectedModLoader.lowercased() == "fabric"
+                            ? "fabric.loader.title" : "quilt.loader.title")
+                            .localized(),
+                        progress: gameSetupService.fabricDownloadState
+                            .coreProgress,
+                        currentFile: gameSetupService.fabricDownloadState
+                            .currentCoreFile,
+                        completed: gameSetupService.fabricDownloadState
+                            .coreCompletedFiles,
+                        total: gameSetupService.fabricDownloadState
+                            .coreTotalFiles,
                         version: nil
                     )
                 }
@@ -296,10 +334,14 @@ struct GameFormView: View {
                 FormSection {
                     DownloadProgressRow(
                         title: "forge.loader.title".localized(),
-                        progress: gameSetupService.forgeDownloadState.coreProgress,
-                        currentFile: gameSetupService.forgeDownloadState.currentCoreFile,
-                        completed: gameSetupService.forgeDownloadState.coreCompletedFiles,
-                        total: gameSetupService.forgeDownloadState.coreTotalFiles,
+                        progress: gameSetupService.forgeDownloadState
+                            .coreProgress,
+                        currentFile: gameSetupService.forgeDownloadState
+                            .currentCoreFile,
+                        completed: gameSetupService.forgeDownloadState
+                            .coreCompletedFiles,
+                        total: gameSetupService.forgeDownloadState
+                            .coreTotalFiles,
                         version: nil
                     )
                 }
@@ -308,10 +350,14 @@ struct GameFormView: View {
                 FormSection {
                     DownloadProgressRow(
                         title: "neoforge.loader.title".localized(),
-                        progress: gameSetupService.neoForgeDownloadState.coreProgress,
-                        currentFile: gameSetupService.neoForgeDownloadState.currentCoreFile,
-                        completed: gameSetupService.neoForgeDownloadState.coreCompletedFiles,
-                        total: gameSetupService.neoForgeDownloadState.coreTotalFiles,
+                        progress: gameSetupService.neoForgeDownloadState
+                            .coreProgress,
+                        currentFile: gameSetupService.neoForgeDownloadState
+                            .currentCoreFile,
+                        completed: gameSetupService.neoForgeDownloadState
+                            .coreCompletedFiles,
+                        total: gameSetupService.neoForgeDownloadState
+                            .coreTotalFiles,
                         version: nil
                     )
                 }
@@ -326,7 +372,7 @@ struct GameFormView: View {
             confirmButton
         }
     }
-    
+
     private var cancelButton: some View {
         Button("common.cancel".localized()) {
             if gameSetupService.downloadState.isDownloading {
@@ -338,7 +384,7 @@ struct GameFormView: View {
         }
         .keyboardShortcut(.cancelAction)
     }
-    
+
     private var confirmButton: some View {
         Button {
             downloadTask?.cancel()
@@ -360,30 +406,36 @@ struct GameFormView: View {
     }
 
     // MARK: - Helper Methods
-    
+
     /// 更新可用版本并设置默认选择
     private func updateAvailableVersions(_ versions: [String]) async {
         await MainActor.run {
             self.availableVersions = versions
             // 如果当前选中的版本不在兼容版本列表中，选择第一个兼容版本
-             if !versions.contains(self.selectedGameVersion) && !versions.isEmpty {
-                 self.selectedGameVersion = versions.first!
-             }
+            if !versions.contains(self.selectedGameVersion) && !versions.isEmpty {
+                self.selectedGameVersion = versions.first!
+            }
         }
-        
+
         // 获取当前选中版本的时间信息
         if !versions.isEmpty {
-            let targetVersion = versions.contains(self.selectedGameVersion) ? self.selectedGameVersion : versions.first!
-            let timeString = await MinecraftService.fetchVersionTime(for: targetVersion)
+            let targetVersion =
+                versions.contains(self.selectedGameVersion)
+                ? self.selectedGameVersion : versions.first!
+            let timeString = await MinecraftService.fetchVersionTime(
+                for: targetVersion
+            )
             await MainActor.run {
                 self.versionTime = timeString
             }
         }
     }
-    
+
     /// 初始化版本选择器
     private func initializeVersionPicker() async {
-        let compatibleVersions = await CommonService.compatibleVersions(for: selectedModLoader)
+        let compatibleVersions = await CommonService.compatibleVersions(
+            for: selectedModLoader
+        )
         await updateAvailableVersions(compatibleVersions)
     }
 
@@ -425,7 +477,8 @@ struct GameFormView: View {
             Task { @MainActor in
                 do {
                     let data = try Data(contentsOf: url)
-                    let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".png")
+                    let tempURL = FileManager.default.temporaryDirectory
+                        .appendingPathComponent(UUID().uuidString + ".png")
                     try data.write(to: tempURL)
                     pendingIconURL = tempURL
                     pendingIconData = data
@@ -443,7 +496,10 @@ struct GameFormView: View {
             }
         case .failure(let error):
             let globalError = GlobalError.from(error)
-            handleNonCriticalError(globalError, message: "error.image.pick.failed".localized())
+            handleNonCriticalError(
+                globalError,
+                message: "error.image.pick.failed".localized()
+            )
         }
     }
 
@@ -454,18 +510,24 @@ struct GameFormView: View {
         }
 
         if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-            provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, error in
+            provider.loadDataRepresentation(
+                forTypeIdentifier: UTType.image.identifier
+            ) { data, error in
                 if let error = error {
                     DispatchQueue.main.async {
                         let globalError = GlobalError.from(error)
-                        handleNonCriticalError(globalError, message: "error.image.load.drag.failed".localized())
+                        handleNonCriticalError(
+                            globalError,
+                            message: "error.image.load.drag.failed".localized()
+                        )
                     }
                     return
                 }
 
                 if let data = data {
                     DispatchQueue.main.async {
-                        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".png")
+                        let tempURL = FileManager.default.temporaryDirectory
+                            .appendingPathComponent(UUID().uuidString + ".png")
                         do {
                             try data.write(to: tempURL)
                             pendingIconURL = tempURL
@@ -475,7 +537,8 @@ struct GameFormView: View {
                             handleNonCriticalError(
                                 GlobalError.fileSystem(
                                     chineseMessage: "图片保存失败",
-                                    i18nKey: "error.filesystem.image_save_failed",
+                                    i18nKey:
+                                        "error.filesystem.image_save_failed",
                                     level: .notification
                                 ),
                                 message: "error.image.save.failed".localized()
@@ -489,7 +552,6 @@ struct GameFormView: View {
         Logger.shared.warning("图片拖放失败：不支持的类型")
         return false
     }
-
 
     // MARK: - Game Save Methods
     private func saveGame() async {
@@ -518,5 +580,3 @@ struct GameFormView: View {
         return await gameSetupService.checkGameNameDuplicate(name)
     }
 }
-
-

@@ -1,3 +1,4 @@
+import CommonCrypto
 //
 //  ModPackDownloadSheetViewModel.swift
 //  SwiftCraftLauncher
@@ -6,7 +7,6 @@
 //
 import Foundation
 import SwiftUI
-import CommonCrypto
 import ZIPFoundation
 
 // MARK: - View Model
@@ -385,95 +385,95 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 // MARK: - Modrinth Index Models
 
 struct ModrinthIndex: Codable {
-   let formatVersion: Int
-   let game: String
-   let versionId: String
-   let name: String
-   let summary: String?
-   let files: [ModrinthIndexFile]
-   let dependencies: ModrinthIndexDependencies
-   
-   enum CodingKeys: String, CodingKey {
-       case formatVersion = "formatVersion"
-       case game
-       case versionId = "versionId"
-       case name
-       case summary
-       case files
-       case dependencies
-   }
+    let formatVersion: Int
+    let game: String
+    let versionId: String
+    let name: String
+    let summary: String?
+    let files: [ModrinthIndexFile]
+    let dependencies: ModrinthIndexDependencies
+
+    enum CodingKeys: String, CodingKey {
+        case formatVersion = "formatVersion"
+        case game
+        case versionId = "versionId"
+        case name
+        case summary
+        case files
+        case dependencies
+    }
 }
 
 struct ModrinthIndexFile: Codable {
-   let path: String
-   let hashes: [String: String]
-   let downloads: [String]
-   let fileSize: Int
-   let env: ModrinthIndexFileEnv?
-   
-   enum CodingKeys: String, CodingKey {
-       case path
-       case hashes
-       case downloads
-       case fileSize = "fileSize"
-       case env
-   }
+    let path: String
+    let hashes: [String: String]
+    let downloads: [String]
+    let fileSize: Int
+    let env: ModrinthIndexFileEnv?
+
+    enum CodingKeys: String, CodingKey {
+        case path
+        case hashes
+        case downloads
+        case fileSize = "fileSize"
+        case env
+    }
 }
 
 struct ModrinthIndexFileEnv: Codable {
-   let client: String?
-   let server: String?
+    let client: String?
+    let server: String?
 }
 
 struct ModrinthIndexDependencies: Codable {
-   let minecraft: String?
-   let forgeLoader: String?
-   let fabricLoader: String?
-   let quiltLoader: String?
-   let neoforgeLoader: String?
-   // 添加不带 -loader 后缀的属性
-   let forge: String?
-   let fabric: String?
-   let quilt: String?
-   let neoforge: String?
-   let dependencies: [ModrinthIndexProjectDependency]?
-   
-   enum CodingKeys: String, CodingKey {
-       case minecraft
-       case forgeLoader = "forge-loader"
-       case fabricLoader = "fabric-loader"
-       case quiltLoader = "quilt-loader"
-       case neoforgeLoader = "neoforge-loader"
-       case forge
-       case fabric
-       case quilt
-       case neoforge
-       case dependencies
-   }
+    let minecraft: String?
+    let forgeLoader: String?
+    let fabricLoader: String?
+    let quiltLoader: String?
+    let neoforgeLoader: String?
+    // 添加不带 -loader 后缀的属性
+    let forge: String?
+    let fabric: String?
+    let quilt: String?
+    let neoforge: String?
+    let dependencies: [ModrinthIndexProjectDependency]?
+
+    enum CodingKeys: String, CodingKey {
+        case minecraft
+        case forgeLoader = "forge-loader"
+        case fabricLoader = "fabric-loader"
+        case quiltLoader = "quilt-loader"
+        case neoforgeLoader = "neoforge-loader"
+        case forge
+        case fabric
+        case quilt
+        case neoforge
+        case dependencies
+    }
 }
 
 struct ModrinthIndexProjectDependency: Codable {
-   let projectId: String?
-   let versionId: String?
-   let dependencyType: String
-   
-   enum CodingKeys: String, CodingKey {
-       case projectId = "project_id"
-       case versionId = "version_id"
-       case dependencyType = "dependency_type"
-   }
+    let projectId: String?
+    let versionId: String?
+    let dependencyType: String
+
+    enum CodingKeys: String, CodingKey {
+        case projectId = "project_id"
+        case versionId = "version_id"
+        case dependencyType = "dependency_type"
+    }
 }
 
 // MARK: - Modrinth Index Info
 struct ModrinthIndexInfo {
-   let gameVersion: String
-   let loaderType: String
-   let loaderVersion: String
-   let modPackName: String
-   let modPackVersion: String
-   let summary: String?
-   let files: [ModrinthIndexFile]
-   let dependencies: [ModrinthIndexProjectDependency]
+    let gameVersion: String
+    let loaderType: String
+    let loaderVersion: String
+    let modPackName: String
+    let modPackVersion: String
+    let summary: String?
+    let files: [ModrinthIndexFile]
+    let dependencies: [ModrinthIndexProjectDependency]
 }
 
 // MARK: - ModPack Install State
@@ -509,7 +509,11 @@ class ModPackInstallState: ObservableObject {
         overridesCompleted = 0
     }
 
-    func startInstallation(filesTotal: Int, dependenciesTotal: Int, overridesTotal: Int = 0) {
+    func startInstallation(
+        filesTotal: Int,
+        dependenciesTotal: Int,
+        overridesTotal: Int = 0
+    ) {
         self.filesTotal = filesTotal
         self.dependenciesTotal = dependenciesTotal
         self.overridesTotal = overridesTotal
@@ -529,23 +533,37 @@ class ModPackInstallState: ObservableObject {
         filesProgress = calculateProgress(completed: completed, total: total)
         objectWillChange.send()
     }
-    
-    func updateDependenciesProgress(dependencyName: String, completed: Int, total: Int) {
+
+    func updateDependenciesProgress(
+        dependencyName: String,
+        completed: Int,
+        total: Int
+    ) {
         currentDependency = dependencyName
         dependenciesCompleted = completed
         dependenciesTotal = total
-        dependenciesProgress = calculateProgress(completed: completed, total: total)
+        dependenciesProgress = calculateProgress(
+            completed: completed,
+            total: total
+        )
         objectWillChange.send()
     }
-    
-    func updateOverridesProgress(overrideName: String, completed: Int, total: Int) {
+
+    func updateOverridesProgress(
+        overrideName: String,
+        completed: Int,
+        total: Int
+    ) {
         currentOverride = overrideName
         overridesCompleted = completed
         overridesTotal = total
-        overridesProgress = calculateProgress(completed: completed, total: total)
+        overridesProgress = calculateProgress(
+            completed: completed,
+            total: total
+        )
         objectWillChange.send()
     }
-    
+
     private func calculateProgress(completed: Int, total: Int) -> Double {
         guard total > 0 else { return 0.0 }
         return max(0.0, min(1.0, Double(completed) / Double(total)))

@@ -37,7 +37,7 @@ struct ModrinthDetailView: View {
             selectedPerformanceImpact.joined(separator: ","),
             selectedLoader.joined(separator: ","),
             String(currentPage),
-            String(gameType)
+            String(gameType),
         ].joined(separator: "|")
     }
 
@@ -45,7 +45,7 @@ struct ModrinthDetailView: View {
     var body: some View {
         LazyVStack {
             if let error = error {
-                ErrorView(error)
+                newErrorView(error)
             } else if viewModel.isLoading {
                 HStack {
                     ProgressView()
@@ -53,26 +53,38 @@ struct ModrinthDetailView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
             } else if viewModel.results.isEmpty {
-                EmptyResultView()
+                emptyResultView()
             } else {
                 resultList
             }
         }
-        .task { if gameType {
-            await initialLoadIfNeeded()
-        } }
+        .task {
+            if gameType {
+                await initialLoadIfNeeded()
+            }
+        }
         .onChange(of: searchKey) { _, newKey in
             if newKey != lastSearchKey {
                 lastSearchKey = newKey
                 triggerSearch()
             }
         }
-        .onChange(of: viewModel.totalHits) { _, newValue in totalItems = newValue }
-        .searchable(text: $searchText,placement: .toolbar,prompt: "search.resources".localized()).help("search.resources".localized())
+        .onChange(of: viewModel.totalHits) { _, newValue in
+            totalItems = newValue
+        }
+        .searchable(
+            text: $searchText,
+            placement: .toolbar,
+            prompt: "search.resources".localized()
+        )
+        .help("search.resources".localized())
         .onChange(of: searchText) { _, _ in
             debounceSearch()
         }
-        .alert("error.notification.search.title".localized(), isPresented: .constant(error != nil)) {
+        .alert(
+            "error.notification.search.title".localized(),
+            isPresented: .constant(error != nil)
+        ) {
             Button("common.close".localized()) {
                 error = nil
             }
@@ -135,14 +147,14 @@ struct ModrinthDetailView: View {
             selectedLoader.joined(separator: ","),
             String(currentPage),
             String(gameType),
-            searchText
+            searchText,
         ].joined(separator: "|")
-        
+
         if params == lastSearchParams {
             // 完全重复，不请求
             return
         }
-        
+
         guard !query.isEmpty else {
             throw GlobalError.validation(
                 chineseMessage: "查询类型不能为空",
@@ -150,7 +162,7 @@ struct ModrinthDetailView: View {
                 level: .notification
             )
         }
-        
+
         lastSearchParams = params
         await viewModel.search(
             query: searchText,

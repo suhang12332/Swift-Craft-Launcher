@@ -1,5 +1,5 @@
-import SwiftUI
 import Foundation
+import SwiftUI
 
 struct ModrinthDetailCardView: View {
     // MARK: - Properties
@@ -14,14 +14,14 @@ struct ModrinthDetailCardView: View {
     @State private var addButtonState: AddButtonState = .idle
     @State private var showDeleteAlert = false
     @EnvironmentObject private var gameRepository: GameRepository
-    
+
     // MARK: - Enums
     enum AddButtonState {
         case idle
         case loading
         case installed
     }
-    
+
     // MARK: - Body
     var body: some View {
         HStack(spacing: ModrinthConstants.UI.contentSpacing) {
@@ -36,15 +36,21 @@ struct ModrinthDetailCardView: View {
         }
         .frame(maxWidth: .infinity)
     }
-    
+
     // MARK: - View Components
     private var iconView: some View {
         Group {
             if project.author == "local" {
                 // 本地资源显示 questionmark.circle 图标
                 localResourceIcon
-            } else if let iconUrl = project.iconUrl, let url = URL(string: iconUrl) {
-                AsyncImage(url: url, transaction: Transaction(animation: .easeInOut(duration: 0.2))) { phase in
+            } else if let iconUrl = project.iconUrl,
+                let url = URL(string: iconUrl) {
+                AsyncImage(
+                    url: url,
+                    transaction: Transaction(
+                        animation: .easeInOut(duration: 0.2)
+                    )
+                ) { phase in
                     switch phase {
                     case .empty:
                         placeholderIcon
@@ -59,34 +65,45 @@ struct ModrinthDetailCardView: View {
                         placeholderIcon
                     }
                 }
-                .frame(width: ModrinthConstants.UI.iconSize, height: ModrinthConstants.UI.iconSize)
+                .frame(
+                    width: ModrinthConstants.UI.iconSize,
+                    height: ModrinthConstants.UI.iconSize
+                )
                 .cornerRadius(ModrinthConstants.UI.cornerRadius)
                 .clipped()
                 .onDisappear {
                     // 清理图片缓存，避免内存泄漏
-                    URLCache.shared.removeCachedResponse(for: URLRequest(url: url))
+                    URLCache.shared.removeCachedResponse(
+                        for: URLRequest(url: url)
+                    )
                 }
             } else {
                 placeholderIcon
             }
         }
     }
-    
+
     private var placeholderIcon: some View {
         Color.gray.opacity(0.2)
-            .frame(width: ModrinthConstants.UI.iconSize, height: ModrinthConstants.UI.iconSize)
+            .frame(
+                width: ModrinthConstants.UI.iconSize,
+                height: ModrinthConstants.UI.iconSize
+            )
             .cornerRadius(ModrinthConstants.UI.cornerRadius)
     }
-    
+
     private var localResourceIcon: some View {
         Image(systemName: "questionmark.circle")
             .font(.system(size: ModrinthConstants.UI.iconSize * 0.6))
             .foregroundColor(.secondary)
-            .frame(width: ModrinthConstants.UI.iconSize, height: ModrinthConstants.UI.iconSize)
+            .frame(
+                width: ModrinthConstants.UI.iconSize,
+                height: ModrinthConstants.UI.iconSize
+            )
             .background(Color.gray.opacity(0.2))
             .cornerRadius(ModrinthConstants.UI.cornerRadius)
     }
-    
+
     private var titleView: some View {
         HStack(spacing: 4) {
             Text(project.title)
@@ -98,27 +115,36 @@ struct ModrinthDetailCardView: View {
                 .lineLimit(1)
         }
     }
-    
+
     private var descriptionView: some View {
         Text(project.description)
             .font(.subheadline)
             .lineLimit(ModrinthConstants.UI.descriptionLineLimit)
             .foregroundColor(.secondary)
     }
-    
+
     private var tagsView: some View {
         HStack(spacing: ModrinthConstants.UI.spacing) {
-            ForEach(Array(project.displayCategories.prefix(ModrinthConstants.UI.maxTags)), id: \.self) { tag in
+            ForEach(
+                Array(
+                    project.displayCategories.prefix(
+                        ModrinthConstants.UI.maxTags
+                    )
+                ),
+                id: \.self
+            ) { tag in
                 TagView(text: tag)
             }
             if project.displayCategories.count > ModrinthConstants.UI.maxTags {
-                Text("+\(project.displayCategories.count - ModrinthConstants.UI.maxTags)")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                Text(
+                    "+\(project.displayCategories.count - ModrinthConstants.UI.maxTags)"
+                )
+                .font(.caption2)
+                .foregroundColor(.secondary)
             }
         }
     }
-    
+
     private var infoView: some View {
         VStack(alignment: .trailing, spacing: ModrinthConstants.UI.spacing) {
             downloadInfoView
@@ -136,21 +162,21 @@ struct ModrinthDetailCardView: View {
             .environmentObject(gameRepository)
         }
     }
-    
+
     private var downloadInfoView: some View {
         InfoRowView(
             icon: "arrow.down.circle",
             text: Self.formatNumber(project.downloads)
         )
     }
-    
+
     private var followerInfoView: some View {
         InfoRowView(
             icon: "heart",
             text: Self.formatNumber(project.follows)
         )
     }
-    
+
     // MARK: - Helper Methods
     static func formatNumber(_ num: Int) -> String {
         if num >= 1_000_000 {
@@ -166,7 +192,7 @@ struct ModrinthDetailCardView: View {
 // MARK: - Supporting Views
 private struct TagView: View {
     let text: String
-    
+
     var body: some View {
         Text(text)
             .font(.caption2)
@@ -180,7 +206,7 @@ private struct TagView: View {
 private struct InfoRowView: View {
     let icon: String
     let text: String
-    
+
     var body: some View {
         HStack(spacing: 2) {
             Image(systemName: icon)

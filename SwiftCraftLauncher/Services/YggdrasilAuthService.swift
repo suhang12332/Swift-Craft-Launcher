@@ -13,18 +13,18 @@ import Combine
 @MainActor
 class YggdrasilAuthService: ObservableObject {
     static let shared = YggdrasilAuthService()
-    
+
     @Published var authState: AuthenticationState = .notAuthenticated
     @Published var isLoading: Bool = false
     private var cancellables = Set<AnyCancellable>()
-    
+
     var openURLHandler: ((URL) -> Void)?
-    
+
     private let clientId = AppConstants.yggdrasilClientId
     private let scope = AppConstants.yggdrasilScope
-    
+
     private init() {}
-    
+
     // MARK: - 认证流程
     func startAuthentication() async {
         await MainActor.run {
@@ -57,7 +57,7 @@ class YggdrasilAuthService: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - 请求设备代码
     private func requestDeviceCodeThrowing() async throws -> YggdrasilDeviceCodeResponse {
         let url = URLConfig.API.Authentication.yggdrasilDeviceCode
@@ -84,7 +84,7 @@ class YggdrasilAuthService: ObservableObject {
             )
         }
     }
-    
+
     // MARK: - 轮询检查令牌
     private func pollForToken(deviceCode: String, interval: Int) async {
         let maxAttempts = 60 // 最多尝试次数
@@ -141,7 +141,7 @@ class YggdrasilAuthService: ObservableObject {
             authState = .error(timeoutError.localizedDescription)
         }
     }
-    
+
     // MARK: - 请求访问令牌
     private func requestTokenThrowing(deviceCode: String) async throws -> YggdrasilTokenResponse {
         let url = URLConfig.API.Authentication.yggdrasilToken
@@ -204,16 +204,16 @@ class YggdrasilAuthService: ObservableObject {
             )
         }
     }
-    
+
     // MARK: - 获取Yggdrasil用户档案
     private func fetchYggdrasilProfileThrowing(accessToken: String, tokenResponse: YggdrasilTokenResponse) async throws -> YggdrasilProfileResponse {
         let url = URLConfig.API.Authentication.yggdrasilUserInfo
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        
+
         let (data, response) = try await URLSession.shared.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
@@ -221,7 +221,7 @@ class YggdrasilAuthService: ObservableObject {
                 level: .popup
             )
         }
-        
+
         guard httpResponse.statusCode == 200 else {
             throw GlobalError.network(
                 chineseMessage: "获取用户档案失败: HTTP \(httpResponse.statusCode)",
@@ -229,19 +229,19 @@ class YggdrasilAuthService: ObservableObject {
                 level: .popup
             )
         }
-        
+
         do {
             // 使用反序列化解析UserInfo响应
             let userInfo = try JSONDecoder().decode(YggdrasilUserInfo.self, from: data)
-            
+
             Logger.shared.info("UserInfo: \(userInfo)")
-            
+
             // 自动获取皮肤信息
             var textures: YggdrasilTextures?
             do {
                 textures = try await fetchSkinInfo(for: userInfo.selectedProfile.id)
             }
-            
+
             return YggdrasilProfileResponse(
                 id: userInfo.selectedProfile.id,
                 username: userInfo.selectedProfile.name,
@@ -259,31 +259,31 @@ class YggdrasilAuthService: ObservableObject {
             )
         }
     }
-    
+
     // MARK: - 登出
     func logout() {
         // 重置认证状态
         authState = .notAuthenticated
-        
+
         // 停止加载状态
         isLoading = false
-        
+
         Logger.shared.debug("Yggdrasil认证服务已清除所有内存状态")
     }
-    
+
     // MARK: - 取消认证
     func cancelAuthentication() {
         authState = .notAuthenticated
     }
-    
+
     // MARK: - 获取皮肤信息
     func fetchSkinInfo(for profileId: String) async throws -> YggdrasilTextures? {
         let url = URLConfig.API.Authentication.yggdrasilProfile(uuid: profileId)
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        
+
         let (data, response) = try await URLSession.shared.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
@@ -291,7 +291,7 @@ class YggdrasilAuthService: ObservableObject {
                 level: .popup
             )
         }
-        
+
         guard httpResponse.statusCode == 200 else {
             throw GlobalError.network(
                 chineseMessage: "获取皮肤信息失败: HTTP \(httpResponse.statusCode)",
@@ -299,17 +299,17 @@ class YggdrasilAuthService: ObservableObject {
                 level: .popup
             )
         }
-        
+
         do {
             // 使用反序列化解析皮肤响应
             let skinResponse = try JSONDecoder().decode(YggdrasilSkinResponse.self, from: data)
-            
+
             // 查找 textures 属性
             guard let texturesProperty = skinResponse.properties.first(where: { $0.name == "textures" }) else {
                 Logger.shared.warning("No textures property found in skin response")
                 return nil
             }
-            
+
             // 解码 Base64 编码的纹理数据
             guard let texturesData = Data(base64Encoded: texturesProperty.value) else {
                 throw GlobalError.validation(
@@ -318,10 +318,10 @@ class YggdrasilAuthService: ObservableObject {
                     level: .popup
                 )
             }
-            
+
             let textures = try JSONDecoder().decode(YggdrasilTextures.self, from: texturesData)
             return textures
-            
+
         } catch {
             throw GlobalError.validation(
                 chineseMessage: "解析皮肤响应失败: \(error.localizedDescription)",
@@ -330,9 +330,9 @@ class YggdrasilAuthService: ObservableObject {
             )
         }
     }
-    
+
     // MARK: - 验证并刷新第三方账户Token
-    
+
     /// 验证并尝试刷新第三方玩家Token（静默版本）
     /// - Parameter player: 玩家对象
     /// - Returns: 验证/刷新后的玩家对象，如果失败返回nil
@@ -346,14 +346,14 @@ class YggdrasilAuthService: ObservableObject {
             return nil
         }
     }
-    
+
     /// 验证并尝试刷新第三方玩家Token（抛出异常版本）
     /// - Parameter player: 玩家对象
     /// - Returns: 验证/刷新后的玩家对象
     /// - Throws: GlobalError 当操作失败时
     func validateAndRefreshPlayerTokenThrowing(for player: Player) async throws -> Player {
         Logger.shared.info("验证第三方账户 \(player.name) 的Token")
-        
+
         // 如果没有访问令牌，抛出错误要求重新登录
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
@@ -362,17 +362,17 @@ class YggdrasilAuthService: ObservableObject {
                 level: .notification
             )
         }
-        
+
         // 首先尝试验证当前token是否有效
         let isTokenValid = await validateThirdPartyToken(player.authAccessToken)
-        
+
         if isTokenValid {
             Logger.shared.info("第三方账户 \(player.name) 的Token仍然有效")
             return player
         }
-        
+
         Logger.shared.info("第三方账户 \(player.name) 的Token已过期，尝试刷新")
-        
+
         // Token无效，尝试使用refresh token刷新
         guard !player.authRefreshToken.isEmpty else {
             Logger.shared.warning("第三方账户 \(player.name) 缺少刷新令牌，需要重新登录")
@@ -382,14 +382,14 @@ class YggdrasilAuthService: ObservableObject {
                 level: .popup
             )
         }
-        
+
         do {
             // 使用refresh token刷新访问令牌
             let refreshedTokens = try await refreshThirdPartyTokenThrowing(refreshToken: player.authRefreshToken)
-            
+
             // 获取更新后的用户档案信息
             let updatedProfile = try await fetchYggdrasilProfileThrowing(accessToken: refreshedTokens.accessToken, tokenResponse: refreshedTokens)
-            
+
             // 创建更新后的玩家对象
             let updatedPlayer = try Player(
                 name: player.name,
@@ -405,10 +405,10 @@ class YggdrasilAuthService: ObservableObject {
                 isCurrent: player.isCurrent,
                 gameRecords: player.gameRecords
             )
-            
+
             Logger.shared.info("成功刷新第三方账户 \(player.name) 的Token")
             return updatedPlayer
-            
+
         } catch {
             Logger.shared.warning("刷新第三方账户 \(player.name) 的Token失败: \(error.localizedDescription)")
             throw GlobalError.authentication(
@@ -418,7 +418,7 @@ class YggdrasilAuthService: ObservableObject {
             )
         }
     }
-    
+
     /// 验证第三方访问令牌是否有效
     /// - Parameter accessToken: 访问令牌
     /// - Returns: 是否有效
@@ -428,20 +428,20 @@ class YggdrasilAuthService: ObservableObject {
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
             request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-            
+
             let (_, response) = try await URLSession.shared.data(for: request)
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 return false
             }
-            
+
             return httpResponse.statusCode == 200
         } catch {
             Logger.shared.debug("第三方Token验证失败: \(error.localizedDescription)")
             return false
         }
     }
-    
+
     /// 使用refresh token刷新第三方访问令牌（抛出异常版本）
     /// - Parameter refreshToken: 刷新令牌
     /// - Returns: 新的令牌响应
@@ -451,12 +451,12 @@ class YggdrasilAuthService: ObservableObject {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        
+
         let body = "grant_type=refresh_token&client_id=\(clientId)&refresh_token=\(refreshToken)"
         request.httpBody = body.data(using: .utf8)
-        
+
         let (data, response) = try await URLSession.shared.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.download(
                 chineseMessage: "刷新第三方访问令牌失败: 无效的 HTTP 响应",
@@ -464,7 +464,7 @@ class YggdrasilAuthService: ObservableObject {
                 level: .notification
             )
         }
-        
+
         // 检查OAuth错误
         if let errorResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
            let error = errorResponse["error"] as? String {
@@ -474,7 +474,7 @@ class YggdrasilAuthService: ObservableObject {
                 level: .popup
             )
         }
-        
+
         guard httpResponse.statusCode == 200 else {
             throw GlobalError.network(
                 chineseMessage: "刷新第三方访问令牌失败: HTTP \(httpResponse.statusCode)",
@@ -482,7 +482,7 @@ class YggdrasilAuthService: ObservableObject {
                 level: .popup
             )
         }
-        
+
         do {
             return try JSONDecoder().decode(YggdrasilTokenResponse.self, from: data)
         } catch {
@@ -494,5 +494,4 @@ class YggdrasilAuthService: ObservableObject {
         }
     }
 }
-
 

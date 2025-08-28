@@ -1,8 +1,5 @@
 import Foundation
 
-
-
-
 // MARK: - 筛选项模型
 struct FilterItem: Identifiable, Equatable, Hashable {
     let id: String

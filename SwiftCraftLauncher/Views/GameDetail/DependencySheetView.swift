@@ -6,11 +6,11 @@ struct DependencySheetView: View {
     @Binding var isDownloadingMainResourceOnly: Bool
     let projectDetail: ModrinthProjectDetail
     @State private var error: GlobalError?
-    
+
     let onDownloadAll: () async -> Void
     let onRetry: (ModrinthProjectDetail) async -> Void
     let onDownloadMainOnly: () async -> Void
-    
+
     var body: some View {
         CommonSheetView(
             header: {
@@ -24,8 +24,10 @@ struct DependencySheetView: View {
                 } else {
                     ModrinthProjectTitleView(projectDetail: projectDetail)
                     VStack(alignment: .leading, spacing: 12) {
-                        ForEach(viewModel.missingDependencies, id: \.id) { dep in
-                            let versions = viewModel.dependencyVersions[dep.id] ?? []
+                        ForEach(viewModel.missingDependencies, id: \.id) {
+                            dep in
+                            let versions =
+                                viewModel.dependencyVersions[dep.id] ?? []
                             if !versions.isEmpty {
                                 VStack(alignment: .leading) {
                                     HStack(alignment: .center) {
@@ -34,10 +36,24 @@ struct DependencySheetView: View {
                                         Spacer()
                                         dependencyDownloadStatusView(dep: dep)
                                     }
-                                    Picker("dependency.version.picker".localized(), selection: Binding(
-                                        get: { viewModel.selectedDependencyVersion[dep.id] ?? (versions.first?.id ?? "") },
-                                        set: { viewModel.selectedDependencyVersion[dep.id] = $0 }
-                                    )) {
+                                    Picker(
+                                        "dependency.version.picker".localized(),
+                                        selection: Binding(
+                                            get: {
+                                                viewModel
+                                                    .selectedDependencyVersion[
+                                                        dep.id
+                                                    ]
+                                                    ?? (versions.first?.id ?? "")
+                                            },
+                                            set: {
+                                                viewModel
+                                                    .selectedDependencyVersion[
+                                                        dep.id
+                                                    ] = $0
+                                            }
+                                        )
+                                    ) {
                                         ForEach(versions, id: \.id) { v in
                                             Text(v.name).tag(v.id)
                                         }
@@ -54,54 +70,71 @@ struct DependencySheetView: View {
                 if viewModel.isLoadingDependencies {
                     HStack {
                         Spacer()
-                        Button("common.close".localized()) { viewModel.showDependenciesSheet = false }
+                        Button("common.close".localized()) {
+                            viewModel.showDependenciesSheet = false
+                        }
                     }
                 } else if !viewModel.missingDependencies.isEmpty {
                     HStack {
-                        Button("common.close".localized()) { viewModel.showDependenciesSheet = false }
-                        Spacer()
-                        
-                        let hasDownloading = viewModel.missingDependencies.contains {
-                            viewModel.dependencyDownloadStates[$0.id] == .downloading
+                        Button("common.close".localized()) {
+                            viewModel.showDependenciesSheet = false
                         }
-                        Button(action: {
+                        Spacer()
+
+                        let hasDownloading = viewModel.missingDependencies
+                            .contains {
+                                viewModel.dependencyDownloadStates[$0.id]
+                                    == .downloading
+                            }
+                        Button {
                             Task {
                                 await onDownloadMainOnly()
                             }
-                        }) {
+                        } label: {
                             if isDownloadingMainResourceOnly {
                                 ProgressView().controlSize(.small)
                             } else {
-                                Text("global_resource.download_main_only".localized())
+                                Text(
+                                    "global_resource.download_main_only"
+                                        .localized()
+                                )
                             }
                         }
-                        .disabled(isDownloadingAllDependencies || isDownloadingMainResourceOnly)
+                        .disabled(
+                            isDownloadingAllDependencies
+                                || isDownloadingMainResourceOnly
+                        )
                         switch viewModel.overallDownloadState {
                         case .idle:
-                            Button(action: {
+                            Button {
                                 isDownloadingAllDependencies = true
                                 Task {
                                     await onDownloadAll()
                                     isDownloadingAllDependencies = false
                                 }
-                            }) {
+                            } label: {
                                 if isDownloadingAllDependencies || hasDownloading {
                                     ProgressView().controlSize(.small)
                                 } else {
-                                    Text("dependency.download_all_and_continue".localized())
+                                    Text(
+                                        "dependency.download_all_and_continue"
+                                            .localized()
+                                    )
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
-                            .disabled(isDownloadingAllDependencies || hasDownloading)
-                            
+                            .disabled(
+                                isDownloadingAllDependencies || hasDownloading
+                            )
+
                         case .failed:
-                            Button(action: {
+                            Button {
                                 isDownloadingAllDependencies = true
                                 Task {
                                     await onDownloadAll()
                                     isDownloadingAllDependencies = false
                                 }
-                            }) {
+                            } label: {
                                 if isDownloadingAllDependencies || hasDownloading {
                                     ProgressView().controlSize(.small)
                                 } else {
@@ -109,7 +142,10 @@ struct DependencySheetView: View {
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
-                            .disabled(isDownloadingAllDependencies || hasDownloading || !viewModel.allDependenciesDownloaded)
+                            .disabled(
+                                isDownloadingAllDependencies || hasDownloading
+                                    || !viewModel.allDependenciesDownloaded
+                            )
 
                         case .retrying:
                             EmptyView()
@@ -118,12 +154,17 @@ struct DependencySheetView: View {
                 } else {
                     HStack {
                         Spacer()
-                        Button("common.close".localized()) { viewModel.showDependenciesSheet = false }
+                        Button("common.close".localized()) {
+                            viewModel.showDependenciesSheet = false
+                        }
                     }
                 }
             }
         )
-        .alert("error.notification.download.title".localized(), isPresented: .constant(error != nil)) {
+        .alert(
+            "error.notification.download.title".localized(),
+            isPresented: .constant(error != nil)
+        ) {
             Button("common.close".localized()) {
                 error = nil
             }
@@ -135,7 +176,9 @@ struct DependencySheetView: View {
     }
 
     @ViewBuilder
-    private func dependencyDownloadStatusView(dep: ModrinthProjectDetail) -> some View {
+    private func dependencyDownloadStatusView(
+        dep: ModrinthProjectDetail
+    ) -> some View {
         let state = viewModel.dependencyDownloadStates[dep.id] ?? .idle
         switch state {
         case .idle:
@@ -143,24 +186,30 @@ struct DependencySheetView: View {
         case .downloading:
             ProgressView().controlSize(.small)
         case .success:
-            Label("dependency.download.success".localized(), systemImage: "checkmark.circle.fill")
-                .labelStyle(.iconOnly)
-                .foregroundColor(.green)
+            Label(
+                "dependency.download.success".localized(),
+                systemImage: "checkmark.circle.fill"
+            )
+            .labelStyle(.iconOnly)
+            .foregroundColor(.green)
         case .failed:
-            Button(action: { 
-                Task { 
+            Button {
+                Task {
                     await onRetry(dep)
                 }
-            }) {
-                Label("dependency.download.retry".localized(), systemImage: "arrow.clockwise.circle.fill")
-                    .labelStyle(.iconOnly)
-                    .foregroundColor(.orange)
+            } label: {
+                Label(
+                    "dependency.download.retry".localized(),
+                    systemImage: "arrow.clockwise.circle.fill"
+                )
+                .labelStyle(.iconOnly)
+                .foregroundColor(.orange)
             }
             .buttonStyle(.borderless)
             .help("dependency.download.retry.help".localized())
         }
     }
-    
+
     private func handleDownloadError(_ error: Error) {
         let globalError = GlobalError.from(error)
         Logger.shared.error("依赖下载错误: \(globalError.chineseMessage)")
@@ -169,5 +218,4 @@ struct DependencySheetView: View {
             self.error = globalError
         }
     }
-} 
- 
+}

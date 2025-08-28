@@ -15,7 +15,7 @@ class FabricLoaderService {
             return []
         }
     }
-    
+
     /// 获取所有 Loader 版本（抛出异常版本）
     /// - Parameter minecraftVersion: Minecraft 版本
     /// - Returns: 加载器版本列表
@@ -23,7 +23,7 @@ class FabricLoaderService {
     static func fetchAllLoaderVersionsThrowing(for minecraftVersion: String) async throws -> [FabricLoader] {
         let url = URLConfig.API.Fabric.loader.appendingPathComponent(minecraftVersion)
         let (data, response) = try await URLSession.shared.data(from: url)
-        
+
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Fabric 加载器版本失败: HTTP \(response)",
@@ -31,7 +31,7 @@ class FabricLoaderService {
                 level: .notification
             )
         }
-        
+
         var result: [FabricLoader] = []
         do {
             if let jsonArray = try JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
@@ -51,12 +51,8 @@ class FabricLoaderService {
                 level: .notification
             )
         }
-        
-        
     }
 
-    
-    
     /// 获取最新的稳定版 Loader 版本（抛出异常版本）
     /// - Parameter minecraftVersion: Minecraft 版本
     /// - Returns: 最新的稳定版加载器
@@ -75,7 +71,7 @@ class FabricLoaderService {
         let fabricVersion = firstStable.loader.version
         let cacheKey = "\(minecraftVersion)-\(fabricVersion)"
         // 1. 查全局缓存
-        
+
         if let cached = AppCacheManager.shared.get(namespace: "fabric", key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
@@ -88,17 +84,15 @@ class FabricLoaderService {
                 level: .notification
             )
         }
-        
+
         var loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         loader.version = fabricVersion
         // 处理 ${modrinth.gameVersion} 占位符
         loader = CommonService.processGameVersionPlaceholders(loader: loader, gameVersion: minecraftVersion)
         AppCacheManager.shared.setSilently(namespace: "fabric", key: cacheKey, value: loader)
         return loader
-                
     }
-    
-    
+
     /// 封装 Fabric 设置流程：获取版本、下载、生成 Classpath（静默版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -113,14 +107,14 @@ class FabricLoaderService {
         do {
             return try await setupFabricThrowing(for: gameVersion, gameInfo: gameInfo, onProgressUpdate: onProgressUpdate)
         } catch {
-            
+
             let globalError = GlobalError.from(error)
             Logger.shared.error("Fabric 设置失败: \(globalError.chineseMessage)")
             GlobalErrorHandler.shared.handle(globalError)
             return nil
         }
     }
-    
+
     /// 封装 Fabric 设置流程：获取版本、下载、生成 Classpath（抛出异常版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -156,7 +150,7 @@ class FabricLoaderService {
     ) async -> (loaderVersion: String, classpath: String, mainClass: String)? {
         return await setupFabric(for: gameVersion, gameInfo: gameInfo, onProgressUpdate: onProgressUpdate)
     }
-    
+
     /// 设置 Fabric 加载器（抛出异常版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -173,4 +167,4 @@ class FabricLoaderService {
     }
 }
 
-extension FabricLoaderService: ModLoaderHandler {} 
+extension FabricLoaderService: ModLoaderHandler {}

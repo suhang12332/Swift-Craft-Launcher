@@ -17,57 +17,60 @@ final class CategoryContentViewModel: ObservableObject {
     @Published private(set) var isLoading: Bool = true
     @Published private(set) var error: GlobalError?
     @Published private(set) var loaders: [Loader] = []
-    
+
     // MARK: - Private Properties
     private var lastFetchTime: Date?
     private let project: String
     private var loadTask: Task<Void, Never>?
-    
+
     // MARK: - Initialization
     init(project: String) {
         self.project = project
     }
-    
+
     deinit {
         loadTask?.cancel()
     }
-    
+
     // MARK: - Public Methods
     func loadData() async {
         guard shouldFetchData else { return }
-        
+
         loadTask?.cancel()
         loadTask = Task {
             await fetchData()
         }
     }
-    
+
     func clearCache() {
         loadTask?.cancel()
         lastFetchTime = nil
         resetData()
     }
-    
+
     func setError(_ error: GlobalError?) {
         self.error = error
     }
-    
+
     // MARK: - Private Helpers
     private var shouldFetchData: Bool {
         guard let lastFetch = lastFetchTime else { return true }
-        return Date().timeIntervalSince(lastFetch) >= CategoryConstants.cacheTimeout || categories.isEmpty
+        return Date().timeIntervalSince(lastFetch)
+            >= CategoryConstants.cacheTimeout || categories.isEmpty
     }
-    
+
     private func fetchData() async {
         isLoading = true
         error = nil
-        
+
         do {
             async let categoriesTask = ModrinthService.fetchCategories()
             async let versionsTask = ModrinthService.fetchGameVersions()
             async let loadersTask = ModrinthService.fetchLoaders()
-            let (categoriesResult, versionsResult, loadersResult) = await (categoriesTask, versionsTask, loadersTask)
-            
+            let (categoriesResult, versionsResult, loadersResult) = await (
+                categoriesTask, versionsTask, loadersTask
+            )
+
             // 验证返回的数据
             guard !categoriesResult.isEmpty else {
                 throw GlobalError.resource(
@@ -76,7 +79,7 @@ final class CategoryContentViewModel: ObservableObject {
                     level: .notification
                 )
             }
-            
+
             guard !versionsResult.isEmpty else {
                 throw GlobalError.resource(
                     chineseMessage: "无法获取游戏版本数据",
@@ -84,30 +87,49 @@ final class CategoryContentViewModel: ObservableObject {
                     level: .notification
                 )
             }
-            
-            await processFetchedData(categories: categoriesResult, versions: versionsResult, loaders: loadersResult)
+
+            await processFetchedData(
+                categories: categoriesResult,
+                versions: versionsResult,
+                loaders: loadersResult
+            )
         } catch {
             handleError(error)
         }
-        
+
         isLoading = false
     }
-    
-    private func processFetchedData(categories: [Category], versions: [GameVersion], loaders: [Loader]) async {
-        let projectType = project == ProjectType.datapack ? ProjectType.mod : project
-        let filteredCategories = categories.filter { $0.project_type == projectType }
-        
+
+    private func processFetchedData(
+        categories: [Category],
+        versions: [GameVersion],
+        loaders: [Loader]
+    ) async {
+        let projectType =
+            project == ProjectType.datapack ? ProjectType.mod : project
+        let filteredCategories = categories.filter {
+            $0.project_type == projectType
+        }
+
         await MainActor.run {
             self.versions = versions
-            self.categories = filteredCategories.filter { $0.header == CategoryHeader.categories }
-            self.features = filteredCategories.filter { $0.header == CategoryHeader.features }
-            self.resolutions = filteredCategories.filter { $0.header == CategoryHeader.resolutions }
-            self.performanceImpacts = filteredCategories.filter { $0.header == CategoryHeader.performanceImpact }
+            self.categories = filteredCategories.filter {
+                $0.header == CategoryHeader.categories
+            }
+            self.features = filteredCategories.filter {
+                $0.header == CategoryHeader.features
+            }
+            self.resolutions = filteredCategories.filter {
+                $0.header == CategoryHeader.resolutions
+            }
+            self.performanceImpacts = filteredCategories.filter {
+                $0.header == CategoryHeader.performanceImpact
+            }
             self.lastFetchTime = Date()
             self.loaders = loaders
         }
     }
-    
+
     private func handleError(_ error: Error) {
         let globalError = GlobalError.from(error)
         Logger.shared.error("加载分类数据错误: \(globalError.chineseMessage)")
@@ -116,7 +138,7 @@ final class CategoryContentViewModel: ObservableObject {
             self.error = globalError
         }
     }
-    
+
     private func resetData() {
         categories.removeAll(keepingCapacity: false)
         features.removeAll(keepingCapacity: false)
@@ -127,4 +149,4 @@ final class CategoryContentViewModel: ObservableObject {
         error = nil
         isLoading = false
     }
-} 
+}

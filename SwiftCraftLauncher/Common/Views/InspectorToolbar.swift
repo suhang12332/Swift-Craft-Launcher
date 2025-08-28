@@ -9,15 +9,15 @@ import SwiftUI
 
 struct InspectorToolbar: View {
     @Binding var showingInspector: Bool
-    
+
     var body: some View {
 
         Spacer()
-        Button(action: {
+        Button {
             withAnimation {
                 showingInspector.toggle()
             }
-        }) {
+        } label: {
             Image(systemName: showingInspector ? "sidebar.right" : "sidebar.left")
         }
         .help((showingInspector ? "game.version.inspector.hide" : "game.version.inspector.show").localized())

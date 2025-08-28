@@ -18,7 +18,7 @@ protocol ModLoaderHandler {
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping (String, Int, Int) -> Void
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String)
-    
+
     /// 设置加载器（静默版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本

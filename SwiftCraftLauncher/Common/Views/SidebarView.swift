@@ -6,11 +6,11 @@ public struct SidebarView: View {
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
-    
+
     public init(selectedItem: Binding<SidebarItem>) {
         self._selectedItem = selectedItem
     }
-    
+
     public var body: some View {
         List(selection: $selectedItem) {
             // 资源部分
@@ -21,7 +21,7 @@ public struct SidebarView: View {
                     }
                 }
             }
-            
+
             // 游戏部分
             Section(header: Text("sidebar.games.title".localized())) {
                 ForEach(filteredGames) { game in
@@ -74,13 +74,11 @@ public struct SidebarView: View {
                 PlayerListView()
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-                    
-                
             }
         }
         .listStyle(.sidebar)
     }
-    
+
     // 只对游戏名做模糊搜索
     private var filteredGames: [GameVersionInfo] {
         if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {

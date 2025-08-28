@@ -6,7 +6,6 @@
 
 import SwiftUI
 
-
 @main
 struct SwiftCraftLauncherApp: App {
     // MARK: - StateObjects
@@ -14,28 +13,31 @@ struct SwiftCraftLauncherApp: App {
     @StateObject private var gameRepository = GameRepository()
     @StateObject private var globalErrorHandler = GlobalErrorHandler.shared
     @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
-    @StateObject private var generalSettingsManager = GeneralSettingsManager.shared
+    @StateObject private var generalSettingsManager = GeneralSettingsManager
+        .shared
     @Environment(\.openWindow) private var openWindow
-    
+
     init() {
         Task {
             await NotificationManager.requestAuthorizationIfNeeded()
         }
-        
+
         // 移除文件菜单
         DispatchQueue.main.async {
             if let mainMenu = NSApplication.shared.mainMenu {
                 // 查找文件菜单
-                if let fileMenuIndex = mainMenu.items.firstIndex(where: { $0.title == "File" || $0.title == "文件" }) {
+                if let fileMenuIndex = mainMenu.items.firstIndex(where: {
+                    $0.title == "File" || $0.title == "文件"
+                }) {
                     mainMenu.removeItem(at: fileMenuIndex)
                 }
             }
         }
     }
-    
+
     // MARK: - Body
     var body: some Scene {
-        
+
         WindowGroup {
             MainView()
                 .environmentObject(playerListViewModel)
@@ -49,18 +51,21 @@ struct SwiftCraftLauncherApp: App {
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
-        
+
         // 关于窗口（共享的 WindowGroup，通过 value 区分）
-        WindowGroup("", id: "aboutWindow", for: Bool.self) { $showingAcknowledgements in
+        WindowGroup("", id: "aboutWindow", for: Bool.self) {
+            $showingAcknowledgements in
             AboutView(showingAcknowledgements: showingAcknowledgements ?? false)
                 .environmentObject(generalSettingsManager)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
-                .background(WindowAccessor { window in
-                                    // 移除关闭、最小化、最大化按钮
-                                    window.styleMask.remove([.miniaturizable, .resizable])
-                                    // 禁用全屏
-                                    window.collectionBehavior.remove(.fullScreenPrimary)
-                                })
+                .background(
+                    WindowAccessor { window in
+                        // 移除关闭、最小化、最大化按钮
+                        window.styleMask.remove([.miniaturizable, .resizable])
+                        // 禁用全屏
+                        window.collectionBehavior.remove(.fullScreenPrimary)
+                    }
+                )
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: true))
@@ -90,8 +95,6 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
             }
-            
-           
         }
 
         Settings {
@@ -104,20 +107,20 @@ struct SwiftCraftLauncherApp: App {
                 .errorAlert()
         }
         // 右上角的状态栏(可以显示图标的)
-        MenuBarExtra(content: {
-            Button("menu.statusbar.placeholder".localized()) {
-
+        MenuBarExtra(
+            content: {
+                Button("menu.statusbar.placeholder".localized()) {
+                }
+            },
+            label: {
+                Image("menu-png").resizable()
+                    .renderingMode(.template)
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)  // 菜单栏常见大小
+                // 推荐保持模板模式
             }
-        }, label: {
-            Image("menu-png").resizable()
-                .renderingMode(.template)
-                .scaledToFit()
-                .frame(width: 18, height: 18) // 菜单栏常见大小
-                     // 推荐保持模板模式
-        })
+        )
     }
-    
-
 }
 
 struct WindowAccessor: NSViewRepresentable {

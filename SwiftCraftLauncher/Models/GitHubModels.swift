@@ -21,7 +21,7 @@ public struct GitHubContributor: Codable, Identifiable {
     public let type: String
     public let siteAdmin: Bool
     public let contributions: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case login
@@ -64,7 +64,7 @@ public struct GitHubRepository: Codable, Identifiable {
     public let openIssuesCount: Int
     public let defaultBranch: String
     public let subscribersCount: Int?
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case nodeId = "node_id"
@@ -97,7 +97,7 @@ public struct GitHubUser: Codable, Identifiable {
     public let htmlUrl: String
     public let type: String
     public let siteAdmin: Bool
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case login
@@ -115,11 +115,9 @@ public struct GitHubUser: Codable, Identifiable {
 public struct GitHubAPIError: Codable, Error {
     public let message: String
     public let documentationUrl: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case message
         case documentationUrl = "documentation_url"
     }
 }
-
-

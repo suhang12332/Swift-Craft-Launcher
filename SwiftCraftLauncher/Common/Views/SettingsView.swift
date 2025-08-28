@@ -5,11 +5,9 @@ import Foundation
 /// 用于显示应用程序的设置选项
 public struct SettingsView: View {
     @ObservedObject private var general = GeneralSettingsManager.shared
-    
-    
-    
+
     public init() {}
-    
+
     public var body: some View {
         TabView {
             GeneralSettingsView()
@@ -32,7 +30,4 @@ public struct SettingsView: View {
 
 #Preview {
     SettingsView()
-} 
-
-
-
+}

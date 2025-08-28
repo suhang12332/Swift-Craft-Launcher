@@ -3,10 +3,10 @@ import Foundation
 /// Handles saving and loading player data using UserDefaults.
 class PlayerDataManager {
     private let playersKey = "savedPlayers"
-    
+
     // MARK: - Public Methods
-    
-        /// 添加新玩家
+
+    /// 添加新玩家
     /// - Parameters:
     ///   - name: 玩家名称
     ///   - uuid: 玩家UUID，如果为nil则生成离线UUID
@@ -18,7 +18,7 @@ class PlayerDataManager {
     /// - Throws: GlobalError 当操作失败时
     func addPlayer(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", refreshToken: String = "", xuid: String = "") throws {
         var players = try loadPlayersThrowing()
-        
+
         if playerExists(name: name) {
             throw GlobalError.player(
                 chineseMessage: "玩家已存在: \(name)",
@@ -26,9 +26,18 @@ class PlayerDataManager {
                 level: .notification
             )
         }
-        
+
         do {
-            let newPlayer = try Player(name: name, uuid: uuid, isOnlineAccount: isOnline, avatarName: avatarName, authXuid: xuid, authAccessToken: accToken, authRefreshToken: refreshToken, isCurrent: players.isEmpty)
+            let newPlayer = try Player(
+                name: name,
+                uuid: uuid,
+                isOnlineAccount: isOnline,
+                avatarName: avatarName,
+                authXuid: xuid,
+                authAccessToken: accToken,
+                authRefreshToken: refreshToken,
+                isCurrent: players.isEmpty
+            )
             players.append(newPlayer)
             try savePlayersThrowing(players)
             Logger.shared.debug("已添加新玩家: \(name)")
@@ -40,7 +49,7 @@ class PlayerDataManager {
             )
         }
     }
-    
+
     /// 添加第三方账户玩家（保留原有UUID和皮肤信息）
     /// - Parameters:
     ///   - name: 玩家名称
@@ -51,7 +60,7 @@ class PlayerDataManager {
     /// - Throws: GlobalError 当操作失败时
     func addThirdPartyPlayer(name: String, uuid: String, avatarUrl: String, accToken: String = "", refreshToken: String = "") throws {
         var players = try loadPlayersThrowing()
-        
+
         if playerExists(name: name) {
             throw GlobalError.player(
                 chineseMessage: "玩家已存在: \(name)",
@@ -59,24 +68,24 @@ class PlayerDataManager {
                 level: .notification
             )
         }
-        
 
-        
+
+
         let newPlayer = try Player(
-                name: name, 
-                uuid: uuid, 
+                name: name,
+                uuid: uuid,
                 isOnlineAccount: false, // 第三方账户作为离线账户处理
                 avatarName: avatarUrl.isEmpty ? PlayerUtils.avatarName(for: uuid) ?? "steve" : avatarUrl,
-                authXuid: "", 
-                authAccessToken: accToken, 
-                authRefreshToken: refreshToken, 
+                authXuid: "",
+                authAccessToken: accToken,
+                authRefreshToken: refreshToken,
                 isCurrent: players.isEmpty
             )
             players.append(newPlayer)
             try savePlayersThrowing(players)
             Logger.shared.debug("已添加第三方账户玩家: \(name) (UUID: \(uuid))")
     }
-    
+
     /// 添加第三方账户玩家（静默版本）
     /// - Parameters:
     ///   - name: 玩家名称
@@ -96,7 +105,7 @@ class PlayerDataManager {
             return false
         }
     }
-    
+
     /// 添加新玩家（静默版本）
     /// - Parameters:
     ///   - name: 玩家名称
@@ -118,7 +127,7 @@ class PlayerDataManager {
             return false
         }
     }
-    
+
     /// 加载所有保存的玩家（静默版本）
     /// - Returns: 玩家数组
     func loadPlayers() -> [Player] {
@@ -131,7 +140,7 @@ class PlayerDataManager {
             return []
         }
     }
-    
+
     /// 加载所有保存的玩家（抛出异常版本）
     /// - Returns: 玩家数组
     /// - Throws: GlobalError 当操作失败时
@@ -139,7 +148,7 @@ class PlayerDataManager {
         guard let playersData = UserDefaults.standard.data(forKey: playersKey) else {
             return []
         }
-        
+
         do {
             let decoder = JSONDecoder()
             return try decoder.decode([Player].self, from: playersData)
@@ -151,7 +160,7 @@ class PlayerDataManager {
             )
         }
     }
-    
+
     /// 检查玩家是否存在（不区分大小写）
     /// - Parameter name: 要检查的名称
     /// - Returns: 如果存在同名玩家则返回 true，否则返回 false
@@ -166,26 +175,26 @@ class PlayerDataManager {
             return false
         }
     }
-    
+
     /// 删除指定ID的玩家
     /// - Parameter id: 要删除的玩家ID
     /// - Throws: GlobalError 当操作失败时
     func deletePlayer(byID id: String) throws {
         var players = try loadPlayersThrowing()
         let initialCount = players.count
-        
+
         // 检查要删除的玩家是否为当前玩家
         let isDeletingCurrentPlayer = players.contains { $0.id == id && $0.isCurrent }
-        
+
         players.removeAll { $0.id == id }
-        
+
         if players.count < initialCount {
             // 如果删除的是当前玩家，需要设置新的当前玩家
             if isDeletingCurrentPlayer && !players.isEmpty {
                 players[0].isCurrent = true
                 Logger.shared.debug("当前玩家被删除，已设置第一个玩家为当前玩家: \(players[0].name)")
             }
-            
+
             try savePlayersThrowing(players)
             Logger.shared.debug("已删除玩家 (ID: \(id))")
         } else {
@@ -196,7 +205,7 @@ class PlayerDataManager {
             )
         }
     }
-    
+
     /// 删除指定ID的玩家（静默版本）
     /// - Parameter id: 要删除的玩家ID
     /// - Returns: 是否成功删除
@@ -211,7 +220,7 @@ class PlayerDataManager {
             return false
         }
     }
-    
+
     /// 保存玩家数组（静默版本）
     /// - Parameter players: 要保存的玩家数组
     func savePlayers(_ players: [Player]) {
@@ -223,7 +232,7 @@ class PlayerDataManager {
             GlobalErrorHandler.shared.handle(globalError)
         }
     }
-    
+
     /// 保存玩家数组（抛出异常版本）
     /// - Parameter players: 要保存的玩家数组
     /// - Throws: GlobalError 当操作失败时
@@ -241,13 +250,13 @@ class PlayerDataManager {
             )
         }
     }
-    
+
     /// 更新指定玩家的信息
     /// - Parameter updatedPlayer: 更新后的玩家对象
     /// - Throws: GlobalError 当操作失败时
     func updatePlayer(_ updatedPlayer: Player) throws {
         var players = try loadPlayersThrowing()
-        
+
         guard let index = players.firstIndex(where: { $0.id == updatedPlayer.id }) else {
             throw GlobalError.player(
                 chineseMessage: "要更新的玩家不存在: \(updatedPlayer.name)",
@@ -255,12 +264,12 @@ class PlayerDataManager {
                 level: .notification
             )
         }
-        
+
         players[index] = updatedPlayer
         try savePlayersThrowing(players)
         Logger.shared.debug("已更新玩家信息: \(updatedPlayer.name)")
     }
-    
+
     /// 更新指定玩家的信息（静默版本）
     /// - Parameter updatedPlayer: 更新后的玩家对象
     /// - Returns: 是否成功更新
@@ -275,4 +284,4 @@ class PlayerDataManager {
             return false
         }
     }
-} 
+}

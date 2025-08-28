@@ -5,7 +5,7 @@ class AppCacheManager {
     private let queue = DispatchQueue(label: "AppCacheManager.queue")
 
     private func fileURL(for namespace: String) throws -> URL {
-        
+
         do {
             try FileManager.default.createDirectory(at: AppPaths.appCache, withIntermediateDirectories: true)
         } catch {
@@ -15,12 +15,12 @@ class AppCacheManager {
                 level: .notification
             )
         }
-        
+
         return AppPaths.appCache.appendingPathComponent("\(namespace).json")
     }
 
     // MARK: - Public API
-    
+
     /// 设置缓存值
     /// - Parameters:
     ///   - namespace: 命名空间
@@ -30,7 +30,7 @@ class AppCacheManager {
     func set<T: Codable>(namespace: String, key: String, value: T) throws {
         try queue.sync {
             var nsDict = try loadNamespace(namespace)
-            
+
             do {
                 let data = try JSONEncoder().encode(value)
                 nsDict[key] = data
@@ -44,7 +44,7 @@ class AppCacheManager {
             }
         }
     }
-    
+
     /// 设置缓存值（静默版本，失败时记录错误但不抛出异常）
     /// - Parameters:
     ///   - namespace: 命名空间
@@ -69,7 +69,7 @@ class AppCacheManager {
             do {
                 let nsDict = try loadNamespace(namespace)
                 guard let data = nsDict[key] else { return nil }
-                
+
                 do {
                     return try JSONDecoder().decode(T.self, from: data)
                 } catch {
@@ -135,8 +135,7 @@ class AppCacheManager {
     /// - Throws: GlobalError 当操作失败时
     func clearAll() throws {
         try queue.sync {
-            
-            
+
             do {
                 let files = try FileManager.default.contentsOfDirectory(at: AppPaths.appCache, includingPropertiesForKeys: nil)
                 for file in files where file.pathExtension == "json" {
@@ -151,7 +150,7 @@ class AppCacheManager {
             }
         }
     }
-    
+
     /// 清空所有缓存（静默版本）
     func clearAllSilently() {
         do {
@@ -162,18 +161,18 @@ class AppCacheManager {
     }
 
     // MARK: - Persistence
-    
+
     /// 加载命名空间数据
     /// - Parameter namespace: 命名空间
     /// - Returns: 命名空间数据字典
     /// - Throws: GlobalError 当操作失败时
     private func loadNamespace(_ namespace: String) throws -> [String: Data] {
         let url = try fileURL(for: namespace)
-        
-        guard FileManager.default.fileExists(atPath: url.path) else { 
-            return [:] 
+
+        guard FileManager.default.fileExists(atPath: url.path) else {
+            return [:]
         }
-        
+
         do {
             let data = try Data(contentsOf: url)
             return try JSONDecoder().decode([String: Data].self, from: data)
@@ -193,7 +192,7 @@ class AppCacheManager {
     /// - Throws: GlobalError 当操作失败时
     private func saveNamespace(_ namespace: String, dict: [String: Data]) throws {
         let url = try fileURL(for: namespace)
-        
+
         do {
             let data = try JSONEncoder().encode(dict)
             try data.write(to: url)
@@ -205,5 +204,4 @@ class AppCacheManager {
             )
         }
     }
-} 
-
+}

@@ -3,7 +3,7 @@ import UserNotifications
 import os
 
 struct NotificationManager {
-    
+
     /// 发送通知
     /// - Parameters:
     ///   - title: 通知标题
@@ -11,7 +11,7 @@ struct NotificationManager {
     /// - Throws: GlobalError 当操作失败时
     static func send(title: String, body: String) throws {
         Logger.shared.info("准备发送通知：\(title) - \(body)")
-        
+
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
@@ -21,14 +21,14 @@ struct NotificationManager {
 
         let semaphore = DispatchSemaphore(value: 0)
         var notificationError: Error?
-        
+
         UNUserNotificationCenter.current().add(request) { error in
             notificationError = error
             semaphore.signal()
         }
-        
+
         semaphore.wait()
-        
+
         if let error = notificationError {
             Logger.shared.error("添加通知请求时出错：\(error.localizedDescription)")
             throw GlobalError.resource(
@@ -40,7 +40,7 @@ struct NotificationManager {
             Logger.shared.info("成功添加通知请求：\(request.identifier)")
         }
     }
-    
+
     /// 发送通知（静默版本，失败时记录错误但不抛出异常）
     /// - Parameters:
     ///   - title: 通知标题
@@ -61,7 +61,7 @@ struct NotificationManager {
         do {
             let granted = try await UNUserNotificationCenter.current()
                 .requestAuthorization(options: [.alert, .sound, .badge])
-            
+
             if granted {
                 Logger.shared.info("通知权限已授予")
             } else {
@@ -85,7 +85,7 @@ struct NotificationManager {
             }
         }
     }
-    
+
     /// 请求通知权限（静默版本，失败时记录错误但不抛出异常）
     static func requestAuthorizationIfNeeded() async {
         do {
@@ -96,17 +96,17 @@ struct NotificationManager {
             GlobalErrorHandler.shared.handle(globalError)
         }
     }
-    
+
     /// 检查通知权限状态
     /// - Returns: 权限状态
     static func checkAuthorizationStatus() async -> UNAuthorizationStatus {
         return await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
     }
-    
+
     /// 检查是否有通知权限
     /// - Returns: 是否有权限
     static func hasAuthorization() async -> Bool {
         let status = await checkAuthorizationStatus()
         return status == .authorized
     }
-} 
+}

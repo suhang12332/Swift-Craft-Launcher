@@ -6,16 +6,15 @@
 //
 import SwiftUI
 
-func ErrorView(_ error: GlobalError) -> some View {
+func newErrorView(_ error: GlobalError) -> some View {
     ContentUnavailableView {
         Label("result.error".localized(), systemImage: "xmark.icloud")
     } description: {
         Text(error.notificationTitle)
     }
-
 }
 
-func EmptyResultView() -> some View {
+func emptyResultView() -> some View {
     ContentUnavailableView {
         Label(
             "result.empty".localized(),
@@ -24,7 +23,7 @@ func EmptyResultView() -> some View {
     }
 }
 
-func SpacerView() -> some View {
+func spacerView() -> some View {
     Spacer().frame(maxHeight: 20)
 }
 
@@ -41,12 +40,9 @@ struct DirectorySettingRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Button(
-                    action: onChoose,
-                    label: {
-                        PathBreadcrumbView(path: path)
-                    }
-                )
+                Button(action: onChoose) {
+                    PathBreadcrumbView(path: path)
+                }
                 .buttonStyle(.plain)
                 .onHover { hovering in
                     if hovering {
@@ -105,7 +101,8 @@ struct PathBreadcrumbView: View {
             ForEach(0..<headCount, id: \.self) { idx in
                 if idx > 0 {
                     Image(systemName: "chevron.right")
-                        .font(.caption).bold()
+                        .font(.caption)
+                        .bold()
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 6)
                 }
@@ -115,7 +112,8 @@ struct PathBreadcrumbView: View {
             if showEllipsis {
                 if headCount > 0 {
                     Image(systemName: "chevron.right")
-                        .font(.caption).bold()
+                        .font(.caption)
+                        .bold()
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 6)
                 }
@@ -127,7 +125,8 @@ struct PathBreadcrumbView: View {
             ForEach(startTail..<count, id: \.self) { idx in
                 if idx > headCount || (showEllipsis && idx == startTail) {
                     Image(systemName: "chevron.right")
-                        .font(.caption).bold()
+                        .font(.caption)
+                        .bold()
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 6)
                 }

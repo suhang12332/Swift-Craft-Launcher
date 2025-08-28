@@ -27,9 +27,9 @@ struct DetailView: View {
     @Binding var gameType: Bool
     @Binding var selectedLoader: [String]
     @Binding var showAdvancedSettings: Bool
-    
+
     @EnvironmentObject var gameRepository: GameRepository
-    
+
     // MARK: - Body
     var body: some View {
         List {
@@ -41,7 +41,7 @@ struct DetailView: View {
             }
         }
     }
-    
+
     // MARK: - Game Detail View
     @ViewBuilder
     private func gameDetailView(gameId: String) -> some View {
@@ -65,7 +65,7 @@ struct DetailView: View {
             )
         }
     }
-    
+
     // MARK: - Resource Detail View
     @ViewBuilder
     private func resourceDetailView(type: ResourceType) -> some View {

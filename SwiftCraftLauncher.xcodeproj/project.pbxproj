@@ -14,7 +14,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		90CA960A2E5C438F00E705DB /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		03386FEE2E6058F00056BDB2 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -44,6 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */,
+				03386FEE2E6058F00056BDB2 /* Swift Craft Launcher.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -61,6 +62,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				033870FC2E6059610056BDB2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */,
@@ -73,7 +75,7 @@
 				90E123456789ABCD0002 /* Sparkle */,
 			);
 			productName = SwiftCraftLauncher;
-			productReference = 90CA960A2E5C438F00E705DB /* Swift Craft Launcher.app */;
+			productReference = 03386FEE2E6058F00056BDB2 /* Swift Craft Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -107,6 +109,7 @@
 				9023D91D2E313A9C005A53F1 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 				90C51D052E421BAB0014D7B4 /* XCRemoteSwiftPackageReference "swift-nbt" */,
 				90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */,
+				033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -137,6 +140,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		033870FC2E6059610056BDB2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 033870FB2E6059610056BDB2 /* SwiftLintBuildToolPlugin */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		9023D83B2E3139B7005A53F1 /* Debug */ = {
@@ -357,6 +367,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.59.1;
+			};
+		};
 		9023D91A2E313A67005A53F1 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
@@ -392,6 +410,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		033870FB2E6059610056BDB2 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
 		9023D91B2E313A67005A53F1 /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 9023D91A2E313A67005A53F1 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;

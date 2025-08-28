@@ -9,9 +9,9 @@ struct PlayerListView: View {
     @State private var showingPlayerListPopover = false
 
     var body: some View {
-        Button(action: {
+        Button {
             showingPlayerListPopover.toggle()
-        }) {
+        } label: {
             PlayerSelectorLabel(selectedPlayer: playerListViewModel.currentPlayer)
         }
         .buttonStyle(.borderless)
@@ -63,8 +63,6 @@ struct PlayerListView: View {
     }
 }
 
-
-
 private struct PlayerSelectorLabel: View {
     let selectedPlayer: Player?
     var body: some View {
@@ -73,7 +71,8 @@ private struct PlayerSelectorLabel: View {
                 PlayerAvatarView(player: selectedPlayer, size: 30)
                 Text(selectedPlayer.name)
                     .foregroundColor(.primary)
-                    .font(.system(size: 13).bold()).lineLimit(1)
+                    .font(.system(size: 13).bold())
+                    .lineLimit(1)
             }
         } else {
             EmptyView()
@@ -87,6 +86,6 @@ private struct PlayerAvatarView: View {
     var size: CGFloat
 
     var body: some View {
-        MinecraftSkinUtils(type: player.isOnlineAccount ? .url : .asset, src: player.avatarName,size: size).id(player.id)
+        MinecraftSkinUtils(type: player.isOnlineAccount ? .url : .asset, src: player.avatarName, size: size).id(player.id)
     }
 }
