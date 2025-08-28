@@ -1,34 +1,6 @@
-<div align="center">
-  <img src="SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="SwiftCraftLauncher" width="128" height="128">
-  
-  # Swift Craft Launcher
-  
-  **现代化的 macOS Minecraft 启动器**
-  
-  [![Swift Craft Launcher](https://img.shields.io/badge/Swift%20Craft%20Launcher-SCL-orange.svg)](https://github.com/suhang12332/Swift-Craft-Launcher)
-  [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg)](https://swift.org/)
-  [![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-1057517524-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
-  
-  [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
-  [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
-  [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://developer.apple.com/macos/)
-  [![Homebrew](https://img.shields.io/badge/Homebrew-available-green.svg)](https://formulae.brew.sh/cask/swiftcraft-launcher)
-  [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&style=flat-square)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
-  
-  [官网](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [下载](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文档](https://imreak.github.io)
-  
-  **简体中文** | [繁體中文](doc/README_zh-TW.md) | [English](doc/README_en.md)
-</div>
-
----
-
-## 项目概述
+# 项目概述
 
 Swift Craft Launcher 是一款采用 SwiftUI 构建的原生 macOS Minecraft 启动器，提供流畅高效的游戏体验。专为现代 macOS 系统设计，集成全面的模组加载器支持、Microsoft 账户认证和直观的游戏管理功能。
-
-<div align="center">
-  <img src="https://s2.loli.net/2025/08/12/pTPxSJh1bCzmGKo.png" alt="SwiftCraftLauncher 截图" width="800">
-</div>
 
 ## 核心特性
 
@@ -121,10 +93,5 @@ brew install --cask swift-craft-launcher
 
 特别感谢以下项目对本启动器的贡献：
 
-- **[Archify](https://github.com/Oct4Pie/archify)** - macOS 应用程序通用二进制优化工具
+- **[Archify - macOS应用程序通用二进制优化工具](https://github.com/Oct4Pie/archify)
 
----
-
-<div align="center">
-  <strong>为 Minecraft 社区用心制作 ❤️</strong>
-</div>
