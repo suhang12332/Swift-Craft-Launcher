@@ -89,22 +89,18 @@ public struct ProxySettingsView: View {
             }
             
             GridRow {
-                Text("")
-                    .gridColumnAlignment(.trailing)
-                HStack {
-                    Button("settings.proxy.test.button".localized()) {
-                        testProxyConnection()
-                    }
-                    .disabled(!proxySettings.isProxyEnabled || !proxySettings.configuration.isValid || isTesting)
-                    
-                    if isTesting {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                            .padding(.leading, 8)
-                    }
+                Button("settings.proxy.test.button".localized()) {
+                    testProxyConnection()
                 }
-                .gridColumnAlignment(.leading)
+                .disabled(!proxySettings.isProxyEnabled || !proxySettings.configuration.isValid || isTesting)
+                
+                if isTesting {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                        .padding(.leading, 8)
+                }
             }
+            .gridCellColumns(2)
         }
         .alert("settings.proxy.test.title".localized(), isPresented: $showingTestAlert) {
             Button("common.ok".localized()) { }
