@@ -20,21 +20,39 @@ public struct ProxyConfiguration {
     public var proxyType: ProxyType
     public var host: String
     public var port: Int
+    public var username: String
+    public var password: String
     
-    public init(isEnabled: Bool = false, proxyType: ProxyType = .http, host: String = "", port: Int = 8080) {
+    public init(isEnabled: Bool = false, proxyType: ProxyType = .http, host: String = "", port: Int = 8080, username: String = "", password: String = "") {
         self.isEnabled = isEnabled
         self.proxyType = proxyType
         self.host = host
         self.port = port
+        self.username = username
+        self.password = password
     }
     
     public var isValid: Bool {
         return !host.isEmpty && port > 0 && port <= 65535
     }
     
+    public var hasAuthentication: Bool {
+        return !username.isEmpty
+    }
+    
     public var urlString: String? {
         guard isValid else { return nil }
-        return "\(proxyType.rawValue)://\(host):\(port)"
+        
+        if hasAuthentication {
+            // 对用户名密码进行 URL 编码
+            guard let encodedUsername = username.addingPercentEncoding(withAllowedCharacters: .urlUserAllowed),
+                  let encodedPassword = password.addingPercentEncoding(withAllowedCharacters: .urlPasswordAllowed) else {
+                return nil
+            }
+            return "\(proxyType.rawValue)://\(encodedUsername):\(encodedPassword)@\(host):\(port)"
+        } else {
+            return "\(proxyType.rawValue)://\(host):\(port)"
+        }
     }
 }
 
@@ -69,6 +87,20 @@ class ProxySettingsManager: ObservableObject {
         }
     }
     
+    @AppStorage("proxyUsername") public var proxyUsername: String = "" {
+        didSet { 
+            objectWillChange.send()
+            updateSystemProxy()
+        }
+    }
+    
+    @AppStorage("proxyPassword") public var proxyPassword: String = "" {
+        didSet { 
+            objectWillChange.send()
+            updateSystemProxy()
+        }
+    }
+    
     public var proxyType: ProxyType {
         get { ProxyType(rawValue: proxyTypeRawValue) ?? .http }
         set { 
@@ -81,7 +113,9 @@ class ProxySettingsManager: ObservableObject {
             isEnabled: isProxyEnabled,
             proxyType: proxyType,
             host: proxyHost,
-            port: proxyPort
+            port: proxyPort,
+            username: proxyUsername,
+            password: proxyPassword
         )
     }
     
@@ -99,7 +133,7 @@ class ProxySettingsManager: ObservableObject {
     }
     
     private func setSystemProxy(configuration: ProxyConfiguration) {
-        let proxyDict: [String: Any] = [
+        var proxyDict: [String: Any] = [
             kCFNetworkProxiesHTTPEnable as String: true,
             kCFNetworkProxiesHTTPProxy as String: configuration.host,
             kCFNetworkProxiesHTTPPort as String: configuration.port,
@@ -108,6 +142,14 @@ class ProxySettingsManager: ObservableObject {
             kCFNetworkProxiesHTTPSPort as String: configuration.port
         ]
         
+        // 添加认证信息
+        if configuration.hasAuthentication {
+            proxyDict["HTTPProxyUsername"] = configuration.username
+            proxyDict["HTTPProxyPassword"] = configuration.password
+            proxyDict["HTTPSProxyUsername"] = configuration.username
+            proxyDict["HTTPSProxyPassword"] = configuration.password
+        }
+        
         if configuration.proxyType == .socks5 {
             let socksDict: [String: Any] = [
                 kCFNetworkProxiesSOCKSEnable as String: true,
@@ -115,13 +157,21 @@ class ProxySettingsManager: ObservableObject {
                 kCFNetworkProxiesSOCKSPort as String: configuration.port
             ]
             
-            let combinedDict = proxyDict.merging(socksDict) { _, new in new }
+            var combinedDict = proxyDict.merging(socksDict) { _, new in new }
+            
+            // SOCKS5 认证
+            if configuration.hasAuthentication {
+                combinedDict["SOCKSUsername"] = configuration.username
+                combinedDict["SOCKSPassword"] = configuration.password
+            }
+            
             URLSessionConfiguration.default.connectionProxyDictionary = combinedDict
         } else {
             URLSessionConfiguration.default.connectionProxyDictionary = proxyDict
         }
         
-        Logger.shared.info("代理已设置: \(configuration.proxyType.rawValue)://\(configuration.host):\(configuration.port)")
+        let authInfo = configuration.hasAuthentication ? " (with authentication)" : ""
+        Logger.shared.info("代理已设置: \(configuration.proxyType.rawValue)://\(configuration.host):\(configuration.port)\(authInfo)")
     }
     
     private func clearSystemProxy() {
@@ -152,6 +202,12 @@ class ProxySettingsManager: ObservableObject {
                 kCFNetworkProxiesSOCKSProxy as String: configuration.host,
                 kCFNetworkProxiesSOCKSPort as String: configuration.port
             ]
+            
+            // SOCKS5 认证
+            if configuration.hasAuthentication {
+                proxyDict["SOCKSUsername"] = configuration.username
+                proxyDict["SOCKSPassword"] = configuration.password
+            }
         } else {
             proxyDict = [
                 kCFNetworkProxiesHTTPEnable as String: true,
@@ -161,6 +217,14 @@ class ProxySettingsManager: ObservableObject {
                 kCFNetworkProxiesHTTPSProxy as String: configuration.host,
                 kCFNetworkProxiesHTTPSPort as String: configuration.port
             ]
+            
+            // HTTP 认证
+            if configuration.hasAuthentication {
+                proxyDict["HTTPProxyUsername"] = configuration.username
+                proxyDict["HTTPProxyPassword"] = configuration.password
+                proxyDict["HTTPSProxyUsername"] = configuration.username
+                proxyDict["HTTPSProxyPassword"] = configuration.password
+            }
         }
         
         config.connectionProxyDictionary = proxyDict

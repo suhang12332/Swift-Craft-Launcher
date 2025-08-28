@@ -68663,6 +68663,23 @@
         }
       }
     },
+    "settings.proxy.password.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Password"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "密码"
+          }
+        }
+      }
+    },
     "settings.proxy.port.label" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -68776,7 +68793,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "测试连接"
           }
         }
@@ -68795,6 +68812,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "代理类型"
+          }
+        }
+      }
+    },
+    "settings.proxy.username.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Username"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用户名"
           }
         }
       }
