@@ -11,19 +11,18 @@ public struct ProxySettingsView: View {
     public init() {}
     
     public var body: some View {
-        Grid(alignment: .center) {
-            GridRow {
+        VStack(spacing: 20) {
+            HStack {
                 Text("settings.proxy.enable.label".localized())
-                    .gridColumnAlignment(.trailing)
+                    .frame(width: 150, alignment: .trailing)
                 Toggle("", isOn: $proxySettings.isProxyEnabled)
-                    .gridColumnAlignment(.leading)
                     .labelsHidden()
+                Spacer()
             }
-            .padding(.bottom, 20)
             
-            GridRow {
+            HStack {
                 Text("settings.proxy.type.label".localized())
-                    .gridColumnAlignment(.trailing)
+                    .frame(width: 150, alignment: .trailing)
                 Picker("", selection: $proxySettings.proxyType) {
                     ForEach(ProxyType.allCases, id: \.self) { type in
                         Text(type.localizedName).tag(type)
@@ -32,31 +31,28 @@ public struct ProxySettingsView: View {
                 .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
                     view.fixedSize()
                 }
-                .gridColumnAlignment(.leading)
                 .labelsHidden()
                 .disabled(!proxySettings.isProxyEnabled)
+                Spacer()
             }
-            .padding(.bottom, 20)
             
-            GridRow {
+            HStack {
                 Text("settings.proxy.host.label".localized())
-                    .gridColumnAlignment(.trailing)
+                    .frame(width: 150, alignment: .trailing)
                 TextField("settings.proxy.host.placeholder".localized(), text: $proxySettings.proxyHost)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(width: 200)
                     .disabled(!proxySettings.isProxyEnabled)
-                    .gridColumnAlignment(.leading)
+                Spacer()
             }
-            .padding(.bottom, 20)
             
-            GridRow {
+            HStack {
                 Text("settings.proxy.port.label".localized())
-                    .gridColumnAlignment(.trailing)
+                    .frame(width: 150, alignment: .trailing)
                 TextField("settings.proxy.port.placeholder".localized(), text: $portString)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(width: 200)
                     .disabled(!proxySettings.isProxyEnabled)
-                    .gridColumnAlignment(.leading)
                     .onChange(of: portString) { _, newValue in
                         // 只允许数字输入，并限制在1-65535范围内
                         let filtered = newValue.filter { $0.isNumber }
@@ -70,12 +66,12 @@ public struct ProxySettingsView: View {
                     .onAppear {
                         portString = String(proxySettings.proxyPort)
                     }
+                Spacer()
             }
-            .padding(.bottom, 20)
             
-            GridRow {
-                Text("")
-                    .gridColumnAlignment(.trailing)
+            HStack {
+                Spacer()
+                    .frame(width: 150)
                 HStack {
                     Button("settings.proxy.test.button".localized()) {
                         testProxyConnection()
@@ -88,10 +84,9 @@ public struct ProxySettingsView: View {
                             .padding(.leading, 8)
                     }
                 }
-                .gridColumnAlignment(.leading)
+                Spacer()
             }
         }
-        .frame(maxWidth: .infinity, alignment: .center)
         .alert("settings.proxy.test.title".localized(), isPresented: $showingTestAlert) {
             Button("common.ok".localized()) { }
         } message: {

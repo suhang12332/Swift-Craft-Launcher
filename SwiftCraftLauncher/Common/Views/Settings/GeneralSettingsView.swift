@@ -15,10 +15,10 @@ public struct GeneralSettingsView: View {
     public init() {}
 
     public var body: some View {
-        Grid(alignment: .trailing) {
-            GridRow {
-                Text("settings.language.picker".localized()) // 长标题
-                    .gridColumnAlignment(.trailing) // 右对齐
+        VStack(spacing: 20) {
+            HStack {
+                Text("settings.language.picker".localized())
+                    .frame(width: 200, alignment: .trailing)
                 Picker("", selection: $selectedLanguage) {
                     ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
                         Text(name).tag(code)
@@ -27,7 +27,6 @@ public struct GeneralSettingsView: View {
                 .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
                     view.fixedSize()
                 }
-                .gridColumnAlignment(.leading)
                 .labelsHidden()
                 .onChange(of: selectedLanguage) { _, newValue in
                     // 如果是取消操作导致的语言恢复，则不触发重启提示
@@ -41,7 +40,6 @@ public struct GeneralSettingsView: View {
                     titleVisibility: .visible
                 ) {
                     Button("settings.language.restart.confirm".localized(), role: .destructive) {
-                        // 在重启前更新 Sparkle 的语言设置
                         sparkleUpdateService.updateSparkleLanguage(selectedLanguage)
                         LanguageManager.shared.selectedLanguage = selectedLanguage
                         restartAppSafely()
@@ -106,8 +104,7 @@ public struct GeneralSettingsView: View {
                     .foregroundColor(.secondary)
                     .fixedSize()
                 }.frame(width: 200)
-                    .gridColumnAlignment(.leading)
-                    .labelsHidden()
+                Spacer()
             }
             .padding(.bottom, 20)
 
