@@ -27,7 +27,8 @@ struct ModrinthLoader: Codable {
     let data: [String: SidedDataEntry]?
 
     enum CodingKeys: String, CodingKey {
-        case id, inheritsFrom, releaseTime, time, mainClass, arguments, libraries, type, version, processors, data
+        case id, inheritsFrom, releaseTime, time, mainClass, arguments,
+            libraries, type, version, processors, data
     }
 
     init(from decoder: Decoder) throws {
@@ -38,11 +39,20 @@ struct ModrinthLoader: Codable {
         time = try container.decode(String.self, forKey: .time)
         mainClass = try container.decode(String.self, forKey: .mainClass)
         arguments = try container.decode(Arguments.self, forKey: .arguments)
-        libraries = try container.decode([ModrinthLoaderLibrary].self, forKey: .libraries)
+        libraries = try container.decode(
+            [ModrinthLoaderLibrary].self,
+            forKey: .libraries
+        )
         type = try container.decode(String.self, forKey: .type)
         version = try container.decodeIfPresent(String.self, forKey: .version)
-        processors = try container.decodeIfPresent([Processor].self, forKey: .processors)
-        data = try container.decodeIfPresent([String: SidedDataEntry].self, forKey: .data)
+        processors = try container.decodeIfPresent(
+            [Processor].self,
+            forKey: .processors
+        )
+        data = try container.decodeIfPresent(
+            [String: SidedDataEntry].self,
+            forKey: .data
+        )
     }
 }
 
@@ -55,7 +65,12 @@ struct ModrinthLoaderLibrary: Codable {
     var url: URL?
 
     // 自定义初始化器，用于直接创建实例
-    init(downloads: LibraryDownloads?, name: String, includeInClasspath: Bool, downloadable: Bool) {
+    init(
+        downloads: LibraryDownloads?,
+        name: String,
+        includeInClasspath: Bool,
+        downloadable: Bool
+    ) {
         self.downloads = downloads
         self.name = name
         self.includeInClasspath = includeInClasspath
@@ -63,7 +78,7 @@ struct ModrinthLoaderLibrary: Codable {
     }
 
     enum CodingKeys: String, CodingKey {
-        case name, downloadable,downloads,url
+        case name, downloadable, downloads, url
         case includeInClasspath = "include_in_classpath"
     }
 
@@ -71,9 +86,15 @@ struct ModrinthLoaderLibrary: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
         downloadable = try container.decode(Bool.self, forKey: .downloadable)
-        includeInClasspath = try container.decode(Bool.self, forKey: .includeInClasspath)
+        includeInClasspath = try container.decode(
+            Bool.self,
+            forKey: .includeInClasspath
+        )
         url = try container.decodeIfPresent(URL.self, forKey: .url)
-        downloads = try container.decodeIfPresent(LibraryDownloads.self, forKey: .downloads)
+        downloads = try container.decodeIfPresent(
+            LibraryDownloads.self,
+            forKey: .downloads
+        )
     }
 }
 

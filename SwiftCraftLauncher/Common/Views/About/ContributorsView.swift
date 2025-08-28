@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct ContributorsView: View { // swiftlint:disable:this type_body_length
+public struct ContributorsView: View {  // swiftlint:disable:this type_body_length
     @StateObject private var viewModel = ContributorsViewModel()
 
     public init() {}
@@ -14,16 +14,66 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
     }
 
     private let staticContributors: [StaticContributor] = [
-        StaticContributor(name: "【喵凹条】喵凹条",url: "", avatar: "🎨", contributions: [.design]),
-        StaticContributor(name: "CarnonLee", url: "",avatar: "👨‍💻", contributions: [.code]),
-        StaticContributor(name: "jiangyin14", url: "https://github.com/jiangyin14",avatar: "👨‍💻", contributions: [.code]),
-        StaticContributor(name: "逗趣狂想", url: "https://space.bilibili.com/3493127828540221",avatar: "🔧", contributions: [.infra]),
-        StaticContributor(name: "Nzcorz", url: "",avatar: "👩‍💻", contributions: [.code]),
-        StaticContributor(name: "桜子ちゃん", url: "",avatar: "👩‍💻", contributions: [.code]),
-        StaticContributor(name: "ZeroSnow", url: "https://github.com/chencomcdyun",avatar: "🎨", contributions: [.design]),
-        StaticContributor(name: "小希Lusiey_", url: "",avatar: "👩‍💻", contributions: [.test]),
-        StaticContributor(name: "骑老奶奶过马路", url: "",avatar: "👩‍💻", contributions: [.test]),
-        StaticContributor(name: "laiTM", url: "",avatar: "👩‍💻", contributions: [.test]),
+        StaticContributor(
+            name: "【喵凹条】喵凹条",
+            url: "",
+            avatar: "🎨",
+            contributions: [.design]
+        ),
+        StaticContributor(
+            name: "CarnonLee",
+            url: "",
+            avatar: "👨‍💻",
+            contributions: [.code]
+        ),
+        StaticContributor(
+            name: "jiangyin14",
+            url: "https://github.com/jiangyin14",
+            avatar: "👨‍💻",
+            contributions: [.code]
+        ),
+        StaticContributor(
+            name: "逗趣狂想",
+            url: "https://space.bilibili.com/3493127828540221",
+            avatar: "🔧",
+            contributions: [.infra]
+        ),
+        StaticContributor(
+            name: "Nzcorz",
+            url: "",
+            avatar: "👩‍💻",
+            contributions: [.code]
+        ),
+        StaticContributor(
+            name: "桜子ちゃん",
+            url: "",
+            avatar: "👩‍💻",
+            contributions: [.code]
+        ),
+        StaticContributor(
+            name: "ZeroSnow",
+            url: "https://github.com/chencomcdyun",
+            avatar: "🎨",
+            contributions: [.design]
+        ),
+        StaticContributor(
+            name: "小希Lusiey_",
+            url: "",
+            avatar: "👩‍💻",
+            contributions: [.test]
+        ),
+        StaticContributor(
+            name: "骑老奶奶过马路",
+            url: "",
+            avatar: "👩‍💻",
+            contributions: [.test]
+        ),
+        StaticContributor(
+            name: "laiTM",
+            url: "",
+            avatar: "👩‍💻",
+            contributions: [.test]
+        ),
     ]
 
     // 贡献类型枚举
@@ -56,7 +106,7 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
             VStack(spacing: 16) {
                 if viewModel.isLoading {
                     loadingView
-                }  else {
+                } else {
                     contributorsContent
                 }
             }
@@ -128,8 +178,15 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
 
             // 顶级贡献者
             if !viewModel.topContributors.isEmpty {
-                ForEach(Array(viewModel.topContributors.enumerated()), id: \.element.id) { index, contributor in
-                    contributorRow(contributor, isTopContributor: true, index: index)
+                ForEach(
+                    Array(viewModel.topContributors.enumerated()),
+                    id: \.element.id
+                ) { index, contributor in
+                    contributorRow(
+                        contributor,
+                        isTopContributor: true,
+                        index: index
+                    )
 
                     if index < viewModel.topContributors.count - 1 {
                         Divider()
@@ -144,8 +201,15 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
             }
 
             // 其他贡献者
-            ForEach(Array(viewModel.otherContributors.enumerated()), id: \.element.id) { index, contributor in
-                contributorRow(contributor, isTopContributor: false, index: index + viewModel.topContributors.count)
+            ForEach(
+                Array(viewModel.otherContributors.enumerated()),
+                id: \.element.id
+            ) { index, contributor in
+                contributorRow(
+                    contributor,
+                    isTopContributor: false,
+                    index: index + viewModel.topContributors.count
+                )
 
                 if index < viewModel.otherContributors.count - 1 {
                     Divider()
@@ -156,7 +220,11 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
     }
 
     // MARK: - Contributor Row
-    private func contributorRow(_ contributor: GitHubContributor, isTopContributor: Bool, index: Int) -> some View {
+    private func contributorRow(
+        _ contributor: GitHubContributor,
+        isTopContributor: Bool,
+        index: Int
+    ) -> some View {
         Link(destination: URL(string: contributor.htmlUrl)!) {
             HStack(spacing: 12) {
                 // 头像
@@ -166,7 +234,13 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(contributor.login)
-                            .font(.system(size: 13, weight: isTopContributor ? .semibold : .regular))
+                            .font(
+                                .system(
+                                    size: 13,
+                                    weight: isTopContributor
+                                        ? .semibold : .regular
+                                )
+                            )
                             .foregroundColor(.primary)
 
                         if isTopContributor {
@@ -181,8 +255,11 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
                         // 贡献次数
                         Text(
                             String(
-                                format: "contributors.contributions.format".localized(),
-                                viewModel.formatContributions(contributor.contributions)
+                                format: "contributors.contributions.format"
+                                    .localized(),
+                                viewModel.formatContributions(
+                                    contributor.contributions
+                                )
                             )
                         )
                         .font(.caption)
@@ -195,7 +272,7 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
                 // 箭头
                 Image("github-mark")
                     .renderingMode(.template)
-                    .resizable().frame(width: 16,height: 16)
+                    .resizable().frame(width: 16, height: 16)
                     .imageScale(.medium)
                     .foregroundColor(.secondary)
             }
@@ -221,7 +298,9 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
     }
 
     // MARK: - Contributor Avatar
-    private func contributorAvatar(_ contributor: GitHubContributor) -> some View {
+    private func contributorAvatar(_ contributor: GitHubContributor)
+        -> some View
+    {
         AsyncImage(url: URL(string: contributor.avatarUrl)) { phase in
             switch phase {
             case .empty:
@@ -292,9 +371,12 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
     }
 
     // MARK: - Static Contributor Row
-    private func staticContributorRow(_ contributor: StaticContributor) -> some View {
+    private func staticContributorRow(_ contributor: StaticContributor)
+        -> some View
+    {
         Group {
-            if !contributor.url.isEmpty, let url = URL(string: contributor.url) {
+            if !contributor.url.isEmpty, let url = URL(string: contributor.url)
+            {
                 Link(destination: url) {
                     staticContributorContent(contributor)
                 }
@@ -304,7 +386,9 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
         }
     }
 
-    private func staticContributorContent(_ contributor: StaticContributor) -> some View {
+    private func staticContributorContent(_ contributor: StaticContributor)
+        -> some View
+    {
         HStack(spacing: 12) {
             // 头像（emoji）
             Text(contributor.avatar)
@@ -323,7 +407,8 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
 
                 // 贡献标签行
                 HStack(spacing: 6) {
-                    ForEach(contributor.contributions, id: \.self) { contribution in
+                    ForEach(contributor.contributions, id: \.self) {
+                        contribution in
                         contributionTag(contribution)
                     }
                     Spacer()
@@ -343,31 +428,31 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
         .contentShape(Rectangle())
     }
     private struct ActionButton: View {
-            @Environment(\.openURL)
-            private var openURL
-            @State private var hovering = false
+        @Environment(\.openURL)
+        private var openURL
+        @State private var hovering = false
 
-            let url: String
-            let image: Image
+        let url: String
+        let image: Image
 
-            var body: some View {
-                Button {
-                    if let url = URL(string: url) {
-                        openURL(url)
-                    }
-                } label: {
-                    image
-                        .resizable()
-                        .frame(width: 14, height: 14)
-                        .imageScale(.medium)
-                        .foregroundColor(hovering ? .primary : .secondary)
+        var body: some View {
+            Button {
+                if let url = URL(string: url) {
+                    openURL(url)
                 }
-                .buttonStyle(.plain)
-                .onHover { hover in
-                    hovering = hover
-                }
+            } label: {
+                image
+                    .resizable()
+                    .frame(width: 14, height: 14)
+                    .imageScale(.medium)
+                    .foregroundColor(hovering ? .primary : .secondary)
+            }
+            .buttonStyle(.plain)
+            .onHover { hover in
+                hovering = hover
             }
         }
+    }
 }
 
 #Preview {

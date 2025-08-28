@@ -152,7 +152,7 @@ struct ModrinthResult: Codable {
 }
 
 // 游戏版本
-struct GameVersion: Codable, Identifiable,Hashable {
+struct GameVersion: Codable, Identifiable, Hashable {
     let version: String
     let version_type: String
     let date: String
@@ -171,7 +171,7 @@ struct Loader: Codable, Identifiable {
 }
 
 // 分类
-struct Category: Codable, Identifiable,Hashable {
+struct Category: Codable, Identifiable, Hashable {
     let name: String
     let project_type: String
     let header: String
@@ -187,7 +187,9 @@ struct License: Codable, Equatable, Hashable {
 }
 
 /// Modrinth version model
-public struct ModrinthProjectDetailVersion: Codable, Identifiable, Equatable, Hashable {
+public struct ModrinthProjectDetailVersion: Codable, Identifiable, Equatable,
+    Hashable
+{
     /// Game versions this version supports
     public let gameVersions: [String]
 
@@ -321,9 +323,9 @@ public struct ModrinthProjectDependency: Codable, Hashable, Equatable {
     public let projects: [ModrinthProjectDetailVersion]
 }
 
-public extension ModrinthProject {
+extension ModrinthProject {
     /// 从 ModrinthProjectDetail 构建 ModrinthProject
-    static func from(detail: ModrinthProjectDetail) -> ModrinthProject {
+    public static func from(detail: ModrinthProjectDetail) -> ModrinthProject {
         ModrinthProject(
             projectId: detail.id,
             projectType: detail.projectType,
@@ -344,7 +346,7 @@ public extension ModrinthProject {
     }
 
     /// 从 ModrinthProject 构建 ModrinthProjectDetail
-    func toDetail() -> ModrinthProjectDetail {
+    public func toDetail() -> ModrinthProjectDetail {
         ModrinthProjectDetail(
             slug: self.slug,
             title: self.title,

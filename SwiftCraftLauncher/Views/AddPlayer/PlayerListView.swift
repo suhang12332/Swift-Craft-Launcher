@@ -85,6 +85,6 @@ private struct PlayerAvatarView: View {
     var size: CGFloat
 
     var body: some View {
-        MinecraftSkinUtils(type: player.isOnlineAccount ? .url : .asset, src: player.avatarName,size: size).id(player.id)
+        MinecraftSkinUtils(type: player.isOnlineAccount ? .url : .asset, src: player.avatarName, size: size).id(player.id)
     }
 }

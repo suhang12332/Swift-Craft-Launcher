@@ -41,43 +41,43 @@ public struct DetailToolbarView: ToolbarContent {
             switch selectedItem {
             case .game:
                 if let game = currentGame {
-//                    if !gameType {
-//                        if let iconURL = AppPaths.profileDirectory(
-//                            gameName: game.gameName
-//                        )?.appendingPathComponent(game.gameIcon),
-//                            FileManager.default.fileExists(atPath: iconURL.path)
-//                        {
-//                            AsyncImage(url: iconURL) { phase in
-//                                switch phase {
-//                                case .empty:
-//                                    ProgressView()
-//                                case .success(let image):
-//                                    image
-//                                        .resizable()
-//                                        .interpolation(.none)
-//                                        .frame(width: 22, height: 22)
-//                                        .cornerRadius(6)
-//                                case .failure:
-//                                    Image("default_game_icon")
-//                                        .resizable()
-//                                        .interpolation(.none)
-//                                        .frame(width: 22, height: 22)
-//                                        .cornerRadius(6)
-//                                @unknown default:
-//                                    EmptyView()
-//                                }
-//                            }
-//                        } else {
-//                            Image("default_game_icon")
-//                                .resizable()
-//                                .interpolation(.none)
-//                                .frame(width: 22, height: 22)
-//                                .cornerRadius(6)
-//                        }
-//                        Text(game.gameName)
-//                            .font(.headline)
-//                        Spacer()
-//                    }
+                    //                    if !gameType {
+                    //                        if let iconURL = AppPaths.profileDirectory(
+                    //                            gameName: game.gameName
+                    //                        )?.appendingPathComponent(game.gameIcon),
+                    //                            FileManager.default.fileExists(atPath: iconURL.path)
+                    //                        {
+                    //                            AsyncImage(url: iconURL) { phase in
+                    //                                switch phase {
+                    //                                case .empty:
+                    //                                    ProgressView()
+                    //                                case .success(let image):
+                    //                                    image
+                    //                                        .resizable()
+                    //                                        .interpolation(.none)
+                    //                                        .frame(width: 22, height: 22)
+                    //                                        .cornerRadius(6)
+                    //                                case .failure:
+                    //                                    Image("default_game_icon")
+                    //                                        .resizable()
+                    //                                        .interpolation(.none)
+                    //                                        .frame(width: 22, height: 22)
+                    //                                        .cornerRadius(6)
+                    //                                @unknown default:
+                    //                                    EmptyView()
+                    //                                }
+                    //                            }
+                    //                        } else {
+                    //                            Image("default_game_icon")
+                    //                                .resizable()
+                    //                                .interpolation(.none)
+                    //                                .frame(width: 22, height: 22)
+                    //                                .cornerRadius(6)
+                    //                        }
+                    //                        Text(game.gameName)
+                    //                            .font(.headline)
+                    //                        Spacer()
+                    //                    }
                     resourcesTypeMenu
                     resourcesMenu
                     if gameType {
@@ -105,11 +105,16 @@ public struct DetailToolbarView: ToolbarContent {
                         }
                     } label: {
                         Label(
-                            game.isRunning ? "stop.fill".localized() : "play.fill".localized(),
-                            systemImage: game.isRunning ? "stop.fill" : "play.fill"
+                            game.isRunning
+                                ? "stop.fill".localized()
+                                : "play.fill".localized(),
+                            systemImage: game.isRunning
+                                ? "stop.fill" : "play.fill"
                         )
                     }
-                    .help((game.isRunning ? "stop.fill" : "play.fill").localized())
+                    .help(
+                        (game.isRunning ? "stop.fill" : "play.fill").localized()
+                    )
                     .animation(.linear, value: game.isRunning)
 
                     Button {
@@ -122,7 +127,8 @@ public struct DetailToolbarView: ToolbarContent {
                             )
                         }
                     } label: {
-                        Label("game.path".localized(), systemImage: "folder").foregroundStyle(.primary)
+                        Label("game.path".localized(), systemImage: "folder")
+                            .foregroundStyle(.primary)
                     }
                     .help("game.path".localized())
                 }
@@ -175,7 +181,7 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Label(currentSortTitle,systemImage: "").labelStyle(.titleOnly)
+            Label(currentSortTitle, systemImage: "").labelStyle(.titleOnly)
         }.help("menu.sort.help".localized())
     }
 
@@ -187,7 +193,7 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Label(currentResourceTitle,systemImage: "").labelStyle(.titleOnly)
+            Label(currentResourceTitle, systemImage: "").labelStyle(.titleOnly)
         }.help("resource.content.type.help".localized())
     }
 
@@ -210,7 +216,10 @@ public struct DetailToolbarView: ToolbarContent {
             Button {
                 handlePageChange(-1)
             } label: {
-                Label("pagination.help".localized(),systemImage: "chevron.left")
+                Label(
+                    "pagination.help".localized(),
+                    systemImage: "chevron.left"
+                )
             }
             .disabled(currentPage == 1)
 
@@ -229,7 +238,10 @@ public struct DetailToolbarView: ToolbarContent {
             Button {
                 handlePageChange(1)
             } label: {
-                Label("pagination.help".localized(), systemImage: "chevron.right")
+                Label(
+                    "pagination.help".localized(),
+                    systemImage: "chevron.right"
+                )
             }
             .disabled(currentPage == totalPages)
         }

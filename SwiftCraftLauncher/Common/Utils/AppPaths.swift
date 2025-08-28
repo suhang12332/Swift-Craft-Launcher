@@ -36,7 +36,7 @@ struct AppPaths {
     }
 
     static func savesDirectory(gameName: String) -> URL? {
-        profileRootDirectory?.appendingPathComponent(gameName).appendingPathComponent("saves",isDirectory: true)
+        profileRootDirectory?.appendingPathComponent(gameName).appendingPathComponent("saves", isDirectory: true)
     }
 
     static func modsDirectory(gameName: String) -> URL? {
