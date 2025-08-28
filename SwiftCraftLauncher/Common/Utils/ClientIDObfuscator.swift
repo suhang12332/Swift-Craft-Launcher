@@ -26,11 +26,29 @@ class ClientIDObfuscator {
     func getClientID() -> String {
         // 将加密字符串按固定长度分割（每个部分8个字符）
         let partLength = 8
+        let expectedLength = partLength * 6 // 48个字符
+        
+        // 检查字符串长度是否足够
+        guard encryptedString.count >= expectedLength else {
+            print("Error: encryptedString length is \(encryptedString.count), expected at least \(expectedLength)")
+            return ""
+        }
+        
         var parts: [String] = []
         
         for i in 0..<6 {
-            let startIndex = encryptedString.index(encryptedString.startIndex, offsetBy: i * partLength)
-            let endIndex = encryptedString.index(startIndex, offsetBy: partLength)
+            let startOffset = i * partLength
+            let endOffset = startOffset + partLength
+            
+            // 安全地获取子字符串
+            guard startOffset < encryptedString.count,
+                  endOffset <= encryptedString.count else {
+                print("Error: Index out of bounds at part \(i)")
+                return ""
+            }
+            
+            let startIndex = encryptedString.index(encryptedString.startIndex, offsetBy: startOffset)
+            let endIndex = encryptedString.index(encryptedString.startIndex, offsetBy: endOffset)
             let part = String(encryptedString[startIndex..<endIndex])
             parts.append(part)
         }
@@ -50,6 +68,13 @@ class ClientIDObfuscator {
     static func encryptClientID(_ clientID: String) -> String {
         let obfuscator = ClientIDObfuscator(encryptedString: "")
         let parts = obfuscator.splitClientID(clientID)
+        
+        // 检查分割是否成功
+        guard parts.count == 6 else {
+            print("Error: Failed to split clientID into 6 parts, got \(parts.count) parts")
+            return ""
+        }
+        
         var encryptedParts = Array(repeating: "", count: parts.count)
         
         // 按照indexOrder进行加密和乱序
@@ -65,11 +90,29 @@ class ClientIDObfuscator {
     // 辅助方法：分割ClientID为6个部分
     private func splitClientID(_ clientID: String) -> [String] {
         let partLength = 6
+        let expectedLength = partLength * 6 // 36个字符
+        
+        // 检查字符串长度是否足够
+        guard clientID.count >= expectedLength else {
+            print("Error: clientID length is \(clientID.count), expected at least \(expectedLength)")
+            return []
+        }
+        
         var parts: [String] = []
         
         for i in 0..<6 {
-            let startIndex = clientID.index(clientID.startIndex, offsetBy: i * partLength)
-            let endIndex = clientID.index(startIndex, offsetBy: partLength)
+            let startOffset = i * partLength
+            let endOffset = startOffset + partLength
+            
+            // 安全地获取子字符串
+            guard startOffset < clientID.count,
+                  endOffset <= clientID.count else {
+                print("Error: Index out of bounds at part \(i) in splitClientID")
+                return []
+            }
+            
+            let startIndex = clientID.index(clientID.startIndex, offsetBy: startOffset)
+            let endIndex = clientID.index(clientID.startIndex, offsetBy: endOffset)
             let part = String(clientID[startIndex..<endIndex])
             parts.append(part)
         }

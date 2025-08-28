@@ -114,8 +114,8 @@ public struct ProxySettingsView: View {
                     var errorMsg = "settings.proxy.test.failure".localized()
                     
                     // 提供更详细的错误信息
-                    if let proxyError = error as? ProxyError {
-                        errorMsg += ": \(proxyError.localizedDescription)"
+                    if let globalError = error as? GlobalError {
+                        errorMsg += ": \(globalError.localizedDescription)"
                     } else if let urlError = error as? URLError {
                         switch urlError.code {
                         case .timedOut:

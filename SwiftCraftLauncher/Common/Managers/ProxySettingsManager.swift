@@ -131,7 +131,12 @@ class ProxySettingsManager: ObservableObject {
     
     public func testProxyConnection(completion: @escaping (Result<Void, Error>) -> Void) {
         guard configuration.isValid else {
-            completion(.failure(ProxyError.invalidConfiguration))
+            let error = GlobalError.network(
+                chineseMessage: "代理配置无效",
+                i18nKey: "settings.proxy.error.invalid_configuration",
+                level: .silent
+            )
+            completion(.failure(error))
             return
         }
         
@@ -189,7 +194,12 @@ class ProxySettingsManager: ObservableObject {
                         success = true
                         Logger.shared.info("代理测试成功: \(urlString)")
                     } else {
-                        lastError = ProxyError.connectionFailed
+                        let connectionError = GlobalError.network(
+                            chineseMessage: "连接失败",
+                            i18nKey: "settings.proxy.error.connection_failed",
+                            level: .silent
+                        )
+                        lastError = connectionError
                         Logger.shared.debug("代理测试HTTP错误 (\(urlString)): \(httpResponse.statusCode)")
                     }
                 }
@@ -204,22 +214,13 @@ class ProxySettingsManager: ObservableObject {
             if success {
                 completion(.success(()))
             } else {
-                completion(.failure(lastError ?? ProxyError.connectionFailed))
+                let finalError = lastError ?? GlobalError.network(
+                    chineseMessage: "连接失败",
+                    i18nKey: "settings.proxy.error.connection_failed",
+                    level: .silent
+                )
+                completion(.failure(finalError))
             }
-        }
-    }
-}
-
-public enum ProxyError: LocalizedError {
-    case invalidConfiguration
-    case connectionFailed
-    
-    public var errorDescription: String? {
-        switch self {
-        case .invalidConfiguration:
-            return "settings.proxy.error.invalid_configuration".localized()
-        case .connectionFailed:
-            return "settings.proxy.error.connection_failed".localized()
         }
     }
 }
