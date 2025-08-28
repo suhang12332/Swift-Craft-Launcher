@@ -7,7 +7,8 @@
   
   [![SCL](https://img.shields.io/badge/SCL-Swift%20Craft%20Launcher-orange.svg)](https://github.com/suhang12332/Swift-Craft-Launcher)
   [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg)](https://swift.org/)
-  [![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-1057517524-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
+  [![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-1058425700-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=1058425700)
+  [![Discord](https://img.shields.io/badge/Discord-加入伺服器-7289da?logo=discord&logoColor=white)](https://discord.gg/FEUpgwdF)
   
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
   [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
@@ -106,7 +107,8 @@ brew install --cask swift-craft-launcher
 
 ## 社群與支援
 
-- **官方 QQ 群**: [1057517524](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
+- **Discord 伺服器**: [加入我們的 Discord](https://discord.gg/FEUpgwdF) 
+- **官方 QQ 群**: [1058425700](https://qm.qq.com/cgi-bin/qm/qr?k=1058425700)
 - **問題回報**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
 - **功能建議**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
 

@@ -7,7 +7,8 @@
   
   [![SCL](https://img.shields.io/badge/SCL-Swift%20Craft%20Launcher-orange.svg)](https://github.com/suhang12332/Swift-Craft-Launcher)
   [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg)](https://swift.org/)
-  [![QQ Group](https://img.shields.io/badge/QQ%20Group-1057517524-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
+  [![QQ Group](https://img.shields.io/badge/QQ%20Group-1058425700-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=1058425700)
+  [![Discord](https://img.shields.io/badge/Discord-Join%20Server-7289da?logo=discord&logoColor=white)](https://discord.gg/FEUpgwdF)
   
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
   [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
@@ -106,7 +107,8 @@ This project is licensed under the GNU Affero General Public License v3.0. See [
 
 ## Community & Support
 
-- **Official QQ Group**: [1057517524](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
+- **Discord Server**: [Join our Discord](https://discord.gg/FEUpgwdF)
+- **Official QQ Group**: [1058425700](https://qm.qq.com/cgi-bin/qm/qr?k=1058425700)
 - **Issues & Bug Reports**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
 - **Feature Requests**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
 
