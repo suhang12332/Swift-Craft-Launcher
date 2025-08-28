@@ -112,14 +112,13 @@ public struct DetailToolbarView: ToolbarContent {
                     .help((game.isRunning ? "stop.fill" : "play.fill").localized())
                     .animation(.linear, value: game.isRunning)
                     Button(action: {
-                        if let gameDir = AppPaths.profileDirectory(
+                        let gameDir = AppPaths.profileDirectory(
                             gameName: game.gameName
-                        ) {
-                            NSWorkspace.shared.selectFile(
-                                nil,
-                                inFileViewerRootedAtPath: gameDir.path
-                            )
-                        }
+                        )
+                        NSWorkspace.shared.selectFile(
+                            nil,
+                            inFileViewerRootedAtPath: gameDir.path
+                        )
                     }) {
                         Label("game.path".localized(), systemImage: "folder").foregroundStyle(.primary)
                     }.help("game.path".localized())

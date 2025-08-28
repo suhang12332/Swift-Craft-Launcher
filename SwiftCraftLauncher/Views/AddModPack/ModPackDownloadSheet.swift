@@ -476,9 +476,7 @@ struct ModPackDownloadSheet: View {
    }
    
    private func createProfileDirectories(for gameName: String) async -> Bool {
-       guard let profileDirectory = AppPaths.profileDirectory(gameName: gameName) else {
-           return false
-       }
+       let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
        
        let subdirs = AppPaths.profileSubdirectories.map { profileDirectory.appendingPathComponent($0) }
        

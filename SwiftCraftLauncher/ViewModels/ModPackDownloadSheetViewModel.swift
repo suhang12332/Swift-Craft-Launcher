@@ -126,11 +126,8 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                return nil
            }
            
-           // 获取游戏目录
-           guard let gameDirectory = AppPaths.profileDirectory(gameName: gameName) else {
-               handleDownloadError("无法获取游戏目录: \(gameName)", "error.configuration.game_directory_not_found")
-               return nil
-           }
+                     // 获取游戏目录
+          let gameDirectory = AppPaths.profileDirectory(gameName: gameName)
            
            // 确保游戏目录存在
            try FileManager.default.createDirectory(at: gameDirectory, withIntermediateDirectories: true)

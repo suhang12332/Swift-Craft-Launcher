@@ -102,13 +102,7 @@ struct MinecraftLaunchCommandBuilder {
         
         
         // 验证游戏目录
-        guard let gameDir = AppPaths.profileDirectory(gameName: gameInfo.gameName)?.path else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取游戏目录路径: \(gameInfo.gameName)",
-                i18nKey: "error.configuration.game_directory_not_found",
-                level: .popup
-            )
-        }
+        let gameDir = AppPaths.profileDirectory(gameName: gameInfo.gameName).path
         
         
         // 验证客户端 JAR 文件

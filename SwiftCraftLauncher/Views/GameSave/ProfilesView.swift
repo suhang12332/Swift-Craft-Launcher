@@ -17,7 +17,7 @@ struct ProfilesView: View {
     @State private var selectedFolder: String = ""
     
     var savesRoot: String? {
-        AppPaths.savesDirectory(gameName: gameName)?.path
+        AppPaths.savesDirectory(gameName: gameName).path
     }
 
     var body: some View {

@@ -86,9 +86,7 @@ struct ContentView: View {
     }
     
     private func hasSaves(for gameName: String) -> Bool {
-        guard let savesDir = AppPaths.savesDirectory(gameName: gameName) else {
-            return false
-        }
+        let savesDir = AppPaths.savesDirectory(gameName: gameName)
         
         do {
             let contents = try FileManager.default.contentsOfDirectory(at: savesDir, includingPropertiesForKeys: nil)

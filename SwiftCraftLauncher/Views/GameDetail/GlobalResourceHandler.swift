@@ -27,8 +27,8 @@ func filterCompatibleGames(
             }
         }()
         guard match else { return nil }
-        if let modsDir = AppPaths.modsDirectory(gameName: game.gameName),
-           ModScanner.shared.isModInstalledSync(projectId: projectId, in: modsDir) {
+        let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
+        if ModScanner.shared.isModInstalledSync(projectId: projectId, in: modsDir) {
             return nil
         }
         return game

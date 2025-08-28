@@ -20,34 +20,16 @@ class Logger {
     
     // 日志文件路径
     private var logFileURL: URL? {
+        
         // 获取应用名称，移除空格并转换为小写
         let appName = Bundle.main.appName.replacingOccurrences(of: " ", with: "-").lowercased()
         
-        // 优先使用系统推荐的日志目录
-        if let logsDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first {
-            let appLogsDirectory = logsDirectory.appendingPathComponent("Logs", isDirectory: true)
-                .appendingPathComponent(Bundle.main.appName, isDirectory: true)
-            
-            // 确保logs目录存在
-            try? FileManager.default.createDirectory(at: appLogsDirectory, withIntermediateDirectories: true)
-            
-            // 使用应用名称-日期格式作为文件名
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let today = dateFormatter.string(from: Date())
-            return appLogsDirectory.appendingPathComponent("\(appName)-\(today).log")
-        }
-        
-        let logsDirectory = AppPaths.launcherSupportDirectory.appendingPathComponent("logs", isDirectory: true)
-        
-        // 确保logs目录存在
-        try? FileManager.default.createDirectory(at: logsDirectory, withIntermediateDirectories: true)
         
         // 使用应用名称-日期格式作为文件名
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let today = dateFormatter.string(from: Date())
-        return logsDirectory.appendingPathComponent("\(appName)-\(today).log")
+        return AppPaths.logsDirectory.appendingPathComponent("\(appName)-\(today).log")
     }
 
     private init() {
@@ -65,6 +47,16 @@ class Logger {
     private func setupLogFile() {
         guard let logURL = logFileURL else { return }
         
+        // 确保日志目录存在
+        let logDirectory = logURL.deletingLastPathComponent()
+        if !FileManager.default.fileExists(atPath: logDirectory.path) {
+            do {
+                try FileManager.default.createDirectory(at: logDirectory, withIntermediateDirectories: true)
+            } catch {
+                return
+            }
+        }
+        
         // 如果文件不存在，创建文件
         if !FileManager.default.fileExists(atPath: logURL.path) {
             FileManager.default.createFile(atPath: logURL.path, contents: nil)
@@ -81,9 +73,7 @@ class Logger {
             if let data = startupMessage.data(using: .utf8) {
                 logFileHandle?.write(data)
             }
-        } catch {
-            Logger.shared.error("Failed to setup log file: \(error)")
-        }
+        } catch {}
     }
     
     private func closeLogFile() {
@@ -120,9 +110,13 @@ class Logger {
             if currentHandle.fileDescriptor != -1 {
                 // 检查文件路径是否匹配当前日期
                 let expectedFileName = currentLogURL.lastPathComponent
-                let currentFileName = currentLogURL.lastPathComponent
                 
-                if expectedFileName != currentFileName {
+                // 简单检查：如果当前日期与文件名中的日期不匹配，切换文件
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd"
+                let today = dateFormatter.string(from: Date())
+                
+                if !expectedFileName.contains(today) {
                     // 日期变化，切换到新文件
                     switchToNewLogFile()
                 }
@@ -264,7 +258,6 @@ class Logger {
     /// 打开当前日志文件
     func openLogFile() {
         guard let logURL = logFileURL else {
-            Logger.shared.error("无法获取日志文件路径")
             return
         }
         
@@ -285,9 +278,7 @@ class Logger {
                 
                 try "日志文件已创建 - \(dateString)".write(to: logURL, atomically: true, encoding: .utf8)
                 NSWorkspace.shared.open(logURL)
-            } catch {
-                Logger.shared.error("无法创建或打开日志文件: \(error)")
-            }
+            } catch {}
         }
     }
     
@@ -323,9 +314,7 @@ class Logger {
                     }
                 }
             }
-        } catch {
-            Logger.shared.error("Failed to cleanup old logs in \(directory.path): \(error)")
-        }
+        } catch {}
     }
 
     // MARK: - Stringify Helper

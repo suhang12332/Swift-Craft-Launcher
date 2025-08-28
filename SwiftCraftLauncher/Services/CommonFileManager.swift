@@ -166,7 +166,8 @@ class CommonFileManager {
         processorData["MINECRAFT_JAR"] = minecraftJarPath.path
         
         // 添加实例路径（profile目录）
-        if let gameName = gameName, let profileDir = AppPaths.profileDirectory(gameName: gameName) {
+        if let gameName = gameName {
+            let profileDir = AppPaths.profileDirectory(gameName: gameName)
             processorData["ROOT"] = profileDir.path
         }
         

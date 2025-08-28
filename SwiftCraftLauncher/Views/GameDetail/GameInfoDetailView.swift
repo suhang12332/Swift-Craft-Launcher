@@ -139,8 +139,8 @@ struct GameInfoDetailView: View {
 
     private var gameIcon: some View {
         Group {
-            if let iconURL = AppPaths.profileDirectory(gameName: game.gameName)?.appendingPathComponent(game.gameIcon),
-               FileManager.default.fileExists(atPath: iconURL.path) {
+            let iconURL = AppPaths.profileDirectory(gameName: game.gameName).appendingPathComponent(game.gameIcon)
+            if FileManager.default.fileExists(atPath: iconURL.path) {
                 AsyncImage(url: iconURL) { phase in
                     switch phase {
                     case .empty:
@@ -218,9 +218,7 @@ struct GameInfoDetailView: View {
     }
     
     private var hasSaves: Bool {
-        guard let savesDir = AppPaths.savesDirectory(gameName: game.gameName) else {
-            return false
-        }
+        let savesDir = AppPaths.savesDirectory(gameName: game.gameName)
         
         do {
             let contents = try FileManager.default.contentsOfDirectory(at: savesDir, includingPropertiesForKeys: nil)
@@ -320,9 +318,8 @@ struct GameInfoDetailView: View {
                 }
                 
                 // 先删除游戏文件夹
-                if let profileDir = AppPaths.profileDirectory(gameName: game.gameName) {
-                    try FileManager.default.removeItem(at: profileDir)
-                }
+                let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
+                try FileManager.default.removeItem(at: profileDir)
                 
                 // 然后删除游戏记录
                 try await gameRepository.deleteGame(id: game.id)

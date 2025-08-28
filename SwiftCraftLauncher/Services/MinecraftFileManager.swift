@@ -95,13 +95,7 @@ class MinecraftFileManager {
     }
     
     private func createDirectories(manifestId: String, gameName: String) throws {
-        guard let profileDirectory = AppPaths.profileDirectory(gameName: gameName) else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取必要的目录路径",
-                i18nKey: "error.configuration.required_directories_not_found",
-                level: .notification
-            )
-        }
+        let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
         let directoriesToCreate = Constants.metaSubdirectories.map {
             AppPaths.metaDirectory.appendingPathComponent($0)
         } + [

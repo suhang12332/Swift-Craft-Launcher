@@ -157,10 +157,9 @@ struct ModrinthDependencyDownloader {
         gameInfo: GameVersionInfo
     ) async -> [(detail: ModrinthProjectDetail, versions: [ModrinthProjectDetailVersion])] {
         let query = "mod"
-        let resourceDir = AppPaths.modsDirectory(
+        let resourceDirUnwrapped = AppPaths.modsDirectory(
             gameName: gameInfo.gameName
         )
-        guard let resourceDirUnwrapped = resourceDir else { return [] }
         
         let dependencies = await ModrinthService.fetchProjectDependencies(
             type: query,
@@ -207,10 +206,9 @@ struct ModrinthDependencyDownloader {
         gameInfo: GameVersionInfo
     ) async -> [ModrinthProjectDetail] {
         let query = "mod"
-        let resourceDir = AppPaths.modsDirectory(
+        let resourceDirUnwrapped = AppPaths.modsDirectory(
             gameName: gameInfo.gameName
         )
-        guard let resourceDirUnwrapped = resourceDir else { return [] }
         let dependencies = await ModrinthService.fetchProjectDependencies(
             type: query,
             cachePath: resourceDirUnwrapped,

@@ -8,8 +8,8 @@ struct GameResourceHandler {
         gameRepository: GameRepository,
         addButtonState: Binding<ModrinthDetailCardView.AddButtonState>
     ) {
-        guard let gameInfo = gameInfo,
-              let modsDir = AppPaths.modsDirectory(gameName: gameInfo.gameName) else { return }
+        guard let gameInfo = gameInfo else { return }
+        let modsDir = AppPaths.modsDirectory(gameName: gameInfo.gameName)
         ModScanner.shared.isModInstalled(projectId: project.projectId, in: modsDir) { installed in
             DispatchQueue.main.async {
                 if installed {

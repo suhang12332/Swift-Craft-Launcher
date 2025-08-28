@@ -118,13 +118,7 @@ struct MinecraftLaunchCommand {
         let javaPath = try validateJavaPath()
         
         // 获取游戏工作目录
-        guard let gameWorkingDirectory = AppPaths.profileDirectory(gameName: game.gameName) else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取游戏工作目录: \(game.gameName)",
-                i18nKey: "error.configuration.game_working_directory_not_found",
-                level: .popup
-            )
-        }
+        let gameWorkingDirectory = AppPaths.profileDirectory(gameName: game.gameName)
         
         Logger.shared.info("启动游戏进程: \(javaPath) \(command.joined(separator: " "))")
         Logger.shared.info("游戏工作目录: \(gameWorkingDirectory.path)")
