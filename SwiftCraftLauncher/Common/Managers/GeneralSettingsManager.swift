@@ -17,7 +17,8 @@ public enum ThemeMode: String, CaseIterable {
         case .dark:
             return .dark
         case .system:
-            return NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua ? .dark : .light
+            return NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua])
+                == .darkAqua ? .dark : .light
         }
     }
 
@@ -44,10 +45,12 @@ class GeneralSettingsManager: ObservableObject {
             objectWillChange.send()
         }
     }
-    
+
     // 新增：启动器工作目录
     @AppStorage("launcherWorkingDirectory")
-    var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
+    var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory
+        .path
+    {
         didSet { objectWillChange.send() }
     }
 
@@ -69,7 +72,10 @@ class GeneralSettingsManager: ObservableObject {
     /// 设置系统外观变化观察者
     private func setupAppearanceObserver() {
         // 监听 NSApp 的 effectiveAppearance 变化
-        appearanceObserver = NSApp.observe(\.effectiveAppearance, options: [.new, .initial]) { [weak self] _, _ in
+        appearanceObserver = NSApp.observe(
+            \.effectiveAppearance,
+            options: [.new, .initial]
+        ) { [weak self] _, _ in
             DispatchQueue.main.async {
                 // 当系统外观变化时，如果当前主题模式是 system，则通知 UI 更新
                 if self?.themeMode == .system {
