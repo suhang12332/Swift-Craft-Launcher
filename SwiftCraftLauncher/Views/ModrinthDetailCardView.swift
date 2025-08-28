@@ -61,6 +61,10 @@ struct ModrinthDetailCardView: View {
                 .frame(width: ModrinthConstants.UI.iconSize, height: ModrinthConstants.UI.iconSize)
                 .cornerRadius(ModrinthConstants.UI.cornerRadius)
                 .clipped()
+                .onDisappear {
+                    // 清理图片缓存，避免内存泄漏
+                    NetworkManager.shared.urlSession.configuration.urlCache?.removeCachedResponse(for: URLRequest(url: url))
+                }
             } else {
                 placeholderIcon
             }
