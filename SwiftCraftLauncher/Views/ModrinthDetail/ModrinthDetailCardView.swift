@@ -66,9 +66,7 @@ struct ModrinthDetailCardView: View {
                 .clipped()
                 .onDisappear {
                     // 清理图片缓存，避免内存泄漏
-                    URLCache.shared.removeCachedResponse(
-                        for: URLRequest(url: url)
-                    )
+                    NetworkManager.shared.urlSession.configuration.urlCache?.removeCachedResponse(for: URLRequest(url: url))
                 }
             } else {
                 placeholderIcon
