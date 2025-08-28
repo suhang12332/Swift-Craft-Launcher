@@ -99,6 +99,81 @@ class PlayerListViewModel: ObservableObject {
         Logger.shared.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
     }
     
+    /// 添加 Yggdrasil 玩家（静默版本）
+    /// - Parameter profile: Yggdrasil 配置文件
+    /// - Returns: 是否成功添加
+    func addYggdrasilPlayer(profile: YggdrasilProfileResponse) -> Bool {
+        // 从皮肤纹理中获取皮肤URL，如果有的话
+        let avatarUrl = profile.textures?.textures.SKIN?.url ?? ""
+        
+        // 使用新的第三方账户添加方法，保留原有UUID和皮肤信息
+        return addThirdPartyPlayer(
+            name: profile.username,
+            uuid: profile.id,
+            avatarUrl: avatarUrl,
+            accToken: profile.accessToken,
+            refreshToken: profile.refreshToken ?? ""
+        )
+    }
+    
+    /// 添加 Yggdrasil 玩家（抛出异常版本）
+    /// - Parameter profile: Yggdrasil 配置文件
+    /// - Throws: GlobalError 当操作失败时
+    func addYggdrasilPlayerThrowing(profile: YggdrasilProfileResponse) throws {
+        // 从皮肤纹理中获取皮肤URL，如果有的话
+        let avatarUrl = profile.textures?.textures.SKIN?.url ?? ""
+        
+        // 使用新的第三方账户添加方法，保留原有UUID和皮肤信息
+        try addThirdPartyPlayerThrowing(
+            name: profile.username,
+            uuid: profile.id,
+            avatarUrl: avatarUrl,
+            accToken: profile.accessToken,
+            refreshToken: profile.refreshToken ?? ""
+        )
+    }
+    
+    /// 添加第三方账户玩家（静默版本）
+    /// - Parameters:
+    ///   - name: 玩家名称
+    ///   - uuid: 玩家UUID
+    ///   - avatarUrl: 皮肤URL
+    ///   - accToken: 访问令牌
+    ///   - refreshToken: 刷新令牌
+    /// - Returns: 是否成功添加
+    func addThirdPartyPlayer(name: String, uuid: String, avatarUrl: String, accToken: String = "", refreshToken: String = "") -> Bool {
+        do {
+            try addThirdPartyPlayerThrowing(name: name, uuid: uuid, avatarUrl: avatarUrl, accToken: accToken, refreshToken: refreshToken)
+            return true
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("添加第三方账户玩家失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return false
+        }
+    }
+    
+    /// 添加第三方账户玩家（抛出异常版本）
+    /// - Parameters:
+    ///   - name: 玩家名称
+    ///   - uuid: 玩家UUID
+    ///   - avatarUrl: 皮肤URL
+    ///   - accToken: 访问令牌
+    ///   - refreshToken: 刷新令牌
+    /// - Throws: GlobalError 当操作失败时
+    func addThirdPartyPlayerThrowing(name: String, uuid: String, avatarUrl: String, accToken: String = "", refreshToken: String = "") throws {
+        try dataManager.addThirdPartyPlayer(
+            name: name, 
+            uuid: uuid, 
+            avatarUrl: avatarUrl, 
+            accToken: accToken, 
+            refreshToken: refreshToken
+        )
+        try loadPlayersThrowing()
+        Logger.shared.debug("第三方账户玩家 \(name) 添加成功，列表已更新。")
+        Logger.shared.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
+    }
+    
     /// 删除玩家（静默版本）
     /// - Parameter id: 要删除的玩家ID
     /// - Returns: 是否成功删除

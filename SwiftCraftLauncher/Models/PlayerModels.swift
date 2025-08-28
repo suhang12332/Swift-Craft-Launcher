@@ -76,7 +76,13 @@ struct Player: Identifiable, Codable, Equatable {
         }
         self.name = name
         self.isOnlineAccount = isOnlineAccount
-        self.avatarName = isOnlineAccount ? avatarName : PlayerUtils.avatarName(for: self.id) ?? "steve"
+        // 如果提供了自定义头像名称/URL则使用，否则使用默认头像逻辑
+        if !avatarName.isEmpty {
+            self.avatarName = avatarName
+        } else {
+            // 对于离线账户，使用基于UUID的默认头像；对于在线账户，使用steve作为默认
+            self.avatarName = isOnlineAccount ? "steve" : (PlayerUtils.avatarName(for: self.id) ?? "steve")
+        }
         self.createdAt = createdAt
         self.lastPlayed = lastPlayed
         self.isCurrent = isCurrent

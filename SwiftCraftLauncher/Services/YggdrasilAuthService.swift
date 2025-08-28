@@ -231,34 +231,25 @@ class YggdrasilAuthService: ObservableObject {
         }
         
         do {
-            // 解析OpenID Connect userinfo响应
-            let userInfo = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
+            // 使用反序列化解析UserInfo响应
+            let userInfo = try JSONDecoder().decode(YggdrasilUserInfo.self, from: data)
             
-            // 提取用户信息
-            Logger.shared.info(userInfo)
-            let sub = userInfo["sub"] as? String ?? ""
-            let username = userInfo["preferred_username"] as? String ?? ""
+            Logger.shared.info("UserInfo: \(userInfo)")
             
-            // 解析Yggdrasil profiles（如果存在）
-            var selectedProfile: YggdrasilSelectedProfile?
-            if let profiles = userInfo["Yggdrasil.PlayerProfiles"] as? [[String: Any]], let firstProfile = profiles.first {
-                let profileId = firstProfile["id"] as? String ?? ""
-                let profileName = firstProfile["name"] as? String ?? ""
-                selectedProfile = YggdrasilSelectedProfile(
-                    id: profileId,
-                    name: profileName,
-                    legacy: firstProfile["legacy"] as? Bool,
-                    demo: firstProfile["demo"] as? Bool
-                )
+            // 自动获取皮肤信息
+            var textures: YggdrasilTextures?
+            do {
+                textures = try await fetchSkinInfo(for: userInfo.selectedProfile.id)
             }
             
             return YggdrasilProfileResponse(
-                id: sub,
-                username: username,
-                selectedProfile: selectedProfile,
+                id: userInfo.selectedProfile.id,
+                username: userInfo.selectedProfile.name,
+                selectedProfile: userInfo.selectedProfile,
                 accessToken: accessToken,
                 refreshToken: tokenResponse.refreshToken,
-                idToken: tokenResponse.idToken
+                idToken: tokenResponse.idToken,
+                textures: textures
             )
         } catch {
             throw GlobalError.validation(
@@ -271,12 +262,237 @@ class YggdrasilAuthService: ObservableObject {
     
     // MARK: - 登出
     func logout() {
+        // 重置认证状态
         authState = .notAuthenticated
+        
+        // 停止加载状态
+        isLoading = false
+        
+        Logger.shared.debug("Yggdrasil认证服务已清除所有内存状态")
     }
     
     // MARK: - 取消认证
     func cancelAuthentication() {
         authState = .notAuthenticated
     }
+    
+    // MARK: - 获取皮肤信息
+    func fetchSkinInfo(for profileId: String) async throws -> YggdrasilTextures? {
+        let url = URLConfig.API.Authentication.yggdrasilProfile(uuid: profileId)
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw GlobalError.network(
+                chineseMessage: "无效的 HTTP 响应",
+                i18nKey: "error.network.invalid_http_response",
+                level: .popup
+            )
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            throw GlobalError.network(
+                chineseMessage: "获取皮肤信息失败: HTTP \(httpResponse.statusCode)",
+                i18nKey: "error.network.yggdrasil_skin_request_failed",
+                level: .popup
+            )
+        }
+        
+        do {
+            // 使用反序列化解析皮肤响应
+            let skinResponse = try JSONDecoder().decode(YggdrasilSkinResponse.self, from: data)
+            
+            // 查找 textures 属性
+            guard let texturesProperty = skinResponse.properties.first(where: { $0.name == "textures" }) else {
+                Logger.shared.warning("No textures property found in skin response")
+                return nil
+            }
+            
+            // 解码 Base64 编码的纹理数据
+            guard let texturesData = Data(base64Encoded: texturesProperty.value) else {
+                throw GlobalError.validation(
+                    chineseMessage: "无法解码纹理数据",
+                    i18nKey: "error.validation.texture_decode_failed",
+                    level: .popup
+                )
+            }
+            
+            let textures = try JSONDecoder().decode(YggdrasilTextures.self, from: texturesData)
+            return textures
+            
+        } catch {
+            throw GlobalError.validation(
+                chineseMessage: "解析皮肤响应失败: \(error.localizedDescription)",
+                i18nKey: "error.validation.yggdrasil_skin_parse_failed",
+                level: .popup
+            )
+        }
+    }
+    
+    // MARK: - 验证并刷新第三方账户Token
+    
+    /// 验证并尝试刷新第三方玩家Token（静默版本）
+    /// - Parameter player: 玩家对象
+    /// - Returns: 验证/刷新后的玩家对象，如果失败返回nil
+    func validateAndRefreshPlayerToken(for player: Player) async -> Player? {
+        do {
+            return try await validateAndRefreshPlayerTokenThrowing(for: player)
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("验证/刷新第三方玩家Token失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return nil
+        }
+    }
+    
+    /// 验证并尝试刷新第三方玩家Token（抛出异常版本）
+    /// - Parameter player: 玩家对象
+    /// - Returns: 验证/刷新后的玩家对象
+    /// - Throws: GlobalError 当操作失败时
+    func validateAndRefreshPlayerTokenThrowing(for player: Player) async throws -> Player {
+        Logger.shared.info("验证第三方账户 \(player.name) 的Token")
+        
+        // 如果没有访问令牌，抛出错误要求重新登录
+        guard !player.authAccessToken.isEmpty else {
+            throw GlobalError.authentication(
+                chineseMessage: "第三方账户 \(player.name) 缺少访问令牌，请重新登录",
+                i18nKey: "error.authentication.third_party_missing_token",
+                level: .notification
+            )
+        }
+        
+        // 首先尝试验证当前token是否有效
+        let isTokenValid = await validateThirdPartyToken(player.authAccessToken)
+        
+        if isTokenValid {
+            Logger.shared.info("第三方账户 \(player.name) 的Token仍然有效")
+            return player
+        }
+        
+        Logger.shared.info("第三方账户 \(player.name) 的Token已过期，尝试刷新")
+        
+        // Token无效，尝试使用refresh token刷新
+        guard !player.authRefreshToken.isEmpty else {
+            Logger.shared.warning("第三方账户 \(player.name) 缺少刷新令牌，需要重新登录")
+            throw GlobalError.authentication(
+                chineseMessage: "第三方账户 \(player.name) 的登录已过期，请重新登录该账户",
+                i18nKey: "error.authentication.third_party_token_expired_relogin_required",
+                level: .popup
+            )
+        }
+        
+        do {
+            // 使用refresh token刷新访问令牌
+            let refreshedTokens = try await refreshThirdPartyTokenThrowing(refreshToken: player.authRefreshToken)
+            
+            // 获取更新后的用户档案信息
+            let updatedProfile = try await fetchYggdrasilProfileThrowing(accessToken: refreshedTokens.accessToken, tokenResponse: refreshedTokens)
+            
+            // 创建更新后的玩家对象
+            let updatedPlayer = try Player(
+                name: player.name,
+                uuid: player.id,
+                isOnlineAccount: player.isOnlineAccount,
+                avatarName: updatedProfile.textures?.textures.SKIN?.url ?? player.avatarName,
+                authXuid: player.authXuid,
+                authAccessToken: refreshedTokens.accessToken,
+                authRefreshToken: refreshedTokens.refreshToken ?? player.authRefreshToken,
+                tokenExpiresAt: Calendar.current.date(byAdding: .second, value: refreshedTokens.expiresIn, to: Date()),
+                createdAt: player.createdAt,
+                lastPlayed: player.lastPlayed,
+                isCurrent: player.isCurrent,
+                gameRecords: player.gameRecords
+            )
+            
+            Logger.shared.info("成功刷新第三方账户 \(player.name) 的Token")
+            return updatedPlayer
+            
+        } catch {
+            Logger.shared.warning("刷新第三方账户 \(player.name) 的Token失败: \(error.localizedDescription)")
+            throw GlobalError.authentication(
+                chineseMessage: "第三方账户 \(player.name) 的登录已过期，请重新登录该账户",
+                i18nKey: "error.authentication.third_party_token_expired_relogin_required",
+                level: .popup
+            )
+        }
+    }
+    
+    /// 验证第三方访问令牌是否有效
+    /// - Parameter accessToken: 访问令牌
+    /// - Returns: 是否有效
+    private func validateThirdPartyToken(_ accessToken: String) async -> Bool {
+        do {
+            let url = URLConfig.API.Authentication.yggdrasilUserInfo
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            
+            let (_, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                return false
+            }
+            
+            return httpResponse.statusCode == 200
+        } catch {
+            Logger.shared.debug("第三方Token验证失败: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    /// 使用refresh token刷新第三方访问令牌（抛出异常版本）
+    /// - Parameter refreshToken: 刷新令牌
+    /// - Returns: 新的令牌响应
+    /// - Throws: GlobalError 当刷新失败时
+    private func refreshThirdPartyTokenThrowing(refreshToken: String) async throws -> YggdrasilTokenResponse {
+        let url = URLConfig.API.Authentication.yggdrasilToken
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        
+        let body = "grant_type=refresh_token&client_id=\(clientId)&refresh_token=\(refreshToken)"
+        request.httpBody = body.data(using: .utf8)
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw GlobalError.download(
+                chineseMessage: "刷新第三方访问令牌失败: 无效的 HTTP 响应",
+                i18nKey: "error.download.third_party_refresh_token_request_failed",
+                level: .notification
+            )
+        }
+        
+        // 检查OAuth错误
+        if let errorResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let error = errorResponse["error"] as? String {
+            throw GlobalError.authentication(
+                chineseMessage: "刷新第三方令牌失败: \(error)",
+                i18nKey: "error.authentication.third_party_refresh_failed",
+                level: .popup
+            )
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            throw GlobalError.network(
+                chineseMessage: "刷新第三方访问令牌失败: HTTP \(httpResponse.statusCode)",
+                i18nKey: "error.network.third_party_refresh_token_failed",
+                level: .popup
+            )
+        }
+        
+        do {
+            return try JSONDecoder().decode(YggdrasilTokenResponse.self, from: data)
+        } catch {
+            throw GlobalError.validation(
+                chineseMessage: "解析刷新后的第三方令牌响应失败: \(error.localizedDescription)",
+                i18nKey: "error.validation.third_party_refresh_token_parse_failed",
+                level: .popup
+            )
+        }
+    }
 }
+
 

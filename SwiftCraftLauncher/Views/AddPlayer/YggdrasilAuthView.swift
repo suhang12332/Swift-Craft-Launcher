@@ -25,8 +25,8 @@ struct YggdrasilAuthView: View {
             case .authenticatedYggdrasil(let profile):
                 authenticatedView(profile: profile)
             case .authenticated:
-                // 兼容旧的 MinecraftProfileResponse
-                authenticatedLegacyView
+                // YggdrasilAuthService 永远不会设置此状态，这里只是为了编译通过
+                EmptyView()
             case .error(let message):
                 errorView(message: message)
             }
@@ -117,15 +117,28 @@ struct YggdrasilAuthView: View {
     // MARK: - 认证成功状态
     private func authenticatedView(profile: YggdrasilProfileResponse) -> some View {
         VStack(spacing: 20) {
-            // 用户信息，可以扩展头像显示等
-            Circle()
-                .fill(Color.green.opacity(0.3))
-                .frame(width: 80, height: 80)
-                .overlay(
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 30))
-                        .foregroundColor(.green)
-                )
+            // 显示用户皮肤头像
+            Group {
+                if let textures = profile.textures,
+                   let skinUrl = textures.textures.SKIN?.url {
+                    // 使用MinecraftSkinUtils显示实际皮肤
+                    MinecraftSkinUtils(
+                        type: .url,
+                        src: skinUrl,
+                        size: 80
+                    )
+                } else {
+                    // 如果没有皮肤信息，显示默认头像
+                    Circle()
+                        .fill(Color.green.opacity(0.3))
+                        .frame(width: 80, height: 80)
+                        .overlay(
+                            Image(systemName: "person.fill")
+                                .font(.system(size: 30))
+                                .foregroundColor(.green)
+                        )
+                }
+            }
             VStack(spacing: 8) {
                 Text("yggdrasil.auth.success".localized())
                     .font(.title2)
@@ -137,29 +150,11 @@ struct YggdrasilAuthView: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                     .textSelection(.enabled)
-                if let selected = profile.selectedProfile {
-                    Text(String(format: "yggdrasil.auth.selected_profile".localized(), selected.name))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
             }
             Text("yggdrasil.auth.confirm_login".localized())
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-        }
-    }
-
-    // 兼容旧结构，防止 authState = .authenticated(profile: MinecraftProfileResponse) 情况下崩溃
-    private var authenticatedLegacyView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "checkmark.seal")
-                .font(.system(size: 60))
-                .foregroundColor(.green)
-            Text("yggdrasil.auth.success_legacy".localized())
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(.green)
         }
     }
 

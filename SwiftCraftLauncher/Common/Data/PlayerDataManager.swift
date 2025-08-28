@@ -41,6 +41,62 @@ class PlayerDataManager {
         }
     }
     
+    /// 添加第三方账户玩家（保留原有UUID和皮肤信息）
+    /// - Parameters:
+    ///   - name: 玩家名称
+    ///   - uuid: 玩家UUID（必须提供，不会生成离线UUID）
+    ///   - avatarUrl: 皮肤URL（如果为空则使用默认皮肤）
+    ///   - accToken: 访问令牌，默认为空字符串
+    ///   - refreshToken: 刷新令牌，默认为空字符串
+    /// - Throws: GlobalError 当操作失败时
+    func addThirdPartyPlayer(name: String, uuid: String, avatarUrl: String, accToken: String = "", refreshToken: String = "") throws {
+        var players = try loadPlayersThrowing()
+        
+        if playerExists(name: name) {
+            throw GlobalError.player(
+                chineseMessage: "玩家已存在: \(name)",
+                i18nKey: "error.player.already_exists",
+                level: .notification
+            )
+        }
+        
+
+        
+        let newPlayer = try Player(
+                name: name, 
+                uuid: uuid, 
+                isOnlineAccount: false, // 第三方账户作为离线账户处理
+                avatarName: avatarUrl.isEmpty ? PlayerUtils.avatarName(for: uuid) ?? "steve" : avatarUrl,
+                authXuid: "", 
+                authAccessToken: accToken, 
+                authRefreshToken: refreshToken, 
+                isCurrent: players.isEmpty
+            )
+            players.append(newPlayer)
+            try savePlayersThrowing(players)
+            Logger.shared.debug("已添加第三方账户玩家: \(name) (UUID: \(uuid))")
+    }
+    
+    /// 添加第三方账户玩家（静默版本）
+    /// - Parameters:
+    ///   - name: 玩家名称
+    ///   - uuid: 玩家UUID（必须提供，不会生成离线UUID）
+    ///   - avatarUrl: 皮肤URL（如果为空则使用默认皮肤）
+    ///   - accToken: 访问令牌，默认为空字符串
+    ///   - refreshToken: 刷新令牌，默认为空字符串
+    /// - Returns: 是否成功添加
+    func addThirdPartyPlayerSilently(name: String, uuid: String, avatarUrl: String, accToken: String = "", refreshToken: String = "") -> Bool {
+        do {
+            try addThirdPartyPlayer(name: name, uuid: uuid, avatarUrl: avatarUrl, accToken: accToken, refreshToken: refreshToken)
+            return true
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("添加第三方账户玩家失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return false
+        }
+    }
+    
     /// 添加新玩家（静默版本）
     /// - Parameters:
     ///   - name: 玩家名称

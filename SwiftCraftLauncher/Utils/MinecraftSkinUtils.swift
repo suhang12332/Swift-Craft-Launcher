@@ -106,7 +106,7 @@ struct MinecraftSkinUtils: View {
                 size: size
             )
             
-        }.shadow(color: Color.black.opacity(0.6), radius: 1)
+        }.shadow(color: Color.black.opacity(0.5), radius: 1)
     }
     
     private func loadSkinData() {

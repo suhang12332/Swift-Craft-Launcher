@@ -21,6 +21,11 @@ enum URLConfig {
             static let yggdrasilDeviceCode = URL(string: "https://open.littleskin.cn/oauth/device_code")!
             static let yggdrasilToken = URL(string: "https://open.littleskin.cn/oauth/token")!
             static let yggdrasilUserInfo = URL(string: "https://open.littleskin.cn/oauth/userinfo")!
+            
+            // LittleSkin / Yggdrasil Session Server
+            static func yggdrasilProfile(uuid: String) -> URL {
+                URL(string: "https://littleskin.cn/api/yggdrasil/sessionserver/session/minecraft/profile/\(uuid)")!
+            }
         }
 
         // Minecraft API

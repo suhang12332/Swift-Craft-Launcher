@@ -15,6 +15,7 @@ struct YggdrasilProfileResponse: Codable, Identifiable {
     let accessToken: String
     let refreshToken: String?
     let idToken: String?
+    let textures: YggdrasilTextures?
     
     // LittleSkin ID Token 可解析更多信息，根据需要添加
 }
@@ -25,6 +26,13 @@ struct YggdrasilSelectedProfile: Codable {
     let name: String
     let legacy: Bool?
     let demo: Bool?
+}
+
+// MARK: - Yggdrasil UserInfo 响应模型
+struct YggdrasilUserInfo: Codable {
+    let sub: String
+    let aud: String
+    let selectedProfile: YggdrasilSelectedProfile
 }
 
 
@@ -63,3 +71,36 @@ struct YggdrasilTokenResponse: Codable {
         case idToken = "id_token"
     }
 }
+
+// MARK: - Yggdrasil 皮肤响应模型
+struct YggdrasilSkinResponse: Codable {
+    let id: String
+    let name: String
+    let properties: [YggdrasilProperty]
+}
+
+// MARK: - Yggdrasil 属性模型
+struct YggdrasilProperty: Codable {
+    let name: String
+    let value: String
+}
+
+// MARK: - Yggdrasil 纹理模型 (Base64解码后的内容)
+struct YggdrasilTextures: Codable {
+    let timestamp: Int
+    let profileId: String
+    let profileName: String
+    let textures: YggdrasilTextureUrls
+}
+
+// MARK: - Yggdrasil 纹理URL模型
+struct YggdrasilTextureUrls: Codable {
+    let SKIN: YggdrasilTextureInfo?
+    let CAPE: YggdrasilTextureInfo?
+}
+
+// MARK: - Yggdrasil 纹理信息模型
+struct YggdrasilTextureInfo: Codable {
+    let url: String
+}
+

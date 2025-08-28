@@ -90,7 +90,14 @@ public struct ContentToolbarView: ToolbarContent {
                         showingAddPlayerSheet = false
                     },
                     onYggLogin: { profile in
-                        Logger.shared.debug("Yggdrasil登录成功!")
+                        Logger.shared.debug("Yggdrasil登录成功（离线用户），用户: \(profile.username)")
+                        // 添加Yggdrasil玩家到列表（作为离线用户）
+                        let _ = playerListViewModel.addYggdrasilPlayer(profile: profile)
+                        
+                        // 清理Yggdrasil认证服务的内存信息，防止下次添加账户时显示上一次的结果
+                        YggdrasilAuthService.shared.logout()
+                        
+                        showingAddPlayerSheet = false
                     },
                     playerListViewModel: playerListViewModel
                 )

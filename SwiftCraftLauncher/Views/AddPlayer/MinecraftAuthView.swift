@@ -23,8 +23,9 @@ struct MinecraftAuthView: View {
             case .authenticated(let profile):
                 authenticatedView(profile: profile)
                 
-            case .authenticatedYggdrasil(let profile):
-                authenticatedYggdrasilView(profile: profile)
+            case .authenticatedYggdrasil:
+                // MinecraftAuthService 永远不会设置此状态，这里只是为了编译通过
+                EmptyView()
                 
             case .error(let message):
                 errorView(message: message)
@@ -163,40 +164,6 @@ struct MinecraftAuthView: View {
             }
             
             Text("minecraft.auth.confirm_login".localized())
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-    }
-    
-    private func authenticatedYggdrasilView(profile: YggdrasilProfileResponse) -> some View {
-        VStack(spacing: 20) {
-            Circle()
-                .fill(Color.green.opacity(0.3))
-                .frame(width: 80, height: 80)
-                .overlay(
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 30))
-                        .foregroundColor(.green)
-                )
-            VStack(spacing: 8) {
-                Text("yggdrasil.auth.success")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.green)
-                Text(profile.username)
-                    .font(.headline)
-                Text(String(format: "yggdrasil.auth.uuid", profile.id))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .textSelection(.enabled)
-                if let selected = profile.selectedProfile {
-                    Text(String(format: "yggdrasil.auth.selected_profile", selected.name))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            Text("yggdrasil.auth.confirm_login")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

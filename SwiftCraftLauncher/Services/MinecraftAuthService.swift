@@ -489,9 +489,15 @@ class MinecraftAuthService: ObservableObject {
     /// - Returns: 验证/刷新后的玩家对象
     /// - Throws: GlobalError 当操作失败时
     func validateAndRefreshPlayerTokenThrowing(for player: Player) async throws -> Player {
-        // 如果不是在线账户，直接返回原玩家
-        guard player.isOnlineAccount else {
+        // 如果是离线账户但没有访问令牌，直接返回（纯离线用户）
+        if !player.isOnlineAccount && player.authAccessToken.isEmpty {
             return player
+        }
+        
+        // 如果是离线账户但有访问令牌，说明是第三方账户，需要验证token
+        if !player.isOnlineAccount && !player.authAccessToken.isEmpty {
+            Logger.shared.info("验证第三方账户 \(player.name) 的Token")
+            return try await YggdrasilAuthService.shared.validateAndRefreshPlayerTokenThrowing(for: player)
         }
         
         // 如果没有访问令牌，抛出错误要求重新登录
