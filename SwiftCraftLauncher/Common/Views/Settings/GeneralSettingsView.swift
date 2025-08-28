@@ -71,6 +71,9 @@ public struct GeneralSettingsView: View {
                     onChoose: { showDirectoryPicker = true },
                     onReset: {
                         resetWorkingDirectorySafely()
+                    },
+                    onOpen: {
+                        openWorkingDirectoryInFinder()
                     }
                 ).fixedSize()
                 .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
@@ -220,6 +223,13 @@ public struct GeneralSettingsView: View {
     private func showError(_ message: String) {
         errorMessage = message
         showingErrorAlert = true
+    }
+    
+    /// 在 Finder 中打开工作目录
+    private func openWorkingDirectoryInFinder() {
+        let directoryPath = general.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : general.launcherWorkingDirectory
+        let url = URL(fileURLWithPath: directoryPath)
+        NSWorkspace.shared.open(url)
     }
 }
 
