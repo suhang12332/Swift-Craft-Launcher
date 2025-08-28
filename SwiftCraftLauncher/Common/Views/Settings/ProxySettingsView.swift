@@ -65,20 +65,45 @@ public struct ProxySettingsView: View {
                     .onAppear {
                         portString = String(proxySettings.proxyPort)
                     }
+                    .gridColumnAlignment(.leading)
             }
             
             GridRow {
-                Button("settings.proxy.test.button".localized()) {
-                    testProxyConnection()
+                Text("settings.proxy.username.label".localized())
+                    
+                TextField("", text: $proxySettings.proxyUsername)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .frame(width: 300)
+                    .disabled(!proxySettings.isProxyEnabled)
+                    
+            }
+            
+            GridRow {
+                Text("settings.proxy.password.label".localized())
+                    
+                SecureField("", text: $proxySettings.proxyPassword)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .frame(width: 300)
+                    .disabled(!proxySettings.isProxyEnabled)
+                    
+            }
+            
+            GridRow {
+                Text("")
+                    .gridColumnAlignment(.trailing)
+                HStack {
+                    Button("settings.proxy.test.button".localized()) {
+                        testProxyConnection()
+                    }
+                    .disabled(!proxySettings.isProxyEnabled || !proxySettings.configuration.isValid || isTesting)
+                    
+                    if isTesting {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                            .padding(.leading, 8)
+                    }
                 }
-                .disabled(!proxySettings.isProxyEnabled || !proxySettings.configuration.isValid || isTesting)
-                .gridCellColumns(2)
-                
-                if isTesting {
-                    ProgressView()
-                        .scaleEffect(0.8)
-                        .padding(.leading, 8)
-                }
+                .gridColumnAlignment(.leading)
             }
         }
         .alert("settings.proxy.test.title".localized(), isPresented: $showingTestAlert) {
