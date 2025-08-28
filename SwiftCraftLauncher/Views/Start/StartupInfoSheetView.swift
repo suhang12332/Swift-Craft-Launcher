@@ -55,7 +55,6 @@ struct StartupInfoSheetView: View {
                         .multilineTextAlignment(.leading)
                         .lineSpacing(4)
                         .fixedSize(horizontal: false, vertical: true)
-
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 4)  // 为滚动条留出空间
@@ -82,7 +81,6 @@ struct StartupInfoSheetView: View {
             }
         }
     }
-
 }
 
 // MARK: - Preview

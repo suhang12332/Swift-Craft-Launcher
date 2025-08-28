@@ -243,6 +243,5 @@ extension AccountAuthType {
         default:
             return ("person.crop.circle.badge.minus", .multicolor)
         }
-
     }
 }

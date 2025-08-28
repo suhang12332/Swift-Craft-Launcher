@@ -25,7 +25,6 @@ struct ProfilesView: View {
             if saveFolders.isEmpty {
 
                 Text("no.saves".localized()).foregroundColor(.secondary)
-
             } else {
                 HStack {
                     Text("save.info".localized())
@@ -51,7 +50,6 @@ struct ProfilesView: View {
                     .padding(.top, 12)
                     .id(selectedFolder)
                 }
-
             }
         }
         .onAppear(perform: loadSaveFolders)

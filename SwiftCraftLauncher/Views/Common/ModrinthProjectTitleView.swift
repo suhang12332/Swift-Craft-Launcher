@@ -80,14 +80,12 @@ struct ModrinthProjectTitleView: View {
                                     .cornerRadius(
                                         ModrinthConstants.UI.tagCornerRadius
                                     )
-
                             }
                         }
                     }
                 }
                 Spacer()
             }
-
         }
         .cornerRadius(12)
     }

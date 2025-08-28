@@ -113,7 +113,6 @@ public struct ContributorsView: View { // swiftlint:disable:this type_body_lengt
                 }
             }
         }
-
     }
 
     // MARK: - Contributors List

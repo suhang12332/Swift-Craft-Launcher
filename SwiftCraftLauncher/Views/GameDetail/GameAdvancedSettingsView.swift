@@ -98,7 +98,6 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
                         .font(.headline)
                     Spacer()
                     Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
-
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -150,7 +149,6 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
                     .font(.headline)
                     Spacer()
                     Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
-
                 }
 
                 VStack(alignment: .leading, spacing: 16) {
@@ -196,11 +194,11 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
                                 .localized(),
                             isOn: $enableThreadOptimizations
                         )
-                        .toggleStyle(SwitchToggleStyle()).controlSize(.mini)
+                        .toggleStyle(SwitchToggleStyle())
+                        .controlSize(.mini)
                         .font(.subheadline)
                         .disabled(!enableOptimizations)
                     }
-
                 }
             }
 
@@ -214,7 +212,6 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
                         .font(.headline)
                     Spacer()
                     Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
-
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -250,7 +247,6 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
                         .font(.headline)
                     Spacer()
                     Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
-
                 }
 
                 VStack(alignment: .leading, spacing: 12) {

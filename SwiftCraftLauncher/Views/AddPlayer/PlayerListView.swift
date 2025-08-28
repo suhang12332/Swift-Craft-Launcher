@@ -63,8 +63,6 @@ struct PlayerListView: View {
     }
 }
 
-
-
 private struct PlayerSelectorLabel: View {
     let selectedPlayer: Player?
     var body: some View {

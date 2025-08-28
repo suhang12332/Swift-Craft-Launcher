@@ -276,7 +276,6 @@ struct GameFormView: View {
                     .disabled(gameSetupService.downloadState.isDownloading)
                 }
                 .disabled(gameSetupService.downloadState.isDownloading)
-
             }
         }
         .onChange(of: gameName) { old, newName in

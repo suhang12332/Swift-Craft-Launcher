@@ -105,8 +105,8 @@ struct MinecraftSkinUtils: View {
                 context: Self.ciContext,
                 size: size
             )
-
-        }.shadow(color: Color.black.opacity(0.6), radius: 1)
+        }
+        .shadow(color: Color.black.opacity(0.6), radius: 1)
     }
 
     private func loadSkinData() {
@@ -158,7 +158,6 @@ struct MinecraftSkinUtils: View {
                 await MainActor.run {
                     self.image = ciImage
                 }
-
             } catch is CancellationError {
                 // 任务被取消，不需要处理
                 return

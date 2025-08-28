@@ -265,7 +265,6 @@ class ProcessorExecutor {
                     level: .notification
                 )
             }
-
         } catch {
             throw GlobalError.download(
                 chineseMessage: "启动处理器失败: \(error.localizedDescription)",

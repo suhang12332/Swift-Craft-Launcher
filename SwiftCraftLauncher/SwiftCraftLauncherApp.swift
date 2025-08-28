@@ -95,7 +95,6 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
             }
-
         }
 
         Settings {
@@ -111,7 +110,6 @@ struct SwiftCraftLauncherApp: App {
         MenuBarExtra(
             content: {
                 Button("menu.statusbar.placeholder".localized()) {
-
                 }
             },
             label: {
@@ -123,7 +121,6 @@ struct SwiftCraftLauncherApp: App {
             }
         )
     }
-
 }
 
 struct WindowAccessor: NSViewRepresentable {

@@ -370,7 +370,6 @@ struct ModPackDependencyInstaller { // swiftlint:disable:this type_body_length
 
             Logger.shared.info("overrides 文件夹处理完成")
             return true
-
         } catch {
             Logger.shared.error("处理 overrides 文件夹失败: \(error.localizedDescription)")
             return false
@@ -520,7 +519,6 @@ struct ModPackDependencyInstaller { // swiftlint:disable:this type_body_length
                 gameInfo: gameInfo,
                 resourceDir: resourceDir
             )
-
         } catch {
             Logger.shared.error("获取版本详情失败: \(error.localizedDescription)")
             return false
@@ -565,7 +563,6 @@ struct ModPackDependencyInstaller { // swiftlint:disable:this type_body_length
                 gameInfo: gameInfo,
                 resourceDir: resourceDir
             )
-
         } catch {
             Logger.shared.error("获取项目详情失败: \(error.localizedDescription)")
             return false
@@ -611,7 +608,6 @@ struct ModPackDependencyInstaller { // swiftlint:disable:this type_body_length
 
             Logger.shared.info("依赖下载成功: \(version.name)")
             return true
-
         } catch {
             Logger.shared.error("下载依赖失败: \(error.localizedDescription)")
             return false

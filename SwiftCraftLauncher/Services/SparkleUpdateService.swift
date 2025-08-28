@@ -43,8 +43,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
             updater?.automaticallyChecksForUpdates = true
             updater?.updateCheckInterval = 24 * 60 * 60 // 24小时检查一次
             updater?.sendsSystemProfile = false
-
-
         } catch {
             Logger.shared.error("初始化更新器失败：\(error.localizedDescription)")
         }
@@ -77,7 +75,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
 
         return appcastURL.absoluteString
     }
-
 
     /// 更新检查完成（无更新）
     func updaterDidNotFindUpdate(_ updater: SPUUpdater) {

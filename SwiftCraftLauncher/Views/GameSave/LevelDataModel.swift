@@ -51,7 +51,6 @@ class LevelDataModel: ObservableObject {
 
             // 只加载基础信息，其他数据按需加载
             loadBasicInfo()
-
         } catch {
             Logger.shared.error(
                 "level.dat 读取失败: \(filePath)，错误: \(error.localizedDescription)"

@@ -127,7 +127,6 @@ class ModPackDownloadSheetViewModel: ObservableObject { // swiftlint:disable:thi
 
             Logger.shared.info("整合包下载成功: \(file.filename) -> \(savePath.path)")
             return savePath
-
         } catch {
             let globalError = GlobalError.from(error)
             GlobalErrorHandler.shared.handle(globalError)
@@ -211,7 +210,6 @@ class ModPackDownloadSheetViewModel: ObservableObject { // swiftlint:disable:thi
                 "游戏图标下载成功: \(projectDetail.title) -> \(iconPath.path)"
             )
             return iconFileName
-
         } catch {
             Logger.shared.error("下载游戏图标详细错误: \(error)")
             handleDownloadError(
@@ -290,7 +288,6 @@ class ModPackDownloadSheetViewModel: ObservableObject { // swiftlint:disable:thi
                 "整合包解压成功: \(modPackPath.lastPathComponent) -> \(tempDir.path)"
             )
             return tempDir
-
         } catch {
             Logger.shared.error("解压整合包详细错误: \(error)")
             handleDownloadError(
@@ -382,7 +379,6 @@ class ModPackDownloadSheetViewModel: ObservableObject { // swiftlint:disable:thi
             )
 
             return indexInfo
-
         } catch {
             Logger.shared.error("解析 modrinth.index.json 详细错误: \(error)")
 

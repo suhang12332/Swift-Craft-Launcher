@@ -106,7 +106,6 @@ struct MainView: View {
                     gameId: $gameId
                 )
             }
-
         }
         //        .inspector(isPresented: $showingInspector) {
         //            ContentView(
@@ -166,7 +165,6 @@ struct MainView: View {
             game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
         self.gameId = gameId
         self.selectedProjectId = nil
-
     }
 
     private func handleGameToGameTransition(

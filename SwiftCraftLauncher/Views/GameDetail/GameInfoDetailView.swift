@@ -89,7 +89,6 @@ struct GameInfoDetailView: View {
                 Text(error.chineseMessage)
             }
         }
-
     }
 
     // MARK: - Header
@@ -111,7 +110,6 @@ struct GameInfoDetailView: View {
                             cacheManager.cacheInfo.formattedSize,
                             systemImage: "externaldrive"
                         )
-
                     }.foregroundStyle(.secondary).font(.headline).padding(
                         .leading,
                         6
@@ -141,7 +139,6 @@ struct GameInfoDetailView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 }
-
             }
             Spacer()
             importButton
@@ -373,5 +370,4 @@ struct GameInfoDetailView: View {
             }
         }
     }
-
 }
