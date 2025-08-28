@@ -15,7 +15,7 @@ struct YggdrasilProfileResponse: Codable, Identifiable {
     let accessToken: String
     let refreshToken: String?
     let idToken: String?
-    
+
     // LittleSkin ID Token 可解析更多信息，根据需要添加
 }
 
@@ -27,7 +27,6 @@ struct YggdrasilSelectedProfile: Codable {
     let demo: Bool?
 }
 
-
 // MARK: - Yggdrasil 设备代码响应模型
 struct YggdrasilDeviceCodeResponse: Codable {
     let userCode: String
@@ -36,7 +35,7 @@ struct YggdrasilDeviceCodeResponse: Codable {
     let verificationUriComplete: String?
     let expiresIn: Int
     let interval: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case userCode = "user_code"
         case deviceCode = "device_code"
@@ -54,7 +53,7 @@ struct YggdrasilTokenResponse: Codable {
     let accessToken: String
     let refreshToken: String?
     let idToken: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case tokenType = "token_type"
         case expiresIn = "expires_in"

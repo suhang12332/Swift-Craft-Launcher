@@ -24,7 +24,7 @@ class ForgeLoaderService {
                 level: .notification
             )
         }
-        
+
         var loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         loader.version = forgeVersion
         AppCacheManager.shared.setSilently(namespace: "forge", key: cacheKey, value: loader)
@@ -42,8 +42,6 @@ class ForgeLoaderService {
         }
         return result
     }
-    
-    
 
     static func fetchLatestForgeVersion(for minecraftVersion: String) async throws -> LoaderInfo {
         guard let result = await CommonService.fetchAllLoaderVersions(type: "forge", minecraftVersion: minecraftVersion) else {
@@ -53,10 +51,10 @@ class ForgeLoaderService {
                 level: .notification
             )
         }
-        
+
         // 先过滤出 stable 为 true 的加载器
         let stableLoaders = result.loaders.filter { $0.stable }
-        
+
         // 如果过滤结果不为空，则返回第一个稳定版本，否则直接返回第一个
         if !stableLoaders.isEmpty {
             return stableLoaders.first!
@@ -64,7 +62,6 @@ class ForgeLoaderService {
             return result.loaders.first!
         }
     }
-
 
     static func setupForge(
         for gameVersion: String,
@@ -75,12 +72,12 @@ class ForgeLoaderService {
         let librariesDirectory = AppPaths.librariesDirectory
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
         fileManager.onProgressUpdate = onProgressUpdate
-        
+
         // 第一步：下载所有downloadable=true的库文件
         let downloadableLibraries = forgeProfile.libraries.filter { $0.downloads != nil }
         let totalDownloads = downloadableLibraries.count
         await fileManager.downloadForgeJars(libraries: forgeProfile.libraries)
-        
+
         // 第二步：执行processors（如果存在）
         if let processors = forgeProfile.processors, !processors.isEmpty {
             // 使用version.json中的原始data字段
@@ -99,7 +96,7 @@ class ForgeLoaderService {
                 }
             )
         }
-        
+
         let classpathString = CommonService.generateClasspath(from: forgeProfile, librariesDir: librariesDirectory)
         let mainClass = forgeProfile.mainClass
         return (loaderVersion: forgeProfile.version!, classpath: classpathString, mainClass: mainClass)
@@ -125,7 +122,7 @@ class ForgeLoaderService {
             return nil
         }
     }
-    
+
     /// 设置 Forge 加载器（抛出异常版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -142,5 +139,4 @@ class ForgeLoaderService {
     }
 }
 
-extension ForgeLoaderService: ModLoaderHandler {} 
- 
+extension ForgeLoaderService: ModLoaderHandler {}

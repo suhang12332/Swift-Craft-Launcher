@@ -7,8 +7,6 @@
 
 import Foundation
 
-
-
 // MARK: - SidedDataEntry
 struct SidedDataEntry: Codable {
     let client: String
@@ -23,15 +21,15 @@ struct ModrinthLoader: Codable {
     var libraries: [ModrinthLoaderLibrary]
     let type: String
     var version: String?
-    
+
     // 添加对processors和data的支持
     let processors: [Processor]?
     let data: [String: SidedDataEntry]?
-    
+
     enum CodingKeys: String, CodingKey {
         case id, inheritsFrom, releaseTime, time, mainClass, arguments, libraries, type, version, processors, data
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
@@ -55,7 +53,7 @@ struct ModrinthLoaderLibrary: Codable {
     var includeInClasspath: Bool
     var downloadable: Bool
     var url: URL?
-    
+
     // 自定义初始化器，用于直接创建实例
     init(downloads: LibraryDownloads?, name: String, includeInClasspath: Bool, downloadable: Bool) {
         self.downloads = downloads
@@ -63,12 +61,12 @@ struct ModrinthLoaderLibrary: Codable {
         self.includeInClasspath = includeInClasspath
         self.downloadable = downloadable
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case name, downloadable,downloads,url
         case includeInClasspath = "include_in_classpath"
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
@@ -105,7 +103,7 @@ struct Processor: Codable {
     let classpath: [String]?
     let args: [String]?
     let outputs: [String: String]?
-    
+
     enum CodingKeys: String, CodingKey {
         case sides, jar, classpath, args, outputs
     }

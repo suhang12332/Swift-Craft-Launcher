@@ -109,7 +109,7 @@ enum URLConfig {
         enum Fabric {
             static let loader = URL(string: "https://meta.fabricmc.net/v2/versions/loader")!
         }
-          
+
         // Forge API
         enum Forge {
             static let gitReleasesBase = URL(string: "https://github.com/\(URLConfig.API.GitHub.repositoryOwner)/forge-client/releases/download/")!

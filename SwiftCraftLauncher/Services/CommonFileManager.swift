@@ -42,14 +42,14 @@ class CommonFileManager {
             GlobalErrorHandler.shared.handle(globalError)
         }
     }
-    
+
     /// 下载 Forge JAR 文件（抛出异常版本）
     /// - Parameter libraries: 要下载的库文件列表
     /// - Throws: GlobalError 当下载失败时
     func downloadForgeJarsThrowing(libraries: [ModrinthLoaderLibrary]) async throws {
         let tasks = libraries.compactMap { lib -> JarDownloadTask? in
             guard lib.downloadable else { return nil }
-            
+
             // 优先使用LibraryDownloads.artifact
             if let downloads = lib.downloads, let artifactUrl = downloads.artifact.url {
                 return JarDownloadTask(
@@ -59,9 +59,7 @@ class CommonFileManager {
                     expectedSha1: downloads.artifact.sha1.isEmpty ? nil : downloads.artifact.sha1
                 )
             }
-            
 
-            
             return JarDownloadTask(
                 name: lib.name,
                 url: CommonService.mavenCoordinateToURL(lib: lib),
@@ -69,8 +67,7 @@ class CommonFileManager {
                 expectedSha1: nil
             )
         }
-        
-        
+
         do {
             try await BatchJarDownloader.download(
                 tasks: tasks,
@@ -86,7 +83,7 @@ class CommonFileManager {
             )
         }
     }
-    
+
     /// 下载 FabricJAR 文件（静默版本）
     /// - Parameter libraries: 要下载的库文件列表
     func downloadFabricJars(libraries: [ModrinthLoaderLibrary]) async {
@@ -98,7 +95,7 @@ class CommonFileManager {
             GlobalErrorHandler.shared.handle(globalError)
         }
     }
-    
+
     /// 下载 FabricJAR 文件（抛出异常版本）
     /// - Parameter libraries: 要下载的库文件列表
     /// - Throws: GlobalError 当下载失败时
@@ -113,7 +110,7 @@ class CommonFileManager {
                 expectedSha1: ""
             )
         }
-        
+
         do {
             try await BatchJarDownloader.download(
                 tasks: tasks,
@@ -129,7 +126,7 @@ class CommonFileManager {
             )
         }
     }
-    
+
     /// 执行processors处理
     /// - Parameters:
     ///   - processors: 处理器列表
@@ -145,38 +142,38 @@ class CommonFileManager {
             guard let sides = processor.sides else { return true } // 如果没有指定sides，默认执行
             return sides.contains("client")
         }
-        
-        guard !clientProcessors.isEmpty else { 
+
+        guard !clientProcessors.isEmpty else {
             Logger.shared.info("没有找到client端的processor，跳过执行")
-            return 
+            return
         }
-        
+
         Logger.shared.info("找到 \(clientProcessors.count) 个client端processor，开始执行")
-        
+
         // 使用version.json中的原始data字段，并添加必要的环境变量
         var processorData: [String: String] = [:]
-        
+
         // 添加基础环境变量
         processorData["SIDE"] = "client"
         processorData["MINECRAFT_VERSION"] = gameVersion
         processorData["LIBRARY_DIR"] = librariesDir.path
-        
+
         // 添加Minecraft JAR路径
         let minecraftJarPath = AppPaths.versionsDirectory.appendingPathComponent(gameVersion).appendingPathComponent("\(gameVersion).jar")
         processorData["MINECRAFT_JAR"] = minecraftJarPath.path
-        
+
         // 添加实例路径（profile目录）
         if let gameName = gameName, let profileDir = AppPaths.profileDirectory(gameName: gameName) {
             processorData["ROOT"] = profileDir.path
         }
-        
+    
         // 解析version.json中的data字段
         if let data = data {
             for (key, sidedEntry) in data {
                 processorData[key] = CommonFileManager.extractClientValue(from: sidedEntry.client) ?? sidedEntry.client
             }
         }
-        
+
         for (index, processor) in clientProcessors.enumerated() {
             do {
                 let processorName = processor.jar ?? "processor.unknown".localized()
@@ -193,7 +190,7 @@ class CommonFileManager {
             }
         }
     }
-    
+
     /// 执行单个processor
     /// - Parameters:
     ///   - processor: 处理器
@@ -210,7 +207,7 @@ class CommonFileManager {
             data: data
         )
     }
-    
+
     /// 从data字段值中提取client端的数据
     /// - Parameter value: data字段的值
     /// - Returns: client端的数据，如果无法解析则返回nil
@@ -219,7 +216,7 @@ class CommonFileManager {
         if value.contains(":") && !value.hasPrefix("[") && !value.hasPrefix("{") {
             return CommonService.convertMavenCoordinateToPath(value)
         }
-        
+
         // 如果是数组格式，直接提取内容并转换为路径
         if value.hasPrefix("[") && value.hasSuffix("]") {
             let content = String(value.dropFirst().dropLast())
@@ -228,9 +225,6 @@ class CommonFileManager {
             }
             return content
         }
-        
         return value
     }
-    
-    
 }

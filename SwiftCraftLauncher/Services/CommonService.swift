@@ -1,7 +1,7 @@
 import Foundation
 
 class CommonService {
-    
+
     /// 根据 mod loader 获取适配的版本列表（静默版本）
     /// - Parameter loader: 加载器类型
     /// - Returns: 兼容的版本列表
@@ -15,7 +15,7 @@ class CommonService {
             return []
         }
     }
-    
+
     /// 根据 mod loader 获取适配的版本列表（抛出异常版本）
     /// - Parameter loader: 加载器类型
     /// - Returns: 兼容的版本列表
@@ -54,7 +54,6 @@ class CommonService {
         return result
     }
 
-    
     // forge 和 neoforge 通用的classpath生成
     static func generateClasspath(from loader: ModrinthLoader, librariesDir: URL) -> String {
         let jarPaths: [String] = loader.libraries.compactMap { lib in
@@ -62,14 +61,13 @@ class CommonService {
             if lib.includeInClasspath {
                 let artifact = lib.downloads!.artifact
                 return librariesDir.appendingPathComponent(artifact.path).path
-            }else{
+            } else {
                 return ""
             }
         }
         return jarPaths.joined(separator: ":")
     }
-    
-    
+
     /// 获取指定加载器类型和 Minecraft 版本的所有加载器版本（静默版本）
     /// - Parameters:
     ///   - type: 加载器类型
@@ -85,7 +83,7 @@ class CommonService {
             return nil
         }
     }
-    
+
     /// 获取指定加载器类型和 Minecraft 版本的所有加载器版本（抛出异常版本）
     /// - Parameters:
     ///   - type: 加载器类型
@@ -94,10 +92,10 @@ class CommonService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchAllLoaderVersionsThrowing(type: String, minecraftVersion: String) async throws -> LoaderVersion {
         let manifest = try await fetchAllVersionThrowing(type: type)
-        
+
         // 过滤出 id 等于当前 minecraftVersion 的结果
         let filteredVersions = manifest.filter { $0.id == minecraftVersion }
-        
+
         // 返回第一个匹配的版本，如果没有则抛出错误
         guard let firstVersion = filteredVersions.first else {
             throw GlobalError.resource(
@@ -106,10 +104,10 @@ class CommonService {
                 level: .notification
             )
         }
-        
+
         return firstVersion
     }
-    
+
     /// 获取指定加载器类型的所有版本（静默版本）
     /// - Parameter type: 加载器类型
     /// - Returns: 版本列表，失败时返回空数组
@@ -123,7 +121,7 @@ class CommonService {
             return []
         }
     }
-    
+
     /// 获取指定加载器类型的所有版本（抛出异常版本）
     /// - Parameter type: 加载器类型
     /// - Returns: 版本列表
@@ -139,11 +137,11 @@ class CommonService {
                 level: .notification
             )
         }
-        
+
         // 解析版本清单
         do {
             let result = try JSONDecoder().decode(ModrinthLoaderVersion.self, from: manifestData)
-            
+
             // 对于 NeoForge，不进行 stable 过滤，因为所有版本都是 beta
             if type == "neo" {
                 return result.gameVersions
@@ -160,10 +158,6 @@ class CommonService {
         }
     }
 
-    
-    
-    
-    
     /// 将Maven坐标转换为文件路径（支持classifier和@符号）
     /// - Parameter coordinate: Maven坐标
     /// - Returns: 文件路径
@@ -172,32 +166,32 @@ class CommonService {
         if coordinate.contains("@") {
             return convertMavenCoordinateWithAtSymbol(coordinate)
         }
-        
+
         // 对于标准Maven坐标，使用CommonService的方法
         if let relativePath = mavenCoordinateToRelativePath(coordinate) {
-        
+
             return AppPaths.librariesDirectory.appendingPathComponent(relativePath).path
         }
-        
+
         // 如果CommonService方法失败，可能是非标准格式，返回原值
         return coordinate
     }
-    
+
     /// 解析包含@符号的Maven坐标的公共逻辑
     /// - Parameter coordinate: Maven坐标
     /// - Returns: 相对路径
     static func parseMavenCoordinateWithAtSymbol(_ coordinate: String) -> String {
         let parts = coordinate.components(separatedBy: ":")
         guard parts.count >= 3 else { return coordinate }
-        
+
         let groupId = parts[0]
         let artifactId = parts[1]
-        
+
         // 处理版本部分，可能包含@符号
         var version = parts[2]
         var classifier = ""
         var classifierName = ""
-        
+
         // 检查版本部分是否包含@符号
         if version.contains("@") {
             let versionParts = version.components(separatedBy: "@")

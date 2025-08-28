@@ -7,7 +7,7 @@ public struct SettingsView: View {
     @ObservedObject private var general = GeneralSettingsManager.shared
 
     public init() {}
-      
+
     public var body: some View {
         TabView {
             GeneralSettingsView()

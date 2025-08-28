@@ -21,7 +21,7 @@ public struct GitHubContributor: Codable, Identifiable {
     public let type: String
     public let siteAdmin: Bool
     public let contributions: Int
-      
+
     enum CodingKeys: String, CodingKey {
         case id
         case login

@@ -149,7 +149,7 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
     static var detectedJavaPaths: [String: String] {
         GameSettingsManager.shared.allJavaPaths
     }
-      
+
     /// 按Java主版本号匹配的Java路径
     var detectedJavaPath: String? {
         GameSettingsManager.shared.allJavaPaths.first(where: { (key, _) in

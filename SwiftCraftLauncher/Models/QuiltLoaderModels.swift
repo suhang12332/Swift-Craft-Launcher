@@ -36,8 +36,9 @@ struct QuiltLoaderResponse: Codable {
         let libraries: Libraries
         let mainClass: MainClass
     }
+
     let loader: Loader
     let hashed: Hashed?
     let intermediary: Intermediary?
     let launcherMeta: LauncherMeta
-} 
+}

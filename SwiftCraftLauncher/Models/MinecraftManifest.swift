@@ -198,7 +198,7 @@ struct LibraryArtifact: Codable {
         try container.encode(size, forKey: .size)
         try container.encode(url?.absoluteString ?? "", forKey: .url)
     }
-     
+
     enum CodingKeys: String, CodingKey {
         case path, sha1, size, url
     }
@@ -258,6 +258,7 @@ struct DownloadedAssetIndex {
 
 struct AssetIndexData: Codable {
     let objects: [String: AssetObject]
+
     struct AssetObject: Codable {
         let hash: String
         let size: Int

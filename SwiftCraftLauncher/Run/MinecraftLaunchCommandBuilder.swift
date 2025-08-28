@@ -23,7 +23,7 @@ struct MinecraftLaunchCommandBuilder {
             return []
         }
     }
-    
+
     /// 构建启动命令（抛出异常版本）
     /// - Throws: GlobalError 当构建失败时
     static func buildThrowing(
@@ -34,7 +34,7 @@ struct MinecraftLaunchCommandBuilder {
     ) throws -> [String] {
         // 验证并获取路径
         let paths = try validateAndGetPaths(gameInfo: gameInfo, manifest: manifest)
-        
+
         // 构建 classpath
         let classpath = buildClasspath(
             manifest.libraries,
@@ -60,7 +60,7 @@ struct MinecraftLaunchCommandBuilder {
             "natives_directory": paths.nativesDir,
             "launcher_name": Bundle.main.appName,
             "launcher_version": launcherVersion,
-            "classpath": classpath
+            "classpath": classpath,
         ]
 
         // 优先解析 arguments 字段
@@ -73,7 +73,7 @@ struct MinecraftLaunchCommandBuilder {
         let xmsArg = "-Xms${xms}M"
         let xmxArg = "-Xmx${xmx}M"
         jvmArgs.insert(contentsOf: [xmsArg, xmxArg], at: 0)
-        
+
         // 添加 macOS 特定的 JVM 参数
         jvmArgs.insert("-XstartOnFirstThread", at: 0)
 
@@ -91,7 +91,7 @@ struct MinecraftLaunchCommandBuilder {
         let allArgs = jvmArgs + [gameInfo.mainClass] + gameArgs
         return allArgs
     }
-    
+
     /// 验证并获取必要的路径
     /// - Parameters:
     ///   - gameInfo: 游戏信息
@@ -103,8 +103,6 @@ struct MinecraftLaunchCommandBuilder {
         manifest: MinecraftVersionManifest
         // swiftlint:disable:next large_tuple
     ) throws -> (nativesDir: String, librariesDir: URL, assetsDir: String, gameDir: String, clientJarPath: String) {
-        
-        
         // 验证游戏目录
         guard let gameDir = AppPaths.profileDirectory(gameName: gameInfo.gameName)?.path else {
             throw GlobalError.configuration(
@@ -113,8 +111,7 @@ struct MinecraftLaunchCommandBuilder {
                 level: .popup
             )
         }
-        
-        
+
         // 验证客户端 JAR 文件
         let clientJarPath = AppPaths.versionsDirectory.appendingPathComponent(manifest.id).appendingPathComponent("\(manifest.id).jar").path
         let fileManager = FileManager.default
@@ -213,4 +210,3 @@ struct LaunchEnvironment {
     let osName: String
     let arch: String
 }
-
