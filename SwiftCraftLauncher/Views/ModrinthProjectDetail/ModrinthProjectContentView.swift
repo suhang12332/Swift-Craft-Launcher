@@ -69,7 +69,9 @@ private struct GameVersionsSection: View {
                     .font(.headline)
                 Spacer()
                 if versions.count > Constants.maxVisibleVersions {
-                    Button(action: { showingVersionsPopover = true }) {
+                    Button {
+                        showingVersionsPopover = true
+                    } label: {
                         Text("+\(versions.count - Constants.maxVisibleVersions)")
                             .font(.caption)
                             .padding(.horizontal, 4)

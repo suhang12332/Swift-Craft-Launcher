@@ -5,7 +5,7 @@ struct JavaVersionResult {
     let version: String
     let error: String?
     let isValid: Bool
-    
+
     init(version: String, error: String? = nil) {
         self.version = version
         self.error = error
@@ -16,9 +16,9 @@ struct JavaVersionResult {
 /// Java 版本检测工具类
 class JavaVersionChecker {
     static let shared = JavaVersionChecker()
-    
+
     private init() {}
-    
+
     /// 检查 Java 版本
     /// - Parameters:
     ///   - path: Java 安装路径
@@ -56,15 +56,15 @@ class JavaVersionChecker {
             let pipe = Pipe()
             process.standardError = pipe
             process.standardOutput = nil
-            
+
             do {
                 try process.run()
                 process.waitUntilExit()
-                
+
                 let data = pipe.fileHandleForReading.readDataToEndOfFile()
                 let output = String(data: data, encoding: .utf8) ?? ""
                 let version = output.components(separatedBy: .newlines).first(where: { $0.contains("version") }) ?? output
-                
+
                 DispatchQueue.main.async {
                     if version.contains("version") {
                         if let match = version.split(separator: "\"").dropFirst().first {
@@ -105,7 +105,7 @@ class JavaVersionChecker {
             }
         }
     }
-    
+
     /// 检查 Java 版本（异步版本）
     /// - Parameter path: Java 安装路径
     /// - Returns: 检测结果
@@ -117,7 +117,7 @@ class JavaVersionChecker {
             }
         }
     }
-    
+
     /// 验证 Java 路径是否有效
     /// - Parameter path: Java 安装路径
     /// - Returns: 是否有效
@@ -126,11 +126,11 @@ class JavaVersionChecker {
         let javaPath = path + "/java"
         return FileManager.default.fileExists(atPath: javaPath)
     }
-    
+
     /// 获取 Java 可执行文件路径
     /// - Parameter path: Java 安装路径
     /// - Returns: Java 可执行文件路径
     func getJavaExecutablePath(from path: String) -> String {
         return path.isEmpty ? "" : path + "/java"
     }
-} 
+}

@@ -73,7 +73,9 @@ struct CategorySectionView: View {
     }
     
     private func overflowButton(overflowItems: [FilterItem]) -> some View {
-        Button(action: { showOverflowPopover = true }) {
+        Button {
+            showOverflowPopover = true
+        } label: {
             Text("+\(overflowItems.count)")
                 .font(.caption)
                 .padding(.horizontal, 4)

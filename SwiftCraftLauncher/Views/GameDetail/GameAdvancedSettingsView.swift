@@ -90,9 +90,9 @@ struct GameAdvancedSettingsView: View {
                     
                     ForEach(GarbageCollector.allCases, id: \.self) { gc in
                         HStack {
-                            Button(action: {
+                            Button {
                                 selectedGarbageCollector = gc
-                            }) {
+                            } label: {
                                 HStack {
                                     Image(systemName: selectedGarbageCollector == gc ? "checkmark.circle.fill" : "circle")
                                         .foregroundColor(selectedGarbageCollector == gc ? .blue : .gray)

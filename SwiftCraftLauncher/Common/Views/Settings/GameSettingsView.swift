@@ -3,16 +3,15 @@ import SwiftUI
 
 public struct GameSettingsView: View {
     @StateObject private var cacheManager = CacheManager()
-    
+
     @ObservedObject private var gameSettings = GameSettingsManager.shared
     @State private var showJavaPathPicker = false
     @State private var javaVersion: String = "java.version.not_detected".localized()
     @State private var javaDetectionError: String?
 
-
-    
     // 内存区间
     @State private var globalMemoryRange: ClosedRange<Double> = 512...4096
+
     public init() {}
 
     /// 检查 Java 版本
@@ -111,7 +110,7 @@ public struct GameSettingsView: View {
                 }.foregroundStyle(.secondary)
             }
         }
-        
+
         .onAppear {
             calculateCacheInfoSafely()
         }

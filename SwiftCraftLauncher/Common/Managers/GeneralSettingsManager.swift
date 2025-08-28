@@ -1,16 +1,15 @@
 import Foundation
 import SwiftUI
 
-
 public enum ThemeMode: String, CaseIterable {
     case light = "light"
     case dark = "dark"
     case system = "system"
-    
+
     public var localizedName: String {
         "settings.theme.\(rawValue)".localized()
     }
-    
+
     public var effectiveColorScheme: ColorScheme {
         switch self {
         case .light:
@@ -37,35 +36,33 @@ public enum ThemeMode: String, CaseIterable {
 
 class GeneralSettingsManager: ObservableObject {
     static let shared = GeneralSettingsManager()
-    
-    @AppStorage("themeMode") public var themeMode: ThemeMode = .system {
+
+    @AppStorage("themeMode") var themeMode: ThemeMode = .system {
         didSet {
             applyAppAppearance()
             objectWillChange.send()
         }
     }
     // 新增：启动器工作目录
-    @AppStorage("launcherWorkingDirectory") public var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
+    @AppStorage("launcherWorkingDirectory") var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
         didSet { objectWillChange.send() }
     }
-    
+
     // 添加系统外观变化观察者
     private var appearanceObserver: NSKeyValueObservation?
-    
+
     private init() {
         // 延迟应用外观设置，确保 NSApp 已完全初始化
         DispatchQueue.main.async { [weak self] in
             self?.applyAppAppearance()
             self?.setupAppearanceObserver()
         }
-        
-
     }
-    
+
     deinit {
         appearanceObserver?.invalidate()
     }
-    
+
     /// 设置系统外观变化观察者
     private func setupAppearanceObserver() {
         // 监听 NSApp 的 effectiveAppearance 变化
@@ -80,7 +77,7 @@ class GeneralSettingsManager: ObservableObject {
     }
 
     /// 应用基于主题设置的全局 AppKit 外观（影响 Sparkle 等 AppKit UI）
-    public func applyAppAppearance() {
+    func applyAppAppearance() {
         let appearance = themeMode.nsAppearance
         if Thread.isMainThread {
             NSApp.appearance = appearance
@@ -90,10 +87,10 @@ class GeneralSettingsManager: ObservableObject {
             }
         }
     }
-    
+
     /// 获取当前有效的 ColorScheme，用于 @Environment(\.colorScheme) 的替代方案
     /// 当主题模式为 system 时，返回系统当前的主题
-    public var currentColorScheme: ColorScheme? {
+    var currentColorScheme: ColorScheme? {
         return themeMode.effectiveColorScheme
     }
 }

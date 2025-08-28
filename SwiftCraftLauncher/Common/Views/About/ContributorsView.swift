@@ -2,9 +2,9 @@ import SwiftUI
 
 public struct ContributorsView: View {
     @StateObject private var viewModel = ContributorsViewModel()
-    
+
     public init() {}
-    
+
     // 静态贡献者定义
     struct StaticContributor {
         let name: String
@@ -12,7 +12,7 @@ public struct ContributorsView: View {
         let avatar: String
         let contributions: [Contribution]
     }
-    
+
     private let staticContributors: [StaticContributor] = [
         StaticContributor(name: "【喵凹条】喵凹条",url: "", avatar: "🎨", contributions: [.design]),
         StaticContributor(name: "CarnonLee", url: "",avatar: "👨‍💻", contributions: [.code]),
@@ -24,9 +24,8 @@ public struct ContributorsView: View {
         StaticContributor(name: "小希Lusiey_", url: "",avatar: "👩‍💻", contributions: [.test]),
         StaticContributor(name: "骑老奶奶过马路", url: "",avatar: "👩‍💻", contributions: [.test]),
         StaticContributor(name: "laiTM", url: "",avatar: "👩‍💻", contributions: [.test])
-        
     ]
-    
+
     // 贡献类型枚举
     enum Contribution: String, CaseIterable {
         case code = "contributor.contribution.code"
@@ -35,11 +34,11 @@ public struct ContributorsView: View {
         case feedback = "contributor.contribution.feedback"
         case documentation = "contributor.contribution.documentation"
         case infra = "contributor.contribution.infra"
-        
+
         var localizedString: String {
             return rawValue.localized()
         }
-        
+
         var color: Color {
             switch self {
             case .code: return .blue
@@ -51,7 +50,7 @@ public struct ContributorsView: View {
             }
         }
     }
-    
+
     public var body: some View {
         ScrollView {
             VStack(spacing: 16) {
@@ -72,7 +71,7 @@ public struct ContributorsView: View {
             }
         }
     }
-    
+
     // MARK: - Loading View
     private var loadingView: some View {
         VStack(spacing: 12) {
@@ -80,14 +79,10 @@ public struct ContributorsView: View {
         }
         .frame(maxWidth: .infinity, minHeight: 100)
     }
-    
-    
-    
+
     // MARK: - Contributors Content
     private var contributorsContent: some View {
         VStack(spacing: 16) {
-            
-            
             // GitHub贡献者列表
             if !viewModel.contributors.isEmpty {
                 contributorsList
@@ -98,7 +93,7 @@ public struct ContributorsView: View {
             staticContributorsList
         }
     }
-    
+
     // MARK: - Static Contributors List
     private var staticContributorsList: some View {
         VStack(spacing: 0) {
@@ -108,10 +103,10 @@ public struct ContributorsView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             ForEach(staticContributors.indices, id: \.self) { index in
                 staticContributorRow(staticContributors[index])
-                
+
                 if index < staticContributors.count - 1 {
                     Divider()
                         .padding(.horizontal, 16)
@@ -120,7 +115,7 @@ public struct ContributorsView: View {
         }
 
     }
-    
+
     // MARK: - Contributors List
     private var contributorsList: some View {
         VStack(spacing: 0) {
@@ -131,28 +126,28 @@ public struct ContributorsView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             // 顶级贡献者
             if !viewModel.topContributors.isEmpty {
                 ForEach(Array(viewModel.topContributors.enumerated()), id: \.element.id) { index, contributor in
                     contributorRow(contributor, isTopContributor: true, index: index)
-                    
+
                     if index < viewModel.topContributors.count - 1 {
                         Divider()
                             .padding(.horizontal, 16)
                     }
                 }
-                
+
                 if !viewModel.otherContributors.isEmpty {
                     Divider()
                         .padding(.horizontal, 16)
                 }
             }
-            
+
             // 其他贡献者
             ForEach(Array(viewModel.otherContributors.enumerated()), id: \.element.id) { index, contributor in
                 contributorRow(contributor, isTopContributor: false, index: index + viewModel.topContributors.count)
-                
+
                 if index < viewModel.otherContributors.count - 1 {
                     Divider()
                         .padding(.horizontal, 16)
@@ -160,54 +155,57 @@ public struct ContributorsView: View {
             }
         }
     }
-    
+
     // MARK: - Contributor Row
     private func contributorRow(_ contributor: GitHubContributor, isTopContributor: Bool, index: Int) -> some View {
         Link(destination: URL(string: contributor.htmlUrl)!) {
             HStack(spacing: 12) {
                 // 头像
                 contributorAvatar(contributor)
-                
+
                 // 信息
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(contributor.login)
                             .font(.system(size: 13, weight: isTopContributor ? .semibold : .regular))
                             .foregroundColor(.primary)
-                        
+
                         if isTopContributor {
                             contributorRankBadge(index + 1)
                         }
                     }
-                    
+
                     HStack(spacing: 4) {
                         // 代码标签（统一标记为代码贡献者）
                         contributionTag(.code)
-                        
+
                         // 贡献次数
-                        Text(String(format: "contributors.contributions.format".localized(), 
-                                   viewModel.formatContributions(contributor.contributions)))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        Text(
+                            String(
+                                format: "contributors.contributions.format".localized(),
+                                viewModel.formatContributions(contributor.contributions)
+                            )
+                        )
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 // 箭头
                 Image("github-mark")
                     .renderingMode(.template)
                     .resizable().frame(width: 16,height: 16)
                     .imageScale(.medium)
                     .foregroundColor(.secondary)
-
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
             .contentShape(Rectangle())
         }
     }
-    
+
     // MARK: - Contribution Tag
     private func contributionTag(_ contribution: Contribution) -> some View {
         Text(contribution.localizedString)
@@ -222,7 +220,7 @@ public struct ContributorsView: View {
                     .opacity(0.8)
             }
     }
-    
+
     // MARK: - Contributor Avatar
     private func contributorAvatar(_ contributor: GitHubContributor) -> some View {
         AsyncImage(url: URL(string: contributor.avatarUrl)) { phase in
@@ -259,16 +257,16 @@ public struct ContributorsView: View {
         .frame(width: 32, height: 32)
         .clipShape(Circle())
     }
-    
+
     // MARK: - Contributor Rank Badge
     private func contributorRankBadge(_ rank: Int) -> some View {
         let (color, icon) = rankBadgeStyle(rank)
-        
+
         return ZStack {
             Circle()
                 .fill(color.gradient)
                 .frame(width: 20, height: 20)
-            
+
             if let icon = icon {
                 Image(systemName: icon)
                     .font(.system(size: 8, weight: .bold))
@@ -280,7 +278,7 @@ public struct ContributorsView: View {
             }
         }
     }
-    
+
     private func rankBadgeStyle(_ rank: Int) -> (Color, String?) {
         switch rank {
         case 1:
@@ -293,8 +291,7 @@ public struct ContributorsView: View {
             return (.accentColor, nil)
         }
     }
-    
-    
+
     // MARK: - Static Contributor Row
     private func staticContributorRow(_ contributor: StaticContributor) -> some View {
         Group {
@@ -307,7 +304,7 @@ public struct ContributorsView: View {
             }
         }
     }
-    
+
     private func staticContributorContent(_ contributor: StaticContributor) -> some View {
         HStack(spacing: 12) {
             // 头像（emoji）
@@ -316,7 +313,7 @@ public struct ContributorsView: View {
                 .frame(width: 32, height: 32)
                 .background(Color.gray.opacity(0.1))
                 .clipShape(Circle())
-            
+
             // 信息部分
             VStack(alignment: .leading, spacing: 4) {
                 // 用户名
@@ -324,7 +321,7 @@ public struct ContributorsView: View {
                     .font(.body)
                     .fontWeight(.medium)
                     .foregroundColor(.primary)
-                
+
                 // 贡献标签行
                 HStack(spacing: 6) {
                     ForEach(contributor.contributions, id: \.self) { contribution in
@@ -334,7 +331,7 @@ public struct ContributorsView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             // 显示箭头图标（如果有URL）
             if !contributor.url.isEmpty {
                 Image(systemName: "globe")
@@ -350,20 +347,21 @@ public struct ContributorsView: View {
             @Environment(\.openURL)
             private var openURL
             @State private var hovering = false
-            
+
             let url: String
             let image: Image
-            
+
             var body: some View {
                 Button {
                     if let url = URL(string: url) {
                         openURL(url)
                     }
                 } label: {
-                    image.resizable().frame(width: 14,height: 14)
+                    image
+                        .resizable()
+                        .frame(width: 14, height: 14)
                         .imageScale(.medium)
                         .foregroundColor(hovering ? .primary : .secondary)
-                        
                 }
                 .buttonStyle(.plain)
                 .onHover { hover in

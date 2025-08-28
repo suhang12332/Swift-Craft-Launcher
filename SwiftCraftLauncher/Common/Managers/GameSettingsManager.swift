@@ -1,8 +1,8 @@
 import Foundation
 import SwiftUI
 
-public class GameSettingsManager: ObservableObject {
-    @Published public var allJavaPaths: [String: String] = [:]
+class GameSettingsManager: ObservableObject {
+    @Published var allJavaPaths: [String: String] = [:]
 
     private static func detectJavaPath() async -> String {
         // 尝试使用 java_home 命令获取 JAVA_HOME 路径
@@ -100,10 +100,10 @@ public class GameSettingsManager: ObservableObject {
     static let shared = GameSettingsManager()
 
     // MARK: - 应用设置属性
-    @AppStorage("defaultJavaPath") public var defaultJavaPath: String = "/usr/bin" {
+    @AppStorage("defaultJavaPath") var defaultJavaPath: String = "/usr/bin" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("concurrentDownloads") public var concurrentDownloads: Int = 64 {
+    @AppStorage("concurrentDownloads") var concurrentDownloads: Int = 64 {
         didSet {
             if concurrentDownloads < 1 {
                 concurrentDownloads = 1
@@ -111,52 +111,52 @@ public class GameSettingsManager: ObservableObject {
             objectWillChange.send()
         }
     }
-    @AppStorage("autoDownloadDependencies") public var autoDownloadDependencies: Bool = false {
+    @AppStorage("autoDownloadDependencies") var autoDownloadDependencies: Bool = false {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("minecraftVersionManifestURL") public var minecraftVersionManifestURL: String = "https://launchermeta.mojang.com/mc/game/version_manifest.json" {
+    @AppStorage("minecraftVersionManifestURL") var minecraftVersionManifestURL: String = "https://launchermeta.mojang.com/mc/game/version_manifest.json" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("modrinthAPIBaseURL") public var modrinthAPIBaseURL: String = "https://api.modrinth.com/v2" {
+    @AppStorage("modrinthAPIBaseURL") var modrinthAPIBaseURL: String = "https://api.modrinth.com/v2" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("forgeMavenMirrorURL") public var forgeMavenMirrorURL: String = "" {
+    @AppStorage("forgeMavenMirrorURL") var forgeMavenMirrorURL: String = "" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("gitProxyURL") public var gitProxyURL: String = "https://ghfast.top" {
+    @AppStorage("gitProxyURL") var gitProxyURL: String = "https://ghfast.top" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("globalXms") public var globalXms: Int = 512 {
+    @AppStorage("globalXms") var globalXms: Int = 512 {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("globalXmx") public var globalXmx: Int = 4096 {
+    @AppStorage("globalXmx") var globalXmx: Int = 4096 {
         didSet { objectWillChange.send() }
     }
-    
+
     /// 计算系统最大可用内存分配（基于物理内存的70%）
-    public var maximumMemoryAllocation: Int {
-        let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
-        let physicalMemoryMB = physicalMemoryBytes / 1_048_576
-        let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
-        let roundedMax = (calculatedMax / 512) * 512
-        return max(roundedMax, 512)
-    }
-    
+    var maximumMemoryAllocation: Int {
+    let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
+    let physicalMemoryMB = physicalMemoryBytes / 1_048_576
+    let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
+    let roundedMax = (calculatedMax / 512) * 512
+    return max(roundedMax, 512)
+}
+
     private init() {
         // 首先使用默认值初始化
         self.allJavaPaths = [:]
-        
+
         // 然后异步加载实际的 Java 路径信息
         Task {
             await loadJavaPaths()
         }
     }
-    
+
     private func loadJavaPaths() async {
         // 异步检测所有可用的 Java 路径
-        let javaPaths = await GameSettingsManager.detectAllJavaPaths()
-        let javaPath = await GameSettingsManager.detectJavaPath()
-        
+        let javaPaths = await Self.detectAllJavaPaths()
+        let javaPath = await Self.detectJavaPath()
+
         // 在主线程上更新 UI 相关属性
         await MainActor.run {
             self.allJavaPaths = javaPaths

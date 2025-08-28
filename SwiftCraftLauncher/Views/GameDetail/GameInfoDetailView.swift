@@ -172,7 +172,9 @@ struct GameInfoDetailView: View {
     }
 
     private var deleteButton: some View {
-        Button(action: { showDeleteAlert = true }) {
+        Button {
+            showDeleteAlert = true
+        } label: {
 //            Image(systemName: "trash.fill")
             Text("common.delete".localized()).font(.subheadline)
         }
@@ -205,9 +207,9 @@ struct GameInfoDetailView: View {
     private var settingsButton: some View {
         Group {
             if hasSaves {
-                Button(action: { 
+                Button { 
                     showAdvancedSettings.toggle()
-                }) {
+                } label: {
                     Text((showAdvancedSettings ? "common.profile.save" : "common.settings").localized())
                 }
                 .buttonStyle(.borderedProminent)

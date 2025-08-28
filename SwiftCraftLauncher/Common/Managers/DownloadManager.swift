@@ -100,7 +100,7 @@ class DownloadManager {
             }
         }
 
-        guard let url = URL(string: finalURLString) else { 
+        guard let url = URL(string: finalURLString) else {
             throw GlobalError.validation(
                 chineseMessage: "无效的下载地址: \(urlString)",
                 i18nKey: "error.validation.invalid_download_url",

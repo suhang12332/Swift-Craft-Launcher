@@ -3,7 +3,7 @@ import SwiftUI
 
 class PlayerSettingsManager: ObservableObject {
     static let shared = PlayerSettingsManager()
-    
+
     @AppStorage("currentPlayerId") public var currentPlayerId: String = "" {
         didSet { objectWillChange.send() }
     }

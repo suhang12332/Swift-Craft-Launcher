@@ -15,7 +15,7 @@ public class LanguageManager {
     private init() {
         // 如果是首次启动（selectedLanguage为空），则根据系统语言设置默认语言
         if selectedLanguage.isEmpty {
-            selectedLanguage = LanguageManager.getDefaultLanguage()
+            selectedLanguage = Self.getDefaultLanguage()
         }
     }
 
@@ -23,7 +23,7 @@ public class LanguageManager {
     public let languages: [(String, String)] = [
         ("🇨🇳 简体中文", "zh-Hans"),
         ("🇨🇳 繁體中文", "zh-Hant"),
-//        ("🇸🇦 العربية", "ar"),
+        // ("🇸🇦 العربية", "ar"),
         ("🇩🇰 Dansk", "da"),
         ("🇩🇪 Deutsch", "de"),
         ("🇺🇸 English", "en"),
@@ -43,7 +43,7 @@ public class LanguageManager {
         ("🇹🇭 ไทย", "th"),
         ("🇹🇷 Türkçe", "tr"),
         ("🇻🇳 Tiếng Việt", "vi"),
-       ]
+    ]
 
     /// 获取当前语言的 Bundle
     public var bundle: Bundle {
@@ -67,14 +67,9 @@ public class LanguageManager {
             switch languageCode {
             case "zh":
                 // 中文：优先简体，其次繁体
-                if preferredLanguage.contains("Hans")
-                    || preferredLanguage.contains("CN")
-                {
+                if preferredLanguage.contains("Hans") || preferredLanguage.contains("CN") {
                     return "zh-Hans"
-                } else if preferredLanguage.contains("Hant")
-                    || preferredLanguage.contains("TW")
-                    || preferredLanguage.contains("HK")
-                {
+                } else if preferredLanguage.contains("Hant") || preferredLanguage.contains("TW") || preferredLanguage.contains("HK") {
                     return "zh-Hant"
                 } else {
                     // 默认简体中文
@@ -108,7 +103,6 @@ public class LanguageManager {
         // 如果系统语言都不支持，默认使用英文
         return "en"
     }
-
 }
 
 // MARK: - String Localization Extension
@@ -117,9 +111,9 @@ extension String {
     /// 获取本地化字符串
     /// - Parameter bundle: 语言包，默认使用当前语言
     /// - Returns: 本地化后的字符串
-    public func localized(_ bundle: Bundle = LanguageManager.shared.bundle)
-        -> String
-    {
+    public func localized(
+        _ bundle: Bundle = LanguageManager.shared.bundle
+    ) -> String {
         NSLocalizedString(self, bundle: bundle, comment: "")
     }
 }

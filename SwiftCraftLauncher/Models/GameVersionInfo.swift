@@ -8,71 +8,69 @@
 import Foundation
 import SwiftUI
 
-
-
 /// 游戏版本信息模型
 /// 用于存储和管理游戏版本的相关信息，包括启动配置等
 struct GameVersionInfo: Codable, Identifiable, Hashable {
     /// 游戏版本唯一标识符
     let id: String
-    
+
     /// 游戏名称
     let gameName: String
-    
+
     /// 游戏图标路径或URL
     let gameIcon: String
-    
+
     /// 游戏版本号
     let gameVersion: String
-    
+
     /// Mod版本号
     var modVersion: String
-    
+
     /// Mod JVM参数
     var modJvm: [String] = []
-    
+
     var modClassPath: String
-    
+
     /// 资源索引版本
     var assetIndex: String
-    
+
     /// 模组加载器类型（如 Forge、Fabric 等）
     let modLoader: String
-    
+
     /// 是否为用户手动添加的版本
     /// - true: 用户手动添加
     /// - false: 下载的整合包
     let isUserAdded: Bool
-    
+
     /// 创建时间
     let createdAt: Date
-    
+
     /// 最后游玩时间
     var lastPlayed: Date
-    
+
     /// 游戏是否正在运行
     var isRunning: Bool
-    
+
     /// Java 运行环境路径
     var javaPath: String
-    
+
     /// 自定义 JVM 启动参数
     var jvmArguments: String
-    
+
     /// 游戏启动命令
     var launchCommand: [String]
-    
+
     /// 运行内存大小 (MB)
     var xms: Int
     var xmx: Int
-    
+
     var javaVersion: Int
     /// 游戏主类（Main Class）
     var mainClass: String
 
     /// 启动参数（如 --launchTarget forge_client 等）
     var gameArguments: [String] = []
-    
+
     /// 环境变量设置
     var environmentVariables: String
 
@@ -146,12 +144,12 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
         self.javaVersion = javaVersion
         self.environmentVariables = environmentVariables
     }
-    
+
     /// 获取所有检测到的Java路径，key为版本号，value为路径
     static var detectedJavaPaths: [String: String] {
         GameSettingsManager.shared.allJavaPaths
     }
-    
+      
     /// 按Java主版本号匹配的Java路径
     var detectedJavaPath: String? {
         GameSettingsManager.shared.allJavaPaths.first(where: { (key, _) in

@@ -1,11 +1,11 @@
 import Foundation
 
 struct AppPaths {
-    
+
     static var launcherSupportDirectory: URL {
-//        guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
-//            return nil
-//        }
+    // guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+    //     return nil
+    // }
         return .applicationSupportDirectory.appendingPathComponent(Bundle.main.appName)
     }
     static var metaDirectory: URL {
@@ -26,31 +26,37 @@ struct AppPaths {
     static var profileRootDirectory: URL? {
         let customPath = GeneralSettingsManager.shared.launcherWorkingDirectory
         guard !customPath.isEmpty else { return nil }
-        
+
         let baseURL = URL(fileURLWithPath: customPath, isDirectory: true)
         return baseURL.appendingPathComponent("profiles", isDirectory: true)
     }
+
     static func profileDirectory(gameName: String) -> URL? {
         profileRootDirectory?.appendingPathComponent(gameName)
     }
+
     static func savesDirectory(gameName: String) -> URL? {
         profileRootDirectory?.appendingPathComponent(gameName).appendingPathComponent("saves",isDirectory: true)
     }
+
     static func modsDirectory(gameName: String) -> URL? {
         profileDirectory(gameName: gameName)?.appendingPathComponent("mods")
     }
+
     static func datapacksDirectory(gameName: String) -> URL? {
         profileDirectory(gameName: gameName)?.appendingPathComponent("datapacks")
     }
+
     static func shaderpacksDirectory(gameName: String) -> URL? {
         profileDirectory(gameName: gameName)?.appendingPathComponent("shaderpacks")
     }
+
     static func resourcepacksDirectory(gameName: String) -> URL? {
         profileDirectory(gameName: gameName)?.appendingPathComponent("resourcepacks")
     }
-    
+
     static let profileSubdirectories = ["shaderpacks", "resourcepacks", "mods", "datapacks", "crash-reports"]
-    
+
     /// 日志文件目录 - 使用系统标准日志目录
     static var logsDirectory: URL? {
         guard let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first else {

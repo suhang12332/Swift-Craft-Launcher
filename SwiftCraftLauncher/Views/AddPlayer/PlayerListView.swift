@@ -9,9 +9,9 @@ struct PlayerListView: View {
     @State private var showingPlayerListPopover = false
 
     var body: some View {
-        Button(action: {
+        Button {
             showingPlayerListPopover.toggle()
-        }) {
+        } label: {
             PlayerSelectorLabel(selectedPlayer: playerListViewModel.currentPlayer)
         }
         .buttonStyle(.borderless)

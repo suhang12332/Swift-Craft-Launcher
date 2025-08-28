@@ -84,7 +84,9 @@ struct ModrinthProjectDetailToolbarView: View {
     
     private var versionPaginationControls: some View {
         HStack(spacing: Constants.spacing) {
-            Button(action: { versionCurrentPage -= 1 }) {
+            Button {
+                versionCurrentPage -= 1
+            } label: {
                 Label("pagination.help".localized(),systemImage: "chevron.left")
             }
             .disabled(versionCurrentPage <= 1)
@@ -102,7 +104,9 @@ struct ModrinthProjectDetailToolbarView: View {
             .font(.subheadline)
             .foregroundStyle(.secondary)
             
-            Button(action: { versionCurrentPage += 1 }) {
+            Button {
+                versionCurrentPage += 1
+            } label: {
                 Label("pagination.help".localized(),systemImage: "chevron.right")
             }
             .disabled(versionCurrentPage == versionTotalPages)

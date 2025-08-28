@@ -85,7 +85,7 @@ public struct DetailToolbarView: ToolbarContent {
                         paginationControls
                     }
                     Spacer()
-                    Button(action: {
+                    Button {
                         Task {
                             if game.isRunning {
                                 // 停止游戏
@@ -103,7 +103,7 @@ public struct DetailToolbarView: ToolbarContent {
                                 ).launchGame()
                             }
                         }
-                    }) {
+                    } label: {
                         Label(
                             game.isRunning ? "stop.fill".localized() : "play.fill".localized(),
                             systemImage: game.isRunning ? "stop.fill" : "play.fill"
@@ -111,7 +111,8 @@ public struct DetailToolbarView: ToolbarContent {
                     }
                     .help((game.isRunning ? "stop.fill" : "play.fill").localized())
                     .animation(.linear, value: game.isRunning)
-                    Button(action: {
+
+                    Button {
                         if let gameDir = AppPaths.profileDirectory(
                             gameName: game.gameName
                         ) {
@@ -120,9 +121,10 @@ public struct DetailToolbarView: ToolbarContent {
                                 inFileViewerRootedAtPath: gameDir.path
                             )
                         }
-                    }) {
+                    } label: {
                         Label("game.path".localized(), systemImage: "folder").foregroundStyle(.primary)
-                    }.help("game.path".localized())
+                    }
+                    .help("game.path".localized())
                 }
             case .resource:
                 if selectProjectId != nil {
@@ -175,7 +177,6 @@ public struct DetailToolbarView: ToolbarContent {
         } label: {
             Label(currentSortTitle,systemImage: "").labelStyle(.titleOnly)
         }.help("menu.sort.help".localized())
-        
     }
 
     private var resourcesMenu: some View {
@@ -188,29 +189,31 @@ public struct DetailToolbarView: ToolbarContent {
         } label: {
             Label(currentResourceTitle,systemImage: "").labelStyle(.titleOnly)
         }.help("resource.content.type.help".localized())
-        
     }
 
     private var resourcesTypeMenu: some View {
-        Button(action: {
+        Button {
             gameType.toggle()
-        }) {
+        } label: {
             Label(
                 currentResourceTypeTitle,
                 systemImage: gameType
                     ? "tray.and.arrow.down" : "icloud.and.arrow.down"
             ).foregroundStyle(.primary)
-            
-        }.help("resource.content.location.help".localized())
-            .animation(.linear, value: gameType)
+        }
+        .help("resource.content.location.help".localized())
+        .animation(.linear, value: gameType)
     }
 
     private var paginationControls: some View {
         HStack(spacing: 8) {
-            Button(action: { handlePageChange(-1) }) {
+            Button {
+                handlePageChange(-1)
+            } label: {
                 Label("pagination.help".localized(),systemImage: "chevron.left")
             }
             .disabled(currentPage == 1)
+
             HStack(spacing: 8) {
                 Text(
                     String(
@@ -223,13 +226,15 @@ public struct DetailToolbarView: ToolbarContent {
             }
             .font(.subheadline)
             .foregroundStyle(.secondary)
-            Button(action: { handlePageChange(1) }) {
+            Button {
+                handlePageChange(1)
+            } label: {
                 Label("pagination.help".localized(),systemImage: "chevron.right")
-                    
             }
-            
             .disabled(currentPage == totalPages)
-        }.help("pagination.help".localized())
+
+        }
+        .help("pagination.help".localized())
     }
 
     private var resourceTypesForCurrentGame: [String] {

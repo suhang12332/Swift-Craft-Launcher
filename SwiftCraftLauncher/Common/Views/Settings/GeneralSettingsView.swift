@@ -12,9 +12,9 @@ public struct GeneralSettingsView: View {
     @State private var selectedLanguage = LanguageManager.shared.selectedLanguage
     @State private var showingErrorAlert = false
     @State private var errorMessage = ""
-    
+
     public init() {}
-    
+
     public var body: some View {
         Grid(alignment: .trailing) {
             GridRow {
@@ -54,14 +54,14 @@ public struct GeneralSettingsView: View {
                     Text("settings.language.restart.message".localized())
                 }
             }.padding(.bottom, 20)
-            
+
             GridRow {
                 Text("settings.theme.picker".localized()) // 长标题
                     .gridColumnAlignment(.trailing) // 右对齐
                 ThemeSelectorView(selectedTheme: $general.themeMode)
                     .gridColumnAlignment(.leading)
             }.padding(.bottom, 20)
-            
+
             GridRow {
                 Text("settings.launcher_working_directory".localized()).gridColumnAlignment(.trailing)
                 DirectorySettingRow(
@@ -73,12 +73,12 @@ public struct GeneralSettingsView: View {
                         resetWorkingDirectorySafely()
                     }
                 ).fixedSize()
-                .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
+                    .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
                         handleDirectoryImport(result)
-                }
-                
+                    }
+
             }.padding(.bottom, 20)
-            
+
             GridRow {
                 Text("settings.concurrent_downloads.label".localized()).gridColumnAlignment(.trailing) // 右对齐
                 HStack {
@@ -94,11 +94,11 @@ public struct GeneralSettingsView: View {
                             }
                         ),
                         in: 1...20
-//                        label: { EmptyView() },
-//                        minimumValueLabel: { EmptyView() },
-//                        maximumValueLabel: { EmptyView() }
+                        //                        label: { EmptyView() },
+                        //                        minimumValueLabel: { EmptyView() },
+                        //                        maximumValueLabel: { EmptyView() }
                     ).controlSize(.mini)
-                    .animation(.easeOut(duration: 0.5), value: gameSettings.concurrentDownloads)
+                        .animation(.easeOut(duration: 0.5), value: gameSettings.concurrentDownloads)
                     // 当前内存值显示（右对齐，固定宽度）
                     Text("\(gameSettings.concurrentDownloads)").font(
                         .subheadline
@@ -108,29 +108,28 @@ public struct GeneralSettingsView: View {
                     .labelsHidden()
             }
             .padding(.bottom, 20)
-            
+
             GridRow {
                 Text("settings.minecraft_versions_url.label".localized()).gridColumnAlignment(.trailing)
                 TextField("", text: $gameSettings.minecraftVersionManifestURL).focusable(false)
                     .fixedSize()
-                
-                
+
+
             }
             GridRow {
                 Text("settings.modrinth_api_url.label".localized()).gridColumnAlignment(.trailing)
                 TextField("", text: $gameSettings.modrinthAPIBaseURL).focusable(false)
                     .fixedSize()
-                
-                
+
+
             }
             GridRow {
                 Text("settings.git_proxy_url.label".localized()).gridColumnAlignment(.trailing)
                 TextField("", text: $gameSettings.gitProxyURL).focusable(false)
                     .fixedSize()
-                
+
             }
-            
-            
+
         }
         .alert("common.error".localized(), isPresented: $showingErrorAlert) {
             Button("common.ok".localized()) { }
@@ -139,9 +138,9 @@ public struct GeneralSettingsView: View {
         }
         .globalErrorHandler()
     }
-    
+
     // MARK: - Private Methods
-    
+
     /// 安全地重置工作目录
     private func resetWorkingDirectorySafely() {
         do {
@@ -152,13 +151,13 @@ public struct GeneralSettingsView: View {
                     level: .popup
                 )
             }
-            
+
             // 确保目录存在
             try FileManager.default.createDirectory(at: supportDir, withIntermediateDirectories: true)
-            
+
             general.launcherWorkingDirectory = supportDir.path
             gameRepository.loadGames()
-            
+
             Logger.shared.info("工作目录已重置为: \(supportDir.path)")
         } catch {
             let globalError = GlobalError.from(error)
@@ -166,7 +165,7 @@ public struct GeneralSettingsView: View {
             showError(globalError.chineseMessage)
         }
     }
-    
+
     /// 处理目录导入结果
     private func handleDirectoryImport(_ result: Result<[URL], Error>) {
         switch result {
@@ -182,10 +181,10 @@ public struct GeneralSettingsView: View {
                             level: .notification
                         )
                     }
-                    
+
                     general.launcherWorkingDirectory = url.path
                     gameRepository.loadGames()
-                    
+
                     Logger.shared.info("工作目录已设置为: \(url.path)")
                 } catch {
                     let globalError = GlobalError.from(error)
@@ -203,7 +202,7 @@ public struct GeneralSettingsView: View {
             showError(globalError.chineseMessage)
         }
     }
-    
+
     /// 安全地重启应用
     private func restartAppSafely() {
         do {
@@ -214,7 +213,7 @@ public struct GeneralSettingsView: View {
             showError(globalError.chineseMessage)
         }
     }
-    
+
     /// 显示错误信息
     private func showError(_ message: String) {
         errorMessage = message
@@ -229,7 +228,6 @@ private func restartApp() throws {
     let task = Process()
     task.launchPath = "/usr/bin/open"
     task.arguments = ["-a", Bundle.main.bundleIdentifier!]
-    
     do {
         try task.run()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -245,17 +243,17 @@ private func restartApp() throws {
                 level: .popup
             )
         }
-        
+
         let url = URL(fileURLWithPath: resourcePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
             .appendingPathComponent("MacOS")
             .appendingPathComponent(executableURL.lastPathComponent)
-        
+
         let process = Process()
         process.executableURL = url
         process.arguments = CommandLine.arguments
-        
+
         do {
             try process.run()
             NSApplication.shared.terminate(nil)
@@ -277,7 +275,7 @@ private func restartApp() throws {
 // MARK: - Theme Selector View
 struct ThemeSelectorView: View {
     @Binding var selectedTheme: ThemeMode
-    
+
     var body: some View {
         HStack(spacing: 16) {
             ForEach(ThemeMode.allCases, id: \.self) { theme in
@@ -297,7 +295,7 @@ struct ThemeOptionView: View {
     let theme: ThemeMode
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 8) {
             // 主题图标
@@ -305,16 +303,16 @@ struct ThemeOptionView: View {
                 RoundedRectangle(cornerRadius: 6)
                     .fill(isSelected ? Color.accentColor.opacity(0.1) : Color.clear)
                     .frame(width: 60, height: 40)
-                
+
                 RoundedRectangle(cornerRadius: 6)
                     .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: isSelected ? 3 : 0)
                     .frame(width: 61, height: 41)
-                
+
                 // 窗口图标内容
                 ThemeWindowIcon(theme: theme)
                     .frame(width: 60, height: 40)
             }
-            
+
             // 主题标签
             Text(theme.localizedName)
                 .font(.caption)
@@ -323,7 +321,7 @@ struct ThemeOptionView: View {
         .onTapGesture {
             onTap()
         }
-//        .scaleEffect(isSelected ? 1.05 : 1.0)
+        // .scaleEffect(isSelected ? 1.05 : 1.0)
         .animation(.easeInOut(duration: 0.2), value: isSelected)
     }
 }
@@ -331,15 +329,15 @@ struct ThemeOptionView: View {
 // MARK: - Theme Window Icon
 struct ThemeWindowIcon: View {
     let theme: ThemeMode
-    
+
     var body: some View {
         Image(iconName)
             .resizable()
-//            .aspectRatio(contentMode: .fit)
+            // .aspectRatio(contentMode: .fit)
             .frame(width: 60, height: 40)
             .cornerRadius(6)
     }
-    
+
     private var iconName: String {
         let isSystem26 = ProcessInfo.processInfo.operatingSystemVersion.majorVersion == 26
         switch theme {

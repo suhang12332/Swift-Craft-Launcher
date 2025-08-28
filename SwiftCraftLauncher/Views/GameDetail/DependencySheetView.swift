@@ -64,11 +64,11 @@ struct DependencySheetView: View {
                         let hasDownloading = viewModel.missingDependencies.contains {
                             viewModel.dependencyDownloadStates[$0.id] == .downloading
                         }
-                        Button(action: {
+                        Button {
                             Task {
                                 await onDownloadMainOnly()
                             }
-                        }) {
+                        } label: {
                             if isDownloadingMainResourceOnly {
                                 ProgressView().controlSize(.small)
                             } else {
@@ -78,13 +78,13 @@ struct DependencySheetView: View {
                         .disabled(isDownloadingAllDependencies || isDownloadingMainResourceOnly)
                         switch viewModel.overallDownloadState {
                         case .idle:
-                            Button(action: {
+                            Button {
                                 isDownloadingAllDependencies = true
                                 Task {
                                     await onDownloadAll()
                                     isDownloadingAllDependencies = false
                                 }
-                            }) {
+                            } label: {
                                 if isDownloadingAllDependencies || hasDownloading {
                                     ProgressView().controlSize(.small)
                                 } else {
@@ -95,13 +95,13 @@ struct DependencySheetView: View {
                             .disabled(isDownloadingAllDependencies || hasDownloading)
                             
                         case .failed:
-                            Button(action: {
+                            Button {
                                 isDownloadingAllDependencies = true
                                 Task {
                                     await onDownloadAll()
                                     isDownloadingAllDependencies = false
                                 }
-                            }) {
+                            } label: {
                                 if isDownloadingAllDependencies || hasDownloading {
                                     ProgressView().controlSize(.small)
                                 } else {
@@ -147,11 +147,11 @@ struct DependencySheetView: View {
                 .labelStyle(.iconOnly)
                 .foregroundColor(.green)
         case .failed:
-            Button(action: { 
-                Task { 
+            Button {
+                Task {
                     await onRetry(dep)
                 }
-            }) {
+            } label: {
                 Label("dependency.download.retry".localized(), systemImage: "arrow.clockwise.circle.fill")
                     .labelStyle(.iconOnly)
                     .foregroundColor(.orange)

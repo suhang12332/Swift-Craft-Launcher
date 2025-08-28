@@ -54,4 +54,4 @@ struct ForgeLibraryArtifact: Codable {
 struct ForgeLibraryExtract: Codable {
     let exclude: [String]
     let include: [String]
-} 
+}

@@ -2,7 +2,7 @@ import SwiftUI
 
 public struct AcknowledgementsView: View {
     public init() {}
-    
+
     // 项目使用的开源库列表
     private let allLibraries = [
         OpenSourceLibrary(
@@ -34,11 +34,11 @@ public struct AcknowledgementsView: View {
         OpenSourceLibrary(name: "swift-nbt", url: "https://github.com/ezfe/swift-nbt"),
         OpenSourceLibrary(name: "ZIPFoundation", url: "https://github.com/weichsel/ZIPFoundation")
     ]
-    
+
     public var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                
+
                 // 开源库列表
                 ForEach(Array(allLibraries.enumerated()), id: \.element.name) { index, library in
                     VStack(spacing: 0) {
@@ -48,7 +48,7 @@ public struct AcknowledgementsView: View {
                                     .foregroundColor(.primary)
 
                                 Spacer()
-                                
+
                                 HStack(spacing: 8) {
                                     Image(systemName: "globe")
                                         .foregroundColor(.secondary)
@@ -60,7 +60,7 @@ public struct AcknowledgementsView: View {
                             .background(Color.clear)
                             .contentShape(Rectangle())
                         }
-                        
+
                         // 分隔线
                         if index < allLibraries.count - 1 {
                             Divider()
