@@ -15,7 +15,7 @@ class QuiltLoaderService {
             return []
         }
     }
-    
+
     /// 获取所有可用 Quilt Loader 版本
     static func fetchAllQuiltLoadersThrowing(for minecraftVersion: String) async throws -> [QuiltLoaderResponse] {
         let url = URLConfig.API.Quilt.loaderBase.appendingPathComponent(minecraftVersion)
@@ -38,7 +38,7 @@ class QuiltLoaderService {
         let result = allLoaders.first!
         let quiltVersion = result.loader.version
         let cacheKey = "\(minecraftVersion)-\(quiltVersion)"
-        
+
         if let cached = AppCacheManager.shared.get(namespace: "quilt", key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
@@ -51,21 +51,17 @@ class QuiltLoaderService {
                 level: .notification
             )
         }
-        
+
         var loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         loader.version = quiltVersion
-        
+
         // 处理 ${modrinth.gameVersion} 占位符
         loader = CommonService.processGameVersionPlaceholders(loader: loader, gameVersion: minecraftVersion)
-        
+
         AppCacheManager.shared.setSilently(namespace: "quilt", key: cacheKey, value: loader)
         return loader
     }
-    
-    
-    
-    
-    
+
     /// 封装 Quilt 设置流程：获取版本、下载、生成 Classpath（静默版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -86,7 +82,7 @@ class QuiltLoaderService {
             return nil
         }
     }
-    
+
     /// 封装 Quilt 设置流程：获取版本、下载、生成 Classpath（抛出异常版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -100,7 +96,7 @@ class QuiltLoaderService {
         onProgressUpdate: @escaping (String, Int, Int) -> Void
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         let quiltProfile = try await fetchLatestStableLoaderVersion(for: gameVersion)
-        let librariesDirectory = AppPaths.librariesDirectory 
+        let librariesDirectory = AppPaths.librariesDirectory
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
         fileManager.onProgressUpdate = onProgressUpdate
         await fileManager.downloadFabricJars(libraries: quiltProfile.libraries)
@@ -122,7 +118,7 @@ class QuiltLoaderService {
     ) async -> (loaderVersion: String, classpath: String, mainClass: String)? {
         return await setupQuilt(for: gameVersion, gameInfo: gameInfo, onProgressUpdate: onProgressUpdate)
     }
-    
+
     /// 设置 Quilt 加载器（抛出异常版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -139,4 +135,4 @@ class QuiltLoaderService {
     }
 }
 
-extension QuiltLoaderService: ModLoaderHandler {} 
+extension QuiltLoaderService: ModLoaderHandler {}

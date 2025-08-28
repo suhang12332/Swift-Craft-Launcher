@@ -100,10 +100,13 @@ class GameSettingsManager: ObservableObject {
     static let shared = GameSettingsManager()
 
     // MARK: - 应用设置属性
-    @AppStorage("defaultJavaPath") var defaultJavaPath: String = "/usr/bin" {
+    @AppStorage("defaultJavaPath")
+    var defaultJavaPath: String = "/usr/bin" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("concurrentDownloads") var concurrentDownloads: Int = 64 {
+
+    @AppStorage("concurrentDownloads")
+    var concurrentDownloads: Int = 64 {
         didSet {
             if concurrentDownloads < 1 {
                 concurrentDownloads = 1
@@ -111,25 +114,39 @@ class GameSettingsManager: ObservableObject {
             objectWillChange.send()
         }
     }
-    @AppStorage("autoDownloadDependencies") var autoDownloadDependencies: Bool = false {
+
+    @AppStorage("autoDownloadDependencies")
+    var autoDownloadDependencies: Bool = false {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("minecraftVersionManifestURL") var minecraftVersionManifestURL: String = "https://launchermeta.mojang.com/mc/game/version_manifest.json" {
+
+    @AppStorage("minecraftVersionManifestURL")
+    var minecraftVersionManifestURL: String = "https://launchermeta.mojang.com/mc/game/version_manifest.json" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("modrinthAPIBaseURL") var modrinthAPIBaseURL: String = "https://api.modrinth.com/v2" {
+
+    @AppStorage("modrinthAPIBaseURL")
+    var modrinthAPIBaseURL: String = "https://api.modrinth.com/v2" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("forgeMavenMirrorURL") var forgeMavenMirrorURL: String = "" {
+
+    @AppStorage("forgeMavenMirrorURL")
+    var forgeMavenMirrorURL: String = "" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("gitProxyURL") var gitProxyURL: String = "https://ghfast.top" {
+
+    @AppStorage("gitProxyURL")
+    var gitProxyURL: String = "https://ghfast.top" {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("globalXms") var globalXms: Int = 512 {
+
+    @AppStorage("globalXms")
+    var globalXms: Int = 512 {
         didSet { objectWillChange.send() }
     }
-    @AppStorage("globalXmx") var globalXmx: Int = 4096 {
+
+    @AppStorage("globalXmx")
+    var globalXmx: Int = 4096 {
         didSet { objectWillChange.send() }
     }
 

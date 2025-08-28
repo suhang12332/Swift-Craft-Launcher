@@ -12,7 +12,6 @@ func newErrorView(_ error: GlobalError) -> some View {
     } description: {
         Text(error.notificationTitle)
     }
-
 }
 
 func emptyResultView() -> some View {

@@ -1,11 +1,6 @@
 import Foundation
 
-
-
-
 class ForgeLoaderService {
-
-
 
     static func fetchLatestForgeProfile(for minecraftVersion: String) async throws -> ModrinthLoader {
         let result = try await fetchLatestForgeVersion(for: minecraftVersion)

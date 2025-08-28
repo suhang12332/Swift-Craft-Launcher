@@ -37,14 +37,17 @@ public enum ThemeMode: String, CaseIterable {
 class GeneralSettingsManager: ObservableObject {
     static let shared = GeneralSettingsManager()
 
-    @AppStorage("themeMode") var themeMode: ThemeMode = .system {
+    @AppStorage("themeMode")
+    var themeMode: ThemeMode = .system {
         didSet {
             applyAppAppearance()
             objectWillChange.send()
         }
     }
+    
     // 新增：启动器工作目录
-    @AppStorage("launcherWorkingDirectory") var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
+    @AppStorage("launcherWorkingDirectory")
+    var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
         didSet { objectWillChange.send() }
     }
 

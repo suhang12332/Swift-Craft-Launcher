@@ -26,13 +26,13 @@ private extension JSONDecoder {
 // swiftlint:disable:next type_body_length
 enum ModrinthService {
     private static let cacheExpiration: TimeInterval = 600 // 10分钟
-    
+
     private static var searchCache = NSCache<NSString, ModrinthResultWrapper>()
     private static var projectDetailCache = NSCache<NSString, ModrinthProjectDetailWrapper>()
     private static var gameVersionsCache = NSCache<NSString, GameVersionsWrapper>()
     private static var categoriesCache = NSCache<NSString, CategoriesWrapper>()
     private static var loadersCache = NSCache<NSString, LoadersWrapper>()
-    
+
     private static func cacheKey(facets: [[String]]?, index: String, offset: Int, limit: Int, query: String?) -> String {
         let facetsString: String
         if let facets = facets, let data = try? JSONEncoder().encode(facets), let string = String(data: data, encoding: .utf8) {
@@ -94,14 +94,14 @@ enum ModrinthService {
         forceRefresh: Bool = false
     ) async throws -> ModrinthResult {
         let key = cacheKey(facets: facets, index: index, offset: offset, limit: limit, query: query) as NSString
-        
+
         if !forceRefresh, let cached = searchCache.object(forKey: key), Date().timeIntervalSince(cached.timestamp) < cacheExpiration {
             Logger.shared.info("使用缓存的 Modrinth 搜索结果，key：\(key)")
             return cached.result
         } else {
             searchCache.removeObject(forKey: key)
         }
-        
+
         var components = URLComponents(
             url: URLConfig.API.Modrinth.search,
             resolvingAgainstBaseURL: true
@@ -131,7 +131,7 @@ enum ModrinthService {
             }
         }
         components.queryItems = queryItems
-        guard let url = components.url else { 
+        guard let url = components.url else {
             throw GlobalError.validation(
                 chineseMessage: "构建搜索URL失败",
                 i18nKey: "error.validation.search_url_build_failed",
@@ -139,7 +139,7 @@ enum ModrinthService {
             )
         }
         Logger.shared.info("Modrinth 搜索 URL：\(url.absoluteString)")
-        
+
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
@@ -337,7 +337,7 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            
+
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
             Logger.shared.info("Modrinth 搜索 URL：\(url)")
@@ -379,7 +379,7 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            
+
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
             Logger.shared.info("Modrinth 搜索 URL：\(url)")
@@ -389,7 +389,7 @@ enum ModrinthService {
             throw globalError
         }
     }
-    
+
     /// 获取项目版本列表（过滤版本）
     /// - Parameters:
     ///   - id: 项目 ID
@@ -414,7 +414,7 @@ enum ModrinthService {
             return versions.filter { version in
                 // 必须同时满足版本和 loader 匹配
                 let versionMatch = selectedVersions.isEmpty || !Set(version.gameVersions).isDisjoint(with: selectedVersions)
-                
+
                 // 对于shader和resourcepack，不检查loader匹配
                 let loaderMatch: Bool
                 if type == "shader" || type == "resourcepack" {
@@ -422,7 +422,7 @@ enum ModrinthService {
                 } else {
                     loaderMatch = loaders.isEmpty || !Set(version.loaders).isDisjoint(with: loaders)
                 }
-                
+
                 return versionMatch && loaderMatch
             }
         }
@@ -438,8 +438,8 @@ enum ModrinthService {
     static func fetchProjectDependencies(
         type: String,
         cachePath: URL,
-        id: String, 
-        selectedVersions: [String], 
+        id: String,
+        selectedVersions: [String],
         selectedLoaders: [String]
     ) async -> ModrinthProjectDependency {
         do {
@@ -470,14 +470,14 @@ enum ModrinthService {
     static func fetchProjectDependenciesThrowing(
         type: String,
         cachePath: URL,
-        id: String, 
-        selectedVersions: [String], 
+        id: String,
+        selectedVersions: [String],
         selectedLoaders: [String]
     ) async throws -> ModrinthProjectDependency {
         // 1. 获取所有筛选后的版本
         let versions = try await fetchProjectVersionsFilter(
-            id: id, 
-            selectedVersions: selectedVersions, 
+            id: id,
+            selectedVersions: selectedVersions,
             selectedLoaders: selectedLoaders,
             type: type
         )
@@ -485,11 +485,11 @@ enum ModrinthService {
         guard let firstVersion = versions.first else {
             return ModrinthProjectDependency(projects: [])
         }
-        
+
         // 2. 收集所有依赖的projectId和versionId
         var dependencyProjectIds = Set<String>()
         var dependencyVersionIds: [String: String] = [:] // projectId -> versionId
-        
+
         let missingDependencies = firstVersion.dependencies
             .filter { $0.dependencyType == "required" }
             .filter { !ModScanner.shared.isModInstalledSync(projectId: $0.projectId ?? "", in: cachePath) }
@@ -502,14 +502,14 @@ enum ModrinthService {
                 }
             }
         }
-        
+
         // 3. 并发获取所有依赖项目的兼容版本
         let dependencyVersions: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
             for depId in dependencyProjectIds {
                 group.addTask {
                     do {
                         let depVersion: ModrinthProjectDetailVersion
-                        
+
                         if let versionId = dependencyVersionIds[depId] {
                             // 如果有 versionId，直接获取指定版本
                             depVersion = try await fetchProjectVersionThrowing(id: versionId)
@@ -527,7 +527,7 @@ enum ModrinthService {
                             }
                             depVersion = firstDepVersion
                         }
-                        
+
                         return depVersion
                     } catch {
                         let globalError = GlobalError.from(error)
@@ -536,20 +536,20 @@ enum ModrinthService {
                     }
                 }
             }
-            
+
             var results: [ModrinthProjectDetailVersion] = []
             for await result in group {
                 if let version = result {
                     results.append(version)
                 }
             }
-            
+
             return results
         }
-        
+
         return ModrinthProjectDependency(projects: dependencyVersions)
     }
-    
+
     /// 获取单个项目版本（抛出异常版本）
     /// - Parameter id: 版本 ID
     /// - Returns: 版本信息
@@ -565,7 +565,7 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            
+
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
             Logger.shared.info("Modrinth 版本 URL：\(url)")
@@ -575,12 +575,12 @@ enum ModrinthService {
             throw globalError
         }
     }
-    
+
     // 过滤出 primary == true 的文件
     static func filterPrimaryFiles(from files: [ModrinthVersionFile]?) -> ModrinthVersionFile? {
         return files?.filter { $0.primary == true }.first
     }
-    
+
     /// 通过文件 hash 查询 Modrinth API，返回 ModrinthProjectDetail（静默版本）
     /// - Parameter hash: 文件哈希值
     /// - Parameter completion: 完成回调
@@ -591,15 +591,15 @@ enum ModrinthService {
                 completion(nil)
                 return
             }
-            
+
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
-            
+
             guard let version = try? decoder.decode(ModrinthProjectDetailVersion.self, from: data) else {
                 completion(nil)
                 return
             }
-            
+
             Task {
                 do {
                     let detail = try await ModrinthService.fetchProjectDetailsThrowing(id: version.projectId)
@@ -675,4 +675,3 @@ private extension Task where Success == ModrinthResult, Failure == Error {
         }
     }
 }
-

@@ -229,10 +229,9 @@ public struct DetailToolbarView: ToolbarContent {
             Button {
                 handlePageChange(1)
             } label: {
-                Label("pagination.help".localized(),systemImage: "chevron.right")
+                Label("pagination.help".localized(), systemImage: "chevron.right")
             }
             .disabled(currentPage == totalPages)
-
         }
         .help("pagination.help".localized())
     }

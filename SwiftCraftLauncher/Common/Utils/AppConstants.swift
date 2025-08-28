@@ -21,7 +21,7 @@ enum AppConstants {
     // 缓存资源类型
     static let cacheResourceTypes = ["libraries", "natives", "assets", "versions"]
 
-    static let logTag = Bundle.main.identifier+".logger"
+    static let logTag = Bundle.main.identifier + ".logger"
 }
 
 // MARK: - Bundle Extension

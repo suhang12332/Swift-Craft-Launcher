@@ -5,8 +5,8 @@
 //  Created by su on 2025/6/28.
 //
 
-import SwiftUI
 import Foundation
+import SwiftUI
 import os
 
 // 新增依赖管理ViewModel，持久化依赖相关状态
@@ -14,23 +14,27 @@ final class DependencySheetViewModel: ObservableObject {
     @Published var missingDependencies: [ModrinthProjectDetail] = []
     @Published var isLoadingDependencies = true
     @Published var showDependenciesSheet = false
-    @Published var dependencyDownloadStates: [String: ResourceDownloadState] = [:]
-    @Published var dependencyVersions: [String: [ModrinthProjectDetailVersion]] = [:]
+    @Published var dependencyDownloadStates: [String: ResourceDownloadState] =
+        [:]
+    @Published var dependencyVersions:
+        [String: [ModrinthProjectDetailVersion]] = [:]
     @Published var selectedDependencyVersion: [String: String] = [:]
     @Published var overallDownloadState: OverallDownloadState = .idle
 
     enum OverallDownloadState {
-        case idle // 初始状态，或全部下载成功后
-        case failed // 首次"全部下载"操作中，有任何文件失败；/
-        case retrying // 用户正在重试失败项
+        case idle  // 初始状态，或全部下载成功后
+        case failed  // 首次"全部下载"操作中，有任何文件失败；/
+        case retrying  // 用户正在重试失败项
     }
-    
+
     var allDependenciesDownloaded: Bool {
         // 当没有依赖时，也认为"所有依赖都已下载"
         if missingDependencies.isEmpty { return true }
-        
+
         // 检查所有列出的依赖项是否都标记为成功
-        return missingDependencies.allSatisfy { dependencyDownloadStates[$0.id] == .success }
+        return missingDependencies.allSatisfy {
+            dependencyDownloadStates[$0.id] == .success
+        }
     }
 
     func resetDownloadStates() {
@@ -54,7 +58,8 @@ struct AddOrDeleteResourceButton: View {
     let query: String
     let type: Bool  // false = local, true = server
     @EnvironmentObject private var gameRepository: GameRepository
-    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
+    @State private var addButtonState: ModrinthDetailCardView.AddButtonState =
+        .idle
     @State private var showDeleteAlert = false
     @State private var showNoGameAlert = false
     @ObservedObject private var gameSettings = GameSettingsManager.shared
@@ -62,9 +67,9 @@ struct AddOrDeleteResourceButton: View {
     @State private var isDownloadingAllDependencies = false
     @State private var isDownloadingMainResourceOnly = false
     @State private var showGlobalResourceSheet = false
-    @State private var showModPackDownloadSheet = false // 新增：整合包下载 sheet
+    @State private var showModPackDownloadSheet = false  // 新增：整合包下载 sheet
     @Binding var selectedItem: SidebarItem
-//    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
+    //    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
     var onResourceChanged: (() -> Void)?
     // 新增：local 区可强制指定已安装状态
     var forceInstalled: Bool? = nil
@@ -96,10 +101,13 @@ struct AddOrDeleteResourceButton: View {
                 buttonLabel
             }
             .buttonStyle(.borderedProminent)
-            .tint(.accentColor) // 或 .tint(.primary) 但一般用 accentColor 更美观
+            .tint(.accentColor)  // 或 .tint(.primary) 但一般用 accentColor 更美观
             .font(.caption2)
             .controlSize(.small)
-            .disabled(addButtonState == .loading || (addButtonState == .installed && type))  // type = true (server mode) disables deletion
+            .disabled(
+                addButtonState == .loading
+                    || (addButtonState == .installed && type)
+            )  // type = true (server mode) disables deletion
             .onAppear {
                 if type == false {
                     // local 区直接显示为已安装
@@ -117,39 +125,46 @@ struct AddOrDeleteResourceButton: View {
                     deleteFile()
                 }
                 .keyboardShortcut(.defaultAction)  // 这里可以绑定回车键
-                
+
                 Button("common.cancel".localized(), role: .cancel) {}
-            }
-            message: {
-                Text(String(format: "resource.delete.confirm".localized(), project.title))
+            } message: {
+                Text(
+                    String(
+                        format: "resource.delete.confirm".localized(),
+                        project.title
+                    )
+                )
             }
             .sheet(isPresented: $depVM.showDependenciesSheet) {
                 DependencySheetView(
                     viewModel: depVM,
                     isDownloadingAllDependencies: $isDownloadingAllDependencies,
-                    isDownloadingMainResourceOnly: $isDownloadingMainResourceOnly,
+                    isDownloadingMainResourceOnly:
+                        $isDownloadingMainResourceOnly,
                     projectDetail: project.toDetail(),
                     onDownloadAll: {
                         if depVM.overallDownloadState == .failed {
                             // 如果是失败后点击"继续"
-                            await GameResourceHandler.downloadMainResourceAfterDependencies(
-                                project: project,
-                                gameInfo: gameInfo,
-                                depVM: depVM,
-                                query: query,
-                                gameRepository: gameRepository,
-                                updateButtonState: updateButtonState
-                            )
+                            await GameResourceHandler
+                                .downloadMainResourceAfterDependencies(
+                                    project: project,
+                                    gameInfo: gameInfo,
+                                    depVM: depVM,
+                                    query: query,
+                                    gameRepository: gameRepository,
+                                    updateButtonState: updateButtonState
+                                )
                         } else {
                             // 首次点击"全部下载"
-                            await GameResourceHandler.downloadAllDependenciesAndMain(
-                                project: project,
-                                gameInfo: gameInfo,
-                                depVM: depVM,
-                                query: query,
-                                gameRepository: gameRepository,
-                                updateButtonState: updateButtonState
-                            )
+                            await GameResourceHandler
+                                .downloadAllDependenciesAndMain(
+                                    project: project,
+                                    gameInfo: gameInfo,
+                                    depVM: depVM,
+                                    query: query,
+                                    gameRepository: gameRepository,
+                                    updateButtonState: updateButtonState
+                                )
                         }
                     },
                     onRetry: { dep in
@@ -177,9 +192,12 @@ struct AddOrDeleteResourceButton: View {
                     }
                 )
             }
-            .sheet(isPresented: $showGlobalResourceSheet, onDismiss: {
-                addButtonState = .idle
-            }) {
+            .sheet(
+                isPresented: $showGlobalResourceSheet,
+                onDismiss: {
+                    addButtonState = .idle
+                }
+            ) {
                 GlobalResourceSheet(
                     project: project,
                     resourceType: query,
@@ -188,10 +206,13 @@ struct AddOrDeleteResourceButton: View {
                 .environmentObject(gameRepository)
             }
             // 新增：整合包下载 sheet
-            .sheet(isPresented: $showModPackDownloadSheet, onDismiss: {
-                addButtonState = .idle
-                scanResourcesIfAvailable()
-            }) {
+            .sheet(
+                isPresented: $showModPackDownloadSheet,
+                onDismiss: {
+                    addButtonState = .idle
+                    scanResourcesIfAvailable()
+                }
+            ) {
                 ModPackDownloadSheet(
                     projectId: project.projectId,
                     gameInfo: gameInfo,
@@ -208,7 +229,7 @@ struct AddOrDeleteResourceButton: View {
             )
         }
     }
-    
+
     // MARK: - UI Components
     private var buttonLabel: some View {
         switch addButtonState {
@@ -217,16 +238,24 @@ struct AddOrDeleteResourceButton: View {
         case .loading:
             AnyView(ProgressView())
         case .installed:
-            AnyView(Text((!type ? "common.delete".localized() : "resource.installed".localized())))
+            AnyView(
+                Text(
+                    (!type
+                        ? "common.delete".localized()
+                        : "resource.installed".localized())
+                )
+            )
         }
     }
-
-    
 
     // 新增：根据当前 project 查找 fileURL（示例实现，需根据实际逻辑补全）
     private func deleteFile() {
         guard let gameInfo = gameInfo,
-              let resourceDir = AppPaths.resourceDirectory(for: query, gameName: gameInfo.gameName) else {
+            let resourceDir = AppPaths.resourceDirectory(
+                for: query,
+                gameName: gameInfo.gameName
+            )
+        else {
             let globalError = GlobalError.configuration(
                 chineseMessage: "无法删除文件：游戏信息或资源目录无效",
                 i18nKey: "error.configuration.delete_file_failed",
@@ -241,10 +270,10 @@ struct AddOrDeleteResourceButton: View {
             if let detail = detail, detail.id == project.projectId {
                 GameResourceHandler.performDelete(fileURL: file)
                 scanResourcesIfAvailable()
-                return // 删除后立即返回
+                return  // 删除后立即返回
             }
         }
-        
+
         // 如果没有找到要删除的文件
         let globalError = GlobalError.resource(
             chineseMessage: "未找到要删除的文件: \(project.title)",
@@ -266,7 +295,7 @@ struct AddOrDeleteResourceButton: View {
                     showModPackDownloadSheet = true
                     return
                 }
-                
+
                 addButtonState = .loading
                 Task {
                     // 仅对 mod 类型检查依赖
@@ -280,14 +309,16 @@ struct AddOrDeleteResourceButton: View {
                                 updateButtonState: updateButtonState
                             )
                         } else {
-                            let hasMissingDeps = await GameResourceHandler.prepareManualDependencies(
-                                project: project,
-                                gameInfo: gameInfo,
-                                depVM: depVM
-                            )
+                            let hasMissingDeps =
+                                await GameResourceHandler
+                                .prepareManualDependencies(
+                                    project: project,
+                                    gameInfo: gameInfo,
+                                    depVM: depVM
+                                )
                             if hasMissingDeps {
                                 depVM.showDependenciesSheet = true
-                                addButtonState = .idle // Reset button state for when sheet is dismissed
+                                addButtonState = .idle  // Reset button state for when sheet is dismissed
                             } else {
                                 await GameResourceHandler.downloadSingleResource(
                                     project: project,
@@ -327,7 +358,7 @@ struct AddOrDeleteResourceButton: View {
                     showModPackDownloadSheet = true
                     return
                 }
-                
+
                 addButtonState = .loading
                 Task {
                     if gameRepository.games.isEmpty {
@@ -352,8 +383,16 @@ struct AddOrDeleteResourceButton: View {
             addButtonState = .installed
             return
         }
-        if let gameInfo = gameInfo, let resourceDir = AppPaths.resourceDirectory(for: query, gameName: gameInfo.gameName) {
-            if ModScanner.shared.isModInstalledSync(projectId: project.projectId, in: resourceDir) {
+        if let gameInfo = gameInfo,
+            let resourceDir = AppPaths.resourceDirectory(
+                for: query,
+                gameName: gameInfo.gameName
+            )
+        {
+            if ModScanner.shared.isModInstalledSync(
+                projectId: project.projectId,
+                in: resourceDir
+            ) {
                 addButtonState = .installed
                 return
             }

@@ -66,7 +66,6 @@ struct Player: Identifiable, Codable, Equatable {
         lastPlayed: Date = Date(),
         isCurrent: Bool = false,
         gameRecords: [String: PlayerGameRecord] = [:]
-
     ) throws {
         // 如果提供了UUID则使用，否则生成离线UUID
         if let providedUUID = uuid {

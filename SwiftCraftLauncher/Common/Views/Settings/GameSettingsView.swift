@@ -40,7 +40,9 @@ public struct GameSettingsView: View {
                     Text("settings.dependencies.description".localized()).font(.footnote).foregroundColor(.secondary)
                 }
                 .gridColumnAlignment(.leading)
-            }.padding(.bottom,20)
+            }
+            .padding(.bottom, 20)
+
             GridRow {
                 Text("settings.default_java_path.label".localized()).gridColumnAlignment(.trailing)
                 DirectorySettingRow(
@@ -53,9 +55,11 @@ public struct GameSettingsView: View {
                     }
                 )
                 .fixedSize()
-                .fileImporter(isPresented: $showJavaPathPicker,
-                              allowedContentTypes: [.directory],
-                              allowsMultipleSelection: false) { result in
+                .fileImporter(
+                    isPresented: $showJavaPathPicker,
+                    allowedContentTypes: [.directory],
+                    allowsMultipleSelection: false
+                ) { result in
                     switch result {
                     case .success(let urls):
                         if let url = urls.first {

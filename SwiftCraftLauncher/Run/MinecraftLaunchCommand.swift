@@ -7,7 +7,7 @@ struct MinecraftLaunchCommand {
     let gameRepository: GameRepository
 
     /// 启动游戏（静默版本）
-    public func launchGame() async {
+    func launchGame() async {
         do {
             try await launchGameThrowing()
         } catch {
@@ -16,7 +16,7 @@ struct MinecraftLaunchCommand {
     }
 
     /// 停止游戏
-    public func stopGame() async {
+    func stopGame() async {
         let success = GameProcessManager.shared.stopProcess(for: game.id)
         if success {
             _ = await MainActor.run {

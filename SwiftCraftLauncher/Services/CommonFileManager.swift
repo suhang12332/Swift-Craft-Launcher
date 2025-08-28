@@ -166,7 +166,7 @@ class CommonFileManager {
         if let gameName = gameName, let profileDir = AppPaths.profileDirectory(gameName: gameName) {
             processorData["ROOT"] = profileDir.path
         }
-    
+
         // 解析version.json中的data字段
         if let data = data {
             for (key, sidedEntry) in data {

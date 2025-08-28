@@ -24,10 +24,10 @@ struct ContentView: View {
     @Binding var gameType: Bool
     @Binding var gameId: String?
     @Binding var showAdvancedSettings: Bool
-    
+
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    
+
     // MARK: - Body
     var body: some View {
         List {
@@ -38,12 +38,12 @@ struct ContentView: View {
                 resourceContentView(type: type)
             }
         }
-        .onChange(of: selectedItem) { _,_ in
+        .onChange(of: selectedItem) { _, _ in
             // 切换游戏时重置高级设置状态
             showAdvancedSettings = false
         }
     }
-    
+
     // MARK: - Game Content View
     @ViewBuilder
     private func gameContentView(gameId: String) -> some View {
@@ -55,7 +55,7 @@ struct ContentView: View {
             }
         }
     }
-    
+
     private func serverModeView(game: GameVersionInfo) -> some View {
         CategoryContentView(
             project: gameResourcesType,
@@ -71,7 +71,7 @@ struct ContentView: View {
         )
         .id(gameResourcesType)
     }
-    
+
     private func localModeView(game: GameVersionInfo) -> some View {
         Group {
             if !hasSaves(for: game.gameName) || showAdvancedSettings {
@@ -84,20 +84,23 @@ struct ContentView: View {
         }
         .id(gameId)
     }
-    
+
     private func hasSaves(for gameName: String) -> Bool {
         guard let savesDir = AppPaths.savesDirectory(gameName: gameName) else {
             return false
         }
-        
+
         do {
-            let contents = try FileManager.default.contentsOfDirectory(at: savesDir, includingPropertiesForKeys: nil)
+            let contents = try FileManager.default.contentsOfDirectory(
+                at: savesDir,
+                includingPropertiesForKeys: nil
+            )
             return !contents.isEmpty
         } catch {
             return false
         }
     }
-    
+
     // MARK: - Resource Content View
     @ViewBuilder
     private func resourceContentView(type: ResourceType) -> some View {

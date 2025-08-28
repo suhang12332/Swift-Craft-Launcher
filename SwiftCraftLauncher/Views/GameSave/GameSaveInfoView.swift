@@ -9,7 +9,7 @@ import SwiftUI
 struct GameSaveInfoView: View {
     let levelDatPath: String
     @StateObject private var levelDataModel = LevelDataModel()
-    
+
     // 跟踪哪些部分已经加载
     @State private var worldSettingsLoaded = false
     @State private var playerDataLoaded = false
@@ -67,5 +67,3 @@ struct GameSaveInfoView: View {
         }
     }
 }
-
-

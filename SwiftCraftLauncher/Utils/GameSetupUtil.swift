@@ -35,8 +35,7 @@ class GameSetupUtil: ObservableObject {
     ///   - gameRepository: 游戏仓库
     ///   - onSuccess: 成功回调
     ///   - onError: 错误回调
-    // swiftlint:disable:next function_parameter_count
-    func saveGame(
+    func saveGame( // swiftlint:disable:this function_parameter_count
         gameName: String,
         gameIcon: String,
         selectedGameVersion: String,
@@ -334,14 +333,14 @@ class GameSetupUtil: ObservableObject {
         var updatedGameInfo = gameInfo
         updatedGameInfo.assetIndex = manifest.assetIndex.id
         updatedGameInfo.javaVersion = manifest.javaVersion.majorVersion
-        
+
         switch selectedModLoader.lowercased() {
         case "fabric", "quilt":
             if let result = selectedModLoader.lowercased() == "fabric" ? fabricResult : quiltResult {
                 updatedGameInfo.modVersion = result.loaderVersion
                 updatedGameInfo.modClassPath = result.classpath
                 updatedGameInfo.mainClass = result.mainClass
-                
+
                 if selectedModLoader.lowercased() == "fabric" {
                     if let fabricLoader = try? await FabricLoaderService.fetchLatestStableLoaderVersion(for: selectedGameVersion) {
                         let jvmArgs = fabricLoader.arguments.jvm ?? []
@@ -358,13 +357,13 @@ class GameSetupUtil: ObservableObject {
                     }
                 }
             }
-            
+
         case "forge":
             if let result = forgeResult {
                 updatedGameInfo.modVersion = result.loaderVersion
                 updatedGameInfo.modClassPath = result.classpath
                 updatedGameInfo.mainClass = result.mainClass
-                
+
                 if let forgeLoader = try? await ForgeLoaderService.fetchLatestForgeProfile(for: selectedGameVersion) {
                     let gameArgs = forgeLoader.arguments.game ?? []
                     updatedGameInfo.gameArguments = gameArgs
@@ -376,17 +375,17 @@ class GameSetupUtil: ObservableObject {
                     }
                 }
             }
-            
+
         case "neoforge":
             if let result = neoForgeResult {
                 updatedGameInfo.modVersion = result.loaderVersion
                 updatedGameInfo.modClassPath = result.classpath
                 updatedGameInfo.mainClass = result.mainClass
-                
+
                 if let neoForgeLoader = try? await NeoForgeLoaderService.fetchLatestNeoForgeProfile(for: selectedGameVersion) {
                     let gameArgs = neoForgeLoader.arguments.game ?? []
                     updatedGameInfo.gameArguments = gameArgs
-                    
+
                     let jvmArgs = neoForgeLoader.arguments.jvm ?? []
                     updatedGameInfo.modJvm = jvmArgs.map { arg in
                         arg.replacingOccurrences(of: "${version_name}", with: selectedGameVersion)
@@ -395,34 +394,34 @@ class GameSetupUtil: ObservableObject {
                     }
                 }
             }
-            
+
         default:
             updatedGameInfo.mainClass = manifest.mainClass
         }
-        
+
         // 构建启动命令
         let launcherBrand = Bundle.main.appName
         let launcherVersion = Bundle.main.fullVersion
-        
+
         updatedGameInfo.launchCommand = MinecraftLaunchCommandBuilder.build(
             manifest: manifest,
             gameInfo: updatedGameInfo,
             launcherBrand: launcherBrand,
             launcherVersion: launcherVersion
         )
-        
+
         return updatedGameInfo
     }
-    
+
     /// 检查游戏名称是否重复
     /// - Parameter name: 游戏名称
     /// - Returns: 是否重复
     func checkGameNameDuplicate(_ name: String) async -> Bool {
         guard !name.isEmpty,
               let profilesDir = AppPaths.profileRootDirectory else { return false }
-        
+
         let fileManager = FileManager.default
         let gameDir = profilesDir.appendingPathComponent(name)
         return fileManager.fileExists(atPath: gameDir.path)
     }
-} 
+}

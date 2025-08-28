@@ -35,7 +35,6 @@ struct MiniRangeSlider: View {
                     .frame(width: max(upperPos - lowerPos, 0), height: trackHeight)
                     .offset(x: lowerPos)
 
-
                 // 左滑块
                 Circle()
                     .fill(colorScheme == .dark ? Color.gray : Color.white)
@@ -96,5 +95,3 @@ struct MiniRangeSlider: View {
         return value
     }
 }
-
-

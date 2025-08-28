@@ -5,7 +5,8 @@ import SwiftUI
 /// 只负责语言列表和 bundle
 public class LanguageManager {
     // 新增：启动器工作目录
-    @AppStorage("selectedLanguage") public var selectedLanguage: String = "" {
+    @AppStorage("selectedLanguage")
+    public var selectedLanguage: String = "" {
         didSet {  }
     }
 

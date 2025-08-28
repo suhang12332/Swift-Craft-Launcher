@@ -55,24 +55,23 @@ class DownloadState: ObservableObject {
             updateResourcesProgress(fileName: fileName, completed: completed, total: total)
         }
     }
-    
+
     private func updateCoreProgress(fileName: String, completed: Int, total: Int) {
         currentCoreFile = fileName
         coreCompletedFiles = completed
         coreTotalFiles = total
         coreProgress = calculateProgress(completed: completed, total: total)
     }
-    
+
     private func updateResourcesProgress(fileName: String, completed: Int, total: Int) {
         currentResourceFile = fileName
         resourcesCompletedFiles = completed
         resourcesTotalFiles = total
         resourcesProgress = calculateProgress(completed: completed, total: total)
     }
-    
+
     private func calculateProgress(completed: Int, total: Int) -> Double {
         guard total > 0 else { return 0.0 }
         return max(0.0, min(1.0, Double(completed) / Double(total)))
     }
 }
-

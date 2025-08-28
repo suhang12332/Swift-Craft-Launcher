@@ -22,9 +22,9 @@ struct CategorySectionView: View {
     @Binding var selectedItems: [String]
     let isLoading: Bool
     var isVersionSection: Bool = false
-    
+
     @State private var showOverflowPopover = false
-    
+
     // MARK: - Body
     var body: some View {
         VStack {
@@ -36,7 +36,7 @@ struct CategorySectionView: View {
             }
         }
     }
-    
+
     // MARK: - Header Views
     private var headerView: some View {
         let (_, overflowItems) = computeVisibleAndOverflowItems()
@@ -50,7 +50,7 @@ struct CategorySectionView: View {
         }
         .padding(.bottom, CategorySectionConstants.headerBottomPadding)
     }
-    
+
     private var headerTitle: some View {
         LabeledContent {
             if !selectedItems.isEmpty {
@@ -61,7 +61,7 @@ struct CategorySectionView: View {
                 .font(.headline)
         }
     }
-    
+
     private var selectionCountBadge: some View {
         Text("\(selectedItems.count)")
             .font(.subheadline)
@@ -71,7 +71,7 @@ struct CategorySectionView: View {
             .background(Color.secondary.opacity(0.1))
             .cornerRadius(4)
     }
-    
+
     private func overflowButton(overflowItems: [FilterItem]) -> some View {
         Button {
             showOverflowPopover = true
@@ -88,8 +88,10 @@ struct CategorySectionView: View {
             overflowPopoverContent(overflowItems: overflowItems)
         }
     }
-    
-    private func overflowPopoverContent(overflowItems: [FilterItem]) -> some View {
+
+    private func overflowPopoverContent(overflowItems: [FilterItem])
+        -> some View
+    {
         VStack(alignment: .leading, spacing: 0) {
             if isLoading {
                 loadingPlaceholder
@@ -116,7 +118,7 @@ struct CategorySectionView: View {
         }
         .frame(width: CategorySectionConstants.popoverWidth)
     }
-    
+
     @ViewBuilder
     private var clearButton: some View {
         if !selectedItems.isEmpty {
@@ -128,14 +130,21 @@ struct CategorySectionView: View {
             .help("filter.clear".localized())
         }
     }
-    
+
     // MARK: - Content Views
     private var loadingPlaceholder: some View {
         ScrollView {
             FlowLayout {
-                ForEach(0..<CategorySectionConstants.placeholderCount, id: \.self) { _ in
-                    FilterChip(title: "common.loading".localized(), isSelected: false, action: {})
-                        .redacted(reason: .placeholder)
+                ForEach(
+                    0..<CategorySectionConstants.placeholderCount,
+                    id: \.self
+                ) { _ in
+                    FilterChip(
+                        title: "common.loading".localized(),
+                        isSelected: false,
+                        action: {}
+                    )
+                    .redacted(reason: .placeholder)
                 }
             }
         }
@@ -143,7 +152,7 @@ struct CategorySectionView: View {
         .fixedSize(horizontal: false, vertical: true)
         .padding(.vertical, CategorySectionConstants.verticalPadding)
     }
-    
+
     private var contentWithOverflow: some View {
         let (visibleItems, _) = computeVisibleAndOverflowItems()
         return FlowLayout {
@@ -159,13 +168,13 @@ struct CategorySectionView: View {
         .fixedSize(horizontal: false, vertical: true)
         .padding(.vertical, CategorySectionConstants.verticalPadding)
     }
-    
+
     // MARK: - Version Grouped Content
     @ViewBuilder
     private func versionGroupedContent(allItems: [FilterItem]) -> some View {
         let groups = groupVersions(allItems)
         let sortedKeys = sortVersionKeys(groups.keys)
-        
+
         ScrollView {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(sortedKeys, id: \.self) { key in
@@ -174,7 +183,7 @@ struct CategorySectionView: View {
                             .font(.headline.bold())
                             .foregroundColor(.primary)
                             .padding(.top, 4)
-                        
+
                         FlowLayout {
                             ForEach(groups[key] ?? []) { item in
                                 FilterChip(
@@ -190,17 +199,24 @@ struct CategorySectionView: View {
             .padding()
         }
     }
-    
+
     // MARK: - Helper Methods
-    private func computeVisibleAndOverflowItems() -> ([FilterItem], [FilterItem]) {
+    private func computeVisibleAndOverflowItems() -> (
+        [FilterItem], [FilterItem]
+    ) {
         var rows: [[FilterItem]] = []
         var currentRow: [FilterItem] = []
         var currentRowWidth: CGFloat = 0
-        
+
         for item in items {
-            let estimatedWidth = CGFloat(item.name.count) * CategorySectionConstants.estimatedCharWidth + CategorySectionConstants.chipPadding
-            
-            if currentRowWidth + estimatedWidth > CategorySectionConstants.maxWidth, !currentRow.isEmpty {
+            let estimatedWidth =
+                CGFloat(item.name.count)
+                * CategorySectionConstants.estimatedCharWidth
+                + CategorySectionConstants.chipPadding
+
+            if currentRowWidth + estimatedWidth
+                > CategorySectionConstants.maxWidth, !currentRow.isEmpty
+            {
                 rows.append(currentRow)
                 currentRow = [item]
                 currentRowWidth = estimatedWidth
@@ -209,19 +225,20 @@ struct CategorySectionView: View {
                 currentRowWidth += estimatedWidth
             }
         }
-        
+
         if !currentRow.isEmpty {
             rows.append(currentRow)
         }
-        
+
         let visibleRows = rows.prefix(CategorySectionConstants.maxRows)
         let visibleItems = visibleRows.flatMap { $0 }
         let overflowItems = Array(items.dropFirst(visibleItems.count))
-        
+
         return (visibleItems, overflowItems)
     }
-    
-    private func groupVersions(_ items: [FilterItem]) -> [String: [FilterItem]] {
+
+    private func groupVersions(_ items: [FilterItem]) -> [String: [FilterItem]]
+    {
         Dictionary(grouping: items) { item in
             let components = item.name.split(separator: ".")
             if components.count >= 2 {
@@ -231,20 +248,22 @@ struct CategorySectionView: View {
             }
         }
     }
-    
-    private func sortVersionKeys(_ keys: Dictionary<String, [FilterItem]>.Keys) -> [String] {
+
+    private func sortVersionKeys(_ keys: Dictionary<String, [FilterItem]>.Keys)
+        -> [String]
+    {
         keys.sorted { key1, key2 in
             let components1 = key1.split(separator: ".").compactMap { Int($0) }
             let components2 = key2.split(separator: ".").compactMap { Int($0) }
             return components1.lexicographicallyPrecedes(components2)
         }.reversed()
     }
-    
+
     // MARK: - Actions
     private func clearSelection() {
         selectedItems.removeAll()
     }
-    
+
     private func toggleSelection(for id: String) {
         if selectedItems.contains(id) {
             selectedItems.removeAll { $0 == id }
@@ -252,4 +271,4 @@ struct CategorySectionView: View {
             selectedItems.append(id)
         }
     }
-} 
+}

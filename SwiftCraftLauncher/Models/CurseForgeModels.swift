@@ -1,4 +1,4 @@
- import Foundation
+import Foundation
 
 struct CurseForgeSearchResult: Codable {
     let data: [CurseForgeMod]

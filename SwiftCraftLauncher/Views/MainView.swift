@@ -13,7 +13,7 @@ struct MainView: View {
     @State private var selectedItem: SidebarItem = .resource(.mod)
     @ObservedObject private var general = GeneralSettingsManager.shared
     @EnvironmentObject var gameRepository: GameRepository
-    
+
     // MARK: - Resource/Project State
     @State private var currentPage: Int = 1
     @State private var totalItems: Int = 0
@@ -35,10 +35,10 @@ struct MainView: View {
     @State private var gameResourcesType = "mod"
     @State private var gameType = true  // false = local, true = server
     @State private var gameId: String?
-    
+
     @State private var showingInspector: Bool = false
     @State private var showAdvancedSettings = false
-    
+
     // MARK: - Body
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -46,7 +46,7 @@ struct MainView: View {
             SidebarView(selectedItem: $selectedItem)
                 .navigationSplitViewColumnWidth(min: 168, ideal: 168, max: 168)
         } content: {
-            
+
             ContentView(
                 selectedItem: selectedItem,
                 selectedVersions: $selectedVersions,
@@ -63,9 +63,13 @@ struct MainView: View {
                 gameId: $gameId,
                 showAdvancedSettings: $showAdvancedSettings
             )
-            .toolbar { ContentToolbarView() }.navigationSplitViewColumnWidth(min: 235, ideal: 240, max: 280)
+            .toolbar { ContentToolbarView() }.navigationSplitViewColumnWidth(
+                min: 235,
+                ideal: 240,
+                max: 280
+            )
         } detail: {
-            
+
             DetailView(
                 selectedItem: $selectedItem,
                 currentPage: $currentPage,
@@ -102,29 +106,28 @@ struct MainView: View {
                     gameId: $gameId
                 )
             }
-            
-            
+
         }
-//        .inspector(isPresented: $showingInspector) {
-//            ContentView(
-//                selectedItem: selectedItem,
-//                selectedVersions: $selectedVersions,
-//                selectedLicenses: $selectedLicenses,
-//                selectedCategories: $selectedCategories,
-//                selectedFeatures: $selectedFeatures,
-//                selectedResolutions: $selectedResolutions,
-//                selectedPerformanceImpact: $selectedPerformanceImpact,
-//                selectProjectId: $selectedProjectId,
-//                loadedProjectDetail: $loadedProjectDetail,
-//                gameResourcesType: $gameResourcesType,
-//                selectedLoaders: $selectedLoaders,
-//                gameType: $gameType,
-//                gameId: $gameId
-//            )
-//            .toolbar {InspectorToolbar(showingInspector: $showingInspector)}.navigationSplitViewColumnWidth(min: 235, ideal: 240, max: .infinity)
-////            ContentView().toolbar {InspectorToolbar(showingInspector: $showingInspector)}
-//        }
-        
+        //        .inspector(isPresented: $showingInspector) {
+        //            ContentView(
+        //                selectedItem: selectedItem,
+        //                selectedVersions: $selectedVersions,
+        //                selectedLicenses: $selectedLicenses,
+        //                selectedCategories: $selectedCategories,
+        //                selectedFeatures: $selectedFeatures,
+        //                selectedResolutions: $selectedResolutions,
+        //                selectedPerformanceImpact: $selectedPerformanceImpact,
+        //                selectProjectId: $selectedProjectId,
+        //                loadedProjectDetail: $loadedProjectDetail,
+        //                gameResourcesType: $gameResourcesType,
+        //                selectedLoaders: $selectedLoaders,
+        //                gameType: $gameType,
+        //                gameId: $gameId
+        //            )
+        //            .toolbar {InspectorToolbar(showingInspector: $showingInspector)}.navigationSplitViewColumnWidth(min: 235, ideal: 240, max: .infinity)
+        ////            ContentView().toolbar {InspectorToolbar(showingInspector: $showingInspector)}
+        //        }
+
         .frame(minWidth: 900, minHeight: 500)
         .onChange(of: selectedItem) { oldValue, newValue in
             handleSidebarItemChange(from: oldValue, to: newValue)
@@ -137,7 +140,10 @@ struct MainView: View {
     }
 
     // MARK: - Sidebar Item Change Handlers
-    private func handleSidebarItemChange(from oldValue: SidebarItem, to newValue: SidebarItem) {
+    private func handleSidebarItemChange(
+        from oldValue: SidebarItem,
+        to newValue: SidebarItem
+    ) {
         switch (oldValue, newValue) {
         case (.resource, .game(let id)):
             handleResourceToGameTransition(gameId: id)
@@ -156,28 +162,33 @@ struct MainView: View {
             self.gameType = false
         }
         let game = gameRepository.getGame(by: gameId)
-        self.gameResourcesType = game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
+        self.gameResourcesType =
+            game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
         self.gameId = gameId
         self.selectedProjectId = nil
-        
+
     }
 
-    private func handleGameToGameTransition(from oldId: String, to newId: String) {
+    private func handleGameToGameTransition(
+        from oldId: String,
+        to newId: String
+    ) {
         if self.gameType != false {
             self.gameType = false
         }
         let game = gameRepository.getGame(by: newId)
-        self.gameResourcesType = game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
+        self.gameResourcesType =
+            game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
         self.gameId = newId
     }
 
     // MARK: - Resource Reset
     private func resetToResourceDefaults() {
-        
+
         if self.gameType != true {
             self.gameType = true
         }
-        
+
         if self.sortIndex != "relevance" {
             self.sortIndex = "relevance"
         }
@@ -213,7 +224,7 @@ struct MainView: View {
         if !self.selectedLoaders.isEmpty {
             self.selectedLoaders.removeAll()
         }
-        
+
         if self.selectedTab != 0 {
             self.selectedTab = 0
         }
@@ -229,11 +240,12 @@ struct MainView: View {
         if self.selectedProjectId == nil && self.gameId != nil {
             self.gameId = nil
         }
-        if self.loadedProjectDetail != nil && self.gameId != nil && self.selectedProjectId != nil {
+        if self.loadedProjectDetail != nil && self.gameId != nil
+            && self.selectedProjectId != nil
+        {
             self.gameId = nil
             self.loadedProjectDetail = nil
             self.selectedProjectId = nil
         }
     }
 }
-

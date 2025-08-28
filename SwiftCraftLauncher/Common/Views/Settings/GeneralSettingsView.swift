@@ -76,8 +76,8 @@ public struct GeneralSettingsView: View {
                     .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
                         handleDirectoryImport(result)
                     }
-
-            }.padding(.bottom, 20)
+            }
+            .padding(.bottom, 20)
 
             GridRow {
                 Text("settings.concurrent_downloads.label".localized()).gridColumnAlignment(.trailing) // 右对齐
@@ -113,23 +113,17 @@ public struct GeneralSettingsView: View {
                 Text("settings.minecraft_versions_url.label".localized()).gridColumnAlignment(.trailing)
                 TextField("", text: $gameSettings.minecraftVersionManifestURL).focusable(false)
                     .fixedSize()
-
-
             }
             GridRow {
                 Text("settings.modrinth_api_url.label".localized()).gridColumnAlignment(.trailing)
                 TextField("", text: $gameSettings.modrinthAPIBaseURL).focusable(false)
                     .fixedSize()
-
-
             }
             GridRow {
                 Text("settings.git_proxy_url.label".localized()).gridColumnAlignment(.trailing)
                 TextField("", text: $gameSettings.gitProxyURL).focusable(false)
                     .fixedSize()
-
             }
-
         }
         .alert("common.error".localized(), isPresented: $showingErrorAlert) {
             Button("common.ok".localized()) { }

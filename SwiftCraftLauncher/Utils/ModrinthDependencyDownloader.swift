@@ -19,7 +19,7 @@ struct ModrinthDependencyDownloader {
             )
             guard let resourceDirUnwrapped = resourceDir else { return }
             // 1. 获取所有依赖
-            
+
             // 新逻辑：用ModScanner判断对应资源目录下是否已安装
             let dependencies =
                 await ModrinthService.fetchProjectDependencies(
@@ -29,9 +29,11 @@ struct ModrinthDependencyDownloader {
                     selectedVersions: [gameInfo.gameVersion],
                     selectedLoaders: [gameInfo.modLoader]
                 )
-            
+
             // 2. 获取主mod详情
-            guard await ModrinthService.fetchProjectDetails(id: projectId) != nil else {
+            guard
+                await ModrinthService.fetchProjectDetails(id: projectId) != nil
+            else {
                 Logger.shared.error("无法获取主项目详情 (ID: \(projectId))")
                 return
             }
@@ -52,13 +54,22 @@ struct ModrinthDependencyDownloader {
                         defer { Task { await semaphore.signal() } }
 
                         // 获取项目详情
-                        guard let projectDetail = await ModrinthService.fetchProjectDetails(id: depVersion.projectId) else {
-                            
-                            Logger.shared.error("无法获取依赖项目详情 (ID: \(depVersion.projectId))")
-                            Logger.shared.error("无法获取sss项目详情 (ID: \(depVersion.projectId))")
+                        guard
+                            let projectDetail =
+                                await ModrinthService.fetchProjectDetails(
+                                    id: depVersion.projectId
+                                )
+                        else {
+
+                            Logger.shared.error(
+                                "无法获取依赖项目详情 (ID: \(depVersion.projectId))"
+                            )
+                            Logger.shared.error(
+                                "无法获取sss项目详情 (ID: \(depVersion.projectId))"
+                            )
                             return nil
                         }
-                        
+
                         // 使用版本中的文件信息
                         let result = ModrinthService.filterPrimaryFiles(
                             from: depVersion.files
@@ -94,8 +105,12 @@ struct ModrinthDependencyDownloader {
                     defer { Task { await semaphore.signal() } }
 
                     do {
-                        guard var mainProjectDetail =
-                            await ModrinthService.fetchProjectDetails(id: projectId) else {
+                        guard
+                            var mainProjectDetail =
+                                await ModrinthService.fetchProjectDetails(
+                                    id: projectId
+                                )
+                        else {
                             Logger.shared.error("无法获取主项目详情 (ID: \(projectId))")
                             return nil
                         }
@@ -133,7 +148,9 @@ struct ModrinthDependencyDownloader {
                         return nil
                     } catch {
                         let globalError = GlobalError.from(error)
-                        Logger.shared.error("下载主资源 \(projectId) 失败: \(globalError.chineseMessage)")
+                        Logger.shared.error(
+                            "下载主资源 \(projectId) 失败: \(globalError.chineseMessage)"
+                        )
                         GlobalErrorHandler.shared.handle(globalError)
                         return nil
                     }
@@ -156,13 +173,15 @@ struct ModrinthDependencyDownloader {
     static func getMissingDependenciesWithVersions(
         for projectId: String,
         gameInfo: GameVersionInfo
-    ) async -> [(detail: ModrinthProjectDetail, versions: [ModrinthProjectDetailVersion])] {
+    ) async -> [(
+        detail: ModrinthProjectDetail, versions: [ModrinthProjectDetailVersion]
+    )] {
         let query = "mod"
         let resourceDir = AppPaths.modsDirectory(
             gameName: gameInfo.gameName
         )
         guard let resourceDirUnwrapped = resourceDir else { return [] }
-        
+
         let dependencies = await ModrinthService.fetchProjectDependencies(
             type: query,
             cachePath: resourceDirUnwrapped,
@@ -170,34 +189,48 @@ struct ModrinthDependencyDownloader {
             selectedVersions: [gameInfo.gameVersion],
             selectedLoaders: [gameInfo.modLoader]
         )
-        
+
         // 并发获取所有依赖项目的详情和版本信息
-        return await withTaskGroup(of: (ModrinthProjectDetail, [ModrinthProjectDetailVersion])?.self) { group in
+        return await withTaskGroup(
+            of: (ModrinthProjectDetail, [ModrinthProjectDetailVersion])?.self
+        ) { group in
             for depVersion in dependencies.projects {
                 group.addTask {
                     // 获取项目详情
-                    guard let projectDetail = await ModrinthService.fetchProjectDetails(id: depVersion.projectId) else {
+                    guard
+                        let projectDetail =
+                            await ModrinthService.fetchProjectDetails(
+                                id: depVersion.projectId
+                            )
+                    else {
                         return nil
                     }
-                    
+
                     // 获取项目版本并过滤
-                    let allVersions = await ModrinthService.fetchProjectVersions(id: depVersion.projectId)
+                    let allVersions =
+                        await ModrinthService.fetchProjectVersions(
+                            id: depVersion.projectId
+                        )
                     let filteredVersions = allVersions.filter {
-                        $0.loaders.contains(gameInfo.modLoader) &&
-                        $0.gameVersions.contains(gameInfo.gameVersion)
+                        $0.loaders.contains(gameInfo.modLoader)
+                            && $0.gameVersions.contains(gameInfo.gameVersion)
                     }
-                    
+
                     return (projectDetail, filteredVersions)
                 }
             }
-            
-            var results: [(detail: ModrinthProjectDetail, versions: [ModrinthProjectDetailVersion])] = []
+
+            var results:
+                [(
+                    detail: ModrinthProjectDetail,
+                    versions: [ModrinthProjectDetailVersion]
+                )] = []
             for await result in group {
                 if let (detail, versions) = result {
                     results.append((detail, versions))
                 }
             }
-            
+
             return results
         }
     }
@@ -219,15 +252,17 @@ struct ModrinthDependencyDownloader {
             selectedVersions: [gameInfo.gameVersion],
             selectedLoaders: [gameInfo.modLoader]
         )
-        
+
         // 将 ModrinthProjectDetailVersion 转换为 ModrinthProjectDetail
         var projectDetails: [ModrinthProjectDetail] = []
         for depVersion in dependencies.projects {
-            if let projectDetail = await ModrinthService.fetchProjectDetails(id: depVersion.projectId) {
+            if let projectDetail = await ModrinthService.fetchProjectDetails(
+                id: depVersion.projectId
+            ) {
                 projectDetails.append(projectDetail)
             }
         }
-        
+
         return projectDetails
     }
 
@@ -296,7 +331,9 @@ struct ModrinthDependencyDownloader {
                         }
                     } catch {
                         let globalError = GlobalError.from(error)
-                        Logger.shared.error("下载依赖 \(depId) 失败: \(globalError.chineseMessage)")
+                        Logger.shared.error(
+                            "下载依赖 \(depId) 失败: \(globalError.chineseMessage)"
+                        )
                         GlobalErrorHandler.shared.handle(globalError)
                         success = false
                     }
@@ -324,12 +361,14 @@ struct ModrinthDependencyDownloader {
 
         // 所有依赖都成功了，现在下载主 mod
         do {
-            guard var mainProjectDetail =
-                await ModrinthService.fetchProjectDetails(id: mainProjectId) else {
+            guard
+                var mainProjectDetail =
+                    await ModrinthService.fetchProjectDetails(id: mainProjectId)
+            else {
                 Logger.shared.error("无法获取主项目详情 (ID: \(mainProjectId))")
                 return false
             }
-            
+
             let selectedLoaders = [gameInfo.modLoader]
             let filteredVersions =
                 try await ModrinthService.fetchProjectVersionsFilter(
@@ -338,11 +377,14 @@ struct ModrinthDependencyDownloader {
                     selectedLoaders: selectedLoaders,
                     type: query
                 )
-            
+
             // 如果指定了版本ID，使用指定版本；否则使用最新版本
             let targetVersion: ModrinthProjectDetailVersion
             if let mainProjectVersionId = mainProjectVersionId,
-               let specifiedVersion = filteredVersions.first(where: { $0.id == mainProjectVersionId }) {
+                let specifiedVersion = filteredVersions.first(where: {
+                    $0.id == mainProjectVersionId
+                })
+            {
                 targetVersion = specifiedVersion
             } else if let latestVersion = filteredVersions.first {
                 targetVersion = latestVersion
@@ -350,10 +392,12 @@ struct ModrinthDependencyDownloader {
                 Logger.shared.error("无法找到合适的版本")
                 return false
             }
-            
-            guard let primaryFile = ModrinthService.filterPrimaryFiles(
-                from: targetVersion.files
-            ) else {
+
+            guard
+                let primaryFile = ModrinthService.filterPrimaryFiles(
+                    from: targetVersion.files
+                )
+            else {
                 Logger.shared.error("无法找到主文件")
                 return false
             }
@@ -376,7 +420,9 @@ struct ModrinthDependencyDownloader {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("下载主资源 \(mainProjectId) 失败: \(globalError.chineseMessage)")
+            Logger.shared.error(
+                "下载主资源 \(mainProjectId) 失败: \(globalError.chineseMessage)"
+            )
             GlobalErrorHandler.shared.handle(globalError)
             return false
         }
@@ -390,8 +436,10 @@ struct ModrinthDependencyDownloader {
         filterLoader: Bool = true
     ) async -> Bool {
         do {
-            guard var mainProjectDetail =
-                await ModrinthService.fetchProjectDetails(id: mainProjectId) else {
+            guard
+                var mainProjectDetail =
+                    await ModrinthService.fetchProjectDetails(id: mainProjectId)
+            else {
                 Logger.shared.error("无法获取主项目详情 (ID: \(mainProjectId))")
                 return false
             }
@@ -430,7 +478,9 @@ struct ModrinthDependencyDownloader {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("仅下载主资源 \(mainProjectId) 失败: \(globalError.chineseMessage)")
+            Logger.shared.error(
+                "仅下载主资源 \(mainProjectId) 失败: \(globalError.chineseMessage)"
+            )
             GlobalErrorHandler.shared.handle(globalError)
             return false
         }

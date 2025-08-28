@@ -36,7 +36,7 @@ struct AddPlayerSheetView: View {
                             Text(type.displayName).tag(type)
                         }
                     }
-                    .pickerStyle(.menu) // 用下拉菜单样式
+                    .pickerStyle(.menu)  // 用下拉菜单样式
                     .labelStyle(.titleOnly)
                     .fixedSize()
                 }
@@ -57,10 +57,13 @@ struct AddPlayerSheetView: View {
             },
             footer: {
                 HStack {
-                    Button("common.cancel".localized(), action: {
-                        authService.isLoading = false
-                        onCancel()
-                    })
+                    Button(
+                        "common.cancel".localized(),
+                        action: {
+                            authService.isLoading = false
+                            onCancel()
+                        }
+                    )
                     Spacer()
                     if selectedAuthType == .premium {
                         // 根据认证状态显示不同的按钮
@@ -72,14 +75,14 @@ struct AddPlayerSheetView: View {
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
-                            
+
                         case .authenticated(let profile):
-                            
+
                             Button("addplayer.auth.add".localized()) {
                                 onLogin(profile)
                             }
                             .keyboardShortcut(.defaultAction)
-                            
+
                         case .error:
                             Button("addplayer.auth.retry".localized()) {
                                 Task {
@@ -87,7 +90,7 @@ struct AddPlayerSheetView: View {
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
-                        
+
                         default:
                             ProgressView().controlSize(.small)
                         }
@@ -96,7 +99,8 @@ struct AddPlayerSheetView: View {
                         case .notAuthenticated:
                             Button("addplayer.auth.start_login".localized()) {
                                 Task {
-                                    await yggdrasilAuthService.startAuthentication()
+                                    await yggdrasilAuthService
+                                        .startAuthentication()
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
@@ -108,7 +112,8 @@ struct AddPlayerSheetView: View {
                         case .error:
                             Button("addplayer.auth.retry".localized()) {
                                 Task {
-                                    await yggdrasilAuthService.startAuthentication()
+                                    await yggdrasilAuthService
+                                        .startAuthentication()
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
@@ -116,10 +121,13 @@ struct AddPlayerSheetView: View {
                             ProgressView().controlSize(.small)
                         }
                     } else {
-                        Button("addplayer.create".localized(), action: {
-                            authService.isLoading = false
-                            onAdd()
-                        })
+                        Button(
+                            "addplayer.create".localized(),
+                            action: {
+                                authService.isLoading = false
+                                onAdd()
+                            }
+                        )
                         .disabled(!isPlayerNameValid)
                         .keyboardShortcut(.defaultAction)
                     }
@@ -136,7 +144,6 @@ struct AddPlayerSheetView: View {
             }
         }
     }
-    
 
     // 说明区
     private var playerInfoSection: some View {
@@ -171,17 +178,22 @@ struct AddPlayerSheetView: View {
                         .foregroundColor(.red)
                 }
             }
-            TextField("addplayer.name.placeholder".localized(), text: $playerName)
-                .textFieldStyle(.roundedBorder)
-                .onChange(of: playerName) { _, newValue in
-                    checkPlayerName(newValue)
-                }
+            TextField(
+                "addplayer.name.placeholder".localized(),
+                text: $playerName
+            )
+            .textFieldStyle(.roundedBorder)
+            .onChange(of: playerName) { _, newValue in
+                checkPlayerName(newValue)
+            }
         }
     }
 
     // 校验错误提示
     private var playerNameError: String {
-        let trimmedName = playerName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedName = playerName.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
         if trimmedName.isEmpty {
             return "addplayer.name.error.empty".localized()
         }
@@ -194,9 +206,11 @@ struct AddPlayerSheetView: View {
 
     private func checkPlayerName(_ name: String) {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        isPlayerNameValid = !trimmedName.isEmpty && !playerListViewModel.playerExists(name: trimmedName)
+        isPlayerNameValid =
+            !trimmedName.isEmpty
+            && !playerListViewModel.playerExists(name: trimmedName)
     }
-} 
+}
 
 // Assuming AccountAuthType is defined as:
 enum AccountAuthType: String, CaseIterable, Identifiable {
@@ -229,7 +243,6 @@ extension AccountAuthType {
         default:
             return ("person.crop.circle.badge.minus", .multicolor)
         }
-        
+
     }
 }
-

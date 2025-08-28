@@ -1,8 +1,8 @@
-import SwiftUI
 import MinecraftNBT
+import SwiftUI
 
 struct ProfileSummary: Identifiable {
-    let id: String // 存档文件夹名
+    let id: String  // 存档文件夹名
     let levelName: String
     let seed: String
     let gameType: String
@@ -15,7 +15,7 @@ struct ProfilesView: View {
     let gameName: String
     @State private var saveFolders: [String] = []
     @State private var selectedFolder: String = ""
-    
+
     var savesRoot: String? {
         AppPaths.savesDirectory(gameName: gameName)?.path
     }
@@ -23,9 +23,9 @@ struct ProfilesView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             if saveFolders.isEmpty {
-                
+
                 Text("no.saves".localized()).foregroundColor(.secondary)
-                
+
             } else {
                 HStack {
                     Text("save.info".localized())
@@ -44,13 +44,14 @@ struct ProfilesView: View {
                     .pickerStyle(MenuPickerStyle())
                 }
 
-                
                 if !selectedFolder.isEmpty, let savesRoot = savesRoot {
-                    GameSaveInfoView(levelDatPath: "\(savesRoot)/\(selectedFolder)/level.dat")
-                        .padding(.top, 12)
-                        .id(selectedFolder)
+                    GameSaveInfoView(
+                        levelDatPath: "\(savesRoot)/\(selectedFolder)/level.dat"
+                    )
+                    .padding(.top, 12)
+                    .id(selectedFolder)
                 }
-                
+
             }
         }
         .onAppear(perform: loadSaveFolders)
@@ -63,13 +64,21 @@ struct ProfilesView: View {
             return
         }
         do {
-            let contents = try FileManager.default.contentsOfDirectory(atPath: savesRoot)
+            let contents = try FileManager.default.contentsOfDirectory(
+                atPath: savesRoot
+            )
             let folders = contents.compactMap { name -> (String, Date)? in
                 let fullPath = "\(savesRoot)/\(name)"
                 var isDir: ObjCBool = false
-                if FileManager.default.fileExists(atPath: fullPath, isDirectory: &isDir), isDir.boolValue {
-                    if let attrs = try? FileManager.default.attributesOfItem(atPath: fullPath),
-                       let date = attrs[.modificationDate] as? Date {
+                if FileManager.default.fileExists(
+                    atPath: fullPath,
+                    isDirectory: &isDir
+                ), isDir.boolValue {
+                    if let attrs = try? FileManager.default.attributesOfItem(
+                        atPath: fullPath
+                    ),
+                        let date = attrs[.modificationDate] as? Date
+                    {
                         return (name, date)
                     }
                 }
@@ -86,5 +95,3 @@ struct ProfilesView: View {
         }
     }
 }
-
-

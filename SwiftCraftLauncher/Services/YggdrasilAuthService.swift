@@ -13,18 +13,18 @@ import Combine
 @MainActor
 class YggdrasilAuthService: ObservableObject {
     static let shared = YggdrasilAuthService()
-    
+
     @Published var authState: AuthenticationState = .notAuthenticated
     @Published var isLoading: Bool = false
     private var cancellables = Set<AnyCancellable>()
-    
+
     var openURLHandler: ((URL) -> Void)?
-    
+
     private let clientId = AppConstants.yggdrasilClientId
     private let scope = AppConstants.yggdrasilScope
-    
+
     private init() {}
-    
+
     // MARK: - 认证流程
     func startAuthentication() async {
         await MainActor.run {
@@ -57,7 +57,7 @@ class YggdrasilAuthService: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - 请求设备代码
     private func requestDeviceCodeThrowing() async throws -> YggdrasilDeviceCodeResponse {
         let url = URLConfig.API.Authentication.yggdrasilDeviceCode
@@ -84,7 +84,7 @@ class YggdrasilAuthService: ObservableObject {
             )
         }
     }
-    
+
     // MARK: - 轮询检查令牌
     private func pollForToken(deviceCode: String, interval: Int) async {
         let maxAttempts = 60 // 最多尝试次数
@@ -141,7 +141,7 @@ class YggdrasilAuthService: ObservableObject {
             authState = .error(timeoutError.localizedDescription)
         }
     }
-    
+
     // MARK: - 请求访问令牌
     private func requestTokenThrowing(deviceCode: String) async throws -> YggdrasilTokenResponse {
         let url = URLConfig.API.Authentication.yggdrasilToken
@@ -204,16 +204,16 @@ class YggdrasilAuthService: ObservableObject {
             )
         }
     }
-    
+
     // MARK: - 获取Yggdrasil用户档案
     private func fetchYggdrasilProfileThrowing(accessToken: String, tokenResponse: YggdrasilTokenResponse) async throws -> YggdrasilProfileResponse {
         let url = URLConfig.API.Authentication.yggdrasilUserInfo
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        
+
         let (data, response) = try await URLSession.shared.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
@@ -221,7 +221,7 @@ class YggdrasilAuthService: ObservableObject {
                 level: .popup
             )
         }
-        
+
         guard httpResponse.statusCode == 200 else {
             throw GlobalError.network(
                 chineseMessage: "获取用户档案失败: HTTP \(httpResponse.statusCode)",
@@ -229,16 +229,16 @@ class YggdrasilAuthService: ObservableObject {
                 level: .popup
             )
         }
-        
+
         do {
             // 解析OpenID Connect userinfo响应
             let userInfo = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
-            
+
             // 提取用户信息
             Logger.shared.info(userInfo)
             let sub = userInfo["sub"] as? String ?? ""
             let username = userInfo["preferred_username"] as? String ?? ""
-            
+
             // 解析Yggdrasil profiles（如果存在）
             var selectedProfile: YggdrasilSelectedProfile?
             if let profiles = userInfo["Yggdrasil.PlayerProfiles"] as? [[String: Any]], let firstProfile = profiles.first {
@@ -251,7 +251,7 @@ class YggdrasilAuthService: ObservableObject {
                     demo: firstProfile["demo"] as? Bool
                 )
             }
-            
+
             return YggdrasilProfileResponse(
                 id: sub,
                 username: username,
@@ -268,15 +268,14 @@ class YggdrasilAuthService: ObservableObject {
             )
         }
     }
-    
+
     // MARK: - 登出
     func logout() {
         authState = .notAuthenticated
     }
-    
+
     // MARK: - 取消认证
     func cancelAuthentication() {
         authState = .notAuthenticated
     }
 }
-

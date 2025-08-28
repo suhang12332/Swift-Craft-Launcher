@@ -9,12 +9,14 @@ import SwiftUI
 
 struct ModrinthProjectTitleView: View {
     let projectDetail: ModrinthProjectDetail
-    
+
     var body: some View {
         VStack {
             HStack {
                 // 项目图标
-                if let iconUrl = projectDetail.iconUrl, let url = URL(string: iconUrl) {
+                if let iconUrl = projectDetail.iconUrl,
+                    let url = URL(string: iconUrl)
+                {
                     AsyncImage(url: url) { image in
                         image
                             .resizable()
@@ -34,16 +36,22 @@ struct ModrinthProjectTitleView: View {
                                 .foregroundColor(.secondary)
                         )
                 }
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(projectDetail.title)
                             .font(.headline)
                         Spacer()
                         HStack {
-                            Label("\(projectDetail.downloads)", systemImage: "arrow.down.circle")
+                            Label(
+                                "\(projectDetail.downloads)",
+                                systemImage: "arrow.down.circle"
+                            )
                             Divider().frame(height: 12)
-                            Label("\(projectDetail.followers)", systemImage: "heart")
+                            Label(
+                                "\(projectDetail.followers)",
+                                systemImage: "heart"
+                            )
                         }
                         .font(.caption)
                         .foregroundColor(.secondary)
@@ -55,13 +63,23 @@ struct ModrinthProjectTitleView: View {
                     // 项目标签
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            ForEach(projectDetail.categories, id: \.self) { category in
+                            ForEach(projectDetail.categories, id: \.self) {
+                                category in
                                 Text(category)
                                     .font(.caption2)
-                                    .padding(.horizontal, ModrinthConstants.UI.tagHorizontalPadding)
-                                    .padding(.vertical, ModrinthConstants.UI.tagVerticalPadding)
+                                    .padding(
+                                        .horizontal,
+                                        ModrinthConstants.UI
+                                            .tagHorizontalPadding
+                                    )
+                                    .padding(
+                                        .vertical,
+                                        ModrinthConstants.UI.tagVerticalPadding
+                                    )
                                     .background(Color.gray.opacity(0.15))
-                                    .cornerRadius(ModrinthConstants.UI.tagCornerRadius)
+                                    .cornerRadius(
+                                        ModrinthConstants.UI.tagCornerRadius
+                                    )
 
                             }
                         }
@@ -69,7 +87,7 @@ struct ModrinthProjectTitleView: View {
                 }
                 Spacer()
             }
-            
+
         }
         .cornerRadius(12)
     }

@@ -11,13 +11,13 @@ private enum Constants {
     static let padding: CGFloat = 6
     static let networkTimeout: TimeInterval = 10.0
     static let maxCacheSize = 50
-    
+
     // Minecraft skin coordinates (64x64 format)
     static let headStartX: CGFloat = 8
     static let headStartY: CGFloat = 8
     static let headWidth: CGFloat = 8
     static let headHeight: CGFloat = 8
-    
+
     // Skin layer coordinates (64x64 format)
     static let layerStartX: CGFloat = 40
     static let layerStartY: CGFloat = 8
@@ -29,18 +29,18 @@ private enum Constants {
 
 private actor ImageCache {
     private var cache: [String: CIImage] = [:]
-    
+
     func get(for key: String) -> CIImage? { cache[key] }
-    
+
     func set(_ image: CIImage, for key: String) {
         if cache.count >= Constants.maxCacheSize {
             cache.removeValue(forKey: cache.keys.first ?? "")
         }
         cache[key] = image
     }
-    
+
     func clear() { cache.removeAll() }
-    
+
     // 添加清理方法，避免内存泄漏
     func cleanup() {
         cache.removeAll()
@@ -53,14 +53,14 @@ struct MinecraftSkinUtils: View {
     let type: SkinType
     let src: String
     let size: CGFloat
-    
+
     @State private var image: CIImage?
     @State private var error: String?
     @State private var loadTask: Task<Void, Never>?
-    
+
     private static let ciContext = CIContext()
     private static let imageCache = ImageCache()
-    
+
     init(type: SkinType, src: String, size: CGFloat = 64) {
         self.type = type
         self.src = src
@@ -85,7 +85,7 @@ struct MinecraftSkinUtils: View {
             loadTask = nil
         }
     }
-    
+
     @ViewBuilder
     private func avatarLayers(for image: CIImage) -> some View {
         ZStack {
@@ -105,21 +105,21 @@ struct MinecraftSkinUtils: View {
                 context: Self.ciContext,
                 size: size
             )
-            
+
         }.shadow(color: Color.black.opacity(0.6), radius: 1)
     }
-    
+
     private func loadSkinData() {
         error = nil
-        
+
         // 取消之前的任务
         loadTask?.cancel()
-        
+
         loadTask = Task {
             do {
                 // 检查任务是否被取消
                 try Task.checkCancellation()
-                
+
                 if let cachedImage = await Self.imageCache.get(for: src) {
                     try Task.checkCancellation()
                     await MainActor.run {
@@ -127,11 +127,11 @@ struct MinecraftSkinUtils: View {
                     }
                     return
                 }
-                
+
                 let data = try await loadData()
-                
+
                 try Task.checkCancellation()
-                
+
                 guard let ciImage = CIImage(data: data) else {
                     throw GlobalError.validation(
                         chineseMessage: "无效的图像数据",
@@ -139,7 +139,7 @@ struct MinecraftSkinUtils: View {
                         level: .silent
                     )
                 }
-                
+
                 // Validate skin dimensions
                 guard ciImage.extent.width == 64 && ciImage.extent.height == 64 else {
                     throw GlobalError.validation(
@@ -148,17 +148,17 @@ struct MinecraftSkinUtils: View {
                         level: .silent
                     )
                 }
-                
+
                 try Task.checkCancellation()
-                
+
                 await Self.imageCache.set(ciImage, for: src)
-                
+
                 try Task.checkCancellation()
-                
+
                 await MainActor.run {
                     self.image = ciImage
                 }
-                
+
             } catch is CancellationError {
                 // 任务被取消，不需要处理
                 return
@@ -172,7 +172,7 @@ struct MinecraftSkinUtils: View {
             }
         }
     }
-    
+
     private func loadData() async throws -> Data {
         switch type {
         case .asset:
@@ -181,7 +181,7 @@ struct MinecraftSkinUtils: View {
             return try await loadURLData()
         }
     }
-    
+
     private func loadAssetData() async throws -> Data {
         guard let image = NSImage(named: src),
               let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
@@ -191,7 +191,7 @@ struct MinecraftSkinUtils: View {
                 level: .silent
             )
         }
-        
+
         let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
         guard let data = bitmapRep.representation(using: .png, properties: [:]) else {
             throw GlobalError.validation(
@@ -200,10 +200,10 @@ struct MinecraftSkinUtils: View {
                 level: .silent
             )
         }
-        
+
         return data
     }
-    
+
     private func loadURLData() async throws -> Data {
         guard let url = URL(string: src) else {
             throw GlobalError.validation(
@@ -212,15 +212,15 @@ struct MinecraftSkinUtils: View {
                 level: .silent
             )
         }
-        
+
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = Constants.networkTimeout
         config.timeoutIntervalForResource = Constants.networkTimeout
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        
+
         let session = URLSession(configuration: config)
         let (data, response) = try await session.data(from: url)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.download(
                 chineseMessage: "皮肤下载失败: 无效的HTTP响应",
@@ -228,7 +228,7 @@ struct MinecraftSkinUtils: View {
                 level: .silent
             )
         }
-        
+
         switch httpResponse.statusCode {
         case 200: return data
         case 404:
@@ -261,7 +261,7 @@ struct CropImageView: View {
     let startY: CGFloat
     let context: CIContext
     let size: CGFloat
-    
+
     var body: some View {
         if let cgImage = createCroppedImage() {
             Image(decorative: cgImage, scale: 1.0)
@@ -273,21 +273,19 @@ struct CropImageView: View {
             Color.clear.frame(width: size, height: size)
         }
     }
-    
+
     private func createCroppedImage() -> CGImage? {
         let imageHeight = ciImage.extent.height
         let convertedY = imageHeight - startY - 8
-        
+
         let croppedRect = CGRect(
             x: startX,
             y: convertedY,
             width: 8,
             height: 8
         )
-        
+
         let croppedImage = ciImage.cropped(to: croppedRect)
         return context.createCGImage(croppedImage, from: croppedImage.extent)
     }
 }
-
-

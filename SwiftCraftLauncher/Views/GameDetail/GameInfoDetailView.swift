@@ -38,7 +38,7 @@ struct GameInfoDetailView: View {
     @State private var importErrorMessage: String?
     @StateObject private var cacheManager = CacheManager()
     @State private var error: GlobalError?
-    
+
     var body: some View {
         return VStack {
             headerView
@@ -77,7 +77,10 @@ struct GameInfoDetailView: View {
         .onAppear {
             cacheManager.calculateGameCacheInfo(game.gameName)
         }
-        .alert("error.notification.validation.title".localized(), isPresented: .constant(error != nil)) {
+        .alert(
+            "error.notification.validation.title".localized(),
+            isPresented: .constant(error != nil)
+        ) {
             Button("common.close".localized()) {
                 error = nil
             }
@@ -86,7 +89,7 @@ struct GameInfoDetailView: View {
                 Text(error.chineseMessage)
             }
         }
-        
+
     }
 
     // MARK: - Header
@@ -94,25 +97,36 @@ struct GameInfoDetailView: View {
         HStack(spacing: 12) {
             gameIcon
             VStack(alignment: .leading, spacing: 4) {
-                HStack{
+                HStack {
                     Text(game.gameName)
                         .font(.title)
                         .bold()
                     HStack {
-                        Label("\(cacheManager.cacheInfo.fileCount)",systemImage: "text.document")
+                        Label(
+                            "\(cacheManager.cacheInfo.fileCount)",
+                            systemImage: "text.document"
+                        )
                         Divider().frame(height: 16)
-                        Label(cacheManager.cacheInfo.formattedSize, systemImage: "externaldrive")
-                        
-                    }.foregroundStyle(.secondary).font(.headline).padding(.leading,6)
+                        Label(
+                            cacheManager.cacheInfo.formattedSize,
+                            systemImage: "externaldrive"
+                        )
+
+                    }.foregroundStyle(.secondary).font(.headline).padding(
+                        .leading,
+                        6
+                    )
                 }
-                
+
                 HStack(spacing: 8) {
                     Label(game.gameVersion, systemImage: "gamecontroller.fill")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     Divider().frame(height: 14)
                     Label(
-                        game.modVersion.isEmpty ? game.modLoader : game.modLoader + "-" + game.modVersion,
+                        game.modVersion.isEmpty
+                            ? game.modLoader
+                            : game.modLoader + "-" + game.modVersion,
                         systemImage: "puzzlepiece.extension.fill"
                     )
                     .font(.subheadline)
@@ -127,8 +141,7 @@ struct GameInfoDetailView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 }
-                
-                
+
             }
             Spacer()
             importButton
@@ -139,8 +152,10 @@ struct GameInfoDetailView: View {
 
     private var gameIcon: some View {
         Group {
-            if let iconURL = AppPaths.profileDirectory(gameName: game.gameName)?.appendingPathComponent(game.gameIcon),
-               FileManager.default.fileExists(atPath: iconURL.path) {
+            if let iconURL = AppPaths.profileDirectory(gameName: game.gameName)?
+                .appendingPathComponent(game.gameIcon),
+                FileManager.default.fileExists(atPath: iconURL.path)
+            {
                 AsyncImage(url: iconURL) { phase in
                     switch phase {
                     case .empty:
@@ -153,10 +168,10 @@ struct GameInfoDetailView: View {
                             .cornerRadius(12)
                     case .failure:
                         Image("default_game_icon")
-                    .resizable()
-                    .interpolation(.none)
-                    .frame(width: 64, height: 64)
-                    .cornerRadius(12)
+                            .resizable()
+                            .interpolation(.none)
+                            .frame(width: 64, height: 64)
+                            .cornerRadius(12)
                     @unknown default:
                         EmptyView()
                     }
@@ -175,7 +190,7 @@ struct GameInfoDetailView: View {
         Button {
             showDeleteAlert = true
         } label: {
-//            Image(systemName: "trash.fill")
+            //            Image(systemName: "trash.fill")
             Text("common.delete".localized()).font(.subheadline)
         }
         .buttonStyle(.borderedProminent)
@@ -192,7 +207,9 @@ struct GameInfoDetailView: View {
             .keyboardShortcut(.defaultAction)
             Button("common.cancel".localized(), role: .cancel) {}
         } message: {
-            Text(String(format: "delete.game.confirm".localized(), game.gameName))
+            Text(
+                String(format: "delete.game.confirm".localized(), game.gameName)
+            )
         }
     }
 
@@ -207,10 +224,14 @@ struct GameInfoDetailView: View {
     private var settingsButton: some View {
         Group {
             if hasSaves {
-                Button { 
+                Button {
                     showAdvancedSettings.toggle()
                 } label: {
-                    Text((showAdvancedSettings ? "common.profile.save" : "common.settings").localized())
+                    Text(
+                        (showAdvancedSettings
+                            ? "common.profile.save" : "common.settings")
+                            .localized()
+                    )
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(Color.accentColor)
@@ -218,14 +239,18 @@ struct GameInfoDetailView: View {
             }
         }
     }
-    
+
     private var hasSaves: Bool {
-        guard let savesDir = AppPaths.savesDirectory(gameName: game.gameName) else {
+        guard let savesDir = AppPaths.savesDirectory(gameName: game.gameName)
+        else {
             return false
         }
-        
+
         do {
-            let contents = try FileManager.default.contentsOfDirectory(at: savesDir, includingPropertiesForKeys: nil)
+            let contents = try FileManager.default.contentsOfDirectory(
+                at: savesDir,
+                includingPropertiesForKeys: nil
+            )
             return !contents.isEmpty
         } catch {
             return false
@@ -314,21 +339,25 @@ struct GameInfoDetailView: View {
             do {
                 // 先切换到其他游戏或资源页面，避免删除后页面重新加载
                 await MainActor.run {
-                    if let firstGame = gameRepository.games.first(where: { $0.id != game.id }) {
+                    if let firstGame = gameRepository.games.first(where: {
+                        $0.id != game.id
+                    }) {
                         selectedItem = .game(firstGame.id)
                     } else {
                         selectedItem = .resource(.mod)
                     }
                 }
-                
+
                 // 先删除游戏文件夹
-                if let profileDir = AppPaths.profileDirectory(gameName: game.gameName) {
+                if let profileDir = AppPaths.profileDirectory(
+                    gameName: game.gameName
+                ) {
                     try FileManager.default.removeItem(at: profileDir)
                 }
-                
+
                 // 然后删除游戏记录
                 try await gameRepository.deleteGame(id: game.id)
-                
+
                 Logger.shared.info("成功删除游戏: \(game.gameName)")
             } catch {
                 let globalError = GlobalError.fileSystem(

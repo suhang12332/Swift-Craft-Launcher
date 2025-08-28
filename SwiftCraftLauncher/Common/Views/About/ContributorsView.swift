@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct ContributorsView: View {
+public struct ContributorsView: View { // swiftlint:disable:this type_body_length
     @StateObject private var viewModel = ContributorsViewModel()
 
     public init() {}
@@ -23,7 +23,7 @@ public struct ContributorsView: View {
         StaticContributor(name: "ZeroSnow", url: "https://github.com/chencomcdyun",avatar: "🎨", contributions: [.design]),
         StaticContributor(name: "小希Lusiey_", url: "",avatar: "👩‍💻", contributions: [.test]),
         StaticContributor(name: "骑老奶奶过马路", url: "",avatar: "👩‍💻", contributions: [.test]),
-        StaticContributor(name: "laiTM", url: "",avatar: "👩‍💻", contributions: [.test])
+        StaticContributor(name: "laiTM", url: "",avatar: "👩‍💻", contributions: [.test]),
     ]
 
     // 贡献类型枚举
