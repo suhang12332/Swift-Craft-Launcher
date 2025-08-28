@@ -354,13 +354,14 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         )
     }
 
-    private func downloadAssetIndex(manifest: MinecraftVersionManifest)
-        async throws -> DownloadedAssetIndex
-    {
+    private func downloadAssetIndex(
+        manifest: MinecraftVersionManifest
+    ) async throws -> DownloadedAssetIndex {
 
         let destinationURL = AppPaths.metaDirectory.appendingPathComponent(
             "assets/indexes"
-        ).appendingPathComponent("\(manifest.assetIndex.id).json")
+        )
+        .appendingPathComponent("\(manifest.assetIndex.id).json")
 
         do {
             _ = try await DownloadManager.downloadFile(
@@ -394,14 +395,15 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         }
     }
 
-    private func downloadLoggingConfig(manifest: MinecraftVersionManifest)
-        async throws
-    {
-
+    private func downloadLoggingConfig(
+        manifest: MinecraftVersionManifest
+    ) async throws {
         let loggingFile = manifest.logging.client.file
         let versionDir = AppPaths.metaDirectory.appendingPathComponent(
             "versions"
-        ).appendingPathComponent(manifest.id)
+        )
+        .appendingPathComponent(manifest.id)
+
         let destinationURL = versionDir.appendingPathComponent(loggingFile.id)
 
         do {

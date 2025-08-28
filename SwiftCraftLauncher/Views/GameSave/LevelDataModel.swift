@@ -240,7 +240,8 @@ class LevelDataModel: ObservableObject {
             case let compound as NBTCompound:
                 let inner = compound.contents.map {
                     "\($0.key): \(formatNBTValue($0.value))"
-                }.joined(separator: ", ")
+                }
+                .joined(separator: ", ")
                 return "{\(inner)}"
             default: return String(describing: value)
             }

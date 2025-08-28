@@ -272,7 +272,8 @@ public struct ContributorsView: View {  // swiftlint:disable:this type_body_leng
                 // 箭头
                 Image("github-mark")
                     .renderingMode(.template)
-                    .resizable().frame(width: 16, height: 16)
+                    .resizable()
+                    .frame(width: 16, height: 16)
                     .imageScale(.medium)
                     .foregroundColor(.secondary)
             }

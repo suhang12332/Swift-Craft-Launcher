@@ -71,7 +71,8 @@ private struct PlayerSelectorLabel: View {
                 PlayerAvatarView(player: selectedPlayer, size: 30)
                 Text(selectedPlayer.name)
                     .foregroundColor(.primary)
-                    .font(.system(size: 13).bold()).lineLimit(1)
+                    .font(.system(size: 13).bold())
+                    .lineLimit(1)
             }
         } else {
             EmptyView()

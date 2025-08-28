@@ -249,14 +249,15 @@ struct CategorySectionView: View {
         }
     }
 
-    private func sortVersionKeys(_ keys: Dictionary<String, [FilterItem]>.Keys)
-        -> [String]
-    {
+    private func sortVersionKeys(
+        _ keys: Dictionary<String, [FilterItem]>.Keys
+    ) -> [String] {
         keys.sorted { key1, key2 in
             let components1 = key1.split(separator: ".").compactMap { Int($0) }
             let components2 = key2.split(separator: ".").compactMap { Int($0) }
             return components1.lexicographicallyPrecedes(components2)
-        }.reversed()
+        }
+        .reversed()
     }
 
     // MARK: - Actions

@@ -104,7 +104,8 @@ struct PathBreadcrumbView: View {
             ForEach(0..<headCount, id: \.self) { idx in
                 if idx > 0 {
                     Image(systemName: "chevron.right")
-                        .font(.caption).bold()
+                        .font(.caption)
+                        .bold()
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 6)
                 }
@@ -114,7 +115,8 @@ struct PathBreadcrumbView: View {
             if showEllipsis {
                 if headCount > 0 {
                     Image(systemName: "chevron.right")
-                        .font(.caption).bold()
+                        .font(.caption)
+                        .bold()
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 6)
                 }
@@ -126,7 +128,8 @@ struct PathBreadcrumbView: View {
             ForEach(startTail..<count, id: \.self) { idx in
                 if idx > headCount || (showEllipsis && idx == startTail) {
                     Image(systemName: "chevron.right")
-                        .font(.caption).bold()
+                        .font(.caption)
+                        .bold()
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 6)
                 }

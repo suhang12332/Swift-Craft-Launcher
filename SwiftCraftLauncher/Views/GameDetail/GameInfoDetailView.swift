@@ -265,7 +265,9 @@ struct GameInfoDetailView: View {
                         || res.title.localizedCaseInsensitiveContains(
                             searchTextForResource
                         ))
-                }.map { ModrinthProject.from(detail: $0) }
+                }
+                .map { ModrinthProject.from(detail: $0) }
+
                 ForEach(filteredResources, id: \.projectId) { mod in
                     // todo mod的作者需要修改或者不显示
                     ModrinthDetailCardView(
@@ -300,7 +302,8 @@ struct GameInfoDetailView: View {
             text: $searchTextForResource,
             placement: .toolbar,
             prompt: "search.resources".localized()
-        ).help("search.resources".localized())
+        )
+        .help("search.resources".localized())
     }
 
     private func scanResources() {

@@ -76,7 +76,8 @@ struct ModrinthDetailView: View {
             text: $searchText,
             placement: .toolbar,
             prompt: "search.resources".localized()
-        ).help("search.resources".localized())
+        )
+        .help("search.resources".localized())
         .onChange(of: searchText) { _, _ in
             debounceSearch()
         }

@@ -35,7 +35,8 @@ public struct GeneralSettingsView: View {
                     if newValue != LanguageManager.shared.selectedLanguage {
                         showingRestartAlert = true
                     }
-                }.confirmationDialog(
+                }
+                .confirmationDialog(
                     "settings.language.restart.title".localized(),
                     isPresented: $showingRestartAlert,
                     titleVisibility: .visible
@@ -102,7 +103,9 @@ public struct GeneralSettingsView: View {
                     // 当前内存值显示（右对齐，固定宽度）
                     Text("\(gameSettings.concurrentDownloads)").font(
                         .subheadline
-                    ).foregroundColor(.secondary).fixedSize()
+                    )
+                    .foregroundColor(.secondary)
+                    .fixedSize()
                 }.frame(width: 200)
                     .gridColumnAlignment(.leading)
                     .labelsHidden()

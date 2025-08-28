@@ -447,10 +447,12 @@ private func groupedVersions(_ versions: [String]) -> [String: [String]] {
             // 移除所有非数字字符后比较
             let v1 = version1.components(
                 separatedBy: CharacterSet.decimalDigits.inverted
-            ).joined()
+            )
+            .joined()
             let v2 = version2.components(
                 separatedBy: CharacterSet.decimalDigits.inverted
-            ).joined()
+            )
+            .joined()
             return v1 > v2
         }
     }

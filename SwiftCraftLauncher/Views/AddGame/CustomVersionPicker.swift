@@ -24,7 +24,8 @@ struct CustomVersionPicker: View {
             let lhs = $0.key.split(separator: ".").compactMap { Int($0) }
             let rhs = $1.key.split(separator: ".").compactMap { Int($0) }
             return lhs.lexicographicallyPrecedes(rhs)
-        }.reversed()
+        }
+        .reversed()
     }
 
     private let columns = Array(

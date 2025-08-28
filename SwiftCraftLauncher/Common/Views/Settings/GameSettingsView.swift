@@ -41,7 +41,8 @@ public struct GameSettingsView: View {
                     ).labelsHidden()
                     Text("settings.dependencies.description".localized()).font(
                         .footnote
-                    ).foregroundColor(.secondary)
+                    )
+                    .foregroundColor(.secondary)
                 }
                 .gridColumnAlignment(.leading)
             }

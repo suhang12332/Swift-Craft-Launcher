@@ -155,7 +155,9 @@ struct GameFormView: View {
                 }
             } else if let iconURL = AppPaths.profileDirectory(
                 gameName: gameName
-            )?.appendingPathComponent(AppConstants.defaultGameIcon),
+            )?
+            .appendingPathComponent(AppConstants.defaultGameIcon),
+
                 FileManager.default.fileExists(atPath: iconURL.path)
             {
                 AsyncImage(url: iconURL) { phase in

@@ -160,7 +160,8 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
                                 .localized(),
                             isOn: $enableOptimizations
                         )
-                        .toggleStyle(SwitchToggleStyle()).controlSize(.mini)
+                        .toggleStyle(SwitchToggleStyle())
+                        .controlSize(.mini)
                         .font(.subheadline)
 
                         Toggle(
@@ -168,7 +169,9 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
                             isOn: $enableAikarFlags
                         )
                         .toggleStyle(SwitchToggleStyle())
-                        .disabled(!enableOptimizations).controlSize(.mini).font(
+                        .disabled(!enableOptimizations)
+                        .controlSize(.mini)
+                        .font(
                             .subheadline
                         )
                         Toggle(
@@ -176,7 +179,8 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
                                 .localized(),
                             isOn: $enableClientOptimizations
                         )
-                        .toggleStyle(SwitchToggleStyle()).controlSize(.mini)
+                        .toggleStyle(SwitchToggleStyle())
+                        .controlSize(.mini)
                         .font(.subheadline)
                         .disabled(!enableOptimizations)
 
@@ -185,7 +189,8 @@ struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_leng
                                 .localized(),
                             isOn: $enableMemoryOptimizations
                         )
-                        .toggleStyle(SwitchToggleStyle()).controlSize(.mini)
+                        .toggleStyle(SwitchToggleStyle())
+                        .controlSize(.mini)
                         .font(.subheadline)
                         .disabled(!enableOptimizations)
 

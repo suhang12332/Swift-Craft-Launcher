@@ -180,7 +180,8 @@ struct MinecraftLaunchCommandBuilder {
                 }
             }
             return paths
-        }.flatMap { $0 }
+        }
+        .flatMap { $0 }
 
         // 3. 拼接 manifest.libraries + modClassPath（原始顺序）+ clientJarPath
         let classpathList = manifestLibraryPaths + [clientJarPath] + modClassPathArray
