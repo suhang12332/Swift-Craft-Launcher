@@ -13,18 +13,22 @@ public struct SettingsView: View {
     public var body: some View {
         TabView {
             GeneralSettingsView()
+                .padding(.horizontal, 40)
                 .tabItem {
                     Label("settings.general.tab".localized(), systemImage: "gearshape")
                 }
             PlayerSettingsView()
+                .padding(.horizontal, 40)
                 .tabItem {
                     Label("settings.player.tab".localized(), systemImage: "person.crop.circle")
                 }
             GameSettingsView()
+                .padding(.horizontal, 40)
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
             ProxySettingsView()
+                .padding(.horizontal, 40)
                 .tabItem {
                     Label("settings.proxy.tab".localized(), systemImage: "network")
                 }

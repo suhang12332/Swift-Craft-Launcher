@@ -16,10 +16,10 @@ public struct GeneralSettingsView: View {
     public init() {}
     
     public var body: some View {
-        Grid(alignment: .trailing) {
-            GridRow {
-                Text("settings.language.picker".localized()) // 长标题
-                    .gridColumnAlignment(.trailing) // 右对齐
+        VStack(spacing: 20) {
+            HStack {
+                Text("settings.language.picker".localized())
+                    .frame(width: 200, alignment: .trailing)
                 Picker("", selection: $selectedLanguage) {
                     ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
                         Text(name).tag(code)
@@ -28,10 +28,8 @@ public struct GeneralSettingsView: View {
                 .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
                     view.fixedSize()
                 }
-                .gridColumnAlignment(.leading)
                 .labelsHidden()
                 .onChange(of: selectedLanguage) { oldValue, newValue in
-                    // 如果是取消操作导致的语言恢复，则不触发重启提示
                     if newValue != LanguageManager.shared.selectedLanguage {
                         showingRestartAlert = true
                     }
@@ -41,7 +39,6 @@ public struct GeneralSettingsView: View {
                     titleVisibility: .visible
                 ) {
                     Button("settings.language.restart.confirm".localized(), role: .destructive) {
-                        // 在重启前更新 Sparkle 的语言设置
                         sparkleUpdateService.updateSparkleLanguage(selectedLanguage)
                         LanguageManager.shared.selectedLanguage = selectedLanguage
                         restartAppSafely()
@@ -53,17 +50,19 @@ public struct GeneralSettingsView: View {
                 } message: {
                     Text("settings.language.restart.message".localized())
                 }
-            }.padding(.bottom, 20)
+                Spacer()
+            }
             
-            GridRow {
-                Text("settings.theme.picker".localized()) // 长标题
-                    .gridColumnAlignment(.trailing) // 右对齐
+            HStack {
+                Text("settings.theme.picker".localized())
+                    .frame(width: 200, alignment: .trailing)
                 ThemeSelectorView(selectedTheme: $general.themeMode)
-                    .gridColumnAlignment(.leading)
-            }.padding(.bottom, 20)
+                Spacer()
+            }
             
-            GridRow {
-                Text("settings.launcher_working_directory".localized()).gridColumnAlignment(.trailing)
+            HStack {
+                Text("settings.launcher_working_directory".localized())
+                    .frame(width: 200, alignment: .trailing)
                 DirectorySettingRow(
                     title: "settings.launcher_working_directory".localized(),
                     path: general.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : general.launcherWorkingDirectory,
@@ -76,11 +75,12 @@ public struct GeneralSettingsView: View {
                 .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
                         handleDirectoryImport(result)
                 }
-                
-            }.padding(.bottom, 20)
+                Spacer()
+            }
             
-            GridRow {
-                Text("settings.concurrent_downloads.label".localized()).gridColumnAlignment(.trailing) // 右对齐
+            HStack {
+                Text("settings.concurrent_downloads.label".localized())
+                    .frame(width: 200, alignment: .trailing)
                 HStack {
                     Slider(
                         value: Binding(
@@ -88,49 +88,46 @@ public struct GeneralSettingsView: View {
                                 Double(gameSettings.concurrentDownloads)
                             },
                             set: {
-                                gameSettings.concurrentDownloads = Int(
-                                    $0
-                                )
+                                gameSettings.concurrentDownloads = Int($0)
                             }
                         ),
                         in: 1...20
-//                        label: { EmptyView() },
-//                        minimumValueLabel: { EmptyView() },
-//                        maximumValueLabel: { EmptyView() }
                     ).controlSize(.mini)
                     .animation(.easeOut(duration: 0.5), value: gameSettings.concurrentDownloads)
-                    // 当前内存值显示（右对齐，固定宽度）
-                    Text("\(gameSettings.concurrentDownloads)").font(
-                        .subheadline
-                    ).foregroundColor(.secondary).fixedSize()
+                    Text("\(gameSettings.concurrentDownloads)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .fixedSize()
                 }.frame(width: 200)
-                    .gridColumnAlignment(.leading)
-                    .labelsHidden()
-            }
-            .padding(.bottom, 20)
-            
-            GridRow {
-                Text("settings.minecraft_versions_url.label".localized()).gridColumnAlignment(.trailing)
-                TextField("", text: $gameSettings.minecraftVersionManifestURL).focusable(false)
-                    .fixedSize()
-                
-                
-            }
-            GridRow {
-                Text("settings.modrinth_api_url.label".localized()).gridColumnAlignment(.trailing)
-                TextField("", text: $gameSettings.modrinthAPIBaseURL).focusable(false)
-                    .fixedSize()
-                
-                
-            }
-            GridRow {
-                Text("settings.git_proxy_url.label".localized()).gridColumnAlignment(.trailing)
-                TextField("", text: $gameSettings.gitProxyURL).focusable(false)
-                    .fixedSize()
-                
+                Spacer()
             }
             
+            HStack {
+                Text("settings.minecraft_versions_url.label".localized())
+                    .frame(width: 200, alignment: .trailing)
+                TextField("", text: $gameSettings.minecraftVersionManifestURL)
+                    .focusable(false)
+                    .fixedSize()
+                Spacer()
+            }
             
+            HStack {
+                Text("settings.modrinth_api_url.label".localized())
+                    .frame(width: 200, alignment: .trailing)
+                TextField("", text: $gameSettings.modrinthAPIBaseURL)
+                    .focusable(false)
+                    .fixedSize()
+                Spacer()
+            }
+            
+            HStack {
+                Text("settings.git_proxy_url.label".localized())
+                    .frame(width: 200, alignment: .trailing)
+                TextField("", text: $gameSettings.gitProxyURL)
+                    .focusable(false)
+                    .fixedSize()
+                Spacer()
+            }
         }
         .alert("common.error".localized(), isPresented: $showingErrorAlert) {
             Button("common.ok".localized()) { }
