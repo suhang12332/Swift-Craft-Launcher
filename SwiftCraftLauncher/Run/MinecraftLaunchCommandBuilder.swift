@@ -23,7 +23,7 @@ struct MinecraftLaunchCommandBuilder {
             return []
         }
     }
-    
+
     /// 构建启动命令（抛出异常版本）
     /// - Throws: GlobalError 当构建失败时
     static func buildThrowing(
@@ -34,7 +34,7 @@ struct MinecraftLaunchCommandBuilder {
     ) throws -> [String] {
         // 验证并获取路径
         let paths = try validateAndGetPaths(gameInfo: gameInfo, manifest: manifest)
-        
+
         // 构建 classpath
         let classpath = buildClasspath(
             manifest.libraries,
@@ -60,7 +60,7 @@ struct MinecraftLaunchCommandBuilder {
             "natives_directory": paths.nativesDir,
             "launcher_name": Bundle.main.appName,
             "launcher_version": launcherVersion,
-            "classpath": classpath
+            "classpath": classpath,
         ]
 
         // 优先解析 arguments 字段
@@ -73,7 +73,7 @@ struct MinecraftLaunchCommandBuilder {
         let xmsArg = "-Xms${xms}M"
         let xmxArg = "-Xmx${xmx}M"
         jvmArgs.insert(contentsOf: [xmsArg, xmxArg], at: 0)
-        
+
         // 添加 macOS 特定的 JVM 参数
         jvmArgs.insert("-XstartOnFirstThread", at: 0)
 
@@ -91,16 +91,18 @@ struct MinecraftLaunchCommandBuilder {
         let allArgs = jvmArgs + [gameInfo.mainClass] + gameArgs
         return allArgs
     }
-    
+
     /// 验证并获取必要的路径
     /// - Parameters:
     ///   - gameInfo: 游戏信息
     ///   - manifest: 版本清单
     /// - Returns: 验证后的路径集合
     /// - Throws: GlobalError 当路径无效时
-    private static func validateAndGetPaths(gameInfo: GameVersionInfo, manifest: MinecraftVersionManifest) throws -> (nativesDir: String, librariesDir: URL, assetsDir: String, gameDir: String, clientJarPath: String) {
-        
-        
+    private static func validateAndGetPaths(
+        gameInfo: GameVersionInfo,
+        manifest: MinecraftVersionManifest
+        // swiftlint:disable:next large_tuple
+    ) throws -> (nativesDir: String, librariesDir: URL, assetsDir: String, gameDir: String, clientJarPath: String) {
         // 验证游戏目录
         let gameDir = AppPaths.profileDirectory(gameName: gameInfo.gameName).path
         
@@ -173,7 +175,8 @@ struct MinecraftLaunchCommandBuilder {
                 }
             }
             return paths
-        }.flatMap { $0 }
+        }
+        .flatMap { $0 }
 
         // 3. 拼接 manifest.libraries + modClassPath（原始顺序）+ clientJarPath
         let classpathList = manifestLibraryPaths + [clientJarPath] + modClassPathArray
@@ -203,4 +206,3 @@ struct LaunchEnvironment {
     let osName: String
     let arch: String
 }
-

@@ -6,7 +6,7 @@ import SwiftUI
 struct LocalResourceInstaller {
     enum ResourceType {
         case mod, datapack, resourcepack
-        
+
         var directoryName: String {
             switch self {
             case .mod: return "mods"
@@ -14,13 +14,13 @@ struct LocalResourceInstaller {
             case .resourcepack: return "resourcepacks"
             }
         }
-        
+
         /// 支持的文件扩展名 - 统一支持 jar 和 zip
         var allowedExtensions: [String] {
             return ["jar", "zip"]
         }
     }
-    
+
     /// 安装本地资源文件到指定目录
     /// - Parameters:
     ///   - fileURL: 用户选中的本地文件
@@ -37,7 +37,7 @@ struct LocalResourceInstaller {
                 level: .notification
             )
         }
-        
+
         // 目标目录
         var isDir: ObjCBool = false
         guard FileManager.default.fileExists(atPath: gameRoot.path, isDirectory: &isDir), isDir.boolValue else {
@@ -47,7 +47,7 @@ struct LocalResourceInstaller {
                 level: .notification
             )
         }
-        
+
         // 处理安全作用域
         let needsSecurity = fileURL.startAccessingSecurityScopedResource()
         defer { if needsSecurity { fileURL.stopAccessingSecurityScopedResource() } }
@@ -58,15 +58,15 @@ struct LocalResourceInstaller {
                 level: .notification
             )
         }
-        
+
         // 目标文件路径
         let destURL = gameRoot.appendingPathComponent(fileURL.lastPathComponent)
-        
+
         // 如果已存在，先移除
         if FileManager.default.fileExists(atPath: destURL.path) {
             try? FileManager.default.removeItem(at: destURL)
         }
-        
+
         do {
             try FileManager.default.copyItem(at: fileURL, to: destURL)
         } catch {
@@ -93,7 +93,7 @@ extension LocalResourceInstaller {
                 Button {
                     showImporter = true
                 } label: {
-//                    Image(systemName: "square.and.arrow.down")
+                    // Image(systemName: "square.and.arrow.down")
                     Text("common.import".localized()).font(.subheadline)
                 }
                 .buttonStyle(.borderedProminent)
@@ -124,10 +124,10 @@ extension LocalResourceInstaller {
                             ))
                             return
                         }
-                        
+
                         // 简化扩展名校验 - 统一支持 jar 和 zip
                         let allowedExtensions = ["jar", "zip"]
-                        
+
                         do {
                             guard let ext = fileURL.pathExtension.lowercased() as String?, allowedExtensions.contains(ext) else {
                                 throw GlobalError.resource(
@@ -136,7 +136,7 @@ extension LocalResourceInstaller {
                                     level: .notification
                                 )
                             }
-                            
+
                             try LocalResourceInstaller.install(
                                 fileURL: fileURL,
                                 resourceType: .mod, // 这里 resourceType 只用于 install 的 allowedExtensions 校验，已在上面手动校验
@@ -146,7 +146,7 @@ extension LocalResourceInstaller {
                         } catch {
                             errorHandler.handle(error)
                         }
-                        
+
                     case .failure(let error):
                         errorHandler.handle(GlobalError.fileSystem(
                             chineseMessage: "文件选择失败：\(error.localizedDescription)",
@@ -158,5 +158,4 @@ extension LocalResourceInstaller {
             }
         }
     }
-} 
- 
+}

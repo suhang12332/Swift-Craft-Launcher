@@ -27,32 +27,32 @@ private struct VersionHeader: View {
     @Binding var selectedGameVersion: String?
     @Binding var showingVersionFilter: Bool
     let availableGameVersions: [String]
-    
+
     var body: some View {
         HStack {
             Text("versions.name".localized())
                 .font(.headline.bold())
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             GameVersionFilter(
                 selectedGameVersion: $selectedGameVersion,
                 showingVersionFilter: $showingVersionFilter,
                 availableGameVersions: availableGameVersions
             )
             .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             Text("versions.platforms".localized())
                 .font(.headline.bold())
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             Text("versions.date".localized())
                 .font(.headline.bold())
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             Text("versions.downloads".localized())
                 .font(.headline.bold())
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             Text("versions.operate".localized())
                 .font(.headline.bold())
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -66,13 +66,15 @@ private struct GameVersionFilter: View {
     @Binding var selectedGameVersion: String?
     @Binding var showingVersionFilter: Bool
     let availableGameVersions: [String]
-    
+
     var body: some View {
         HStack {
             Text("versions.game_versions".localized())
                 .font(.headline.bold())
-            
-            Button(action: { showingVersionFilter = true }) {
+
+            Button {
+                showingVersionFilter = true
+            } label: {
                 HStack(spacing: 4) {
                     if let selected = selectedGameVersion {
                         Text(selected)
@@ -108,7 +110,7 @@ private struct GameVersionFilterPopover: View {
     @Binding var selectedGameVersion: String?
     @Binding var showingVersionFilter: Bool
     let availableGameVersions: [String]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -116,17 +118,17 @@ private struct GameVersionFilterPopover: View {
                     .font(.headline)
                 Spacer()
                 if selectedGameVersion != nil {
-                    Button(action: {
+                    Button {
                         selectedGameVersion = nil
                         showingVersionFilter = false
-                    }) {
+                    } label: {
                         Image(systemName: "xmark.circle.fill")
                     }
                     .buttonStyle(.plain)
                     .foregroundColor(.primary)
                 }
             }
-            
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     ForEach(groupedGameVersions(availableGameVersions).keys.sorted(by: versionSort), id: \.self) { majorVersion in
@@ -143,15 +145,13 @@ private struct GameVersionFilterPopover: View {
         .padding()
         .frame(width: Constants.filterPopoverWidth, height: Constants.filterPopoverHeight)
     }
-    
+
     private func versionSort(_ version1: String, _ version2: String) -> Bool {
         let components1 = version1.split(separator: ".").compactMap { Int($0) }
         let components2 = version2.split(separator: ".").compactMap { Int($0) }
-        
-        for i in 0..<min(components1.count, components2.count) {
-            if components1[i] != components2[i] {
-                return components1[i] > components2[i]
-            }
+
+        for i in 0..<min(components1.count, components2.count) where components1[i] != components2[i] {
+            return components1[i] > components2[i]
         }
         return components1.count > components2.count
     }
@@ -162,19 +162,19 @@ private struct GameVersionGroup: View {
     let versions: [String]
     @Binding var selectedGameVersion: String?
     @Binding var showingVersionFilter: Bool
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(majorVersion)
                 .font(.headline.bold())
                 .foregroundColor(.primary)
-            
+
             FlowLayout(spacing: Constants.tagSpacing) {
                 ForEach(versions, id: \.self) { version in
-                    Button(action: {
+                    Button {
                         selectedGameVersion = version
                         showingVersionFilter = false
-                    }) {
+                    } label: {
                         Text(version)
                             .font(.caption)
                             .padding(.horizontal, Constants.tagPadding)
@@ -196,34 +196,34 @@ private struct VersionRow: View {
     let version: ModrinthProjectDetailVersion
     @Binding var gameVersionsPopoverId: String?
     @Binding var platformsPopoverId: String?
-    
+
     var body: some View {
         HStack {
             VersionNameSection(version: version)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             GameVersionsSection(
                 version: version,
                 gameVersionsPopoverId: $gameVersionsPopoverId
             )
             .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             PlatformsSection(
                 version: version,
                 platformsPopoverId: $platformsPopoverId
             )
             .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             Text(version.datePublished, style: .relative)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             Text("\(version.downloads)")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             VersionActions()
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -240,7 +240,7 @@ private struct VersionRow: View {
 
 private struct VersionNameSection: View {
     let version: ModrinthProjectDetailVersion
-    
+
     var body: some View {
         HStack {
             versionTypeIcon
@@ -253,7 +253,7 @@ private struct VersionNameSection: View {
             }
         }
     }
-    
+
     private var versionTypeIcon: some View {
         Group {
             if version.versionType == "release" {
@@ -272,7 +272,7 @@ private struct VersionNameSection: View {
 private struct GameVersionsSection: View {
     let version: ModrinthProjectDetailVersion
     @Binding var gameVersionsPopoverId: String?
-    
+
     var body: some View {
         HStack {
             FlowLayout(spacing: Constants.tagSpacing) {
@@ -280,7 +280,7 @@ private struct GameVersionsSection: View {
                     VersionTag(text: gameVersion)
                 }
             }
-            
+
             if version.gameVersions.count > Constants.maxVisibleGameVersions {
                 MoreVersionsButton(
                     count: version.gameVersions.count - Constants.maxVisibleGameVersions,
@@ -299,12 +299,12 @@ private struct GameVersionsSection: View {
 
 private struct GameVersionsPopover: View {
     let version: ModrinthProjectDetailVersion
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("versions.game_versions".localized())
                 .font(.headline)
-            
+
             ScrollView {
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(groupedGameVersions(version.gameVersions).keys.sorted(by: >), id: \.self) { majorVersion in
@@ -312,7 +312,7 @@ private struct GameVersionsPopover: View {
                             Text(majorVersion)
                                 .font(.headline.bold())
                                 .foregroundColor(.secondary)
-                            
+
                             FlowLayout(spacing: Constants.tagSpacing) {
                                 ForEach(groupedGameVersions(version.gameVersions)[majorVersion] ?? [], id: \.self) { gameVersion in
                                     VersionTag(text: gameVersion)
@@ -331,7 +331,7 @@ private struct GameVersionsPopover: View {
 private struct PlatformsSection: View {
     let version: ModrinthProjectDetailVersion
     @Binding var platformsPopoverId: String?
-    
+
     var body: some View {
         HStack {
             FlowLayout(spacing: Constants.tagSpacing) {
@@ -339,7 +339,7 @@ private struct PlatformsSection: View {
                     VersionTag(text: loader)
                 }
             }
-            
+
             if version.loaders.count > Constants.maxVisibleLoaders {
                 MoreVersionsButton(
                     count: version.loaders.count - Constants.maxVisibleLoaders,
@@ -358,7 +358,7 @@ private struct PlatformsSection: View {
 
 private struct PlatformsPopover: View {
     let version: ModrinthProjectDetailVersion
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("versions.platforms".localized())
@@ -376,7 +376,7 @@ private struct PlatformsPopover: View {
 
 private struct VersionTag: View {
     let text: String
-    
+
     var body: some View {
         Text(text)
             .font(.caption)
@@ -390,7 +390,7 @@ private struct VersionTag: View {
 private struct MoreVersionsButton: View {
     let count: Int
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Text("+\(count)")
@@ -418,7 +418,7 @@ private struct VersionActions: View {
 // MARK: - Version Grouping
 private func groupedGameVersions(_ versions: [String]) -> [String: [String]] {
     var groups: [String: [String]] = [:]
-    
+
     for version in versions {
         let groupKey = getVersionGroupKey(version)
         if groups[groupKey] == nil {
@@ -426,7 +426,7 @@ private func groupedGameVersions(_ versions: [String]) -> [String: [String]] {
         }
         groups[groupKey]?.append(version)
     }
-    
+
     // 对每个组内的版本进行排序
     for key in groups.keys {
         groups[key]?.sort { version1, version2 in
@@ -435,7 +435,7 @@ private func groupedGameVersions(_ versions: [String]) -> [String: [String]] {
             return v1 > v2
         }
     }
-    
+
     return groups
 }
 
@@ -445,19 +445,19 @@ private func getVersionGroupKey(_ version: String) -> String {
         let year = String(version.prefix(2))
         return "Snapshot \(year)"
     }
-    
+
     // 处理预发布版本 (如 1.20.4-pre1)
     if version.contains("-pre") {
         let baseVersion = version.components(separatedBy: "-pre")[0]
         return getMajorVersion(from: baseVersion)
     }
-    
+
     // 处理候选版本 (如 1.20.4-rc1)
     if version.contains("-rc") {
         let baseVersion = version.components(separatedBy: "-rc")[0]
         return getMajorVersion(from: baseVersion)
     }
-    
+
     // 处理正式版本 (如 1.20.4)
     return getMajorVersion(from: version)
 }
@@ -479,27 +479,27 @@ struct ModrinthProjectDetailVersionView: View {
     @Binding var currentPage: Int
     @Binding var versionTotal: Int
     var projectId: String
-    
+
     @State private var gameVersionsPopoverId: String?
     @State private var platformsPopoverId: String?
     @State private var selectedGameVersion: String?
     @State private var showingVersionFilter = false
-    
+
     private var filteredVersions: [ModrinthProjectDetailVersion] {
         allVersions
     }
-    
+
     private var paginatedVersions: [ModrinthProjectDetailVersion] {
         let startIndex = (currentPage - 1) * Constants.itemsPerPage
         let endIndex = min(startIndex + Constants.itemsPerPage, filteredVersions.count)
         guard startIndex < endIndex else { return [] }
         return Array(filteredVersions[startIndex..<endIndex])
     }
-    
+
     private var availableGameVersions: [String] {
         Array(Set(allVersions.flatMap { $0.gameVersions })).sorted()
     }
-    
+
     var body: some View {
         LazyVStack {
             VersionHeader(
@@ -507,7 +507,7 @@ struct ModrinthProjectDetailVersionView: View {
                 showingVersionFilter: $showingVersionFilter,
                 availableGameVersions: availableGameVersions
             )
-            
+
             ForEach(paginatedVersions) { version in
                 VersionRow(
                     version: version,
@@ -525,23 +525,23 @@ struct ModrinthProjectDetailVersionView: View {
             }
         }
     }
-    
+
     private func loadVersions() async {
         isLoadingVersions = true
         error = nil
-        
-        var versions =  await ModrinthService.fetchProjectVersions(id: projectId)
-        
+
+        var versions = await ModrinthService.fetchProjectVersions(id: projectId)
+
         if let selectedVersion = selectedGameVersion {
             versions = versions.filter { $0.gameVersions.contains(selectedVersion) }
         }
-        
+
         await MainActor.run {
             allVersions = versions
             versionTotal = versions.count
             currentPage = 1
         }
-        
+
         isLoadingVersions = false
     }
 }

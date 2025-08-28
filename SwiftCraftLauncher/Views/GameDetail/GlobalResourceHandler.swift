@@ -15,15 +15,18 @@ func filterCompatibleGames(
         let match: Bool = {
             switch (resourceType, localLoader) {
             case ("datapack", "vanilla"):
-                return supportedVersions.contains(game.gameVersion) && supportedLoaders.contains("datapack")
+                return supportedVersions.contains(game.gameVersion)
+                    && supportedLoaders.contains("datapack")
             case ("shader", let loader) where loader != "vanilla":
                 return supportedVersions.contains(game.gameVersion)
             case ("resourcepack", "vanilla"):
-                return supportedVersions.contains(game.gameVersion) && supportedLoaders.contains("minecraft")
+                return supportedVersions.contains(game.gameVersion)
+                    && supportedLoaders.contains("minecraft")
             case ("resourcepack", _):
                 return supportedVersions.contains(game.gameVersion)
             default:
-                return supportedVersions.contains(game.gameVersion) && supportedLoaders.contains(localLoader)
+                return supportedVersions.contains(game.gameVersion)
+                    && supportedLoaders.contains(localLoader)
             }
         }()
         guard match else { return nil }
@@ -41,8 +44,13 @@ private struct DependencyState {
     var versions: [String: [ModrinthProjectDetailVersion]] = [:]
     var selected: [String: ModrinthProjectDetailVersion?] = [:]
     var isLoading = false
-    
-    init(dependencies: [ModrinthProjectDetail] = [], versions: [String: [ModrinthProjectDetailVersion]] = [:], selected: [String: ModrinthProjectDetailVersion?] = [:], isLoading: Bool = false) {
+
+    init(
+        dependencies: [ModrinthProjectDetail] = [],
+        versions: [String: [ModrinthProjectDetailVersion]] = [:],
+        selected: [String: ModrinthProjectDetailVersion?] = [:],
+        isLoading: Bool = false
+    ) {
         self.dependencies = dependencies
         self.versions = versions
         self.selected = selected
@@ -71,25 +79,43 @@ struct GlobalResourceSheet: View {
     var body: some View {
         CommonSheetView(
             header: {
-                Text(selectedGame.map { String(format: "global_resource.add_for_game".localized(), $0.gameName) } ?? "global_resource.add".localized())
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                Text(
+                    selectedGame.map {
+                        String(
+                            format: "global_resource.add_for_game".localized(),
+                            $0.gameName
+                        )
+                    } ?? "global_resource.add".localized()
+                )
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
             },
             body: {
                 if isLoading {
                     ProgressView().controlSize(.small)
                 } else if let error = error {
-                    ErrorView(error)
+                    newErrorView(error)
                 } else if let detail = projectDetail {
-                    let compatibleGames = filterCompatibleGames(detail: detail, gameRepository: gameRepository, resourceType: resourceType, projectId: project.projectId)
+                    let compatibleGames = filterCompatibleGames(
+                        detail: detail,
+                        gameRepository: gameRepository,
+                        resourceType: resourceType,
+                        projectId: project.projectId
+                    )
                     if compatibleGames.isEmpty {
-                        Text("global_resource.no_game_list".localized()).foregroundColor(.secondary).padding()
+                        Text("global_resource.no_game_list".localized())
+                            .foregroundColor(.secondary).padding()
                     } else {
                         VStack {
-                            ModrinthProjectTitleView(projectDetail: projectDetail!).padding(.bottom,18)
-                            CommonSheetGameBody(compatibleGames: compatibleGames, selectedGame: $selectedGame)
+                            ModrinthProjectTitleView(
+                                projectDetail: projectDetail!
+                            ).padding(.bottom, 18)
+                            CommonSheetGameBody(
+                                compatibleGames: compatibleGames,
+                                selectedGame: $selectedGame
+                            )
                             if let game = selectedGame {
-                                SpacerView()
+                                spacerView()
                                 VersionPickerForSheet(
                                     project: project,
                                     resourceType: resourceType,
@@ -98,7 +124,9 @@ struct GlobalResourceSheet: View {
                                     availableVersions: $availableVersions,
                                     mainVersionId: $mainVersionId,
                                     onVersionChange: { version in
-                                        if resourceType == "mod", let v = version {
+                                        if resourceType == "mod",
+                                            let v = version
+                                        {
                                             loadDependencies(for: v, game: game)
                                         } else {
                                             dependencyState = DependencyState()
@@ -106,7 +134,7 @@ struct GlobalResourceSheet: View {
                                     }
                                 )
                                 if resourceType == "mod" && !GameSettingsManager.shared.autoDownloadDependencies {
-                                    SpacerView()
+                                    spacerView()
                                     DependencySection(state: $dependencyState)
                                 }
                             }
@@ -154,7 +182,7 @@ struct GlobalResourceSheet: View {
             }
         }
     }
-    
+
     private func loadDetailThrowing() async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
@@ -163,22 +191,29 @@ struct GlobalResourceSheet: View {
                 level: .notification
             )
         }
-        
-        guard let detail = await ModrinthService.fetchProjectDetails(id: project.projectId) else {
+
+        guard
+            let detail = await ModrinthService.fetchProjectDetails(
+                id: project.projectId
+            )
+        else {
             throw GlobalError.resource(
                 chineseMessage: "无法获取项目详情",
                 i18nKey: "error.resource.project_details_not_found",
                 level: .notification
             )
         }
-        
+
         _ = await MainActor.run {
             self.projectDetail = detail
             self.isLoading = false
         }
     }
 
-    private func loadDependencies(for version: ModrinthProjectDetailVersion, game: GameVersionInfo) {
+    private func loadDependencies(
+        for version: ModrinthProjectDetailVersion,
+        game: GameVersionInfo
+    ) {
         dependencyState.isLoading = true
         Task {
             do {
@@ -193,8 +228,11 @@ struct GlobalResourceSheet: View {
             }
         }
     }
-    
-    private func loadDependenciesThrowing(for version: ModrinthProjectDetailVersion, game: GameVersionInfo) async throws {
+
+    private func loadDependenciesThrowing(
+        for version: ModrinthProjectDetailVersion,
+        game: GameVersionInfo
+    ) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
                 chineseMessage: "项目ID不能为空",
@@ -202,25 +240,32 @@ struct GlobalResourceSheet: View {
                 level: .notification
             )
         }
-        
+
         // 获取缺失的依赖项（包含版本信息）
-        let missingWithVersions = await ModrinthDependencyDownloader.getMissingDependenciesWithVersions(
-            for: project.projectId,
-            gameInfo: game
-        )
-        
+        let missingWithVersions =
+            await ModrinthDependencyDownloader
+            .getMissingDependenciesWithVersions(
+                for: project.projectId,
+                gameInfo: game
+            )
+
         var depVersions: [String: [ModrinthProjectDetailVersion]] = [:]
         var depSelected: [String: ModrinthProjectDetailVersion?] = [:]
         var dependencies: [ModrinthProjectDetail] = []
-        
+
         for (detail, versions) in missingWithVersions {
             dependencies.append(detail)
             depVersions[detail.id] = versions
             depSelected[detail.id] = versions.first
         }
-        
+
         _ = await MainActor.run {
-            dependencyState = DependencyState(dependencies: dependencies, versions: depVersions, selected: depSelected, isLoading: false)
+            dependencyState = DependencyState(
+                dependencies: dependencies,
+                versions: depVersions,
+                selected: depSelected,
+                isLoading: false
+            )
         }
     }
 }
@@ -232,23 +277,31 @@ private struct DependencySection: View {
         if state.isLoading {
             ProgressView().controlSize(.small)
         } else if !state.dependencies.isEmpty {
-            SpacerView()
+            spacerView()
             VStack(alignment: .leading, spacing: 12) {
-                ForEach(state.dependencies, id: \ .id) { dep in
+                ForEach(state.dependencies, id: \.id) { dep in
                     VStack(alignment: .leading) {
                         Text(dep.title).font(.headline).bold()
-                        if let versions = state.versions[dep.id], !versions.isEmpty {
-                            Picker("global_resource.dependency_version".localized(), selection: Binding(
-                                get: { state.selected[dep.id] ?? versions.first },
-                                set: { state.selected[dep.id] = $0 }
-                            )) {
-                                ForEach(versions, id: \ .id) { v in
+                        if let versions = state.versions[dep.id],
+                            !versions.isEmpty {
+                            Picker(
+                                "global_resource.dependency_version".localized(),
+                                selection:
+                                    Binding(
+                                    get: {
+                                        state.selected[dep.id] ?? versions.first
+                                    },
+                                    set: { state.selected[dep.id] = $0 }
+                                )
+                            ) {
+                                ForEach(versions, id: \.id) { v in
                                     Text(v.name).tag(Optional(v))
                                 }
                             }
                             .pickerStyle(.menu)
                         } else {
-                            Text("global_resource.no_version".localized()).foregroundColor(.secondary)
+                            Text("global_resource.no_version".localized())
+                                .foregroundColor(.secondary)
                         }
                     }
                 }
@@ -269,12 +322,18 @@ private struct FooterButtons: View {
     @Binding var isDownloadingAll: Bool
     @Binding var isDownloadingMainOnly: Bool
     let gameRepository: GameRepository
-    let loadDependencies: (ModrinthProjectDetailVersion, GameVersionInfo) -> Void
+    let loadDependencies:
+        (ModrinthProjectDetailVersion, GameVersionInfo) -> Void
     @Binding var mainVersionId: String
-    
+
     var body: some View {
         if let detail = projectDetail {
-            let compatibleGames = filterCompatibleGames(detail: detail, gameRepository: gameRepository, resourceType: resourceType, projectId: project.projectId)
+            let compatibleGames = filterCompatibleGames(
+                detail: detail,
+                gameRepository: gameRepository,
+                resourceType: resourceType,
+                projectId: project.projectId
+            )
             if compatibleGames.isEmpty {
                 HStack {
                     Spacer()
@@ -291,7 +350,10 @@ private struct FooterButtons: View {
                                     if isDownloadingAll {
                                         ProgressView().controlSize(.small)
                                     } else {
-                                        Text("global_resource.download_all".localized())
+                                        Text(
+                                            "global_resource.download_all"
+                                                .localized()
+                                        )
                                     }
                                 }
                                 .disabled(isDownloadingAll)
@@ -299,12 +361,15 @@ private struct FooterButtons: View {
                             }
                         } else if !dependencyState.isLoading {
                             if selectedVersion != nil {
-                                
+
                                 Button(action: downloadAllManual) {
                                     if isDownloadingAll {
                                         ProgressView().controlSize(.small)
                                     } else {
-                                        Text("global_resource.download_all".localized())
+                                        Text(
+                                            "global_resource.download_all"
+                                                .localized()
+                                        )
                                     }
                                 }
                                 .disabled(isDownloadingAll)
@@ -335,7 +400,7 @@ private struct FooterButtons: View {
     }
 
     private func downloadAll() {
-        guard let game = selectedGame, let _ = selectedVersion else { return }
+        guard let game = selectedGame, selectedVersion != nil else { return }
         isDownloadingAll = true
         Task {
             do {
@@ -351,7 +416,7 @@ private struct FooterButtons: View {
             }
         }
     }
-    
+
     private func downloadAllThrowing(game: GameVersionInfo) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
@@ -360,10 +425,10 @@ private struct FooterButtons: View {
                 level: .notification
             )
         }
-        
+
         var actuallyDownloaded: [ModrinthProjectDetail] = []
         var visited: Set<String> = []
-        
+
         await ModrinthDependencyDownloader.downloadAllDependenciesRecursive(
             for: project.projectId,
             gameInfo: game,
@@ -373,9 +438,9 @@ private struct FooterButtons: View {
             visited: &visited
         )
     }
-    
+
     private func downloadMainOnly() {
-        guard let game = selectedGame, let _ = selectedVersion else { return }
+        guard let game = selectedGame, selectedVersion != nil else { return }
         isDownloadingMainOnly = true
         Task {
             do {
@@ -391,7 +456,7 @@ private struct FooterButtons: View {
             }
         }
     }
-    
+
     private func downloadMainOnlyThrowing(game: GameVersionInfo) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
@@ -400,15 +465,16 @@ private struct FooterButtons: View {
                 level: .notification
             )
         }
-        
-        let success = await ModrinthDependencyDownloader.downloadMainResourceOnly(
-            mainProjectId: project.projectId,
-            gameInfo: game,
-            query: resourceType,
-            gameRepository: gameRepository,
-            filterLoader: true
-        )
-        
+
+        let success =
+            await ModrinthDependencyDownloader.downloadMainResourceOnly(
+                mainProjectId: project.projectId,
+                gameInfo: game,
+                query: resourceType,
+                gameRepository: gameRepository,
+                filterLoader: true
+            )
+
         if !success {
             throw GlobalError.download(
                 chineseMessage: "下载主资源失败",
@@ -417,16 +483,18 @@ private struct FooterButtons: View {
             )
         }
     }
-    
+
     private func downloadAllManual() {
-        guard let game = selectedGame, let _ = selectedVersion else { return }
+        guard let game = selectedGame, selectedVersion != nil else { return }
         isDownloadingAll = true
         Task {
             do {
                 try await downloadAllManualThrowing(game: game)
             } catch {
                 let globalError = GlobalError.from(error)
-                Logger.shared.error("手动下载所有依赖项失败: \(globalError.chineseMessage)")
+                Logger.shared.error(
+                    "手动下载所有依赖项失败: \(globalError.chineseMessage)"
+                )
                 GlobalErrorHandler.shared.handle(globalError)
             }
             _ = await MainActor.run {
@@ -435,7 +503,7 @@ private struct FooterButtons: View {
             }
         }
     }
-    
+
     private func downloadAllManualThrowing(game: GameVersionInfo) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
@@ -444,20 +512,24 @@ private struct FooterButtons: View {
                 level: .notification
             )
         }
-        
-        let success = await ModrinthDependencyDownloader.downloadManualDependenciesAndMain(
-            dependencies: dependencyState.dependencies,
-            selectedVersions: dependencyState.selected.compactMapValues { $0?.id },
-            dependencyVersions: dependencyState.versions,
-            mainProjectId: project.projectId,
-            mainProjectVersionId: mainVersionId.isEmpty ? nil : mainVersionId,
-            gameInfo: game,
-            query: resourceType,
-            gameRepository: gameRepository,
-            onDependencyDownloadStart: { _ in },
-            onDependencyDownloadFinish: { _, _ in }
-        )
-        
+
+        let success =
+            await ModrinthDependencyDownloader.downloadManualDependenciesAndMain(
+                dependencies: dependencyState.dependencies,
+                selectedVersions: dependencyState.selected.compactMapValues {
+                    $0?.id
+                },
+                dependencyVersions: dependencyState.versions,
+                mainProjectId: project.projectId,
+                mainProjectVersionId: mainVersionId.isEmpty
+                    ? nil : mainVersionId,
+                gameInfo: game,
+                query: resourceType,
+                gameRepository: gameRepository,
+                onDependencyDownloadStart: { _ in },
+                onDependencyDownloadFinish: { _, _ in }
+            )
+
         if !success {
             throw GlobalError.download(
                 chineseMessage: "手动下载依赖项失败",
@@ -466,9 +538,9 @@ private struct FooterButtons: View {
             )
         }
     }
-    
+
     private func downloadResource() {
-        guard let game = selectedGame, let _ = selectedVersion else { return }
+        guard let game = selectedGame, selectedVersion != nil else { return }
         isDownloadingAll = true
         Task {
             do {
@@ -484,7 +556,7 @@ private struct FooterButtons: View {
             }
         }
     }
-    
+
     private func downloadResourceThrowing(game: GameVersionInfo) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
@@ -493,15 +565,16 @@ private struct FooterButtons: View {
                 level: .notification
             )
         }
-        
-        let success = await ModrinthDependencyDownloader.downloadMainResourceOnly(
-            mainProjectId: project.projectId,
-            gameInfo: game,
-            query: resourceType,
-            gameRepository: gameRepository,
-            filterLoader: true
-        )
-        
+
+        let success =
+            await ModrinthDependencyDownloader.downloadMainResourceOnly(
+                mainProjectId: project.projectId,
+                gameInfo: game,
+                query: resourceType,
+                gameRepository: gameRepository,
+                filterLoader: true
+            )
+
         if !success {
             throw GlobalError.download(
                 chineseMessage: "下载资源失败",
@@ -517,16 +590,19 @@ struct CommonSheetGameBody: View {
     let compatibleGames: [GameVersionInfo]
     @Binding var selectedGame: GameVersionInfo?
     var body: some View {
-        Picker("global_resource.select_game".localized(), selection: $selectedGame) {
-            Text("global_resource.please_select_game".localized()).tag(Optional<GameVersionInfo>(nil))
-            ForEach(compatibleGames, id: \ .id) { game in
-                (
-                    Text("\(game.gameName)-")
+        Picker(
+            "global_resource.select_game".localized(),
+            selection: $selectedGame
+        ) {
+            Text("global_resource.please_select_game".localized()).tag(
+                GameVersionInfo?(nil)
+            )
+            ForEach(compatibleGames, id: \.id) { game in
+                (Text("\(game.gameName)-")
                     + Text("\(game.gameVersion)-").foregroundStyle(.secondary)
                     + Text("\(game.modLoader)-")
-                    + Text("\(game.modVersion)").foregroundStyle(.secondary)
-                )
-                .tag(Optional(game))
+                    + Text("\(game.modVersion)").foregroundStyle(.secondary))
+                    .tag(Optional(game))
             }
         }
         .pickerStyle(.menu)
@@ -550,12 +626,22 @@ struct VersionPickerForSheet: View {
             if isLoading {
                 ProgressView().controlSize(.small)
             } else if !availableVersions.isEmpty {
-                Text(project.title).font(.headline).bold().frame(maxWidth: .infinity, alignment: .leading)
-                Picker("global_resource.select_version".localized(), selection: $selectedVersion) {
-                    ForEach(availableVersions, id: \ .id) { version in
+                Text(project.title).font(.headline).bold().frame(
+                    maxWidth: .infinity,
+                    alignment: .leading
+                )
+                Picker(
+                    "global_resource.select_version".localized(),
+                    selection: $selectedVersion
+                ) {
+                    ForEach(availableVersions, id: \.id) { version in
                         if resourceType == "shader" {
-                            let loaders = version.loaders.joined(separator: ", ")
-                            Text("\(version.name) (\(loaders))").tag(Optional(version))
+                            let loaders = version.loaders.joined(
+                                separator: ", "
+                            )
+                            Text("\(version.name) (\(loaders))").tag(
+                                Optional(version)
+                            )
                         } else {
                             Text(version.name).tag(Optional(version))
                         }
@@ -563,7 +649,8 @@ struct VersionPickerForSheet: View {
                 }
                 .pickerStyle(.menu)
             } else {
-                Text("global_resource.no_version_available".localized()).foregroundColor(.secondary)
+                Text("global_resource.no_version_available".localized())
+                    .foregroundColor(.secondary)
             }
         }
         .onAppear(perform: loadVersions)
@@ -594,7 +681,7 @@ struct VersionPickerForSheet: View {
             }
         }
     }
-    
+
     private func loadVersionsThrowing() async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
@@ -603,7 +690,7 @@ struct VersionPickerForSheet: View {
                 level: .notification
             )
         }
-        
+
         guard let game = selectedGame else {
             _ = await MainActor.run {
                 availableVersions = []
@@ -613,7 +700,7 @@ struct VersionPickerForSheet: View {
             }
             return
         }
-        
+
         // 使用服务端的过滤方法，减少客户端过滤
         let filtered = try await ModrinthService.fetchProjectVersionsFilter(
             id: project.projectId,
@@ -621,7 +708,7 @@ struct VersionPickerForSheet: View {
             selectedLoaders: [game.modLoader],
             type: resourceType
         )
-        
+
         _ = await MainActor.run {
             availableVersions = filtered
             selectedVersion = filtered.first

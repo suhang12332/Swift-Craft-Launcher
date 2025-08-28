@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 
+// swiftlint:disable:next type_body_length
 struct GameResourceHandler {
     static func updateButtonState(
         gameInfo: GameVersionInfo?,
@@ -22,7 +23,7 @@ struct GameResourceHandler {
     }
 
     // MARK: - 文件删除
-    
+
     /// 删除文件（静默版本）
     static func performDelete(fileURL: URL) {
         do {
@@ -33,7 +34,7 @@ struct GameResourceHandler {
             GlobalErrorHandler.shared.handle(globalError)
         }
     }
-    
+
     /// 删除文件（抛出异常版本）
     static func performDeleteThrowing(fileURL: URL) throws {
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
@@ -43,12 +44,13 @@ struct GameResourceHandler {
                 level: .notification
             )
         }
-        
+
         do {
             try FileManager.default.removeItem(at: fileURL)
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "删除文件失败: \(fileURL.lastPathComponent), 错误: \(error.localizedDescription)",
+                chineseMessage:
+                    "删除文件失败: \(fileURL.lastPathComponent), 错误: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.file_deletion_failed",
                 level: .notification
             )
@@ -56,7 +58,7 @@ struct GameResourceHandler {
     }
 
     // MARK: - 下载方法
-    
+
     @MainActor
     static func downloadWithDependencies(
         project: ModrinthProject,
@@ -79,7 +81,7 @@ struct GameResourceHandler {
             GlobalErrorHandler.shared.handle(globalError)
         }
     }
-    
+
     @MainActor
     static func downloadWithDependenciesThrowing(
         project: ModrinthProject,
@@ -94,10 +96,10 @@ struct GameResourceHandler {
                 level: .notification
             )
         }
-        
+
         var actuallyDownloaded: [ModrinthProjectDetail] = []
         var visited: Set<String> = []
-        
+
         await ModrinthDependencyDownloader.downloadAllDependenciesRecursive(
             for: project.projectId,
             gameInfo: gameInfo,
@@ -130,7 +132,7 @@ struct GameResourceHandler {
             GlobalErrorHandler.shared.handle(globalError)
         }
     }
-    
+
     @MainActor
     static func downloadSingleResourceThrowing(
         project: ModrinthProject,
@@ -145,7 +147,7 @@ struct GameResourceHandler {
                 level: .notification
             )
         }
-        
+
         _ = await ModrinthDependencyDownloader.downloadMainResourceOnly(
             mainProjectId: project.projectId,
             gameInfo: gameInfo,
@@ -179,7 +181,7 @@ struct GameResourceHandler {
             return false
         }
     }
-    
+
     @MainActor
     static func prepareManualDependenciesThrowing(
         project: ModrinthProject,
@@ -193,35 +195,38 @@ struct GameResourceHandler {
                 level: .notification
             )
         }
-        
+
         depVM.isLoadingDependencies = true
-        
+
         let missing = await ModrinthDependencyDownloader.getMissingDependencies(
             for: project.projectId,
             gameInfo: gameInfo
         )
-        
+
         if missing.isEmpty {
             depVM.isLoadingDependencies = false
             return false
         }
-        
+
         var versionDict: [String: [ModrinthProjectDetailVersion]] = [:]
         var selectedVersionDict: [String: String] = [:]
-        
+
         for dep in missing {
-            let versions = await ModrinthService.fetchProjectVersions(id: dep.id)
-            
+            let versions = await ModrinthService.fetchProjectVersions(
+                id: dep.id
+            )
+
             let filteredVersions = versions.filter {
-                $0.loaders.contains(gameInfo.modLoader) && $0.gameVersions.contains(gameInfo.gameVersion)
+                $0.loaders.contains(gameInfo.modLoader)
+                    && $0.gameVersions.contains(gameInfo.gameVersion)
             }
-            
+
             versionDict[dep.id] = filteredVersions
             if let first = filteredVersions.first {
                 selectedVersionDict[dep.id] = first.id
             }
         }
-        
+
         depVM.missingDependencies = missing
         depVM.dependencyVersions = versionDict
         depVM.selectedDependencyVersion = selectedVersionDict
@@ -256,7 +261,7 @@ struct GameResourceHandler {
             depVM.overallDownloadState = .failed
         }
     }
-    
+
     @MainActor
     static func downloadAllDependenciesAndMainThrowing(
         project: ModrinthProject,
@@ -272,28 +277,30 @@ struct GameResourceHandler {
                 level: .notification
             )
         }
-        
+
         let dependencies = depVM.missingDependencies
         let selectedVersions = depVM.selectedDependencyVersion
         let dependencyVersions = depVM.dependencyVersions
 
-        let allSucceeded = await ModrinthDependencyDownloader.downloadManualDependenciesAndMain(
-            dependencies: dependencies,
-            selectedVersions: selectedVersions,
-            dependencyVersions: dependencyVersions,
-            mainProjectId: project.projectId,
-            mainProjectVersionId: nil, // 使用最新版本
-            gameInfo: gameInfo,
-            query: query,
-            gameRepository: gameRepository,
-            onDependencyDownloadStart: { depId in
-                depVM.dependencyDownloadStates[depId] = .downloading
-            },
-            onDependencyDownloadFinish: { depId, success in
-                depVM.dependencyDownloadStates[depId] = success ? .success : .failed
-            }
-        )
-        
+        let allSucceeded =
+            await ModrinthDependencyDownloader.downloadManualDependenciesAndMain(
+                dependencies: dependencies,
+                selectedVersions: selectedVersions,
+                dependencyVersions: dependencyVersions,
+                mainProjectId: project.projectId,
+                mainProjectVersionId: nil,  // 使用最新版本
+                gameInfo: gameInfo,
+                query: query,
+                gameRepository: gameRepository,
+                onDependencyDownloadStart: { depId in
+                    depVM.dependencyDownloadStates[depId] = .downloading
+                },
+                onDependencyDownloadFinish: { depId, success in
+                    depVM.dependencyDownloadStates[depId] =
+                        success ? .success : .failed
+                }
+            )
+
         if !allSucceeded {
             throw GlobalError.download(
                 chineseMessage: "下载依赖项失败",
@@ -302,7 +309,7 @@ struct GameResourceHandler {
             )
         }
     }
-    
+
     @MainActor
     static func downloadMainResourceAfterDependencies(
         project: ModrinthProject,
@@ -327,7 +334,7 @@ struct GameResourceHandler {
             GlobalErrorHandler.shared.handle(globalError)
         }
     }
-    
+
     @MainActor
     static func downloadMainResourceAfterDependenciesThrowing(
         project: ModrinthProject,
@@ -342,14 +349,15 @@ struct GameResourceHandler {
                 level: .notification
             )
         }
-        
-        let success = await ModrinthDependencyDownloader.downloadMainResourceOnly(
-            mainProjectId: project.projectId,
-            gameInfo: gameInfo,
-            query: query,
-            gameRepository: gameRepository
-        )
-        
+
+        let success =
+            await ModrinthDependencyDownloader.downloadMainResourceOnly(
+                mainProjectId: project.projectId,
+                gameInfo: gameInfo,
+                query: query,
+                gameRepository: gameRepository
+            )
+
         if !success {
             throw GlobalError.download(
                 chineseMessage: "下载主资源失败",
@@ -382,7 +390,7 @@ struct GameResourceHandler {
             depVM.dependencyDownloadStates[dep.id] = .failed
         }
     }
-    
+
     @MainActor
     static func retryDownloadDependencyThrowing(
         dep: ModrinthProjectDetail,
@@ -398,7 +406,7 @@ struct GameResourceHandler {
                 level: .notification
             )
         }
-        
+
         guard let versionId = depVM.selectedDependencyVersion[dep.id] else {
             throw GlobalError.resource(
                 chineseMessage: "缺少版本ID: \(dep.id)",
@@ -406,7 +414,7 @@ struct GameResourceHandler {
                 level: .notification
             )
         }
-        
+
         guard let versions = depVM.dependencyVersions[dep.id] else {
             throw GlobalError.resource(
                 chineseMessage: "缺少版本信息: \(dep.id)",
@@ -414,7 +422,7 @@ struct GameResourceHandler {
                 level: .notification
             )
         }
-        
+
         guard let version = versions.first(where: { $0.id == versionId }) else {
             throw GlobalError.resource(
                 chineseMessage: "找不到指定版本: \(versionId)",
@@ -422,17 +430,21 @@ struct GameResourceHandler {
                 level: .notification
             )
         }
-        
-        guard let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) else {
+
+        guard
+            let primaryFile = ModrinthService.filterPrimaryFiles(
+                from: version.files
+            )
+        else {
             throw GlobalError.resource(
                 chineseMessage: "找不到主文件: \(dep.id)",
                 i18nKey: "error.resource.primary_file_not_found",
                 level: .notification
             )
         }
-        
+
         depVM.dependencyDownloadStates[dep.id] = .downloading
-        
+
         do {
             _ = try await DownloadManager.downloadResource(
                 for: gameInfo,
@@ -440,7 +452,7 @@ struct GameResourceHandler {
                 resourceType: dep.projectType,
                 expectedSha1: primaryFile.hashes.sha1
             )
-            
+
             var resourceToAdd = dep
             resourceToAdd.fileName = primaryFile.filename
             resourceToAdd.type = query
@@ -453,4 +465,4 @@ struct GameResourceHandler {
             )
         }
     }
-} 
+}

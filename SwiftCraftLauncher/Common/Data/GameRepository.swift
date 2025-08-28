@@ -3,7 +3,7 @@ import Foundation
 
 /// 游戏版本信息仓库
 /// 负责游戏版本信息的持久化存储和管理
-class GameRepository: ObservableObject {
+class GameRepository: ObservableObject { // swiftlint:disable:this type_body_length
     // MARK: - Properties
 
     /// 已保存的游戏列表
@@ -30,7 +30,7 @@ class GameRepository: ObservableObject {
         try saveGamesThrowing()
         Logger.shared.info("成功添加游戏: \(game.gameName)")
     }
-    
+
     /// 添加新游戏（静默版本）
     /// - Parameter game: 要添加的游戏版本信息
     func addGameSilently(_ game: GameVersionInfo) {
@@ -54,14 +54,14 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
-        
+
         await MainActor.run {
             games.removeAll { $0.id == id }
         }
         try saveGamesThrowing()
         Logger.shared.info("成功删除游戏: \(game.gameName)")
     }
-    
+
     /// 删除游戏（静默版本）
     /// - Parameter id: 要删除的游戏ID
     func deleteGameSilently(id: String) {
@@ -80,14 +80,14 @@ class GameRepository: ObservableObject {
     func getGame(by id: String) -> GameVersionInfo? {
         return games.first { $0.id == id }
     }
-    
+
     /// 根据游戏名称查找游戏版本信息
     /// - Parameter gameName: 游戏名称
     /// - Returns: 匹配的 GameVersionInfo 对象，如果找不到则返回 nil
     func getGameByName(by gameName: String) -> GameVersionInfo? {
         return games.first { $0.gameName == gameName }
     }
-    
+
     /// 根据 ID 更新游戏信息
     /// - Parameter game: 新的游戏信息
     /// - Throws: GlobalError 当操作失败时
@@ -99,14 +99,14 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
-        
+
         await MainActor.run {
             games[index] = game
         }
         try saveGamesThrowing()
         Logger.shared.info("成功更新游戏: \(game.gameName)")
     }
-    
+
     /// 根据 ID 更新游戏信息（静默版本）
     /// - Parameter game: 新的游戏信息
     /// - Returns: 是否更新成功
@@ -120,7 +120,7 @@ class GameRepository: ObservableObject {
         }
         return true // Note: This will always return true since the operation is async
     }
-    
+
     /// 根据 ID 更新游戏状态
     /// - Parameters:
     ///   - id: 游戏 ID
@@ -135,18 +135,18 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
-        
+
         await MainActor.run {
             var game = games[index]
             game.isRunning = isRunning
             game.lastPlayed = lastPlayed
             games[index] = game
         }
-        
+
         try saveGamesThrowing()
         Logger.shared.info("成功更新游戏状态: \(games[index].gameName)")
     }
-    
+
     /// 根据 ID 更新游戏状态（静默版本）
     /// - Parameters:
     ///   - id: 游戏 ID
@@ -177,7 +177,7 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
-        
+
         await MainActor.run {
             var game = games[index]
             game.javaPath = javaPath
@@ -186,7 +186,7 @@ class GameRepository: ObservableObject {
         try saveGamesThrowing()
         Logger.shared.info("成功更新游戏 Java 路径: \(games[index].gameName)")
     }
-    
+
     /// 更新 Java 路径（静默版本）
     /// - Parameters:
     ///   - id: 游戏 ID
@@ -202,7 +202,7 @@ class GameRepository: ObservableObject {
         }
         return true // Note: This will always return true since the operation is async
     }
-    
+
     /// 更新 JVM 启动参数
     /// - Parameters:
     ///   - id: 游戏 ID
@@ -216,7 +216,7 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
-        
+
         await MainActor.run {
             var game = games[index]
             game.jvmArguments = jvmArguments
@@ -225,7 +225,7 @@ class GameRepository: ObservableObject {
         try saveGamesThrowing()
         Logger.shared.info("成功更新游戏 JVM 参数: \(games[index].gameName)")
     }
-    
+
     /// 更新 JVM 启动参数（静默版本）
     /// - Parameters:
     ///   - id: 游戏 ID
@@ -241,7 +241,7 @@ class GameRepository: ObservableObject {
         }
         return true // Note: This will always return true since the operation is async
     }
-    
+
     /// 更新运行内存大小
     /// - Parameters:
     ///   - id: 游戏 ID
@@ -256,7 +256,7 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
-        
+
         // 验证内存参数
         guard xms > 0 && xmx > 0 && xms <= xmx else {
             throw GlobalError.validation(
@@ -265,7 +265,7 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
-        
+
         await MainActor.run {
             var game = games[index]
             game.xms = xms
@@ -275,7 +275,7 @@ class GameRepository: ObservableObject {
         try saveGamesThrowing()
         Logger.shared.info("成功更新游戏内存大小: \(games[index].gameName)")
     }
-    
+
     /// 更新运行内存大小（静默版本）
     /// - Parameters:
     ///   - id: 游戏 ID
@@ -299,7 +299,7 @@ class GameRepository: ObservableObject {
     func loadGames() {
         loadGamesSafely()
     }
-    
+
     /// 从 UserDefaults 加载游戏列表（静默版本）
     private func loadGamesSafely() {
         Task {
@@ -313,7 +313,7 @@ class GameRepository: ObservableObject {
             }
         }
     }
-    
+
     /// 从 UserDefaults 加载游戏列表（抛出异常版本）
     /// - Throws: GlobalError 当操作失败时
     func loadGamesThrowing() async throws {
@@ -327,13 +327,13 @@ class GameRepository: ObservableObject {
         do {
             let decoder = JSONDecoder()
             let allGames = try decoder.decode([GameVersionInfo].self, from: savedGamesData)
-            
+
             // 只保留本地 profiles 目录下实际存在的游戏（只判断文件夹名）
             let profilesDir = AppPaths.profileRootDirectory
             
             let fileManager = FileManager.default
             let localGameNames: Set<String>
-            
+
             do {
                 let contents = try fileManager.contentsOfDirectory(atPath: profilesDir.path)
                 localGameNames = Set(contents)
@@ -344,12 +344,12 @@ class GameRepository: ObservableObject {
                     level: .silent
                 )
             }
-            
+
             let validGames = allGames.filter { localGameNames.contains($0.gameName) }
             await MainActor.run {
                 games = validGames
             }
-            
+
             Logger.shared.info("成功加载 \(validGames.count) 个游戏")
         } catch let error as GlobalError {
             throw error
@@ -370,7 +370,7 @@ class GameRepository: ObservableObject {
             GlobalErrorHandler.shared.handle(error)
         }
     }
-    
+
     /// 保存游戏列表到 UserDefaults（抛出异常版本）
     /// - Throws: GlobalError 当操作失败时
     private func saveGamesThrowing() throws {

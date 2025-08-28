@@ -20,10 +20,10 @@ struct MinecraftVersionManifest: Codable {
 struct Arguments: Codable {
     let game: [String]?
     let jvm: [String]?
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         // 处理 game 参数，可能不存在
         if container.contains(.game) {
             let gameArgs = try container.decode([ArgumentValue].self, forKey: .game)
@@ -36,7 +36,7 @@ struct Arguments: Codable {
         } else {
             game = nil
         }
-        
+
         // 处理 jvm 参数，可能不存在
         if container.contains(.jvm) {
             let jvmArgs = try container.decode([ArgumentValue].self, forKey: .jvm)
@@ -50,7 +50,7 @@ struct Arguments: Codable {
             jvm = nil
         }
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case game, jvm
     }
@@ -167,7 +167,7 @@ struct LibraryArtifact: Codable {
     let sha1: String
     let size: Int
     var url: URL?
-    
+
     // 自定义初始化器，用于直接创建实例
     init(path: String, sha1: String, size: Int, url: URL?) {
         self.path = path
@@ -181,7 +181,7 @@ struct LibraryArtifact: Codable {
         path = try container.decode(String.self, forKey: .path)
         sha1 = try container.decode(String.self, forKey: .sha1)
         size = try container.decode(Int.self, forKey: .size)
-        
+
         // 处理 URL，允许为空字符串
         let urlString = try container.decode(String.self, forKey: .url)
         if urlString.isEmpty {
@@ -198,7 +198,7 @@ struct LibraryArtifact: Codable {
         try container.encode(size, forKey: .size)
         try container.encode(url?.absoluteString ?? "", forKey: .url)
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case path, sha1, size, url
     }
@@ -258,6 +258,7 @@ struct DownloadedAssetIndex {
 
 struct AssetIndexData: Codable {
     let objects: [String: AssetObject]
+
     struct AssetObject: Codable {
         let hash: String
         let size: Int

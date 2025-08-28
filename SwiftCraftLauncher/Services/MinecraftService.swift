@@ -23,7 +23,7 @@ enum MinecraftService {
             let (data, response) = try await URLSession.shared.data(
                 from: URLConfig.API.Minecraft.versionList
             )
-            
+
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
                     chineseMessage: "获取版本清单失败: HTTP \(response)",
@@ -31,7 +31,7 @@ enum MinecraftService {
                     level: .notification
                 )
             }
-            
+
             return try JSONDecoder().decode(MojangVersionManifest.self, from: data)
         } catch {
             let globalError = GlobalError.from(error)
@@ -52,7 +52,7 @@ enum MinecraftService {
             return nil
         }
     }
-    
+
     /// 获取当前版本信息（抛出异常版本）
     /// - Parameter currentVersion: 当前版本号
     /// - Returns: 版本信息
@@ -60,7 +60,7 @@ enum MinecraftService {
     static func getCurrentVersionThrowing(currentVersion: String) async throws -> MojangVersionInfo {
         let manifest = try await fetchVersionManifestThrowing()
         let version = manifest.versions.first { $0.type == "release" && $0.id == currentVersion }
-        
+
         guard let version = version else {
             throw GlobalError.resource(
                 chineseMessage: "未找到版本: \(currentVersion)",
@@ -68,7 +68,7 @@ enum MinecraftService {
                 level: .notification
             )
         }
-        
+
         return version
     }
 
@@ -85,7 +85,7 @@ enum MinecraftService {
             return ""
         }
     }
-    
+
     /// 根据版本获取时间信息（抛出异常版本）
     /// - Parameter version: 游戏版本号
     /// - Returns: 格式化的相对时间字符串
@@ -96,7 +96,7 @@ enum MinecraftService {
         if let cachedTime: String = AppCacheManager.shared.get(namespace: "version_time", key: cacheKey, as: String.self) {
             return cachedTime
         }
-        
+
         do {
             let gameVersions = await ModrinthService.fetchGameVersions()
             guard let gameVersion = gameVersions.first(where: { $0.version == version }) else {
@@ -106,7 +106,7 @@ enum MinecraftService {
                     level: .notification
                 )
             }
-            
+
             let formattedTime = CommonUtil.formatRelativeTime(gameVersion.date)
             // 缓存结果
             AppCacheManager.shared.setSilently(namespace: "version_time", key: cacheKey, value: formattedTime)
@@ -130,10 +130,10 @@ enum MinecraftService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchMojangManifestThrowing(from url: URL) async throws -> MinecraftVersionManifest {
         Logger.shared.info("正在从以下地址获取 Mojang 版本清单：\(url.absoluteString)")
-        
+
         do {
             let (manifestData, response) = try await URLSession.shared.data(from: url)
-            
+
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
                     chineseMessage: "获取版本清单失败: HTTP \(response)",
@@ -141,7 +141,7 @@ enum MinecraftService {
                     level: .notification
                 )
             }
-            
+
             let downloadedManifest = try JSONDecoder().decode(MinecraftVersionManifest.self, from: manifestData)
             Logger.shared.info("成功获取版本清单：\(downloadedManifest.id)")
             return downloadedManifest

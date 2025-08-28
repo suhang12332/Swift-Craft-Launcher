@@ -7,107 +7,109 @@
 
 import SwiftUI
 
+// swiftlint:disable:next type_body_length
 struct ModPackDownloadSheet: View {
-   let projectId: String
-   let gameInfo: GameVersionInfo?
-   let query: String
-   @EnvironmentObject private var gameRepository: GameRepository
-   @Environment(\.dismiss) private var dismiss
-   
-   @StateObject private var viewModel = ModPackDownloadSheetViewModel()
-   @State private var selectedGameVersion: String = ""
-   @State private var selectedModPackVersion: ModrinthProjectDetailVersion?
-   @State private var downloadTask: Task<Void, Error>? = nil
-   @State private var isProcessing = false
-   @StateObject private var gameSetupService = GameSetupUtil()
-   
-   var body: some View {
-       CommonSheetView(
-           header: { headerView },
-           body: { bodyView },
-           footer: { footerView }
-       )
-       .onAppear {
-           viewModel.setGameRepository(gameRepository)
-           Task {
-               await viewModel.loadProjectDetails(projectId: projectId)
-           }
-       }
-   }
-   
-   // MARK: - View Components
-   
-   private var headerView: some View {
-       HStack {
-           Text("modpack.download.title".localized())
-               .font(.headline)
-               .frame(maxWidth: .infinity, alignment: .leading)
-       }
-   }
-   
-   private var bodyView: some View {
-       VStack(alignment: .leading,spacing: 12) {
-           if isProcessing {
-               processingView
-           } else if viewModel.isLoadingProjectDetails {
-               ProgressView().controlSize(.small)
-               .frame(maxWidth: .infinity, minHeight: 130)
-           } else if let projectDetail = viewModel.projectDetail {
-               ModrinthProjectTitleView(projectDetail: projectDetail)
-                   .padding(.bottom,18)
-               versionSelectionSection
-               
-               if shouldShowProgress {
-                   
-                   downloadProgressSection.padding(.top,18)
-               }
-           }
-       }
-   }
-   
-   private var footerView: some View {
-       HStack {
-           cancelButton
-           Spacer()
-           confirmButton
-       }
-   }
-   
-   // MARK: - Computed Properties
-   
-   private var shouldShowProgress: Bool {
-       gameSetupService.downloadState.isDownloading || viewModel.modPackInstallState.isInstalling
-   }
-   
-   private var canDownload: Bool {
-       !selectedGameVersion.isEmpty && selectedModPackVersion != nil
-   }
-   
-   private var isDownloading: Bool {
-       isProcessing || gameSetupService.downloadState.isDownloading || viewModel.modPackInstallState.isInstalling
-   }
-   
-   // MARK: - UI Components
-   
-   private var processingView: some View {
-       VStack(spacing: 24) {
-           ProgressView().controlSize(.small)
-           
-           Text("modpack.processing.title".localized())
-               .font(.headline)
-               .foregroundColor(.primary)
-           
-           Text("modpack.processing.subtitle".localized())
-               .font(.subheadline)
-               .foregroundColor(.secondary)
-               .multilineTextAlignment(.center)
-           
-           Spacer()
-       }
-       .frame(maxWidth: .infinity, minHeight: 130)
-       .padding()
-   }
-   
+    let projectId: String
+    let gameInfo: GameVersionInfo?
+    let query: String
+    @EnvironmentObject private var gameRepository: GameRepository
+    @Environment(\.dismiss) private var dismiss
+
+    @StateObject private var viewModel = ModPackDownloadSheetViewModel()
+    @State private var selectedGameVersion: String = ""
+    @State private var selectedModPackVersion: ModrinthProjectDetailVersion?
+    @State private var downloadTask: Task<Void, Error>? = nil
+    @State private var isProcessing = false
+    @StateObject private var gameSetupService = GameSetupUtil()
+
+    var body: some View {
+        CommonSheetView(
+            header: { headerView },
+            body: { bodyView },
+            footer: { footerView }
+        )
+        .onAppear {
+            viewModel.setGameRepository(gameRepository)
+            Task {
+                await viewModel.loadProjectDetails(projectId: projectId)
+            }
+        }
+    }
+
+    // MARK: - View Components
+
+    private var headerView: some View {
+        HStack {
+            Text("modpack.download.title".localized())
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var bodyView: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if isProcessing {
+                processingView
+            } else if viewModel.isLoadingProjectDetails {
+                ProgressView().controlSize(.small)
+                    .frame(maxWidth: .infinity, minHeight: 130)
+            } else if let projectDetail = viewModel.projectDetail {
+                ModrinthProjectTitleView(projectDetail: projectDetail)
+                    .padding(.bottom, 18)
+                versionSelectionSection
+
+                if shouldShowProgress {
+
+                    downloadProgressSection.padding(.top, 18)
+                }
+            }
+        }
+    }
+
+    private var footerView: some View {
+        HStack {
+            cancelButton
+            Spacer()
+            confirmButton
+        }
+    }
+
+    // MARK: - Computed Properties
+
+    private var shouldShowProgress: Bool {
+        gameSetupService.downloadState.isDownloading
+            || viewModel.modPackInstallState.isInstalling
+    }
+
+    private var canDownload: Bool {
+        !selectedGameVersion.isEmpty && selectedModPackVersion != nil
+    }
+
+    private var isDownloading: Bool {
+        isProcessing || gameSetupService.downloadState.isDownloading
+            || viewModel.modPackInstallState.isInstalling
+    }
+
+    // MARK: - UI Components
+
+    private var processingView: some View {
+        VStack(spacing: 24) {
+            ProgressView().controlSize(.small)
+
+            Text("modpack.processing.title".localized())
+                .font(.headline)
+                .foregroundColor(.primary)
+
+            Text("modpack.processing.subtitle".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, minHeight: 130)
+        .padding()
+    }
 
    
    private var downloadProgressSection: some View {
@@ -550,21 +552,21 @@ struct ModPackDownloadSheet: View {
 // MARK: - Supporting Types
 
 private enum ProgressType {
-   case core, resources
+    case core, resources
 }
 
 private enum InstallProgressType {
-   case files, dependencies
+    case files, dependencies
 }
 
 // MARK: - Preview
 
 #Preview {
-   ModPackDownloadSheet(
-       projectId: "1KVo5zza",
-       gameInfo: nil,
-       query: "modpack"
-   )
-   .environmentObject(GameRepository())
-   .frame(height: 600)
+    ModPackDownloadSheet(
+        projectId: "1KVo5zza",
+        gameInfo: nil,
+        query: "modpack"
+    )
+    .environmentObject(GameRepository())
+    .frame(height: 600)
 }

@@ -5,7 +5,7 @@ import Foundation
 struct Player: Identifiable, Codable, Equatable {
     /// 玩家唯一标识符
     let id: String
-    
+
     /// 玩家名称
     let name: String
     /// 是否为在线账号
@@ -20,23 +20,23 @@ struct Player: Identifiable, Codable, Equatable {
     var tokenExpiresAt: Date?
     /// 账号创建时间
     let createdAt: Date
-    
+
     /// 最后游玩时间
     var lastPlayed: Date
-    
+
     /// 是否为当前选中的玩家
     var isCurrent: Bool
-    
+
     /// 游戏记录字典
     /// - Key: 游戏ID或名称
     /// - Value: 对应的游戏记录
     var gameRecords: [String: PlayerGameRecord]
-    
+
     /// 计算总游戏时间
     var totalPlayTime: TimeInterval {
         gameRecords.values.reduce(0) { $0 + $1.playTime }
     }
-    
+
     /// 获取最近游玩的游戏列表
     /// 按最后游玩时间降序排序
     var recentlyPlayedGames: [PlayerGameRecord] {
@@ -66,7 +66,6 @@ struct Player: Identifiable, Codable, Equatable {
         lastPlayed: Date = Date(),
         isCurrent: Bool = false,
         gameRecords: [String: PlayerGameRecord] = [:]
-        
     ) throws {
         // 如果提供了UUID则使用，否则生成离线UUID
         if let providedUUID = uuid {
@@ -92,7 +91,7 @@ struct Player: Identifiable, Codable, Equatable {
         self.authXuid = authXuid
         self.tokenExpiresAt = tokenExpiresAt
     }
-    
+
     /// 更新指定游戏的记录
     /// - Parameters:
     ///   - gameId: 游戏ID
@@ -101,7 +100,7 @@ struct Player: Identifiable, Codable, Equatable {
         gameRecords[gameId] = record
         lastPlayed = Date()
     }
-    
+
     /// 获取指定游戏的记录
     /// - Parameter gameId: 游戏ID
     /// - Returns: 游戏记录，如果不存在则返回nil
@@ -115,25 +114,25 @@ struct Player: Identifiable, Codable, Equatable {
 struct PlayerGameRecord: Identifiable, Codable, Equatable {
     /// 记录唯一标识符
     let id: UUID
-    
+
     /// 关联的玩家ID
     let playerId: UUID
-    
+
     /// 关联的游戏版本ID
     let gameVersionId: UUID
-    
+
     /// 首次游玩时间
     let startPlayTime: Date
-    
+
     /// 累计游玩时间（秒）
     var playTime: TimeInterval
-    
+
     /// 最后游玩时间
     var lastPlayed: Date
-    
+
     /// 游戏版本号
     let gameVersion: String
-    
+
     /// 格式化后的游戏时间
     /// 格式：X小时Y分钟
     var formattedPlayTime: String {
@@ -141,13 +140,13 @@ struct PlayerGameRecord: Identifiable, Codable, Equatable {
         let minutes = (Int(playTime) % 3600) / 60
         return String(format: "time.hours_minutes".localized(), hours, minutes)
     }
-    
+
     /// 判断游戏是否正在运行
     /// 如果最后游玩时间在5分钟内，则认为正在运行
     var isPlaying: Bool {
         return lastPlayed.timeIntervalSinceNow > -300
     }
-    
+
     /// 初始化游戏记录
     /// - Parameters:
     ///   - id: 记录ID，默认生成新的UUID
@@ -174,14 +173,14 @@ struct PlayerGameRecord: Identifiable, Codable, Equatable {
         self.lastPlayed = lastPlayed
         self.gameVersion = gameVersion
     }
-    
+
     /// 更新游戏时间
     /// - Parameter additionalTime: 新增的游戏时间（秒）
     mutating func updatePlayTime(_ additionalTime: TimeInterval) {
         playTime += additionalTime
         lastPlayed = Date()
     }
-    
+
     /// 重置游戏时间
     /// 将游玩时间设为0，并更新最后游玩时间
     mutating func resetPlayTime() {

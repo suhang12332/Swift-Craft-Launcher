@@ -9,7 +9,7 @@ import SwiftUI
 class CacheManager: ObservableObject {
     @Published var cacheInfo: CacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
     private let calculator = CacheCalculator.shared
-    
+
     /// 计算元数据缓存信息（静默版本）
     func calculateMetaCacheInfo() {
         do {
@@ -21,7 +21,7 @@ class CacheManager: ObservableObject {
             // 保持默认值
         }
     }
-    
+
     /// 计算元数据缓存信息（抛出异常版本）
     /// - Throws: GlobalError 当操作失败时
     func calculateMetaCacheInfoThrowing() throws {
@@ -35,7 +35,7 @@ class CacheManager: ObservableObject {
             )
         }
     }
-    
+
     /// 计算数据缓存信息（静默版本）
     func calculateDataCacheInfo() {
         do {
@@ -47,7 +47,7 @@ class CacheManager: ObservableObject {
             // 保持默认值
         }
     }
-    
+
     /// 计算数据缓存信息（抛出异常版本）
     /// - Throws: GlobalError 当操作失败时
     func calculateDataCacheInfoThrowing() throws {
@@ -61,7 +61,7 @@ class CacheManager: ObservableObject {
             )
         }
     }
-    
+
     /// 计算游戏缓存信息（静默版本）
     /// - Parameter game: 游戏名称
     func calculateGameCacheInfo(_ game: String) {
@@ -74,7 +74,7 @@ class CacheManager: ObservableObject {
             // 保持默认值
         }
     }
-    
+
     /// 计算游戏缓存信息（抛出异常版本）
     /// - Parameter game: 游戏名称
     /// - Throws: GlobalError 当操作失败时

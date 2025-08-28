@@ -18,7 +18,7 @@ enum ModrinthConstants {
         static let maxTags = 3
         static let contentSpacing: CGFloat = 8
     }
-    
+
     // MARK: - API Constants
     /// API 相关的常量
     enum API {
@@ -31,7 +31,7 @@ enum ModrinthConstants {
             static let resolutions = "resolutions"
             static let performanceImpact = "performance_impact"
         }
-        
+
         enum FacetValue {
             static let required = "required"
             static let optional = "optional"
@@ -49,20 +49,21 @@ final class ModrinthSearchViewModel: ObservableObject {
     @Published private(set) var isLoading: Bool = false
     @Published private(set) var error: GlobalError?
     @Published private(set) var totalHits: Int = 0
-    
+
     // MARK: - Private Properties
     private var searchTask: Task<Void, Never>?
     private var currentPage: Int = 1
     private let pageSize: Int = 20
-    
+
     // MARK: - Initialization
     init() {}
-    
+
     deinit {
         searchTask?.cancel()
     }
-    
+
     // MARK: - Public Methods
+    // swiftlint:disable:next function_parameter_count
     func search(
         query: String,
         projectType: String,
@@ -77,15 +78,15 @@ final class ModrinthSearchViewModel: ObservableObject {
     ) async {
         // Cancel any existing search task
         searchTask?.cancel()
-        
+
         searchTask = Task {
             do {
                 isLoading = true
                 error = nil
-                
+
                 // 检查任务是否被取消
                 try Task.checkCancellation()
-                
+
                 let offset = (page - 1) * pageSize
                 let facets = buildFacets(
                     projectType: projectType,
@@ -96,9 +97,9 @@ final class ModrinthSearchViewModel: ObservableObject {
                     performanceImpact: performanceImpact,
                     loaders: loaders
                 )
-                
+
                 try Task.checkCancellation()
-                
+
                 let result = await ModrinthService.searchProjects(
                     facets: facets,
                     index: sortIndex,
@@ -106,16 +107,16 @@ final class ModrinthSearchViewModel: ObservableObject {
                     limit: pageSize,
                     query: query
                 )
-                
+
                 try Task.checkCancellation()
-                
+
                 if !Task.isCancelled {
                     results = result.hits
                     totalHits = result.totalHits
                 }
-                
+
                 try Task.checkCancellation()
-                
+
                 if !Task.isCancelled {
                     isLoading = false
                 }
@@ -133,7 +134,7 @@ final class ModrinthSearchViewModel: ObservableObject {
             }
         }
     }
-    
+
     func clearResults() {
         searchTask?.cancel()
         results.removeAll()
@@ -141,7 +142,7 @@ final class ModrinthSearchViewModel: ObservableObject {
         error = nil
         isLoading = false
     }
-    
+
     // MARK: - Private Methods
     private func buildFacets(
         projectType: String,
@@ -153,20 +154,30 @@ final class ModrinthSearchViewModel: ObservableObject {
         loaders: [String]
     ) -> [[String]] {
         var facets: [[String]] = []
-        
+
         // Project type is always required
-        facets.append(["\(ModrinthConstants.API.FacetType.projectType):\(projectType)"])
-        
+        facets.append([
+            "\(ModrinthConstants.API.FacetType.projectType):\(projectType)"
+        ])
+
         // Add versions if any
         if !versions.isEmpty {
-            facets.append(versions.map { "\(ModrinthConstants.API.FacetType.versions):\($0)" })
+            facets.append(
+                versions.map {
+                    "\(ModrinthConstants.API.FacetType.versions):\($0)"
+                }
+            )
         }
-        
+
         // Add categories if any
         if !categories.isEmpty {
-            facets.append(categories.map { "\(ModrinthConstants.API.FacetType.categories):\($0)" })
+            facets.append(
+                categories.map {
+                    "\(ModrinthConstants.API.FacetType.categories):\($0)"
+                }
+            )
         }
-        
+
         // Handle client_side and server_side based on features selection
         let (clientFacets, serverFacets) = buildEnvironmentFacets(
             features: features
@@ -177,7 +188,7 @@ final class ModrinthSearchViewModel: ObservableObject {
         if !serverFacets.isEmpty {
             facets.append(serverFacets)
         }
-        
+
         // Add resolutions if any (as categories)
         if !resolutions.isEmpty {
             facets.append(resolutions.map { "categories:\($0)" })
@@ -189,39 +200,39 @@ final class ModrinthSearchViewModel: ObservableObject {
         }
 
         // Add loaders if any (as categories)
-        if !loaders.isEmpty && projectType != "resourcepack" && projectType != "datapack" {
+        if !loaders.isEmpty && projectType != "resourcepack"
+            && projectType != "datapack" {
             var loadersToUse = loaders
             if let first = loaders.first, first.lowercased() == "vanilla" {
                 loadersToUse = ["minecraft"]
             }
             facets.append(loadersToUse.map { "categories:\($0)" })
         }
-        
+
         return facets
     }
-    
+
     private func buildEnvironmentFacets(features: [String]) -> (
         clientFacets: [String], serverFacets: [String]
     ) {
         let hasClient = features.contains("client")
         let hasServer = features.contains("server")
-        
+
         var clientFacets: [String] = []
         var serverFacets: [String] = []
-        
+
         if hasClient {
             clientFacets.append("client_side:required")
         } else if hasServer {
             clientFacets.append("client_side:optional")
         }
-        
+
         if hasServer {
             serverFacets.append("server_side:required")
         } else if hasClient {
             serverFacets.append("server_side:optional")
         }
-        
+
         return (clientFacets, serverFacets)
     }
-} 
- 
+}

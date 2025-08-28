@@ -8,7 +8,7 @@ struct DeviceCodeResponse: Codable {
     let expiresIn: Int
     let interval: Int
     let message: String
-    
+
     enum CodingKeys: String, CodingKey {
         case userCode = "user_code"
         case deviceCode = "device_code"
@@ -26,7 +26,7 @@ struct TokenResponse: Codable {
     let expiresIn: Int
     let tokenType: String
     let scope: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case refreshToken = "refresh_token"
@@ -40,7 +40,7 @@ struct TokenResponse: Codable {
 struct XboxLiveTokenResponse: Codable {
     let token: String
     let displayClaims: DisplayClaims
-    
+
     enum CodingKeys: String, CodingKey {
         case token = "Token"
         case displayClaims = "DisplayClaims"
@@ -49,7 +49,7 @@ struct XboxLiveTokenResponse: Codable {
 
 struct DisplayClaims: Codable {
     let xui: [XUI]
-    
+
     enum CodingKeys: String, CodingKey {
         case xui = "xui"
     }
@@ -57,7 +57,7 @@ struct DisplayClaims: Codable {
 
 struct XUI: Codable {
     let uhs: String
-    
+
     enum CodingKeys: String, CodingKey {
         case uhs
     }
@@ -72,7 +72,7 @@ struct MinecraftProfileResponse: Codable {
     let accessToken: String
     let authXuid: String
     let refreshToken: String
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case name
@@ -80,7 +80,7 @@ struct MinecraftProfileResponse: Codable {
         case capes
         // accessToken 和 authXuid 不参与解码，因为它们不是从 API 响应中获取的
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
@@ -92,7 +92,7 @@ struct MinecraftProfileResponse: Codable {
         authXuid = ""
         refreshToken = ""
     }
-    
+
     init(id: String, name: String, skins: [Skin], capes: [Cape]?, accessToken: String, authXuid: String, refreshToken: String = "") {
         self.id = id
         self.name = name
@@ -140,7 +140,7 @@ enum MinecraftAuthError: Error, LocalizedError {
     case networkError(Error)
     case invalidResponse
     case httpError(Int)
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidDeviceCode:
@@ -161,4 +161,4 @@ enum MinecraftAuthError: Error, LocalizedError {
             return "HTTP错误: \(code)"
         }
     }
-} 
+}

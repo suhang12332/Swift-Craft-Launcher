@@ -18,22 +18,22 @@ enum PlayerUtils {
     /// - Returns: 生成的UUID字符串（小写）
     /// - Throws: GlobalError 当操作失败时
     static func generateOfflineUUID(for username: String) throws -> String {
-        guard !username.isEmpty else { 
+        guard !username.isEmpty else {
             throw GlobalError.player(
                 chineseMessage: "无效的用户名: 用户名不能为空",
                 i18nKey: "error.player.invalid_username_empty",
                 level: .notification
             )
         }
-        
-        guard let data = (offlinePrefix + username).data(using: .utf8) else { 
+
+        guard let data = (offlinePrefix + username).data(using: .utf8) else {
             throw GlobalError.validation(
                 chineseMessage: "用户名编码失败: \(username)",
                 i18nKey: "error.validation.username_encode_failed",
                 level: .notification
             )
         }
-        
+
         var bytes = [UInt8](Insecure.MD5.hash(data: data))
         bytes[6] = (bytes[6] & 0x0F) | 0x30 // 版本3
         bytes[8] = (bytes[8] & 0x3F) | 0x80 // RFC 4122
@@ -67,8 +67,8 @@ enum PlayerUtils {
         guard let i = UInt64(iStr, radix: 16), let u = UInt64(uStr, radix: 16) else { return nil }
         let f = i ^ u
         let mixedBits = (f ^ (f >> 32)) & 0xffff_ffff
-        let I = Int32(bitPattern: UInt32(truncatingIfNeeded: mixedBits))
-        return (Int(I) % names.count + names.count) % names.count
+        let ii = Int32(bitPattern: UInt32(truncatingIfNeeded: mixedBits))
+        return (Int(ii) % names.count + names.count) % names.count
     }
 }
 
@@ -98,4 +98,4 @@ enum PlayerError: LocalizedError {
     init(localizedDescription: String) {
         self = .custom(localizedDescription)
     }
-} 
+}

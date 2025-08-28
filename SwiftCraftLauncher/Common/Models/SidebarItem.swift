@@ -4,7 +4,7 @@ import Foundation
 public enum SidebarItem: Hashable, Identifiable {
     case game(String)  // 游戏项，包含游戏ID
     case resource(ResourceType)  // 资源项
-    
+
     public var id: String {
         switch self {
         case .game(let gameId):
@@ -13,7 +13,7 @@ public enum SidebarItem: Hashable, Identifiable {
             return "resource_\(type.rawValue)"
         }
     }
-    
+
     public var title: String {
         switch self {
         case .game(let gameId):
@@ -31,8 +31,8 @@ public enum ResourceType: String, CaseIterable {
     case shader = "shader"
     case resourcepack = "resourcepack"
     case modpack = "modpack"
-    
+
     public var localizedName: String {
         "resource.content.type.\(rawValue)".localized()
     }
-} 
+}

@@ -16,7 +16,7 @@ struct YggdrasilProfileResponse: Codable, Identifiable {
     let refreshToken: String?
     let idToken: String?
     let textures: YggdrasilTextures?
-    
+
     // LittleSkin ID Token 可解析更多信息，根据需要添加
 }
 
@@ -44,7 +44,7 @@ struct YggdrasilDeviceCodeResponse: Codable {
     let verificationUriComplete: String?
     let expiresIn: Int
     let interval: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case userCode = "user_code"
         case deviceCode = "device_code"
@@ -62,7 +62,7 @@ struct YggdrasilTokenResponse: Codable {
     let accessToken: String
     let refreshToken: String?
     let idToken: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case tokenType = "token_type"
         case expiresIn = "expires_in"

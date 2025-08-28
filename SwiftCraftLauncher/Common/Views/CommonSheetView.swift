@@ -10,12 +10,12 @@ import SwiftUI
 /// 通用Sheet视图组件
 /// 分为头部、主体、底部三个部分，自适应内容大小
 struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
-    
+
     // MARK: - Properties
     let header: Header
     let bodyContent: BodyContent
     let footer: Footer
-    
+
     // MARK: - Initialization
     init(
         @ViewBuilder header: () -> Header,
@@ -26,7 +26,7 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
         self.bodyContent = body()
         self.footer = footer()
     }
-    
+
     // MARK: - Body
     var body: some View {
         VStack(spacing: 0) {
@@ -35,12 +35,12 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
                 .padding(.horizontal)
                 .padding()
             Divider()
-            
+
             // 主体区域
             bodyContent
                 .padding(.horizontal)
                 .padding()
-            
+
             // 底部区域
             Divider()
             footer
@@ -85,4 +85,3 @@ extension CommonSheetView where Header == EmptyView {
         self.footer = footer()
     }
 }
-

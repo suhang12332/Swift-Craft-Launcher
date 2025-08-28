@@ -2,6 +2,7 @@ import SwiftUI
 
 public struct PlayerSettingsView: View {
     public init() {}
+
     public var body: some View {
         HStack {
             Spacer()
@@ -10,9 +11,9 @@ public struct PlayerSettingsView: View {
                     Text("settings.player.placeholder".localized())
                 }
             }
-//            .frame(maxWidth: 500)
+            // .frame(maxWidth: 500)
             Spacer()
         }
         .padding()
     }
-} 
+}
