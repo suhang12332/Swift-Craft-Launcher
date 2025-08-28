@@ -1,9 +1,9 @@
 import Foundation
 import SwiftUI
 
-class GameSettingsManager: ObservableObject {
+public class GameSettingsManager: ObservableObject {
     @Published public var allJavaPaths: [String: String] = [:]
-    
+
     private static func detectJavaPath() async -> String {
         // 尝试使用 java_home 命令获取 JAVA_HOME 路径
         if let taskOutput = try? await shell(["/usr/libexec/java_home"]) {
@@ -23,16 +23,16 @@ class GameSettingsManager: ObservableObject {
         // 如果都找不到，返回默认路径
         return "/usr/bin"
     }
-    
+
     private static func detectAllJavaPaths() async -> [String: String] {
         var dict: [String: String] = [:]
         guard let output = try? await shell(["/usr/libexec/java_home", "-V"]) else { return dict }
-        
+
         // 解析 java_home -V 的输出，格式如下：
         // Matching Java Virtual Machines (2):
         //     17.0.2, x86_64:   "OpenJDK 17.0.2" /Library/Java/JavaVirtualMachines/temurin-17.0.2.jdk/Contents/Home
         //     1.8.0_292, x86_64:    "AdoptOpenJDK 8" /Library/Java/JavaVirtualMachines/adoptopenjdk-8.jdk/Contents/Home
-        
+
         let lines = output.components(separatedBy: "\n")
         for line in lines {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
@@ -46,7 +46,7 @@ class GameSettingsManager: ObservableObject {
         }
         return dict
     }
-    
+
     private static func shell(_ args: [String]) async throws -> String {
         let task = Process()
         task.launchPath = "/usr/bin/env"
@@ -54,12 +54,12 @@ class GameSettingsManager: ObservableObject {
         let pipe = Pipe()
         task.standardOutput = pipe
         task.standardError = pipe
-        
+
         // 设置命令执行超时时间（30秒）
         let timeout: TimeInterval = 30.0
-        
+
         try task.run()
-        
+
         // 使用 async/await 和 continuation 模式处理异步执行
         return try await withCheckedThrowingContinuation { continuation in
             // 在后台队列中监控任务执行，使用 userInitiated QoS 避免优先级反转
@@ -79,14 +79,14 @@ class GameSettingsManager: ObservableObject {
                     }
                 }
                 timeoutTimer.resume()
-                
+
                 // 监控任务完成状态
                 DispatchQueue.global(qos: .userInitiated).async {
                     task.waitUntilExit()
-                    
+
                     // 取消超时定时器
                     timeoutTimer.cancel()
-                    
+
                     // 读取命令输出
                     let data = pipe.fileHandleForReading.readDataToEndOfFile()
                     let output = String(data: data, encoding: .utf8) ?? ""
@@ -95,10 +95,10 @@ class GameSettingsManager: ObservableObject {
             }
         }
     }
-    
+
     // MARK: - 单例实例
     static let shared = GameSettingsManager()
-    
+
     // MARK: - 应用设置属性
     @AppStorage("defaultJavaPath") public var defaultJavaPath: String = "/usr/bin" {
         didSet { objectWillChange.send() }

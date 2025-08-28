@@ -4,7 +4,7 @@ import CommonCrypto
 class DownloadManager {
     enum ResourceType: String {
         case mod, datapack, shader, resourcepack
-        
+
         var folderName: String {
             switch self {
             case .mod: return "mods"
@@ -13,7 +13,7 @@ class DownloadManager {
             case .resourcepack: return "resourcepacks"
             }
         }
-        
+
         init?(from string: String) {
             switch string.lowercased() {
             case "mod": self = .mod
@@ -24,7 +24,7 @@ class DownloadManager {
             }
         }
     }
-    
+
     /// 下载资源文件
     /// - Parameters:
     ///   - game: 游戏信息
@@ -34,14 +34,14 @@ class DownloadManager {
     /// - Returns: 下载到的本地文件 URL
     /// - Throws: GlobalError 当操作失败时
     static func downloadResource(for game: GameVersionInfo, urlString: String, resourceType: String, expectedSha1: String? = nil) async throws -> URL {
-        guard let url = URL(string: urlString) else { 
+        guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
                 chineseMessage: "无效的下载地址: \(urlString)",
                 i18nKey: "error.validation.invalid_download_url",
                 level: .notification
             )
         }
-        
+
         guard let type = ResourceType(from: resourceType) else {
             throw GlobalError.resource(
                 chineseMessage: "未知的资源类型: \(resourceType)",
@@ -49,7 +49,7 @@ class DownloadManager {
                 level: .notification
             )
         }
-        
+
         let resourceDir: URL? = {
             switch type {
             case .mod:
@@ -65,7 +65,7 @@ class DownloadManager {
                 return AppPaths.resourcepacksDirectory(gameName: game.gameName)
             }
         }()
-        
+
         guard let resourceDirUnwrapped = resourceDir else {
             throw GlobalError.resource(
                 chineseMessage: "无法获取资源目录: \(type.folderName) for game: \(game.gameName)",
@@ -73,11 +73,11 @@ class DownloadManager {
                 level: .notification
             )
         }
-        
+
         let destURL = resourceDirUnwrapped.appendingPathComponent(url.lastPathComponent)
         return try await downloadFile(urlString: urlString, destinationURL: destURL, expectedSha1: expectedSha1)
     }
-    
+
     /// 通用下载文件到指定路径（不做任何目录结构拼接）
     /// - Parameters:
     ///   - urlString: 下载地址
@@ -91,7 +91,7 @@ class DownloadManager {
         expectedSha1: String? = nil
     ) async throws -> URL {
         Logger.shared.info("下载文件 \(urlString) -> \(destinationURL.path)")
-        
+
         var finalURLString = urlString
         if urlString.hasPrefix("https://github.com/") {
             let proxy = GameSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -99,7 +99,7 @@ class DownloadManager {
                 finalURLString = proxy + "/" + urlString
             }
         }
-        
+
         guard let url = URL(string: finalURLString) else { 
             throw GlobalError.validation(
                 chineseMessage: "无效的下载地址: \(urlString)",
@@ -107,9 +107,9 @@ class DownloadManager {
                 level: .notification
             )
         }
-        
+
         let fileManager = FileManager.default
-        
+
         do {
             try fileManager.createDirectory(at: destinationURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         } catch {
@@ -119,10 +119,10 @@ class DownloadManager {
                 level: .notification
             )
         }
-        
+
         // 检查是否需要 SHA1 校验
         let shouldCheckSha1 = (expectedSha1?.isEmpty == false)
-        
+
         // 如果文件已存在
         if fileManager.fileExists(atPath: destinationURL.path) {
             if shouldCheckSha1, let expectedSha1 = expectedSha1 {
@@ -142,12 +142,12 @@ class DownloadManager {
                 return destinationURL
             }
         }
-        
+
         // 下载文件到临时位置
         do {
             let (tempFileURL, response) = try await URLSession.shared.download(from: url)
             defer { try? fileManager.removeItem(at: tempFileURL) }
-            
+
             guard let httpResponse = response as? HTTPURLResponse else {
                 throw GlobalError.download(
                     chineseMessage: "无效的 HTTP 响应",
@@ -155,7 +155,7 @@ class DownloadManager {
                     level: .notification
                 )
             }
-            
+
             guard httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
                     chineseMessage: "HTTP 请求失败，状态码: \(httpResponse.statusCode)",
@@ -163,7 +163,7 @@ class DownloadManager {
                     level: .notification
                 )
             }
-            
+
             // SHA1 校验
             if shouldCheckSha1, let expectedSha1 = expectedSha1 {
                 do {
@@ -187,7 +187,7 @@ class DownloadManager {
                     }
                 }
             }
-            
+
             // 原子性地移动到最终位置
             do {
                 // 如果目标文件已存在，先删除它
@@ -202,9 +202,8 @@ class DownloadManager {
                     level: .notification
                 )
             }
-            
+
             return destinationURL
-            
         } catch {
             // 转换错误为 GlobalError
             if let globalError = error as? GlobalError {
@@ -232,4 +231,4 @@ class DownloadManager {
     static func calculateFileSHA1(at url: URL) throws -> String {
         return try SHA1Calculator.sha1(ofFileAt: url)
     }
-} 
+}

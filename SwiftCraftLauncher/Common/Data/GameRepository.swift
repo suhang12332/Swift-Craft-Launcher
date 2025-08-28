@@ -3,8 +3,7 @@ import Foundation
 
 /// 游戏版本信息仓库
 /// 负责游戏版本信息的持久化存储和管理
-// swiftlint:disable:next type_body_length
-class GameRepository: ObservableObject {
+class GameRepository: ObservableObject { // swiftlint:disable:this type_body_length
     // MARK: - Properties
 
     /// 已保存的游戏列表
@@ -143,7 +142,7 @@ class GameRepository: ObservableObject {
             game.lastPlayed = lastPlayed
             games[index] = game
         }
-        
+
         try saveGamesThrowing()
         Logger.shared.info("成功更新游戏状态: \(games[index].gameName)")
     }
