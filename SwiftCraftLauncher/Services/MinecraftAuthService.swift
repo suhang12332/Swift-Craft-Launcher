@@ -72,9 +72,9 @@ class MinecraftAuthService: ObservableObject {
 
         let body = "client_id=\(clientId)&scope=\(scope.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? scope)"
         request.httpBody = body.data(using: .utf8)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
+        
+        let (data, response) = try await NetworkManager.shared.data(for: request)
+        
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "请求设备代码失败: HTTP \(response)",
@@ -171,9 +171,9 @@ class MinecraftAuthService: ObservableObject {
 
         let body = "grant_type=urn:ietf:params:oauth:grant-type:device_code&client_id=\(clientId)&device_code=\(deviceCode)"
         request.httpBody = body.data(using: .utf8)
-
+        
         let (data, response) = try await URLSession.shared.data(for: request)
-
+        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.download(
                 chineseMessage: "请求访问令牌失败: 无效的 HTTP 响应",
@@ -282,9 +282,9 @@ class MinecraftAuthService: ObservableObject {
                 level: .notification
             )
         }
-
+        
         let (data, response) = try await URLSession.shared.data(for: request)
-
+        
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Xbox Live 令牌失败: HTTP \(response)",
@@ -342,9 +342,9 @@ class MinecraftAuthService: ObservableObject {
                 level: .notification
             )
         }
-
+        
         let (xstsData, xstsResponse) = try await URLSession.shared.data(for: xstsRequest)
-
+        
         guard let xstsHttpResponse = xstsResponse as? HTTPURLResponse, xstsHttpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 XSTS 令牌失败: HTTP \(xstsResponse)",
@@ -383,9 +383,9 @@ class MinecraftAuthService: ObservableObject {
                 level: .notification
             )
         }
-
+        
         let (minecraftData, minecraftResponse) = try await URLSession.shared.data(for: minecraftRequest)
-
+        
         guard let minecraftHttpResponse = minecraftResponse as? HTTPURLResponse, minecraftHttpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Minecraft 访问令牌失败: HTTP \(minecraftResponse)",
@@ -425,9 +425,9 @@ class MinecraftAuthService: ObservableObject {
         let url = URLConfig.API.Authentication.minecraftProfile
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-
+        
         let (data, response) = try await URLSession.shared.data(for: request)
-
+        
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Minecraft 用户资料失败: HTTP \(response)",
@@ -579,9 +579,9 @@ class MinecraftAuthService: ObservableObject {
 
         let body = "grant_type=refresh_token&client_id=\(clientId)&refresh_token=\(refreshToken)"
         request.httpBody = body.data(using: .utf8)
-
+        
         let (data, response) = try await URLSession.shared.data(for: request)
-
+        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.download(
                 chineseMessage: "刷新访问令牌失败: 无效的 HTTP 响应",

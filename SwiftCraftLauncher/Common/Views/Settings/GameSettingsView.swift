@@ -30,23 +30,19 @@ public struct GameSettingsView: View {
     }
 
     public var body: some View {
-        Grid(alignment: .trailing) {
+        Grid(alignment: .center, horizontalSpacing: 10, verticalSpacing: 20) {
             GridRow {
                 Text("settings.auto_handle_dependencies".localized())
                     .gridColumnAlignment(.trailing)
                 HStack {
-                    Toggle(
-                        "",
-                        isOn: $gameSettings.autoDownloadDependencies
-                    ).labelsHidden()
-                    Text("settings.dependencies.description".localized()).font(
-                        .footnote
-                    )
-                    .foregroundColor(.secondary)
+                    Toggle("", isOn: $gameSettings.autoDownloadDependencies)
+                        .labelsHidden()
+                    Text("settings.dependencies.description".localized())
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
                 }
                 .gridColumnAlignment(.leading)
             }
-            .padding(.bottom, 20)
 
             GridRow {
                 Text("settings.default_java_path.label".localized())
@@ -64,12 +60,9 @@ public struct GameSettingsView: View {
                         gameSettings.defaultJavaPath = AppConstants.defaultJava
                     }
                 )
-                .fixedSize()
-                .fileImporter(
-                    isPresented: $showJavaPathPicker,
-                    allowedContentTypes: [.directory],
-                    allowsMultipleSelection: false
-                ) { result in
+                .fileImporter(isPresented: $showJavaPathPicker,
+                              allowedContentTypes: [.directory],
+                              allowsMultipleSelection: false) { result in
                     switch result {
                     case .success(let urls):
                         if let url = urls.first {
@@ -99,13 +92,20 @@ public struct GameSettingsView: View {
                         at: newPath.isEmpty ? AppConstants.defaultJava : newPath
                     )
                 }
-                if let error = javaDetectionError {
+                .gridColumnAlignment(.leading)
+            }
+
+            if let error = javaDetectionError {
+                GridRow {
+                    Text("")
+                        .gridColumnAlignment(.trailing)
                     Text(error)
                         .font(.caption)
                         .foregroundColor(.red)
+                        .gridColumnAlignment(.leading)
                 }
             }
-            .padding(.bottom, 20)
+
             GridRow {
                 Text("settings.default_memory_allocation.label".localized())
                     .gridColumnAlignment(.trailing)
@@ -135,7 +135,8 @@ public struct GameSettingsView: View {
                     .truncationMode(.tail)
                 }
                 .gridColumnAlignment(.leading)
-            }.padding(.bottom, 20)
+            }
+
             GridRow {
                 Text("settings.game_resource_info.label".localized())
                     .gridColumnAlignment(.trailing)
@@ -145,11 +146,10 @@ public struct GameSettingsView: View {
                         systemImage: "text.document"
                     )
                     Divider().frame(height: 16)
-                    Label(
-                        cacheManager.cacheInfo.formattedSize,
-                        systemImage: "externaldrive"
-                    )
-                }.foregroundStyle(.secondary)
+                    Label(cacheManager.cacheInfo.formattedSize, systemImage: "externaldrive")
+                }
+                .foregroundStyle(.secondary)
+                .gridColumnAlignment(.leading)
             }
         }
 

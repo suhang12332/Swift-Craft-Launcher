@@ -145,7 +145,7 @@ class DownloadManager {
 
         // 下载文件到临时位置
         do {
-            let (tempFileURL, response) = try await URLSession.shared.download(from: url)
+            let (tempFileURL, response) = try await NetworkManager.shared.download(from: url)
             defer { try? fileManager.removeItem(at: tempFileURL) }
 
             guard let httpResponse = response as? HTTPURLResponse else {

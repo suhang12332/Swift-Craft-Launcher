@@ -66,7 +66,7 @@ class YggdrasilAuthService: ObservableObject {
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         let body = "client_id=\(clientId)&scope=\(scope.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? scope)"
         request.httpBody = body.data(using: .utf8)
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await NetworkManager.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.network(
                 chineseMessage: "请求设备代码失败: HTTP \((response as? HTTPURLResponse)?.statusCode ?? -1)",
@@ -150,7 +150,7 @@ class YggdrasilAuthService: ObservableObject {
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         let body = "grant_type=urn:ietf:params:oauth:grant-type:device_code&client_id=\(clientId)&device_code=\(deviceCode)"
         request.httpBody = body.data(using: .utf8)
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await NetworkManager.shared.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",

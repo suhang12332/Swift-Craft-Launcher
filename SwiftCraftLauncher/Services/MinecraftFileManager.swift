@@ -23,7 +23,6 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
     // MARK: - Properties
 
     private let fileManager = FileManager.default
-    private let session: URLSession
     private let coreFilesCount = NSLockingCounter()
     private let resourceFilesCount = NSLockingCounter()
     private var coreTotalFiles = 0
@@ -42,13 +41,7 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
 
     // MARK: - Initialization
     init() {
-        let config = URLSessionConfiguration.ephemeral
-        config.timeoutIntervalForRequest = Constants.downloadTimeout
-        config.timeoutIntervalForResource = Constants.downloadTimeout
-        config.httpMaximumConnectionsPerHost =
-            GameSettingsManager.shared.concurrentDownloads
-        config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        self.session = URLSession(configuration: config)
+        // NetworkManager will handle proxy configuration
     }
 
     // MARK: - Public Methods
@@ -432,7 +425,7 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
 
         // Download without retry
         do {
-            let (tempFileURL, response) = try await session.download(from: url)
+            let (tempFileURL, response) = try await NetworkManager.shared.download(from: url)
             defer { try? fileManager.removeItem(at: tempFileURL) }
 
             guard let httpResponse = response as? HTTPURLResponse,

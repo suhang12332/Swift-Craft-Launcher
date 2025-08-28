@@ -16,22 +16,21 @@ public struct GeneralSettingsView: View {
     public init() {}
 
     public var body: some View {
-        Grid(alignment: .trailing) {
+        Grid(alignment: .center, horizontalSpacing: 10, verticalSpacing: 20) {
             GridRow {
-                Text("settings.language.picker".localized()) // 长标题
-                    .gridColumnAlignment(.trailing) // 右对齐
+                Text("settings.language.picker".localized())
+                    .gridColumnAlignment(.trailing)
                 Picker("", selection: $selectedLanguage) {
                     ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
                         Text(name).tag(code)
                     }
                 }
+                .frame(width: 300)
                 .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
                     view.fixedSize()
                 }
-                .gridColumnAlignment(.leading)
                 .labelsHidden()
-                .onChange(of: selectedLanguage) { _, newValue in
-                    // 如果是取消操作导致的语言恢复，则不触发重启提示
+                .onChange(of: selectedLanguage) { oldValue, newValue in
                     if newValue != LanguageManager.shared.selectedLanguage {
                         showingRestartAlert = true
                     }
@@ -42,7 +41,6 @@ public struct GeneralSettingsView: View {
                     titleVisibility: .visible
                 ) {
                     Button("settings.language.restart.confirm".localized(), role: .destructive) {
-                        // 在重启前更新 Sparkle 的语言设置
                         sparkleUpdateService.updateSparkleLanguage(selectedLanguage)
                         LanguageManager.shared.selectedLanguage = selectedLanguage
                         restartAppSafely()
@@ -54,17 +52,19 @@ public struct GeneralSettingsView: View {
                 } message: {
                     Text("settings.language.restart.message".localized())
                 }
-            }.padding(.bottom, 20)
-
+                .gridColumnAlignment(.leading)
+            }
+            
             GridRow {
-                Text("settings.theme.picker".localized()) // 长标题
-                    .gridColumnAlignment(.trailing) // 右对齐
+                Text("settings.theme.picker".localized())
+                    .gridColumnAlignment(.trailing)
                 ThemeSelectorView(selectedTheme: $general.themeMode)
                     .gridColumnAlignment(.leading)
-            }.padding(.bottom, 20)
-
+            }
+            
             GridRow {
-                Text("settings.launcher_working_directory".localized()).gridColumnAlignment(.trailing)
+                Text("settings.launcher_working_directory".localized())
+                    .gridColumnAlignment(.trailing)
                 DirectorySettingRow(
                     title: "settings.launcher_working_directory".localized(),
                     path: general.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : general.launcherWorkingDirectory,
@@ -72,16 +72,20 @@ public struct GeneralSettingsView: View {
                     onChoose: { showDirectoryPicker = true },
                     onReset: {
                         resetWorkingDirectorySafely()
+                    },
+                    onOpen: {
+                        openWorkingDirectoryInFinder()
                     }
                 ).fixedSize()
                     .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
                         handleDirectoryImport(result)
-                    }
+                }
+                .gridColumnAlignment(.leading)
             }
-            .padding(.bottom, 20)
-
+            
             GridRow {
-                Text("settings.concurrent_downloads.label".localized()).gridColumnAlignment(.trailing) // 右对齐
+                Text("settings.concurrent_downloads.label".localized())
+                    .gridColumnAlignment(.trailing)
                 HStack {
                     Slider(
                         value: Binding(
@@ -89,43 +93,48 @@ public struct GeneralSettingsView: View {
                                 Double(gameSettings.concurrentDownloads)
                             },
                             set: {
-                                gameSettings.concurrentDownloads = Int(
-                                    $0
-                                )
+                                gameSettings.concurrentDownloads = Int($0)
                             }
                         ),
                         in: 1...20
-                        //                        label: { EmptyView() },
-                        //                        minimumValueLabel: { EmptyView() },
-                        //                        maximumValueLabel: { EmptyView() }
                     ).controlSize(.mini)
-                        .animation(.easeOut(duration: 0.5), value: gameSettings.concurrentDownloads)
-                    // 当前内存值显示（右对齐，固定宽度）
-                    Text("\(gameSettings.concurrentDownloads)").font(
-                        .subheadline
-                    )
-                    .foregroundColor(.secondary)
-                    .fixedSize()
+                    .animation(.easeOut(duration: 0.5), value: gameSettings.concurrentDownloads)
+                    Text("\(gameSettings.concurrentDownloads)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .fixedSize()
                 }.frame(width: 200)
-                    .gridColumnAlignment(.leading)
-                    .labelsHidden()
+                .gridColumnAlignment(.leading)
             }
-            .padding(.bottom, 20)
 
             GridRow {
-                Text("settings.minecraft_versions_url.label".localized()).gridColumnAlignment(.trailing)
-                TextField("", text: $gameSettings.minecraftVersionManifestURL).focusable(false)
+                Text("settings.minecraft_versions_url.label".localized())
+                    .gridColumnAlignment(.trailing)
+                TextField("", text: $gameSettings.minecraftVersionManifestURL)
+                    .focusable(false)
                     .fixedSize()
+                    .gridColumnAlignment(.leading)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
             }
+
             GridRow {
-                Text("settings.modrinth_api_url.label".localized()).gridColumnAlignment(.trailing)
-                TextField("", text: $gameSettings.modrinthAPIBaseURL).focusable(false)
+                Text("settings.modrinth_api_url.label".localized())
+                    .gridColumnAlignment(.trailing)
+                TextField("", text: $gameSettings.modrinthAPIBaseURL)
+                    .focusable(false)
                     .fixedSize()
+                    .gridColumnAlignment(.leading)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
             }
+
             GridRow {
-                Text("settings.git_proxy_url.label".localized()).gridColumnAlignment(.trailing)
-                TextField("", text: $gameSettings.gitProxyURL).focusable(false)
+                Text("settings.git_proxy_url.label".localized())
+                    .gridColumnAlignment(.trailing)
+                TextField("", text: $gameSettings.gitProxyURL)
+                    .focusable(false)
                     .fixedSize()
+                    .gridColumnAlignment(.leading)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
             }
         }
         .alert("common.error".localized(), isPresented: $showingErrorAlert) {
@@ -215,6 +224,13 @@ public struct GeneralSettingsView: View {
     private func showError(_ message: String) {
         errorMessage = message
         showingErrorAlert = true
+    }
+
+    /// 在 Finder 中打开工作目录
+    private func openWorkingDirectoryInFinder() {
+        let directoryPath = general.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : general.launcherWorkingDirectory
+        let url = URL(fileURLWithPath: directoryPath)
+        NSWorkspace.shared.open(url)
     }
 }
 
