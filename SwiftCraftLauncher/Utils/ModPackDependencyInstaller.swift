@@ -9,6 +9,7 @@ import Foundation
 
 /// 整合包依赖安装服务
 /// 负责安装整合包中定义的所有必需依赖
+// swiftlint:disable:next type_body_length
 struct ModPackDependencyInstaller {
     
     // MARK: - Download Type

@@ -79,7 +79,7 @@ struct GlobalResourceSheet: View {
                 if isLoading {
                     ProgressView().controlSize(.small)
                 } else if let error = error {
-                    ErrorView(error)
+                    newErrorView(error)
                 } else if let detail = projectDetail {
                     let compatibleGames = filterCompatibleGames(detail: detail, gameRepository: gameRepository, resourceType: resourceType, projectId: project.projectId)
                     if compatibleGames.isEmpty {
@@ -89,7 +89,7 @@ struct GlobalResourceSheet: View {
                             ModrinthProjectTitleView(projectDetail: projectDetail!).padding(.bottom,18)
                             CommonSheetGameBody(compatibleGames: compatibleGames, selectedGame: $selectedGame)
                             if let game = selectedGame {
-                                SpacerView()
+                                spacerView()
                                 VersionPickerForSheet(
                                     project: project,
                                     resourceType: resourceType,
@@ -106,7 +106,7 @@ struct GlobalResourceSheet: View {
                                     }
                                 )
                                 if resourceType == "mod" && !GameSettingsManager.shared.autoDownloadDependencies {
-                                    SpacerView()
+                                    spacerView()
                                     DependencySection(state: $dependencyState)
                                 }
                             }
@@ -232,7 +232,7 @@ private struct DependencySection: View {
         if state.isLoading {
             ProgressView().controlSize(.small)
         } else if !state.dependencies.isEmpty {
-            SpacerView()
+            spacerView()
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(state.dependencies, id: \ .id) { dep in
                     VStack(alignment: .leading) {

@@ -63,6 +63,7 @@ final class ModrinthSearchViewModel: ObservableObject {
     }
     
     // MARK: - Public Methods
+    // swiftlint:disable:next function_parameter_count
     func search(
         query: String,
         projectType: String,

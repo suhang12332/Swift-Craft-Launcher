@@ -45,7 +45,7 @@ struct ModrinthDetailView: View {
     var body: some View {
         LazyVStack {
             if let error = error {
-                ErrorView(error)
+                newErrorView(error)
             } else if viewModel.isLoading {
                 HStack {
                     ProgressView()
@@ -53,7 +53,7 @@ struct ModrinthDetailView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
             } else if viewModel.results.isEmpty {
-                EmptyResultView()
+                emptyResultView()
             } else {
                 resultList
             }

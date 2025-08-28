@@ -11,6 +11,7 @@ import SwiftUI
 /// 游戏设置服务
 /// 负责处理游戏下载、配置和保存的完整流程
 @MainActor
+// swiftlint:disable:next type_body_length
 class GameSetupUtil: ObservableObject {
     
     // MARK: - Properties
@@ -34,6 +35,7 @@ class GameSetupUtil: ObservableObject {
     ///   - gameRepository: 游戏仓库
     ///   - onSuccess: 成功回调
     ///   - onError: 错误回调
+    // swiftlint:disable:next function_parameter_count
     func saveGame(
         gameName: String,
         gameIcon: String,

@@ -85,7 +85,11 @@ class DownloadManager {
     ///   - expectedSha1: 预期 SHA1 值
     /// - Returns: 下载到的本地文件 URL
     /// - Throws: GlobalError 当操作失败时
-    static func downloadFile(urlString: String, destinationURL: URL, expectedSha1: String? = nil) async throws -> URL {
+    static func downloadFile(
+        urlString: String,
+        destinationURL: URL,
+        expectedSha1: String? = nil
+    ) async throws -> URL {
         Logger.shared.info("下载文件 \(urlString) -> \(destinationURL.path)")
         
         var finalURLString = urlString

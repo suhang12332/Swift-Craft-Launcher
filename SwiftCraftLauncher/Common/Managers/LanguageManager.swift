@@ -43,7 +43,6 @@ public class LanguageManager {
         ("🇹🇭 ไทย", "th"),
         ("🇹🇷 Türkçe", "tr"),
         ("🇻🇳 Tiếng Việt", "vi"),
-        
        ]
 
     /// 获取当前语言的 Bundle

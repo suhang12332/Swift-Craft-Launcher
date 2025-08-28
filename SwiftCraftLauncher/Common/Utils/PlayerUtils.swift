@@ -67,8 +67,8 @@ enum PlayerUtils {
         guard let i = UInt64(iStr, radix: 16), let u = UInt64(uStr, radix: 16) else { return nil }
         let f = i ^ u
         let mixedBits = (f ^ (f >> 32)) & 0xffff_ffff
-        let I = Int32(bitPattern: UInt32(truncatingIfNeeded: mixedBits))
-        return (Int(I) % names.count + names.count) % names.count
+        let ii = Int32(bitPattern: UInt32(truncatingIfNeeded: mixedBits))
+        return (Int(ii) % names.count + names.count) % names.count
     }
 }
 

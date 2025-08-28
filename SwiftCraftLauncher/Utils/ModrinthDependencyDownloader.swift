@@ -1,6 +1,7 @@
 import Foundation
 import os
 
+// swiftlint:disable:next type_body_length
 struct ModrinthDependencyDownloader {
     /// 递归下载所有依赖（基于官方依赖API）
     static func downloadAllDependenciesRecursive(
@@ -231,6 +232,7 @@ struct ModrinthDependencyDownloader {
     }
 
     /// 手动下载依赖和主mod（不递归，仅当前依赖和主mod）
+    // swiftlint:disable:next function_parameter_count
     static func downloadManualDependenciesAndMain(
         dependencies: [ModrinthProjectDetail],
         selectedVersions: [String: String],

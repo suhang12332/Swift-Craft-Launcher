@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// swiftlint:disable:next type_body_length
 struct ModPackDownloadSheet: View {
    let projectId: String
    let gameInfo: GameVersionInfo?

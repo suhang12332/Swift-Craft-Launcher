@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-func ErrorView(_ error: GlobalError) -> some View {
+func newErrorView(_ error: GlobalError) -> some View {
     ContentUnavailableView {
         Label("result.error".localized(), systemImage: "xmark.icloud")
     } description: {
@@ -15,7 +15,7 @@ func ErrorView(_ error: GlobalError) -> some View {
 
 }
 
-func EmptyResultView() -> some View {
+func emptyResultView() -> some View {
     ContentUnavailableView {
         Label(
             "result.empty".localized(),
@@ -24,7 +24,7 @@ func EmptyResultView() -> some View {
     }
 }
 
-func SpacerView() -> some View {
+func spacerView() -> some View {
     Spacer().frame(maxHeight: 20)
 }
 

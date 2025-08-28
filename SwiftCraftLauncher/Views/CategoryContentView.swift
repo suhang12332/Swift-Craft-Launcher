@@ -53,7 +53,7 @@ struct CategoryContentView: View {
     var body: some View {
         VStack {
             if let error = viewModel.error {
-                ErrorView(error)
+                newErrorView(error)
             } else {
                 if type == "resource" {
                     versionSection

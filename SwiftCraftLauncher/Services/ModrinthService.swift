@@ -23,6 +23,7 @@ private extension JSONDecoder {
     }
 }
 
+// swiftlint:disable:next type_body_length
 enum ModrinthService {
     private static let cacheExpiration: TimeInterval = 600 // 10分钟
     

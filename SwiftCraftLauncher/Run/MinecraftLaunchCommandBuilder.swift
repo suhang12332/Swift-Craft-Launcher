@@ -98,7 +98,11 @@ struct MinecraftLaunchCommandBuilder {
     ///   - manifest: 版本清单
     /// - Returns: 验证后的路径集合
     /// - Throws: GlobalError 当路径无效时
-    private static func validateAndGetPaths(gameInfo: GameVersionInfo, manifest: MinecraftVersionManifest) throws -> (nativesDir: String, librariesDir: URL, assetsDir: String, gameDir: String, clientJarPath: String) {
+    private static func validateAndGetPaths(
+        gameInfo: GameVersionInfo,
+        manifest: MinecraftVersionManifest
+        // swiftlint:disable:next large_tuple
+    ) throws -> (nativesDir: String, librariesDir: URL, assetsDir: String, gameDir: String, clientJarPath: String) {
         
         
         // 验证游戏目录

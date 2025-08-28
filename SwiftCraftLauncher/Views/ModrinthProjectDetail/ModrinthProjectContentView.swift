@@ -294,7 +294,7 @@ struct ModrinthProjectContentView: View {
     var body: some View {
         VStack {
             if let error = error {
-                ErrorView(error)
+                newErrorView(error)
             } else if let project = projectDetail {
                 CompatibilitySection(project: project)
                 LinksSection(project: project)

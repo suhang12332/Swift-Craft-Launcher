@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 import SwiftUI
-
+// swiftlint:disable:next type_body_length
 class MinecraftAuthService: ObservableObject {
     static let shared = MinecraftAuthService()
     

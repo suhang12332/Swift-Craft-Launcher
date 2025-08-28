@@ -28,7 +28,16 @@ class PlayerDataManager {
         }
         
         do {
-            let newPlayer = try Player(name: name, uuid: uuid, isOnlineAccount: isOnline, avatarName: avatarName, authXuid: xuid, authAccessToken: accToken, authRefreshToken: refreshToken, isCurrent: players.isEmpty)
+            let newPlayer = try Player(
+                name: name,
+                uuid: uuid,
+                isOnlineAccount: isOnline,
+                avatarName: avatarName,
+                authXuid: xuid,
+                authAccessToken: accToken,
+                authRefreshToken: refreshToken,
+                isCurrent: players.isEmpty
+            )
             players.append(newPlayer)
             try savePlayersThrowing(players)
             Logger.shared.debug("已添加新玩家: \(name)")
