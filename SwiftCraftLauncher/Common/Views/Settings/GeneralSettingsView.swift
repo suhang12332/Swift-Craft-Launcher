@@ -15,15 +15,16 @@ public struct GeneralSettingsView: View {
     public init() {}
 
     public var body: some View {
-        VStack(spacing: 20) {
-            HStack {
+        Grid(alignment: .center, horizontalSpacing: 10, verticalSpacing: 20) {
+            GridRow {
                 Text("settings.language.picker".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 Picker("", selection: $selectedLanguage) {
                     ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
                         Text(name).tag(code)
                     }
                 }
+                .frame(width: 300)
                 .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
                     view.fixedSize()
                 }
@@ -104,7 +105,7 @@ public struct GeneralSettingsView: View {
                     .foregroundColor(.secondary)
                     .fixedSize()
                 }.frame(width: 200)
-                Spacer()
+                .gridColumnAlignment(.leading)
             }
             .padding(.bottom, 20)
 
