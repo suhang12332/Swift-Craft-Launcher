@@ -16,15 +16,16 @@ public struct GeneralSettingsView: View {
     public init() {}
     
     public var body: some View {
-        VStack(spacing: 20) {
-            HStack {
+        Grid(alignment: .center, horizontalSpacing: 10, verticalSpacing: 20) {
+            GridRow {
                 Text("settings.language.picker".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 Picker("", selection: $selectedLanguage) {
                     ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
                         Text(name).tag(code)
                     }
                 }
+                .frame(width: 300)
                 .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
                     view.fixedSize()
                 }
@@ -50,19 +51,19 @@ public struct GeneralSettingsView: View {
                 } message: {
                     Text("settings.language.restart.message".localized())
                 }
-                Spacer()
+                .gridColumnAlignment(.leading)
             }
             
-            HStack {
+            GridRow {
                 Text("settings.theme.picker".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 ThemeSelectorView(selectedTheme: $general.themeMode)
-                Spacer()
+                    .gridColumnAlignment(.leading)
             }
             
-            HStack {
+            GridRow {
                 Text("settings.launcher_working_directory".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 DirectorySettingRow(
                     title: "settings.launcher_working_directory".localized(),
                     path: general.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : general.launcherWorkingDirectory,
@@ -75,12 +76,12 @@ public struct GeneralSettingsView: View {
                 .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
                         handleDirectoryImport(result)
                 }
-                Spacer()
+                .gridColumnAlignment(.leading)
             }
             
-            HStack {
+            GridRow {
                 Text("settings.concurrent_downloads.label".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 HStack {
                     Slider(
                         value: Binding(
@@ -99,34 +100,37 @@ public struct GeneralSettingsView: View {
                         .foregroundColor(.secondary)
                         .fixedSize()
                 }.frame(width: 200)
-                Spacer()
+                .gridColumnAlignment(.leading)
             }
             
-            HStack {
+            GridRow {
                 Text("settings.minecraft_versions_url.label".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 TextField("", text: $gameSettings.minecraftVersionManifestURL)
                     .focusable(false)
                     .fixedSize()
-                Spacer()
+                    .gridColumnAlignment(.leading)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
             }
             
-            HStack {
+            GridRow {
                 Text("settings.modrinth_api_url.label".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 TextField("", text: $gameSettings.modrinthAPIBaseURL)
                     .focusable(false)
                     .fixedSize()
-                Spacer()
+                    .gridColumnAlignment(.leading)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
             }
             
-            HStack {
+            GridRow {
                 Text("settings.git_proxy_url.label".localized())
-                    .frame(width: 200, alignment: .trailing)
+                    .gridColumnAlignment(.trailing)
                 TextField("", text: $gameSettings.gitProxyURL)
                     .focusable(false)
                     .fixedSize()
-                Spacer()
+                    .gridColumnAlignment(.leading)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
             }
         }
         .alert("common.error".localized(), isPresented: $showingErrorAlert) {
