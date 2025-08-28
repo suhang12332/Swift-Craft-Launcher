@@ -11,11 +11,15 @@ struct AddPlayerSheetView: View {
         case minecraft(MinecraftProfileResponse)
         case yggdrasil(YggdrasilProfileResponse)
     }
+
     @ObservedObject var playerListViewModel: PlayerListViewModel
+
     @State private var isPremium: Bool = false
     @State private var authenticatedProfile: MinecraftProfileResponse?
     @StateObject private var authService = MinecraftAuthService.shared
+
     @StateObject private var yggdrasilAuthService = YggdrasilAuthService.shared
+    
     @Environment(\.openURL) private var openURL
     @State private var selectedAuthType: AccountAuthType = .offline
 

@@ -40,12 +40,9 @@ struct DirectorySettingRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Button(
-                    action: onChoose,
-                    label: {
-                        PathBreadcrumbView(path: path)
-                    }
-                )
+                Button(action: onChoose) {
+                    PathBreadcrumbView(path: path)
+                }
                 .buttonStyle(.plain)
                 .onHover { hovering in
                     if hovering {
