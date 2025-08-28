@@ -77838,133 +77838,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يرجى النقر على زر \"تسجيل الدخول\" أدناه لتأكيد استخدام هذا الحساب"
+            "value" : "يرجى النقر على زر \"إضافة\" أدناه لتأكيد استخدام هذا الحساب"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Klik venligst på \"Login\"-knappen nedenfor for at bekræfte brugen af denne konto"
+            "value" : "Klik venligst på \"Tilføj\"-knappen nedenfor for at bekræfte brugen af denne konto"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bitte klicken Sie auf die Schaltfläche \"Anmelden\" unten, um die Verwendung dieses Kontos zu bestätigen"
+            "value" : "Bitte klicken Sie auf die Schaltfläche \"Hinzufügen\" unten, um die Verwendung dieses Kontos zu bestätigen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Please click the \"Login\" button below to confirm using this account"
+            "value" : "Please click the \"Add\" button below to confirm using this account"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por favor haz clic en el botón \"Iniciar sesión\" de abajo para confirmar el uso de esta cuenta"
+            "value" : "Por favor haz clic en el botón \"Añadir\" de abajo para confirmar el uso de esta cuenta"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Napsauta alla olevaa \"Kirjaudu\"-painiketta vahvistaaksesi tämän tilin käytön"
+            "value" : "Napsauta alla olevaa \"Lisää\"-painiketta vahvistaaksesi tämän tilin käytön"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Veuillez cliquer sur le bouton \"Connexion\" ci-dessous pour confirmer l'utilisation de ce compte"
+            "value" : "Veuillez cliquer sur le bouton \"Ajouter\" ci-dessous pour confirmer l'utilisation de ce compte"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "कृपया इस खाते का उपयोग करने की पुष्टि के लिए नीचे \"लॉगिन\" बटन पर क्लिक करें"
+            "value" : "कृपया इस खाते का उपयोग करने की पुष्टि के लिए नीचे \"जोड़ें\" बटन पर क्लिक करें"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fai clic sul pulsante \"Accedi\" qui sotto per confermare l'utilizzo di questo account"
+            "value" : "Fai clic sul pulsante \"Aggiungi\" qui sotto per confermare l'utilizzo di questo account"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このアカウントの使用を確認するために、下の\"ログイン\"ボタンをクリックしてください"
+            "value" : "このアカウントの使用を確認するために、下の\"追加\"ボタンをクリックしてください"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 계정 사용을 확인하려면 아래 \"로그인\" 버튼을 클릭해 주세요"
+            "value" : "이 계정 사용을 확인하려면 아래 \"추가\" 버튼을 클릭해 주세요"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vennligst klikk på \"Logg inn\"-knappen nedenfor for å bekrefte bruk av denne kontoen"
+            "value" : "Vennligst klikk på \"Legg til\"-knappen nedenfor for å bekrefte bruk av denne kontoen"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Klik op de \"Inloggen\"-knop hieronder om het gebruik van dit account te bevestigen"
+            "value" : "Klik op de \"Toevoegen\"-knop hieronder om het gebruik van dit account te bevestigen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kliknij przycisk \"Zaloguj\" poniżej, aby potwierdzić użycie tego konta"
+            "value" : "Kliknij przycisk \"Dodaj\" poniżej, aby potwierdzić użycie tego konta"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Clique no botão \"Login\" abaixo para confirmar o uso desta conta"
+            "value" : "Clique no botão \"Adicionar\" abaixo para confirmar o uso desta conta"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Пожалуйста, нажмите кнопку \"Войти\" ниже, чтобы подтвердить использование этой учётной записи"
+            "value" : "Пожалуйста, нажмите кнопку \"Добавить\" ниже, чтобы подтвердить использование этой учётной записи"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Klicka på \"Logga in\"-knappen nedan för att bekräfta användning av detta konto"
+            "value" : "Klicka på \"Lägg till\"-knappen nedan för att bekräfta användning av detta konto"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "โปรดคลิกปุ่ม \"เข้าสู่ระบบ\" ด้านล่างเพื่อยืนยันการใช้บัญชีนี้"
+            "value" : "โปรดคลิกปุ่ม \"เพิ่ม\" ด้านล่างเพื่อยืนยันการใช้บัญชีนี้"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bu hesabı kullandığınızı onaylamak için lütfen aşağıdaki \"Giriş\" düğmesine tıklayın"
+            "value" : "Bu hesabı kullandığınızı onaylamak için lütfen aşağıdaki \"Ekle\" düğmesine tıklayın"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vui lòng nhấp vào nút \"Đăng nhập\" bên dưới để xác nhận sử dụng tài khoản này"
+            "value" : "Vui lòng nhấp vào nút \"Thêm\" bên dưới để xác nhận sử dụng tài khoản này"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请点击下方的\"登录\"按钮确认使用此账户"
+            "value" : "请点击下方的\"添加\"按钮确认使用此账户"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請點擊下方的「登入」按鈕確認使用此帳戶"
+            "value" : "請點擊下方的「添加」按鈕確認使用此帳戶"
           }
         }
       }
