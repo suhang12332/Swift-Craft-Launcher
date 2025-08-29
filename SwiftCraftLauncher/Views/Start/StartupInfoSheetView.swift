@@ -11,7 +11,8 @@ import SwiftUI
 struct StartupInfoSheetView: View {
 
     // MARK: - Properties
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
 
     // MARK: - Body
     var body: some View {

@@ -5,7 +5,7 @@ import SwiftUI
 enum ModrinthConstants {
     // MARK: - UI Constants
     /// UI 相关的常量
-    enum UI {
+    enum UIConstants {
         static let pageSize = 20
         static let iconSize: CGFloat = 48
         static let cornerRadius: CGFloat = 8
@@ -38,6 +38,14 @@ enum ModrinthConstants {
             static let unsupported = "unsupported"
         }
     }
+}
+
+// MARK: - Filter Options
+/// 过滤选项结构体，用于减少函数参数数量
+struct FilterOptions {
+    let resolutions: [String]
+    let performanceImpact: [String]
+    let loaders: [String]
 }
 
 // MARK: - ViewModel
@@ -88,14 +96,17 @@ final class ModrinthSearchViewModel: ObservableObject {
                 try Task.checkCancellation()
 
                 let offset = (page - 1) * pageSize
+                let filterOptions = FilterOptions(
+                    resolutions: resolutions,
+                    performanceImpact: performanceImpact,
+                    loaders: loaders
+                )
                 let facets = buildFacets(
                     projectType: projectType,
                     versions: versions,
                     categories: categories,
                     features: features,
-                    resolutions: resolutions,
-                    performanceImpact: performanceImpact,
-                    loaders: loaders
+                    filterOptions: filterOptions
                 )
 
                 try Task.checkCancellation()
@@ -149,9 +160,7 @@ final class ModrinthSearchViewModel: ObservableObject {
         versions: [String],
         categories: [String],
         features: [String],
-        resolutions: [String],
-        performanceImpact: [String],
-        loaders: [String]
+        filterOptions: FilterOptions
     ) -> [[String]] {
         var facets: [[String]] = []
 
@@ -190,20 +199,20 @@ final class ModrinthSearchViewModel: ObservableObject {
         }
 
         // Add resolutions if any (as categories)
-        if !resolutions.isEmpty {
-            facets.append(resolutions.map { "categories:\($0)" })
+        if !filterOptions.resolutions.isEmpty {
+            facets.append(filterOptions.resolutions.map { "categories:\($0)" })
         }
 
         // Add performance impact if any (as categories)
-        if !performanceImpact.isEmpty {
-            facets.append(performanceImpact.map { "categories:\($0)" })
+        if !filterOptions.performanceImpact.isEmpty {
+            facets.append(filterOptions.performanceImpact.map { "categories:\($0)" })
         }
 
         // Add loaders if any (as categories)
-        if !loaders.isEmpty && projectType != "resourcepack"
+        if !filterOptions.loaders.isEmpty && projectType != "resourcepack"
             && projectType != "datapack" {
-            var loadersToUse = loaders
-            if let first = loaders.first, first.lowercased() == "vanilla" {
+            var loadersToUse = filterOptions.loaders
+            if let first = filterOptions.loaders.first, first.lowercased() == "vanilla" {
                 loadersToUse = ["minecraft"]
             }
             facets.append(loadersToUse.map { "categories:\($0)" })

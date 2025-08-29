@@ -11,7 +11,7 @@ import ZIPFoundation
 
 // MARK: - View Model
 @MainActor
-class ModPackDownloadSheetViewModel: ObservableObject { // swiftlint:disable:this type_body_length
+class ModPackDownloadSheetViewModel: ObservableObject {
     @Published var projectDetail: ModrinthProjectDetail?
     @Published var availableGameVersions: [String] = []
     @Published var filteredModPackVersions: [ModrinthProjectDetailVersion] = []
@@ -39,7 +39,7 @@ class ModPackDownloadSheetViewModel: ObservableObject { // swiftlint:disable:thi
                 try await ModrinthService.fetchProjectDetailsThrowing(
                     id: projectId
                 )
-            availableGameVersions = projectDetail!.gameVersions
+            availableGameVersions = projectDetail?.gameVersions ?? []
         } catch {
             let globalError = GlobalError.from(error)
             GlobalErrorHandler.shared.handle(globalError)

@@ -18,7 +18,7 @@ struct YggdrasilAuthView: View {
                 notAuthenticatedView
             case .requestingCode:
                 requestingCodeView
-            case .waitingForUser(let userCode, let verificationUri):
+            case let .waitingForUser(userCode, verificationUri):
                 waitingForUserView(userCode: userCode, verificationUri: verificationUri)
             case .authenticating:
                 authenticatingView

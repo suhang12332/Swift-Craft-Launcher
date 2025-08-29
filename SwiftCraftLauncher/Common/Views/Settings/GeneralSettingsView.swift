@@ -224,7 +224,7 @@ private func restartApp() throws {
     // 使用更简单和可靠的重启方法
     let task = Process()
     task.launchPath = "/usr/bin/open"
-    task.arguments = ["-a", Bundle.main.bundleIdentifier!]
+    task.arguments = ["-a", Bundle.main.identifier]
     do {
         try task.run()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {

@@ -1,8 +1,7 @@
 import Foundation
 import SwiftUI
 
-// swiftlint:disable:next type_body_length
-struct GameResourceHandler {
+enum GameResourceHandler {
     static func updateButtonState(
         gameInfo: GameVersionInfo?,
         project: ModrinthProject,

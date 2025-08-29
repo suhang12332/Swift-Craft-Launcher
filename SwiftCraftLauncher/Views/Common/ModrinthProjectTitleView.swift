@@ -62,22 +62,21 @@ struct ModrinthProjectTitleView: View {
                     // 项目标签
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
-                            ForEach(projectDetail.categories, id: \.self) {
-                                category in
+                            ForEach(projectDetail.categories, id: \.self) { category in
                                 Text(category)
                                     .font(.caption2)
                                     .padding(
                                         .horizontal,
-                                        ModrinthConstants.UI
+                                        ModrinthConstants.UIConstants
                                             .tagHorizontalPadding
                                     )
                                     .padding(
                                         .vertical,
-                                        ModrinthConstants.UI.tagVerticalPadding
+                                        ModrinthConstants.UIConstants.tagVerticalPadding
                                     )
                                     .background(Color.gray.opacity(0.15))
                                     .cornerRadius(
-                                        ModrinthConstants.UI.tagCornerRadius
+                                        ModrinthConstants.UIConstants.tagCornerRadius
                                     )
                             }
                         }

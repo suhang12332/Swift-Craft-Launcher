@@ -24,8 +24,7 @@ struct DependencySheetView: View {
                 } else {
                     ModrinthProjectTitleView(projectDetail: projectDetail)
                     VStack(alignment: .leading, spacing: 12) {
-                        ForEach(viewModel.missingDependencies, id: \.id) {
-                            dep in
+                        ForEach(viewModel.missingDependencies, id: \.id) { dep in
                             let versions =
                                 viewModel.dependencyVersions[dep.id] ?? []
                             if !versions.isEmpty {

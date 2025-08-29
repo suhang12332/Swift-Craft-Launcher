@@ -8,10 +8,11 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct GameAdvancedSettingsView: View { // swiftlint:disable:this type_body_length
+struct GameAdvancedSettingsView: View {
     let game: GameVersionInfo
     @EnvironmentObject var gameRepository: GameRepository
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
 
     // 内存设置
     @State private var memoryRange: ClosedRange<Double> =

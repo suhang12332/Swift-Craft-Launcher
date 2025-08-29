@@ -148,7 +148,7 @@ struct MainView: View {
             handleResourceToGameTransition(gameId: id)
         case (.game, .resource):
             resetToResourceDefaults()
-        case (.game(let oldId), .game(let newId)):
+        case let (.game(oldId), .game(newId)):
             handleGameToGameTransition(from: oldId, to: newId)
         case (.resource, .resource):
             resetToResourceDefaults()
