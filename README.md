@@ -1,22 +1,22 @@
 <div align="center">
   <img src="SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="SwiftCraftLauncher" width="128" height="128">
-  
+
   # Swift Craft Launcher
-  
+
   **现代化的 macOS Minecraft 启动器**
-  
+
   [![Swift Craft Launcher](https://img.shields.io/badge/Swift%20Craft%20Launcher-SCL-orange.svg)](https://github.com/suhang12332/Swift-Craft-Launcher)
   [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg)](https://swift.org/)
   [![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-1057517524-blue.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
-  
+
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
   [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
   [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://developer.apple.com/macos/)
   [![Homebrew](https://img.shields.io/badge/Homebrew-available-green.svg)](https://formulae.brew.sh/cask/swiftcraft-launcher)
-  [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&style=flat-square)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
-  
+  [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
+
   [官网](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [下载](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文档](https://imreak.github.io)
-  
+
   **简体中文** | [繁體中文](doc/README_zh-TW.md) | [English](doc/README_en.md)
 </div>
 
