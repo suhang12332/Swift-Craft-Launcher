@@ -70,6 +70,7 @@ jobs:
             -destination "platform=macOS,arch=${{ matrix.arch }}" \
             -derivedDataPath "$BUILD_DIR" \
             -archivePath "$ARCHIVE_PATH" \
+            -skipPackagePluginValidation \
             EXCLUDED_ARCHS="$EXCLUDED_ARCHS" \
             archive
 
