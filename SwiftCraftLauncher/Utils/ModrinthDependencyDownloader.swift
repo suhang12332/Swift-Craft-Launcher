@@ -1,8 +1,7 @@
 import Foundation
 import os
 
-// swiftlint:disable:next type_body_length
-struct ModrinthDependencyDownloader {
+enum ModrinthDependencyDownloader {
     /// 递归下载所有依赖（基于官方依赖API）
     static func downloadAllDependenciesRecursive(
         for projectId: String,
@@ -264,7 +263,7 @@ struct ModrinthDependencyDownloader {
         return projectDetails
     }
 
-    /// 手动下载依赖和主mod（不递归，仅当前依赖和主mod）
+    // 手动下载依赖和主mod（不递归，仅当前依赖和主mod）
     // swiftlint:disable:next function_parameter_count
     static func downloadManualDependenciesAndMain(
         dependencies: [ModrinthProjectDetail],
@@ -284,8 +283,7 @@ struct ModrinthDependencyDownloader {
             value: GameSettingsManager.shared.concurrentDownloads
         )
 
-        await withTaskGroup(of: (String, Bool, ModrinthProjectDetail?).self) {
-            group in
+        await withTaskGroup(of: (String, Bool, ModrinthProjectDetail?).self) { group in
             for dep in dependencies {
                 guard let versionId = selectedVersions[dep.id],
                     let versions = dependencyVersions[dep.id],

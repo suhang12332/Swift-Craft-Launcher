@@ -1,6 +1,6 @@
 import SwiftUI
 
-public struct ContributorsView: View {  // swiftlint:disable:this type_body_length
+public struct ContributorsView: View {
     @StateObject private var viewModel = ContributorsViewModel()
 
     public init() {}
@@ -225,62 +225,77 @@ public struct ContributorsView: View {  // swiftlint:disable:this type_body_leng
         isTopContributor: Bool,
         index: Int
     ) -> some View {
-        Link(destination: URL(string: contributor.htmlUrl)!) {
-            HStack(spacing: 12) {
-                // 头像
-                contributorAvatar(contributor)
+        Group {
+            if let url = URL(string: contributor.htmlUrl) {
+                Link(destination: url) {
+                    contributorRowContent(contributor, isTopContributor: isTopContributor, index: index)
+                }
+            } else {
+                contributorRowContent(contributor, isTopContributor: isTopContributor, index: index)
+            }
+        }
+    }
 
-                // 信息
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(contributor.login)
-                            .font(
-                                .system(
-                                    size: 13,
-                                    weight: isTopContributor
-                                        ? .semibold : .regular
-                                )
-                            )
-                            .foregroundColor(.primary)
+    // MARK: - Contributor Row Content
+    private func contributorRowContent(
+        _ contributor: GitHubContributor,
+        isTopContributor: Bool,
+        index: Int
+    ) -> some View {
+        HStack(spacing: 12) {
+            // 头像
+            contributorAvatar(contributor)
 
-                        if isTopContributor {
-                            contributorRankBadge(index + 1)
-                        }
-                    }
-
-                    HStack(spacing: 4) {
-                        // 代码标签（统一标记为代码贡献者）
-                        contributionTag(.code)
-
-                        // 贡献次数
-                        Text(
-                            String(
-                                format: "contributors.contributions.format"
-                                    .localized(),
-                                viewModel.formatContributions(
-                                    contributor.contributions
-                                )
+            // 信息
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(contributor.login)
+                        .font(
+                            .system(
+                                size: 13,
+                                weight: isTopContributor
+                                ? .semibold : .regular
                             )
                         )
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
+
+                    if isTopContributor {
+                        contributorRankBadge(index + 1)
                     }
                 }
 
-                Spacer()
+                HStack(spacing: 4) {
+                    // 代码标签（统一标记为代码贡献者）
+                    contributionTag(.code)
 
-                // 箭头
-                Image("github-mark")
-                    .renderingMode(.template)
-                    .resizable()
-                    .frame(width: 16, height: 16)
-                    .imageScale(.medium)
+                    // 贡献次数
+                    Text(
+                        String(
+                            format: "contributors.contributions.format"
+                                .localized(),
+                            viewModel.formatContributions(
+                                contributor.contributions
+                            )
+                        )
+                    )
+                    .font(.caption)
                     .foregroundColor(.secondary)
+                }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .contentShape(Rectangle())
+
+            Spacer()
+
+            // 箭头
+            Image("github-mark")
+                .renderingMode(.template)
+                .resizable()
+                .frame(width: 16, height: 16)
+                .imageScale(.medium)
+                .foregroundColor(.secondary)
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .contentShape(Rectangle())
     }
 
     // MARK: - Contribution Tag
@@ -405,8 +420,7 @@ public struct ContributorsView: View {  // swiftlint:disable:this type_body_leng
 
                 // 贡献标签行
                 HStack(spacing: 6) {
-                    ForEach(contributor.contributions, id: \.self) {
-                        contribution in
+                    ForEach(contributor.contributions, id: \.self) { contribution in
                         contributionTag(contribution)
                     }
                     Spacer()
@@ -451,9 +465,4 @@ public struct ContributorsView: View {  // swiftlint:disable:this type_body_leng
             }
         }
     }
-}
-
-#Preview {
-    ContributorsView()
-        .frame(width: 300, height: 400)
 }

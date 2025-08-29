@@ -13,7 +13,8 @@ struct MiniRangeSlider: View {
 
     private let thumbDiameter: CGFloat = 14
     private let trackHeight: CGFloat = 3
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.colorScheme)
+    var colorScheme
     var body: some View {
         GeometryReader { geo in
             let width = geo.size.width

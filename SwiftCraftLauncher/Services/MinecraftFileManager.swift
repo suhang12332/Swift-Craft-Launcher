@@ -147,22 +147,20 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         }
         let allDirectories = directoriesToCreate + profileSubfolders
 
-        for directory in allDirectories {
-            if !fileManager.fileExists(atPath: directory.path) {
-                do {
-                    try fileManager.createDirectory(
-                        at: directory,
-                        withIntermediateDirectories: true
-                    )
-                    Logger.shared.debug("创建目录：\(directory.path)")
-                } catch {
-                    throw GlobalError.fileSystem(
-                        chineseMessage:
-                            "创建目录失败: \(directory.path), 错误: \(error.localizedDescription)",
-                        i18nKey: "error.filesystem.directory_creation_failed",
-                        level: .notification
-                    )
-                }
+        for directory in allDirectories where !fileManager.fileExists(atPath: directory.path) {
+            do {
+                try fileManager.createDirectory(
+                    at: directory,
+                    withIntermediateDirectories: true
+                )
+                Logger.shared.debug("创建目录：\(directory.path)")
+            } catch {
+                throw GlobalError.fileSystem(
+                    chineseMessage:
+                        "创建目录失败: \(directory.path), 错误: \(error.localizedDescription)",
+                    i18nKey: "error.filesystem.directory_creation_failed",
+                    level: .notification
+                )
             }
         }
     }
@@ -253,9 +251,17 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
         let destinationURL = metaDirectory.appendingPathComponent("libraries")
             .appendingPathComponent(library.downloads.artifact.path)
 
+        guard let artifactURL = library.downloads.artifact.url else {
+            throw GlobalError.download(
+                chineseMessage: "库文件 \(library.name) 缺少下载 URL",
+                i18nKey: "error.download.missing_library_url",
+                level: .notification
+            )
+        }
+
         do {
             _ = try await DownloadManager.downloadFile(
-                urlString: library.downloads.artifact.url!.absoluteString,
+                urlString: artifactURL.absoluteString,
                 destinationURL: destinationURL,
                 expectedSha1: library.downloads.artifact.sha1
             )
@@ -303,9 +309,17 @@ class MinecraftFileManager {  // swiftlint:disable:this type_body_length
             let destinationURL = metaDirectory.appendingPathComponent("natives")
                 .appendingPathComponent(nativeArtifact.path)
 
+            guard let nativeURL = nativeArtifact.url else {
+                throw GlobalError.download(
+                    chineseMessage: "原生库文件 \(library.name) 缺少下载 URL",
+                    i18nKey: "error.download.missing_native_url",
+                    level: .notification
+                )
+            }
+
             do {
                 _ = try await DownloadManager.downloadFile(
-                    urlString: nativeArtifact.url!.absoluteString,
+                    urlString: nativeURL.absoluteString,
                     destinationURL: destinationURL,
                     expectedSha1: nativeArtifact.sha1
                 )
@@ -645,7 +659,7 @@ extension MinecraftFileManager {
     /// 判断库是否允许在 macOS (osx) 下加载
     func isLibraryAllowedOnOSX(_ rules: [Rule]?) -> Bool {
         guard let rules = rules else { return true }  // 没有规则默认允许
-        var allowed: Bool?
+        var allowed = true  // 默认允许
         for rule in rules {
             let osMatch = rule.os?.name == nil || rule.os?.name == "osx"
             if osMatch {
@@ -656,7 +670,7 @@ extension MinecraftFileManager {
                 }
             }
         }
-        return allowed ?? true
+        return allowed
     }
 }
 

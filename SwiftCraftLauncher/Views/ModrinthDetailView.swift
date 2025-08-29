@@ -20,7 +20,7 @@ struct ModrinthDetailView: View {
     @StateObject private var viewModel = ModrinthSearchViewModel()
     @State private var hasLoaded = false
     @State private var searchText: String = ""
-    @State private var searchTimer: Timer? = nil
+    @State private var searchTimer: Timer?
     @Binding var gameType: Bool
     @State private var lastSearchKey: String = ""
     @State private var lastSearchParams: String = ""
@@ -190,7 +190,7 @@ struct ModrinthDetailView: View {
                 type: true,
                 selectedItem: $selectedItem
             )
-            .padding(.vertical, ModrinthConstants.UI.verticalPadding)
+            .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
             .listRowInsets(
                 EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
             )

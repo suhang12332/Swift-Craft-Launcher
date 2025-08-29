@@ -10,7 +10,7 @@ import CommonCrypto
 import CryptoKit
 
 /// 统一的 SHA1 计算工具类
-public class SHA1Calculator {
+public enum SHA1Calculator {
 
     /// 计算 Data 的 SHA1 哈希值（适用于小文件或内存中的数据）
     /// - Parameter data: 要计算哈希的数据

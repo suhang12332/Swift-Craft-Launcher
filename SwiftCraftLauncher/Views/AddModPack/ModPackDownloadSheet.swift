@@ -13,12 +13,13 @@ struct ModPackDownloadSheet: View {
     let gameInfo: GameVersionInfo?
     let query: String
     @EnvironmentObject private var gameRepository: GameRepository
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
 
     @StateObject private var viewModel = ModPackDownloadSheetViewModel()
     @State private var selectedGameVersion: String = ""
     @State private var selectedModPackVersion: ModrinthProjectDetailVersion?
-    @State private var downloadTask: Task<Void, Error>? = nil
+    @State private var downloadTask: Task<Void, Error>?
     @State private var isProcessing = false
     @StateObject private var gameSetupService = GameSetupUtil()
 
@@ -209,8 +210,7 @@ struct ModPackDownloadSheet: View {
                     "modpack.version".localized(),
                     selection: $selectedModPackVersion
                 ) {
-                    ForEach(viewModel.filteredModPackVersions, id: \.id) {
-                        version in
+                    ForEach(viewModel.filteredModPackVersions, id: \.id) { version in
                         Text(version.name).tag(
                             version as ModrinthProjectDetailVersion?
                         )
@@ -455,19 +455,18 @@ struct ModPackDownloadSheet: View {
             await ModPackDependencyInstaller.installVersionDependencies(
                 indexInfo: indexInfo,
                 gameInfo: tempGameInfo,
-                extractedPath: extractedPath,
-                onProgressUpdate: { fileName, completed, total, type in
-                    Task { @MainActor in
-                        viewModel.objectWillChange.send()
-                        updateInstallProgress(
-                            fileName: fileName,
-                            completed: completed,
-                            total: total,
-                            type: type
-                        )
-                    }
+                extractedPath: extractedPath
+            ) { fileName, completed, total, type in
+                Task { @MainActor in
+                    viewModel.objectWillChange.send()
+                    updateInstallProgress(
+                        fileName: fileName,
+                        completed: completed,
+                        total: total,
+                        type: type
+                    )
                 }
-            )
+            }
 
         if !dependencySuccess {
             handleInstallationResult(success: false, gameName: gameName)

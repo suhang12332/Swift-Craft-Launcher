@@ -212,9 +212,8 @@ struct GameInfoDetailView: View {
     private var importButton: some View {
         LocalResourceInstaller.ImportButton(
             query: query,
-            gameName: game.gameName,
-            onResourceChanged: { scanResources() }
-        )
+            gameName: game.gameName
+        ) { scanResources() }
     }
 
     private var settingsButton: some View {
@@ -276,12 +275,11 @@ struct GameInfoDetailView: View {
                         gameInfo: game,
                         query: query,
                         type: gameType,
-                        selectedItem: $selectedItem,
-                        onResourceChanged: {
-                            scanResources()
-                        }
-                    )
-                    .padding(.vertical, ModrinthConstants.UI.verticalPadding)
+                        selectedItem: $selectedItem
+                    ) {
+                        scanResources()
+                    }
+                    .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                     .listRowInsets(
                         EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
                     )

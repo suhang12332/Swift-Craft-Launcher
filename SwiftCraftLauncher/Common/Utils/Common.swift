@@ -38,7 +38,7 @@ extension String {
     }
 }
 
-struct CommonUtil {
+enum CommonUtil {
     // MARK: - Base64 图片解码工具
     static func imageDataFromBase64(_ base64: String) -> Data? {
         if base64.hasPrefix("data:image") {
@@ -72,7 +72,8 @@ struct CommonUtil {
 }
 
 extension View {
-    @ViewBuilder func `if`<Content: View>(
+    @ViewBuilder
+    func `if`<Content: View>(
         _ condition: Bool,
         transform: (Self) -> Content
     ) -> some View {

@@ -79,7 +79,7 @@ public struct ContentToolbarView: ToolbarContent {
                         // 处理正版登录成功，使用Minecraft用户资料
                         Logger.shared.debug("正版登录成功，用户: \(profile.name)")
                         // 这里可以添加正版玩家的处理逻辑
-                        let _ = playerListViewModel.addOnlinePlayer(profile: profile)
+                        _ = playerListViewModel.addOnlinePlayer(profile: profile)
 
                         // 清理微软认证服务的内存信息，防止下次添加账户时显示上一次的结果
                         MinecraftAuthService.shared.clearAuthenticationData()

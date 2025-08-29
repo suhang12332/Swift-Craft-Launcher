@@ -104,19 +104,34 @@ enum ArgumentValueArrayOrString: Codable {
 struct Rule: Codable {
     let action: String
     let features: Features?
-    let os: OS?
+    let os: OperatingSystem?
 }
 
 struct Features: Codable {
-    let is_demo_user: Bool?
-    let has_custom_resolution: Bool?
-    let has_quick_plays_support: Bool?
-    let is_quick_play_singleplayer: Bool?
-    let is_quick_play_multiplayer: Bool?
-    let is_quick_play_realms: Bool?
+    let is_demo_user: Bool
+    let has_custom_resolution: Bool
+    let has_quick_plays_support: Bool
+    let is_quick_play_singleplayer: Bool
+    let is_quick_play_multiplayer: Bool
+    let is_quick_play_realms: Bool
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        is_demo_user = try container.decodeIfPresent(Bool.self, forKey: .is_demo_user) ?? false
+        has_custom_resolution = try container.decodeIfPresent(Bool.self, forKey: .has_custom_resolution) ?? false
+        has_quick_plays_support = try container.decodeIfPresent(Bool.self, forKey: .has_quick_plays_support) ?? false
+        is_quick_play_singleplayer = try container.decodeIfPresent(Bool.self, forKey: .is_quick_play_singleplayer) ?? false
+        is_quick_play_multiplayer = try container.decodeIfPresent(Bool.self, forKey: .is_quick_play_multiplayer) ?? false
+        is_quick_play_realms = try container.decodeIfPresent(Bool.self, forKey: .is_quick_play_realms) ?? false
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case is_demo_user, has_custom_resolution, has_quick_plays_support
+        case is_quick_play_singleplayer, is_quick_play_multiplayer, is_quick_play_realms
+    }
 }
 
-struct OS: Codable {
+struct OperatingSystem: Codable {
     let name: String?
     let version: String?
     let arch: String?

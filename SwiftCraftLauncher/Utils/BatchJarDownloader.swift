@@ -7,7 +7,7 @@ struct JarDownloadTask {
     let expectedSha1: String?
 }
 
-class BatchJarDownloader {
+enum BatchJarDownloader {
     static func download(
         tasks: [JarDownloadTask],
         metaLibrariesDir: URL,
@@ -45,6 +45,7 @@ class BatchJarDownloader {
 
     actor Counter {
         private var value = 0
+
         func increment() -> Int {
             value += 1
             return value

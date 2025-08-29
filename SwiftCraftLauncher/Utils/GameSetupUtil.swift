@@ -11,7 +11,6 @@ import SwiftUI
 /// 游戏设置服务
 /// 负责处理游戏下载、配置和保存的完整流程
 @MainActor
-// swiftlint:disable:next type_body_length
 class GameSetupUtil: ObservableObject {
 
     // MARK: - Properties

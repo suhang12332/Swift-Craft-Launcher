@@ -1,6 +1,6 @@
 import Foundation
 
-class NeoForgeLoaderService {
+enum NeoForgeLoaderService {
 
     /// 获取最新的可用 NeoForge 版本
     static func fetchLatestNeoForgeVersion(for minecraftVersion: String) async throws -> LoaderInfo {
@@ -16,10 +16,16 @@ class NeoForgeLoaderService {
         let stableLoaders = result.loaders.filter { $0.stable }
 
         // 如果过滤结果不为空，则返回第一个稳定版本，否则直接返回第一个
-        if !stableLoaders.isEmpty {
-            return stableLoaders.first!
+        if let firstStable = stableLoaders.first {
+            return firstStable
+        } else if let firstLoader = result.loaders.first {
+            return firstLoader
         } else {
-            return result.loaders.first!
+            throw GlobalError.resource(
+                chineseMessage: "未找到任何 Minecraft \(minecraftVersion) 的 NeoForge 加载器版本",
+                i18nKey: "error.resource.no_neoforge_loader_versions",
+                level: .notification
+            )
         }
     }
 
@@ -45,7 +51,14 @@ class NeoForgeLoaderService {
             return cached
         }
 
-        let (data, response) = try await URLSession.shared.data(from: URL(string: result.url)!)
+        guard let url = URL(string: result.url) else {
+            throw GlobalError.resource(
+                chineseMessage: "无效的 NeoForge URL: \(result.url)",
+                i18nKey: "error.resource.invalid_neoforge_url",
+                level: .notification
+            )
+        }
+        let (data, response) = try await URLSession.shared.data(from: url)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
@@ -85,20 +98,28 @@ class NeoForgeLoaderService {
                 librariesDir: librariesDirectory,
                 gameVersion: gameVersion,
                 data: neoForgeProfile.data,
-                gameName: gameInfo.gameName,
-                onProgressUpdate: { message, currentProcessor, totalProcessors in
-                    // 将处理器进度消息转换为下载进度格式
-                    // 总任务数 = 下载数 + 处理器数
-                    let totalTasks = totalDownloads + totalProcessors
-                    let completedTasks = totalDownloads + currentProcessor
-                    onProgressUpdate(message, completedTasks, totalTasks)
-                }
-            )
+                gameName: gameInfo.gameName
+            ) { message, currentProcessor, totalProcessors in
+                // 将处理器进度消息转换为下载进度格式
+                // 总任务数 = 下载数 + 处理器数
+                let totalTasks = totalDownloads + totalProcessors
+                let completedTasks = totalDownloads + currentProcessor
+                onProgressUpdate(message, completedTasks, totalTasks)
+            }
         }
 
         let classpathString = CommonService.generateClasspath(from: neoForgeProfile, librariesDir: librariesDirectory)
         let mainClass = neoForgeProfile.mainClass
-        return (loaderVersion: neoForgeProfile.version!, classpath: classpathString, mainClass: mainClass)
+
+        guard let version = neoForgeProfile.version else {
+            throw GlobalError.resource(
+                chineseMessage: "NeoForge profile 缺少版本信息",
+                i18nKey: "error.resource.neoforge_missing_version",
+                level: .notification
+            )
+        }
+
+        return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)
     }
 
     /// 设置 NeoForge 加载器（静默版本）

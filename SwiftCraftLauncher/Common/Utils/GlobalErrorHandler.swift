@@ -8,7 +8,7 @@ enum ErrorLevel: String, CaseIterable {
     case popup = "popup"           // 弹窗显示
     case notification = "notification" // 通知显示
     case silent = "silent"         // 静默处理，只记录日志
-    case none = "none"             // 什么都不做，不记录
+    case disabled = "disabled"     // 什么都不做，不记录
 
     var displayName: String {
         switch self {
@@ -18,7 +18,7 @@ enum ErrorLevel: String, CaseIterable {
             return "通知"
         case .silent:
             return "静默"
-        case .none:
+        case .disabled:
             return "无操作"
         }
     }
@@ -86,27 +86,27 @@ enum GlobalError: Error, LocalizedError, Identifiable {
 
     var id: String {
         switch self {
-        case .network(let message, let key, _):
+        case let .network(message, key, _):
             return "network_\(key)_\(message.hashValue)"
-        case .fileSystem(let message, let key, _):
+        case let .fileSystem(message, key, _):
             return "filesystem_\(key)_\(message.hashValue)"
-        case .authentication(let message, let key, _):
+        case let .authentication(message, key, _):
             return "auth_\(key)_\(message.hashValue)"
-        case .validation(let message, let key, _):
+        case let .validation(message, key, _):
             return "validation_\(key)_\(message.hashValue)"
-        case .download(let message, let key, _):
+        case let .download(message, key, _):
             return "download_\(key)_\(message.hashValue)"
-        case .installation(let message, let key, _):
+        case let .installation(message, key, _):
             return "installation_\(key)_\(message.hashValue)"
-        case .gameLaunch(let message, let key, _):
+        case let .gameLaunch(message, key, _):
             return "gameLaunch_\(key)_\(message.hashValue)"
-        case .resource(let message, let key, _):
+        case let .resource(message, key, _):
             return "resource_\(key)_\(message.hashValue)"
-        case .player(let message, let key, _):
+        case let .player(message, key, _):
             return "player_\(key)_\(message.hashValue)"
-        case .configuration(let message, let key, _):
+        case let .configuration(message, key, _):
             return "config_\(key)_\(message.hashValue)"
-        case .unknown(let message, let key, _):
+        case let .unknown(message, key, _):
             return "unknown_\(key)_\(message.hashValue)"
         }
     }
@@ -114,27 +114,27 @@ enum GlobalError: Error, LocalizedError, Identifiable {
     /// 中文错误描述
     var chineseMessage: String {
         switch self {
-        case .network(let message, _, _):
+        case let .network(message, _, _):
             return message
-        case .fileSystem(let message, _, _):
+        case let .fileSystem(message, _, _):
             return message
-        case .authentication(let message, _, _):
+        case let .authentication(message, _, _):
             return message
-        case .validation(let message, _, _):
+        case let .validation(message, _, _):
             return message
-        case .download(let message, _, _):
+        case let .download(message, _, _):
             return message
-        case .installation(let message, _, _):
+        case let .installation(message, _, _):
             return message
-        case .gameLaunch(let message, _, _):
+        case let .gameLaunch(message, _, _):
             return message
-        case .resource(let message, _, _):
+        case let .resource(message, _, _):
             return message
-        case .player(let message, _, _):
+        case let .player(message, _, _):
             return message
-        case .configuration(let message, _, _):
+        case let .configuration(message, _, _):
             return message
-        case .unknown(let message, _, _):
+        case let .unknown(message, _, _):
             return message
         }
     }
@@ -142,27 +142,27 @@ enum GlobalError: Error, LocalizedError, Identifiable {
     /// 国际化key
     var i18nKey: String {
         switch self {
-        case .network(_, let key, _):
+        case let .network(_, key, _):
             return key
-        case .fileSystem(_, let key, _):
+        case let .fileSystem(_, key, _):
             return key
-        case .authentication(_, let key, _):
+        case let .authentication(_, key, _):
             return key
-        case .validation(_, let key, _):
+        case let .validation(_, key, _):
             return key
-        case .download(_, let key, _):
+        case let .download(_, key, _):
             return key
-        case .installation(_, let key, _):
+        case let .installation(_, key, _):
             return key
-        case .gameLaunch(_, let key, _):
+        case let .gameLaunch(_, key, _):
             return key
-        case .resource(_, let key, _):
+        case let .resource(_, key, _):
             return key
-        case .player(_, let key, _):
+        case let .player(_, key, _):
             return key
-        case .configuration(_, let key, _):
+        case let .configuration(_, key, _):
             return key
-        case .unknown(_, let key, _):
+        case let .unknown(_, key, _):
             return key
         }
     }
@@ -170,27 +170,27 @@ enum GlobalError: Error, LocalizedError, Identifiable {
     /// 错误等级
     var level: ErrorLevel {
         switch self {
-        case .network(_, _, let level):
+        case let .network(_, _, level):
             return level
-        case .fileSystem(_, _, let level):
+        case let .fileSystem(_, _, level):
             return level
-        case .authentication(_, _, let level):
+        case let .authentication(_, _, level):
             return level
-        case .validation(_, _, let level):
+        case let .validation(_, _, level):
             return level
-        case .download(_, _, let level):
+        case let .download(_, _, level):
             return level
-        case .installation(_, _, let level):
+        case let .installation(_, _, level):
             return level
-        case .gameLaunch(_, _, let level):
+        case let .gameLaunch(_, _, level):
             return level
-        case .resource(_, _, let level):
+        case let .resource(_, _, level):
             return level
-        case .player(_, _, let level):
+        case let .player(_, _, level):
             return level
-        case .configuration(_, _, let level):
+        case let .configuration(_, _, level):
             return level
-        case .unknown(_, _, let level):
+        case let .unknown(_, _, level):
             return level
         }
     }
@@ -329,7 +329,7 @@ class GlobalErrorHandler: ObservableObject {
             // 静默处理，只记录日志
             Logger.shared.error("[GlobalError-Silent] \(error.chineseMessage)")
 
-        case .none:
+        case .disabled:
             // 什么都不做
             break
         }

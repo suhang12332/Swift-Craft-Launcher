@@ -23,8 +23,20 @@ struct YggdrasilProfileResponse: Codable, Identifiable {
 struct YggdrasilSelectedProfile: Codable {
     let id: String
     let name: String
-    let legacy: Bool?
-    let demo: Bool?
+    let legacy: Bool
+    let demo: Bool
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        legacy = try container.decodeIfPresent(Bool.self, forKey: .legacy) ?? false
+        demo = try container.decodeIfPresent(Bool.self, forKey: .demo) ?? false
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, legacy, demo
+    }
 }
 
 // MARK: - Yggdrasil 设备代码响应模型

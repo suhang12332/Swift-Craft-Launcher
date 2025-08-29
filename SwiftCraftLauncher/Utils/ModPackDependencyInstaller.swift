@@ -9,7 +9,7 @@ import Foundation
 
 /// 整合包依赖安装服务
 /// 负责安装整合包中定义的所有必需依赖
-struct ModPackDependencyInstaller { // swiftlint:disable:this type_body_length
+enum ModPackDependencyInstaller {
 
     // MARK: - Download Type
     enum DownloadType {

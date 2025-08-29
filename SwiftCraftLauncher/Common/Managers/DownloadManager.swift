@@ -1,7 +1,7 @@
 import Foundation
 import CommonCrypto
 
-class DownloadManager {
+enum DownloadManager {
     enum ResourceType: String {
         case mod, datapack, shader, resourcepack
 

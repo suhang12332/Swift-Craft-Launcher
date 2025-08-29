@@ -283,9 +283,8 @@ private struct GameVersionsSection: View {
 
             if version.gameVersions.count > Constants.maxVisibleGameVersions {
                 MoreVersionsButton(
-                    count: version.gameVersions.count - Constants.maxVisibleGameVersions,
-                    action: { gameVersionsPopoverId = version.id }
-                )
+                    count: version.gameVersions.count - Constants.maxVisibleGameVersions
+                ) { gameVersionsPopoverId = version.id }
                 .popover(isPresented: Binding(
                     get: { gameVersionsPopoverId == version.id },
                     set: { if !$0 { gameVersionsPopoverId = nil } }
@@ -342,9 +341,8 @@ private struct PlatformsSection: View {
 
             if version.loaders.count > Constants.maxVisibleLoaders {
                 MoreVersionsButton(
-                    count: version.loaders.count - Constants.maxVisibleLoaders,
-                    action: { platformsPopoverId = version.id }
-                )
+                    count: version.loaders.count - Constants.maxVisibleLoaders
+                ) { platformsPopoverId = version.id }
                 .popover(isPresented: Binding(
                     get: { platformsPopoverId == version.id },
                     set: { if !$0 { platformsPopoverId = nil } }

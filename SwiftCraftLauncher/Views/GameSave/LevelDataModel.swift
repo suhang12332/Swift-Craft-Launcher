@@ -10,7 +10,7 @@ import MinecraftNBT
 
 class LevelDataModel: ObservableObject {
     @Published var levelData: [String: String] = [:]
-    @Published var errorMessage: String? = nil
+    @Published var errorMessage: String?
 
     private var nbtStructure: NBTStructure?
     private var dataCompound: NBTCompound?

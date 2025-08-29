@@ -1,6 +1,6 @@
 import Foundation
 
-class QuiltLoaderService {
+enum QuiltLoaderService {
 
     /// 获取所有 Loader 版本（静默版本）
     /// - Parameter minecraftVersion: Minecraft 版本
@@ -35,7 +35,13 @@ class QuiltLoaderService {
     /// 获取最新的可用 Quilt Loader 版本
     static func fetchLatestStableLoaderVersion(for minecraftVersion: String) async throws -> ModrinthLoader {
         let allLoaders = await fetchAllQuiltLoaders(for: minecraftVersion)
-        let result = allLoaders.first!
+        guard let result = allLoaders.first else {
+            throw GlobalError.resource(
+                chineseMessage: "未找到任何 Minecraft \(minecraftVersion) 的 Quilt 加载器版本",
+                i18nKey: "error.resource.no_quilt_loader_versions",
+                level: .notification
+            )
+        }
         let quiltVersion = result.loader.version
         let cacheKey = "\(minecraftVersion)-\(quiltVersion)"
 
@@ -102,7 +108,14 @@ class QuiltLoaderService {
         await fileManager.downloadFabricJars(libraries: quiltProfile.libraries)
         let classpathString = CommonService.generateFabricClasspath(from: quiltProfile, librariesDir: librariesDirectory)
         let mainClass = quiltProfile.mainClass
-        return (loaderVersion: quiltProfile.version!, classpath: classpathString, mainClass: mainClass)
+        guard let version = quiltProfile.version else {
+            throw GlobalError.resource(
+                chineseMessage: "Quilt profile 缺少版本信息",
+                i18nKey: "error.resource.quilt_missing_version",
+                level: .notification
+            )
+        }
+        return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)
     }
 
     /// 设置 Quilt 加载器（静默版本）

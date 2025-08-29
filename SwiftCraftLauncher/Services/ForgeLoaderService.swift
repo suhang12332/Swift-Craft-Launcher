@@ -1,6 +1,6 @@
 import Foundation
 
-class ForgeLoaderService {
+enum ForgeLoaderService {
 
     static func fetchLatestForgeProfile(for minecraftVersion: String) async throws -> ModrinthLoader {
         let result = try await fetchLatestForgeVersion(for: minecraftVersion)
@@ -11,7 +11,14 @@ class ForgeLoaderService {
             return cached
         }
         // 2. 直接下载 version.json
-        let (data, response) = try await URLSession.shared.data(from: URL(string: result.url)!)
+        guard let url = URL(string: result.url) else {
+            throw GlobalError.download(
+                chineseMessage: "获取 Forge profile 失败: 无效的 URL \(result.url)",
+                i18nKey: "error.download.invalid_url",
+                level: .notification
+            )
+        }
+        let (data, response) = try await URLSession.shared.data(from: url)
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Forge profile 失败: HTTP \(response)",
@@ -52,9 +59,23 @@ class ForgeLoaderService {
 
         // 如果过滤结果不为空，则返回第一个稳定版本，否则直接返回第一个
         if !stableLoaders.isEmpty {
-            return stableLoaders.first!
+            guard let firstStable = stableLoaders.first else {
+                throw GlobalError.resource(
+                    chineseMessage: "未找到稳定的 Forge 加载器版本",
+                    i18nKey: "error.resource.no_stable_forge_version",
+                    level: .notification
+                )
+            }
+            return firstStable
         } else {
-            return result.loaders.first!
+            guard let firstLoader = result.loaders.first else {
+                throw GlobalError.resource(
+                    chineseMessage: "未找到 Forge 加载器版本",
+                    i18nKey: "error.resource.no_forge_version",
+                    level: .notification
+                )
+            }
+            return firstLoader
         }
     }
 
@@ -81,20 +102,26 @@ class ForgeLoaderService {
                 librariesDir: librariesDirectory,
                 gameVersion: gameVersion,
                 data: forgeProfile.data,
-                gameName: gameInfo.gameName,
-                onProgressUpdate: { message, currentProcessor, totalProcessors in
+                gameName: gameInfo.gameName
+            ) { message, currentProcessor, totalProcessors in
                     // 将处理器进度消息转换为下载进度格式
                     // 总任务数 = 下载数 + 处理器数
                     let totalTasks = totalDownloads + totalProcessors
                     let completedTasks = totalDownloads + currentProcessor
                     onProgressUpdate(message, completedTasks, totalTasks)
-                }
-            )
+            }
         }
 
         let classpathString = CommonService.generateClasspath(from: forgeProfile, librariesDir: librariesDirectory)
         let mainClass = forgeProfile.mainClass
-        return (loaderVersion: forgeProfile.version!, classpath: classpathString, mainClass: mainClass)
+        guard let version = forgeProfile.version else {
+            throw GlobalError.resource(
+                chineseMessage: "Forge profile 缺少版本信息",
+                i18nKey: "error.resource.missing_forge_version",
+                level: .notification
+            )
+        }
+        return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)
     }
 
     /// 设置 Forge 加载器（静默版本）

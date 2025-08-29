@@ -2,7 +2,7 @@ import Foundation
 import ZIPFoundation
 
 /// Forge/NeoForge Processor执行器
-class ProcessorExecutor {
+enum ProcessorExecutor {
 
     /// 执行单个processor
     /// - Parameters:
@@ -167,9 +167,13 @@ class ProcessorExecutor {
         command.append(mainClass)
 
         if let args = args {
-            let processedArgs = args.map { arg in
-                processPlaceholders(
-                    CommonFileManager.extractClientValue(from: arg)!,
+            let processedArgs: [String] = args.compactMap { arg in
+                guard let extractedValue = CommonFileManager.extractClientValue(from: arg) else {
+                    Logger.shared.warning("无法提取客户端值: \(arg)")
+                    return nil
+                }
+                return processPlaceholders(
+                    extractedValue,
                     gameVersion: gameVersion,
                     librariesDir: librariesDir,
                     data: data

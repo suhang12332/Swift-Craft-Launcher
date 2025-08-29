@@ -10,7 +10,7 @@ struct ModrinthDetailCardView: View {
     let query: String
     let type: Bool  // false = local, true = server
     @Binding var selectedItem: SidebarItem
-    var onResourceChanged: (() -> Void)? = nil
+    var onResourceChanged: (() -> Void)?
     @State private var addButtonState: AddButtonState = .idle
     @State private var showDeleteAlert = false
     @EnvironmentObject private var gameRepository: GameRepository
@@ -24,9 +24,9 @@ struct ModrinthDetailCardView: View {
 
     // MARK: - Body
     var body: some View {
-        HStack(spacing: ModrinthConstants.UI.contentSpacing) {
+        HStack(spacing: ModrinthConstants.UIConstants.contentSpacing) {
             iconView
-            VStack(alignment: .leading, spacing: ModrinthConstants.UI.spacing) {
+            VStack(alignment: .leading, spacing: ModrinthConstants.UIConstants.spacing) {
                 titleView
                 descriptionView
                 tagsView
@@ -66,10 +66,10 @@ struct ModrinthDetailCardView: View {
                     }
                 }
                 .frame(
-                    width: ModrinthConstants.UI.iconSize,
-                    height: ModrinthConstants.UI.iconSize
+                    width: ModrinthConstants.UIConstants.iconSize,
+                    height: ModrinthConstants.UIConstants.iconSize
                 )
-                .cornerRadius(ModrinthConstants.UI.cornerRadius)
+                .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
                 .clipped()
                 .onDisappear {
                     // 清理图片缓存，避免内存泄漏
@@ -86,22 +86,22 @@ struct ModrinthDetailCardView: View {
     private var placeholderIcon: some View {
         Color.gray.opacity(0.2)
             .frame(
-                width: ModrinthConstants.UI.iconSize,
-                height: ModrinthConstants.UI.iconSize
+                width: ModrinthConstants.UIConstants.iconSize,
+                height: ModrinthConstants.UIConstants.iconSize
             )
-            .cornerRadius(ModrinthConstants.UI.cornerRadius)
+            .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
     }
 
     private var localResourceIcon: some View {
         Image(systemName: "questionmark.circle")
-            .font(.system(size: ModrinthConstants.UI.iconSize * 0.6))
+            .font(.system(size: ModrinthConstants.UIConstants.iconSize * 0.6))
             .foregroundColor(.secondary)
             .frame(
-                width: ModrinthConstants.UI.iconSize,
-                height: ModrinthConstants.UI.iconSize
+                width: ModrinthConstants.UIConstants.iconSize,
+                height: ModrinthConstants.UIConstants.iconSize
             )
             .background(Color.gray.opacity(0.2))
-            .cornerRadius(ModrinthConstants.UI.cornerRadius)
+            .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
     }
 
     private var titleView: some View {
@@ -119,25 +119,25 @@ struct ModrinthDetailCardView: View {
     private var descriptionView: some View {
         Text(project.description)
             .font(.subheadline)
-            .lineLimit(ModrinthConstants.UI.descriptionLineLimit)
+            .lineLimit(ModrinthConstants.UIConstants.descriptionLineLimit)
             .foregroundColor(.secondary)
     }
 
     private var tagsView: some View {
-        HStack(spacing: ModrinthConstants.UI.spacing) {
+        HStack(spacing: ModrinthConstants.UIConstants.spacing) {
             ForEach(
                 Array(
                     project.displayCategories.prefix(
-                        ModrinthConstants.UI.maxTags
+                        ModrinthConstants.UIConstants.maxTags
                     )
                 ),
                 id: \.self
             ) { tag in
                 TagView(text: tag)
             }
-            if project.displayCategories.count > ModrinthConstants.UI.maxTags {
+            if project.displayCategories.count > ModrinthConstants.UIConstants.maxTags {
                 Text(
-                    "+\(project.displayCategories.count - ModrinthConstants.UI.maxTags)"
+                    "+\(project.displayCategories.count - ModrinthConstants.UIConstants.maxTags)"
                 )
                 .font(.caption2)
                 .foregroundColor(.secondary)
@@ -146,7 +146,7 @@ struct ModrinthDetailCardView: View {
     }
 
     private var infoView: some View {
-        VStack(alignment: .trailing, spacing: ModrinthConstants.UI.spacing) {
+        VStack(alignment: .trailing, spacing: ModrinthConstants.UIConstants.spacing) {
             downloadInfoView
             followerInfoView
             AddOrDeleteResourceButton(
@@ -196,10 +196,10 @@ private struct TagView: View {
     var body: some View {
         Text(text)
             .font(.caption2)
-            .padding(.horizontal, ModrinthConstants.UI.tagHorizontalPadding)
-            .padding(.vertical, ModrinthConstants.UI.tagVerticalPadding)
+            .padding(.horizontal, ModrinthConstants.UIConstants.tagHorizontalPadding)
+            .padding(.vertical, ModrinthConstants.UIConstants.tagVerticalPadding)
             .background(Color.gray.opacity(0.15))
-            .cornerRadius(ModrinthConstants.UI.tagCornerRadius)
+            .cornerRadius(ModrinthConstants.UIConstants.tagCornerRadius)
     }
 }
 

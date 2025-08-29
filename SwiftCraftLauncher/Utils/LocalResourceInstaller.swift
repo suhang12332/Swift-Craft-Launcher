@@ -3,7 +3,7 @@ import UniformTypeIdentifiers
 import SwiftUI
 
 /// 工具类：负责将本地 jar/zip 文件导入到指定资源目录
-struct LocalResourceInstaller {
+enum LocalResourceInstaller {
     enum ResourceType {
         case mod, datapack, resourcepack
 

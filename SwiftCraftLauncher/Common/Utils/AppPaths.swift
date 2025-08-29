@@ -1,6 +1,6 @@
 import Foundation
 
-struct AppPaths {
+enum AppPaths {
 
     static var launcherSupportDirectory: URL {
     // guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {

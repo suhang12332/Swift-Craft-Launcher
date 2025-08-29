@@ -15,7 +15,8 @@ struct SwiftCraftLauncherApp: App {
     @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
     @StateObject private var generalSettingsManager = GeneralSettingsManager
         .shared
-    @Environment(\.openWindow) private var openWindow
+    @Environment(\.openWindow)
+    private var openWindow
 
     init() {
         Task {
@@ -53,8 +54,7 @@ struct SwiftCraftLauncherApp: App {
         .windowResizability(.contentMinSize)
 
         // 关于窗口（共享的 WindowGroup，通过 value 区分）
-        WindowGroup("", id: "aboutWindow", for: Bool.self) {
-            $showingAcknowledgements in
+        WindowGroup("", id: "aboutWindow", for: Bool.self) { $showingAcknowledgements in
             AboutView(showingAcknowledgements: showingAcknowledgements ?? false)
                 .environmentObject(generalSettingsManager)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)

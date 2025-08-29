@@ -2,7 +2,7 @@ import Foundation
 import os.log
 import AppKit
 
-class Logger { // swiftlint:disable:this type_body_length
+class Logger {
     static let shared = Logger()
     private let logger = OSLog(
         subsystem: Bundle.main.identifier,
@@ -224,7 +224,7 @@ class Logger { // swiftlint:disable:this type_body_length
         line: Int
     ) {
         let fileName = (file as NSString).lastPathComponent
-        let message = items.map { Logger.stringify($0) }.joined(separator: " ")
+        let message = items.map { Self.stringify($0) }.joined(separator: " ")
         let logMessage = "\(prefix) [\(fileName):\(line)] \(function): \(message)"
 
         // 输出到控制台。 本地调试可以开启
@@ -264,7 +264,7 @@ class Logger { // swiftlint:disable:this type_body_length
     /// 打开当前日志文件
     func openLogFile() {
         guard let logURL = logFileURL else {
-            Logger.shared.error("无法获取日志文件路径")
+            Self.shared.error("无法获取日志文件路径")
             return
         }
 
@@ -286,7 +286,7 @@ class Logger { // swiftlint:disable:this type_body_length
                 try "日志文件已创建 - \(dateString)".write(to: logURL, atomically: true, encoding: .utf8)
                 NSWorkspace.shared.open(logURL)
             } catch {
-                Logger.shared.error("无法创建或打开日志文件: \(error)")
+                Self.shared.error("无法创建或打开日志文件: \(error)")
             }
         }
     }
@@ -314,17 +314,15 @@ class Logger { // swiftlint:disable:this type_body_length
                 options: [.skipsHiddenFiles]
             )
 
-            for fileURL in fileURLs {
-                if fileURL.pathExtension == "log" {
-                    let attributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
-                    if let creationDate = attributes[.creationDate] as? Date,
-                       creationDate < sevenDaysAgo {
-                        try FileManager.default.removeItem(at: fileURL)
-                    }
+            for fileURL in fileURLs where fileURL.pathExtension == "log" {
+                let attributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
+                if let creationDate = attributes[.creationDate] as? Date,
+                   creationDate < sevenDaysAgo {
+                    try FileManager.default.removeItem(at: fileURL)
                 }
             }
         } catch {
-            Logger.shared.error("Failed to cleanup old logs in \(directory.path): \(error)")
+            Self.shared.error("Failed to cleanup old logs in \(directory.path): \(error)")
         }
     }
 

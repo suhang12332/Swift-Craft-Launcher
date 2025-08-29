@@ -69,15 +69,14 @@ class JavaVersionChecker {
                 let data = pipe.fileHandleForReading.readDataToEndOfFile()
                 let output = String(data: data, encoding: .utf8) ?? ""
                 let version =
-                    output.components(separatedBy: .newlines).first(where: {
+                    output.components(separatedBy: .newlines).first {
                         $0.contains("version")
-                    }) ?? output
+                    } ?? output
 
                 DispatchQueue.main.async {
                     if version.contains("version") {
                         if let match = version.split(separator: "\"")
-                            .dropFirst().first
-                        {
+                            .dropFirst().first {
                             let result = JavaVersionResult(version: "\(match)")
                             completion(result)
                         } else {
@@ -127,8 +126,7 @@ class JavaVersionChecker {
     /// - Returns: 检测结果
     /// - Throws: GlobalError 当操作失败时
     func checkJavaVersionAsync(at path: String) async throws
-        -> JavaVersionResult
-    {
+        -> JavaVersionResult {
         return await withCheckedContinuation { continuation in
             checkJavaVersion(at: path) { result in
                 continuation.resume(returning: result)

@@ -4,7 +4,7 @@ import SwiftUI
 /// A view model that manages the list of players and interacts with PlayerDataManager.
 class PlayerListViewModel: ObservableObject {
     @Published var players: [Player] = []
-    @Published var currentPlayer: Player? = nil
+    @Published var currentPlayer: Player?
 
     private let dataManager = PlayerDataManager()
 
@@ -23,7 +23,7 @@ class PlayerListViewModel: ObservableObject {
     /// - Throws: GlobalError 当操作失败时
     func loadPlayersThrowing() throws {
         players = try dataManager.loadPlayersThrowing()
-        currentPlayer = players.first(where: { $0.isCurrent })
+        currentPlayer = players.first { $0.isCurrent }
         Logger.shared.debug("玩家列表已加载，数量: \(players.count)")
         Logger.shared.debug("当前玩家 (加载后): \(currentPlayer?.name ?? "无")")
     }

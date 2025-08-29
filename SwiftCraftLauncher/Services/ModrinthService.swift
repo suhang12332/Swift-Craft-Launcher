@@ -23,7 +23,6 @@ private extension JSONDecoder {
     }
 }
 
-// swiftlint:disable:next type_body_length
 enum ModrinthService {
     private static let cacheExpiration: TimeInterval = 600 // 10分钟
 
@@ -102,10 +101,16 @@ enum ModrinthService {
             searchCache.removeObject(forKey: key)
         }
 
-        var components = URLComponents(
+        guard var components = URLComponents(
             url: URLConfig.API.Modrinth.search,
             resolvingAgainstBaseURL: true
-        )!
+        ) else {
+            throw GlobalError.validation(
+                chineseMessage: "构建URLComponents失败",
+                i18nKey: "error.validation.url_components_build_failed",
+                level: .notification
+            )
+        }
         var queryItems = [
             URLQueryItem(name: "index", value: index),
             URLQueryItem(name: "offset", value: String(offset)),
@@ -177,7 +182,7 @@ enum ModrinthService {
     /// - Returns: 加载器列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchLoadersThrowing(forceRefresh: Bool = false) async throws -> [Loader] {
-        let key = URLConfig.API.Modrinth.Tag.loader.absoluteString as NSString
+        let key = URLConfig.API.Modrinth.loaderTag.absoluteString as NSString
         if !forceRefresh, let cached = loadersCache.object(forKey: key), Date().timeIntervalSince(cached.timestamp) < cacheExpiration {
             Logger.shared.info("使用缓存的 Modrinth 加载器列表")
             return cached.loaders
@@ -186,7 +191,7 @@ enum ModrinthService {
         }
         do {
             let (data, response) = try await URLSession.shared.data(
-                from: URLConfig.API.Modrinth.Tag.loader
+                from: URLConfig.API.Modrinth.loaderTag
             )
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
@@ -195,7 +200,7 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.Tag.loader)")
+            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.loaderTag)")
             let result = try JSONDecoder().decode([Loader].self, from: data)
             loadersCache.setObject(LoadersWrapper(loaders: result), forKey: key)
             return result
@@ -224,7 +229,7 @@ enum ModrinthService {
     /// - Returns: 分类列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchCategoriesThrowing(forceRefresh: Bool = false) async throws -> [Category] {
-        let key = URLConfig.API.Modrinth.Tag.category.absoluteString as NSString
+        let key = URLConfig.API.Modrinth.categoryTag.absoluteString as NSString
         if !forceRefresh, let cached = categoriesCache.object(forKey: key), Date().timeIntervalSince(cached.timestamp) < cacheExpiration {
             Logger.shared.info("使用缓存的 Modrinth 分类列表")
             return cached.categories
@@ -233,7 +238,7 @@ enum ModrinthService {
         }
         do {
             let (data, response) = try await URLSession.shared.data(
-                from: URLConfig.API.Modrinth.Tag.category
+                from: URLConfig.API.Modrinth.categoryTag
             )
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
@@ -242,7 +247,7 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.Tag.category)")
+            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.categoryTag)")
             let result = try JSONDecoder().decode([Category].self, from: data)
             categoriesCache.setObject(CategoriesWrapper(categories: result), forKey: key)
             return result
@@ -271,7 +276,7 @@ enum ModrinthService {
     /// - Returns: 游戏版本列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchGameVersionsThrowing(forceRefresh: Bool = false) async throws -> [GameVersion] {
-        let key = URLConfig.API.Modrinth.Tag.gameVersion.absoluteString as NSString
+        let key = URLConfig.API.Modrinth.gameVersionTag.absoluteString as NSString
         if !forceRefresh, let cached = gameVersionsCache.object(forKey: key), Date().timeIntervalSince(cached.timestamp) < cacheExpiration {
             Logger.shared.info("使用缓存的 Modrinth 游戏版本列表")
             return cached.versions
@@ -280,7 +285,7 @@ enum ModrinthService {
         }
         do {
             let (data, response) = try await URLSession.shared.data(
-                from: URLConfig.API.Modrinth.Tag.gameVersion
+                from: URLConfig.API.Modrinth.gameVersionTag
             )
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
@@ -289,7 +294,7 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.Tag.gameVersion)")
+            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.gameVersionTag)")
             let result = try JSONDecoder().decode([GameVersion].self, from: data)
             gameVersionsCache.setObject(GameVersionsWrapper(versions: result), forKey: key)
             return result.filter { $0.version_type == "release" }
@@ -578,7 +583,7 @@ enum ModrinthService {
 
     // 过滤出 primary == true 的文件
     static func filterPrimaryFiles(from files: [ModrinthVersionFile]?) -> ModrinthVersionFile? {
-        return files?.filter { $0.primary == true }.first
+        return files?.first { $0.primary == true }
     }
 
     /// 通过文件 hash 查询 Modrinth API，返回 ModrinthProjectDetail（静默版本）
@@ -602,7 +607,7 @@ enum ModrinthService {
 
             Task {
                 do {
-                    let detail = try await ModrinthService.fetchProjectDetailsThrowing(id: version.projectId)
+                    let detail = try await Self.fetchProjectDetailsThrowing(id: version.projectId)
                     await MainActor.run {
                         completion(detail)
                     }
@@ -623,6 +628,7 @@ enum ModrinthService {
 private class ModrinthResultWrapper: NSObject {
     let result: ModrinthResult
     let timestamp: Date
+
     init(result: ModrinthResult) {
         self.result = result
         self.timestamp = Date()
@@ -632,6 +638,7 @@ private class ModrinthResultWrapper: NSObject {
 private class ModrinthProjectDetailWrapper: NSObject {
     let detail: ModrinthProjectDetail
     let timestamp: Date
+
     init(detail: ModrinthProjectDetail) {
         self.detail = detail
         self.timestamp = Date()
@@ -641,6 +648,7 @@ private class ModrinthProjectDetailWrapper: NSObject {
 private class GameVersionsWrapper: NSObject {
     let versions: [GameVersion]
     let timestamp: Date
+
     init(versions: [GameVersion]) {
         self.versions = versions
         self.timestamp = Date()
@@ -650,6 +658,7 @@ private class GameVersionsWrapper: NSObject {
 private class CategoriesWrapper: NSObject {
     let categories: [Category]
     let timestamp: Date
+
     init(categories: [Category]) {
         self.categories = categories
         self.timestamp = Date()
@@ -659,6 +668,7 @@ private class CategoriesWrapper: NSObject {
 private class LoadersWrapper: NSObject {
     let loaders: [Loader]
     let timestamp: Date
+
     init(loaders: [Loader]) {
         self.loaders = loaders
         self.timestamp = Date()

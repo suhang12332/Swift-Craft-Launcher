@@ -1,6 +1,6 @@
 import Foundation
 
-class CommonService {
+enum CommonService {
 
     /// 根据 mod loader 获取适配的版本列表（静默版本）
     /// - Parameter loader: 加载器类型
@@ -85,7 +85,8 @@ class CommonService {
         let jarPaths: [String] = loader.libraries.compactMap { lib in
             guard lib.includeInClasspath else { return nil }
             if lib.includeInClasspath {
-                let artifact = lib.downloads!.artifact
+                guard let downloads = lib.downloads else { return nil }
+                let artifact = downloads.artifact
                 return librariesDir.appendingPathComponent(artifact.path).path
             } else {
                 return ""
@@ -312,7 +313,7 @@ class CommonService {
         let artifact = parts[1]
 
         var version = ""
-        var classifier: String? = nil
+        var classifier: String?
 
         if parts.count == 3 {
             // group:artifact:version
@@ -365,10 +366,10 @@ class CommonService {
     /// Maven 坐标转 FabricMC Maven 仓库 URL
     /// - Parameter coordinate: Maven 坐标
     /// - Returns: Maven 仓库 URL
-    static func mavenCoordinateToURL(lib: ModrinthLoaderLibrary) -> URL {
+    static func mavenCoordinateToURL(lib: ModrinthLoaderLibrary) -> URL? {
         // 使用相对路径而不是完整路径来构建URL
         let relativePath = mavenCoordinateToRelativePathForURL(lib.name)
-        return lib.url!.appendingPathComponent(relativePath)
+        return lib.url?.appendingPathComponent(relativePath)
     }
 
     /// Maven 坐标转默认 Minecraft 库 URL

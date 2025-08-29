@@ -139,16 +139,15 @@ public struct DetailToolbarView: ToolbarContent {
                         selectedTab: $selectedTab,
                         versionCurrentPage: $versionCurrentPage,
                         versionTotal: $versionTotal,
-                        gameId: gameId,
-                        onBack: {
-                            if let id = gameId {
-                                selectedItem = .game(id)
-                            } else {
-                                selectProjectId = nil
-                                selectedTab = 0
-                            }
+                        gameId: gameId
+                    ) {
+                        if let id = gameId {
+                            selectedItem = .game(id)
+                        } else {
+                            selectProjectId = nil
+                            selectedTab = 0
                         }
-                    )
+                    }
                 } else {
                     sortMenu
                     paginationControls

@@ -17,7 +17,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     // 配置选项
     private let startupCheckDelay: TimeInterval = 2.0 // 启动后延迟检查时间（秒）
 
-    private override init() {
+    override private init() {
         super.init()
         currentVersion = Bundle.main.appVersion
         setupUpdater()

@@ -3,7 +3,7 @@ import Foundation
 
 /// 游戏版本信息仓库
 /// 负责游戏版本信息的持久化存储和管理
-class GameRepository: ObservableObject { // swiftlint:disable:this type_body_length
+class GameRepository: ObservableObject {
     // MARK: - Properties
 
     /// 已保存的游戏列表

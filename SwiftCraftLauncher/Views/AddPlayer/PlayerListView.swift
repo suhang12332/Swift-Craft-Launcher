@@ -3,8 +3,9 @@ import SwiftUI
 /// 显示玩家列表的视图
 struct PlayerListView: View {
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @Environment(\.dismiss) var dismiss
-    @State private var playerToDelete: Player? = nil
+    @Environment(\.dismiss)
+    var dismiss
+    @State private var playerToDelete: Player?
     @State private var showDeleteAlert = false
     @State private var showingPlayerListPopover = false
 

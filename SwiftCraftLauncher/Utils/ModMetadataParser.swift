@@ -1,7 +1,7 @@
 import Foundation
 import ZIPFoundation
 
-class ModMetadataParser {
+enum ModMetadataParser {
     /// 解析 modid 和 version（静默版本）
     static func parseModMetadata(
         fileURL: URL,

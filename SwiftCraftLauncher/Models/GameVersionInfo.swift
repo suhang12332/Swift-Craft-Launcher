@@ -152,11 +152,11 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
 
     /// 按Java主版本号匹配的Java路径
     var detectedJavaPath: String? {
-        GameSettingsManager.shared.allJavaPaths.first(where: { key, _ in
+        GameSettingsManager.shared.allJavaPaths.first { key, _ in
             if let intVer = Int(key.split(separator: ".").first ?? "") {
                 return intVer == self.javaVersion
             }
             return false
-        })?.value
+        }?.value
     }
 }

@@ -72,7 +72,7 @@ struct AddOrDeleteResourceButton: View {
     //    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
     var onResourceChanged: (() -> Void)?
     // 新增：local 区可强制指定已安装状态
-    var forceInstalled: Bool? = nil
+    var forceInstalled: Bool
     // 保证所有 init 都有 onResourceChanged 参数（带默认值）
     init(
         project: ModrinthProject,
@@ -83,7 +83,7 @@ struct AddOrDeleteResourceButton: View {
         type: Bool,
         selectedItem: Binding<SidebarItem>,
         onResourceChanged: (() -> Void)? = nil,
-        forceInstalled: Bool? = nil
+        forceInstalled: Bool = false
     ) {
         self.project = project
         self.selectedVersions = selectedVersions
@@ -95,6 +95,7 @@ struct AddOrDeleteResourceButton: View {
         self.onResourceChanged = onResourceChanged
         self.forceInstalled = forceInstalled
     }
+
     var body: some View {
         VStack {
             Button(action: handleButtonAction) {
@@ -196,30 +197,32 @@ struct AddOrDeleteResourceButton: View {
                 isPresented: $showGlobalResourceSheet,
                 onDismiss: {
                     addButtonState = .idle
+                },
+                content: {
+                    GlobalResourceSheet(
+                        project: project,
+                        resourceType: query,
+                        isPresented: $showGlobalResourceSheet
+                    )
+                    .environmentObject(gameRepository)
                 }
-            ) {
-                GlobalResourceSheet(
-                    project: project,
-                    resourceType: query,
-                    isPresented: $showGlobalResourceSheet
-                )
-                .environmentObject(gameRepository)
-            }
+            )
             // 新增：整合包下载 sheet
             .sheet(
                 isPresented: $showModPackDownloadSheet,
                 onDismiss: {
                     addButtonState = .idle
                     scanResourcesIfAvailable()
+                },
+                content: {
+                    ModPackDownloadSheet(
+                        projectId: project.projectId,
+                        gameInfo: gameInfo,
+                        query: query
+                    )
+                    .environmentObject(gameRepository)
                 }
-            ) {
-                ModPackDownloadSheet(
-                    projectId: project.projectId,
-                    gameInfo: gameInfo,
-                    query: query
-                )
-                .environmentObject(gameRepository)
-            }
+            )
         }
         .alert(isPresented: $showNoGameAlert) {
             Alert(

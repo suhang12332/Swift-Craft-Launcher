@@ -144,4 +144,3 @@ private struct CategoryTag: View {
             .cornerRadius(Constants.categoryCornerRadius)
     }
 }
-

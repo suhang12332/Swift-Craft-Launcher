@@ -61,9 +61,10 @@ class CommonFileManager {
                 )
             }
 
+            guard let url = CommonService.mavenCoordinateToURL(lib: lib) else { return nil }
             return JarDownloadTask(
                 name: lib.name,
-                url: CommonService.mavenCoordinateToURL(lib: lib),
+                url: url,
                 destinationPath: CommonService.mavenCoordinateToDefaultPath(lib.name),
                 expectedSha1: nil
             )
@@ -103,10 +104,10 @@ class CommonFileManager {
     func downloadFabricJarsThrowing(libraries: [ModrinthLoaderLibrary]) async throws {
         let tasks = libraries.compactMap { lib -> JarDownloadTask? in
             guard lib.downloadable else { return nil }
-            let result = CommonService.mavenCoordinateToURL(lib: lib)
+            guard let url = CommonService.mavenCoordinateToURL(lib: lib) else { return nil }
             return JarDownloadTask(
                 name: lib.name,
-                url: result,
+                url: url,
                 destinationPath: CommonService.mavenCoordinateToDefaultPath(lib.name),
                 expectedSha1: ""
             )
@@ -171,7 +172,7 @@ class CommonFileManager {
         // 解析version.json中的data字段
         if let data = data {
             for (key, sidedEntry) in data {
-                processorData[key] = CommonFileManager.extractClientValue(from: sidedEntry.client) ?? sidedEntry.client
+                processorData[key] = Self.extractClientValue(from: sidedEntry.client) ?? sidedEntry.client
             }
         }
 

@@ -20,7 +20,8 @@ private enum Constants {
 struct GameFormView: View {
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
 
     // MARK: - State
     @StateObject private var gameSetupService = GameSetupUtil()
@@ -33,11 +34,11 @@ struct GameFormView: View {
     @State private var selectedModLoader = "vanilla"
     @State private var mojangVersions: [MojangVersionInfo] = []
     @State private var availableVersions: [String] = []  // 新增：存储可用版本字符串列表
-    @State private var downloadTask: Task<Void, Error>? = nil
+    @State private var downloadTask: Task<Void, Error>?
     @FocusState private var isGameNameFocused: Bool
     @State private var isGameNameDuplicate: Bool = false
-    @State private var pendingIconData: Data? = nil
-    @State private var pendingIconURL: URL? = nil
+    @State private var pendingIconData: Data?
+    @State private var pendingIconURL: URL?
     @State private var didInit = false
 
     // MARK: - Body
@@ -104,8 +105,7 @@ struct GameFormView: View {
                         showImagePicker = true
                     }
                 }
-                .onDrop(of: [UTType.image.identifier], isTargeted: nil) {
-                    providers in
+                .onDrop(of: [UTType.image.identifier], isTargeted: nil) { providers in
                     if !gameSetupService.downloadState.isDownloading {
                         handleImageDrop(providers)
                     } else {
@@ -210,11 +210,10 @@ struct GameFormView: View {
         CustomVersionPicker(
             selected: $selectedGameVersion,
             availableVersions: availableVersions,
-            time: $versionTime,
-            onVersionSelected: { version in
-                await MinecraftService.fetchVersionTime(for: version)
-            }
-        )
+            time: $versionTime
+        ) { version in
+            await MinecraftService.fetchVersionTime(for: version)
+        }
         .disabled(gameSetupService.downloadState.isDownloading)
     }
 
@@ -416,7 +415,7 @@ struct GameFormView: View {
             self.availableVersions = versions
             // 如果当前选中的版本不在兼容版本列表中，选择第一个兼容版本
             if !versions.contains(self.selectedGameVersion) && !versions.isEmpty {
-                self.selectedGameVersion = versions.first!
+                self.selectedGameVersion = versions.first ?? ""
             }
         }
 
@@ -424,7 +423,7 @@ struct GameFormView: View {
         if !versions.isEmpty {
             let targetVersion =
                 versions.contains(self.selectedGameVersion)
-                ? self.selectedGameVersion : versions.first!
+                ? self.selectedGameVersion : (versions.first ?? "")
             let timeString = await MinecraftService.fetchVersionTime(
                 for: targetVersion
             )

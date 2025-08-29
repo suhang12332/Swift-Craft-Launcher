@@ -71,7 +71,7 @@ struct MinecraftSkinUtils: View {
         ZStack {
             if let image = image {
                 avatarLayers(for: image)
-            } else if let _ = error {
+            } else if error != nil {
                 Image(systemName: "person.slash")
                     .foregroundColor(.orange)
                     .font(.title2)

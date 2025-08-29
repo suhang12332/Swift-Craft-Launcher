@@ -7,6 +7,7 @@ struct AddPlayerSheetView: View {
     var onCancel: () -> Void
     var onLogin: (MinecraftProfileResponse) -> Void
     var onYggLogin: (YggdrasilProfileResponse) -> Void
+
     enum PlayerProfile {
         case minecraft(MinecraftProfileResponse)
         case yggdrasil(YggdrasilProfileResponse)
@@ -19,8 +20,9 @@ struct AddPlayerSheetView: View {
     @StateObject private var authService = MinecraftAuthService.shared
 
     @StateObject private var yggdrasilAuthService = YggdrasilAuthService.shared
-    
-    @Environment(\.openURL) private var openURL
+
+    @Environment(\.openURL)
+    private var openURL
     @State private var selectedAuthType: AccountAuthType = .offline
 
     var body: some View {
@@ -62,12 +64,11 @@ struct AddPlayerSheetView: View {
             footer: {
                 HStack {
                     Button(
-                        "common.cancel".localized(),
-                        action: {
-                            authService.isLoading = false
-                            onCancel()
-                        }
-                    )
+                        "common.cancel".localized()
+                    ) {
+                        authService.isLoading = false
+                        onCancel()
+                    }
                     Spacer()
                     if selectedAuthType == .premium {
                         // 根据认证状态显示不同的按钮
@@ -126,12 +127,11 @@ struct AddPlayerSheetView: View {
                         }
                     } else {
                         Button(
-                            "addplayer.create".localized(),
-                            action: {
-                                authService.isLoading = false
-                                onAdd()
-                            }
-                        )
+                            "addplayer.create".localized()
+                        ) {
+                            authService.isLoading = false
+                            onAdd()
+                        }
                         .disabled(!isPlayerNameValid)
                         .keyboardShortcut(.defaultAction)
                     }

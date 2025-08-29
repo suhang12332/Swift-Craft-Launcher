@@ -1,6 +1,6 @@
 import Foundation
 
-struct MinecraftLaunchCommandBuilder {
+enum MinecraftLaunchCommandBuilder {
     /// 构建启动命令（静默版本）
     /// - Returns: 启动命令数组，失败时返回空数组
     static func build(

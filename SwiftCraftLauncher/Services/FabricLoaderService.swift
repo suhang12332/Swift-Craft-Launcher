@@ -1,6 +1,6 @@
 import Foundation
 
-class FabricLoaderService {
+enum FabricLoaderService {
 
     /// 获取所有 Loader 版本（静默版本）
     /// - Parameter minecraftVersion: Minecraft 版本
@@ -134,7 +134,14 @@ class FabricLoaderService {
         await fileManager.downloadFabricJars(libraries: fabricProfile.libraries)
         let classpathString = CommonService.generateFabricClasspath(from: fabricProfile, librariesDir: librariesDirectory)
         let mainClass = fabricProfile.mainClass
-        return (loaderVersion: fabricProfile.version!, classpath: classpathString, mainClass: mainClass)
+        guard let version = fabricProfile.version else {
+            throw GlobalError.validation(
+                chineseMessage: "Fabric 加载器版本信息缺失",
+                i18nKey: "error.validation.fabric_loader_version_missing",
+                level: .notification
+            )
+        }
+        return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)
     }
 
     /// 设置 Fabric 加载器（静默版本）

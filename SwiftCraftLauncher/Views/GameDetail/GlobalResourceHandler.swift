@@ -47,18 +47,6 @@ private struct DependencyState {
     var versions: [String: [ModrinthProjectDetailVersion]] = [:]
     var selected: [String: ModrinthProjectDetailVersion?] = [:]
     var isLoading = false
-
-    init(
-        dependencies: [ModrinthProjectDetail] = [],
-        versions: [String: [ModrinthProjectDetailVersion]] = [:],
-        selected: [String: ModrinthProjectDetailVersion?] = [:],
-        isLoading: Bool = false
-    ) {
-        self.dependencies = dependencies
-        self.versions = versions
-        self.selected = selected
-        self.isLoading = isLoading
-    }
 }
 
 // MARK: - 主资源添加 Sheet
@@ -67,12 +55,12 @@ struct GlobalResourceSheet: View {
     let resourceType: String
     @Binding var isPresented: Bool
     @EnvironmentObject var gameRepository: GameRepository
-    @State private var selectedGame: GameVersionInfo? = nil
-    @State private var selectedVersion: ModrinthProjectDetailVersion? = nil
+    @State private var selectedGame: GameVersionInfo?
+    @State private var selectedVersion: ModrinthProjectDetailVersion?
     @State private var availableVersions: [ModrinthProjectDetailVersion] = []
-    @State private var projectDetail: ModrinthProjectDetail? = nil
+    @State private var projectDetail: ModrinthProjectDetail?
     @State private var isLoading = true
-    @State private var error: GlobalError? = nil
+    @State private var error: GlobalError?
     @State private var dependencyState = DependencyState()
     @State private var hasLoadedDetail = false
     @State private var isDownloadingAll = false
@@ -111,7 +99,7 @@ struct GlobalResourceSheet: View {
                     } else {
                         VStack {
                             ModrinthProjectTitleView(
-                                projectDetail: projectDetail!
+                                projectDetail: detail
                             ).padding(.bottom, 18)
                             CommonSheetGameBody(
                                 compatibleGames: compatibleGames,
@@ -125,17 +113,15 @@ struct GlobalResourceSheet: View {
                                     selectedGame: $selectedGame,
                                     selectedVersion: $selectedVersion,
                                     availableVersions: $availableVersions,
-                                    mainVersionId: $mainVersionId,
-                                    onVersionChange: { version in
+                                    mainVersionId: $mainVersionId
+                                ) { version in
                                         if resourceType == "mod",
-                                            let v = version
-                                        {
+                                            let v = version {
                                             loadDependencies(for: v, game: game)
                                         } else {
                                             dependencyState = DependencyState()
                                         }
-                                    }
-                                )
+                                }
                                 if resourceType == "mod" && !GameSettingsManager.shared.autoDownloadDependencies {
                                     spacerView()
                                     DependencySection(state: $dependencyState)
@@ -620,7 +606,7 @@ struct VersionPickerForSheet: View {
     @Binding var selectedVersion: ModrinthProjectDetailVersion?
     @Binding var availableVersions: [ModrinthProjectDetailVersion]
     @Binding var mainVersionId: String
-    var onVersionChange: ((ModrinthProjectDetailVersion?) -> Void)? = nil
+    var onVersionChange: ((ModrinthProjectDetailVersion?) -> Void)?
     @State private var isLoading = false
     @State private var error: GlobalError?
 

@@ -64,11 +64,10 @@ public struct AcknowledgementsView: View {
             VStack(spacing: 0) {
 
                 // 开源库列表
-                ForEach(Array(allLibraries.enumerated()), id: \.element.name) {
-                    index,
-                    library in
+                ForEach(Array(allLibraries.enumerated()), id: \.element.name) { index, library in
                     VStack(spacing: 0) {
-                        Link(destination: URL(string: library.url)!) {
+                        if let url = URL(string: library.url) {
+                            Link(destination: url) {
                             HStack {
                                 Text(library.name)
                                     .foregroundColor(.primary)
@@ -85,6 +84,7 @@ public struct AcknowledgementsView: View {
                             .padding(.vertical, 12)
                             .background(Color.clear)
                             .contentShape(Rectangle())
+                            }
                         }
 
                         // 分隔线

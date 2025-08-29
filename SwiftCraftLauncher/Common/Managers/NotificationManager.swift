@@ -2,7 +2,7 @@ import Foundation
 import UserNotifications
 import os
 
-struct NotificationManager {
+enum NotificationManager {
 
     /// 发送通知
     /// - Parameters:

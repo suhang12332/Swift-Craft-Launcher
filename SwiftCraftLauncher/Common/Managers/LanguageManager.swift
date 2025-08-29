@@ -115,6 +115,6 @@ extension String {
     public func localized(
         _ bundle: Bundle = LanguageManager.shared.bundle
     ) -> String {
-        NSLocalizedString(self, bundle: bundle, comment: "")
+        bundle.localizedString(forKey: self, value: self, table: nil)
     }
 }

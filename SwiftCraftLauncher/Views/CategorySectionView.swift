@@ -106,9 +106,8 @@ struct CategorySectionView: View {
                         ForEach(items) { item in
                             FilterChip(
                                 title: item.name,
-                                isSelected: selectedItems.contains(item.id),
-                                action: { toggleSelection(for: item.id) }
-                            )
+                                isSelected: selectedItems.contains(item.id)
+                            ) { toggleSelection(for: item.id) }
                         }
                     }
                     .padding()
@@ -119,8 +118,7 @@ struct CategorySectionView: View {
         .frame(width: CategorySectionConstants.popoverWidth)
     }
 
-    @ViewBuilder
-    private var clearButton: some View {
+    @ViewBuilder private var clearButton: some View {
         if !selectedItems.isEmpty {
             Button(action: clearSelection) {
                 Image(systemName: "xmark.circle.fill")
@@ -141,9 +139,8 @@ struct CategorySectionView: View {
                 ) { _ in
                     FilterChip(
                         title: "common.loading".localized(),
-                        isSelected: false,
-                        action: {}
-                    )
+                        isSelected: false
+                    ) {}
                     .redacted(reason: .placeholder)
                 }
             }
@@ -159,9 +156,8 @@ struct CategorySectionView: View {
             ForEach(visibleItems) { item in
                 FilterChip(
                     title: item.name,
-                    isSelected: selectedItems.contains(item.id),
-                    action: { toggleSelection(for: item.id) }
-                )
+                    isSelected: selectedItems.contains(item.id)
+                ) { toggleSelection(for: item.id) }
             }
         }
         .frame(maxHeight: CategorySectionConstants.maxHeight)
@@ -188,9 +184,8 @@ struct CategorySectionView: View {
                             ForEach(groups[key] ?? []) { item in
                                 FilterChip(
                                     title: item.name,
-                                    isSelected: selectedItems.contains(item.id),
-                                    action: { toggleSelection(for: item.id) }
-                                )
+                                    isSelected: selectedItems.contains(item.id)
+                                ) { toggleSelection(for: item.id) }
                             }
                         }
                     }

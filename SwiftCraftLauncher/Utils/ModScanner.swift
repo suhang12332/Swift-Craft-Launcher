@@ -3,6 +3,7 @@ import Foundation
 
 class ModScanner {
     static let shared = ModScanner()
+
     private init() {}
 
     /// 主入口：获取 ModrinthProjectDetail（静默版本）
@@ -269,7 +270,9 @@ extension ModScanner {
                 if detail == nil {
                     detail = createFallbackDetailFromFileName(fileURL: fileURL)
                     // 保存兜底信息到缓存，避免重复创建
-                    saveToCache(hash: hash, detail: detail!)
+                    if let detail = detail {
+                        saveToCache(hash: hash, detail: detail)
+                    }
                 }
 
                 return (file: fileURL, hash: hash, detail: detail)
@@ -415,8 +418,7 @@ extension ModScanner {
         let semaphore = AsyncSemaphore(value: 4)
 
         // 使用 TaskGroup 并发扫描文件
-        let results = await withTaskGroup(of: ModrinthProjectDetail?.self) {
-            group in
+        let results = await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
             for fileURL in jarFiles {
                 group.addTask {
                     await semaphore.wait()
