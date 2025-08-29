@@ -63,6 +63,7 @@ class ProxySettingsManager: ObservableObject {
         didSet { 
             objectWillChange.send()
             updateSystemProxy()
+            notifyProxyConfigurationChanged()
         }
     }
     
@@ -70,6 +71,7 @@ class ProxySettingsManager: ObservableObject {
         didSet { 
             objectWillChange.send()
             updateSystemProxy()
+            notifyProxyConfigurationChanged()
         }
     }
     
@@ -77,6 +79,7 @@ class ProxySettingsManager: ObservableObject {
         didSet { 
             objectWillChange.send()
             updateSystemProxy()
+            notifyProxyConfigurationChanged()
         }
     }
     
@@ -84,6 +87,7 @@ class ProxySettingsManager: ObservableObject {
         didSet { 
             objectWillChange.send()
             updateSystemProxy()
+            notifyProxyConfigurationChanged()
         }
     }
     
@@ -91,6 +95,7 @@ class ProxySettingsManager: ObservableObject {
         didSet { 
             objectWillChange.send()
             updateSystemProxy()
+            notifyProxyConfigurationChanged()
         }
     }
     
@@ -98,6 +103,7 @@ class ProxySettingsManager: ObservableObject {
         didSet { 
             objectWillChange.send()
             updateSystemProxy()
+            notifyProxyConfigurationChanged()
         }
     }
     
@@ -121,6 +127,11 @@ class ProxySettingsManager: ObservableObject {
     
     private init() {
         updateSystemProxy()
+    }
+    
+    /// 通知代理配置变化
+    private func notifyProxyConfigurationChanged() {
+        NotificationCenter.default.post(name: NSNotification.Name("ProxyConfigurationChanged"), object: nil)
     }
     
     private func updateSystemProxy() {
