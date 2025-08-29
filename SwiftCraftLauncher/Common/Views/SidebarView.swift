@@ -27,8 +27,9 @@ public struct SidebarView: View {
                 ForEach(filteredGames) { game in
                     NavigationLink(value: SidebarItem.game(game.id)) {
                         HStack(spacing: 6) {
-                            if let iconURL = AppPaths.profileDirectory(gameName: game.gameName)?.appendingPathComponent(game.gameIcon),
-                               FileManager.default.fileExists(atPath: iconURL.path) {
+                            let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
+                            let iconURL = profileDir.appendingPathComponent(game.gameIcon)
+                            if FileManager.default.fileExists(atPath: iconURL.path) {
                                 AsyncImage(url: iconURL) { phase in
                                     switch phase {
                                     case .empty:

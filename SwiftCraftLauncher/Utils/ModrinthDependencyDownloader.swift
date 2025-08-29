@@ -177,11 +177,10 @@ enum ModrinthDependencyDownloader {
         let resourceDir = AppPaths.modsDirectory(
             gameName: gameInfo.gameName
         )
-        guard let resourceDirUnwrapped = resourceDir else { return [] }
 
         let dependencies = await ModrinthService.fetchProjectDependencies(
             type: query,
-            cachePath: resourceDirUnwrapped,
+            cachePath: resourceDir,
             id: projectId,
             selectedVersions: [gameInfo.gameVersion],
             selectedLoaders: [gameInfo.modLoader]
@@ -241,10 +240,10 @@ enum ModrinthDependencyDownloader {
         let resourceDir = AppPaths.modsDirectory(
             gameName: gameInfo.gameName
         )
-        guard let resourceDirUnwrapped = resourceDir else { return [] }
+
         let dependencies = await ModrinthService.fetchProjectDependencies(
             type: query,
-            cachePath: resourceDirUnwrapped,
+            cachePath: resourceDir,
             id: projectId,
             selectedVersions: [gameInfo.gameVersion],
             selectedLoaders: [gameInfo.modLoader]

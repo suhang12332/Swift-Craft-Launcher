@@ -118,9 +118,8 @@ public struct DetailToolbarView: ToolbarContent {
                     .animation(.linear, value: game.isRunning)
 
                     Button {
-                        if let gameDir = AppPaths.profileDirectory(
-                            gameName: game.gameName
-                        ) {
+                        let gameDir = AppPaths.profileDirectory(gameName: game.gameName)
+                        if FileManager.default.fileExists(atPath: gameDir.path) {
                             NSWorkspace.shared.selectFile(
                                 nil,
                                 inFileViewerRootedAtPath: gameDir.path

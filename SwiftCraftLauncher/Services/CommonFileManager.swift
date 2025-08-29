@@ -165,8 +165,8 @@ class CommonFileManager {
         processorData["MINECRAFT_JAR"] = minecraftJarPath.path
 
         // 添加实例路径（profile目录）
-        if let gameName = gameName, let profileDir = AppPaths.profileDirectory(gameName: gameName) {
-            processorData["ROOT"] = profileDir.path
+        if let gameName = gameName {
+            processorData["ROOT"] = AppPaths.profileDirectory(gameName: gameName).path
         }
 
         // 解析version.json中的data字段

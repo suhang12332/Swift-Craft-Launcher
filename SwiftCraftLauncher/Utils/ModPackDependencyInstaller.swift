@@ -36,10 +36,7 @@ enum ModPackDependencyInstaller {
         Logger.shared.info("开始安装整合包依赖: \(indexInfo.modPackName)")
 
         // 获取资源目录
-        guard let resourceDir = AppPaths.profileDirectory(gameName: gameInfo.gameName) else {
-            Logger.shared.error("无法获取资源目录")
-            return false
-        }
+        let resourceDir = AppPaths.profileDirectory(gameName: gameInfo.gameName)
 
         // 并发执行文件和依赖的安装
         async let filesResult = installModPackFiles(

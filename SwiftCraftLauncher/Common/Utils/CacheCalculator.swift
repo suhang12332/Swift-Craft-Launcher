@@ -97,20 +97,13 @@ class CacheCalculator {
     /// - Returns: 缓存信息
     /// - Throws: GlobalError 当操作失败时
     func calculateProfileCacheInfo(gameName: String) throws -> CacheInfo {
-        guard let profileDir = AppPaths.profileDirectory(gameName: gameName) else {
-            throw GlobalError.configuration(
-                chineseMessage: "无法获取游戏配置目录: \(gameName)",
-                i18nKey: "error.configuration.game_profile_directory_not_found",
-                level: .notification
-            )
-        }
 
         let subdirectories = AppPaths.profileSubdirectories
         var totalFileCount = 0
         var totalSize: Int64 = 0
 
         for subdir in subdirectories {
-            let subdirPath = profileDir.appendingPathComponent(subdir)
+            let subdirPath = AppPaths.profileDirectory(gameName: gameName).appendingPathComponent(subdir)
             let (fileCount, size) = try calculateDirectorySize(subdirPath)
             totalFileCount += fileCount
             totalSize += size

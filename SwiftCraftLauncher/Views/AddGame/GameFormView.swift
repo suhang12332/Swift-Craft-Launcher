@@ -153,12 +153,13 @@ struct GameFormView: View {
                         EmptyView()
                     }
                 }
-            } else if let iconURL = AppPaths.profileDirectory(
-                gameName: gameName
-            )?
-            .appendingPathComponent(AppConstants.defaultGameIcon),
+            } else {
+                let iconURL = AppPaths.profileDirectory(
+                    gameName: gameName
+                )
+                .appendingPathComponent(AppConstants.defaultGameIcon)
 
-            FileManager.default.fileExists(atPath: iconURL.path) {
+                if FileManager.default.fileExists(atPath: iconURL.path) {
                 AsyncImage(url: iconURL) { phase in
                     switch phase {
                     case .empty:
@@ -189,10 +190,11 @@ struct GameFormView: View {
                         EmptyView()
                     }
                 }
-            } else {
-                RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
-                    .background(Color.gray.opacity(0.08))
+                } else {
+                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                        .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
+                        .background(Color.gray.opacity(0.08))
+                }
             }
         }
         .frame(width: Constants.iconSize, height: Constants.iconSize)

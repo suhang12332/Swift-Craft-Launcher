@@ -20,25 +20,11 @@ class Logger {
 
     // 日志文件路径
     private var logFileURL: URL? {
+        // 使用AppPaths中定义的logsDirectory（现在总是返回有效路径）
+        let logsDirectory = AppPaths.logsDirectory
+
         // 获取应用名称，移除空格并转换为小写
         let appName = Bundle.main.appName.replacingOccurrences(of: " ", with: "-").lowercased()
-
-        // 优先使用系统推荐的日志目录
-        if let logsDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first {
-            let appLogsDirectory = logsDirectory.appendingPathComponent("Logs", isDirectory: true)
-                .appendingPathComponent(Bundle.main.appName, isDirectory: true)
-
-            // 确保logs目录存在
-            try? FileManager.default.createDirectory(at: appLogsDirectory, withIntermediateDirectories: true)
-
-            // 使用应用名称-日期格式作为文件名
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
-            let today = dateFormatter.string(from: Date())
-            return appLogsDirectory.appendingPathComponent("\(appName)-\(today).log")
-        }
-
-        let logsDirectory = AppPaths.launcherSupportDirectory.appendingPathComponent("logs", isDirectory: true)
 
         // 确保logs目录存在
         try? FileManager.default.createDirectory(at: logsDirectory, withIntermediateDirectories: true)
@@ -297,12 +283,9 @@ class Logger {
             let calendar = Calendar.current
             let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
 
-            // 清理系统日志目录
-            if let logsDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first {
-                let appLogsDirectory = logsDirectory.appendingPathComponent("Logs", isDirectory: true)
-                    .appendingPathComponent(Bundle.main.appName, isDirectory: true)
-                self.cleanupLogsInDirectory(appLogsDirectory, sevenDaysAgo: sevenDaysAgo)
-            }
+            // 使用AppPaths中定义的logsDirectory进行清理（现在总是返回有效路径）
+            let logsDirectory = AppPaths.logsDirectory
+            self.cleanupLogsInDirectory(logsDirectory, sevenDaysAgo: sevenDaysAgo)
         }
     }
 

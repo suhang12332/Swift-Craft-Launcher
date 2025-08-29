@@ -171,11 +171,10 @@ class GameSetupUtil: ObservableObject {
         pendingIconData: Data?,
         onError: @escaping (GlobalError, String) -> Void
     ) async {
-        guard let data = pendingIconData, !gameName.isEmpty,
-              let profileDir = AppPaths.profileDirectory(gameName: gameName) else {
+        guard let data = pendingIconData, !gameName.isEmpty else {
             return
         }
-
+        let profileDir = AppPaths.profileDirectory(gameName: gameName)
         let iconURL = profileDir.appendingPathComponent(AppConstants.defaultGameIcon)
 
         do {
@@ -416,11 +415,10 @@ class GameSetupUtil: ObservableObject {
     /// - Parameter name: 游戏名称
     /// - Returns: 是否重复
     func checkGameNameDuplicate(_ name: String) async -> Bool {
-        guard !name.isEmpty,
-              let profilesDir = AppPaths.profileRootDirectory else { return false }
+        guard !name.isEmpty else { return false }
 
         let fileManager = FileManager.default
-        let gameDir = profilesDir.appendingPathComponent(name)
+        let gameDir = AppPaths.profileRootDirectory.appendingPathComponent(name)
         return fileManager.fileExists(atPath: gameDir.path)
     }
 }

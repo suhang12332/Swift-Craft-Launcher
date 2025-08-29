@@ -328,20 +328,11 @@ class GameRepository: ObservableObject {
             let decoder = JSONDecoder()
             let allGames = try decoder.decode([GameVersionInfo].self, from: savedGamesData)
 
-            // 只保留本地 profiles 目录下实际存在的游戏（只判断文件夹名）
-            guard let profilesDir = AppPaths.profileRootDirectory else {
-                throw GlobalError.configuration(
-                    chineseMessage: "无法获取游戏配置根目录",
-                    i18nKey: "error.configuration.game_profiles_root_not_found",
-                    level: .popup
-                )
-            }
-
             let fileManager = FileManager.default
             let localGameNames: Set<String>
 
             do {
-                let contents = try fileManager.contentsOfDirectory(atPath: profilesDir.path)
+                let contents = try fileManager.contentsOfDirectory(atPath: AppPaths.profileRootDirectory.path)
                 localGameNames = Set(contents)
             } catch {
                 throw GlobalError.validation(

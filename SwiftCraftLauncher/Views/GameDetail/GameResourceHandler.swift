@@ -8,12 +8,10 @@ enum GameResourceHandler {
         gameRepository: GameRepository,
         addButtonState: Binding<ModrinthDetailCardView.AddButtonState>
     ) {
-        guard let gameInfo = gameInfo,
-            let modsDir = AppPaths.modsDirectory(gameName: gameInfo.gameName)
-        else { return }
+        guard let gameInfo = gameInfo else { return }
         ModScanner.shared.isModInstalled(
             projectId: project.projectId,
-            in: modsDir
+            in: AppPaths.modsDirectory(gameName: gameInfo.gameName)
         ) { installed in
             DispatchQueue.main.async {
                 if installed {
