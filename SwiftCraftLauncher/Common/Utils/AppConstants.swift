@@ -13,11 +13,7 @@ enum AppConstants {
         return obfuscator.getClientID()
     }()
     static let minecraftScope = "XboxLive.signin offline_access"
-
-    // Yggdrasil/LittleSkin认证
-    static let yggdrasilClientId = "1182" // 替换为你的实际LittleSkin客户端ID
-    static let yggdrasilScope = "openid Yggdrasil.PlayerProfiles.Select" // 按需调整
-
+    static let callbackURLScheme = "swift-craft-launcher"
     // 缓存资源类型
     static let cacheResourceTypes = ["libraries", "natives", "assets", "versions"]
 
