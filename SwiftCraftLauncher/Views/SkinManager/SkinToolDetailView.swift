@@ -12,17 +12,15 @@ struct SkinToolDetailView: View {
     enum SkinModelType: String, CaseIterable, Identifiable { case classic, slim; var id: String { rawValue } }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                header
-                previewSection
-                modelSelectSection
-                uploadSection
-                Spacer(minLength: 20)
-            }
-            .padding(.vertical, 16)
-            .padding(.horizontal, 24)
+        VStack(alignment: .leading, spacing: 24) {
+            header
+            previewSection
+            modelSelectSection
+            uploadSection
+            Spacer(minLength: 20)
         }
+        .padding(.vertical, 16)
+        .padding(.horizontal, 24)
     }
 
     // MARK: Sections
