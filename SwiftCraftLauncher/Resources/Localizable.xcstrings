@@ -74260,133 +74260,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "معالجة رمز المصادقة"
+            "value" : "جاري التحقق من معلومات الحساب"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Behandler autoriseringskode"
+            "value" : "Verificerer kontooplysninger"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autorisierungscode wird verarbeitet"
+            "value" : "Kontoinformationen werden überprüft"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Processing authorization code"
+            "value" : "Verifying account information"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Procesando código de autorización"
+            "value" : "Verificando información de la cuenta"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Käsitellään valtuutuskoodia"
+            "value" : "Tarkistetaan tilin tietoja"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Traitement du code d'autorisation"
+            "value" : "Vérification des informations du compte"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "प्राधिकरण कोड संसाधित किया जा रहा है"
+            "value" : "खाता जानकारी सत्यापित की जा रही है"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elaborazione del codice di autorizzazione"
+            "value" : "Verifica delle informazioni dell'account"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "認証コードを処理中"
+            "value" : "アカウント情報を確認中"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "인증 코드 처리 중"
+            "value" : "계정 정보 확인 중"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Behandler autoriseringskode"
+            "value" : "Verifiserer kontoinformasjon"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Autorisatiecode verwerken"
+            "value" : "Accountinformatie wordt geverifieerd"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przetwarzanie kodu autoryzacji"
+            "value" : "Weryfikacja informacji o koncie"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Processando código de autorização"
+            "value" : "Verificando informações da conta"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Обработка кода авторизации"
+            "value" : "Проверка информации аккаунта"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bearbetar auktoriseringskod"
+            "value" : "Verifierar kontoinformation"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "กำลังประมวลผลรหัสการอนุญาต"
+            "value" : "กำลังตรวจสอบข้อมูลบัญชี"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yetkilendirme kodu işleniyor"
+            "value" : "Hesap bilgileri doğrulanıyor"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Đang xử lý mã ủy quyền"
+            "value" : "Đang xác minh thông tin tài khoản"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在处理授权码"
+            "value" : "正在验证账户信息"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在處理授權碼"
+            "value" : "正在驗證賬戶信息"
           }
         }
       }
