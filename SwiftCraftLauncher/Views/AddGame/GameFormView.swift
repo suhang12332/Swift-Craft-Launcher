@@ -16,7 +16,6 @@ private enum Constants {
 }
 
 // MARK: - GameFormView
-// swiftlint:disable:next type_body_length
 struct GameFormView: View {
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel

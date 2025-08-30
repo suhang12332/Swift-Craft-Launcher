@@ -6,11 +6,9 @@ struct AddPlayerSheetView: View {
     var onAdd: () -> Void
     var onCancel: () -> Void
     var onLogin: (MinecraftProfileResponse) -> Void
-    var onYggLogin: (YggdrasilProfileResponse) -> Void
 
     enum PlayerProfile {
         case minecraft(MinecraftProfileResponse)
-        case yggdrasil(YggdrasilProfileResponse)
     }
 
     @ObservedObject var playerListViewModel: PlayerListViewModel
@@ -18,8 +16,6 @@ struct AddPlayerSheetView: View {
     @State private var isPremium: Bool = false
     @State private var authenticatedProfile: MinecraftProfileResponse?
     @StateObject private var authService = MinecraftAuthService.shared
-
-    @StateObject private var yggdrasilAuthService = YggdrasilAuthService.shared
 
     @Environment(\.openURL)
     private var openURL
@@ -51,8 +47,6 @@ struct AddPlayerSheetView: View {
                 switch selectedAuthType {
                 case .premium:
                     MinecraftAuthView(onLoginSuccess: onLogin)
-                case .yggdrasil:
-                    YggdrasilAuthView()
                 case .offline:
                     VStack(alignment: .leading) {
                         playerInfoSection
@@ -99,32 +93,6 @@ struct AddPlayerSheetView: View {
                         default:
                             ProgressView().controlSize(.small)
                         }
-                    } else if selectedAuthType == .yggdrasil {
-                        switch yggdrasilAuthService.authState {
-                        case .notAuthenticated:
-                            Button("addplayer.auth.start_login".localized()) {
-                                Task {
-                                    await yggdrasilAuthService
-                                        .startAuthentication()
-                                }
-                            }
-                            .keyboardShortcut(.defaultAction)
-                        case .authenticatedYggdrasil(let profile):
-                            Button("addplayer.auth.add".localized()) {
-                                onYggLogin(profile)
-                            }
-                            .keyboardShortcut(.defaultAction)
-                        case .error:
-                            Button("addplayer.auth.retry".localized()) {
-                                Task {
-                                    await yggdrasilAuthService
-                                        .startAuthentication()
-                                }
-                            }
-                            .keyboardShortcut(.defaultAction)
-                        default:
-                            ProgressView().controlSize(.small)
-                        }
                     } else {
                         Button(
                             "addplayer.create".localized()
@@ -138,15 +106,6 @@ struct AddPlayerSheetView: View {
                 }
             }
         )
-        .onAppear {
-            // 设置URL打开回调
-            authService.openURLHandler = { url in
-                openURL(url)
-            }
-            yggdrasilAuthService.openURLHandler = { url in
-                openURL(url)
-            }
-        }
     }
 
     // 说明区
@@ -222,14 +181,11 @@ enum AccountAuthType: String, CaseIterable, Identifiable {
 
     case offline
     case premium
-    case yggdrasil
 
     var displayName: String {
         switch self {
         case .premium:
             return "addplayer.auth.microsoft".localized()
-        case .yggdrasil:
-            return "addplayer.auth.yggdrasil".localized()
         default:
             return "addplayer.auth.offline".localized()
         }
@@ -242,8 +198,6 @@ extension AccountAuthType {
         switch self {
         case .premium:
             return ("person.crop.circle.badge.plus", .multicolor)
-        case .yggdrasil:
-            return ("person.crop.circle.badge.questionmark", .multicolor)
         default:
             return ("person.crop.circle.badge.minus", .multicolor)
         }

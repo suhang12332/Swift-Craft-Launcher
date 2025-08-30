@@ -70,10 +70,11 @@ public struct ContentToolbarView: ToolbarContent {
                         playerName = ""
                         isPlayerNameValid = false
 
-                        // 清理微软认证服务的内存信息
-                        MinecraftAuthService.shared.clearAuthenticationData()
-
                         showingAddPlayerSheet = false
+                        // 延迟清理认证状态，避免影响对话框关闭动画
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            MinecraftAuthService.shared.clearAuthenticationData()
+                        }
                     },
                     onLogin: { profile in
                         // 处理正版登录成功，使用Minecraft用户资料
@@ -81,14 +82,13 @@ public struct ContentToolbarView: ToolbarContent {
                         // 这里可以添加正版玩家的处理逻辑
                         _ = playerListViewModel.addOnlinePlayer(profile: profile)
 
-                        // 清理微软认证服务的内存信息，防止下次添加账户时显示上一次的结果
-                        MinecraftAuthService.shared.clearAuthenticationData()
-
                         showingAddPlayerSheet = false
+                        // 延迟清理认证状态，让用户能看到成功状态
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            MinecraftAuthService.shared.clearAuthenticationData()
+                        }
                     },
-                    onYggLogin: { _ in
-                        Logger.shared.debug("Yggdrasil登录成功!")
-                    },
+
                     playerListViewModel: playerListViewModel
                 )
             }

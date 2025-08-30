@@ -1,21 +1,32 @@
 import Foundation
 
-// MARK: - Device Code Response
-struct DeviceCodeResponse: Codable {
-    let userCode: String
-    let deviceCode: String
-    let verificationUri: String
-    let expiresIn: Int
-    let interval: Int
-    let message: String
+// MARK: - Authorization Code Flow Response
+struct AuthorizationCodeResponse {
+    let code: String?
+    let state: String?
+    let error: String?
+    let errorDescription: String?
 
-    enum CodingKeys: String, CodingKey {
-        case userCode = "user_code"
-        case deviceCode = "device_code"
-        case verificationUri = "verification_uri"
-        case expiresIn = "expires_in"
-        case interval
-        case message
+    var isSuccess: Bool {
+        return code != nil && error == nil
+    }
+
+    var isUserDenied: Bool {
+        return error == "access_denied"
+    }
+
+    init?(from url: URL) {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let queryItems = components.queryItems else { return nil }
+        self.code = queryItems.first { $0.name == "code" }?.value
+        self.state = queryItems.first { $0.name == "state" }?.value
+        self.error = queryItems.first { $0.name == "error" }?.value
+        // 解码 error_description
+        if let encodedDescription = queryItems.first(where: { $0.name == "error_description" })?.value {
+            self.errorDescription = encodedDescription.removingPercentEncoding
+        } else {
+            self.errorDescription = nil
+        }
     }
 }
 
@@ -64,7 +75,7 @@ struct XUI: Codable {
 }
 
 // MARK: - Minecraft Profile Response
-struct MinecraftProfileResponse: Codable {
+struct MinecraftProfileResponse: Codable, Equatable {
     let id: String
     let name: String
     let skins: [Skin]
@@ -104,7 +115,7 @@ struct MinecraftProfileResponse: Codable {
     }
 }
 
-struct Skin: Codable {
+struct Skin: Codable, Equatable {
     let id: String
     let state: String
     let url: String
@@ -112,47 +123,63 @@ struct Skin: Codable {
     let alias: String?
 }
 
-struct Cape: Codable {
+struct Cape: Codable, Equatable {
     let id: String
     let state: String
     let url: String
     let alias: String?
 }
 
+// MARK: - Minecraft Entitlements Response
+struct MinecraftEntitlementsResponse: Codable {
+    let items: [EntitlementItem]
+    let signature: String
+    let keyId: String
+}
+
+struct EntitlementItem: Codable {
+    let name: String
+    let signature: String
+}
+
+// MARK: - Entitlement Names
+enum MinecraftEntitlement: String, CaseIterable {
+    case productMinecraft = "product_minecraft"
+    case gameMinecraft = "game_minecraft"
+
+    var displayName: String {
+        switch self {
+        case .productMinecraft:
+            return "Minecraft Product License"
+        case .gameMinecraft:
+            return "Minecraft Game License"
+        }
+    }
+}
+
 // MARK: - Authentication State
-enum AuthenticationState {
+enum AuthenticationState: Equatable {
     case notAuthenticated
-    case requestingCode
-    case waitingForUser(userCode: String, verificationUri: String)
-    case authenticating
+    case waitingForBrowserAuth          // 等待用户在浏览器中完成授权
+    case processingAuthCode(step: String) // 处理授权码的各个步骤
     case authenticated(profile: MinecraftProfileResponse)
-    case authenticatedYggdrasil(profile: YggdrasilProfileResponse)
     case error(String)
 }
 
 // MARK: - Authentication Error
 enum MinecraftAuthError: Error, LocalizedError {
-    case invalidDeviceCode
-    case authorizationPending
     case authorizationDeclined
     case expiredToken
-    case slowDown
     case networkError(Error)
     case invalidResponse
     case httpError(Int)
 
     var errorDescription: String? {
         switch self {
-        case .invalidDeviceCode:
-            return "无效的设备代码"
-        case .authorizationPending:
-            return "授权待处理，请完成浏览器验证"
         case .authorizationDeclined:
             return "用户拒绝了授权"
         case .expiredToken:
             return "令牌已过期"
-        case .slowDown:
-            return "请求过于频繁，请稍后再试"
         case .networkError(let error):
             return "网络错误: \(error.localizedDescription)"
         case .invalidResponse:

@@ -10,24 +10,15 @@ struct MinecraftAuthView: View {
             switch authService.authState {
             case .notAuthenticated:
                 notAuthenticatedView
+//                waitingForBrowserAuthView
+            case .waitingForBrowserAuth:
+                waitingForBrowserAuthView
 
-            case .requestingCode:
-                requestingCodeView
-
-            case let .waitingForUser(userCode, verificationUri):
-                waitingForUserView(
-                    userCode: userCode,
-                    verificationUri: verificationUri
-                )
-
-            case .authenticating:
-                authenticatingView
+            case .processingAuthCode(let step):
+                processingAuthCodeView(step: step)
 
             case .authenticated(let profile):
                 authenticatedView(profile: profile)
-
-            case .authenticatedYggdrasil(let profile):
-                authenticatedYggdrasilView(profile: profile)
 
             case .error(let message):
                 errorView(message: message)
@@ -55,79 +46,36 @@ struct MinecraftAuthView: View {
         }
     }
 
-    // MARK: - 请求代码状态
-    private var requestingCodeView: some View {
+    // MARK: - 等待浏览器授权状态
+    private var waitingForBrowserAuthView: some View {
         VStack(spacing: 16) {
-            ProgressView().controlSize(.small)
+            // 浏览器图标
+            Image(systemName: "person.crop.circle.badge.clock")
+                .font(.system(size: 60))
+                .foregroundColor(.secondary)
 
-            Text("minecraft.auth.requesting_code".localized())
+            Text("minecraft.auth.waiting_browser".localized())
                 .font(.headline)
+                .multilineTextAlignment(.center)
 
-            Text("minecraft.auth.requesting_code.subtitle".localized())
+            Text("minecraft.auth.waiting_browser.subtitle".localized())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
     }
 
-    // MARK: - 等待用户验证状态
-    private func waitingForUserView(
-        userCode: String,
-        verificationUri: String
-    ) -> some View {
-        VStack(spacing: 20) {
-            Image(systemName: "person.badge.clock.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.blue)
-
-            Text("minecraft.auth.waiting_verification".localized())
-                .font(.headline)
-
-            VStack(spacing: 12) {
-
-                Text(userCode)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .padding(10)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(8)
-                    .textSelection(.enabled)
-                    .onAppear {
-                        let pasteboard = NSPasteboard.general
-                        pasteboard.clearContents()
-                        pasteboard.setString(userCode, forType: .string)
-                    }
-            }
-
-            VStack(spacing: 8) {
-
-                VStack(alignment: .leading, spacing: 4) {
-
-                    Text("minecraft.auth.step1".localized())
-                    Text("minecraft.auth.step2".localized())
-                    Text("minecraft.auth.step3".localized())
-                }
-                .font(.caption)
-                .foregroundColor(.secondary)
-            }
-
-            //            Text(String(format: "minecraft.auth.verification_url".localized(), verificationUri))
-            //                .font(.caption)
-            //                .foregroundColor(.secondary)
-            //                .textSelection(.enabled)
-        }
-    }
-
-    // MARK: - 认证中状态
-    private var authenticatingView: some View {
+    // MARK: - 处理授权码状态
+    private func processingAuthCodeView(step: String) -> some View {
         VStack(spacing: 16) {
             ProgressView().controlSize(.small)
 
-            Text("minecraft.auth.authenticating".localized())
-                .font(.headline)
-
-            Text("minecraft.auth.authenticating.subtitle".localized())
+            Text(step)
                 .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            Text("minecraft.auth.processing.subtitle".localized())
+                .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
@@ -173,47 +121,6 @@ struct MinecraftAuthView: View {
             }
 
             Text("minecraft.auth.confirm_login".localized())
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-    }
-
-    private func authenticatedYggdrasilView(
-        profile: YggdrasilProfileResponse
-    ) -> some View {
-        VStack(spacing: 20) {
-            Circle()
-                .fill(Color.green.opacity(0.3))
-                .frame(width: 80, height: 80)
-                .overlay(
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 30))
-                        .foregroundColor(.green)
-                )
-            VStack(spacing: 8) {
-                Text("yggdrasil.auth.success")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.green)
-                Text(profile.username)
-                    .font(.headline)
-                Text(String(format: "yggdrasil.auth.uuid", profile.id))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .textSelection(.enabled)
-                if let selected = profile.selectedProfile {
-                    Text(
-                        String(
-                            format: "yggdrasil.auth.selected_profile",
-                            selected.name
-                        )
-                    )
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                }
-            }
-            Text("yggdrasil.auth.confirm_login")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

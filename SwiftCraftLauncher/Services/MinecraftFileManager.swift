@@ -18,7 +18,7 @@ private enum Constants {
 }
 
 // MARK: - MinecraftFileManager
-class MinecraftFileManager {  // swiftlint:disable:this type_body_length
+class MinecraftFileManager {
 
     // MARK: - Properties
 

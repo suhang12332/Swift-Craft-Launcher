@@ -1,234 +1,194 @@
 import Foundation
-import Combine
 import SwiftUI
-// swiftlint:disable:next type_body_length
-class MinecraftAuthService: ObservableObject {
+import AuthenticationServices
+
+class MinecraftAuthService: NSObject, ObservableObject {
     static let shared = MinecraftAuthService()
 
     @Published var authState: AuthenticationState = .notAuthenticated
     @Published var isLoading: Bool = false
-    private var cancellables = Set<AnyCancellable>()
-
-    var openURLHandler: ((URL) -> Void)?
+    private var webAuthSession: ASWebAuthenticationSession?
 
     private let clientId = AppConstants.minecraftClientId
     private let scope = AppConstants.minecraftScope
+    private let redirectUri = URLConfig.API.Authentication.redirectUri
 
-    private init() {}
+    override private init() {
+        super.init()
+    }
 
-    // MARK: - 认证流程
+    // MARK: - 认证流程 (使用 ASWebAuthenticationSession)
+    @MainActor
     func startAuthentication() async {
-        await MainActor.run {
-            isLoading = true
-            authState = .requestingCode
-        }
+        // 开始新认证前清理之前的状态
+        webAuthSession?.cancel()
+        webAuthSession = nil
 
-        do {
-            let deviceCodeResponse = try await requestDeviceCodeThrowing()
+        isLoading = true
+        authState = .waitingForBrowserAuth
 
-            await MainActor.run {
-                authState = .waitingForUser(
-                    userCode: deviceCodeResponse.userCode,
-                    verificationUri: deviceCodeResponse.verificationUri
-                )
-            }
+        let authURL = buildAuthorizationURL()
 
-            // 自动打开验证页面
-            if let url = URL(string: deviceCodeResponse.verificationUri) {
-                await MainActor.run {
-                    openURLHandler?(url)
+        await withCheckedContinuation { continuation in
+            webAuthSession = ASWebAuthenticationSession(
+                url: authURL,
+                callbackURLScheme: "swift-craft-launcher"
+            ) { [weak self] callbackURL, error in
+                Task { @MainActor in
+                    if let error = error {
+                        Logger.shared.debug("Microsoft 认证回调收到错误: \(error)")
+                        if let authError = error as? ASWebAuthenticationSessionError {
+                            Logger.shared.debug("ASWebAuthenticationSessionError 错误代码: \(authError.code.rawValue)")
+                            if authError.code == .canceledLogin {
+                                Logger.shared.info("用户取消了 Microsoft 认证")
+                                self?.authState = .notAuthenticated
+                            } else {
+                                Logger.shared.error("Microsoft 认证失败: \(authError.localizedDescription)")
+                                self?.authState = .error("认证失败: \(authError.localizedDescription)")
+                            }
+                        } else {
+                            Logger.shared.error("Microsoft 认证发生未知错误: \(error.localizedDescription)")
+                            self?.authState = .error("认证失败: \(error.localizedDescription)")
+                        }
+                        self?.isLoading = false
+                        continuation.resume()
+                        return
+                    }
+
+                    Logger.shared.debug("Microsoft 认证回调 URL: \(callbackURL?.absoluteString ?? "nil")")
+
+                    guard let callbackURL = callbackURL,
+                          let authResponse = AuthorizationCodeResponse(from: callbackURL) else {
+                        Logger.shared.error("Microsoft 无效的回调 URL: \(callbackURL?.absoluteString ?? "nil")")
+                        self?.authState = .error("无效的回调 URL")
+                        self?.isLoading = false
+                        continuation.resume()
+                        return
+                    }
+
+                    // 检查是否是用户拒绝授权
+                    if authResponse.isUserDenied {
+                        Logger.shared.info("用户拒绝了 Microsoft 授权")
+                        self?.authState = .notAuthenticated
+                        self?.isLoading = false
+                        continuation.resume()
+                        return
+                    }
+
+                    // 检查是否有其他错误
+                    if let error = authResponse.error {
+                        let description = authResponse.errorDescription ?? error
+                        Logger.shared.error("Microsoft 授权返回错误: \(error) - \(description)")
+                        self?.authState = .error("授权失败: \(description)")
+                        self?.isLoading = false
+                        continuation.resume()
+                        return
+                    }
+
+                    // 检查是否成功获取授权码
+                    guard authResponse.isSuccess, let code = authResponse.code else {
+                        Logger.shared.error("Microsoft 授权响应缺少授权码")
+                        self?.authState = .error("未获取到授权码")
+                        self?.isLoading = false
+                        continuation.resume()
+                        return
+                    }
+
+                    await self?.handleAuthorizationCode(code)
+                    continuation.resume()
                 }
             }
 
-            // 轮询检查认证状态
-            await pollForToken(deviceCode: deviceCodeResponse.deviceCode, interval: deviceCodeResponse.interval)
-        } catch {
-            let globalError = GlobalError.from(error)
-            await MainActor.run {
-                isLoading = false
-                authState = .error(globalError.chineseMessage)
-            }
+            webAuthSession?.presentationContextProvider = self
+            webAuthSession?.prefersEphemeralWebBrowserSession = false
+            webAuthSession?.start()
         }
     }
 
-    // MARK: - 请求设备代码（静默版本）
-    private func requestDeviceCode() async -> DeviceCodeResponse? {
+    // MARK: - 构建授权 URL
+    private func buildAuthorizationURL() -> URL {
+        guard var components = URLComponents(url: URLConfig.API.Authentication.authorize, resolvingAgainstBaseURL: false) else {
+            fatalError("Invalid authorization URL configuration")
+        }
+        components.queryItems = [
+            URLQueryItem(name: "client_id", value: clientId),
+            URLQueryItem(name: "response_type", value: "code"),
+            URLQueryItem(name: "redirect_uri", value: redirectUri),
+            URLQueryItem(name: "response_mode", value: "query"),
+            URLQueryItem(name: "scope", value: scope),
+            URLQueryItem(name: "state", value: UUID().uuidString),
+        ]
+        guard let url = components.url else {
+            fatalError("Failed to build authorization URL")
+        }
+        return url
+    }
+
+    // MARK: - 处理授权码
+    @MainActor
+    private func handleAuthorizationCode(_ code: String) async {
+        authState = .processingAuthCode(step: "开始处理授权码")
+
         do {
-            return try await requestDeviceCodeThrowing()
+            Logger.shared.debug("开始处理授权码: \(String(code.prefix(10)))...")
+
+            // 使用授权码获取访问令牌
+            Logger.shared.debug("步骤 1/5: 获取访问令牌")
+            authState = .processingAuthCode(step: "获取 Microsoft 访问令牌")
+            let tokenResponse = try await exchangeCodeForToken(code: code)
+
+            // 获取完整的认证链
+            Logger.shared.debug("步骤 2/5: 获取 Xbox Live 令牌")
+            authState = .processingAuthCode(step: "获取 Xbox Live 令牌")
+            let xboxToken = try await getXboxLiveTokenThrowing(accessToken: tokenResponse.accessToken)
+
+            Logger.shared.debug("步骤 3/5: 获取 Minecraft 访问令牌")
+            authState = .processingAuthCode(step: "获取 Minecraft 访问令牌")
+            let minecraftToken = try await getMinecraftTokenThrowing(xboxToken: xboxToken.token, uhs: xboxToken.displayClaims.xui.first?.uhs ?? "")
+
+            Logger.shared.debug("步骤 4/5: 检查游戏拥有情况")
+            authState = .processingAuthCode(step: "检查游戏拥有情况")
+            try await checkMinecraftOwnership(accessToken: minecraftToken)
+
+            Logger.shared.debug("步骤 5/5: 获取 Minecraft 用户资料")
+            authState = .processingAuthCode(step: "获取用户资料")
+            let profile = try await getMinecraftProfileThrowing(accessToken: minecraftToken, authXuid: xboxToken.displayClaims.xui.first?.uhs ?? "", refreshToken: tokenResponse.refreshToken ?? "")
+
+            Logger.shared.info("Minecraft 认证成功，用户: \(profile.name)")
+            isLoading = false
+            authState = .authenticated(profile: profile)
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("请求设备代码失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
-            return nil
+            Logger.shared.error("Minecraft 认证失败: \(globalError.chineseMessage)")
+            isLoading = false
+            authState = .error(globalError.chineseMessage)
         }
     }
 
-    // MARK: - 请求设备代码（抛出异常版本）
-    private func requestDeviceCodeThrowing() async throws -> DeviceCodeResponse {
-        let url = URLConfig.API.Authentication.deviceCode
+    // MARK: - 使用授权码交换访问令牌
+    private func exchangeCodeForToken(code: String) async throws -> TokenResponse {
+        let url = URLConfig.API.Authentication.token
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
 
-        let body = "client_id=\(clientId)&scope=\(scope.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? scope)"
-        request.httpBody = body.data(using: .utf8)
+        let bodyParameters = [
+            "client_id": clientId,
+            "code": code,
+            "redirect_uri": redirectUri,
+            "grant_type": "authorization_code",
+            "scope": scope,
+        ]
+
+        let bodyString = bodyParameters.map { "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")" }.joined(separator: "&")
+        request.httpBody = bodyString.data(using: .utf8)
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw GlobalError.download(
-                chineseMessage: "请求设备代码失败: HTTP \(response)",
-                i18nKey: "error.download.device_code_request_failed",
-                level: .notification
-            )
-        }
-
-        do {
-            return try JSONDecoder().decode(DeviceCodeResponse.self, from: data)
-        } catch {
-            throw GlobalError.validation(
-                chineseMessage: "解析设备代码响应失败: \(error.localizedDescription)",
-                i18nKey: "error.validation.device_code_parse_failed",
-                level: .notification
-            )
-        }
-    }
-
-    // MARK: - 轮询检查令牌
-    private func pollForToken(deviceCode: String, interval: Int) async {
-        let maxAttempts = 60
-        var attempts = 0
-
-        while attempts < maxAttempts {
-            do {
-                let tokenResponse = try await requestTokenThrowing(deviceCode: deviceCode)
-
-                await MainActor.run {
-                    authState = .authenticating
-                }
-
-                // 获取完整的认证链
-                let xboxToken = try await getXboxLiveTokenThrowing(accessToken: tokenResponse.accessToken)
-                let minecraftToken = try await getMinecraftTokenThrowing(xboxToken: xboxToken.token, uhs: xboxToken.displayClaims.xui.first?.uhs ?? "")
-                let profile = try await getMinecraftProfileThrowing(accessToken: minecraftToken, authXuid: xboxToken.displayClaims.xui.first?.uhs ?? "", refreshToken: tokenResponse.refreshToken ?? "")
-
-                await MainActor.run {
-                    isLoading = false
-                    authState = .authenticated(profile: profile)
-                }
-
-                return
-            } catch let error as GlobalError {
-                switch error {
-                case .authentication( _, let i18nKey, _) where i18nKey == "error.authentication.authorization_pending":
-                    break // 继续轮询
-                case .authentication( _, let i18nKey, _) where i18nKey == "error.authentication.slow_down":
-                    try? await Task.sleep(nanoseconds: UInt64((interval + 5) * 1_000_000_000))
-                default:
-                    await MainActor.run {
-                        isLoading = false
-                        authState = .error(error.chineseMessage)
-                    }
-                    return
-                }
-            } catch {
-                let globalError = GlobalError.from(error)
-                await MainActor.run {
-                    isLoading = false
-                    authState = .error(globalError.chineseMessage)
-                }
-                return
-            }
-
-            attempts += 1
-            try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000))
-        }
-
-        await MainActor.run {
-            isLoading = false
-            authState = .error("认证超时，请重试")
-        }
-    }
-
-    // MARK: - 请求访问令牌（静默版本）
-    private func requestToken(deviceCode: String) async -> TokenResponse? {
-        do {
-            return try await requestTokenThrowing(deviceCode: deviceCode)
-        } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error("请求访问令牌失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
-            return nil
-        }
-    }
-
-    // MARK: - 请求访问令牌（抛出异常版本）
-    private func requestTokenThrowing(deviceCode: String) async throws -> TokenResponse {
-        let url = URLConfig.API.Authentication.token
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-
-        let body = "grant_type=urn:ietf:params:oauth:grant-type:device_code&client_id=\(clientId)&device_code=\(deviceCode)"
-        request.httpBody = body.data(using: .utf8)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.download(
-                chineseMessage: "请求访问令牌失败: 无效的 HTTP 响应",
-                i18nKey: "error.download.access_token_request_failed",
-                level: .notification
-            )
-        }
-
-        // 检查OAuth错误
-        if let errorResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let error = errorResponse["error"] as? String {
-            switch error {
-            case "authorization_pending":
-                throw GlobalError.authentication(
-                    chineseMessage: "授权待处理，请完成浏览器验证",
-                    i18nKey: "error.authentication.authorization_pending",
-                    level: .notification
-                )
-            case "authorization_declined":
-                throw GlobalError.authentication(
-                    chineseMessage: "用户拒绝了授权",
-                    i18nKey: "error.authentication.authorization_declined",
-                    level: .notification
-                )
-            case "expired_token":
-                throw GlobalError.authentication(
-                    chineseMessage: "令牌已过期",
-                    i18nKey: "error.authentication.expired_token",
-                    level: .notification
-                )
-            case "invalid_device_code":
-                throw GlobalError.authentication(
-                    chineseMessage: "无效的设备代码",
-                    i18nKey: "error.authentication.invalid_device_code",
-                    level: .notification
-                )
-            case "slow_down":
-                throw GlobalError.authentication(
-                    chineseMessage: "请求过于频繁，请稍后再试",
-                    i18nKey: "error.authentication.slow_down",
-                    level: .notification
-                )
-            default:
-                throw GlobalError.authentication(
-                    chineseMessage: "认证错误: \(error)",
-                    i18nKey: "error.authentication.general_error",
-                    level: .notification
-                )
-            }
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            throw GlobalError.download(
-                chineseMessage: "请求访问令牌失败: HTTP \(httpResponse.statusCode)",
-                i18nKey: "error.download.access_token_request_failed",
+            throw GlobalError.authentication(
+                chineseMessage: "获取访问令牌失败: HTTP \(response)",
+                i18nKey: "error.authentication.token_exchange_failed",
                 level: .notification
             )
         }
@@ -237,8 +197,8 @@ class MinecraftAuthService: ObservableObject {
             return try JSONDecoder().decode(TokenResponse.self, from: data)
         } catch {
             throw GlobalError.validation(
-                chineseMessage: "解析访问令牌响应失败: \(error.localizedDescription)",
-                i18nKey: "error.validation.access_token_parse_failed",
+                chineseMessage: "解析令牌响应失败: \(error.localizedDescription)",
+                i18nKey: "error.validation.token_response_parse_failed",
                 level: .notification
             )
         }
@@ -365,10 +325,12 @@ class MinecraftAuthService: ObservableObject {
         }
 
         // 获取Minecraft访问令牌
+        Logger.shared.debug("开始获取 Minecraft 访问令牌")
         let minecraftUrl = URLConfig.API.Authentication.minecraftLogin
         var minecraftRequest = URLRequest(url: minecraftUrl)
         minecraftRequest.httpMethod = "POST"
         minecraftRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        minecraftRequest.timeoutInterval = 30.0
 
         let minecraftBody: [String: Any] = [
             "identityToken": "XBL3.0 x=\(uhs);\(xstsTokenResponse.token)"
@@ -386,12 +348,51 @@ class MinecraftAuthService: ObservableObject {
 
         let (minecraftData, minecraftResponse) = try await URLSession.shared.data(for: minecraftRequest)
 
-        guard let minecraftHttpResponse = minecraftResponse as? HTTPURLResponse, minecraftHttpResponse.statusCode == 200 else {
+        guard let minecraftHttpResponse = minecraftResponse as? HTTPURLResponse else {
             throw GlobalError.download(
-                chineseMessage: "获取 Minecraft 访问令牌失败: HTTP \(minecraftResponse)",
-                i18nKey: "error.download.minecraft_token_failed",
+                chineseMessage: "获取 Minecraft 访问令牌失败: 无效的 HTTP 响应",
+                i18nKey: "error.download.minecraft_token_invalid_response",
                 level: .notification
             )
+        }
+
+        guard minecraftHttpResponse.statusCode == 200 else {
+            let statusCode = minecraftHttpResponse.statusCode
+            Logger.shared.error("Minecraft 认证失败: HTTP \(statusCode)")
+
+            // 根据不同的状态码提供更具体的错误信息
+            switch statusCode {
+            case 401:
+                throw GlobalError.authentication(
+                    chineseMessage: "Minecraft 认证失败: Xbox Live 令牌无效或已过期",
+                    i18nKey: "error.authentication.invalid_xbox_token",
+                    level: .notification
+                )
+            case 403:
+                throw GlobalError.authentication(
+                    chineseMessage: "Minecraft 认证失败: 该Microsoft账户未购买Minecraft",
+                    i18nKey: "error.authentication.minecraft_not_owned",
+                    level: .notification
+                )
+            case 503:
+                throw GlobalError.network(
+                    chineseMessage: "Minecraft 认证服务暂时不可用，请稍后重试",
+                    i18nKey: "error.network.minecraft_service_unavailable",
+                    level: .notification
+                )
+            case 429:
+                throw GlobalError.network(
+                    chineseMessage: "请求过于频繁，请稍后重试",
+                    i18nKey: "error.network.rate_limited",
+                    level: .notification
+                )
+            default:
+                throw GlobalError.download(
+                    chineseMessage: "获取 Minecraft 访问令牌失败: HTTP \(statusCode)",
+                    i18nKey: "error.download.minecraft_token_failed",
+                    level: .notification
+                )
+            }
         }
 
         let minecraftTokenResponse: TokenResponse
@@ -408,29 +409,119 @@ class MinecraftAuthService: ObservableObject {
         return minecraftTokenResponse.accessToken
     }
 
-        // MARK: - 获取Minecraft用户资料（静默版本）
-    private func getMinecraftProfile(accessToken: String, authXuid: String) async -> MinecraftProfileResponse? {
+    // MARK: - 检查Minecraft游戏拥有情况
+    private func checkMinecraftOwnership(accessToken: String) async throws {
+        let url = URLConfig.API.Authentication.minecraftEntitlements
+        var request = URLRequest(url: url)
+        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.timeoutInterval = 30.0
+
+        Logger.shared.debug("检查 Minecraft 游戏拥有情况: \(url)")
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw GlobalError.download(
+                chineseMessage: "检查游戏拥有情况失败: 无效的 HTTP 响应",
+                i18nKey: "error.download.entitlements_invalid_response",
+                level: .notification
+            )
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            let statusCode = httpResponse.statusCode
+            Logger.shared.error("检查游戏拥有情况失败: HTTP \(statusCode)")
+
+            // 根据状态码提供具体的错误信息
+            switch statusCode {
+            case 401:
+                throw GlobalError.authentication(
+                    chineseMessage: "Minecraft 访问令牌无效或已过期",
+                    i18nKey: "error.authentication.invalid_minecraft_token",
+                    level: .notification
+                )
+            case 403:
+                throw GlobalError.authentication(
+                    chineseMessage: "该账户未购买 Minecraft，请使用已购买 Minecraft 的 Microsoft 账户登录",
+                    i18nKey: "error.authentication.minecraft_not_purchased",
+                    level: .popup
+                )
+            default:
+                throw GlobalError.download(
+                    chineseMessage: "检查游戏拥有情况失败: HTTP \(statusCode)",
+                    i18nKey: "error.download.entitlements_check_failed",
+                    level: .notification
+                )
+            }
+        }
+
         do {
-            return try await getMinecraftProfileThrowing(accessToken: accessToken, authXuid: authXuid)
+            let entitlements = try JSONDecoder().decode(MinecraftEntitlementsResponse.self, from: data)
+
+            // 检查是否拥有必要的游戏权限
+            let hasProductMinecraft = entitlements.items.contains { $0.name == MinecraftEntitlement.productMinecraft.rawValue }
+            let hasGameMinecraft = entitlements.items.contains { $0.name == MinecraftEntitlement.gameMinecraft.rawValue }
+
+            Logger.shared.debug("游戏权限检查结果: product_minecraft=\(hasProductMinecraft), game_minecraft=\(hasGameMinecraft)")
+
+            if !hasProductMinecraft || !hasGameMinecraft {
+                Logger.shared.warning("账户缺少必要的 Minecraft 游戏权限")
+                throw GlobalError.authentication(
+                    chineseMessage: "该 Microsoft 账户未购买 Minecraft 或权限不足，请使用已购买 Minecraft 的账户登录",
+                    i18nKey: "error.authentication.insufficient_minecraft_entitlements",
+                    level: .popup
+                )
+            }
+
+            Logger.shared.info("Minecraft 游戏拥有情况验证通过")
+        } catch let decodingError as DecodingError {
+            Logger.shared.error("解析游戏权限响应失败: \(decodingError)")
+            throw GlobalError.validation(
+                chineseMessage: "解析游戏权限响应失败: \(decodingError.localizedDescription)",
+                i18nKey: "error.validation.entitlements_parse_failed",
+                level: .notification
+            )
+        } catch let globalError as GlobalError {
+            // 重新抛出 GlobalError
+            throw globalError
         } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error("获取 Minecraft 用户资料失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
-            return nil
+            Logger.shared.error("检查游戏拥有情况时发生未知错误: \(error)")
+            throw GlobalError.validation(
+                chineseMessage: "检查游戏拥有情况时发生未知错误: \(error.localizedDescription)",
+                i18nKey: "error.validation.entitlements_check_unknown_error",
+                level: .notification
+            )
         }
     }
 
-    // MARK: - 获取Minecraft用户资料（抛出异常版本）
+    // MARK: - 获取Minecraft用户资料
     private func getMinecraftProfileThrowing(accessToken: String, authXuid: String, refreshToken: String = "") async throws -> MinecraftProfileResponse {
         let url = URLConfig.API.Authentication.minecraftProfile
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
+        request.timeoutInterval = 30.0
+        Logger.shared.debug("获取 Minecraft 用户资料: \(url)")
+
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            Logger.shared.error("获取 Minecraft 用户资料失败: HTTP \(statusCode)")
+
+            // 检查是否是账户相关的问题
+            if statusCode == 404 {
+                // 由于我们已经在之前检查了游戏拥有情况，404错误通常表示账户配置问题
+                throw GlobalError.validation(
+                    chineseMessage: "无法获取 Minecraft 账户信息，可能是账户配置问题或服务暂时不可用",
+                    i18nKey: "error.validation.minecraft_profile_not_found",
+                    level: .notification
+                )
+            }
+
             throw GlobalError.download(
-                chineseMessage: "获取 Minecraft 用户资料失败: HTTP \(response)",
+                chineseMessage: "获取 Minecraft 用户资料失败: HTTP \(statusCode)",
                 i18nKey: "error.download.minecraft_profile_failed",
                 level: .notification
             )
@@ -457,33 +548,57 @@ class MinecraftAuthService: ObservableObject {
         }
     }
 
-    // MARK: - 登出
+    // MARK: - 登出/取消认证
+    @MainActor
     func logout() {
         authState = .notAuthenticated
+        webAuthSession?.cancel()
+        webAuthSession = nil
+        isLoading = false
     }
 
-    // MARK: - 取消认证
-    func cancelAuthentication() {
+    // MARK: - 清理认证数据
+    @MainActor
+    func clearAuthenticationData() {
         authState = .notAuthenticated
+        isLoading = false
+        webAuthSession?.cancel()
+        webAuthSession = nil
+        Logger.shared.debug("Microsoft 认证数据已清理")
     }
+}
 
+// MARK: - Token Validation and Refresh
+extension MinecraftAuthService {
     // MARK: - Token验证和刷新相关方法
 
-    /// 验证并尝试刷新玩家Token
-    /// - Parameter player: 玩家对象
-    /// - Returns: 验证/刷新后的玩家对象，如果失败返回nil
-    func validateAndRefreshPlayerToken(for player: Player) async -> Player? {
+    /// 刷新指定玩家的 Token（公开接口）
+    /// - Parameter player: 需要刷新 Token 的玩家
+    /// - Returns: 刷新后的玩家对象
+    @MainActor
+    func refreshPlayerToken(for player: Player) async -> Result<Player, GlobalError> {
+        isLoading = true
+        defer { isLoading = false }
+
         do {
-            return try await validateAndRefreshPlayerTokenThrowing(for: player)
+            let refreshedPlayer = try await validateAndRefreshPlayerTokenThrowing(for: player)
+            Logger.shared.info("成功刷新玩家 \(player.name) 的 Token")
+            return .success(refreshedPlayer)
+        } catch let error as GlobalError {
+            Logger.shared.error("刷新玩家 \(player.name) 的 Token 失败: \(error.localizedDescription)")
+            return .failure(error)
         } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error("验证/刷新玩家Token失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
-            return nil
+            Logger.shared.error("刷新玩家 \(player.name) 的 Token 失败: \(error.localizedDescription)")
+            let globalError = GlobalError.authentication(
+                chineseMessage: "刷新 Token 时发生未知错误: \(error.localizedDescription)",
+                i18nKey: "error.authentication.unknown_refresh_error",
+                level: .notification
+            )
+            return .failure(globalError)
         }
     }
 
-    /// 验证并尝试刷新玩家Token（抛出异常版本）
+    /// 验证并尝试刷新玩家Token
     /// - Parameter player: 玩家对象
     /// - Returns: 验证/刷新后的玩家对象
     /// - Throws: GlobalError 当操作失败时
@@ -651,21 +766,12 @@ class MinecraftAuthService: ObservableObject {
 
         GlobalErrorHandler.shared.handle(notification)
     }
+}
 
-    // MARK: - 清理认证状态和内存信息
-    func clearAuthenticationData() {
-        // 重置认证状态到初始状态
-        authState = .notAuthenticated
-
-        // 停止加载状态
-        isLoading = false
-
-        // 清理 Combine 订阅，释放内存
-        cancellables.removeAll()
-
-        // 清理 URL 处理器回调，避免内存泄漏
-        openURLHandler = nil
-
-        Logger.shared.debug("Microsoft 认证数据已清理，下次添加账户将显示初始状态")
+// MARK: - ASWebAuthenticationPresentationContextProviding
+extension MinecraftAuthService: ASWebAuthenticationPresentationContextProviding {
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        // 返回主窗口作为展示锚点
+        return NSApplication.shared.windows.first ?? ASPresentationAnchor()
     }
 }

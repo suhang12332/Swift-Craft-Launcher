@@ -13,9 +13,10 @@ enum URLConfig {
     enum API {
         // Authentication API
         enum Authentication {
-            // Microsoft OAuth
-            static let deviceCode = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/devicecode")
+            // Microsoft OAuth - Authorization Code Flow
+            static let authorize = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize")
             static let token = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/token")
+            static let redirectUri = "swift-craft-launcher://auth"
 
             // Xbox Live
             static let xboxLiveAuth = URLConfig.url("https://user.auth.xboxlive.com/user/authenticate")
@@ -24,11 +25,7 @@ enum URLConfig {
             // Minecraft Services
             static let minecraftLogin = URLConfig.url("https://api.minecraftservices.com/authentication/login_with_xbox")
             static let minecraftProfile = URLConfig.url("https://api.minecraftservices.com/minecraft/profile")
-
-            // LittleSkin / Yggdrasil OAuth
-            static let yggdrasilDeviceCode = URLConfig.url("https://open.littleskin.cn/oauth/device_code")
-            static let yggdrasilToken = URLConfig.url("https://open.littleskin.cn/oauth/token")
-            static let yggdrasilUserInfo = URLConfig.url("https://open.littleskin.cn/oauth/userinfo")
+            static let minecraftEntitlements = URLConfig.url("https://api.minecraftservices.com/entitlements/mcstore")
         }
 
         // Minecraft API
