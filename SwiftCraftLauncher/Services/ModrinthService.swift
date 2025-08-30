@@ -24,24 +24,6 @@ private extension JSONDecoder {
 }
 
 enum ModrinthService {
-    private static let cacheExpiration: TimeInterval = 600 // 10分钟
-
-    private static var searchCache = NSCache<NSString, ModrinthResultWrapper>()
-    private static var projectDetailCache = NSCache<NSString, ModrinthProjectDetailWrapper>()
-    private static var gameVersionsCache = NSCache<NSString, GameVersionsWrapper>()
-    private static var categoriesCache = NSCache<NSString, CategoriesWrapper>()
-    private static var loadersCache = NSCache<NSString, LoadersWrapper>()
-
-    private static func cacheKey(facets: [[String]]?, index: String, offset: Int, limit: Int, query: String?) -> String {
-        let facetsString: String
-        if let facets = facets, let data = try? JSONEncoder().encode(facets), let string = String(data: data, encoding: .utf8) {
-            facetsString = string
-        } else {
-            facetsString = "nil"
-        }
-        return "facets:\(facetsString)|index:\(index)|offset:\(offset)|limit:\(limit)|query:\(query ?? "nil")"
-    }
-
     /// 搜索项目（静默版本）
     /// - Parameters:
     ///   - facets: 搜索条件
@@ -63,8 +45,7 @@ enum ModrinthService {
                 index: index,
                 offset: offset,
                 limit: limit,
-                query: query,
-                forceRefresh: false
+                query: query
             )
         }.catching { error in
             let globalError = GlobalError.from(error)
@@ -81,7 +62,6 @@ enum ModrinthService {
     ///   - offset: 偏移量
     ///   - limit: 限制数量
     ///   - query: 查询字符串
-    ///   - forceRefresh: 是否强制刷新缓存，默认 false
     /// - Returns: 搜索结果
     /// - Throws: GlobalError 当操作失败时
     static func searchProjectsThrowing(
@@ -89,18 +69,8 @@ enum ModrinthService {
         index: String,
         offset: Int = 0,
         limit: Int,
-        query: String?,
-        forceRefresh: Bool = false
+        query: String?
     ) async throws -> ModrinthResult {
-        let key = cacheKey(facets: facets, index: index, offset: offset, limit: limit, query: query) as NSString
-
-        if !forceRefresh, let cached = searchCache.object(forKey: key), Date().timeIntervalSince(cached.timestamp) < cacheExpiration {
-            Logger.shared.info("使用缓存的 Modrinth 搜索结果，key：\(key)")
-            return cached.result
-        } else {
-            searchCache.removeObject(forKey: key)
-        }
-
         guard var components = URLComponents(
             url: URLConfig.API.Modrinth.search,
             resolvingAgainstBaseURL: true
@@ -155,7 +125,6 @@ enum ModrinthService {
                 )
             }
             let result = try JSONDecoder().decode(ModrinthResult.self, from: data)
-            searchCache.setObject(ModrinthResultWrapper(result: result), forKey: key)
             return result
         } catch {
             let globalError = GlobalError.from(error)
@@ -167,7 +136,7 @@ enum ModrinthService {
     /// - Returns: 加载器列表，失败时返回空数组
     static func fetchLoaders() async -> [Loader] {
         do {
-            return try await fetchLoadersThrowing(forceRefresh: false)
+            return try await fetchLoadersThrowing()
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Modrinth 加载器列表失败: \(globalError.chineseMessage)")
@@ -177,18 +146,9 @@ enum ModrinthService {
     }
 
     /// 获取加载器列表（抛出异常版本）
-    /// - Parameters:
-    ///   - forceRefresh: 是否强制刷新缓存，默认 false
     /// - Returns: 加载器列表
     /// - Throws: GlobalError 当操作失败时
-    static func fetchLoadersThrowing(forceRefresh: Bool = false) async throws -> [Loader] {
-        let key = URLConfig.API.Modrinth.loaderTag.absoluteString as NSString
-        if !forceRefresh, let cached = loadersCache.object(forKey: key), Date().timeIntervalSince(cached.timestamp) < cacheExpiration {
-            Logger.shared.info("使用缓存的 Modrinth 加载器列表")
-            return cached.loaders
-        } else {
-            loadersCache.removeObject(forKey: key)
-        }
+    static func fetchLoadersThrowing() async throws -> [Loader] {
         do {
             let (data, response) = try await URLSession.shared.data(
                 from: URLConfig.API.Modrinth.loaderTag
@@ -202,7 +162,6 @@ enum ModrinthService {
             }
             Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.loaderTag)")
             let result = try JSONDecoder().decode([Loader].self, from: data)
-            loadersCache.setObject(LoadersWrapper(loaders: result), forKey: key)
             return result
         } catch {
             let globalError = GlobalError.from(error)
@@ -214,7 +173,7 @@ enum ModrinthService {
     /// - Returns: 分类列表，失败时返回空数组
     static func fetchCategories() async -> [Category] {
         do {
-            return try await fetchCategoriesThrowing(forceRefresh: false)
+            return try await fetchCategoriesThrowing()
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Modrinth 分类列表失败: \(globalError.chineseMessage)")
@@ -224,18 +183,9 @@ enum ModrinthService {
     }
 
     /// 获取分类列表（抛出异常版本）
-    /// - Parameters:
-    ///   - forceRefresh: 是否强制刷新缓存，默认 false
     /// - Returns: 分类列表
     /// - Throws: GlobalError 当操作失败时
-    static func fetchCategoriesThrowing(forceRefresh: Bool = false) async throws -> [Category] {
-        let key = URLConfig.API.Modrinth.categoryTag.absoluteString as NSString
-        if !forceRefresh, let cached = categoriesCache.object(forKey: key), Date().timeIntervalSince(cached.timestamp) < cacheExpiration {
-            Logger.shared.info("使用缓存的 Modrinth 分类列表")
-            return cached.categories
-        } else {
-            categoriesCache.removeObject(forKey: key)
-        }
+    static func fetchCategoriesThrowing() async throws -> [Category] {
         do {
             let (data, response) = try await URLSession.shared.data(
                 from: URLConfig.API.Modrinth.categoryTag
@@ -249,7 +199,6 @@ enum ModrinthService {
             }
             Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.categoryTag)")
             let result = try JSONDecoder().decode([Category].self, from: data)
-            categoriesCache.setObject(CategoriesWrapper(categories: result), forKey: key)
             return result
         } catch {
             let globalError = GlobalError.from(error)
@@ -261,7 +210,7 @@ enum ModrinthService {
     /// - Returns: 游戏版本列表，失败时返回空数组
     static func fetchGameVersions() async -> [GameVersion] {
         do {
-            return try await fetchGameVersionsThrowing(forceRefresh: false).filter { $0.version_type == "release" }
+            return try await fetchGameVersionsThrowing().filter { $0.version_type == "release" }
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Modrinth 游戏版本列表失败: \(globalError.chineseMessage)")
@@ -271,18 +220,9 @@ enum ModrinthService {
     }
 
     /// 获取游戏版本列表（抛出异常版本）
-    /// - Parameters:
-    ///   - forceRefresh: 是否强制刷新缓存，默认 false
     /// - Returns: 游戏版本列表
     /// - Throws: GlobalError 当操作失败时
-    static func fetchGameVersionsThrowing(forceRefresh: Bool = false) async throws -> [GameVersion] {
-        let key = URLConfig.API.Modrinth.gameVersionTag.absoluteString as NSString
-        if !forceRefresh, let cached = gameVersionsCache.object(forKey: key), Date().timeIntervalSince(cached.timestamp) < cacheExpiration {
-            Logger.shared.info("使用缓存的 Modrinth 游戏版本列表")
-            return cached.versions
-        } else {
-            gameVersionsCache.removeObject(forKey: key)
-        }
+    static func fetchGameVersionsThrowing() async throws -> [GameVersion] {
         do {
             let (data, response) = try await URLSession.shared.data(
                 from: URLConfig.API.Modrinth.gameVersionTag
@@ -296,7 +236,6 @@ enum ModrinthService {
             }
             Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.gameVersionTag)")
             let result = try JSONDecoder().decode([GameVersion].self, from: data)
-            gameVersionsCache.setObject(GameVersionsWrapper(versions: result), forKey: key)
             return result.filter { $0.version_type == "release" }
         } catch {
             let globalError = GlobalError.from(error)
@@ -309,7 +248,7 @@ enum ModrinthService {
     /// - Returns: 项目详情，失败时返回 nil
     static func fetchProjectDetails(id: String) async -> ModrinthProjectDetail? {
         do {
-            return try await fetchProjectDetailsThrowing(id: id, forceRefresh: false)
+            return try await fetchProjectDetailsThrowing(id: id)
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取项目详情失败 (ID: \(id)): \(globalError.chineseMessage)")
@@ -319,19 +258,10 @@ enum ModrinthService {
     }
 
     /// 获取项目详情（抛出异常版本）
-    /// - Parameters:
-    ///   - id: 项目 ID
-    ///   - forceRefresh: 是否强制刷新缓存，默认 false
+    /// - Parameter id: 项目 ID
     /// - Returns: 项目详情
     /// - Throws: GlobalError 当操作失败时
-    static func fetchProjectDetailsThrowing(id: String, forceRefresh: Bool = false) async throws -> ModrinthProjectDetail {
-        let key = id as NSString
-        if !forceRefresh, let cached = projectDetailCache.object(forKey: key), Date().timeIntervalSince(cached.timestamp) < cacheExpiration {
-            Logger.shared.info("使用缓存的 Modrinth 项目详情，key：\(key)")
-            return cached.detail
-        } else {
-            projectDetailCache.removeObject(forKey: key)
-        }
+    static func fetchProjectDetailsThrowing(id: String) async throws -> ModrinthProjectDetail {
         let url = URLConfig.API.Modrinth.project(id: id)
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
@@ -347,7 +277,6 @@ enum ModrinthService {
             decoder.configureForModrinth()
             Logger.shared.info("Modrinth 搜索 URL：\(url)")
             let detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
-            projectDetailCache.setObject(ModrinthProjectDetailWrapper(detail: detail), forKey: key)
             return detail
         } catch {
             let globalError = GlobalError.from(error)
@@ -622,56 +551,6 @@ enum ModrinthService {
             }
         }
         task.resume()
-    }
-}
-
-private class ModrinthResultWrapper: NSObject {
-    let result: ModrinthResult
-    let timestamp: Date
-
-    init(result: ModrinthResult) {
-        self.result = result
-        self.timestamp = Date()
-    }
-}
-
-private class ModrinthProjectDetailWrapper: NSObject {
-    let detail: ModrinthProjectDetail
-    let timestamp: Date
-
-    init(detail: ModrinthProjectDetail) {
-        self.detail = detail
-        self.timestamp = Date()
-    }
-}
-
-private class GameVersionsWrapper: NSObject {
-    let versions: [GameVersion]
-    let timestamp: Date
-
-    init(versions: [GameVersion]) {
-        self.versions = versions
-        self.timestamp = Date()
-    }
-}
-
-private class CategoriesWrapper: NSObject {
-    let categories: [Category]
-    let timestamp: Date
-
-    init(categories: [Category]) {
-        self.categories = categories
-        self.timestamp = Date()
-    }
-}
-
-private class LoadersWrapper: NSObject {
-    let loaders: [Loader]
-    let timestamp: Date
-
-    init(loaders: [Loader]) {
-        self.loaders = loaders
-        self.timestamp = Date()
     }
 }
 
