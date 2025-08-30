@@ -13,29 +13,30 @@ enum PlayerSkinService {
         enum SkinModel: String, Codable { case classic, slim }
     }
 
+    // Flattened previously deeply-nested types to satisfy SwiftLint nesting rule
     private struct SessionProfile: Decodable {
-        struct Property: Decodable { let name: String; let value: String }
         let id: String
         let name: String
-        let properties: [Property]
+        let properties: [SessionProperty]
     }
+    private struct SessionProperty: Decodable { let name: String; let value: String }
 
     private struct TexturesPayload: Decodable {
-        struct Textures: Decodable {
-            struct SkinObj: Decodable {
-                struct Metadata: Decodable { let model: String? }
-                let url: String
-                let metadata: Metadata?
-            }
-            struct CapeObj: Decodable { let url: String }
-            let SKIN: SkinObj?
-            let CAPE: CapeObj?
-        }
         let timestamp: Int64
         let profileId: String
         let profileName: String
         let textures: Textures
     }
+    private struct Textures: Decodable {
+        let SKIN: SkinObj?
+        let CAPE: CapeObj?
+    }
+    private struct SkinObj: Decodable {
+        let url: String
+        let metadata: SkinMetadata?
+    }
+    private struct SkinMetadata: Decodable { let model: String? }
+    private struct CapeObj: Decodable { let url: String }
 
     static func fetchPublicSkin(uuid: String) async -> PublicSkinInfo? {
         do { return try await fetchPublicSkinThrowing(uuid: uuid) } catch {
@@ -74,7 +75,8 @@ enum PlayerSkinService {
             )
         }
         switch http.statusCode {
-        case 200: break
+        case 200:
+            break
         case 404:
             throw GlobalError.resource(
                 chineseMessage: "Player not found or no skin: \(uuid)",
@@ -89,8 +91,8 @@ enum PlayerSkinService {
             )
         }
 
-        let profile = try JSONDecoder().decode(SessionProfile.self, from: data)
-        guard let texturesProperty = profile.properties.first(where: { $0.name == "textures" }) else {
+    let profile = try JSONDecoder().decode(SessionProfile.self, from: data)
+    guard let texturesProperty = profile.properties.first(where: { $0.name == "textures" }) else {
             throw GlobalError.resource(
                 chineseMessage: "Missing textures property",
                 i18nKey: "error.resource.textures_property_missing",
@@ -105,19 +107,20 @@ enum PlayerSkinService {
                 i18nKey: "error.validation.textures_base64_decode_failed",
                 level: .silent
             )
-        }
+    }
 
-        let payload = try JSONDecoder().decode(TexturesPayload.self, from: decodedData)
-        let skinURL = payload.textures.SKIN?.url
-        let modelString = payload.textures.SKIN?.metadata?.model?.lowercased()
-        let model: PublicSkinInfo.SkinModel = (modelString == "slim") ? .slim : .classic
+    let payload = try JSONDecoder().decode(TexturesPayload.self, from: decodedData)
+    let skinURL = payload.textures.SKIN?.url
+    let modelString = payload.textures.SKIN?.metadata?.model?.lowercased()
+    let model: PublicSkinInfo.SkinModel = (modelString == "slim") ? .slim : .classic
     let capeURL = payload.textures.CAPE?.url
 
     let secureSkin = skinURL?.httpToHttps()
     let secureCape = capeURL?.httpToHttps()
 
     let result = PublicSkinInfo(skinURL: secureSkin, model: model, capeURL: secureCape, fetchedAt: Date())
-        AppCacheManager.shared.setSilently(namespace: cacheNamespace, key: cleanUUID, value: result)
-        return result
+
+    AppCacheManager.shared.setSilently(namespace: cacheNamespace, key: cleanUUID, value: result)
+    return result
     }
 }

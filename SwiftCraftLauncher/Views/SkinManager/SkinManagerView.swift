@@ -65,7 +65,7 @@ public struct SkinManagerView: View {
             Spacer(minLength: 0)
         }
         .padding(.horizontal)
-        .onChange(of: playerListViewModel.players) { _ in
+        .onChange(of: playerListViewModel.players) { _, _ in
             let online = playerListViewModel.players.filter { $0.isOnlineAccount }
             if let selected = skinSelection.selectedPlayerId, !online.contains(where: { $0.id == selected }) {
                 skinSelection.select(online.first?.id)

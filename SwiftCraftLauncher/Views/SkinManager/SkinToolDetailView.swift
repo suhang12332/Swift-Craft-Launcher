@@ -13,7 +13,11 @@ struct SkinToolDetailView: View {
     @State private var loadingPublicSkin = false
     @State private var publicSkinError: String?
 
-    enum SkinModelType: String, CaseIterable, Identifiable { case classic, slim; var id: String { rawValue } }
+    enum SkinModelType: String, CaseIterable, Identifiable {
+        case classic, slim
+
+        var id: String { rawValue }
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -65,9 +69,10 @@ struct SkinToolDetailView: View {
             }
             HStack {
                 Button("skin.manager.reset".localized()) {
-                    // TODO: reset to default skin
+                    // Reset skin to default (implementation pending)
                     Logger.shared.info("Reset skin clicked")
-                }.disabled(resolvedPlayer == nil)
+                }
+                .disabled(resolvedPlayer == nil)
                 Spacer()
             }
         }
@@ -90,7 +95,7 @@ struct SkinToolDetailView: View {
                     VStack(spacing: 12) {
                         ZStack {
                             RoundedRectangle(cornerRadius: 6)
-                                .stroke(Color.accentColor.opacity(0.4), style: StrokeStyle(lineWidth: 1, dash: [4,4]))
+                                .stroke(Color.accentColor.opacity(0.4), style: StrokeStyle(lineWidth: 1, dash: [4, 4]))
                                 .background(RoundedRectangle(cornerRadius: 6).fill(Color.black.opacity(0.08)))
                                 .frame(width: 120, height: 120)
                             if loadingPublicSkin {
@@ -117,7 +122,7 @@ struct SkinToolDetailView: View {
                                     .background(Color.accentColor.opacity(0.15))
                                     .clipShape(RoundedRectangle(cornerRadius: 4))
                             }
-                            Button(action: { Task { await loadPublicSkin(force: true) } }) {
+                            Button { Task { await loadPublicSkin(force: true) } } label: {
                                 Image(systemName: "arrow.clockwise")
                             }.buttonStyle(.plain).help("skin.manager.preview.refresh".localized())
                         }
@@ -125,7 +130,9 @@ struct SkinToolDetailView: View {
                 }
             }
         }
-        .onChange(of: resolvedPlayer?.id) { _ in Task { await loadPublicSkin(force: true) } }
+        .onChange(of: resolvedPlayer?.id) { _, _ in
+            Task { await loadPublicSkin(force: true) }
+        }
         .task { await loadPublicSkin() }
     }
 
@@ -263,16 +270,16 @@ struct SkinToolDetailView: View {
 private struct RemoteRawSkinImage: View {
     let urlString: String
     @State private var image: NSImage?
-    @State private var task: Task<Void, Never>? = nil
+    @State private var task: Task<Void, Never>?
 
     var body: some View {
         Group {
-            if let image = image { Image(nsImage: image).resizable().interpolation(.none) }
-            else { ProgressView().controlSize(.mini) }
+            if let image = image { Image(nsImage: image).resizable().interpolation(.none) } else { ProgressView().controlSize(.mini) }
         }
         .onAppear { load() }
         .onDisappear { task?.cancel() }
     }
+
     private func load() {
         task?.cancel()
         task = Task {
