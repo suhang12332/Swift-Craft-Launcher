@@ -67,6 +67,12 @@ public struct SidebarView: View {
                     }
                 }
             }
+
+            Section(header: Text("sidebar.tools.title".localized())) {
+                NavigationLink(value: SidebarItem.tool(.skinManager)) {
+                    Label("sidebar.tools.skin_manager".localized(), systemImage: "person.crop.square")
+                }
+            }
         }
         .searchable(text: $searchText, placement: .sidebar, prompt: "sidebar.search.games".localized())
         .safeAreaInset(edge: .bottom) {

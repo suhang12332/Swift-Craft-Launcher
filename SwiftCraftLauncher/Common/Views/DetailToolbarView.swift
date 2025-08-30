@@ -152,6 +152,10 @@ public struct DetailToolbarView: ToolbarContent {
                     paginationControls
                     Spacer()
                 }
+            case .tool:
+                Text("skin.manager.toolbar.title".localized())
+                    .font(.headline)
+                Spacer()
             }
         }
     }

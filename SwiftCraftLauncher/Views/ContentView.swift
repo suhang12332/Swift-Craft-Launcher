@@ -36,6 +36,8 @@ struct ContentView: View {
                 gameContentView(gameId: gameId)
             case .resource(let type):
                 resourceContentView(type: type)
+            case .tool(let toolType):
+                toolContentView(toolType: toolType)
             }
         }
         .onChange(of: selectedItem) { _, _ in
@@ -121,6 +123,15 @@ struct ContentView: View {
                 selectedLoaders: $selectedLoaders
             )
             .id(type)
+        }
+    }
+
+    // MARK: - Tool Content View
+    @ViewBuilder
+    private func toolContentView(toolType: ToolType) -> some View {
+        switch toolType {
+        case .skinManager:
+            SkinManagerView()
         }
     }
 }
