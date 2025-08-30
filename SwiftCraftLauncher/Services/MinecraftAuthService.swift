@@ -32,7 +32,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         await withCheckedContinuation { continuation in
             webAuthSession = ASWebAuthenticationSession(
                 url: authURL,
-                callbackURLScheme: "swift-craft-launcher"
+                callbackURLScheme: AppConstants.callbackURLScheme
             ) { [weak self] callbackURL, error in
                 Task { @MainActor in
                     if let error = error {
