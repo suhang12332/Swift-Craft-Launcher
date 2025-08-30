@@ -161,31 +161,7 @@ enum MinecraftEntitlement: String, CaseIterable {
 enum AuthenticationState: Equatable {
     case notAuthenticated
     case waitingForBrowserAuth          // 等待用户在浏览器中完成授权
-    case processingAuthCode(step: String) // 处理授权码的各个步骤
+    case processingAuthCode             // 处理授权码
     case authenticated(profile: MinecraftProfileResponse)
     case error(String)
-}
-
-// MARK: - Authentication Error
-enum MinecraftAuthError: Error, LocalizedError {
-    case authorizationDeclined
-    case expiredToken
-    case networkError(Error)
-    case invalidResponse
-    case httpError(Int)
-
-    var errorDescription: String? {
-        switch self {
-        case .authorizationDeclined:
-            return "用户拒绝了授权"
-        case .expiredToken:
-            return "令牌已过期"
-        case .networkError(let error):
-            return "网络错误: \(error.localizedDescription)"
-        case .invalidResponse:
-            return "无效的响应数据"
-        case .httpError(let code):
-            return "HTTP错误: \(code)"
-        }
-    }
 }

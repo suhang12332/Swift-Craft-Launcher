@@ -243,13 +243,6 @@ extension GlobalError {
         case let globalError as GlobalError:
             return globalError
 
-        case let authError as MinecraftAuthError:
-            return .authentication(
-                chineseMessage: authError.localizedDescription,
-                i18nKey: "error.authentication.minecraft",
-                level: .popup
-            )
-
         default:
             // 检查是否是网络相关错误
             if let urlError = error as? URLError {

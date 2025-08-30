@@ -14,8 +14,8 @@ struct MinecraftAuthView: View {
             case .waitingForBrowserAuth:
                 waitingForBrowserAuthView
 
-            case .processingAuthCode(let step):
-                processingAuthCodeView(step: step)
+            case .processingAuthCode:
+                processingAuthCodeView
 
             case .authenticated(let profile):
                 authenticatedView(profile: profile)
@@ -66,11 +66,11 @@ struct MinecraftAuthView: View {
     }
 
     // MARK: - 处理授权码状态
-    private func processingAuthCodeView(step: String) -> some View {
+    private var processingAuthCodeView: some View {
         VStack(spacing: 16) {
             ProgressView().controlSize(.small)
 
-            Text(step)
+            Text("minecraft.auth.processing.title".localized())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
