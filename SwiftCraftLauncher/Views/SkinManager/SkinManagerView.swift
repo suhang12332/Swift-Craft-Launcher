@@ -9,14 +9,15 @@ public struct SkinManagerView: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if let current = playerListViewModel.currentPlayer {
+            // Only show current player if it's an online account
+            if let current = playerListViewModel.currentPlayer, current.isOnlineAccount {
                 Section {
                     HStack(spacing: 12) {
-                        MinecraftSkinUtils(type: current.isOnlineAccount ? .url : .asset, src: current.avatarName, size: 64)
+                        MinecraftSkinUtils(type: .url, src: current.avatarName, size: 64)
                             .id(current.id)
                         VStack(alignment: .leading, spacing: 4) {
                             Text(current.name).font(.headline)
-                            Text(current.isOnlineAccount ? "Online Account" : "Offline Account").font(.caption).foregroundColor(.secondary)
+                            Text("Online Account").font(.caption).foregroundColor(.secondary)
                         }
                         Spacer()
                     }
@@ -25,17 +26,18 @@ public struct SkinManagerView: View {
                 }
             }
 
+            let onlinePlayers = playerListViewModel.players.filter { $0.isOnlineAccount }
             Section {
-                if playerListViewModel.players.isEmpty {
-                    ContentUnavailableView("No Players", systemImage: "person", description: Text("Please add players before managing skins"))
+                if onlinePlayers.isEmpty {
+                    ContentUnavailableView("No Microsoft Accounts", systemImage: "person.badge.key", description: Text("Please sign in with a Microsoft account"))
                 } else {
-                    ForEach(playerListViewModel.players) { player in
+                    ForEach(onlinePlayers) { player in
                         VStack(spacing: 0) {
                             Button {
                                 skinSelection.select(player.id)
                             } label: {
                                 HStack(spacing: 12) {
-                                    MinecraftSkinUtils(type: player.isOnlineAccount ? .url : .asset, src: player.avatarName, size: 40)
+                                    MinecraftSkinUtils(type: .url, src: player.avatarName, size: 40)
                                         .id(player.id)
                                     Text(player.name)
                                     Spacer()
@@ -58,11 +60,25 @@ public struct SkinManagerView: View {
                     }
                 }
             } header: {
-                Text("All Players")
+                Text("Microsoft Accounts")
             }
             Spacer(minLength: 0)
         }
         .padding(.horizontal)
+        .onChange(of: playerListViewModel.players) { _ in
+            let online = playerListViewModel.players.filter { $0.isOnlineAccount }
+            if let selected = skinSelection.selectedPlayerId, !online.contains(where: { $0.id == selected }) {
+                skinSelection.select(online.first?.id)
+            } else if skinSelection.selectedPlayerId == nil {
+                skinSelection.select(online.first?.id)
+            }
+        }
+        .onAppear {
+            let online = playerListViewModel.players.filter { $0.isOnlineAccount }
+            if skinSelection.selectedPlayerId == nil {
+                skinSelection.select(online.first?.id)
+            }
+        }
     }
 }
 
