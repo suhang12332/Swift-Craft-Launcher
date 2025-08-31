@@ -15,9 +15,9 @@ public struct ContributorsView: View {
 
     private let staticContributors: [StaticContributor] = [
         StaticContributor(
-            name: "【喵凹条】喵凹条",
-            url: "",
-            avatar: "🎨",
+            name: "喵凹条",
+            url: "https://www.instagram.com/houjustin732?igsh=MWdwdmN4d2I0Zm80bw==",
+            avatar: "https://s2.loli.net/2025/08/31/JhG9oXzYBZrkRa4.png",
             contributions: [.design]
         ),
         StaticContributor(
@@ -54,6 +54,12 @@ public struct ContributorsView: View {
             name: "ZeroSnow",
             url: "https://github.com/chencomcdyun",
             avatar: "🎨",
+            contributions: [.design]
+        ),
+        StaticContributor(
+            name: "猫白GAF",
+            url: "https://space.bilibili.com/508878020",
+            avatar: "https://s2.loli.net/2025/08/31/KLGzDOtQ3A9qFxE.jpg",
             contributions: [.design]
         ),
         StaticContributor(
@@ -404,11 +410,47 @@ public struct ContributorsView: View {
     ) -> some View {
         HStack(spacing: 12) {
             // 头像（emoji）
-            Text(contributor.avatar)
-                .font(.system(size: 24))
+            if contributor.avatar.starts(with: "http") {
+                AsyncImage(url: URL(string: contributor.avatar)) { phase in
+                    switch phase {
+                    case .empty:
+                        Rectangle()
+                            .foregroundColor(.gray.opacity(0.3))
+                            .overlay(
+                                ProgressView()
+                                    .scaleEffect(0.5)
+                            )
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    case .failure:
+                        Rectangle()
+                            .foregroundColor(.gray.opacity(0.3))
+                            .overlay(
+                                Image(systemName: "person.fill")
+                                    .foregroundColor(.gray)
+                                    .font(.caption)
+                            )
+                    @unknown default:
+                        Rectangle()
+                            .foregroundColor(.gray.opacity(0.3))
+                            .overlay(
+                                Image(systemName: "person.fill")
+                                    .foregroundColor(.gray)
+                                    .font(.caption)
+                            )
+                    }
+                }
                 .frame(width: 32, height: 32)
-                .background(Color.gray.opacity(0.1))
                 .clipShape(Circle())
+            } else {
+                Text(contributor.avatar)
+                    .font(.system(size: 24))
+                    .frame(width: 32, height: 32)
+                    .background(Color.gray.opacity(0.1))
+                    .clipShape(Circle())
+            }
 
             // 信息部分
             VStack(alignment: .leading, spacing: 4) {
