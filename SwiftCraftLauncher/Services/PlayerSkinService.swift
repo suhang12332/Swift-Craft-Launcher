@@ -123,4 +123,175 @@ enum PlayerSkinService {
     AppCacheManager.shared.setSilently(namespace: cacheNamespace, key: cleanUUID, value: result)
     return result
     }
+
+    // MARK: - Upload Skin (multipart/form-data)
+    /// Upload (silent version)
+    /// - Parameters:
+    ///   - imageData: PNG image data (64x64 or 64x32 standard formats)
+    ///   - model: Skin model classic / slim
+    ///   - player: Current online player (requires valid accessToken)
+    /// - Returns: Whether successful
+    static func uploadSkin(imageData: Data, model: PublicSkinInfo.SkinModel, player: Player) async -> Bool {
+        do {
+            try await uploadSkinThrowing(imageData: imageData, model: model, player: player)
+            return true
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("Upload skin failed: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return false
+        }
+    }
+
+    /// Upload (throwing version)
+    /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#upload-skin specification
+    static func uploadSkinThrowing(imageData: Data, model: PublicSkinInfo.SkinModel, player: Player) async throws {
+        guard player.isOnlineAccount else {
+            throw GlobalError.validation(
+                chineseMessage: "Offline accounts do not support skin upload",
+                i18nKey: "error.validation.offline_skin_upload_not_supported",
+                level: .notification
+            )
+        }
+        guard !player.authAccessToken.isEmpty else {
+            throw GlobalError.authentication(
+                chineseMessage: "Missing access token, please log in again",
+                i18nKey: "error.authentication.missing_token",
+                level: .popup
+            )
+        }
+
+        let boundary = "Boundary-" + UUID().uuidString
+        var body = Data()
+        func appendField(name: String, value: String) {
+            if let fieldData = "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(name)\"\r\n\r\n\(value)\r\n".data(using: .utf8) {
+                body.append(fieldData)
+            }
+        }
+        func appendFile(name: String, filename: String, mime: String, data: Data) {
+            var part = Data()
+            func appendString(_ s: String) { if let d = s.data(using: .utf8) { part.append(d) } }
+            appendString("--\(boundary)\r\n")
+            appendString("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"\r\n")
+            appendString("Content-Type: \(mime)\r\n\r\n")
+            part.append(data)
+            appendString("\r\n")
+            body.append(part)
+        }
+        appendField(name: "variant", value: model == .slim ? "slim" : "classic")
+        appendFile(name: "file", filename: "skin.png", mime: "image/png", data: imageData)
+        if let closing = "--\(boundary)--\r\n".data(using: .utf8) { body.append(closing) }
+
+        var request = URLRequest(url: URLConfig.API.Authentication.minecraftProfileSkins)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(player.authAccessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.httpBody = body
+        request.timeoutInterval = 30
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw GlobalError.network(
+                chineseMessage: "Upload skin failed: Invalid response",
+                i18nKey: "error.network.skin_upload_invalid_response",
+                level: .notification
+            )
+        }
+        switch http.statusCode {
+        case 200, 204: // Mojang documentation may return empty payload
+            // Invalidate cache
+            AppCacheManager.shared.removeSilently(namespace: cacheNamespace, key: player.id.replacingOccurrences(of: "-", with: ""))
+            Logger.shared.info("Skin upload successful, status=\(http.statusCode) bytes=\(data.count)")
+            return
+        case 400:
+            throw GlobalError.validation(
+                chineseMessage: "Invalid skin file",
+                i18nKey: "error.validation.skin_invalid_file",
+                level: .notification
+            )
+        case 401:
+            throw GlobalError.authentication(
+                chineseMessage: "Invalid or expired access token, please log in again",
+                i18nKey: "error.authentication.token_invalid_or_expired",
+                level: .popup
+            )
+        case 403:
+            throw GlobalError.authentication(
+                chineseMessage: "No permission to upload skin (403)",
+                i18nKey: "error.authentication.skin_upload_forbidden",
+                level: .notification
+            )
+        case 429:
+            throw GlobalError.network(
+                chineseMessage: "Too many requests, please try again later",
+                i18nKey: "error.network.rate_limited",
+                level: .notification
+            )
+        default:
+            let bodyText = String(data: data, encoding: .utf8) ?? ""
+            throw GlobalError.network(
+                chineseMessage: "Upload skin failed: HTTP \(http.statusCode) \(bodyText)",
+                i18nKey: "error.network.skin_upload_http_error",
+                level: .notification
+            )
+        }
+    }
+
+    // MARK: - Reset Skin (delete active)
+    static func resetSkin(player: Player) async -> Bool {
+        do {
+            try await resetSkinThrowing(player: player)
+            return true
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("Reset skin failed: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return false
+        }
+    }
+
+    static func resetSkinThrowing(player: Player) async throws {
+        guard player.isOnlineAccount else {
+            throw GlobalError.validation(
+                chineseMessage: "Offline accounts do not support skin reset",
+                i18nKey: "error.validation.offline_skin_reset_not_supported",
+                level: .notification
+            )
+        }
+        guard !player.authAccessToken.isEmpty else {
+            throw GlobalError.authentication(
+                chineseMessage: "Access token missing, please log in again",
+                i18nKey: "error.authentication.missing_token",
+                level: .popup
+            )
+        }
+        var request = URLRequest(url: URLConfig.API.Authentication.minecraftProfileActiveSkin)
+        request.httpMethod = "DELETE"
+        request.setValue("Bearer \(player.authAccessToken)", forHTTPHeaderField: "Authorization")
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw GlobalError.network(
+                chineseMessage: "Reset skin failed: Invalid response",
+                i18nKey: "error.network.skin_reset_invalid_response",
+                level: .notification
+            )
+        }
+        switch http.statusCode {
+        case 200, 204:
+            AppCacheManager.shared.removeSilently(namespace: cacheNamespace, key: player.id.replacingOccurrences(of: "-", with: ""))
+            Logger.shared.info("Skin reset to default")
+        case 401:
+            throw GlobalError.authentication(
+                chineseMessage: "Invalid or expired access token, please log in again",
+                i18nKey: "error.authentication.token_invalid_or_expired",
+                level: .popup
+            )
+        default:
+            throw GlobalError.network(
+                chineseMessage: "Reset skin failed: HTTP \(http.statusCode)",
+                i18nKey: "error.network.skin_reset_http_error",
+                level: .notification
+            )
+        }
+    }
 }
