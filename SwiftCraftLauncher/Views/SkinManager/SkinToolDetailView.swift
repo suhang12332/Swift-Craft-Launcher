@@ -69,8 +69,15 @@ struct SkinToolDetailView: View {
             }
             HStack {
                 Button("skin.manager.reset".localized()) {
-                    // Reset skin to default (implementation pending)
-                    Logger.shared.info("Reset skin clicked")
+                    guard let player = resolvedPlayer, !uploadInProgress else { return }
+                    uploadInProgress = true
+                    Task {
+                        let ok = await PlayerSkinService.resetSkin(player: player)
+                        await MainActor.run {
+                            uploadInProgress = false
+                            if ok { Task { await loadPublicSkin(force: true) } }
+                        }
+                    }
                 }
                 .disabled(resolvedPlayer == nil)
                 Spacer()
@@ -235,9 +242,31 @@ struct SkinToolDetailView: View {
                                 .foregroundStyle(.secondary)
                         }
                         Button {
-                            showingFileImporter = true
+                            if selectedFileURL == nil {
+                                showingFileImporter = true
+                            } else {
+                                // Start upload
+                                guard let file = selectedFileURL, let player = resolvedPlayer else { return }
+                                uploadInProgress = true
+                                Task {
+                                    do {
+                                        let data = try Data(contentsOf: file)
+                                        let ok = await PlayerSkinService.uploadSkin(imageData: data, model: currentModel == .classic ? .classic : .slim, player: player)
+                                        await MainActor.run {
+                                            uploadInProgress = false
+                                            if ok {
+                                                Task { await loadPublicSkin(force: true) }
+                                                selectedFileURL = nil
+                                            }
+                                        }
+                                    } catch {
+                                        Logger.shared.error("Failed to read skin file: \(error.localizedDescription)")
+                                        await MainActor.run { uploadInProgress = false }
+                                    }
+                                }
+                            }
                         } label: {
-                            Text(uploadInProgress ? "skin.manager.upload.uploading".localized() : "skin.manager.upload.select".localized())
+                            Text(uploadInProgress ? "skin.manager.upload.uploading".localized() : (selectedFileURL == nil ? "skin.manager.upload.select".localized() : "skin.manager.upload.start".localized()))
                         }
                         .disabled(uploadInProgress || resolvedPlayer == nil)
                     }
