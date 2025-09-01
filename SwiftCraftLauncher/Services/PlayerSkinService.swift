@@ -19,7 +19,10 @@ enum PlayerSkinService {
         let name: String
         let properties: [SessionProperty]
     }
-    private struct SessionProperty: Decodable { let name: String; let value: String }
+    private struct SessionProperty: Decodable {
+        let name: String
+        let value: String
+    }
 
     private struct TexturesPayload: Decodable {
         let timestamp: Int64
@@ -41,24 +44,43 @@ enum PlayerSkinService {
     static func fetchPublicSkin(uuid: String) async -> PublicSkinInfo? {
         do { return try await fetchPublicSkinThrowing(uuid: uuid) } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("Fetch Skin failed: \(globalError.chineseMessage)")
+            Logger.shared.error(
+                "Fetch Skin failed: \(globalError.chineseMessage)"
+            )
             GlobalErrorHandler.shared.handle(globalError)
 
-            if let cached: PublicSkinInfo = AppCacheManager.shared.get(namespace: cacheNamespace, key: uuid, as: PublicSkinInfo.self) {
+            if let cached: PublicSkinInfo = AppCacheManager.shared.get(
+                namespace: cacheNamespace,
+                key: uuid,
+                as: PublicSkinInfo.self
+            ) {
                 return cached
             }
             return nil
         }
     }
 
-    static func fetchPublicSkinThrowing(uuid: String) async throws -> PublicSkinInfo {
+    static func fetchPublicSkinThrowing(uuid: String) async throws
+        -> PublicSkinInfo
+    {
         let cleanUUID = uuid.replacingOccurrences(of: "-", with: "")
 
-        if let cached: PublicSkinInfo = AppCacheManager.shared.get(namespace: cacheNamespace, key: cleanUUID, as: PublicSkinInfo.self) {
-            if Date().timeIntervalSince(cached.fetchedAt) < 300 { return cached }
+        if let cached: PublicSkinInfo = AppCacheManager.shared.get(
+            namespace: cacheNamespace,
+            key: cleanUUID,
+            as: PublicSkinInfo.self
+        ) {
+            if Date().timeIntervalSince(cached.fetchedAt) < 300 {
+                return cached
+            }
         }
 
-        guard let url = URL(string: "https://sessionserver.mojang.com/session/minecraft/profile/\(cleanUUID)") else {
+        guard
+            let url = URL(
+                string:
+                    "https://sessionserver.mojang.com/session/minecraft/profile/\(cleanUUID)"
+            )
+        else {
             throw GlobalError.validation(
                 chineseMessage: "Invalid UUID: \(uuid)",
                 i18nKey: "error.validation.invalid_uuid",
@@ -91,8 +113,12 @@ enum PlayerSkinService {
             )
         }
 
-    let profile = try JSONDecoder().decode(SessionProfile.self, from: data)
-    guard let texturesProperty = profile.properties.first(where: { $0.name == "textures" }) else {
+        let profile = try JSONDecoder().decode(SessionProfile.self, from: data)
+        guard
+            let texturesProperty = profile.properties.first(where: {
+                $0.name == "textures"
+            })
+        else {
             throw GlobalError.resource(
                 chineseMessage: "Missing textures property",
                 i18nKey: "error.resource.textures_property_missing",
@@ -101,27 +127,41 @@ enum PlayerSkinService {
         }
 
         // Base64 → JSON
-        guard let decodedData = Data(base64Encoded: texturesProperty.value) else {
+        guard let decodedData = Data(base64Encoded: texturesProperty.value)
+        else {
             throw GlobalError.validation(
                 chineseMessage: "textures Base64 decode failed",
                 i18nKey: "error.validation.textures_base64_decode_failed",
                 level: .silent
             )
-    }
+        }
 
-    let payload = try JSONDecoder().decode(TexturesPayload.self, from: decodedData)
-    let skinURL = payload.textures.SKIN?.url
-    let modelString = payload.textures.SKIN?.metadata?.model?.lowercased()
-    let model: PublicSkinInfo.SkinModel = (modelString == "slim") ? .slim : .classic
-    let capeURL = payload.textures.CAPE?.url
+        let payload = try JSONDecoder().decode(
+            TexturesPayload.self,
+            from: decodedData
+        )
+        let skinURL = payload.textures.SKIN?.url
+        let modelString = payload.textures.SKIN?.metadata?.model?.lowercased()
+        let model: PublicSkinInfo.SkinModel =
+            (modelString == "slim") ? .slim : .classic
+        let capeURL = payload.textures.CAPE?.url
 
-    let secureSkin = skinURL?.httpToHttps()
-    let secureCape = capeURL?.httpToHttps()
+        let secureSkin = skinURL?.httpToHttps()
+        let secureCape = capeURL?.httpToHttps()
 
-    let result = PublicSkinInfo(skinURL: secureSkin, model: model, capeURL: secureCape, fetchedAt: Date())
+        let result = PublicSkinInfo(
+            skinURL: secureSkin,
+            model: model,
+            capeURL: secureCape,
+            fetchedAt: Date()
+        )
 
-    AppCacheManager.shared.setSilently(namespace: cacheNamespace, key: cleanUUID, value: result)
-    return result
+        AppCacheManager.shared.setSilently(
+            namespace: cacheNamespace,
+            key: cleanUUID,
+            value: result
+        )
+        return result
     }
 
     // MARK: - Upload Skin (multipart/form-data)
@@ -131,13 +171,23 @@ enum PlayerSkinService {
     ///   - model: Skin model classic / slim
     ///   - player: Current online player (requires valid accessToken)
     /// - Returns: Whether successful
-    static func uploadSkin(imageData: Data, model: PublicSkinInfo.SkinModel, player: Player) async -> Bool {
+    static func uploadSkin(
+        imageData: Data,
+        model: PublicSkinInfo.SkinModel,
+        player: Player
+    ) async -> Bool {
         do {
-            try await uploadSkinThrowing(imageData: imageData, model: model, player: player)
+            try await uploadSkinThrowing(
+                imageData: imageData,
+                model: model,
+                player: player
+            )
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("Upload skin failed: \(globalError.chineseMessage)")
+            Logger.shared.error(
+                "Upload skin failed: \(globalError.chineseMessage)"
+            )
             GlobalErrorHandler.shared.handle(globalError)
             return false
         }
@@ -145,7 +195,11 @@ enum PlayerSkinService {
 
     /// Upload (throwing version)
     /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#upload-skin specification
-    static func uploadSkinThrowing(imageData: Data, model: PublicSkinInfo.SkinModel, player: Player) async throws {
+    static func uploadSkinThrowing(
+        imageData: Data,
+        model: PublicSkinInfo.SkinModel,
+        player: Player
+    ) async throws {
         guard player.isOnlineAccount else {
             throw GlobalError.validation(
                 chineseMessage: "Offline accounts do not support skin upload",
@@ -164,28 +218,55 @@ enum PlayerSkinService {
         let boundary = "Boundary-" + UUID().uuidString
         var body = Data()
         func appendField(name: String, value: String) {
-            if let fieldData = "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(name)\"\r\n\r\n\(value)\r\n".data(using: .utf8) {
+            if let fieldData =
+                "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(name)\"\r\n\r\n\(value)\r\n"
+                .data(using: .utf8)
+            {
                 body.append(fieldData)
             }
         }
-        func appendFile(name: String, filename: String, mime: String, data: Data) {
+        func appendFile(
+            name: String,
+            filename: String,
+            mime: String,
+            data: Data
+        ) {
             var part = Data()
-            func appendString(_ s: String) { if let d = s.data(using: .utf8) { part.append(d) } }
+            func appendString(_ s: String) {
+                if let d = s.data(using: .utf8) { part.append(d) }
+            }
             appendString("--\(boundary)\r\n")
-            appendString("Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"\r\n")
+            appendString(
+                "Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"\r\n"
+            )
             appendString("Content-Type: \(mime)\r\n\r\n")
             part.append(data)
             appendString("\r\n")
             body.append(part)
         }
         appendField(name: "variant", value: model == .slim ? "slim" : "classic")
-        appendFile(name: "file", filename: "skin.png", mime: "image/png", data: imageData)
-        if let closing = "--\(boundary)--\r\n".data(using: .utf8) { body.append(closing) }
+        appendFile(
+            name: "file",
+            filename: "skin.png",
+            mime: "image/png",
+            data: imageData
+        )
+        if let closing = "--\(boundary)--\r\n".data(using: .utf8) {
+            body.append(closing)
+        }
 
-        var request = URLRequest(url: URLConfig.API.Authentication.minecraftProfileSkins)
+        var request = URLRequest(
+            url: URLConfig.API.Authentication.minecraftProfileSkins
+        )
         request.httpMethod = "POST"
-        request.setValue("Bearer \(player.authAccessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue(
+            "Bearer \(player.authAccessToken)",
+            forHTTPHeaderField: "Authorization"
+        )
+        request.setValue(
+            "multipart/form-data; boundary=\(boundary)",
+            forHTTPHeaderField: "Content-Type"
+        )
         request.httpBody = body
         request.timeoutInterval = 30
 
@@ -198,10 +279,15 @@ enum PlayerSkinService {
             )
         }
         switch http.statusCode {
-        case 200, 204: // Mojang documentation may return empty payload
+        case 200, 204:  // Mojang documentation may return empty payload
             // Invalidate cache
-            AppCacheManager.shared.removeSilently(namespace: cacheNamespace, key: player.id.replacingOccurrences(of: "-", with: ""))
-            Logger.shared.info("Skin upload successful, status=\(http.statusCode) bytes=\(data.count)")
+            AppCacheManager.shared.removeSilently(
+                namespace: cacheNamespace,
+                key: player.id.replacingOccurrences(of: "-", with: "")
+            )
+            Logger.shared.info(
+                "Skin upload successful, status=\(http.statusCode) bytes=\(data.count)"
+            )
             return
         case 400:
             throw GlobalError.validation(
@@ -211,7 +297,8 @@ enum PlayerSkinService {
             )
         case 401:
             throw GlobalError.authentication(
-                chineseMessage: "Invalid or expired access token, please log in again",
+                chineseMessage:
+                    "Invalid or expired access token, please log in again",
                 i18nKey: "error.authentication.token_invalid_or_expired",
                 level: .popup
             )
@@ -230,7 +317,8 @@ enum PlayerSkinService {
         default:
             let bodyText = String(data: data, encoding: .utf8) ?? ""
             throw GlobalError.network(
-                chineseMessage: "Upload skin failed: HTTP \(http.statusCode) \(bodyText)",
+                chineseMessage:
+                    "Upload skin failed: HTTP \(http.statusCode) \(bodyText)",
                 i18nKey: "error.network.skin_upload_http_error",
                 level: .notification
             )
@@ -244,9 +332,280 @@ enum PlayerSkinService {
             return true
         } catch {
             let globalError = GlobalError.from(error)
-            Logger.shared.error("Reset skin failed: \(globalError.chineseMessage)")
+            Logger.shared.error(
+                "Reset skin failed: \(globalError.chineseMessage)"
+            )
             GlobalErrorHandler.shared.handle(globalError)
             return false
+        }
+    }
+
+    // MARK: - Cape Management
+    /// Get player profile with capes information (silent version)
+    /// - Parameter player: Current online player
+    /// - Returns: Profile with cape information or nil if failed
+    static func fetchPlayerProfile(player: Player) async
+        -> MinecraftProfileResponse?
+    {
+        do {
+            return try await fetchPlayerProfileThrowing(player: player)
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error(
+                "Fetch player profile failed: \(globalError.chineseMessage)"
+            )
+            GlobalErrorHandler.shared.handle(globalError)
+            return nil
+        }
+    }
+
+    /// Get player profile with capes information (throwing version)
+    static func fetchPlayerProfileThrowing(player: Player) async throws
+        -> MinecraftProfileResponse
+    {
+        guard player.isOnlineAccount else {
+            throw GlobalError.validation(
+                chineseMessage:
+                    "Offline accounts do not support profile fetching",
+                i18nKey: "error.validation.offline_profile_fetch_not_supported",
+                level: .notification
+            )
+        }
+        guard !player.authAccessToken.isEmpty else {
+            throw GlobalError.authentication(
+                chineseMessage: "Access token missing, please log in again",
+                i18nKey: "error.authentication.missing_token",
+                level: .popup
+            )
+        }
+
+        var request = URLRequest(
+            url: URLConfig.API.Authentication.minecraftProfile
+        )
+        request.setValue(
+            "Bearer \(player.authAccessToken)",
+            forHTTPHeaderField: "Authorization"
+        )
+        request.timeoutInterval = 30
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw GlobalError.network(
+                chineseMessage: "Get profile failed: Invalid response",
+                i18nKey: "error.network.profile_invalid_response",
+                level: .notification
+            )
+        }
+        switch http.statusCode {
+        case 200:
+            break
+        case 401:
+            throw GlobalError.authentication(
+                chineseMessage:
+                    "Invalid or expired access token, please log in again",
+                i18nKey: "error.authentication.token_invalid_or_expired",
+                level: .popup
+            )
+        default:
+            throw GlobalError.network(
+                chineseMessage: "Get profile failed: HTTP \(http.statusCode)",
+                i18nKey: "error.network.profile_http_error",
+                level: .notification
+            )
+        }
+
+        let profile = try JSONDecoder().decode(
+            MinecraftProfileResponse.self,
+            from: data
+        )
+        return MinecraftProfileResponse(
+            id: profile.id,
+            name: profile.name,
+            skins: profile.skins,
+            capes: profile.capes,
+            accessToken: player.authAccessToken,
+            authXuid: player.authXuid,
+            refreshToken: player.authRefreshToken
+        )
+    }
+
+    /// Show/equip a cape (silent version)
+    /// - Parameters:
+    ///   - capeId: Cape UUID to equip
+    ///   - player: Current online player
+    /// - Returns: Whether successful
+    static func showCape(capeId: String, player: Player) async -> Bool {
+        do {
+            try await showCapeThrowing(capeId: capeId, player: player)
+            return true
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error(
+                "Show cape failed: \(globalError.chineseMessage)"
+            )
+            GlobalErrorHandler.shared.handle(globalError)
+            return false
+        }
+    }
+
+    /// Show/equip a cape (throwing version)
+    /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#show-cape specification
+    static func showCapeThrowing(capeId: String, player: Player) async throws {
+        guard player.isOnlineAccount else {
+            throw GlobalError.validation(
+                chineseMessage:
+                    "Offline accounts do not support cape switching",
+                i18nKey: "error.validation.offline_cape_switch_not_supported",
+                level: .notification
+            )
+        }
+        guard !player.authAccessToken.isEmpty else {
+            throw GlobalError.authentication(
+                chineseMessage: "Access token missing, please log in again",
+                i18nKey: "error.authentication.missing_token",
+                level: .popup
+            )
+        }
+
+        let payload = ["capeId": capeId]
+        let jsonData = try JSONSerialization.data(withJSONObject: payload)
+
+        var request = URLRequest(
+            url: URLConfig.API.Authentication.minecraftProfileActiveCape
+        )
+        request.httpMethod = "PUT"
+        request.setValue(
+            "Bearer \(player.authAccessToken)",
+            forHTTPHeaderField: "Authorization"
+        )
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = jsonData
+        request.timeoutInterval = 30
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw GlobalError.network(
+                chineseMessage: "Show cape failed: Invalid response",
+                i18nKey: "error.network.cape_show_invalid_response",
+                level: .notification
+            )
+        }
+        switch http.statusCode {
+        case 200, 204:
+            // Invalidate cache
+            AppCacheManager.shared.removeSilently(
+                namespace: cacheNamespace,
+                key: player.id.replacingOccurrences(of: "-", with: "")
+            )
+            Logger.shared.info("Cape \(capeId) equipped successfully")
+        case 400:
+            throw GlobalError.validation(
+                chineseMessage: "Invalid cape ID or request",
+                i18nKey: "error.validation.cape_invalid_id",
+                level: .notification
+            )
+        case 401:
+            throw GlobalError.authentication(
+                chineseMessage:
+                    "Invalid or expired access token, please log in again",
+                i18nKey: "error.authentication.token_invalid_or_expired",
+                level: .popup
+            )
+        case 403:
+            throw GlobalError.authentication(
+                chineseMessage: "No permission to equip cape (403)",
+                i18nKey: "error.authentication.cape_equip_forbidden",
+                level: .notification
+            )
+        case 404:
+            throw GlobalError.resource(
+                chineseMessage: "Cape not found or not owned",
+                i18nKey: "error.resource.cape_not_found",
+                level: .notification
+            )
+        default:
+            throw GlobalError.network(
+                chineseMessage: "Show cape failed: HTTP \(http.statusCode)",
+                i18nKey: "error.network.cape_show_http_error",
+                level: .notification
+            )
+        }
+    }
+
+    /// Hide current cape (silent version)
+    /// - Parameter player: Current online player
+    /// - Returns: Whether successful
+    static func hideCape(player: Player) async -> Bool {
+        do {
+            try await hideCapeThrowing(player: player)
+            return true
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error(
+                "Hide cape failed: \(globalError.chineseMessage)"
+            )
+            GlobalErrorHandler.shared.handle(globalError)
+            return false
+        }
+    }
+
+    /// Hide current cape (throwing version)
+    /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#hide-cape specification
+    static func hideCapeThrowing(player: Player) async throws {
+        guard player.isOnlineAccount else {
+            throw GlobalError.validation(
+                chineseMessage: "Offline accounts do not support cape hiding",
+                i18nKey: "error.validation.offline_cape_hide_not_supported",
+                level: .notification
+            )
+        }
+        guard !player.authAccessToken.isEmpty else {
+            throw GlobalError.authentication(
+                chineseMessage: "Access token missing, please log in again",
+                i18nKey: "error.authentication.missing_token",
+                level: .popup
+            )
+        }
+
+        var request = URLRequest(
+            url: URLConfig.API.Authentication.minecraftProfileActiveCape
+        )
+        request.httpMethod = "DELETE"
+        request.setValue(
+            "Bearer \(player.authAccessToken)",
+            forHTTPHeaderField: "Authorization"
+        )
+        request.timeoutInterval = 30
+
+        let (_, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw GlobalError.network(
+                chineseMessage: "Hide cape failed: Invalid response",
+                i18nKey: "error.network.cape_hide_invalid_response",
+                level: .notification
+            )
+        }
+        switch http.statusCode {
+        case 200, 204:
+            // Invalidate cache
+            AppCacheManager.shared.removeSilently(
+                namespace: cacheNamespace,
+                key: player.id.replacingOccurrences(of: "-", with: "")
+            )
+            Logger.shared.info("Cape hidden successfully")
+        case 401:
+            throw GlobalError.authentication(
+                chineseMessage:
+                    "Invalid or expired access token, please log in again",
+                i18nKey: "error.authentication.token_invalid_or_expired",
+                level: .popup
+            )
+        default:
+            throw GlobalError.network(
+                chineseMessage: "Hide cape failed: HTTP \(http.statusCode)",
+                i18nKey: "error.network.cape_hide_http_error",
+                level: .notification
+            )
         }
     }
 
@@ -265,9 +624,14 @@ enum PlayerSkinService {
                 level: .popup
             )
         }
-        var request = URLRequest(url: URLConfig.API.Authentication.minecraftProfileActiveSkin)
+        var request = URLRequest(
+            url: URLConfig.API.Authentication.minecraftProfileActiveSkin
+        )
         request.httpMethod = "DELETE"
-        request.setValue("Bearer \(player.authAccessToken)", forHTTPHeaderField: "Authorization")
+        request.setValue(
+            "Bearer \(player.authAccessToken)",
+            forHTTPHeaderField: "Authorization"
+        )
         let (_, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else {
             throw GlobalError.network(
@@ -278,11 +642,15 @@ enum PlayerSkinService {
         }
         switch http.statusCode {
         case 200, 204:
-            AppCacheManager.shared.removeSilently(namespace: cacheNamespace, key: player.id.replacingOccurrences(of: "-", with: ""))
+            AppCacheManager.shared.removeSilently(
+                namespace: cacheNamespace,
+                key: player.id.replacingOccurrences(of: "-", with: "")
+            )
             Logger.shared.info("Skin reset to default")
         case 401:
             throw GlobalError.authentication(
-                chineseMessage: "Invalid or expired access token, please log in again",
+                chineseMessage:
+                    "Invalid or expired access token, please log in again",
                 i18nKey: "error.authentication.token_invalid_or_expired",
                 level: .popup
             )
