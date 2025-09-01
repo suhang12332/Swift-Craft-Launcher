@@ -83,6 +83,7 @@ struct MinecraftProfileResponse: Codable, Equatable {
     let accessToken: String
     let authXuid: String
     let refreshToken: String
+    let tokenExpiresAt: Date?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -102,9 +103,10 @@ struct MinecraftProfileResponse: Codable, Equatable {
         accessToken = ""
         authXuid = ""
         refreshToken = ""
+        tokenExpiresAt = nil
     }
 
-    init(id: String, name: String, skins: [Skin], capes: [Cape]?, accessToken: String, authXuid: String, refreshToken: String = "") {
+    init(id: String, name: String, skins: [Skin], capes: [Cape]?, accessToken: String, authXuid: String, refreshToken: String = "", tokenExpiresAt: Date? = nil) {
         self.id = id
         self.name = name
         self.skins = skins
@@ -112,6 +114,7 @@ struct MinecraftProfileResponse: Codable, Equatable {
         self.accessToken = accessToken
         self.authXuid = authXuid
         self.refreshToken = refreshToken
+        self.tokenExpiresAt = tokenExpiresAt
     }
 }
 
