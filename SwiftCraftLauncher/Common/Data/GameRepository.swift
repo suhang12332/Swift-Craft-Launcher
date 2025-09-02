@@ -121,13 +121,12 @@ class GameRepository: ObservableObject {
         return true // Note: This will always return true since the operation is async
     }
 
-    /// 根据 ID 更新游戏状态
+    /// 根据 ID 更新游戏最后游玩时间
     /// - Parameters:
     ///   - id: 游戏 ID
-    ///   - isRunning: 是否正在运行
     ///   - lastPlayed: 最后游玩时间
     /// - Throws: GlobalError 当操作失败时
-    func updateGameStatus(id: String, isRunning: Bool, lastPlayed: Date = Date()) async throws {
+    func updateGameLastPlayed(id: String, lastPlayed: Date = Date()) async throws {
         guard let index = games.firstIndex(where: { $0.id == id }) else {
             throw GlobalError.validation(
                 chineseMessage: "找不到要更新状态的游戏：\(id)",
@@ -138,25 +137,23 @@ class GameRepository: ObservableObject {
 
         await MainActor.run {
             var game = games[index]
-            game.isRunning = isRunning
             game.lastPlayed = lastPlayed
             games[index] = game
         }
 
         try saveGamesThrowing()
-        Logger.shared.info("成功更新游戏状态: \(games[index].gameName)")
+        Logger.shared.info("成功更新游戏最后游玩时间: \(games[index].gameName)")
     }
 
-    /// 根据 ID 更新游戏状态（静默版本）
+    /// 根据 ID 更新游戏最后游玩时间（静默版本）
     /// - Parameters:
     ///   - id: 游戏 ID
-    ///   - isRunning: 是否正在运行
     ///   - lastPlayed: 最后游玩时间
     /// - Returns: 是否更新成功
-    func updateGameStatusSilently(id: String, isRunning: Bool, lastPlayed: Date = Date()) -> Bool {
+    func updateGameLastPlayedSilently(id: String, lastPlayed: Date = Date()) -> Bool {
         Task {
             do {
-                try await updateGameStatus(id: id, isRunning: isRunning, lastPlayed: lastPlayed)
+                try await updateGameLastPlayed(id: id, lastPlayed: lastPlayed)
             } catch {
                 GlobalErrorHandler.shared.handle(error)
             }

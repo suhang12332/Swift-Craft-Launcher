@@ -735,8 +735,7 @@ extension MinecraftAuthService {
             Logger.shared.debug("玩家 \(player.name) 的Token尚未过期（过期时间: \(expiresAt), 当前时间: \(currentTime)）")
         }
         
-//        return isExpired
-        return true
+        return isExpired
     }
 
     /// 提示用户重新登录指定玩家
