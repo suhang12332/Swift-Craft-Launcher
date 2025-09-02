@@ -188,6 +188,7 @@ public struct DetailToolbarView: ToolbarContent {
             ) { sort in
                 Button("menu.sort.\(sort)".localized()) {
                     sortIndex = sort
+                    currentPage = 1
                 }
             }
         } label: {
@@ -200,6 +201,7 @@ public struct DetailToolbarView: ToolbarContent {
             ForEach(resourceTypesForCurrentGame, id: \.self) { sort in
                 Button("resource.content.type.\(sort)".localized()) {
                     gameResourcesType = sort
+                    currentPage = 1
                 }
             }
         } label: {
@@ -210,6 +212,7 @@ public struct DetailToolbarView: ToolbarContent {
     private var resourcesTypeMenu: some View {
         Button {
             gameType.toggle()
+            currentPage = 1
         } label: {
             Label(
                 currentResourceTypeTitle,
