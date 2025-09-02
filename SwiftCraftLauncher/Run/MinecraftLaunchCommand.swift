@@ -21,6 +21,7 @@ struct MinecraftLaunchCommand {
         if success {
             _ = await MainActor.run {
                 gameRepository.updateGameStatusSilently(id: game.id, isRunning: false)
+                GameStatusManager.shared.setGameRunning(gameId: game.id, isRunning: false)
             }
         }
     }
@@ -133,6 +134,7 @@ struct MinecraftLaunchCommand {
 
         _ = await MainActor.run {
             gameRepository.updateGameStatusSilently(id: game.id, isRunning: true)
+            GameStatusManager.shared.setGameRunning(gameId: game.id, isRunning: true)
         }
 
         do {
@@ -151,6 +153,7 @@ struct MinecraftLaunchCommand {
         process.terminationHandler = { _ in
             Task { @MainActor in
                 _ = self.gameRepository.updateGameStatusSilently(id: gameId, isRunning: false)
+                GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
                 // 清理进程管理器中的进程
                 GameProcessManager.shared.cleanupTerminatedProcesses()
             }

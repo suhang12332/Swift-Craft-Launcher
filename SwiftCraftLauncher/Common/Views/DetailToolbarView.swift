@@ -11,6 +11,7 @@ public struct DetailToolbarView: ToolbarContent {
     @Binding var versionCurrentPage: Int
     @Binding var versionTotal: Int
     @EnvironmentObject var gameRepository: GameRepository
+    @StateObject private var gameStatusManager = GameStatusManager.shared
     let totalItems: Int
     @Binding var project: ModrinthProjectDetail?
     @Binding var selectProjectId: String?
@@ -34,6 +35,11 @@ public struct DetailToolbarView: ToolbarContent {
             return gameRepository.getGame(by: gameId)
         }
         return nil
+    }
+    
+    /// 基于进程状态判断游戏是否正在运行
+    private func isGameRunning(gameId: String) -> Bool {
+        return gameStatusManager.isGameRunning(gameId: gameId)
     }
 
     public var body: some ToolbarContent {
@@ -87,7 +93,8 @@ public struct DetailToolbarView: ToolbarContent {
                     Spacer()
                     Button {
                         Task {
-                            if game.isRunning {
+                            let isRunning = isGameRunning(gameId: game.id)
+                            if isRunning {
                                 // 停止游戏
                                 await MinecraftLaunchCommand(
                                     player: playerListViewModel.currentPlayer,
@@ -104,18 +111,19 @@ public struct DetailToolbarView: ToolbarContent {
                             }
                         }
                     } label: {
-                        Label(
-                            game.isRunning
+                        let isRunning = isGameRunning(gameId: game.id)
+                        return Label(
+                            isRunning
                                 ? "stop.fill".localized()
                                 : "play.fill".localized(),
-                            systemImage: game.isRunning
+                            systemImage: isRunning
                                 ? "stop.fill" : "play.fill"
                         )
                     }
                     .help(
-                        (game.isRunning ? "stop.fill" : "play.fill").localized()
+                        (isGameRunning(gameId: game.id) ? "stop.fill" : "play.fill").localized()
                     )
-                    .animation(.linear, value: game.isRunning)
+                    .animation(.linear, value: isGameRunning(gameId: game.id))
 
                     Button {
                         let gameDir = AppPaths.profileDirectory(gameName: game.gameName)
