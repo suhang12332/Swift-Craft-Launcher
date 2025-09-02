@@ -154,17 +154,33 @@ class GameSetupUtil: ObservableObject {
             onSuccess()
         } catch is CancellationError {
             Logger.shared.info("游戏下载任务已取消")
+            // 清理已创建的游戏文件夹
+            await cleanupGameDirectories(gameName: gameName)
             await MainActor.run {
                 self.objectWillChange.send()
                 downloadState.reset()
             }
         } catch {
+            // 清理已创建的游戏文件夹
+            await cleanupGameDirectories(gameName: gameName)
             GlobalErrorHandler.shared.handle(error)
         }
         return
     }
 
     // MARK: - Private Methods
+
+    /// 清理游戏文件夹
+    /// - Parameter gameName: 游戏名称
+    private func cleanupGameDirectories(gameName: String) async {
+        do {
+            let fileManager = MinecraftFileManager()
+            try fileManager.cleanupGameDirectories(gameName: gameName)
+        } catch {
+            Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
+            // 不抛出错误，因为这是清理操作，不应该影响主流程
+        }
+    }
 
     private func saveGameIcon(
         gameName: String,

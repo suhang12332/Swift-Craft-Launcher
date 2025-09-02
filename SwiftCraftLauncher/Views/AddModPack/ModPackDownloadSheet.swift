@@ -20,6 +20,7 @@ struct ModPackDownloadSheet: View {
     @State private var selectedModPackVersion: ModrinthProjectDetailVersion?
     @State private var downloadTask: Task<Void, Error>?
     @State private var isProcessing = false
+    @State private var currentGameName: String?
     @StateObject private var gameSetupService = GameSetupUtil()
 
     var body: some View {
@@ -349,6 +350,13 @@ struct ModPackDownloadSheet: View {
             downloadTask = nil
             isProcessing = false
             viewModel.modPackInstallState.reset()
+            
+            // 清理已创建的游戏文件夹
+            if let gameName = currentGameName {
+                Task {
+                    await cleanupGameDirectories(gameName: gameName)
+                }
+            }
         } else {
             dismiss()
         }
@@ -376,6 +384,9 @@ struct ModPackDownloadSheet: View {
         projectDetail: ModrinthProjectDetail
     ) async {
         isProcessing = true
+        
+        // 确定游戏名称
+        currentGameName = "\(projectDetail.title)-\(selectedGameVersion)"
 
         // 1. 下载整合包
         guard
@@ -409,29 +420,28 @@ struct ModPackDownloadSheet: View {
         }
 
         // 4. 下载游戏图标
-        let gameName = "\(projectDetail.title)-\(selectedGameVersion)"
         let iconPath = await viewModel.downloadGameIcon(
             projectDetail: projectDetail,
-            gameName: gameName
+            gameName: currentGameName!
         )
 
         // 5. 创建 profile 文件夹
         let profileCreated = await withCheckedContinuation { continuation in
             Task {
-                let result = await createProfileDirectories(for: gameName)
+                let result = await createProfileDirectories(for: currentGameName!)
                 continuation.resume(returning: result)
             }
         }
 
         if !profileCreated {
-            isProcessing = false
+            handleInstallationResult(success: false, gameName: currentGameName!)
             return
         }
 
         // 6. 准备安装
         let tempGameInfo = GameVersionInfo(
             id: UUID(),
-            gameName: gameName,
+            gameName: currentGameName!,
             gameIcon: iconPath ?? "",
             gameVersion: selectedGameVersion,
             assetIndex: "",
@@ -468,7 +478,7 @@ struct ModPackDownloadSheet: View {
             }
 
         if !dependencySuccess {
-            handleInstallationResult(success: false, gameName: gameName)
+            handleInstallationResult(success: false, gameName: currentGameName!)
             return
         }
 
@@ -476,7 +486,7 @@ struct ModPackDownloadSheet: View {
         let gameSuccess = await withCheckedContinuation { continuation in
             Task {
                 await gameSetupService.saveGame(
-                    gameName: gameName,
+                    gameName: currentGameName!,
                     gameIcon: iconPath ?? "",
                     selectedGameVersion: selectedGameVersion,
                     selectedModLoader: indexInfo.loaderType,
@@ -497,7 +507,7 @@ struct ModPackDownloadSheet: View {
             }
         }
 
-        handleInstallationResult(success: gameSuccess, gameName: gameName)
+        handleInstallationResult(success: gameSuccess, gameName: currentGameName!)
     }
 
     private func downloadModPackFile(
@@ -602,6 +612,10 @@ struct ModPackDownloadSheet: View {
             dismiss()
         } else {
             Logger.shared.error("整合包依赖安装失败: \(gameName)")
+            // 清理已创建的游戏文件夹
+            Task {
+                await cleanupGameDirectories(gameName: gameName)
+            }
             let globalError = GlobalError.resource(
                 chineseMessage: "整合包依赖安装失败",
                 i18nKey: "error.resource.modpack_dependencies_failed",
@@ -612,6 +626,18 @@ struct ModPackDownloadSheet: View {
             gameSetupService.downloadState.reset()
         }
         isProcessing = false
+    }
+
+    /// 清理游戏文件夹
+    /// - Parameter gameName: 游戏名称
+    private func cleanupGameDirectories(gameName: String) async {
+        do {
+            let fileManager = MinecraftFileManager()
+            try fileManager.cleanupGameDirectories(gameName: gameName)
+        } catch {
+            Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
+            // 不抛出错误，因为这是清理操作，不应该影响主流程
+        }
     }
 }
 
