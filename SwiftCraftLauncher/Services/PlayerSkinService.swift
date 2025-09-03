@@ -3,7 +3,6 @@ import Foundation
 enum PlayerSkinService {
 
     private static let cacheNamespace = "session_skin"
-    
     // MARK: - Error Handling
     private static func handleError(_ error: Error, operation: String) {
         let globalError = GlobalError.from(error)
@@ -76,18 +75,7 @@ enum PlayerSkinService {
             }
         }
 
-        guard
-            let url = URL(
-                string:
-                    "https://sessionserver.mojang.com/session/minecraft/profile/\(cleanUUID)"
-            )
-        else {
-            throw GlobalError.validation(
-                chineseMessage: "无效的UUID: \(uuid)",
-                i18nKey: "error.validation.invalid_uuid",
-                level: .silent
-            )
-        }
+        let url = URLConfig.API.Minecraft.sessionProfile(uuid: cleanUUID)
 
         let (data, response) = try await URLSession.shared.data(from: url)
         guard let http = response as? HTTPURLResponse else {
@@ -289,7 +277,7 @@ enum PlayerSkinService {
             throw GlobalError.validation(
                 chineseMessage: "无效的皮肤文件",
                 i18nKey: "error.validation.skin_invalid_file",
-                level: .notification
+                level: .popup
             )
         case 401:
             throw GlobalError.authentication(
