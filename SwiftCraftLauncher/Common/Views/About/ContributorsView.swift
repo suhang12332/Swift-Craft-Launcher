@@ -131,7 +131,7 @@ public struct ContributorsView: View {
     // MARK: - Loading View
     private var loadingView: some View {
         VStack(spacing: 12) {
-            ProgressView()
+            ProgressView().controlSize(.small)
         }
         .frame(maxWidth: .infinity, minHeight: 100)
     }
