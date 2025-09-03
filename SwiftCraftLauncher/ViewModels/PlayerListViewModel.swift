@@ -167,4 +167,36 @@ class PlayerListViewModel: ObservableObject {
     func playerExists(name: String) -> Bool {
         dataManager.playerExists(name: name)
     }
+    
+    /// 更新玩家列表中的指定玩家信息
+    /// - Parameter updatedPlayer: 更新后的玩家对象
+    func updatePlayerInList(_ updatedPlayer: Player) {
+        do {
+            try updatePlayerInListThrowing(updatedPlayer)
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("更新玩家列表失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+        }
+    }
+    
+    /// 更新玩家列表中的指定玩家信息（抛出异常版本）
+    /// - Parameter updatedPlayer: 更新后的玩家对象
+    /// - Throws: GlobalError 当操作失败时
+    func updatePlayerInListThrowing(_ updatedPlayer: Player) throws {
+        // 更新数据管理器中的玩家信息
+        try dataManager.updatePlayer(updatedPlayer)
+        
+        // 更新本地玩家列表
+        if let index = players.firstIndex(where: { $0.id == updatedPlayer.id }) {
+            players[index] = updatedPlayer
+            
+            // 如果更新的是当前玩家，也要更新 currentPlayer
+            if updatedPlayer.isCurrent {
+                currentPlayer = updatedPlayer
+            }
+            
+            Logger.shared.debug("玩家列表中的玩家信息已更新: \(updatedPlayer.name)")
+        }
+    }
 }

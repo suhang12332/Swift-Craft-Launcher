@@ -38,8 +38,6 @@ struct DetailView: View {
                 gameDetailView(gameId: gameId)
             case .resource(let type):
                 resourceDetailView(type: type)
-            case .tool(let toolType):
-                toolDetailView(toolType: toolType)
             }
         }
     }
@@ -95,15 +93,6 @@ struct DetailView: View {
                 selectedItem: $selectedItem,
                 gameType: $gameType
             )
-        }
-    }
-
-    // MARK: - Tool Detail View
-    @ViewBuilder
-    private func toolDetailView(toolType: ToolType) -> some View {
-        switch toolType {
-        case .skinManager:
-            SkinToolDetailView()
         }
     }
 }

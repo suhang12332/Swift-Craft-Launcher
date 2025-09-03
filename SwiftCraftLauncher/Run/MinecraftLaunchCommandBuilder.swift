@@ -56,7 +56,7 @@ enum MinecraftLaunchCommandBuilder {
             "clientid": AppConstants.minecraftClientId,
             "auth_xuid": "${auth_xuid}",
             "user_type": "msa",
-            "version_type": "SCL",
+            "version_type": Bundle.main.appName,
             "natives_directory": paths.nativesDir,
             "launcher_name": Bundle.main.appName,
             "launcher_version": launcherVersion,

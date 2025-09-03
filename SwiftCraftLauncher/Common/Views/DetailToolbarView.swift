@@ -36,7 +36,7 @@ public struct DetailToolbarView: ToolbarContent {
         }
         return nil
     }
-    
+
     /// 基于进程状态判断游戏是否正在运行
     private func isGameRunning(gameId: String) -> Bool {
         return gameStatusManager.isGameRunning(gameId: gameId)
@@ -123,7 +123,7 @@ public struct DetailToolbarView: ToolbarContent {
                     .help(
                         (isGameRunning(gameId: game.id) ? "stop.fill" : "play.fill").localized()
                     )
-                    .animation(.linear, value: isGameRunning(gameId: game.id))
+                    .contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
 
                     Button {
                         let gameDir = AppPaths.profileDirectory(gameName: game.gameName)
@@ -160,10 +160,6 @@ public struct DetailToolbarView: ToolbarContent {
                     paginationControls
                     Spacer()
                 }
-            case .tool:
-                Text("skin.manager.toolbar.title".localized())
-                    .font(.headline)
-                Spacer()
             }
         }
     }
@@ -221,7 +217,7 @@ public struct DetailToolbarView: ToolbarContent {
             ).foregroundStyle(.primary)
         }
         .help("resource.content.location.help".localized())
-        .animation(.linear, value: gameType)
+        .contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
     }
 
     private var paginationControls: some View {

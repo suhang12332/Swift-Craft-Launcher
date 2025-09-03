@@ -59,7 +59,6 @@ struct MinecraftSkinUtils: View {
     @State private var loadTask: Task<Void, Never>?
 
     private static let ciContext = CIContext()
-    private static let imageCache = ImageCache()
 
     init(type: SkinType, src: String, size: CGFloat = 64) {
         self.type = type
@@ -120,13 +119,8 @@ struct MinecraftSkinUtils: View {
                 // 检查任务是否被取消
                 try Task.checkCancellation()
 
-                if let cachedImage = await Self.imageCache.get(for: src) {
-                    try Task.checkCancellation()
-                    await MainActor.run {
-                        self.image = cachedImage
-                    }
-                    return
-                }
+                // 不使用缓存，每次都重新加载
+                Logger.shared.info("Loading skin without cache: \(src)")
 
                 let data = try await loadData()
 
@@ -148,10 +142,6 @@ struct MinecraftSkinUtils: View {
                         level: .silent
                     )
                 }
-
-                try Task.checkCancellation()
-
-                await Self.imageCache.set(ciImage, for: src)
 
                 try Task.checkCancellation()
 
