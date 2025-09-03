@@ -133,11 +133,11 @@ class MinecraftAuthService: NSObject, ObservableObject {
             let xboxToken = try await getXboxLiveTokenThrowing(accessToken: tokenResponse.accessToken)
             let minecraftToken = try await getMinecraftTokenThrowing(xboxToken: xboxToken.token, uhs: xboxToken.displayClaims.xui.first?.uhs ?? "")
             try await checkMinecraftOwnership(accessToken: minecraftToken)
-            
+
             // 创建包含过期时间的profile
             let profile = try await getMinecraftProfileThrowing(
-                accessToken: minecraftToken, 
-                authXuid: xboxToken.displayClaims.xui.first?.uhs ?? "", 
+                accessToken: minecraftToken,
+                authXuid: xboxToken.displayClaims.xui.first?.uhs ?? "",
                 refreshToken: tokenResponse.refreshToken ?? "",
                 expiresIn: tokenResponse.expiresIn
             )
@@ -507,7 +507,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
         do {
             let profile = try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
-            
+
             // 计算token过期时间
             let tokenExpiresAt: Date?
             if let expiresIn = expiresIn {
@@ -515,7 +515,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
             } else {
                 tokenExpiresAt = nil
             }
-            
+
             // 由于 accessToken、authXuid 和 refreshToken 不是从 API 响应中获取的，我们需要手动设置
             return MinecraftProfileResponse(
                 id: profile.id,
@@ -600,7 +600,7 @@ extension MinecraftAuthService {
 
         // 基于tokenExpiresAt检查token是否过期
         let isTokenExpired = await isTokenExpiredBasedOnTime(for: player)
-        
+
         if !isTokenExpired {
             Logger.shared.debug("玩家 \(player.name) 的Token尚未过期，无需刷新")
             return player
@@ -721,20 +721,20 @@ extension MinecraftAuthService {
             Logger.shared.debug("玩家 \(player.name) 没有Token过期时间，认为已过期")
             return true
         }
-        
+
         // 添加5分钟的缓冲时间，提前刷新token
         let bufferTime: TimeInterval = 5 * 60 // 5分钟
         let currentTime = Date()
         let expirationTimeWithBuffer = expiresAt.addingTimeInterval(-bufferTime)
-        
+
         let isExpired = currentTime >= expirationTimeWithBuffer
-        
+
         if isExpired {
             Logger.shared.debug("玩家 \(player.name) 的Token已过期或即将过期（过期时间: \(expiresAt), 当前时间: \(currentTime)）")
         } else {
             Logger.shared.debug("玩家 \(player.name) 的Token尚未过期（过期时间: \(expiresAt), 当前时间: \(currentTime)）")
         }
-        
+
         return isExpired
     }
 

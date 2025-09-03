@@ -7,7 +7,7 @@ class GameProcessManager: ObservableObject {
 
     /// 存储游戏进程的字典，key 为游戏 ID
     private var gameProcesses: [String: Process] = [:]
-    
+
     /// 进程状态变化通知
     @Published var processStates: [String: Bool] = [:]
 
@@ -65,7 +65,7 @@ class GameProcessManager: ObservableObject {
         let terminatedGameIds = gameProcesses.compactMap { gameId, process in
             !process.isRunning ? gameId : nil
         }
-        
+
         for gameId in terminatedGameIds {
             gameProcesses.removeValue(forKey: gameId)
             processStates[gameId] = false

@@ -20,8 +20,19 @@ struct ModPackDownloadSheet: View {
     @State private var selectedModPackVersion: ModrinthProjectDetailVersion?
     @State private var downloadTask: Task<Void, Error>?
     @State private var isProcessing = false
-    @State private var currentGameName: String?
+    @State private var currentGameName: String
+    @State private var customGameName: String = ""
+    @State private var isGameNameDuplicate: Bool = false
     @StateObject private var gameSetupService = GameSetupUtil()
+    @FocusState private var isGameNameFocused: Bool
+
+    // MARK: - Initializer
+    init(projectId: String, gameInfo: GameVersionInfo?, query: String) {
+        self.projectId = projectId
+        self.gameInfo = gameInfo
+        self.query = query
+        self._currentGameName = State(initialValue: "")
+    }
 
     var body: some View {
         CommonSheetView(
@@ -83,7 +94,7 @@ struct ModPackDownloadSheet: View {
     }
 
     private var canDownload: Bool {
-        !selectedGameVersion.isEmpty && selectedModPackVersion != nil
+        !selectedGameVersion.isEmpty && selectedModPackVersion != nil && !customGameName.isEmpty && !isGameNameDuplicate
     }
 
     private var isDownloading: Bool {
@@ -179,35 +190,45 @@ struct ModPackDownloadSheet: View {
         VStack(alignment: .leading, spacing: 12) {
             gameVersionPicker
             modPackVersionPicker
+            gameNameInputSection
         }
     }
 
     private var gameVersionPicker: some View {
-        Picker(
-            "modpack.game.version".localized(),
-            selection: $selectedGameVersion
-        ) {
-            Text("modpack.game.version.placeholder".localized()).tag("")
-            ForEach(viewModel.availableGameVersions, id: \.self) { version in
-                Text(version).tag(version)
+        VStack(alignment: .leading, spacing: 8) {
+            Text("modpack.game.version".localized())
+                .foregroundColor(.primary)
+            Picker(
+                "",
+                selection: $selectedGameVersion
+            ) {
+                Text("modpack.game.version.placeholder".localized()).tag("")
+                ForEach(viewModel.availableGameVersions, id: \.self) { version in
+                    Text(version).tag(version)
+                }
             }
-        }
-        .pickerStyle(MenuPickerStyle())
-        .onChange(of: selectedGameVersion) { _, newValue in
-            handleGameVersionChange(newValue)
+            .pickerStyle(MenuPickerStyle())
+            .labelsHidden()
+            .onChange(of: selectedGameVersion) { _, newValue in
+                handleGameVersionChange(newValue)
+            }
         }
     }
 
     private var modPackVersionPicker: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             if viewModel.isLoadingModPackVersions {
+                Text("modpack.version".localized())
+                    .foregroundColor(.primary)
                 HStack {
                     ProgressView()
                         .controlSize(.small).frame(maxWidth: .infinity)
                 }
             } else if !selectedGameVersion.isEmpty {
+                Text("modpack.version".localized())
+                    .foregroundColor(.primary)
                 Picker(
-                    "modpack.version".localized(),
+                    "",
                     selection: $selectedModPackVersion
                 ) {
                     ForEach(viewModel.filteredModPackVersions, id: \.id) { version in
@@ -216,9 +237,44 @@ struct ModPackDownloadSheet: View {
                         )
                     }
                 }
+                .labelsHidden()
                 .pickerStyle(MenuPickerStyle())
                 .onAppear {
                     selectFirstModPackVersion()
+                }
+            }
+        }
+    }
+
+    private var gameNameInputSection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            if !selectedGameVersion.isEmpty && selectedModPackVersion != nil {
+                HStack {
+                    Text("game.form.name".localized())
+                        .foregroundColor(.primary)
+                    if isGameNameDuplicate {
+                        Spacer()
+                        Text("game.form.name.duplicate".localized())
+                            .foregroundColor(.red)
+                            .font(.caption)
+                            .padding(.trailing, 4)
+                    }
+                }
+                TextField(
+                    "game.form.name.placeholder".localized(),
+                    text: $customGameName
+                )
+                .textFieldStyle(.roundedBorder)
+                .foregroundColor(.primary)
+                .focused($isGameNameFocused)
+                .disabled(isProcessing)
+                .onChange(of: customGameName) { _, newName in
+                    Task {
+                        let isDuplicate = await gameSetupService.checkGameNameDuplicate(newName)
+                        if isDuplicate != isGameNameDuplicate {
+                            isGameNameDuplicate = isDuplicate
+                        }
+                    }
                 }
             }
         }
@@ -350,12 +406,10 @@ struct ModPackDownloadSheet: View {
             downloadTask = nil
             isProcessing = false
             viewModel.modPackInstallState.reset()
-            
+
             // 清理已创建的游戏文件夹
-            if let gameName = currentGameName {
-                Task {
-                    await cleanupGameDirectories(gameName: gameName)
-                }
+            Task {
+                await cleanupGameDirectories(gameName: currentGameName)
             }
         } else {
             dismiss()
@@ -384,9 +438,9 @@ struct ModPackDownloadSheet: View {
         projectDetail: ModrinthProjectDetail
     ) async {
         isProcessing = true
-        
+
         // 确定游戏名称
-        currentGameName = "\(projectDetail.title)-\(selectedGameVersion)"
+        currentGameName = customGameName.isEmpty ? "\(projectDetail.title)-\(selectedGameVersion)" : customGameName
 
         // 1. 下载整合包
         guard
@@ -422,26 +476,26 @@ struct ModPackDownloadSheet: View {
         // 4. 下载游戏图标
         let iconPath = await viewModel.downloadGameIcon(
             projectDetail: projectDetail,
-            gameName: currentGameName!
+            gameName: currentGameName
         )
 
         // 5. 创建 profile 文件夹
         let profileCreated = await withCheckedContinuation { continuation in
             Task {
-                let result = await createProfileDirectories(for: currentGameName!)
+                let result = await createProfileDirectories(for: currentGameName)
                 continuation.resume(returning: result)
             }
         }
 
         if !profileCreated {
-            handleInstallationResult(success: false, gameName: currentGameName!)
+            handleInstallationResult(success: false, gameName: currentGameName)
             return
         }
 
         // 6. 准备安装
         let tempGameInfo = GameVersionInfo(
             id: UUID(),
-            gameName: currentGameName!,
+            gameName: currentGameName,
             gameIcon: iconPath ?? "",
             gameVersion: selectedGameVersion,
             assetIndex: "",
@@ -478,7 +532,7 @@ struct ModPackDownloadSheet: View {
             }
 
         if !dependencySuccess {
-            handleInstallationResult(success: false, gameName: currentGameName!)
+            handleInstallationResult(success: false, gameName: currentGameName)
             return
         }
 
@@ -486,7 +540,7 @@ struct ModPackDownloadSheet: View {
         let gameSuccess = await withCheckedContinuation { continuation in
             Task {
                 await gameSetupService.saveGame(
-                    gameName: currentGameName!,
+                    gameName: currentGameName,
                     gameIcon: iconPath ?? "",
                     selectedGameVersion: selectedGameVersion,
                     selectedModLoader: indexInfo.loaderType,
@@ -507,7 +561,7 @@ struct ModPackDownloadSheet: View {
             }
         }
 
-        handleInstallationResult(success: gameSuccess, gameName: currentGameName!)
+        handleInstallationResult(success: gameSuccess, gameName: currentGameName)
     }
 
     private func downloadModPackFile(
@@ -649,16 +703,4 @@ private enum ProgressType {
 
 private enum InstallProgressType {
     case files, dependencies
-}
-
-// MARK: - Preview
-
-#Preview {
-    ModPackDownloadSheet(
-        projectId: "1KVo5zza",
-        gameInfo: nil,
-        query: "modpack"
-    )
-    .environmentObject(GameRepository())
-    .frame(height: 600)
 }

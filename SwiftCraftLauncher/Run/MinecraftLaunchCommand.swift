@@ -91,8 +91,6 @@ struct MinecraftLaunchCommand {
         return replaceGameParameters(command: authReplacedCommand)
     }
 
-
-
     private func replaceGameParameters(command: [String]) -> [String] {
         let settings = GameSettingsManager.shared
 

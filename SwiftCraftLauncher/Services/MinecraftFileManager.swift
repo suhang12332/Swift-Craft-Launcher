@@ -58,13 +58,13 @@ class MinecraftFileManager {
     /// - Throws: GlobalError 当操作失败时
     func cleanupGameDirectories(gameName: String) throws {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
-        
+
         // 检查游戏文件夹是否存在
         guard fileManager.fileExists(atPath: profileDirectory.path) else {
             Logger.shared.debug("游戏文件夹不存在，无需清理: \(profileDirectory.path)")
             return
         }
-        
+
         do {
             try fileManager.removeItem(at: profileDirectory)
             Logger.shared.info("成功清理游戏文件夹: \(profileDirectory.path)")
