@@ -3,6 +3,13 @@ import Foundation
 enum PlayerSkinService {
 
     private static let cacheNamespace = "session_skin"
+    
+    // MARK: - Error Handling
+    private static func handleError(_ error: Error, operation: String) {
+        let globalError = GlobalError.from(error)
+        Logger.shared.error("\(operation) failed: \(globalError.chineseMessage)")
+        GlobalErrorHandler.shared.handle(globalError)
+    }
 
     struct PublicSkinInfo: Codable, Equatable {
         let skinURL: String?
@@ -43,11 +50,7 @@ enum PlayerSkinService {
 
     static func fetchPublicSkin(uuid: String) async -> PublicSkinInfo? {
         do { return try await fetchPublicSkinThrowing(uuid: uuid) } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error(
-                "Fetch Skin failed: \(globalError.chineseMessage)"
-            )
-            GlobalErrorHandler.shared.handle(globalError)
+            handleError(error, operation: "Fetch Skin")
 
             if let cached: PublicSkinInfo = AppCacheManager.shared.get(
                 namespace: cacheNamespace,
@@ -60,9 +63,7 @@ enum PlayerSkinService {
         }
     }
 
-    static func fetchPublicSkinThrowing(uuid: String) async throws
-        -> PublicSkinInfo
-    {
+    static func fetchPublicSkinThrowing(uuid: String) async throws -> PublicSkinInfo {
         let cleanUUID = uuid.replacingOccurrences(of: "-", with: "")
 
         if let cached: PublicSkinInfo = AppCacheManager.shared.get(
@@ -82,7 +83,7 @@ enum PlayerSkinService {
             )
         else {
             throw GlobalError.validation(
-                chineseMessage: "Invalid UUID: \(uuid)",
+                chineseMessage: "无效的UUID: \(uuid)",
                 i18nKey: "error.validation.invalid_uuid",
                 level: .silent
             )
@@ -91,7 +92,7 @@ enum PlayerSkinService {
         let (data, response) = try await URLSession.shared.data(from: url)
         guard let http = response as? HTTPURLResponse else {
             throw GlobalError.download(
-                chineseMessage: "Session Server invalid response",
+                chineseMessage: "会话服务器响应无效",
                 i18nKey: "error.download.session_invalid_response",
                 level: .silent
             )
@@ -101,13 +102,13 @@ enum PlayerSkinService {
             break
         case 404:
             throw GlobalError.resource(
-                chineseMessage: "Player not found or no skin: \(uuid)",
+                chineseMessage: "未找到玩家或没有皮肤: \(uuid)",
                 i18nKey: "error.resource.skin_player_not_found",
                 level: .silent
             )
         default:
             throw GlobalError.download(
-                chineseMessage: "Session Server error: HTTP \(http.statusCode)",
+                chineseMessage: "会话服务器错误: HTTP \(http.statusCode)",
                 i18nKey: "error.download.session_http_error",
                 level: .silent
             )
@@ -120,7 +121,7 @@ enum PlayerSkinService {
             })
         else {
             throw GlobalError.resource(
-                chineseMessage: "Missing textures property",
+                chineseMessage: "缺少纹理属性",
                 i18nKey: "error.resource.textures_property_missing",
                 level: .silent
             )
@@ -130,7 +131,7 @@ enum PlayerSkinService {
         guard let decodedData = Data(base64Encoded: texturesProperty.value)
         else {
             throw GlobalError.validation(
-                chineseMessage: "textures Base64 decode failed",
+                chineseMessage: "纹理Base64解码失败",
                 i18nKey: "error.validation.textures_base64_decode_failed",
                 level: .silent
             )
@@ -184,11 +185,7 @@ enum PlayerSkinService {
             )
             return true
         } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error(
-                "Upload skin failed: \(globalError.chineseMessage)"
-            )
-            GlobalErrorHandler.shared.handle(globalError)
+            handleError(error, operation: "Upload skin")
             return false
         }
     }
@@ -202,14 +199,14 @@ enum PlayerSkinService {
     ) async throws {
         guard player.isOnlineAccount else {
             throw GlobalError.validation(
-                chineseMessage: "Offline accounts do not support skin upload",
+                chineseMessage: "离线账户不支持皮肤上传",
                 i18nKey: "error.validation.offline_skin_upload_not_supported",
                 level: .notification
             )
         }
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
-                chineseMessage: "Missing access token, please log in again",
+                chineseMessage: "缺少访问令牌，请重新登录",
                 i18nKey: "error.authentication.missing_token",
                 level: .popup
             )
@@ -220,8 +217,7 @@ enum PlayerSkinService {
         func appendField(name: String, value: String) {
             if let fieldData =
                 "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(name)\"\r\n\r\n\(value)\r\n"
-                .data(using: .utf8)
-            {
+                .data(using: .utf8) {
                 body.append(fieldData)
             }
         }
@@ -273,7 +269,7 @@ enum PlayerSkinService {
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else {
             throw GlobalError.network(
-                chineseMessage: "Upload skin failed: Invalid response",
+                chineseMessage: "皮肤上传失败: 响应无效",
                 i18nKey: "error.network.skin_upload_invalid_response",
                 level: .notification
             )
@@ -291,26 +287,26 @@ enum PlayerSkinService {
             return
         case 400:
             throw GlobalError.validation(
-                chineseMessage: "Invalid skin file",
+                chineseMessage: "无效的皮肤文件",
                 i18nKey: "error.validation.skin_invalid_file",
                 level: .notification
             )
         case 401:
             throw GlobalError.authentication(
                 chineseMessage:
-                    "Invalid or expired access token, please log in again",
+                    "访问令牌无效或已过期，请重新登录",
                 i18nKey: "error.authentication.token_invalid_or_expired",
                 level: .popup
             )
         case 403:
             throw GlobalError.authentication(
-                chineseMessage: "No permission to upload skin (403)",
+                chineseMessage: "没有上传皮肤的权限 (403)",
                 i18nKey: "error.authentication.skin_upload_forbidden",
                 level: .notification
             )
         case 429:
             throw GlobalError.network(
-                chineseMessage: "Too many requests, please try again later",
+                chineseMessage: "请求过于频繁，请稍后再试",
                 i18nKey: "error.network.rate_limited",
                 level: .notification
             )
@@ -318,7 +314,7 @@ enum PlayerSkinService {
             let bodyText = String(data: data, encoding: .utf8) ?? ""
             throw GlobalError.network(
                 chineseMessage:
-                    "Upload skin failed: HTTP \(http.statusCode) \(bodyText)",
+                    "皮肤上传失败: HTTP \(http.statusCode) \(bodyText)",
                 i18nKey: "error.network.skin_upload_http_error",
                 level: .notification
             )
@@ -331,11 +327,7 @@ enum PlayerSkinService {
             try await resetSkinThrowing(player: player)
             return true
         } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error(
-                "Reset skin failed: \(globalError.chineseMessage)"
-            )
-            GlobalErrorHandler.shared.handle(globalError)
+            handleError(error, operation: "Reset skin")
             return false
         }
     }
@@ -345,35 +337,29 @@ enum PlayerSkinService {
     /// - Parameter player: Current online player
     /// - Returns: Profile with cape information or nil if failed
     static func fetchPlayerProfile(player: Player) async
-        -> MinecraftProfileResponse?
-    {
+        -> MinecraftProfileResponse? {
         do {
             return try await fetchPlayerProfileThrowing(player: player)
         } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error(
-                "Fetch player profile failed: \(globalError.chineseMessage)"
-            )
-            GlobalErrorHandler.shared.handle(globalError)
+            handleError(error, operation: "Fetch player profile")
             return nil
         }
     }
 
     /// Get player profile with capes information (throwing version)
     static func fetchPlayerProfileThrowing(player: Player) async throws
-        -> MinecraftProfileResponse
-    {
+        -> MinecraftProfileResponse {
         guard player.isOnlineAccount else {
             throw GlobalError.validation(
                 chineseMessage:
-                    "Offline accounts do not support profile fetching",
+                    "离线账户不支持获取个人资料",
                 i18nKey: "error.validation.offline_profile_fetch_not_supported",
                 level: .notification
             )
         }
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
-                chineseMessage: "Access token missing, please log in again",
+                chineseMessage: "缺少访问令牌，请重新登录",
                 i18nKey: "error.authentication.missing_token",
                 level: .popup
             )
@@ -391,7 +377,7 @@ enum PlayerSkinService {
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else {
             throw GlobalError.network(
-                chineseMessage: "Get profile failed: Invalid response",
+                chineseMessage: "获取个人资料失败: 响应无效",
                 i18nKey: "error.network.profile_invalid_response",
                 level: .notification
             )
@@ -402,13 +388,13 @@ enum PlayerSkinService {
         case 401:
             throw GlobalError.authentication(
                 chineseMessage:
-                    "Invalid or expired access token, please log in again",
+                    "访问令牌无效或已过期，请重新登录",
                 i18nKey: "error.authentication.token_invalid_or_expired",
                 level: .popup
             )
         default:
             throw GlobalError.network(
-                chineseMessage: "Get profile failed: HTTP \(http.statusCode)",
+                chineseMessage: "获取个人资料失败: HTTP \(http.statusCode)",
                 i18nKey: "error.network.profile_http_error",
                 level: .notification
             )
@@ -439,11 +425,7 @@ enum PlayerSkinService {
             try await showCapeThrowing(capeId: capeId, player: player)
             return true
         } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error(
-                "Show cape failed: \(globalError.chineseMessage)"
-            )
-            GlobalErrorHandler.shared.handle(globalError)
+            handleError(error, operation: "Show cape")
             return false
         }
     }
@@ -451,17 +433,9 @@ enum PlayerSkinService {
     /// Show/equip a cape (throwing version)
     /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#show-cape specification
     static func showCapeThrowing(capeId: String, player: Player) async throws {
-        guard player.isOnlineAccount else {
-            throw GlobalError.validation(
-                chineseMessage:
-                    "Offline accounts do not support cape switching",
-                i18nKey: "error.validation.offline_cape_switch_not_supported",
-                level: .notification
-            )
-        }
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
-                chineseMessage: "Access token missing, please log in again",
+                chineseMessage: "缺少访问令牌，请重新登录",
                 i18nKey: "error.authentication.missing_token",
                 level: .popup
             )
@@ -485,7 +459,7 @@ enum PlayerSkinService {
         let (_, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else {
             throw GlobalError.network(
-                chineseMessage: "Show cape failed: Invalid response",
+                chineseMessage: "显示斗篷失败: 响应无效",
                 i18nKey: "error.network.cape_show_invalid_response",
                 level: .notification
             )
@@ -500,32 +474,32 @@ enum PlayerSkinService {
             Logger.shared.info("Cape \(capeId) equipped successfully")
         case 400:
             throw GlobalError.validation(
-                chineseMessage: "Invalid cape ID or request",
+                chineseMessage: "无效的斗篷ID或请求",
                 i18nKey: "error.validation.cape_invalid_id",
                 level: .notification
             )
         case 401:
             throw GlobalError.authentication(
                 chineseMessage:
-                    "Invalid or expired access token, please log in again",
+                    "访问令牌无效或已过期，请重新登录",
                 i18nKey: "error.authentication.token_invalid_or_expired",
                 level: .popup
             )
         case 403:
             throw GlobalError.authentication(
-                chineseMessage: "No permission to equip cape (403)",
+                chineseMessage: "没有装备斗篷的权限 (403)",
                 i18nKey: "error.authentication.cape_equip_forbidden",
                 level: .notification
             )
         case 404:
             throw GlobalError.resource(
-                chineseMessage: "Cape not found or not owned",
+                chineseMessage: "未找到斗篷或未拥有",
                 i18nKey: "error.resource.cape_not_found",
                 level: .notification
             )
         default:
             throw GlobalError.network(
-                chineseMessage: "Show cape failed: HTTP \(http.statusCode)",
+                chineseMessage: "显示斗篷失败: HTTP \(http.statusCode)",
                 i18nKey: "error.network.cape_show_http_error",
                 level: .notification
             )
@@ -540,11 +514,7 @@ enum PlayerSkinService {
             try await hideCapeThrowing(player: player)
             return true
         } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error(
-                "Hide cape failed: \(globalError.chineseMessage)"
-            )
-            GlobalErrorHandler.shared.handle(globalError)
+            handleError(error, operation: "Hide cape")
             return false
         }
     }
@@ -554,14 +524,14 @@ enum PlayerSkinService {
     static func hideCapeThrowing(player: Player) async throws {
         guard player.isOnlineAccount else {
             throw GlobalError.validation(
-                chineseMessage: "Offline accounts do not support cape hiding",
+                chineseMessage: "离线账户不支持隐藏斗篷",
                 i18nKey: "error.validation.offline_cape_hide_not_supported",
                 level: .notification
             )
         }
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
-                chineseMessage: "Access token missing, please log in again",
+                chineseMessage: "缺少访问令牌，请重新登录",
                 i18nKey: "error.authentication.missing_token",
                 level: .popup
             )
@@ -580,7 +550,7 @@ enum PlayerSkinService {
         let (_, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else {
             throw GlobalError.network(
-                chineseMessage: "Hide cape failed: Invalid response",
+                chineseMessage: "隐藏斗篷失败: 响应无效",
                 i18nKey: "error.network.cape_hide_invalid_response",
                 level: .notification
             )
@@ -596,13 +566,13 @@ enum PlayerSkinService {
         case 401:
             throw GlobalError.authentication(
                 chineseMessage:
-                    "Invalid or expired access token, please log in again",
+                    "访问令牌无效或已过期，请重新登录",
                 i18nKey: "error.authentication.token_invalid_or_expired",
                 level: .popup
             )
         default:
             throw GlobalError.network(
-                chineseMessage: "Hide cape failed: HTTP \(http.statusCode)",
+                chineseMessage: "隐藏斗篷失败: HTTP \(http.statusCode)",
                 i18nKey: "error.network.cape_hide_http_error",
                 level: .notification
             )
@@ -612,14 +582,14 @@ enum PlayerSkinService {
     static func resetSkinThrowing(player: Player) async throws {
         guard player.isOnlineAccount else {
             throw GlobalError.validation(
-                chineseMessage: "Offline accounts do not support skin reset",
+                chineseMessage: "离线账户不支持皮肤重置",
                 i18nKey: "error.validation.offline_skin_reset_not_supported",
                 level: .notification
             )
         }
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
-                chineseMessage: "Access token missing, please log in again",
+                chineseMessage: "缺少访问令牌，请重新登录",
                 i18nKey: "error.authentication.missing_token",
                 level: .popup
             )
@@ -635,7 +605,7 @@ enum PlayerSkinService {
         let (_, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else {
             throw GlobalError.network(
-                chineseMessage: "Reset skin failed: Invalid response",
+                chineseMessage: "重置皮肤失败: 响应无效",
                 i18nKey: "error.network.skin_reset_invalid_response",
                 level: .notification
             )
@@ -650,13 +620,13 @@ enum PlayerSkinService {
         case 401:
             throw GlobalError.authentication(
                 chineseMessage:
-                    "Invalid or expired access token, please log in again",
+                    "访问令牌无效或已过期，请重新登录",
                 i18nKey: "error.authentication.token_invalid_or_expired",
                 level: .popup
             )
         default:
             throw GlobalError.network(
-                chineseMessage: "Reset skin failed: HTTP \(http.statusCode)",
+                chineseMessage: "重置皮肤失败: HTTP \(http.statusCode)",
                 i18nKey: "error.network.skin_reset_http_error",
                 level: .notification
             )
