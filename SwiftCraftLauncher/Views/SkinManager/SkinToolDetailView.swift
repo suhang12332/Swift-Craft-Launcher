@@ -4,8 +4,9 @@ import UniformTypeIdentifiers
 
 struct SkinToolDetailView: View {
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.dismiss)
+    private var dismiss
+
     @State private var currentModel: SkinModelType = .classic
     @State private var showingFileImporter = false
     @State private var operationInProgress = false
@@ -37,12 +38,12 @@ struct SkinToolDetailView: View {
             loadData()
         }
     }
-    
+
     private var headerView: some View {
         Text("skin.manager".localized()).font(.headline)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
+
     private var bodyContentView: some View {
         Group {
             if isLoading {
@@ -58,12 +59,12 @@ struct SkinToolDetailView: View {
             }
         }
     }
-    
+
     private var footerView: some View {
         HStack {
             Button("skin.cancel".localized()) { dismiss() }.keyboardShortcut(.cancelAction)
             Spacer()
-            
+
             if !isLoading {
                 HStack(spacing: 12) {
                     if resolvedPlayer?.isOnlineAccount == true {
@@ -76,7 +77,7 @@ struct SkinToolDetailView: View {
             }
         }
     }
-    
+
     private var playerSection: some View {
         VStack(spacing: 16) {
             if let player = resolvedPlayer {
@@ -121,7 +122,7 @@ struct SkinToolDetailView: View {
             skinDropArea
         }
     }
-    
+
     private var skinDropArea: some View {
         Group {
             if let image = selectedSkinImage {
@@ -133,7 +134,7 @@ struct SkinToolDetailView: View {
         .onTapGesture { if selectedSkinData == nil { showingFileImporter = true } }
         .onDrop(of: [UTType.image.identifier], isTargeted: nil) { handleDrop($0) }
     }
-    
+
     private func selectedSkinView(image: NSImage) -> some View {
         HStack(spacing: 12) {
             Image(nsImage: image)
@@ -152,7 +153,7 @@ struct SkinToolDetailView: View {
         .padding(12)
         .background(selectedSkinBackground)
     }
-    
+
     private var emptyDropArea: some View {
         VStack(spacing: 12) {
             Image(systemName: "square.and.arrow.up")
@@ -163,7 +164,7 @@ struct SkinToolDetailView: View {
         .frame(maxWidth: .infinity, minHeight: 80)
         .background(emptyDropBackground)
     }
-    
+
     private var selectedSkinBackground: some View {
         RoundedRectangle(cornerRadius: 8)
             .fill(Color.accentColor.opacity(0.08))
@@ -172,7 +173,7 @@ struct SkinToolDetailView: View {
                     .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
             )
     }
-    
+
     private var emptyDropBackground: some View {
         RoundedRectangle(cornerRadius: 8)
             .fill(Color.gray.opacity(0.05))
@@ -186,7 +187,7 @@ struct SkinToolDetailView: View {
     private var capeSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("skin.cape".localized()).font(.headline)
-            
+
             if let playerProfile = playerProfile, let capes = playerProfile.capes, !capes.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
@@ -206,7 +207,7 @@ struct SkinToolDetailView: View {
 
     private func capeOption(id: String?, name: String, imageURL: String? = nil, isSystemOption: Bool = false) -> some View {
         let isSelected = selectedCapeId == id
-        
+
         return Button { selectedCapeId = id } label: {
             VStack(spacing: 6) {
                 capeIconContainer(isSelected: isSelected, imageURL: imageURL, isSystemOption: isSystemOption)
@@ -215,7 +216,7 @@ struct SkinToolDetailView: View {
             }
         }.buttonStyle(.plain)
     }
-    
+
     private func capeIconContainer(isSelected: Bool, imageURL: String?, isSystemOption: Bool) -> some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
@@ -226,7 +227,7 @@ struct SkinToolDetailView: View {
                         .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.3),
                                lineWidth: isSelected ? 2 : 1)
                 )
-            
+
             if let imageURL = imageURL {
                 CapeTextureView(imageURL: imageURL)
                     .frame(width: 42, height: 62).clipped().cornerRadius(6)
@@ -235,32 +236,32 @@ struct SkinToolDetailView: View {
             }
         }
     }
-    
+
     private var resolvedPlayer: Player? { playerListViewModel.currentPlayer }
-    
+
     private var hasChanges: Bool {
         let hasSkinData = selectedSkinData != nil
         let hasCapeChange = selectedCapeId != currentActiveCapeId
         let hasModelChange = currentModel != originalModel
-        
+
         Logger.shared.info("hasChanges check: skinData=\(hasSkinData), capeChange=\(hasCapeChange), modelChange=\(hasModelChange) (current=\(currentModel), original=\(originalModel))")
-        
+
         return hasSkinData || hasCapeChange || hasModelChange
     }
-    
+
     private var currentActiveCapeId: String? {
         playerProfile?.capes?.first { $0.state == "ACTIVE" }?.id
     }
-    
+
     private var originalModel: SkinModelType {
         guard let model = publicSkinInfo?.model else { return .classic }
         return model == .classic ? .classic : .slim
     }
-    
+
     private var currentSkinModel: PlayerSkinService.PublicSkinInfo.SkinModel {
         currentModel == .classic ? .classic : .slim
     }
-    
+
     private func loadData() {
         guard let player = resolvedPlayer else { 
             Logger.shared.warning("No player selected for skin manager")
@@ -269,16 +270,16 @@ struct SkinToolDetailView: View {
         }
 
         Logger.shared.info("Loading skin data for player: \(player.name)")
-        
+
         Task {
             async let skinInfo = PlayerSkinService.fetchPublicSkin(uuid: player.id)
             async let profile = PlayerSkinService.fetchPlayerProfile(player: player)
             
             let (skin, playerProfile) = await (skinInfo, profile)
-            
+
             Logger.shared.info("Loaded skin info: \(skin != nil ? "success" : "failed")")
             Logger.shared.info("Loaded player profile: \(playerProfile != nil ? "success" : "failed")")
-            
+
             if let profile = playerProfile {
                 Logger.shared.info("Player has \(profile.capes?.count ?? 0) capes")
             }
@@ -298,14 +299,14 @@ struct SkinToolDetailView: View {
             }
         }
     }
-    
+
     private func handleFileSelection(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):
             guard let url = urls.first,
                   url.startAccessingSecurityScopedResource() else { return }
             defer { url.stopAccessingSecurityScopedResource() }
-            
+
             do {
                 let data = try Data(contentsOf: url)
                 processSkinData(data)
@@ -316,10 +317,10 @@ struct SkinToolDetailView: View {
             Logger.shared.error("File selection failed: \(error)")
         }
     }
-    
+
     private func handleDrop(_ providers: [NSItemProvider]) -> Bool {
         guard let provider = providers.first else { return false }
-        
+
         provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, error in
             guard let data = data else { return }
             DispatchQueue.main.async {
@@ -328,26 +329,26 @@ struct SkinToolDetailView: View {
         }
         return true
     }
-    
+
     private func processSkinData(_ data: Data) {
         guard data.isPNG else { return }
         selectedSkinData = data
         selectedSkinImage = NSImage(data: data)
     }
-    
+
     private func clearSelectedSkin() {
         selectedSkinData = nil
         selectedSkinImage = nil
     }
-    
+
     private func resetSkin() {
         guard let player = resolvedPlayer else { return }
-        
+
         operationInProgress = true
         isLoading = true
         Task {
             let success = await PlayerSkinService.resetSkin(player: player)
-            
+
             await MainActor.run {
                 operationInProgress = false
                 if success {
@@ -360,14 +361,14 @@ struct SkinToolDetailView: View {
             }
         }
     }
-    
+
     private func refreshPlayerSkinInList() {
         guard let player = resolvedPlayer else { return }
-        
+
         Task {
             if let skinInfo = await PlayerSkinService.fetchPublicSkin(uuid: player.id) {
                 Logger.shared.info("Refreshing player skin: oldURL=\(player.avatarName), newURL=\(skinInfo.skinURL ?? "")")
-                
+
                 let updatedPlayer = try Player(
                     name: player.name,
                     uuid: player.id,
@@ -382,7 +383,7 @@ struct SkinToolDetailView: View {
                     isCurrent: player.isCurrent,
                     gameRecords: player.gameRecords
                 )
-                
+
                 await MainActor.run {
                     playerListViewModel.updatePlayerInList(updatedPlayer)
                     Logger.shared.info("Player skin updated in list")
@@ -392,15 +393,15 @@ struct SkinToolDetailView: View {
             }
         }
     }
-    
+
     private func applyChanges() {
         guard let player = resolvedPlayer else { return }
-        
+
         operationInProgress = true
         Task {
             let skinSuccess = await handleSkinChanges(player: player)
             let capeSuccess = await handleCapeChanges(player: player)
-            
+
             await MainActor.run {
                 operationInProgress = false
                 if skinSuccess && capeSuccess {
@@ -412,13 +413,13 @@ struct SkinToolDetailView: View {
             }
         }
     }
-    
+
     private func handleSkinChanges(player: Player) async -> Bool {
         Logger.shared.info("handleSkinChanges: currentModel=\(currentModel), originalModel=\(originalModel)")
         Logger.shared.info("selectedSkinData: \(selectedSkinData != nil ? "has data" : "nil")")
         Logger.shared.info("publicSkinInfo: \(publicSkinInfo != nil ? "has info" : "nil")")
         Logger.shared.info("skinURL: \(publicSkinInfo?.skinURL ?? "nil")")
-        
+
         if let skinData = selectedSkinData {
             Logger.shared.info("Uploading new skin with model: \(currentSkinModel)")
             let result = await PlayerSkinService.uploadSkin(
@@ -443,7 +444,7 @@ struct SkinToolDetailView: View {
         Logger.shared.info("No skin changes needed")
         return true // No skin changes needed
     }
-    
+
     private func handleCapeChanges(player: Player) async -> Bool {
         if selectedCapeId != currentActiveCapeId {
             if let capeId = selectedCapeId {
@@ -454,7 +455,7 @@ struct SkinToolDetailView: View {
         }
         return true // No cape changes needed
     }
-    
+
     private func uploadCurrentSkinWithNewModel(skinURL: String, player: Player) async -> Bool {
         do {
             Logger.shared.info("uploadCurrentSkinWithNewModel: skinURL=\(skinURL), model=\(currentSkinModel)")
@@ -464,7 +465,7 @@ struct SkinToolDetailView: View {
             }
             let (data, _) = try await URLSession.shared.data(from: url)
             Logger.shared.info("Downloaded skin data: \(data.count) bytes")
-            
+
             let result = await PlayerSkinService.uploadSkin(
                 imageData: data,
                 model: currentSkinModel,
@@ -499,14 +500,14 @@ struct CapeTextureView: View {
                     let containerHeight = geometry.size.height
                     let capeAspectRatio: CGFloat = 10.0 / 16.0
                     let containerAspectRatio = containerWidth / containerHeight
-                    
+
                     let scale: CGFloat = containerAspectRatio > capeAspectRatio 
                         ? containerHeight / 16.0 
                         : containerWidth / 10.0
-                    
+
                     let offsetX = (containerWidth - 10.0 * scale) / 2.0 - 1.0 * scale
                     let offsetY = (containerHeight - 16.0 * scale) / 2.0 - 1.0 * scale
-                    
+
                     return image
                         .resizable().interpolation(.none)
                         .frame(width: 64.0 * scale, height: 32.0 * scale)
