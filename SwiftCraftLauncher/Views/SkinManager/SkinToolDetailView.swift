@@ -17,13 +17,11 @@ struct SkinToolDetailView: View {
     @State private var playerProfile: MinecraftProfileResponse?
     @State private var isLoading = true
     @State private var hasChanges = false
-    
     // 缓存之前的值，避免不必要的计算
     @State private var lastSelectedSkinData: Data?
     @State private var lastCurrentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
     @State private var lastSelectedCapeId: String?
     @State private var lastCurrentActiveCapeId: String?
-
 
     var body: some View {
         CommonSheetView(
@@ -100,7 +98,7 @@ struct SkinToolDetailView: View {
 
                         Toggle(isOn: Binding(
                             get: { currentModel == .slim },
-                            set: { 
+                            set: {
                                 currentModel = $0 ? .slim : .classic
                                 updateHasChanges()
                             }
@@ -117,8 +115,11 @@ struct SkinToolDetailView: View {
                     }
                 }
             } else {
-                ContentUnavailableView("skin.no_player".localized(), systemImage: "person",
-                    description: Text("skin.add_player_first".localized()))
+                ContentUnavailableView(
+                    "skin.no_player".localized(),
+                    systemImage: "person",
+                    description: Text("skin.add_player_first".localized())
+                )
             }
         }.frame(width: 280)
     }
@@ -145,10 +146,11 @@ struct SkinToolDetailView: View {
     private func selectedSkinView(image: NSImage) -> some View {
         HStack(spacing: 12) {
             Image(nsImage: image)
-                .resizable().interpolation(.none)
+                .resizable()
+                .interpolation(.none)
                 .frame(width: 48, height: 48)
-                .background(Color.gray.opacity(0.1)).cornerRadius(6)
-            
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(6)
             VStack(alignment: .leading, spacing: 4) {
                 Text("skin.selected".localized()).font(.callout).fontWeight(.medium)
                 Text("skin.click_apply".localized()).font(.caption).foregroundColor(.secondary)
@@ -206,7 +208,8 @@ struct SkinToolDetailView: View {
                 }
             } else {
                 Text("skin.no_capes_available".localized())
-                    .font(.callout).foregroundStyle(.secondary)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
@@ -215,13 +218,15 @@ struct SkinToolDetailView: View {
     private func capeOption(id: String?, name: String, imageURL: String? = nil, isSystemOption: Bool = false) -> some View {
         let isSelected = selectedCapeId == id
 
-        return Button { 
+        return Button {
             selectedCapeId = id
             updateHasChanges()
         } label: {
             VStack(spacing: 6) {
                 capeIconContainer(isSelected: isSelected, imageURL: imageURL, isSystemOption: isSystemOption)
-                Text(name).font(.caption).lineLimit(1)
+                Text(name)
+                    .font(.caption)
+                    .lineLimit(1)
                     .foregroundColor(isSelected ? .accentColor : .primary)
             }
         }.buttonStyle(.plain)
@@ -234,8 +239,10 @@ struct SkinToolDetailView: View {
                 .frame(width: 50, height: 70)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(isSelected ? Color.accentColor : Color.gray.opacity(0.3),
-                               lineWidth: isSelected ? 2 : 1)
+                        .stroke(
+                            isSelected ? Color.accentColor : Color.gray.opacity(0.3),
+                            lineWidth: isSelected ? 2 : 1
+                        )
                 )
 
             if let imageURL = imageURL {
@@ -255,18 +262,18 @@ struct SkinToolDetailView: View {
         let modelChanged = currentModel != lastCurrentModel
         let capeIdChanged = selectedCapeId != lastSelectedCapeId
         let activeCapeIdChanged = currentActiveCapeId != lastCurrentActiveCapeId
-        
+
         // 如果没有任何变化，直接返回
         if !skinDataChanged && !modelChanged && !capeIdChanged && !activeCapeIdChanged {
             return
         }
-        
+
         // 更新缓存的值
         lastSelectedSkinData = selectedSkinData
         lastCurrentModel = currentModel
         lastSelectedCapeId = selectedCapeId
         lastCurrentActiveCapeId = currentActiveCapeId
-        
+
         let hasSkinChange = PlayerSkinService.hasSkinChanges(
             selectedSkinData: selectedSkinData,
             currentModel: currentModel,
@@ -289,7 +296,7 @@ struct SkinToolDetailView: View {
     }
 
     private func loadData() {
-        guard let player = resolvedPlayer else { 
+        guard let player = resolvedPlayer else {
             Logger.shared.warning("No player selected for skin manager")
             isLoading = false
             return
@@ -298,7 +305,7 @@ struct SkinToolDetailView: View {
         Task {
             async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: player)
             async let profile = PlayerSkinService.fetchPlayerProfile(player: player)
-            
+
             let (skin, playerProfile) = await (skinInfo, profile)
 
             await MainActor.run {
@@ -337,7 +344,7 @@ struct SkinToolDetailView: View {
     private func handleDrop(_ providers: [NSItemProvider]) -> Bool {
         guard let provider = providers.first else { return false }
 
-        provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, error in
+        provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in
             guard let data = data else { return }
             DispatchQueue.main.async {
                 self.processSkinData(data)
@@ -378,7 +385,6 @@ struct SkinToolDetailView: View {
             }
         }
     }
-
 
     private func applyChanges() {
         guard let player = resolvedPlayer else { return }
@@ -435,10 +441,10 @@ struct SkinToolDetailView: View {
         do {
             // 将HTTP URL转换为HTTPS以符合ATS策略
             let httpsURL = skinURL.httpToHttps()
-            
-            guard let url = URL(string: httpsURL) else { 
+
+            guard let url = URL(string: httpsURL) else {
                 Logger.shared.error("Invalid skin URL: \(httpsURL)")
-                return false 
+                return false
             }
             let (data, _) = try await URLSession.shared.data(from: url)
 
@@ -476,19 +482,21 @@ struct CapeTextureView: View {
                     let capeAspectRatio: CGFloat = 10.0 / 16.0
                     let containerAspectRatio = containerWidth / containerHeight
 
-                    let scale: CGFloat = containerAspectRatio > capeAspectRatio 
-                        ? containerHeight / 16.0 
+                    let scale: CGFloat = containerAspectRatio > capeAspectRatio
+                        ? containerHeight / 16.0
                         : containerWidth / 10.0
 
                     let offsetX = (containerWidth - 10.0 * scale) / 2.0 - 1.0 * scale
                     let offsetY = (containerHeight - 16.0 * scale) / 2.0 - 1.0 * scale
 
                     return image
-                        .resizable().interpolation(.none)
+                        .resizable()
+                        .interpolation(.none)
                         .frame(width: 64.0 * scale, height: 32.0 * scale)
-                        .offset(x: offsetX, y: offsetY).clipped()
+                        .offset(x: offsetX, y: offsetY)
+                        .clipped()
                 }
-            case .failure(_):
+            case .failure:
                 Image(systemName: "photo").font(.system(size: 16)).foregroundColor(.secondary)
             @unknown default:
                 Image(systemName: "photo").font(.system(size: 16)).foregroundColor(.secondary)

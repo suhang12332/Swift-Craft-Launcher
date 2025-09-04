@@ -7,18 +7,19 @@ class PlayerListViewModel: ObservableObject {
     @Published var currentPlayer: Player?
 
     private let dataManager = PlayerDataManager()
+    private var notificationObserver: NSObjectProtocol?
 
     init() {
         loadPlayersSafely()
         setupNotifications()
     }
-    
     deinit {
-        NotificationCenter.default.removeObserver(self)
+        if let observer = notificationObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
-    
     private func setupNotifications() {
-        NotificationCenter.default.addObserver(
+        notificationObserver = NotificationCenter.default.addObserver(
             forName: PlayerSkinService.playerUpdatedNotification,
             object: nil,
             queue: .main
@@ -214,7 +215,6 @@ class PlayerListViewModel: ObservableObject {
         } else {
             Logger.shared.info("  - 当前玩家: 无")
         }
-        
         // 注意：数据管理器已在 PlayerSkinService 中更新，这里只更新内存中的状态
 
         // 更新本地玩家列表
@@ -233,6 +233,4 @@ class PlayerListViewModel: ObservableObject {
             Logger.shared.debug("玩家列表中的玩家信息已更新: \(updatedPlayer.name)")
         }
     }
-
-
 }

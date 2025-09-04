@@ -1,10 +1,11 @@
 import Foundation
 
 enum PlayerSkinService {
-    
+
     // MARK: - Notification System
+
     static let playerUpdatedNotification = Notification.Name("PlayerUpdated")
-    
+
     private static func notifyPlayerUpdated(_ updatedPlayer: Player) {
         NotificationCenter.default.post(
             name: playerUpdatedNotification,
@@ -19,9 +20,8 @@ enum PlayerSkinService {
         Logger.shared.error("\(operation) failed: \(globalError.chineseMessage)")
         GlobalErrorHandler.shared.handle(globalError)
     }
-    
+
     // MARK: - Common Error Helpers
-    
     private static func validateAccessToken(_ player: Player) throws {
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
@@ -31,7 +31,7 @@ enum PlayerSkinService {
             )
         }
     }
-    
+
     private static func handleHTTPError(_ http: HTTPURLResponse, operation: String) throws {
         switch http.statusCode {
         case 400:
@@ -82,9 +82,6 @@ enum PlayerSkinService {
         enum SkinModel: String, Codable, CaseIterable { case classic, slim }
     }
 
-
-    
-
     /// 更新玩家皮肤信息到数据管理器
     /// - Parameters:
     ///   - uuid: 玩家UUID
@@ -94,12 +91,12 @@ enum PlayerSkinService {
         do {
             let dataManager = PlayerDataManager()
             let players = try dataManager.loadPlayersThrowing()
-            
+
             guard let player = players.first(where: { $0.id == uuid }) else {
                 Logger.shared.warning("Player not found for UUID: \(uuid)")
                 return false
             }
-            
+
             // 创建更新后的玩家对象
             let updatedPlayer = try Player(
                 name: player.name,
@@ -115,56 +112,54 @@ enum PlayerSkinService {
                 isCurrent: player.isCurrent,
                 gameRecords: player.gameRecords
             )
-            
+
             // 使用 dataManager 更新数据
             try dataManager.updatePlayer(updatedPlayer)
-            
+
             // 通知ViewModel更新当前玩家
             notifyPlayerUpdated(updatedPlayer)
-            
+
             return true
         } catch {
             Logger.shared.error("Failed to update player skin info: \(error.localizedDescription)")
             return false
         }
     }
-    
+
     /// 使用 Minecraft Services API 获取当前玩家的皮肤信息（更准确，无缓存延迟）
     /// - Parameter player: 玩家信息
     /// - Returns: 皮肤信息，如果获取失败返回nil
     static func fetchCurrentPlayerSkinFromServices(player: Player) async -> PublicSkinInfo? {
         do {
             let profile = try await fetchPlayerProfileThrowing(player: player)
-            
+
             // 从 Minecraft Services API 响应中提取皮肤信息
             guard !profile.skins.isEmpty else {
                 Logger.shared.warning("玩家没有皮肤信息")
                 return nil
             }
-            
+
             // 找到当前激活的皮肤
             let activeSkin = profile.skins.first { $0.state == "ACTIVE" } ?? profile.skins.first
-            
+
             guard let skin = activeSkin else {
                 Logger.shared.warning("没有找到激活的皮肤")
                 return nil
             }
-            
+
             let skinInfo = PublicSkinInfo(
                 skinURL: skin.url,
                 model: skin.variant == "SLIM" ? .slim : .classic,
                 capeURL: nil, // Minecraft Services API 不直接提供斗篷信息
                 fetchedAt: Date()
             )
-            
+
             return skinInfo
-            
         } catch {
             Logger.shared.error("从 Minecraft Services API 获取皮肤信息失败: \(error.localizedDescription)")
             return nil
         }
     }
-
 
     // MARK: - Upload Skin (multipart/form-data)
     /// Upload (silent version)
@@ -190,15 +185,15 @@ enum PlayerSkinService {
             return false
         }
     }
-    
+
     /// 刷新皮肤信息（公共方法）
     /// - Parameter player: 玩家信息
     private static func refreshSkinInfo(player: Player) async {
         if let newSkinInfo = await fetchCurrentPlayerSkinFromServices(player: player) {
-            await updatePlayerSkinInfo(uuid: player.id, skinInfo: newSkinInfo)
+            _ = await updatePlayerSkinInfo(uuid: player.id, skinInfo: newSkinInfo)
         }
     }
-    
+
     /// 处理皮肤上传后的完整流程（包括数据更新和通知）
     /// - Parameters:
     ///   - imageData: 皮肤图片数据
@@ -216,7 +211,7 @@ enum PlayerSkinService {
         }
         return success
     }
-    
+
     /// 重置皮肤并刷新数据
     /// - Parameter player: 玩家信息
     /// - Returns: 是否成功
@@ -291,7 +286,7 @@ enum PlayerSkinService {
         request.httpBody = body
         request.timeoutInterval = 30
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse else {
             throw GlobalError.network(
                 chineseMessage: "皮肤上传失败: 响应无效",
@@ -325,14 +320,14 @@ enum PlayerSkinService {
     }
 
     // MARK: - Common Helper Methods
-    
+
     /// 获取当前激活的披风ID
     /// - Parameter profile: 玩家配置文件
     /// - Returns: 激活的披风ID，如果没有则返回nil
     static func getActiveCapeId(from profile: MinecraftProfileResponse?) -> String? {
         return profile?.capes?.first { $0.state == "ACTIVE" }?.id
     }
-    
+
     /// 检查是否有皮肤变化
     /// - Parameters:
     ///   - selectedSkinData: 选中的皮肤数据
@@ -348,20 +343,20 @@ enum PlayerSkinService {
         if selectedSkinData != nil {
             return true
         }
-        
+
         // 如果没有原始模型信息（没有现有皮肤），但当前模型不是默认的classic，则有变化
         if originalModel == nil && currentModel != .classic {
             return true
         }
-        
+
         // 如果有原始模型信息，比较当前模型和原始模型
         if let original = originalModel {
             return currentModel != original
         }
-        
+
         return false
     }
-    
+
     /// 检查是否有披风变化
     /// - Parameters:
     ///   - selectedCapeId: 选中的披风ID
