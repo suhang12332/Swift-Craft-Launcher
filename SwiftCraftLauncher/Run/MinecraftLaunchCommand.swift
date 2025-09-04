@@ -123,24 +123,7 @@ struct MinecraftLaunchCommand {
         process.arguments = command
         process.currentDirectoryURL = gameWorkingDirectory
 
-        // 存储进程到管理器
-        GameProcessManager.shared.storeProcess(gameId: game.id, process: process)
-
-        _ = await MainActor.run {
-            GameStatusManager.shared.setGameRunning(gameId: game.id, isRunning: true)
-        }
-
-        do {
-            try process.run()
-        } catch {
-            Logger.shared.error("启动进程失败: \(error.localizedDescription)")
-            throw GlobalError.gameLaunch(
-                chineseMessage: "启动游戏进程失败: \(error.localizedDescription)",
-                i18nKey: "error.game_launch.process_failed",
-                level: .popup
-            )
-        }
-
+        // 设置进程终止处理器（在启动前设置）
         let gameId = game.id
         process.terminationHandler = { _ in
             Task { @MainActor in
@@ -148,6 +131,32 @@ struct MinecraftLaunchCommand {
                 // 清理进程管理器中的进程
                 GameProcessManager.shared.cleanupTerminatedProcesses()
             }
+        }
+
+        // 存储进程到管理器
+        GameProcessManager.shared.storeProcess(gameId: game.id, process: process)
+
+        do {
+            try process.run()
+            
+            // 进程启动后立即设置状态为运行中
+            _ = await MainActor.run {
+                GameStatusManager.shared.setGameRunning(gameId: game.id, isRunning: true)
+            }
+        } catch {
+            Logger.shared.error("启动进程失败: \(error.localizedDescription)")
+            
+            // 启动失败时清理进程并重置状态
+            GameProcessManager.shared.stopProcess(for: game.id)
+            _ = await MainActor.run {
+                GameStatusManager.shared.setGameRunning(gameId: game.id, isRunning: false)
+            }
+            
+            throw GlobalError.gameLaunch(
+                chineseMessage: "启动游戏进程失败: \(error.localizedDescription)",
+                i18nKey: "error.game_launch.process_failed",
+                level: .popup
+            )
         }
     }
 

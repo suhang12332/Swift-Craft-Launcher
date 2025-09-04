@@ -71,5 +71,14 @@ class GameProcessManager: ObservableObject {
             processStates[gameId] = false
             Logger.shared.debug("清理已终止的进程: \(gameId)")
         }
+        
+        // 通知状态管理器更新状态
+        if !terminatedGameIds.isEmpty {
+            Task { @MainActor in
+                for gameId in terminatedGameIds {
+                    GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
+                }
+            }
+        }
     }
 }

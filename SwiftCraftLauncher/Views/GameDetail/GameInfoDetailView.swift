@@ -163,7 +163,7 @@ struct GameInfoDetailView: View {
                             .frame(width: 64, height: 64)
                             .cornerRadius(12)
                     case .failure:
-                        Image("default_game_icon")
+                        Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
                             .resizable()
                             .interpolation(.none)
                             .frame(width: 64, height: 64)
@@ -173,7 +173,7 @@ struct GameInfoDetailView: View {
                     }
                 }
             } else {
-                Image("default_game_icon")
+                Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
                     .resizable()
                     .interpolation(.none)
                     .frame(width: 64, height: 64)
