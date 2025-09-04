@@ -16,6 +16,13 @@ struct SkinToolDetailView: View {
     @State private var publicSkinInfo: PlayerSkinService.PublicSkinInfo?
     @State private var playerProfile: MinecraftProfileResponse?
     @State private var isLoading = true
+    @State private var hasChanges = false
+    
+    // 缓存之前的值，避免不必要的计算
+    @State private var lastSelectedSkinData: Data?
+    @State private var lastCurrentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
+    @State private var lastSelectedCapeId: String?
+    @State private var lastCurrentActiveCapeId: String?
 
 
     var body: some View {
@@ -93,7 +100,10 @@ struct SkinToolDetailView: View {
 
                         Toggle(isOn: Binding(
                             get: { currentModel == .slim },
-                            set: { currentModel = $0 ? .slim : .classic }
+                            set: { 
+                                currentModel = $0 ? .slim : .classic
+                                updateHasChanges()
+                            }
                         )) {
                             EmptyView() // 避免 "" 带来的多余空间
                         }
@@ -205,7 +215,10 @@ struct SkinToolDetailView: View {
     private func capeOption(id: String?, name: String, imageURL: String? = nil, isSystemOption: Bool = false) -> some View {
         let isSelected = selectedCapeId == id
 
-        return Button { selectedCapeId = id } label: {
+        return Button { 
+            selectedCapeId = id
+            updateHasChanges()
+        } label: {
             VStack(spacing: 6) {
                 capeIconContainer(isSelected: isSelected, imageURL: imageURL, isSystemOption: isSystemOption)
                 Text(name).font(.caption).lineLimit(1)
@@ -236,7 +249,24 @@ struct SkinToolDetailView: View {
 
     private var resolvedPlayer: Player? { playerListViewModel.currentPlayer }
 
-    private var hasChanges: Bool {
+    private func updateHasChanges() {
+        // 检查是否有任何相关值发生变化
+        let skinDataChanged = selectedSkinData != lastSelectedSkinData
+        let modelChanged = currentModel != lastCurrentModel
+        let capeIdChanged = selectedCapeId != lastSelectedCapeId
+        let activeCapeIdChanged = currentActiveCapeId != lastCurrentActiveCapeId
+        
+        // 如果没有任何变化，直接返回
+        if !skinDataChanged && !modelChanged && !capeIdChanged && !activeCapeIdChanged {
+            return
+        }
+        
+        // 更新缓存的值
+        lastSelectedSkinData = selectedSkinData
+        lastCurrentModel = currentModel
+        lastSelectedCapeId = selectedCapeId
+        lastCurrentActiveCapeId = currentActiveCapeId
+        
         let hasSkinChange = PlayerSkinService.hasSkinChanges(
             selectedSkinData: selectedSkinData,
             currentModel: currentModel,
@@ -247,9 +277,7 @@ struct SkinToolDetailView: View {
             currentActiveCapeId: currentActiveCapeId
         )
 
-        Logger.shared.info("hasChanges check: skinChange=\(hasSkinChange), capeChange=\(hasCapeChange) (current=\(currentModel), original=\(originalModel?.rawValue ?? "nil"))")
-
-        return hasSkinChange || hasCapeChange
+        hasChanges = hasSkinChange || hasCapeChange
     }
 
     private var currentActiveCapeId: String? {
@@ -294,6 +322,7 @@ struct SkinToolDetailView: View {
                 }
                 self.selectedCapeId = currentActiveCapeId
                 self.isLoading = false
+                self.updateHasChanges()
             }
         }
     }
@@ -332,11 +361,13 @@ struct SkinToolDetailView: View {
         guard data.isPNG else { return }
         selectedSkinData = data
         selectedSkinImage = NSImage(data: data)
+        updateHasChanges()
     }
 
     private func clearSelectedSkin() {
         selectedSkinData = nil
         selectedSkinImage = nil
+        updateHasChanges()
     }
 
     private func resetSkin() {
@@ -371,8 +402,6 @@ struct SkinToolDetailView: View {
             await MainActor.run {
                 operationInProgress = false
                 if skinSuccess && capeSuccess {
-                    isLoading = true
-                    loadData()
                     dismiss()
                 }
             }
