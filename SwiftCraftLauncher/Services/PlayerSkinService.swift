@@ -359,14 +359,29 @@ enum PlayerSkinService {
     /// - Parameters:
     ///   - selectedSkinData: 选中的皮肤数据
     ///   - currentModel: 当前模型
-    ///   - originalModel: 原始模型
+    ///   - originalModel: 原始模型（可选，nil表示没有现有皮肤）
     /// - Returns: 是否有皮肤变化
     static func hasSkinChanges(
         selectedSkinData: Data?,
         currentModel: PublicSkinInfo.SkinModel,
-        originalModel: PublicSkinInfo.SkinModel
+        originalModel: PublicSkinInfo.SkinModel?
     ) -> Bool {
-        return selectedSkinData != nil || currentModel != originalModel
+        // 如果有选中的皮肤数据，则有变化
+        if selectedSkinData != nil {
+            return true
+        }
+        
+        // 如果没有原始模型信息（没有现有皮肤），但当前模型不是默认的classic，则有变化
+        if originalModel == nil && currentModel != .classic {
+            return true
+        }
+        
+        // 如果有原始模型信息，比较当前模型和原始模型
+        if let original = originalModel {
+            return currentModel != original
+        }
+        
+        return false
     }
     
     /// 检查是否有披风变化

@@ -247,7 +247,7 @@ struct SkinToolDetailView: View {
             currentActiveCapeId: currentActiveCapeId
         )
 
-        Logger.shared.info("hasChanges check: skinChange=\(hasSkinChange), capeChange=\(hasCapeChange) (current=\(currentModel), original=\(originalModel))")
+        Logger.shared.info("hasChanges check: skinChange=\(hasSkinChange), capeChange=\(hasCapeChange) (current=\(currentModel), original=\(originalModel?.rawValue ?? "nil"))")
 
         return hasSkinChange || hasCapeChange
     }
@@ -256,8 +256,8 @@ struct SkinToolDetailView: View {
         PlayerSkinService.getActiveCapeId(from: playerProfile)
     }
 
-    private var originalModel: PlayerSkinService.PublicSkinInfo.SkinModel {
-        publicSkinInfo?.model ?? .classic
+    private var originalModel: PlayerSkinService.PublicSkinInfo.SkinModel? {
+        publicSkinInfo?.model
     }
 
     private func loadData() {
@@ -380,7 +380,7 @@ struct SkinToolDetailView: View {
     }
 
     private func handleSkinChanges(player: Player) async -> Bool {
-        Logger.shared.info("handleSkinChanges: currentModel=\(currentModel), originalModel=\(originalModel)")
+        Logger.shared.info("handleSkinChanges: currentModel=\(currentModel), originalModel=\(originalModel?.rawValue ?? "nil")")
         Logger.shared.info("selectedSkinData: \(selectedSkinData != nil ? "has data" : "nil")")
         Logger.shared.info("publicSkinInfo: \(publicSkinInfo != nil ? "has info" : "nil")")
         Logger.shared.info("skinURL: \(publicSkinInfo?.skinURL ?? "nil")")
@@ -394,8 +394,8 @@ struct SkinToolDetailView: View {
             )
             Logger.shared.info("New skin upload result: \(result)")
             return result
-        } else if currentModel != originalModel {
-            Logger.shared.info("Changing skin model from \(originalModel) to \(currentModel)")
+        } else if let original = originalModel, currentModel != original {
+            Logger.shared.info("Changing skin model from \(original) to \(currentModel)")
             if let currentSkinInfo = publicSkinInfo, let skinURL = currentSkinInfo.skinURL {
                 let result = await uploadCurrentSkinWithNewModel(skinURL: skinURL, player: player)
                 Logger.shared.info("Model change upload result: \(result)")
@@ -405,6 +405,13 @@ struct SkinToolDetailView: View {
                 Logger.shared.warning("publicSkinInfo: \(publicSkinInfo != nil ? "exists" : "nil")")
                 return false
             }
+        } else if originalModel == nil && currentModel != .classic {
+            Logger.shared.info("Setting model to \(currentModel) for new skin (no existing skin)")
+            // 对于没有现有皮肤的情况，我们需要上传一个默认皮肤
+            // 这里我们可以使用一个默认的皮肤数据或者提示用户选择皮肤
+            Logger.shared.warning("Cannot set model without skin data. User needs to select a skin first.")
+            // 这里可以显示一个提示给用户，告诉他们需要先选择皮肤
+            return false
         }
         Logger.shared.info("No skin changes needed")
         return true // No skin changes needed
@@ -424,8 +431,13 @@ struct SkinToolDetailView: View {
     private func uploadCurrentSkinWithNewModel(skinURL: String, player: Player) async -> Bool {
         do {
             Logger.shared.info("uploadCurrentSkinWithNewModel: skinURL=\(skinURL), model=\(currentModel)")
-            guard let url = URL(string: skinURL) else { 
-                Logger.shared.error("Invalid skin URL: \(skinURL)")
+            
+            // 将HTTP URL转换为HTTPS以符合ATS策略
+            let httpsURL = skinURL.httpToHttps()
+            Logger.shared.info("Converted to HTTPS URL: \(httpsURL)")
+            
+            guard let url = URL(string: httpsURL) else { 
+                Logger.shared.error("Invalid skin URL: \(httpsURL)")
                 return false 
             }
             let (data, _) = try await URLSession.shared.data(from: url)
