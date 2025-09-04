@@ -157,7 +157,10 @@ struct MainView: View {
 
     // MARK: - Transition Helpers
     private func handleResourceToGameTransition(gameId: String) {
-        if self.gameType != false {
+        // 不要强制设置 gameType，保持用户之前的选择
+        // 只有在 gameType 未初始化时才设置为 false
+        if self.gameType == true && self.gameId == nil {
+            // 如果是从资源页面切换到游戏页面，且之前没有选择游戏，则设置为本地资源
             self.gameType = false
         }
         let game = gameRepository.getGame(by: gameId)
@@ -171,9 +174,7 @@ struct MainView: View {
         from oldId: String,
         to newId: String
     ) {
-        if self.gameType != false {
-            self.gameType = false
-        }
+        // 保持用户之前选择的 gameType，不要强制修改
         let game = gameRepository.getGame(by: newId)
         self.gameResourcesType =
             game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
