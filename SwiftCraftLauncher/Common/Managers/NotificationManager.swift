@@ -10,8 +10,6 @@ enum NotificationManager {
     ///   - body: 通知内容
     /// - Throws: GlobalError 当操作失败时
     static func send(title: String, body: String) throws {
-        Logger.shared.info("准备发送通知：\(title) - \(body)")
-
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
@@ -36,8 +34,6 @@ enum NotificationManager {
                 i18nKey: "error.resource.notification_send_failed",
                 level: .silent
             )
-        } else {
-            Logger.shared.info("成功添加通知请求：\(request.identifier)")
         }
     }
 

@@ -28,6 +28,7 @@ private enum Constants {
 // MARK: - Image Cache
 
 private actor ImageCache {
+    static let shared = ImageCache()    
     private var cache: [String: CIImage] = [:]
 
     func get(for key: String) -> CIImage? { cache[key] }
@@ -119,8 +120,15 @@ struct MinecraftSkinUtils: View {
                 // 检查任务是否被取消
                 try Task.checkCancellation()
 
-                // 不使用缓存，每次都重新加载
-                Logger.shared.info("Loading skin without cache: \(src)")
+                // 检查缓存
+                if let cachedImage = await ImageCache.shared.get(for: src) {
+                    await MainActor.run {
+                        self.image = cachedImage
+                    }
+                    return
+                }
+
+                Logger.shared.debug("Loading skin: \(src)")
 
                 let data = try await loadData()
 
@@ -144,6 +152,9 @@ struct MinecraftSkinUtils: View {
                 }
 
                 try Task.checkCancellation()
+
+                // 缓存图像
+                await ImageCache.shared.set(ciImage, for: src)
 
                 await MainActor.run {
                     self.image = ciImage

@@ -25,10 +25,6 @@ class PlayerListViewModel: ObservableObject {
             queue: .main
         ) { [weak self] notification in
             if let updatedPlayer = notification.userInfo?["updatedPlayer"] as? Player {
-                Logger.shared.info("🔔 [setupNotifications] 收到玩家更新通知:")
-                Logger.shared.info("  - 姓名: \(updatedPlayer.name)")
-                Logger.shared.info("  - 皮肤URL: \(updatedPlayer.avatarName)")
-                Logger.shared.info("  - 是否当前玩家: \(updatedPlayer.isCurrent)")
                 self?.updatePlayerInList(updatedPlayer)
             }
         }

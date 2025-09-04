@@ -88,7 +88,7 @@ struct SkinToolDetailView: View {
                         type: player.isOnlineAccount ? .url : .asset,
                         src: player.avatarName,
                         size: 88
-                    ).id(player.avatarName)
+                    )
                     Text(player.name).font(.title2.bold())
 
                     HStack(spacing: 4) {
