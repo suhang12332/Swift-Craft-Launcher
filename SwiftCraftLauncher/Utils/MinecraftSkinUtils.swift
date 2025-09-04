@@ -28,7 +28,7 @@ private enum Constants {
 // MARK: - Image Cache
 
 private actor ImageCache {
-    static let shared = ImageCache()    
+    static let shared = ImageCache()
     private var cache: [String: CIImage] = [:]
 
     func get(for key: String) -> CIImage? { cache[key] }
@@ -57,6 +57,7 @@ struct MinecraftSkinUtils: View {
 
     @State private var image: CIImage?
     @State private var error: String?
+    @State private var isLoading: Bool = false
     @State private var loadTask: Task<Void, Never>?
 
     private static let ciContext = CIContext()
@@ -71,6 +72,12 @@ struct MinecraftSkinUtils: View {
         ZStack {
             if let image = image {
                 avatarLayers(for: image)
+            } else if isLoading {
+                // Loading 指示器
+                VStack(spacing: 8) {
+                    ProgressView()
+                        .controlSize(.small)
+                }
             } else if error != nil {
                 Image(systemName: "person.slash")
                     .foregroundColor(.orange)
@@ -111,6 +118,7 @@ struct MinecraftSkinUtils: View {
 
     private func loadSkinData() {
         error = nil
+        isLoading = true
 
         // 取消之前的任务
         loadTask?.cancel()
@@ -124,6 +132,7 @@ struct MinecraftSkinUtils: View {
                 if let cachedImage = await ImageCache.shared.get(for: src) {
                     await MainActor.run {
                         self.image = cachedImage
+                        self.isLoading = false
                     }
                     return
                 }
@@ -158,14 +167,19 @@ struct MinecraftSkinUtils: View {
 
                 await MainActor.run {
                     self.image = ciImage
+                    self.isLoading = false
                 }
             } catch is CancellationError {
                 // 任务被取消，不需要处理
+                await MainActor.run {
+                    self.isLoading = false
+                }
                 return
             } catch {
                 let globalError = GlobalError.from(error)
                 await MainActor.run {
                     self.error = globalError.chineseMessage
+                    self.isLoading = false
                 }
                 Logger.shared.error("❌ 皮肤加载失败: \(globalError.chineseMessage)")
                 GlobalErrorHandler.shared.handle(globalError)
