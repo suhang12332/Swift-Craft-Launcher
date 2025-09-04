@@ -100,12 +100,6 @@ enum PlayerSkinService {
                 return false
             }
             
-            // 记录更新前的玩家信息
-            Logger.shared.info("🔄 [updatePlayerSkinInfo] 更新前玩家信息:")
-            Logger.shared.info("  - 姓名: \(player.name)")
-            Logger.shared.info("  - 皮肤URL: \(player.avatarName)")
-            Logger.shared.info("  - 是否当前玩家: \(player.isCurrent)")
-            
             // 创建更新后的玩家对象
             let updatedPlayer = try Player(
                 name: player.name,
@@ -122,19 +116,12 @@ enum PlayerSkinService {
                 gameRecords: player.gameRecords
             )
             
-            // 记录更新后的玩家信息
-            Logger.shared.info("🔄 [updatePlayerSkinInfo] 更新后玩家信息:")
-            Logger.shared.info("  - 姓名: \(updatedPlayer.name)")
-            Logger.shared.info("  - 皮肤URL: \(updatedPlayer.avatarName)")
-            Logger.shared.info("  - 是否当前玩家: \(updatedPlayer.isCurrent)")
-            
             // 使用 dataManager 更新数据
             try dataManager.updatePlayer(updatedPlayer)
             
             // 通知ViewModel更新当前玩家
             notifyPlayerUpdated(updatedPlayer)
             
-            Logger.shared.info("Player skin info updated for: \(player.name)")
             return true
         } catch {
             Logger.shared.error("Failed to update player skin info: \(error.localizedDescription)")
@@ -170,7 +157,6 @@ enum PlayerSkinService {
                 fetchedAt: Date()
             )
             
-            Logger.shared.info("✅ 从 Minecraft Services API 获取皮肤信息成功")
             return skinInfo
             
         } catch {
@@ -208,13 +194,8 @@ enum PlayerSkinService {
     /// 刷新皮肤信息（公共方法）
     /// - Parameter player: 玩家信息
     private static func refreshSkinInfo(player: Player) async {
-        Logger.shared.info("🔄 正在获取最新皮肤信息...")
-        
         if let newSkinInfo = await fetchCurrentPlayerSkinFromServices(player: player) {
-            Logger.shared.info("✅ 成功获取最新皮肤信息，正在更新...")
             await updatePlayerSkinInfo(uuid: player.id, skinInfo: newSkinInfo)
-        } else {
-            Logger.shared.warning("⚠️ 无法获取最新皮肤信息")
         }
     }
     
@@ -231,7 +212,6 @@ enum PlayerSkinService {
     ) async -> Bool {
         let success = await uploadSkin(imageData: imageData, model: model, player: player)
         if success {
-            Logger.shared.info("🔄 皮肤上传成功，正在获取最新皮肤信息...")
             await refreshSkinInfo(player: player)
         }
         return success
@@ -243,7 +223,6 @@ enum PlayerSkinService {
     static func resetSkinAndRefresh(player: Player) async -> Bool {
         let success = await resetSkin(player: player)
         if success {
-            Logger.shared.info("🔄 皮肤重置成功，正在获取最新皮肤信息...")
             await refreshSkinInfo(player: player)
         }
         return success
@@ -322,7 +301,6 @@ enum PlayerSkinService {
         }
         switch http.statusCode {
         case 200, 204:
-            Logger.shared.info("Skin upload successful, status=\(http.statusCode) bytes=\(data.count)")
             return
         case 400:
             throw GlobalError.validation(
@@ -496,7 +474,7 @@ enum PlayerSkinService {
         }
         switch http.statusCode {
         case 200, 204:
-            Logger.shared.info("Cape \(capeId) equipped successfully")
+            return
         case 400:
             throw GlobalError.validation(
                 chineseMessage: "无效的斗篷ID或请求",
@@ -569,7 +547,7 @@ enum PlayerSkinService {
         }
         switch http.statusCode {
         case 200, 204:
-            Logger.shared.info("Cape hidden successfully")
+            return
         case 401:
             throw GlobalError.authentication(
                 chineseMessage:
@@ -606,7 +584,7 @@ enum PlayerSkinService {
         }
         switch http.statusCode {
         case 200, 204:
-            Logger.shared.info("Skin reset to default")
+            return
         case 401:
             throw GlobalError.authentication(
                 chineseMessage:
