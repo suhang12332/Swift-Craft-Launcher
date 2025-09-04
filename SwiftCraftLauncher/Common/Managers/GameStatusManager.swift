@@ -11,25 +11,33 @@ class GameStatusManager: ObservableObject {
         // 移除定期检测，改为按需检查
     }
 
-    /// 检查指定游戏是否正在运行
+    /// 检查指定游戏是否正在运行（只读，不修改状态）
     /// - Parameter gameId: 游戏ID
     /// - Returns: 是否正在运行
     func isGameRunning(gameId: String) -> Bool {
         // 总是检查实际进程状态，确保状态同步
         let actuallyRunning = GameProcessManager.shared.isGameRunning(gameId: gameId)
-        
-        // 如果实际状态与缓存状态不同，更新缓存并触发UI更新
+
+        // 异步更新缓存状态，避免在视图更新期间修改@Published属性
+        DispatchQueue.main.async {
+            self.updateGameStatusIfNeeded(gameId: gameId, actuallyRunning: actuallyRunning)
+        }
+
+        return actuallyRunning
+    }
+    /// 更新游戏状态（如果需要）
+    /// - Parameters:
+    ///   - gameId: 游戏ID
+    ///   - actuallyRunning: 实际运行状态
+    private func updateGameStatusIfNeeded(gameId: String, actuallyRunning: Bool) {
         if let cachedState = gameRunningStates[gameId], cachedState != actuallyRunning {
             gameRunningStates[gameId] = actuallyRunning
             Logger.shared.debug("游戏状态同步更新: \(gameId) -> \(actuallyRunning ? "运行中" : "已停止")")
         } else if gameRunningStates[gameId] == nil {
-            // 如果缓存中没有状态，直接设置
             gameRunningStates[gameId] = actuallyRunning
         }
-        
-        return actuallyRunning
     }
-    
+
     /// 强制刷新指定游戏的状态
     /// - Parameter gameId: 游戏ID
     func refreshGameStatus(gameId: String) {
