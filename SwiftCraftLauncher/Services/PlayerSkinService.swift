@@ -1,13 +1,76 @@
 import Foundation
 
 enum PlayerSkinService {
+    
+    // MARK: - Notification System
+    static let playerUpdatedNotification = Notification.Name("PlayerUpdated")
+    
+    private static func notifyPlayerUpdated(_ updatedPlayer: Player) {
+        NotificationCenter.default.post(
+            name: playerUpdatedNotification,
+            object: nil,
+            userInfo: ["updatedPlayer": updatedPlayer]
+        )
+    }
 
-    private static let cacheNamespace = "session_skin"
     // MARK: - Error Handling
     private static func handleError(_ error: Error, operation: String) {
         let globalError = GlobalError.from(error)
         Logger.shared.error("\(operation) failed: \(globalError.chineseMessage)")
         GlobalErrorHandler.shared.handle(globalError)
+    }
+    
+    // MARK: - Common Error Helpers
+    
+    private static func validateAccessToken(_ player: Player) throws {
+        guard !player.authAccessToken.isEmpty else {
+            throw GlobalError.authentication(
+                chineseMessage: "缺少访问令牌，请重新登录",
+                i18nKey: "error.authentication.missing_token",
+                level: .popup
+            )
+        }
+    }
+    
+    private static func handleHTTPError(_ http: HTTPURLResponse, operation: String) throws {
+        switch http.statusCode {
+        case 400:
+            throw GlobalError.validation(
+                chineseMessage: "无效的请求参数",
+                i18nKey: "error.validation.invalid_request",
+                level: .notification
+            )
+        case 401:
+            throw GlobalError.authentication(
+                chineseMessage: "访问令牌无效或已过期，请重新登录",
+                i18nKey: "error.authentication.token_expired",
+                level: .popup
+            )
+        case 403:
+            throw GlobalError.authentication(
+                chineseMessage: "没有\(operation)的权限 (403)",
+                i18nKey: "error.authentication.\(operation)_forbidden",
+                level: .notification
+            )
+        case 404:
+            throw GlobalError.resource(
+                chineseMessage: "未找到相关资源",
+                i18nKey: "error.resource.not_found",
+                level: .notification
+            )
+        case 429:
+            throw GlobalError.network(
+                chineseMessage: "请求过于频繁，请稍后再试",
+                i18nKey: "error.network.rate_limited",
+                level: .notification
+            )
+        default:
+            throw GlobalError.network(
+                chineseMessage: "\(operation)失败: HTTP \(http.statusCode)",
+                i18nKey: "error.network.\(operation)_http_error",
+                level: .notification
+            )
+        }
     }
 
     struct PublicSkinInfo: Codable, Equatable {
@@ -16,142 +79,106 @@ enum PlayerSkinService {
         let capeURL: String?
         let fetchedAt: Date
 
-        enum SkinModel: String, Codable { case classic, slim }
+        enum SkinModel: String, Codable, CaseIterable { case classic, slim }
     }
 
-    // Flattened previously deeply-nested types to satisfy SwiftLint nesting rule
-    private struct SessionProfile: Decodable {
-        let id: String
-        let name: String
-        let properties: [SessionProperty]
-    }
-    private struct SessionProperty: Decodable {
-        let name: String
-        let value: String
-    }
 
-    private struct TexturesPayload: Decodable {
-        let timestamp: Int64
-        let profileId: String
-        let profileName: String
-        let textures: Textures
-    }
-    private struct Textures: Decodable {
-        let SKIN: SkinObj?
-        let CAPE: CapeObj?
-    }
-    private struct SkinObj: Decodable {
-        let url: String
-        let metadata: SkinMetadata?
-    }
-    private struct SkinMetadata: Decodable { let model: String? }
-    private struct CapeObj: Decodable { let url: String }
+    
 
-    static func fetchPublicSkin(uuid: String) async -> PublicSkinInfo? {
-        do { return try await fetchPublicSkinThrowing(uuid: uuid) } catch {
-            handleError(error, operation: "Fetch Skin")
-
-            if let cached: PublicSkinInfo = AppCacheManager.shared.get(
-                namespace: cacheNamespace,
-                key: uuid,
-                as: PublicSkinInfo.self
-            ) {
-                return cached
+    /// 更新玩家皮肤信息到数据管理器
+    /// - Parameters:
+    ///   - uuid: 玩家UUID
+    ///   - skinInfo: 皮肤信息
+    /// - Returns: 是否更新成功
+    private static func updatePlayerSkinInfo(uuid: String, skinInfo: PublicSkinInfo) async -> Bool {
+        do {
+            let dataManager = PlayerDataManager()
+            let players = try dataManager.loadPlayersThrowing()
+            
+            guard let player = players.first(where: { $0.id == uuid }) else {
+                Logger.shared.warning("Player not found for UUID: \(uuid)")
+                return false
             }
+            
+            // 记录更新前的玩家信息
+            Logger.shared.info("🔄 [updatePlayerSkinInfo] 更新前玩家信息:")
+            Logger.shared.info("  - 姓名: \(player.name)")
+            Logger.shared.info("  - 皮肤URL: \(player.avatarName)")
+            Logger.shared.info("  - 是否当前玩家: \(player.isCurrent)")
+            
+            // 创建更新后的玩家对象
+            let updatedPlayer = try Player(
+                name: player.name,
+                uuid: player.id,
+                isOnlineAccount: player.isOnlineAccount,
+                avatarName: skinInfo.skinURL?.httpToHttps() ?? player.avatarName,
+                authXuid: player.authXuid,
+                authAccessToken: player.authAccessToken,
+                authRefreshToken: player.authRefreshToken,
+                tokenExpiresAt: player.tokenExpiresAt,
+                createdAt: player.createdAt,
+                lastPlayed: player.lastPlayed,
+                isCurrent: player.isCurrent,
+                gameRecords: player.gameRecords
+            )
+            
+            // 记录更新后的玩家信息
+            Logger.shared.info("🔄 [updatePlayerSkinInfo] 更新后玩家信息:")
+            Logger.shared.info("  - 姓名: \(updatedPlayer.name)")
+            Logger.shared.info("  - 皮肤URL: \(updatedPlayer.avatarName)")
+            Logger.shared.info("  - 是否当前玩家: \(updatedPlayer.isCurrent)")
+            
+            // 使用 dataManager 更新数据
+            try dataManager.updatePlayer(updatedPlayer)
+            
+            // 通知ViewModel更新当前玩家
+            notifyPlayerUpdated(updatedPlayer)
+            
+            Logger.shared.info("Player skin info updated for: \(player.name)")
+            return true
+        } catch {
+            Logger.shared.error("Failed to update player skin info: \(error.localizedDescription)")
+            return false
+        }
+    }
+    
+    /// 使用 Minecraft Services API 获取当前玩家的皮肤信息（更准确，无缓存延迟）
+    /// - Parameter player: 玩家信息
+    /// - Returns: 皮肤信息，如果获取失败返回nil
+    static func fetchCurrentPlayerSkinFromServices(player: Player) async -> PublicSkinInfo? {
+        do {
+            let profile = try await fetchPlayerProfileThrowing(player: player)
+            
+            // 从 Minecraft Services API 响应中提取皮肤信息
+            guard !profile.skins.isEmpty else {
+                Logger.shared.warning("玩家没有皮肤信息")
+                return nil
+            }
+            
+            // 找到当前激活的皮肤
+            let activeSkin = profile.skins.first { $0.state == "ACTIVE" } ?? profile.skins.first
+            
+            guard let skin = activeSkin else {
+                Logger.shared.warning("没有找到激活的皮肤")
+                return nil
+            }
+            
+            let skinInfo = PublicSkinInfo(
+                skinURL: skin.url,
+                model: skin.variant == "SLIM" ? .slim : .classic,
+                capeURL: nil, // Minecraft Services API 不直接提供斗篷信息
+                fetchedAt: Date()
+            )
+            
+            Logger.shared.info("✅ 从 Minecraft Services API 获取皮肤信息成功")
+            return skinInfo
+            
+        } catch {
+            Logger.shared.error("从 Minecraft Services API 获取皮肤信息失败: \(error.localizedDescription)")
             return nil
         }
     }
 
-    static func fetchPublicSkinThrowing(uuid: String) async throws -> PublicSkinInfo {
-        let cleanUUID = uuid.replacingOccurrences(of: "-", with: "")
-
-        if let cached: PublicSkinInfo = AppCacheManager.shared.get(
-            namespace: cacheNamespace,
-            key: cleanUUID,
-            as: PublicSkinInfo.self
-        ) {
-            if Date().timeIntervalSince(cached.fetchedAt) < 300 {
-                return cached
-            }
-        }
-
-        let url = URLConfig.API.Minecraft.sessionProfile(uuid: cleanUUID)
-
-        let (data, response) = try await URLSession.shared.data(from: url)
-        guard let http = response as? HTTPURLResponse else {
-            throw GlobalError.download(
-                chineseMessage: "会话服务器响应无效",
-                i18nKey: "error.download.session_invalid_response",
-                level: .silent
-            )
-        }
-        switch http.statusCode {
-        case 200:
-            break
-        case 404:
-            throw GlobalError.resource(
-                chineseMessage: "未找到玩家或没有皮肤: \(uuid)",
-                i18nKey: "error.resource.skin_player_not_found",
-                level: .silent
-            )
-        default:
-            throw GlobalError.download(
-                chineseMessage: "会话服务器错误: HTTP \(http.statusCode)",
-                i18nKey: "error.download.session_http_error",
-                level: .silent
-            )
-        }
-
-        let profile = try JSONDecoder().decode(SessionProfile.self, from: data)
-        guard
-            let texturesProperty = profile.properties.first(where: {
-                $0.name == "textures"
-            })
-        else {
-            throw GlobalError.resource(
-                chineseMessage: "缺少纹理属性",
-                i18nKey: "error.resource.textures_property_missing",
-                level: .silent
-            )
-        }
-
-        // Base64 → JSON
-        guard let decodedData = Data(base64Encoded: texturesProperty.value)
-        else {
-            throw GlobalError.validation(
-                chineseMessage: "纹理Base64解码失败",
-                i18nKey: "error.validation.textures_base64_decode_failed",
-                level: .silent
-            )
-        }
-
-        let payload = try JSONDecoder().decode(
-            TexturesPayload.self,
-            from: decodedData
-        )
-        let skinURL = payload.textures.SKIN?.url
-        let modelString = payload.textures.SKIN?.metadata?.model?.lowercased()
-        let model: PublicSkinInfo.SkinModel =
-            (modelString == "slim") ? .slim : .classic
-        let capeURL = payload.textures.CAPE?.url
-
-        let secureSkin = skinURL?.httpToHttps()
-        let secureCape = capeURL?.httpToHttps()
-
-        let result = PublicSkinInfo(
-            skinURL: secureSkin,
-            model: model,
-            capeURL: secureCape,
-            fetchedAt: Date()
-        )
-
-        AppCacheManager.shared.setSilently(
-            namespace: cacheNamespace,
-            key: cleanUUID,
-            value: result
-        )
-        return result
-    }
 
     // MARK: - Upload Skin (multipart/form-data)
     /// Upload (silent version)
@@ -177,6 +204,50 @@ enum PlayerSkinService {
             return false
         }
     }
+    
+    /// 刷新皮肤信息（公共方法）
+    /// - Parameter player: 玩家信息
+    private static func refreshSkinInfo(player: Player) async {
+        Logger.shared.info("🔄 正在获取最新皮肤信息...")
+        
+        if let newSkinInfo = await fetchCurrentPlayerSkinFromServices(player: player) {
+            Logger.shared.info("✅ 成功获取最新皮肤信息，正在更新...")
+            await updatePlayerSkinInfo(uuid: player.id, skinInfo: newSkinInfo)
+        } else {
+            Logger.shared.warning("⚠️ 无法获取最新皮肤信息")
+        }
+    }
+    
+    /// 处理皮肤上传后的完整流程（包括数据更新和通知）
+    /// - Parameters:
+    ///   - imageData: 皮肤图片数据
+    ///   - model: 皮肤模型
+    ///   - player: 玩家信息
+    /// - Returns: 是否成功
+    static func uploadSkinAndRefresh(
+        imageData: Data,
+        model: PublicSkinInfo.SkinModel,
+        player: Player
+    ) async -> Bool {
+        let success = await uploadSkin(imageData: imageData, model: model, player: player)
+        if success {
+            Logger.shared.info("🔄 皮肤上传成功，正在获取最新皮肤信息...")
+            await refreshSkinInfo(player: player)
+        }
+        return success
+    }
+    
+    /// 重置皮肤并刷新数据
+    /// - Parameter player: 玩家信息
+    /// - Returns: 是否成功
+    static func resetSkinAndRefresh(player: Player) async -> Bool {
+        let success = await resetSkin(player: player)
+        if success {
+            Logger.shared.info("🔄 皮肤重置成功，正在获取最新皮肤信息...")
+            await refreshSkinInfo(player: player)
+        }
+        return success
+    }
 
     /// Upload (throwing version)
     /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#upload-skin specification
@@ -185,20 +256,7 @@ enum PlayerSkinService {
         model: PublicSkinInfo.SkinModel,
         player: Player
     ) async throws {
-        guard player.isOnlineAccount else {
-            throw GlobalError.validation(
-                chineseMessage: "离线账户不支持皮肤上传",
-                i18nKey: "error.validation.offline_skin_upload_not_supported",
-                level: .notification
-            )
-        }
-        guard !player.authAccessToken.isEmpty else {
-            throw GlobalError.authentication(
-                chineseMessage: "缺少访问令牌，请重新登录",
-                i18nKey: "error.authentication.missing_token",
-                level: .popup
-            )
-        }
+        try validateAccessToken(player)
 
         let boundary = "Boundary-" + UUID().uuidString
         var body = Data()
@@ -263,15 +321,8 @@ enum PlayerSkinService {
             )
         }
         switch http.statusCode {
-        case 200, 204:  // Mojang documentation may return empty payload
-            // Invalidate cache
-            AppCacheManager.shared.removeSilently(
-                namespace: cacheNamespace,
-                key: player.id.replacingOccurrences(of: "-", with: "")
-            )
-            Logger.shared.info(
-                "Skin upload successful, status=\(http.statusCode) bytes=\(data.count)"
-            )
+        case 200, 204:
+            Logger.shared.info("Skin upload successful, status=\(http.statusCode) bytes=\(data.count)")
             return
         case 400:
             throw GlobalError.validation(
@@ -279,33 +330,8 @@ enum PlayerSkinService {
                 i18nKey: "error.validation.skin_invalid_file",
                 level: .popup
             )
-        case 401:
-            throw GlobalError.authentication(
-                chineseMessage:
-                    "访问令牌无效或已过期，请重新登录",
-                i18nKey: "error.authentication.token_invalid_or_expired",
-                level: .popup
-            )
-        case 403:
-            throw GlobalError.authentication(
-                chineseMessage: "没有上传皮肤的权限 (403)",
-                i18nKey: "error.authentication.skin_upload_forbidden",
-                level: .notification
-            )
-        case 429:
-            throw GlobalError.network(
-                chineseMessage: "请求过于频繁，请稍后再试",
-                i18nKey: "error.network.rate_limited",
-                level: .notification
-            )
         default:
-            let bodyText = String(data: data, encoding: .utf8) ?? ""
-            throw GlobalError.network(
-                chineseMessage:
-                    "皮肤上传失败: HTTP \(http.statusCode) \(bodyText)",
-                i18nKey: "error.network.skin_upload_http_error",
-                level: .notification
-            )
+            try handleHTTPError(http, operation: "皮肤上传")
         }
     }
 
@@ -318,6 +344,38 @@ enum PlayerSkinService {
             handleError(error, operation: "Reset skin")
             return false
         }
+    }
+
+    // MARK: - Common Helper Methods
+    
+    /// 获取当前激活的披风ID
+    /// - Parameter profile: 玩家配置文件
+    /// - Returns: 激活的披风ID，如果没有则返回nil
+    static func getActiveCapeId(from profile: MinecraftProfileResponse?) -> String? {
+        return profile?.capes?.first { $0.state == "ACTIVE" }?.id
+    }
+    
+    /// 检查是否有皮肤变化
+    /// - Parameters:
+    ///   - selectedSkinData: 选中的皮肤数据
+    ///   - currentModel: 当前模型
+    ///   - originalModel: 原始模型
+    /// - Returns: 是否有皮肤变化
+    static func hasSkinChanges(
+        selectedSkinData: Data?,
+        currentModel: PublicSkinInfo.SkinModel,
+        originalModel: PublicSkinInfo.SkinModel
+    ) -> Bool {
+        return selectedSkinData != nil || currentModel != originalModel
+    }
+    
+    /// 检查是否有披风变化
+    /// - Parameters:
+    ///   - selectedCapeId: 选中的披风ID
+    ///   - currentActiveCapeId: 当前激活的披风ID
+    /// - Returns: 是否有披风变化
+    static func hasCapeChanges(selectedCapeId: String?, currentActiveCapeId: String?) -> Bool {
+        return selectedCapeId != currentActiveCapeId
     }
 
     // MARK: - Cape Management
@@ -337,21 +395,7 @@ enum PlayerSkinService {
     /// Get player profile with capes information (throwing version)
     static func fetchPlayerProfileThrowing(player: Player) async throws
         -> MinecraftProfileResponse {
-        guard player.isOnlineAccount else {
-            throw GlobalError.validation(
-                chineseMessage:
-                    "离线账户不支持获取个人资料",
-                i18nKey: "error.validation.offline_profile_fetch_not_supported",
-                level: .notification
-            )
-        }
-        guard !player.authAccessToken.isEmpty else {
-            throw GlobalError.authentication(
-                chineseMessage: "缺少访问令牌，请重新登录",
-                i18nKey: "error.authentication.missing_token",
-                level: .popup
-            )
-        }
+        try validateAccessToken(player)
 
         var request = URLRequest(
             url: URLConfig.API.Authentication.minecraftProfile
@@ -373,19 +417,8 @@ enum PlayerSkinService {
         switch http.statusCode {
         case 200:
             break
-        case 401:
-            throw GlobalError.authentication(
-                chineseMessage:
-                    "访问令牌无效或已过期，请重新登录",
-                i18nKey: "error.authentication.token_invalid_or_expired",
-                level: .popup
-            )
         default:
-            throw GlobalError.network(
-                chineseMessage: "获取个人资料失败: HTTP \(http.statusCode)",
-                i18nKey: "error.network.profile_http_error",
-                level: .notification
-            )
+            try handleHTTPError(http, operation: "获取个人资料")
         }
 
         let profile = try JSONDecoder().decode(
@@ -421,13 +454,7 @@ enum PlayerSkinService {
     /// Show/equip a cape (throwing version)
     /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#show-cape specification
     static func showCapeThrowing(capeId: String, player: Player) async throws {
-        guard !player.authAccessToken.isEmpty else {
-            throw GlobalError.authentication(
-                chineseMessage: "缺少访问令牌，请重新登录",
-                i18nKey: "error.authentication.missing_token",
-                level: .popup
-            )
-        }
+        try validateAccessToken(player)
 
         let payload = ["capeId": capeId]
         let jsonData = try JSONSerialization.data(withJSONObject: payload)
@@ -454,11 +481,6 @@ enum PlayerSkinService {
         }
         switch http.statusCode {
         case 200, 204:
-            // Invalidate cache
-            AppCacheManager.shared.removeSilently(
-                namespace: cacheNamespace,
-                key: player.id.replacingOccurrences(of: "-", with: "")
-            )
             Logger.shared.info("Cape \(capeId) equipped successfully")
         case 400:
             throw GlobalError.validation(
@@ -510,20 +532,7 @@ enum PlayerSkinService {
     /// Hide current cape (throwing version)
     /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#hide-cape specification
     static func hideCapeThrowing(player: Player) async throws {
-        guard player.isOnlineAccount else {
-            throw GlobalError.validation(
-                chineseMessage: "离线账户不支持隐藏斗篷",
-                i18nKey: "error.validation.offline_cape_hide_not_supported",
-                level: .notification
-            )
-        }
-        guard !player.authAccessToken.isEmpty else {
-            throw GlobalError.authentication(
-                chineseMessage: "缺少访问令牌，请重新登录",
-                i18nKey: "error.authentication.missing_token",
-                level: .popup
-            )
-        }
+        try validateAccessToken(player)
 
         var request = URLRequest(
             url: URLConfig.API.Authentication.minecraftProfileActiveCape
@@ -545,11 +554,6 @@ enum PlayerSkinService {
         }
         switch http.statusCode {
         case 200, 204:
-            // Invalidate cache
-            AppCacheManager.shared.removeSilently(
-                namespace: cacheNamespace,
-                key: player.id.replacingOccurrences(of: "-", with: "")
-            )
             Logger.shared.info("Cape hidden successfully")
         case 401:
             throw GlobalError.authentication(
@@ -568,20 +572,7 @@ enum PlayerSkinService {
     }
 
     static func resetSkinThrowing(player: Player) async throws {
-        guard player.isOnlineAccount else {
-            throw GlobalError.validation(
-                chineseMessage: "离线账户不支持皮肤重置",
-                i18nKey: "error.validation.offline_skin_reset_not_supported",
-                level: .notification
-            )
-        }
-        guard !player.authAccessToken.isEmpty else {
-            throw GlobalError.authentication(
-                chineseMessage: "缺少访问令牌，请重新登录",
-                i18nKey: "error.authentication.missing_token",
-                level: .popup
-            )
-        }
+        try validateAccessToken(player)
         var request = URLRequest(
             url: URLConfig.API.Authentication.minecraftProfileActiveSkin
         )
@@ -600,10 +591,6 @@ enum PlayerSkinService {
         }
         switch http.statusCode {
         case 200, 204:
-            AppCacheManager.shared.removeSilently(
-                namespace: cacheNamespace,
-                key: player.id.replacingOccurrences(of: "-", with: "")
-            )
             Logger.shared.info("Skin reset to default")
         case 401:
             throw GlobalError.authentication(

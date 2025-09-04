@@ -7,7 +7,7 @@ struct SkinToolDetailView: View {
     @Environment(\.dismiss)
     private var dismiss
 
-    @State private var currentModel: SkinModelType = .classic
+    @State private var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
     @State private var showingFileImporter = false
     @State private var operationInProgress = false
     @State private var selectedSkinData: Data?
@@ -17,9 +17,6 @@ struct SkinToolDetailView: View {
     @State private var playerProfile: MinecraftProfileResponse?
     @State private var isLoading = true
 
-    enum SkinModelType: String, CaseIterable {
-        case classic, slim
-    }
 
     var body: some View {
         CommonSheetView(
@@ -240,26 +237,27 @@ struct SkinToolDetailView: View {
     private var resolvedPlayer: Player? { playerListViewModel.currentPlayer }
 
     private var hasChanges: Bool {
-        let hasSkinData = selectedSkinData != nil
-        let hasCapeChange = selectedCapeId != currentActiveCapeId
-        let hasModelChange = currentModel != originalModel
+        let hasSkinChange = PlayerSkinService.hasSkinChanges(
+            selectedSkinData: selectedSkinData,
+            currentModel: currentModel,
+            originalModel: originalModel
+        )
+        let hasCapeChange = PlayerSkinService.hasCapeChanges(
+            selectedCapeId: selectedCapeId,
+            currentActiveCapeId: currentActiveCapeId
+        )
 
-        Logger.shared.info("hasChanges check: skinData=\(hasSkinData), capeChange=\(hasCapeChange), modelChange=\(hasModelChange) (current=\(currentModel), original=\(originalModel))")
+        Logger.shared.info("hasChanges check: skinChange=\(hasSkinChange), capeChange=\(hasCapeChange) (current=\(currentModel), original=\(originalModel))")
 
-        return hasSkinData || hasCapeChange || hasModelChange
+        return hasSkinChange || hasCapeChange
     }
 
     private var currentActiveCapeId: String? {
-        playerProfile?.capes?.first { $0.state == "ACTIVE" }?.id
+        PlayerSkinService.getActiveCapeId(from: playerProfile)
     }
 
-    private var originalModel: SkinModelType {
-        guard let model = publicSkinInfo?.model else { return .classic }
-        return model == .classic ? .classic : .slim
-    }
-
-    private var currentSkinModel: PlayerSkinService.PublicSkinInfo.SkinModel {
-        currentModel == .classic ? .classic : .slim
+    private var originalModel: PlayerSkinService.PublicSkinInfo.SkinModel {
+        publicSkinInfo?.model ?? .classic
     }
 
     private func loadData() {
@@ -272,7 +270,7 @@ struct SkinToolDetailView: View {
         Logger.shared.info("Loading skin data for player: \(player.name)")
 
         Task {
-            async let skinInfo = PlayerSkinService.fetchPublicSkin(uuid: player.id)
+            async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: player)
             async let profile = PlayerSkinService.fetchPlayerProfile(player: player)
             
             let (skin, playerProfile) = await (skinInfo, profile)
@@ -288,8 +286,8 @@ struct SkinToolDetailView: View {
                 self.publicSkinInfo = skin
                 self.playerProfile = playerProfile
                 if let model = skin?.model {
-                    self.currentModel = model == .classic ? .classic : .slim
-                    Logger.shared.info("Loaded skin model: \(model) -> currentModel: \(self.currentModel)")
+                    self.currentModel = model
+                    Logger.shared.info("Loaded skin model: \(model)")
                 } else {
                     self.currentModel = .classic // 默认使用 classic 模型
                     Logger.shared.info("No skin model found, using default: \(self.currentModel)")
@@ -347,13 +345,12 @@ struct SkinToolDetailView: View {
         operationInProgress = true
         isLoading = true
         Task {
-            let success = await PlayerSkinService.resetSkin(player: player)
+            let success = await PlayerSkinService.resetSkinAndRefresh(player: player)
 
             await MainActor.run {
                 operationInProgress = false
                 if success {
                     clearSelectedSkin()
-                    refreshPlayerSkinInList()
                     loadData() // 重新加载数据
                 } else {
                     isLoading = false
@@ -362,37 +359,6 @@ struct SkinToolDetailView: View {
         }
     }
 
-    private func refreshPlayerSkinInList() {
-        guard let player = resolvedPlayer else { return }
-
-        Task {
-            if let skinInfo = await PlayerSkinService.fetchPublicSkin(uuid: player.id) {
-                Logger.shared.info("Refreshing player skin: oldURL=\(player.avatarName), newURL=\(skinInfo.skinURL ?? "")")
-
-                let updatedPlayer = try Player(
-                    name: player.name,
-                    uuid: player.id,
-                    isOnlineAccount: player.isOnlineAccount,
-                    avatarName: skinInfo.skinURL ?? "",
-                    authXuid: player.authXuid,
-                    authAccessToken: player.authAccessToken,
-                    authRefreshToken: player.authRefreshToken,
-                    tokenExpiresAt: player.tokenExpiresAt,
-                    createdAt: player.createdAt,
-                    lastPlayed: player.lastPlayed,
-                    isCurrent: player.isCurrent,
-                    gameRecords: player.gameRecords
-                )
-
-                await MainActor.run {
-                    playerListViewModel.updatePlayerInList(updatedPlayer)
-                    Logger.shared.info("Player skin updated in list")
-                }
-            } else {
-                Logger.shared.warning("Failed to fetch updated skin info")
-            }
-        }
-    }
 
     private func applyChanges() {
         guard let player = resolvedPlayer else { return }
@@ -405,7 +371,6 @@ struct SkinToolDetailView: View {
             await MainActor.run {
                 operationInProgress = false
                 if skinSuccess && capeSuccess {
-                    refreshPlayerSkinInList()
                     isLoading = true
                     loadData()
                     dismiss()
@@ -421,10 +386,10 @@ struct SkinToolDetailView: View {
         Logger.shared.info("skinURL: \(publicSkinInfo?.skinURL ?? "nil")")
 
         if let skinData = selectedSkinData {
-            Logger.shared.info("Uploading new skin with model: \(currentSkinModel)")
-            let result = await PlayerSkinService.uploadSkin(
+            Logger.shared.info("Uploading new skin with model: \(currentModel)")
+            let result = await PlayerSkinService.uploadSkinAndRefresh(
                 imageData: skinData,
-                model: currentSkinModel,
+                model: currentModel,
                 player: player
             )
             Logger.shared.info("New skin upload result: \(result)")
@@ -458,7 +423,7 @@ struct SkinToolDetailView: View {
 
     private func uploadCurrentSkinWithNewModel(skinURL: String, player: Player) async -> Bool {
         do {
-            Logger.shared.info("uploadCurrentSkinWithNewModel: skinURL=\(skinURL), model=\(currentSkinModel)")
+            Logger.shared.info("uploadCurrentSkinWithNewModel: skinURL=\(skinURL), model=\(currentModel)")
             guard let url = URL(string: skinURL) else { 
                 Logger.shared.error("Invalid skin URL: \(skinURL)")
                 return false 
@@ -468,7 +433,7 @@ struct SkinToolDetailView: View {
 
             let result = await PlayerSkinService.uploadSkin(
                 imageData: data,
-                model: currentSkinModel,
+                model: currentModel,
                 player: player
             )
             Logger.shared.info("Upload result: \(result)")

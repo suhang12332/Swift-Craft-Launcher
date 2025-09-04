@@ -35,10 +35,6 @@ enum URLConfig {
         // Minecraft API
         enum Minecraft {
             static let versionList = URLConfig.url("https://launchermeta.mojang.com/mc/game/version_manifest.json")
-
-            static func sessionProfile(uuid: String) -> URL {
-                URLConfig.url("https://sessionserver.mojang.com/session/minecraft/profile/\(uuid)")
-            }
         }
 
         // GitHub API
