@@ -48,9 +48,6 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
     /// 最后游玩时间
     var lastPlayed: Date
 
-    /// 游戏是否正在运行
-    var isRunning: Bool
-
     /// Java 运行环境路径
     var javaPath: String
 
@@ -88,7 +85,6 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
     ///   - isUserAdded: 是否用户手动添加
     ///   - createdAt: 创建时间，默认当前时间
     ///   - lastPlayed: 最后游玩时间，默认当前时间
-    ///   - isRunning: 是否正在运行，默认false
     ///   - javaPath: Java路径，默认空字符串
     ///   - jvmArguments: JVM参数，默认空字符串
     ///   - launchCommand: 启动命令，默认空字符串
@@ -110,7 +106,6 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
         isUserAdded: Bool,
         createdAt: Date = Date(),
         lastPlayed: Date = Date(),
-        isRunning: Bool = false,
         javaPath: String = "",
         jvmArguments: String = "",
         launchCommand: [String] = [],
@@ -133,7 +128,6 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
         self.isUserAdded = isUserAdded
         self.createdAt = createdAt
         self.lastPlayed = lastPlayed
-        self.isRunning = isRunning
         self.javaPath = javaPath
         self.jvmArguments = jvmArguments
         self.launchCommand = launchCommand

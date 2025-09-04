@@ -11,6 +11,7 @@ public struct DetailToolbarView: ToolbarContent {
     @Binding var versionCurrentPage: Int
     @Binding var versionTotal: Int
     @EnvironmentObject var gameRepository: GameRepository
+    @StateObject private var gameStatusManager = GameStatusManager.shared
     let totalItems: Int
     @Binding var project: ModrinthProjectDetail?
     @Binding var selectProjectId: String?
@@ -34,6 +35,11 @@ public struct DetailToolbarView: ToolbarContent {
             return gameRepository.getGame(by: gameId)
         }
         return nil
+    }
+
+    /// 基于进程状态判断游戏是否正在运行
+    private func isGameRunning(gameId: String) -> Bool {
+        return gameStatusManager.isGameRunning(gameId: gameId)
     }
 
     public var body: some ToolbarContent {
@@ -87,7 +93,8 @@ public struct DetailToolbarView: ToolbarContent {
                     Spacer()
                     Button {
                         Task {
-                            if game.isRunning {
+                            let isRunning = isGameRunning(gameId: game.id)
+                            if isRunning {
                                 // 停止游戏
                                 await MinecraftLaunchCommand(
                                     player: playerListViewModel.currentPlayer,
@@ -104,18 +111,19 @@ public struct DetailToolbarView: ToolbarContent {
                             }
                         }
                     } label: {
-                        Label(
-                            game.isRunning
+                        let isRunning = isGameRunning(gameId: game.id)
+                        return Label(
+                            isRunning
                                 ? "stop.fill".localized()
                                 : "play.fill".localized(),
-                            systemImage: game.isRunning
+                            systemImage: isRunning
                                 ? "stop.fill" : "play.fill"
                         )
                     }
                     .help(
-                        (game.isRunning ? "stop.fill" : "play.fill").localized()
+                        (isGameRunning(gameId: game.id) ? "stop.fill" : "play.fill").localized()
                     )
-                    .animation(.linear, value: game.isRunning)
+                    .contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
 
                     Button {
                         let gameDir = AppPaths.profileDirectory(gameName: game.gameName)
@@ -176,6 +184,7 @@ public struct DetailToolbarView: ToolbarContent {
             ) { sort in
                 Button("menu.sort.\(sort)".localized()) {
                     sortIndex = sort
+                    currentPage = 1
                 }
             }
         } label: {
@@ -188,6 +197,7 @@ public struct DetailToolbarView: ToolbarContent {
             ForEach(resourceTypesForCurrentGame, id: \.self) { sort in
                 Button("resource.content.type.\(sort)".localized()) {
                     gameResourcesType = sort
+                    currentPage = 1
                 }
             }
         } label: {
@@ -198,6 +208,7 @@ public struct DetailToolbarView: ToolbarContent {
     private var resourcesTypeMenu: some View {
         Button {
             gameType.toggle()
+            currentPage = 1
         } label: {
             Label(
                 currentResourceTypeTitle,
@@ -206,7 +217,7 @@ public struct DetailToolbarView: ToolbarContent {
             ).foregroundStyle(.primary)
         }
         .help("resource.content.location.help".localized())
-        .animation(.linear, value: gameType)
+        .contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
     }
 
     private var paginationControls: some View {

@@ -133,7 +133,14 @@ class MinecraftAuthService: NSObject, ObservableObject {
             let xboxToken = try await getXboxLiveTokenThrowing(accessToken: tokenResponse.accessToken)
             let minecraftToken = try await getMinecraftTokenThrowing(xboxToken: xboxToken.token, uhs: xboxToken.displayClaims.xui.first?.uhs ?? "")
             try await checkMinecraftOwnership(accessToken: minecraftToken)
-            let profile = try await getMinecraftProfileThrowing(accessToken: minecraftToken, authXuid: xboxToken.displayClaims.xui.first?.uhs ?? "", refreshToken: tokenResponse.refreshToken ?? "")
+
+            // 创建包含过期时间的profile
+            let profile = try await getMinecraftProfileThrowing(
+                accessToken: minecraftToken,
+                authXuid: xboxToken.displayClaims.xui.first?.uhs ?? "",
+                refreshToken: tokenResponse.refreshToken ?? "",
+                expiresIn: tokenResponse.expiresIn
+            )
 
             Logger.shared.info("Minecraft 认证成功，用户: \(profile.name)")
             isLoading = false
@@ -469,7 +476,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
     }
 
     // MARK: - 获取Minecraft用户资料
-    private func getMinecraftProfileThrowing(accessToken: String, authXuid: String, refreshToken: String = "") async throws -> MinecraftProfileResponse {
+    private func getMinecraftProfileThrowing(accessToken: String, authXuid: String, refreshToken: String = "", expiresIn: Int? = nil) async throws -> MinecraftProfileResponse {
         let url = URLConfig.API.Authentication.minecraftProfile
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
@@ -500,6 +507,15 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
         do {
             let profile = try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
+
+            // 计算token过期时间
+            let tokenExpiresAt: Date?
+            if let expiresIn = expiresIn {
+                tokenExpiresAt = Calendar.current.date(byAdding: .second, value: expiresIn, to: Date())
+            } else {
+                tokenExpiresAt = nil
+            }
+
             // 由于 accessToken、authXuid 和 refreshToken 不是从 API 响应中获取的，我们需要手动设置
             return MinecraftProfileResponse(
                 id: profile.id,
@@ -508,7 +524,8 @@ class MinecraftAuthService: NSObject, ObservableObject {
                 capes: profile.capes,
                 accessToken: accessToken,
                 authXuid: authXuid,
-                refreshToken: refreshToken
+                refreshToken: refreshToken,
+                tokenExpiresAt: tokenExpiresAt
             )
         } catch {
             throw GlobalError.validation(
@@ -571,10 +588,6 @@ extension MinecraftAuthService {
     /// - Returns: 验证/刷新后的玩家对象
     /// - Throws: GlobalError 当操作失败时
     func validateAndRefreshPlayerTokenThrowing(for player: Player) async throws -> Player {
-        // 如果不是在线账户，直接返回原玩家
-        guard player.isOnlineAccount else {
-            return player
-        }
 
         // 如果没有访问令牌，抛出错误要求重新登录
         guard !player.authAccessToken.isEmpty else {
@@ -585,14 +598,17 @@ extension MinecraftAuthService {
             )
         }
 
-        // 首先尝试验证当前token是否有效
-        let isTokenValid = await validateToken(player.authAccessToken, authXuid: player.authXuid)
+        // 基于tokenExpiresAt检查token是否过期
+        let isTokenExpired = await isTokenExpiredBasedOnTime(for: player)
 
-        if isTokenValid {
+        if !isTokenExpired {
+            Logger.shared.debug("玩家 \(player.name) 的Token尚未过期，无需刷新")
             return player
         }
 
-        // Token无效，尝试使用refresh token刷新
+        Logger.shared.info("玩家 \(player.name) 的Token已过期，尝试刷新")
+
+        // Token过期，尝试使用refresh token刷新
         guard !player.authRefreshToken.isEmpty else {
             throw GlobalError.authentication(
                 chineseMessage: String(format: "minecraft.auth.error.player_token_expired".localized(), player.name),
@@ -696,18 +712,30 @@ extension MinecraftAuthService {
         }
     }
 
-    /// 验证Token是否有效
-    /// - Parameters:
-    ///   - accessToken: 访问令牌
-    ///   - authXuid: Xbox用户ID
-    /// - Returns: 是否有效
-    func validateToken(_ accessToken: String, authXuid: String) async -> Bool {
-        do {
-            _ = try await getMinecraftProfileThrowing(accessToken: accessToken, authXuid: authXuid)
+    /// 基于时间戳检查Token是否过期
+    /// - Parameter player: 玩家对象
+    /// - Returns: 是否过期
+    func isTokenExpiredBasedOnTime(for player: Player) async -> Bool {
+        // 如果没有过期时间，认为已过期（需要刷新）
+        guard let expiresAt = player.tokenExpiresAt else {
+            Logger.shared.debug("玩家 \(player.name) 没有Token过期时间，认为已过期")
             return true
-        } catch {
-            return false
         }
+
+        // 添加5分钟的缓冲时间，提前刷新token
+        let bufferTime: TimeInterval = 5 * 60 // 5分钟
+        let currentTime = Date()
+        let expirationTimeWithBuffer = expiresAt.addingTimeInterval(-bufferTime)
+
+        let isExpired = currentTime >= expirationTimeWithBuffer
+
+        if isExpired {
+            Logger.shared.debug("玩家 \(player.name) 的Token已过期或即将过期（过期时间: \(expiresAt), 当前时间: \(currentTime)）")
+        } else {
+            Logger.shared.debug("玩家 \(player.name) 的Token尚未过期（过期时间: \(expiresAt), 当前时间: \(currentTime)）")
+        }
+
+        return isExpired
     }
 
     /// 提示用户重新登录指定玩家

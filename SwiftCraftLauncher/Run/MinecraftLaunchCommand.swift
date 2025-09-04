@@ -20,7 +20,7 @@ struct MinecraftLaunchCommand {
         let success = GameProcessManager.shared.stopProcess(for: game.id)
         if success {
             _ = await MainActor.run {
-                gameRepository.updateGameStatusSilently(id: game.id, isRunning: false)
+                GameStatusManager.shared.setGameRunning(gameId: game.id, isRunning: false)
             }
         }
     }
@@ -91,11 +91,6 @@ struct MinecraftLaunchCommand {
         return replaceGameParameters(command: authReplacedCommand)
     }
 
-    // 保留原有的方法作为后备
-    private func replaceAuthParameters(command: [String]) -> [String] {
-        return replaceAuthParameters(command: command, with: player)
-    }
-
     private func replaceGameParameters(command: [String]) -> [String] {
         let settings = GameSettingsManager.shared
 
@@ -132,14 +127,13 @@ struct MinecraftLaunchCommand {
         GameProcessManager.shared.storeProcess(gameId: game.id, process: process)
 
         _ = await MainActor.run {
-            gameRepository.updateGameStatusSilently(id: game.id, isRunning: true)
+            GameStatusManager.shared.setGameRunning(gameId: game.id, isRunning: true)
         }
 
         do {
             try process.run()
         } catch {
             Logger.shared.error("启动进程失败: \(error.localizedDescription)")
-            _ = gameRepository.updateGameStatusSilently(id: game.id, isRunning: false)
             throw GlobalError.gameLaunch(
                 chineseMessage: "启动游戏进程失败: \(error.localizedDescription)",
                 i18nKey: "error.game_launch.process_failed",
@@ -150,7 +144,7 @@ struct MinecraftLaunchCommand {
         let gameId = game.id
         process.terminationHandler = { _ in
             Task { @MainActor in
-                _ = self.gameRepository.updateGameStatusSilently(id: gameId, isRunning: false)
+                GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
                 // 清理进程管理器中的进程
                 GameProcessManager.shared.cleanupTerminatedProcesses()
             }
@@ -198,7 +192,6 @@ struct MinecraftLaunchCommand {
     /// - Parameter error: 启动错误
     private func handleLaunchError(_ error: Error) async {
         Logger.shared.error("启动游戏失败：\(error.localizedDescription)")
-        _ = gameRepository.updateGameStatusSilently(id: game.id, isRunning: false)
 
         // 使用全局错误处理器处理错误
         let globalError = GlobalError.from(error)

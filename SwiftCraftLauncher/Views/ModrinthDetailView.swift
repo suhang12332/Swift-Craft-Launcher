@@ -118,6 +118,8 @@ struct ModrinthDetailView: View {
             withTimeInterval: 0.5,
             repeats: false
         ) { _ in
+            // 搜索时重置页码到第一页
+            currentPage = 1
             Task { await performSearchWithErrorHandling() }
         }
     }

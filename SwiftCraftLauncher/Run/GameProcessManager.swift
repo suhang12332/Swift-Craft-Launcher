@@ -8,6 +8,9 @@ class GameProcessManager: ObservableObject {
     /// 存储游戏进程的字典，key 为游戏 ID
     private var gameProcesses: [String: Process] = [:]
 
+    /// 进程状态变化通知
+    @Published var processStates: [String: Bool] = [:]
+
     private init() {}
 
     /// 存储游戏进程
@@ -16,6 +19,8 @@ class GameProcessManager: ObservableObject {
     ///   - process: 进程对象
     func storeProcess(gameId: String, process: Process) {
         gameProcesses[gameId] = process
+        processStates[gameId] = true
+        Logger.shared.debug("存储游戏进程: \(gameId)")
     }
 
     /// 获取游戏进程
@@ -40,6 +45,8 @@ class GameProcessManager: ObservableObject {
         }
 
         gameProcesses.removeValue(forKey: gameId)
+        processStates[gameId] = false
+        Logger.shared.debug("停止游戏进程: \(gameId)")
         return true
     }
 
@@ -55,8 +62,14 @@ class GameProcessManager: ObservableObject {
 
     /// 清理已终止的进程
     func cleanupTerminatedProcesses() {
-        gameProcesses = gameProcesses.filter { _, process in
-            process.isRunning
+        let terminatedGameIds = gameProcesses.compactMap { gameId, process in
+            !process.isRunning ? gameId : nil
+        }
+
+        for gameId in terminatedGameIds {
+            gameProcesses.removeValue(forKey: gameId)
+            processStates[gameId] = false
+            Logger.shared.debug("清理已终止的进程: \(gameId)")
         }
     }
 }

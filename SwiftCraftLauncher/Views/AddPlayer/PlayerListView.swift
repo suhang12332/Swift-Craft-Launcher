@@ -28,7 +28,7 @@ struct PlayerListView: View {
                             Text(player.name)
                         }
                         .buttonStyle(.plain)
-                        Spacer(minLength: 8)
+                        Spacer(minLength: 64)
                         Button {
                             playerToDelete = player
                             showDeleteAlert = true
@@ -87,6 +87,6 @@ private struct PlayerAvatarView: View {
     var size: CGFloat
 
     var body: some View {
-        MinecraftSkinUtils(type: player.isOnlineAccount ? .url : .asset, src: player.avatarName, size: size).id(player.id)
+        MinecraftSkinUtils(type: player.isOnlineAccount ? .url : .asset, src: player.avatarName, size: size).id(player.id).id(player.avatarName)
     }
 }

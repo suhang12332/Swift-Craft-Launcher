@@ -9,6 +9,7 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var showPlayerAlert = false
     @State private var showingGameForm = false
     @EnvironmentObject var gameRepository: GameRepository
+    @State private var showEditSkin = false
 
     // MARK: - Startup Info State
     @State private var showStartupInfo = false
@@ -44,6 +45,14 @@ public struct ContentToolbarView: ToolbarContent {
                 Label("player.add".localized(), systemImage: "person.badge.plus")
             }
             .help("player.add".localized())
+            if let player = playerListViewModel.currentPlayer, player.isOnlineAccount {
+                Button {
+                    showEditSkin = true
+                } label: {
+                    Image(systemName: "tshirt")
+                        .help("player.remove".localized())
+                }
+            }
 
             // 启动信息按钮
             Button {
@@ -109,6 +118,9 @@ public struct ContentToolbarView: ToolbarContent {
                     message: Text("sidebar.alert.no_player.message".localized()),
                     dismissButton: .default(Text("common.confirm".localized()))
                 )
+            }
+            .sheet(isPresented: $showEditSkin) {
+                SkinToolDetailView()
             }
         }
     }

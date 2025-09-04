@@ -28,6 +28,7 @@ private enum Constants {
 // MARK: - Image Cache
 
 private actor ImageCache {
+    static let shared = ImageCache()
     private var cache: [String: CIImage] = [:]
 
     func get(for key: String) -> CIImage? { cache[key] }
@@ -56,10 +57,10 @@ struct MinecraftSkinUtils: View {
 
     @State private var image: CIImage?
     @State private var error: String?
+    @State private var isLoading: Bool = false
     @State private var loadTask: Task<Void, Never>?
 
     private static let ciContext = CIContext()
-    private static let imageCache = ImageCache()
 
     init(type: SkinType, src: String, size: CGFloat = 64) {
         self.type = type
@@ -71,6 +72,12 @@ struct MinecraftSkinUtils: View {
         ZStack {
             if let image = image {
                 avatarLayers(for: image)
+            } else if isLoading {
+                // Loading 指示器
+                VStack(spacing: 8) {
+                    ProgressView()
+                        .controlSize(.small)
+                }
             } else if error != nil {
                 Image(systemName: "person.slash")
                     .foregroundColor(.orange)
@@ -111,6 +118,7 @@ struct MinecraftSkinUtils: View {
 
     private func loadSkinData() {
         error = nil
+        isLoading = true
 
         // 取消之前的任务
         loadTask?.cancel()
@@ -120,13 +128,16 @@ struct MinecraftSkinUtils: View {
                 // 检查任务是否被取消
                 try Task.checkCancellation()
 
-                if let cachedImage = await Self.imageCache.get(for: src) {
-                    try Task.checkCancellation()
+                // 检查缓存
+                if let cachedImage = await ImageCache.shared.get(for: src) {
                     await MainActor.run {
                         self.image = cachedImage
+                        self.isLoading = false
                     }
                     return
                 }
+
+                Logger.shared.debug("Loading skin: \(src)")
 
                 let data = try await loadData()
 
@@ -151,20 +162,24 @@ struct MinecraftSkinUtils: View {
 
                 try Task.checkCancellation()
 
-                await Self.imageCache.set(ciImage, for: src)
-
-                try Task.checkCancellation()
+                // 缓存图像
+                await ImageCache.shared.set(ciImage, for: src)
 
                 await MainActor.run {
                     self.image = ciImage
+                    self.isLoading = false
                 }
             } catch is CancellationError {
                 // 任务被取消，不需要处理
+                await MainActor.run {
+                    self.isLoading = false
+                }
                 return
             } catch {
                 let globalError = GlobalError.from(error)
                 await MainActor.run {
                     self.error = globalError.chineseMessage
+                    self.isLoading = false
                 }
                 Logger.shared.error("❌ 皮肤加载失败: \(globalError.chineseMessage)")
                 GlobalErrorHandler.shared.handle(globalError)

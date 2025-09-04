@@ -15,6 +15,7 @@ struct SwiftCraftLauncherApp: App {
     @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
     @StateObject private var generalSettingsManager = GeneralSettingsManager
         .shared
+    @StateObject private var skinSelectionStore = SkinSelectionStore()
     @Environment(\.openWindow)
     private var openWindow
 
@@ -45,6 +46,7 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(gameRepository)
                 .environmentObject(sparkleUpdateService)
                 .environmentObject(generalSettingsManager)
+                .environmentObject(skinSelectionStore)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
         }

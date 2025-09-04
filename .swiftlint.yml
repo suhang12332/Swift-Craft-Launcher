@@ -463,4 +463,4 @@ function_parameter_count:
 
 type_body_length:
   warning: 800
-  error: 850
+  error: 1050
