@@ -165,7 +165,7 @@ struct MainView: View {
         }
         let game = gameRepository.getGame(by: gameId)
         self.gameResourcesType =
-            game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
+        game?.modLoader.lowercased() == "vanilla" ? self.gameResourcesType.lowercased() != "mod" ? self.gameResourcesType : "datapack" : "mod"
         self.gameId = gameId
         self.selectedProjectId = nil
     }
@@ -174,6 +174,9 @@ struct MainView: View {
         from oldId: String,
         to newId: String
     ) {
+        if self.gameType != false {
+                self.gameType = false
+        }
         // 保持用户之前选择的 gameType，不要强制修改
         let game = gameRepository.getGame(by: newId)
         self.gameResourcesType =
