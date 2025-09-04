@@ -11,7 +11,7 @@ public struct DetailToolbarView: ToolbarContent {
     @Binding var versionCurrentPage: Int
     @Binding var versionTotal: Int
     @EnvironmentObject var gameRepository: GameRepository
-    @StateObject private var gameStatusManager = GameStatusManager.shared
+    @ObservedObject private var gameStatusManager = GameStatusManager.shared
     let totalItems: Int
     @Binding var project: ModrinthProjectDetail?
     @Binding var selectProjectId: String?

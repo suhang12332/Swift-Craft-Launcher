@@ -42,7 +42,7 @@ public struct SidebarView: View {
                                         .frame(width: 16, height: 16)
                                         .clipShape(RoundedRectangle(cornerRadius: 4))
                                     case .failure:
-                                    Image("default_game_icon")
+                                    Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
                                         .resizable()
                                         .interpolation(.none)
                                         .scaledToFit()
@@ -53,7 +53,7 @@ public struct SidebarView: View {
                                     }
                                 }
                             } else {
-                                Image("default_game_icon")
+                                Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
                                     .resizable()
                                     .interpolation(.none)
                                     .scaledToFit()
