@@ -51,8 +51,12 @@ class GameStatusManager: ObservableObject {
     ///   - gameId: 游戏ID
     ///   - isRunning: 是否正在运行
     func setGameRunning(gameId: String, isRunning: Bool) {
-        gameRunningStates[gameId] = isRunning
-        Logger.shared.debug("游戏状态更新: \(gameId) -> \(isRunning ? "运行中" : "已停止")")
+        // 检查状态是否真的发生了变化，避免重复日志
+        let currentState = gameRunningStates[gameId]
+        if currentState != isRunning {
+            gameRunningStates[gameId] = isRunning
+            Logger.shared.debug("游戏状态更新: \(gameId) -> \(isRunning ? "运行中" : "已停止")")
+        }
     }
 
     /// 清理已停止的游戏状态
