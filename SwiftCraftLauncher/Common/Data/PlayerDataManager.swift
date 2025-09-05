@@ -15,8 +15,9 @@ class PlayerDataManager {
     ///   - accToken: 访问令牌，默认为空字符串
     ///   - refreshToken: 刷新令牌，默认为空字符串
     ///   - xuid: Xbox用户ID，默认为空字符串
+    ///   - tokenExpiresAt: Token过期时间，默认为nil
     /// - Throws: GlobalError 当操作失败时
-    func addPlayer(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", refreshToken: String = "", xuid: String = "") throws {
+    func addPlayer(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", refreshToken: String = "", xuid: String = "", tokenExpiresAt: Date? = nil) throws {
         var players = try loadPlayersThrowing()
 
         if playerExists(name: name) {
@@ -36,6 +37,7 @@ class PlayerDataManager {
                 authXuid: xuid,
                 authAccessToken: accToken,
                 authRefreshToken: refreshToken,
+                tokenExpiresAt: tokenExpiresAt,
                 isCurrent: players.isEmpty
             )
             players.append(newPlayer)
@@ -59,10 +61,11 @@ class PlayerDataManager {
     ///   - accToken: 访问令牌，默认为空字符串
     ///   - refreshToken: 刷新令牌，默认为空字符串
     ///   - xuid: Xbox用户ID，默认为空字符串
+    ///   - tokenExpiresAt: Token过期时间，默认为nil
     /// - Returns: 是否成功添加
-    func addPlayerSilently(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", refreshToken: String = "", xuid: String = "") -> Bool {
+    func addPlayerSilently(name: String, uuid: String? = nil, isOnline: Bool, avatarName: String, accToken: String = "", refreshToken: String = "", xuid: String = "", tokenExpiresAt: Date? = nil) -> Bool {
         do {
-            try addPlayer(name: name, uuid: uuid, isOnline: isOnline, avatarName: avatarName, accToken: accToken, refreshToken: refreshToken, xuid: xuid)
+            try addPlayer(name: name, uuid: uuid, isOnline: isOnline, avatarName: avatarName, accToken: accToken, refreshToken: refreshToken, xuid: xuid, tokenExpiresAt: tokenExpiresAt)
             return true
         } catch {
             let globalError = GlobalError.from(error)
