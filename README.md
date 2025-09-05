@@ -13,7 +13,7 @@
   [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
   [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg)](https://developer.apple.com/macos/)
   [![Homebrew](https://img.shields.io/badge/Homebrew-available-green.svg)](https://formulae.brew.sh/cask/swiftcraft-launcher)
-  [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&style=flat-square)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
+  [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
   
   [官网](https://suhang12332.github.io/swift-craft-launcher-web.github.io/) • [下载](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [文档](https://imreak.github.io)
   
