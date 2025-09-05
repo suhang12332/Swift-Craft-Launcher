@@ -164,7 +164,22 @@ struct MinecraftLaunchCommand {
     /// - Returns: 有效的 Java 路径
     /// - Throws: GlobalError 当 Java 路径无效时
     private func validateJavaPath() throws -> String {
-        let javaPath = game.javaPath.isEmpty ? GameSettingsManager.shared.defaultJavaPath : game.javaPath
+        var javaPath: String
+        
+        // 如果游戏有指定的Java路径，使用指定的路径
+        if !game.javaPath.isEmpty {
+            javaPath = game.javaPath
+        } else {
+            // 否则尝试自动匹配Java版本
+            if let recommendedJava = GameSettingsManager.shared.javaVersionManager.getRecommendedJavaVersion(for: game.gameVersion) {
+                javaPath = recommendedJava.path
+                Logger.shared.info("自动匹配Java版本: \(recommendedJava.displayName) (\(recommendedJava.version))")
+            } else {
+                // 如果自动匹配失败，使用默认路径
+                javaPath = GameSettingsManager.shared.defaultJavaPath
+                Logger.shared.warning("无法自动匹配Java版本，使用默认路径: \(javaPath)")
+            }
+        }
 
         guard !javaPath.isEmpty else {
             throw GlobalError.configuration(

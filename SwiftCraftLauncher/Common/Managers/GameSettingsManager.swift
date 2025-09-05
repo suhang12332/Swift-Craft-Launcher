@@ -3,6 +3,9 @@ import SwiftUI
 
 class GameSettingsManager: ObservableObject {
     @Published var allJavaPaths: [String: String] = [:]
+    
+    // 使用新的Java版本管理器
+    @Published var javaVersionManager = JavaVersionManager.shared
 
     private static func detectJavaPath() async -> String {
         // 尝试使用 java_home 命令获取 JAVA_HOME 路径
