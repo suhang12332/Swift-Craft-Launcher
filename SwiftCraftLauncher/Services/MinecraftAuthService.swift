@@ -137,7 +137,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
             // 使用JWT解析获取Minecraft token的真实过期时间
             let minecraftTokenExpiration = JWTDecoder.getMinecraftTokenExpiration(from: minecraftToken)
             Logger.shared.info("Minecraft token过期时间: \(minecraftTokenExpiration)")
-            
+
             // 创建包含正确过期时间的profile
             let profile = try await getMinecraftProfileThrowing(
                 accessToken: minecraftToken,
@@ -726,7 +726,6 @@ extension MinecraftAuthService {
             }
 
             return isExpired
-
         } else {
             // 如果没有存储的过期时间，尝试从JWT中解析
             if !player.authAccessToken.isEmpty {
