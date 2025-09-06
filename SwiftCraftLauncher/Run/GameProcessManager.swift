@@ -66,6 +66,11 @@ class GameProcessManager: ObservableObject {
             !process.isRunning ? gameId : nil
         }
 
+        // 如果没有需要清理的进程，直接返回
+        guard !terminatedGameIds.isEmpty else {
+            return
+        }
+
         for gameId in terminatedGameIds {
             gameProcesses.removeValue(forKey: gameId)
             processStates[gameId] = false
@@ -73,12 +78,25 @@ class GameProcessManager: ObservableObject {
         }
 
         // 通知状态管理器更新状态
-        if !terminatedGameIds.isEmpty {
-            Task { @MainActor in
-                for gameId in terminatedGameIds {
-                    GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
-                }
+        Task { @MainActor in
+            for gameId in terminatedGameIds {
+                GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
             }
+        }
+    }
+
+    /// 清理特定游戏的进程
+    /// - Parameter gameId: 游戏ID
+    func cleanupSpecificProcess(gameId: String) {
+        guard let process = gameProcesses[gameId] else {
+            return
+        }
+
+        // 检查进程是否已经终止
+        if !process.isRunning {
+            gameProcesses.removeValue(forKey: gameId)
+            processStates[gameId] = false
+            Logger.shared.debug("清理特定进程: \(gameId)")
         }
     }
 }

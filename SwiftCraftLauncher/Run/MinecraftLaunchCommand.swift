@@ -127,9 +127,10 @@ struct MinecraftLaunchCommand {
         let gameId = game.id
         process.terminationHandler = { _ in
             Task { @MainActor in
+                // 先更新状态，再清理进程
                 GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
-                // 清理进程管理器中的进程
-                GameProcessManager.shared.cleanupTerminatedProcesses()
+                // 清理进程管理器中的进程（只清理当前游戏）
+                GameProcessManager.shared.cleanupSpecificProcess(gameId: gameId)
             }
         }
 
