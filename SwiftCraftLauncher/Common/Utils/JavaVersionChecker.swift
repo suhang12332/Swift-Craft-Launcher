@@ -35,10 +35,9 @@ class JavaVersionChecker {
             completion(result)
             return
         }
-
-        let javaPath = path + "/java"
-        guard FileManager.default.fileExists(atPath: javaPath) else {
-            let error = "Java 可执行文件不存在: \(javaPath)"
+        // Resolve executable path robustly
+        guard let javaPath = resolveJavaExecutable(from: path) else {
+            let error = "Java 可执行文件不存在: \(path)"
             let result = JavaVersionResult(
                 version: "java.version.not_detected".localized(),
                 error: error
@@ -138,15 +137,73 @@ class JavaVersionChecker {
     /// - Parameter path: Java 安装路径
     /// - Returns: 是否有效
     func isValidJavaPath(_ path: String) -> Bool {
-        guard !path.isEmpty else { return false }
-        let javaPath = path + "/java"
-        return FileManager.default.fileExists(atPath: javaPath)
+        guard let _ = resolveJavaExecutable(from: path) else { return false }
+        return true
     }
 
     /// 获取 Java 可执行文件路径
     /// - Parameter path: Java 安装路径
     /// - Returns: Java 可执行文件路径
     func getJavaExecutablePath(from path: String) -> String {
-        return path.isEmpty ? "" : path + "/java"
+        return resolveJavaExecutable(from: path) ?? ""
+    }
+
+    /// 尝试解析并返回可用的 Java 可执行文件路径。
+    /// 支持常见 JDK 布局（例如 Azul/Zulu 11/17）。
+    private func resolveJavaExecutable(from rawPath: String) -> String? {
+        guard !rawPath.isEmpty else { return nil }
+        let fm = FileManager.default
+
+        // 规范化路径
+        var base = rawPath.trimmingCharacters(in: .whitespacesAndNewlines)
+        base = base.replacingOccurrences(of: "/Llbrary/", with: "/Library/")
+        base = (base as NSString).standardizingPath
+
+        // 备选候选列表（按优先级）
+        var candidates: [String] = []
+
+        // 如果传入的是到 bin 目录
+        if base.hasSuffix("/bin") {
+            candidates.append((base as NSString).appendingPathComponent("java"))
+        }
+
+        // 如果传入的是到 Contents/Home
+        if base.hasSuffix("/Contents/Home") {
+            candidates.append(((base as NSString).appendingPathComponent("bin") as NSString).appendingPathComponent("java"))
+        }
+
+        // 如果传入的是 JDK/JRE 根目录（以 .jdk 或 .jre 结尾）
+        if base.hasSuffix(".jdk") || base.hasSuffix(".jre") {
+            let contentsHome = ((base as NSString).appendingPathComponent("Contents") as NSString).appendingPathComponent("Home")
+            candidates.append(((contentsHome as NSString).appendingPathComponent("bin") as NSString).appendingPathComponent("java"))
+        }
+
+        // Azul/Zulu 通常位于 .../zulu-<ver>.jdk/Contents/Home 或 Home/bin
+        if base.contains("/JavaVirtualMachines/") {
+            let contentsHome = ((base as NSString).appendingPathComponent("Contents") as NSString).appendingPathComponent("Home")
+            let zuluBinJava = (((contentsHome as NSString).appendingPathComponent("bin") as NSString).appendingPathComponent("java"))
+            candidates.append(zuluBinJava)
+        }
+
+        // 如果传入已经是 Home/bin 目录
+        if base.hasSuffix("/Home/bin") {
+            candidates.append((base as NSString).appendingPathComponent("java"))
+        }
+
+        // 通用尝试：直接认为传入的是到 Home 目录
+        let homeBinJava = (((base as NSString).appendingPathComponent("bin") as NSString).appendingPathComponent("java"))
+        candidates.append(homeBinJava)
+
+        // 去重保序
+        var seen = Set<String>()
+        candidates = candidates.filter { seen.insert($0).inserted }
+
+        // 返回首个存在的可执行文件
+        for cand in candidates {
+            if fm.fileExists(atPath: cand) {
+                return cand
+            }
+        }
+        return nil
     }
 }

@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 /// Java版本信息
-struct JavaVersionInfo: Identifiable, Hashable {
+struct JavaVersionInfo: Identifiable, Hashable, Sendable {
     let id = UUID()
     let version: String
     let majorVersion: Int
@@ -35,7 +35,6 @@ struct JavaVersionInfo: Identifiable, Hashable {
 /// Java版本管理器
 class JavaVersionManager: ObservableObject {
     static let shared = JavaVersionManager()
-    
     @Published var allJavaVersions: [JavaVersionInfo] = []
     @Published var isScanning = false
     @Published var showMinorVersions = false
@@ -43,36 +42,33 @@ class JavaVersionManager: ObservableObject {
     private init() {
         // 从用户设置中读取是否显示小版本
         self.showMinorVersions = UserDefaults.standard.bool(forKey: "showMinorVersions")
-        
         // 异步扫描Java版本
         Task {
             await scanJavaVersions()
         }
     }
-    
     /// 扫描系统中的Java版本
     func scanJavaVersions() async {
         await MainActor.run {
             isScanning = true
         }
-        
         var javaVersions: [JavaVersionInfo] = []
-        
         // 使用 java_home -V 命令扫描所有Java版本
         if let output = try? await shell(["/usr/libexec/java_home", "-V"]) {
             let lines = output.components(separatedBy: "\n")
-            
             for line in lines {
-                let trimmed = line.trimmingCharacters(in: .whitespaces)
-                
-                // 使用正则表达式匹配版本号和路径
-                if let verRange = trimmed.range(of: "^[^,]+", options: .regularExpression),
-                   let pathRange = trimmed.range(of: "/Library/Java/JavaVirtualMachines/.*", options: .regularExpression) {
+                let trimmed = line.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                if let verRange = trimmed.range(of: "^[^,]+", options: String.CompareOptions.regularExpression),
+                   let pathRange = trimmed.range(of: "/Library/Java/JavaVirtualMachines/.*", options: String.CompareOptions.regularExpression) {
                     let version = String(trimmed[verRange])
                     let path = String(trimmed[pathRange]) + "/bin"
-                    
                     let javaInfo = JavaVersionInfo(version: version, path: path)
-                    javaVersions.append(javaInfo)
+                    // 仅添加可用的 Java，可执行文件存在才加入列表
+                    if JavaVersionChecker.shared.isValidJavaPath(javaInfo.path) {
+                        javaVersions.append(javaInfo)
+                    } else {
+                        // print("Filtered invalid Java path: \(javaInfo.path)")
+                    }
                 }
             }
         }
@@ -84,21 +80,18 @@ class JavaVersionManager: ObservableObject {
             }
             return first.version > second.version
         }
-        
         await MainActor.run {
             self.allJavaVersions = javaVersions
             self.isScanning = false
         }
     }
     
-    /// 获取显示用的Java版本列表
     var displayJavaVersions: [JavaVersionInfo] {
         if showMinorVersions {
             return allJavaVersions
         } else {
             // 只显示每个主版本号的最新版本
             var majorVersions: [Int: JavaVersionInfo] = [:]
-            
             for javaInfo in allJavaVersions {
                 if majorVersions[javaInfo.majorVersion] == nil {
                     majorVersions[javaInfo.majorVersion] = javaInfo
@@ -150,17 +143,14 @@ class JavaVersionManager: ObservableObject {
             // Java 21 兼容性
             return allJavaVersions.first { $0.majorVersion >= 21 }
         }
-        
         // 返回最新的Java版本作为备选
         return allJavaVersions.first
     }
-    
     /// 设置是否显示小版本
     func setShowMinorVersions(_ show: Bool) {
         showMinorVersions = show
         UserDefaults.standard.set(show, forKey: "showMinorVersions")
     }
-    
     /// 执行shell命令
     private func shell(_ args: [String]) async throws -> String {
         let task = Process()
@@ -169,13 +159,8 @@ class JavaVersionManager: ObservableObject {
         let pipe = Pipe()
         task.standardOutput = pipe
         task.standardError = pipe
-        
-        // 设置命令执行超时时间（30秒）
         let timeout: TimeInterval = 30.0
-        
         try task.run()
-        
-        // 使用 async/await 和 continuation 模式处理异步执行
         return try await withCheckedThrowingContinuation { continuation in
             // 在后台队列中监控任务执行，使用 userInitiated QoS 避免优先级反转
             DispatchQueue.global(qos: .userInitiated).async {
@@ -194,15 +179,9 @@ class JavaVersionManager: ObservableObject {
                     }
                 }
                 timeoutTimer.resume()
-                
-                // 监控任务完成状态
                 DispatchQueue.global(qos: .userInitiated).async {
                     task.waitUntilExit()
-                    
-                    // 取消超时定时器
                     timeoutTimer.cancel()
-                    
-                    // 读取命令输出
                     let data = pipe.fileHandleForReading.readDataToEndOfFile()
                     let output = String(data: data, encoding: .utf8) ?? ""
                     continuation.resume(returning: output)

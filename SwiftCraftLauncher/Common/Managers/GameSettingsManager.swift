@@ -123,6 +123,12 @@ class GameSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    // 是否在启动游戏时自动选择推荐的 Java 版本
+    @AppStorage("autoSelectJavaAtLaunch")
+    var autoSelectJavaAtLaunch: Bool = true {
+        didSet { objectWillChange.send() }
+    }
+
     @AppStorage("minecraftVersionManifestURL")
     var minecraftVersionManifestURL: String = "https://launchermeta.mojang.com/mc/game/version_manifest.json" {
         didSet { objectWillChange.send() }

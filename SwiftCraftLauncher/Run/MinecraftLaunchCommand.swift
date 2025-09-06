@@ -109,17 +109,17 @@ struct MinecraftLaunchCommand {
     /// - Parameter command: 启动命令数组
     /// - Throws: GlobalError 当启动失败时
     private func launchGameProcess(command: [String]) async throws {
-        // 验证 Java 路径
-        let javaPath = try validateJavaPath()
+        // 验证并解析 Java 可执行文件路径
+        let javaExecutable = try validateJavaPath()
 
         // 获取游戏工作目录
         let gameWorkingDirectory = AppPaths.profileDirectory(gameName: game.gameName)
 
-        Logger.shared.info("启动游戏进程: \(javaPath) \(command.joined(separator: " "))")
+        Logger.shared.info("启动游戏进程: \(javaExecutable) \(command.joined(separator: " "))")
         Logger.shared.info("游戏工作目录: \(gameWorkingDirectory.path)")
 
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: javaPath + "/java")
+        process.executableURL = URL(fileURLWithPath: javaExecutable)
         process.arguments = command
         process.currentDirectoryURL = gameWorkingDirectory
 
@@ -160,28 +160,34 @@ struct MinecraftLaunchCommand {
         }
     }
 
-    /// 验证 Java 路径
-    /// - Returns: 有效的 Java 路径
+    /// 验证 Java 路径并解析为可执行文件
+    /// - Returns: 有效的 Java 可执行文件完整路径
     /// - Throws: GlobalError 当 Java 路径无效时
     private func validateJavaPath() throws -> String {
-        var javaPath: String
-        
+        var javaPathCandidate: String
+        let settings = GameSettingsManager.shared
+
         // 如果游戏有指定的Java路径，使用指定的路径
         if !game.javaPath.isEmpty {
-            javaPath = game.javaPath
+            javaPathCandidate = game.javaPath
         } else {
-            // 否则尝试自动匹配Java版本
-            if let recommendedJava = GameSettingsManager.shared.javaVersionManager.getRecommendedJavaVersion(for: game.gameVersion) {
-                javaPath = recommendedJava.path
+            // 根据设置决定是否自动选择推荐的 Java
+            if settings.autoSelectJavaAtLaunch,
+               let recommendedJava = settings.javaVersionManager.getRecommendedJavaVersion(for: game.gameVersion) {
+                javaPathCandidate = recommendedJava.path
                 Logger.shared.info("自动匹配Java版本: \(recommendedJava.displayName) (\(recommendedJava.version))")
             } else {
-                // 如果自动匹配失败，使用默认路径
-                javaPath = GameSettingsManager.shared.defaultJavaPath
-                Logger.shared.warning("无法自动匹配Java版本，使用默认路径: \(javaPath)")
+                // 使用默认路径
+                javaPathCandidate = settings.defaultJavaPath
+                if settings.autoSelectJavaAtLaunch {
+                    Logger.shared.warning("无法自动匹配Java版本，使用默认路径: \(javaPathCandidate)")
+                } else {
+                    Logger.shared.info("未启用自动选择Java，使用默认路径: \(javaPathCandidate)")
+                }
             }
         }
 
-        guard !javaPath.isEmpty else {
+        guard !javaPathCandidate.isEmpty else {
             throw GlobalError.configuration(
                 chineseMessage: "Java 路径未设置",
                 i18nKey: "error.configuration.java_path_not_set",
@@ -189,12 +195,13 @@ struct MinecraftLaunchCommand {
             )
         }
 
-        let javaExecutable = javaPath + "/java"
+        // 解析实际可执行文件
+        let javaExecutable = JavaVersionChecker.shared.getJavaExecutablePath(from: javaPathCandidate)
         let fileManager = FileManager.default
 
-        guard fileManager.fileExists(atPath: javaExecutable) else {
+        guard !javaExecutable.isEmpty, fileManager.fileExists(atPath: javaExecutable) else {
             throw GlobalError.configuration(
-                chineseMessage: "Java 可执行文件不存在: \(javaExecutable)",
+                chineseMessage: "Java 可执行文件不存在: \(javaPathCandidate)",
                 i18nKey: "error.configuration.java_executable_not_found",
                 level: .popup
             )
@@ -209,7 +216,7 @@ struct MinecraftLaunchCommand {
             )
         }
 
-        return javaPath
+        return javaExecutable
     }
 
     /// 处理启动错误

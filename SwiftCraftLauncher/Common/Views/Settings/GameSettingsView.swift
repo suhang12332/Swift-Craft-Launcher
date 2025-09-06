@@ -14,7 +14,6 @@ public struct GameSettingsView: View {
     @State private var globalMemoryRange: ClosedRange<Double> = 512...4096
 
     public init() {}
-
     /// 检查 Java 版本
     /// - Parameter path: Java 安装路径
     private func checkJavaVersion(at path: String) {
@@ -28,16 +27,13 @@ public struct GameSettingsView: View {
     private func calculateCacheInfoSafely() {
         cacheManager.calculateMetaCacheInfo()
     }
-    
     /// 检查Java路径是否匹配
     private func isJavaPathSelected(_ javaInfo: JavaVersionInfo) -> Bool {
         let currentPath = gameSettings.defaultJavaPath
         let targetPath = javaInfo.path
-        
         // 标准化路径进行比较
         let normalizedCurrent = (currentPath as NSString).standardizingPath
         let normalizedTarget = (targetPath as NSString).standardizingPath
-        
         return normalizedCurrent == normalizedTarget
     }
 
@@ -118,11 +114,9 @@ public struct GameSettingsView: View {
                 }
             }
             .padding(.bottom, 20)
-            
             // 分割线
             Divider()
                 .padding(.vertical, 10)
-            
             // Java版本管理设置
             GridRow {
                 Text("settings.java_management.title".localized())
@@ -138,7 +132,6 @@ public struct GameSettingsView: View {
                         .buttonStyle(.bordered)
                         .controlSize(.small)
                         .disabled(gameSettings.javaVersionManager.isScanning)
-                        
                         if gameSettings.javaVersionManager.isScanning {
                             ProgressView()
                                 .scaleEffect(0.8)
@@ -146,9 +139,7 @@ public struct GameSettingsView: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        
                         Spacer()
-                        
                         Toggle("settings.java_management.show_minor_versions".localized(), isOn: $gameSettings.javaVersionManager.showMinorVersions)
                             .toggleStyle(SwitchToggleStyle())
                             .controlSize(.mini)
@@ -157,14 +148,12 @@ public struct GameSettingsView: View {
                                 gameSettings.javaVersionManager.setShowMinorVersions(newValue)
                             }
                     }
-                    
                     // 显示扫描到的Java版本
                     if !gameSettings.javaVersionManager.displayJavaVersions.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("settings.java_management.detected_versions".localized())
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                            
                             ForEach(gameSettings.javaVersionManager.displayJavaVersions.prefix(5)) { javaInfo in
                                 Button(action: {
                                     gameSettings.defaultJavaPath = javaInfo.path
@@ -179,9 +168,7 @@ public struct GameSettingsView: View {
                                                 .font(.caption2)
                                                 .foregroundColor(.secondary)
                                         }
-                                        
                                         Spacer()
-                                        
                                         // 显示当前选中的版本
                                         if isJavaPathSelected(javaInfo) {
                                             Image(systemName: "checkmark.circle.fill")
@@ -205,6 +192,14 @@ public struct GameSettingsView: View {
                         }
                         .padding(.top, 4)
                     }
+                    // 是否在启动游戏时自动选择推荐的 Java
+                    Toggle(
+                        "settings.java_management.auto_select_at_launch".localized(),
+                        isOn: $gameSettings.autoSelectJavaAtLaunch
+                    )
+                    .toggleStyle(SwitchToggleStyle())
+                    .controlSize(.mini)
+                    .font(.caption)
                 }
                 .gridColumnAlignment(.leading)
             }
