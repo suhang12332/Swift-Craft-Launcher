@@ -115,6 +115,12 @@ extension String {
     public func localized(
         _ bundle: Bundle = LanguageManager.shared.bundle
     ) -> String {
-        bundle.localizedString(forKey: self, value: self, table: nil)
+        // Try selected language bundle first
+        let value = bundle.localizedString(forKey: self, value: self, table: nil)
+        if value == self, bundle != .main {
+            // Fallback to main bundle (base language) to avoid showing raw keys
+            return Bundle.main.localizedString(forKey: self, value: self, table: nil)
+        }
+        return value
     }
 }

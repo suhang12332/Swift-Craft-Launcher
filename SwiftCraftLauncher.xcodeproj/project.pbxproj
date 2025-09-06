@@ -14,7 +14,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		904915402E6C41B0004B14B9 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "Swift Craft Launcher.app"; path = "/Users/su/Development/XCodeProjects/SwiftCraftLauncher/build/Debug/Swift Craft Launcher.app"; sourceTree = "<absolute>"; };
+		BE59AB1B2E6B155200ECAB58 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -44,6 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */,
+				BE59AB1B2E6B155200ECAB58 /* Swift Craft Launcher.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -74,7 +75,7 @@
 				90E123456789ABCD0002 /* Sparkle */,
 			);
 			productName = SwiftCraftLauncher;
-			productReference = 904915402E6C41B0004B14B9 /* Swift Craft Launcher.app */;
+			productReference = BE59AB1B2E6B155200ECAB58 /* Swift Craft Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

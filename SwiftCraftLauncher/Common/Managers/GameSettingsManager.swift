@@ -3,6 +3,9 @@ import SwiftUI
 
 class GameSettingsManager: ObservableObject {
     @Published var allJavaPaths: [String: String] = [:]
+    
+    // 使用新的Java版本管理器
+    @Published var javaVersionManager = JavaVersionManager.shared
 
     private static func detectJavaPath() async -> String {
         // 尝试使用 java_home 命令获取 JAVA_HOME 路径
@@ -120,6 +123,12 @@ class GameSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    // 是否在启动游戏时自动选择推荐的 Java 版本
+    @AppStorage("autoSelectJavaAtLaunch")
+    var autoSelectJavaAtLaunch: Bool = true {
+        didSet { objectWillChange.send() }
+    }
+
     @AppStorage("minecraftVersionManifestURL")
     var minecraftVersionManifestURL: String = "https://launchermeta.mojang.com/mc/game/version_manifest.json" {
         didSet { objectWillChange.send() }
@@ -152,12 +161,12 @@ class GameSettingsManager: ObservableObject {
 
     /// 计算系统最大可用内存分配（基于物理内存的70%）
     var maximumMemoryAllocation: Int {
-    let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
-    let physicalMemoryMB = physicalMemoryBytes / 1_048_576
-    let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
-    let roundedMax = (calculatedMax / 512) * 512
-    return max(roundedMax, 512)
-}
+        let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
+        let physicalMemoryMB = physicalMemoryBytes / 1_048_576
+        let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
+        let roundedMax = (calculatedMax / 512) * 512
+        return max(roundedMax, 512)
+    }
 
     private init() {
         // 首先使用默认值初始化
