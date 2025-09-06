@@ -1,7 +1,7 @@
 <div align="center">
   <img src="SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="SwiftCraftLauncher" width="128" height="128">
   
-  # Swift Craft Launcher
+  # Swift Craft Launcher1
   
   **现代化的 macOS Minecraft 启动器**
   
