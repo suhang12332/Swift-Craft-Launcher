@@ -1,6 +1,0 @@
-/* Java 管理 - 设置 */
-"settings.java_management.title" = "Java 版本管理";
-"settings.java_management.scan_button" = "扫描 Java 版本";
-"settings.java_management.scanning" = "正在扫描...";
-"settings.java_management.show_minor_versions" = "显示小版本";
-"settings.java_management.detected_versions" = "检测到的 Java 版本:";

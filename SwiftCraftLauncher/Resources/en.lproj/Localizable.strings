@@ -1,6 +1,0 @@
-/* Java Management - Settings */
-"settings.java_management.title" = "Java Version Management";
-"settings.java_management.scan_button" = "Scan Java Versions";
-"settings.java_management.scanning" = "Scanning...";
-"settings.java_management.show_minor_versions" = "Show minor versions";
-"settings.java_management.detected_versions" = "Detected Java versions:";

@@ -155,12 +155,12 @@ class GameSettingsManager: ObservableObject {
 
     /// 计算系统最大可用内存分配（基于物理内存的70%）
     var maximumMemoryAllocation: Int {
-    let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
-    let physicalMemoryMB = physicalMemoryBytes / 1_048_576
-    let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
-    let roundedMax = (calculatedMax / 512) * 512
-    return max(roundedMax, 512)
-}
+        let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
+        let physicalMemoryMB = physicalMemoryBytes / 1_048_576
+        let calculatedMax = Int(Double(physicalMemoryMB) * 0.7)
+        let roundedMax = (calculatedMax / 512) * 512
+        return max(roundedMax, 512)
+    }
 
     private init() {
         // 首先使用默认值初始化

@@ -8,11 +8,9 @@ struct JavaVersionInfo: Identifiable, Hashable {
     let majorVersion: Int
     let path: String
     let displayName: String
-    
     init(version: String, path: String) {
         self.version = version
         self.path = path
-        
         // 解析主版本号
         let components = version.components(separatedBy: ".")
         if let firstComponent = components.first, let major = Int(firstComponent) {
@@ -25,7 +23,6 @@ struct JavaVersionInfo: Identifiable, Hashable {
                 self.majorVersion = 0
             }
         }
-        
         // 生成显示名称
         if majorVersion >= 9 {
             self.displayName = "Java \(majorVersion)"
@@ -42,7 +39,7 @@ class JavaVersionManager: ObservableObject {
     @Published var allJavaVersions: [JavaVersionInfo] = []
     @Published var isScanning = false
     @Published var showMinorVersions = false
-    
+
     private init() {
         // 从用户设置中读取是否显示小版本
         self.showMinorVersions = UserDefaults.standard.bool(forKey: "showMinorVersions")
