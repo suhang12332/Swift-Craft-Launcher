@@ -78,7 +78,7 @@ public struct ContributorsView: View {
             name: "laiTM",
             url: "",
             avatar: "👩‍💻",
-            contributions: [.test]
+            contributions: [.test, .design]
         ),
     ]
 
