@@ -125,12 +125,12 @@ public struct GameSettingsView: View {
             
             // Java版本管理设置
             GridRow {
-                Text("Java版本管理")
+                Text("settings.java_management.title".localized())
                     .gridColumnAlignment(.trailing)
                 VStack(alignment: .leading, spacing: 12) {
                     // 扫描按钮和显示设置
                     HStack {
-                        Button("扫描Java版本") {
+                        Button("settings.java_management.scan_button".localized()) {
                             Task {
                                 await gameSettings.javaVersionManager.scanJavaVersions()
                             }
@@ -142,14 +142,14 @@ public struct GameSettingsView: View {
                         if gameSettings.javaVersionManager.isScanning {
                             ProgressView()
                                 .scaleEffect(0.8)
-                            Text("正在扫描...")
+                            Text("settings.java_management.scanning".localized())
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
                         
                         Spacer()
                         
-                        Toggle("显示小版本", isOn: $gameSettings.javaVersionManager.showMinorVersions)
+                        Toggle("settings.java_management.show_minor_versions".localized(), isOn: $gameSettings.javaVersionManager.showMinorVersions)
                             .toggleStyle(SwitchToggleStyle())
                             .controlSize(.mini)
                             .font(.caption)
@@ -161,7 +161,7 @@ public struct GameSettingsView: View {
                     // 显示扫描到的Java版本
                     if !gameSettings.javaVersionManager.displayJavaVersions.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("检测到的Jvav版本:")
+                            Text("settings.java_management.detected_versions".localized())
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                             

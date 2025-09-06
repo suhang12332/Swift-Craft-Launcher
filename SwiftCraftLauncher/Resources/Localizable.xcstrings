@@ -49156,9 +49156,6 @@
         }
       }
     },
-    "Java版本管理" : {
-
-    },
     "keep.inventory" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -80441,20 +80438,8 @@
         }
       }
     },
-    "扫描Java版本" : {
-
-    },
-    "显示小版本" : {
-
-    },
     "暂不可用" : {
       "shouldTranslate" : false
-    },
-    "检测到的Java版本:" : {
-
-    },
-    "正在扫描..." : {
-
     }
   },
   "version" : "1.1"
