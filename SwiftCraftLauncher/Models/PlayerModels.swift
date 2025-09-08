@@ -16,8 +16,6 @@ struct Player: Identifiable, Codable, Equatable {
     var authAccessToken: String
     /// Refresh Token（用于自动刷新访问令牌）
     var authRefreshToken: String
-    /// Token过期时间（仅对在线账户有效）
-    var tokenExpiresAt: Date?
     /// 账号创建时间
     let createdAt: Date
 
@@ -61,7 +59,6 @@ struct Player: Identifiable, Codable, Equatable {
         authXuid: String,
         authAccessToken: String,
         authRefreshToken: String = "",
-        tokenExpiresAt: Date? = nil,
         createdAt: Date = Date(),
         lastPlayed: Date = Date(),
         isCurrent: Bool = false,
@@ -83,7 +80,6 @@ struct Player: Identifiable, Codable, Equatable {
         self.authAccessToken = authAccessToken
         self.authRefreshToken = authRefreshToken
         self.authXuid = authXuid
-        self.tokenExpiresAt = tokenExpiresAt
     }
 
     /// 更新指定游戏的记录

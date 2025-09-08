@@ -106,7 +106,6 @@ enum PlayerSkinService {
                 authXuid: player.authXuid,
                 authAccessToken: player.authAccessToken,
                 authRefreshToken: player.authRefreshToken,
-                tokenExpiresAt: player.tokenExpiresAt,
                 createdAt: player.createdAt,
                 lastPlayed: player.lastPlayed,
                 isCurrent: player.isCurrent,
