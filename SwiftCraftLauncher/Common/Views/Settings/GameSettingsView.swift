@@ -5,36 +5,13 @@ public struct GameSettingsView: View {
     @StateObject private var cacheManager = CacheManager()
 
     @ObservedObject private var gameSettings = GameSettingsManager.shared
-    @State private var showJavaPathPicker = false
-    @State private var javaVersion: String = "java.version.not_detected"
-        .localized()
-    @State private var javaDetectionError: String?
 
     // 内存区间
     @State private var globalMemoryRange: ClosedRange<Double> = 512...4096
 
-    public init() {}
-    /// 检查 Java 版本
-    /// - Parameter path: Java 安装路径
-    private func checkJavaVersion(at path: String) {
-        JavaVersionChecker.shared.checkJavaVersion(at: path) { result in
-            self.javaVersion = result.version
-            self.javaDetectionError = result.error
-        }
-    }
-
     /// 安全地计算缓存信息
     private func calculateCacheInfoSafely() {
         cacheManager.calculateMetaCacheInfo()
-    }
-    /// 检查Java路径是否匹配
-    private func isJavaPathSelected(_ javaInfo: JavaVersionInfo) -> Bool {
-        let currentPath = gameSettings.defaultJavaPath
-        let targetPath = javaInfo.path
-        // 标准化路径进行比较
-        let normalizedCurrent = (currentPath as NSString).standardizingPath
-        let normalizedTarget = (targetPath as NSString).standardizingPath
-        return normalizedCurrent == normalizedTarget
     }
 
     public var body: some View {
@@ -56,154 +33,6 @@ public struct GameSettingsView: View {
             }
             .padding(.bottom, 20)
 
-            GridRow {
-                Text("settings.default_java_path.label".localized())
-                    .gridColumnAlignment(.trailing)
-                DirectorySettingRow(
-                    title: "settings.default_java_path.label".localized(),
-                    path: gameSettings.defaultJavaPath.isEmpty
-                        ? AppConstants.defaultJava + "/java"
-                        : gameSettings.defaultJavaPath + "/java",
-                    description: gameSettings.defaultJavaPath.isEmpty
-                        ? AppConstants.defaultJava + "/java"
-                        : gameSettings.defaultJavaPath + "/java" + javaVersion,
-                    onChoose: { showJavaPathPicker = true },
-                    onReset: {
-                        gameSettings.defaultJavaPath = AppConstants.defaultJava
-                    }
-                )
-                .fixedSize()
-                .fileImporter(
-                    isPresented: $showJavaPathPicker,
-                    allowedContentTypes: [.directory],
-                    allowsMultipleSelection: false
-                ) { result in
-                    switch result {
-                    case .success(let urls):
-                        if let url = urls.first {
-                            gameSettings.defaultJavaPath = url.path
-                        }
-                    case .failure(let error):
-                        GlobalErrorHandler.shared.handle(
-                            GlobalError.fileSystem(
-                                chineseMessage:
-                                    "选择 Java 目录失败: \(error.localizedDescription)",
-                                i18nKey:
-                                    "error.filesystem.java_directory_selection_failed",
-                                level: .notification
-                            )
-                        )
-                    }
-                }
-                .onAppear {
-                    checkJavaVersion(
-                        at: gameSettings.defaultJavaPath.isEmpty
-                            ? AppConstants.defaultJava
-                            : gameSettings.defaultJavaPath
-                    )
-                }
-                .onChange(of: gameSettings.defaultJavaPath) { _, newPath in
-                    checkJavaVersion(
-                        at: newPath.isEmpty ? AppConstants.defaultJava : newPath
-                    )
-                }
-                if let error = javaDetectionError {
-                    Text(error)
-                        .font(.caption)
-                        .foregroundColor(.red)
-                }
-            }
-            .padding(.bottom, 20)
-            // 分割线
-            Divider()
-                .padding(.vertical, 10)
-            // Java版本管理设置
-            GridRow {
-                Text("settings.java_management.title".localized())
-                    .gridColumnAlignment(.trailing)
-                VStack(alignment: .leading, spacing: 12) {
-                    // 扫描按钮和显示设置
-                    HStack {
-                        Button("settings.java_management.scan_button".localized()) {
-                            Task {
-                                await gameSettings.javaVersionManager.scanJavaVersions()
-                            }
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.small)
-                        .disabled(gameSettings.javaVersionManager.isScanning)
-                        if gameSettings.javaVersionManager.isScanning {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                            Text("settings.java_management.scanning".localized())
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        Spacer()
-                        Toggle("settings.java_management.show_minor_versions".localized(), isOn: $gameSettings.javaVersionManager.showMinorVersions)
-                            .toggleStyle(SwitchToggleStyle())
-                            .controlSize(.mini)
-                            .font(.caption)
-                            .onChange(of: gameSettings.javaVersionManager.showMinorVersions) { _, newValue in
-                                gameSettings.javaVersionManager.setShowMinorVersions(newValue)
-                            }
-                    }
-                    // 显示扫描到的Java版本
-                    if !gameSettings.javaVersionManager.displayJavaVersions.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("settings.java_management.detected_versions".localized())
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            ForEach(gameSettings.javaVersionManager.displayJavaVersions.prefix(5)) { javaInfo in
-                                Button(action: {
-                                    gameSettings.defaultJavaPath = javaInfo.path
-                                }) {
-                                    HStack {
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            Text(javaInfo.displayName)
-                                                .font(.caption)
-                                                .fontWeight(.medium)
-                                                .foregroundColor(.primary)
-                                            Text("(\(javaInfo.version))")
-                                                .font(.caption2)
-                                                .foregroundColor(.secondary)
-                                        }
-                                        Spacer()
-                                        // 显示当前选中的版本
-                                        if isJavaPathSelected(javaInfo) {
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .foregroundColor(.blue)
-                                                .font(.caption)
-                                        } else {
-                                            Image(systemName: "circle")
-                                                .foregroundColor(.gray)
-                                                .font(.caption)
-                                        }
-                                    }
-                                    .padding(.vertical, 4)
-                                    .padding(.horizontal, 8)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 6)
-                                            .fill(isJavaPathSelected(javaInfo) ? Color.blue.opacity(0.1) : Color.clear)
-                                    )
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                            }
-                        }
-                        .padding(.top, 4)
-                    }
-                    // 是否在启动游戏时自动选择推荐的 Java
-                    Toggle(
-                        "settings.java_management.auto_select_at_launch".localized(),
-                        isOn: $gameSettings.autoSelectJavaAtLaunch
-                    )
-                    .toggleStyle(SwitchToggleStyle())
-                    .controlSize(.mini)
-                    .font(.caption)
-                }
-                .gridColumnAlignment(.leading)
-            }
-            .padding(.bottom, 20)
             GridRow {
                 Text("settings.default_memory_allocation.label".localized())
                     .gridColumnAlignment(.trailing)

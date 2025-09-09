@@ -8,6 +8,9 @@ enum AppPaths {
     // }
         return .applicationSupportDirectory.appendingPathComponent(Bundle.main.appName)
     }
+    static var runtimeDirectory: URL {
+        launcherSupportDirectory.appendingPathComponent("runtime")
+    }
     static var metaDirectory: URL {
         launcherSupportDirectory.appendingPathComponent("meta")
     }

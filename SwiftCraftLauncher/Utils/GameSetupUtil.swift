@@ -113,6 +113,8 @@ class GameSetupUtil: ObservableObject {
             // 下载 Mojang manifest
             let downloadedManifest = try await fetchMojangManifest(from: mojangVersion.url)
 
+            try await JavaManager.shared.ensureJavaExists(version: downloadedManifest.javaVersion.component)
+
             // 设置文件管理器
             let fileManager = try await setupFileManager(manifest: downloadedManifest, modLoader: gameInfo.modLoader)
 
@@ -140,7 +142,7 @@ class GameSetupUtil: ObservableObject {
                 neoForgeResult: selectedModLoader.lowercased() == "neoforge" ? modLoaderResult : nil,
                 quiltResult: selectedModLoader.lowercased() == "quilt" ? modLoaderResult : nil
             )
-
+            gameInfo.javaPath = JavaManager.shared.findJavaExecutable(version: downloadedManifest.javaVersion.component)
             // 保存游戏配置
             gameRepository.addGameSilently(gameInfo)
 
