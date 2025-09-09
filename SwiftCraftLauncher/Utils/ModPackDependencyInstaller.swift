@@ -166,34 +166,15 @@ enum ModPackDependencyInstaller {
             return true
         }
     }
-
+    
     /// 下载单个文件
     /// - Parameters:
     ///   - file: 文件信息
     ///   - resourceDir: 资源目录
     /// - Returns: 是否下载成功
     private static func downloadSingleFile(file: ModrinthIndexFile, resourceDir: URL) async -> Bool {
-        // 检查是否是 CurseForge 格式的虚拟文件
-        if file.path.hasPrefix("mods/curseforge_") && file.downloads.isEmpty {
-            // 从虚拟路径中提取项目ID和文件ID
-            let pathComponents = file.path.replacingOccurrences(of: "mods/curseforge_", with: "")
-                .replacingOccurrences(of: ".jar", with: "")
-                .split(separator: "_")
-            
-            if pathComponents.count == 2,
-               let projectId = Int(pathComponents[0]),
-               let fileId = Int(pathComponents[1]) {
-                Logger.shared.info("检测到 CurseForge 文件: \(projectId)/\(fileId)")
-                return await CurseForgeFileDownloader.downloadFile(
-                    projectId: projectId,
-                    fileId: fileId,
-                    resourceDir: resourceDir
-                )
-            } else {
-                Logger.shared.error("无法解析 CurseForge 虚拟路径: \(file.path)")
-                return false
-            }
-        }
+        // 现在所有文件（包括 CurseForge）都使用统一的下载逻辑
+        // CurseForge 文件在解析阶段已经获得了真实的下载URL
         
         // 原有的 Modrinth 文件下载逻辑
         guard let urlString = file.downloads.first, !urlString.isEmpty else {
@@ -209,7 +190,7 @@ enum ModPackDependencyInstaller {
             )
 
             // 只对 Modrinth 文件保存到缓存，CurseForge 文件当作本地文件处理
-            if !file.path.hasPrefix("mods/curseforge_") {
+            if file.source == .modrinth {
                 if let hash = ModScanner.sha1Hash(of: downloadedFile) {
                     // 使用fetchModrinthDetail获取真实的项目详情
                     await withCheckedContinuation { continuation in
@@ -514,13 +495,46 @@ enum ModPackDependencyInstaller {
 
         // 检查是否是 CurseForge 格式的依赖（纯数字 ID）
         if let curseForgeProjectId = Int(projectId), let versionId = dep.versionId, let curseForgeFileId = Int(versionId) {
-            // CurseForge 格式：使用 CurseForgeFileDownloader 下载
+            // CurseForge 格式：获取文件详情并使用统一下载逻辑
             Logger.shared.info("检测到 CurseForge 格式依赖: \(curseForgeProjectId)/\(curseForgeFileId)")
-            return await CurseForgeFileDownloader.downloadFile(
-                projectId: curseForgeProjectId,
-                fileId: curseForgeFileId,
-                resourceDir: resourceDir
-            )
+            
+            guard let fileDetail = await CurseForgeService.fetchFileDetail(projectId: curseForgeProjectId, fileId: curseForgeFileId) else {
+                Logger.shared.error("无法获取 CurseForge 文件详情: \(curseForgeProjectId)/\(curseForgeFileId)")
+                return false
+            }
+            
+            // 确定下载URL
+            let downloadUrl: String
+            if let directUrl = fileDetail.downloadUrl, !directUrl.isEmpty {
+                downloadUrl = directUrl
+            } else {
+                // 使用配置的备用下载地址
+                downloadUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(fileId: curseForgeFileId, fileName: fileDetail.fileName).absoluteString
+            }
+            
+            // 确定子目录
+            let subDirectory = getSubDirectoryForFileName(fileDetail.fileName)
+            let destinationPath = resourceDir.appendingPathComponent(subDirectory).appendingPathComponent(fileDetail.fileName)
+            
+            // 确保目录存在
+            do {
+                try FileManager.default.createDirectory(
+                    at: destinationPath.deletingLastPathComponent(),
+                    withIntermediateDirectories: true
+                )
+                
+                // 使用统一下载器下载
+                let _ = try await DownloadManager.downloadFile(
+                    urlString: downloadUrl,
+                    destinationURL: destinationPath,
+                    expectedSha1: nil
+                )
+                
+                return true
+            } catch {
+                Logger.shared.error("下载 CurseForge 文件失败: \(fileDetail.fileName) - \(error.localizedDescription)")
+                return false
+            }
         } else {
             // Modrinth 格式：使用原有逻辑
             if let versionId = dep.versionId {
@@ -668,6 +682,31 @@ enum ModPackDependencyInstaller {
         } catch {
             Logger.shared.error("下载依赖失败: \(error.localizedDescription)")
             return false
+        }
+    }
+    
+    /// 根据文件名确定应该下载到的子目录
+    /// - Parameter fileName: 文件名
+    /// - Returns: 子目录名称
+    private static func getSubDirectoryForFileName(_ fileName: String) -> String {
+        let fileExtension = fileName.lowercased()
+        
+        // 根据文件扩展名判断文件类型
+        if fileExtension.hasSuffix(".jar") {
+            return "mods"
+        } else if fileExtension.hasSuffix(".zip") {
+            // ZIP 文件可能是资源包、数据包或模组
+            // 这里默认作为模组处理，因为 CurseForge 上的 ZIP 文件大多是模组
+            return "mods"
+        } else if fileExtension.hasSuffix(".mcpack") {
+            return "resourcepacks"
+        } else if fileExtension.hasSuffix(".mcworld") {
+            return "saves"
+        } else if fileExtension.hasSuffix(".mcaddon") {
+            return "mods"
+        } else {
+            // 默认作为模组处理
+            return "mods"
         }
     }
 }

@@ -295,9 +295,8 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         }
         
         // 如果不是 Modrinth 格式，尝试解析 CurseForge 格式
-        if let curseForgeInfo = await CurseForgeManifestParser.parseManifest(extractedPath: extractedPath) {
-            // 将 CurseForge 格式转换为 Modrinth 格式
-            return convertCurseForgeToModrinthIndex(curseForgeInfo)
+        if let modrinthInfo = await CurseForgeManifestParser.parseManifest(extractedPath: extractedPath) {
+            return modrinthInfo
         }
         
         // 都不是支持的格式
@@ -383,35 +382,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         }
     }
     
-    /// 将 CurseForge 索引信息转换为 Modrinth 索引信息
-    /// - Parameter curseForgeInfo: CurseForge 索引信息
-    /// - Returns: Modrinth 索引信息
-    private func convertCurseForgeToModrinthIndex(_ curseForgeInfo: CurseForgeIndexInfo) -> ModrinthIndexInfo {
-        Logger.shared.info("转换 CurseForge 格式到 Modrinth 格式")
-        
-        // CurseForge 的 files 应该转换为 Modrinth 的 files，而不是 dependencies
-        // 创建虚拟的 ModrinthIndexFile 来兼容现有系统
-        let modrinthFiles = curseForgeInfo.files.map { file in
-            ModrinthIndexFile(
-                path: "mods/curseforge_\(file.projectID)_\(file.fileID).jar", // 虚拟路径
-                hashes: [:], // CurseForge 不提供哈希
-                downloads: [], // 将通过 CurseForgeFileDownloader 下载
-                fileSize: 0, // 未知大小
-                env: nil // 默认环境
-            )
-        }
-        
-        return ModrinthIndexInfo(
-            gameVersion: curseForgeInfo.gameVersion,
-            loaderType: curseForgeInfo.loaderType,
-            loaderVersion: curseForgeInfo.loaderVersion,
-            modPackName: curseForgeInfo.modPackName,
-            modPackVersion: curseForgeInfo.modPackVersion,
-            summary: curseForgeInfo.author.map { "作者: \($0)" },
-            files: modrinthFiles, // CurseForge 文件转换为 Modrinth 文件
-            dependencies: [] // CurseForge 格式没有额外的依赖项
-        )
-    }
 
     // MARK: - Helper Methods
 
@@ -547,6 +517,7 @@ struct ModrinthIndexFile: Codable {
     let downloads: [String]
     let fileSize: Int
     let env: ModrinthIndexFileEnv?
+    let source: FileSource?
 
     enum CodingKeys: String, CodingKey {
         case path
@@ -554,7 +525,13 @@ struct ModrinthIndexFile: Codable {
         case downloads
         case fileSize = "fileSize"
         case env
+        case source
     }
+}
+
+enum FileSource: String, Codable {
+    case modrinth = "modrinth"
+    case curseforge = "curseforge"
 }
 
 struct ModrinthIndexFileEnv: Codable {
@@ -611,6 +588,29 @@ struct ModrinthIndexInfo {
     let summary: String?
     let files: [ModrinthIndexFile]
     let dependencies: [ModrinthIndexProjectDependency]
+    let source: FileSource
+    
+    init(
+        gameVersion: String,
+        loaderType: String,
+        loaderVersion: String,
+        modPackName: String,
+        modPackVersion: String,
+        summary: String?,
+        files: [ModrinthIndexFile],
+        dependencies: [ModrinthIndexProjectDependency],
+        source: FileSource = .modrinth
+    ) {
+        self.gameVersion = gameVersion
+        self.loaderType = loaderType
+        self.loaderVersion = loaderVersion
+        self.modPackName = modPackName
+        self.modPackVersion = modPackVersion
+        self.summary = summary
+        self.files = files
+        self.dependencies = dependencies
+        self.source = source
+    }
 }
 
 // MARK: - ModPack Install State

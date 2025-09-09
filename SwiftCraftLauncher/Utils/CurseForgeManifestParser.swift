@@ -8,8 +8,8 @@ enum CurseForgeManifestParser {
     
     /// 解析 CurseForge 整合包的 manifest.json 文件
     /// - Parameter extractedPath: 解压后的整合包路径
-    /// - Returns: 解析后的 CurseForge 索引信息
-    static func parseManifest(extractedPath: URL) async -> CurseForgeIndexInfo? {
+    /// - Returns: 解析后的 Modrinth 索引信息
+    static func parseManifest(extractedPath: URL) async -> ModrinthIndexInfo? {
         do {
             // 查找 manifest.json 文件
             let manifestPath = extractedPath.appendingPathComponent("manifest.json")
@@ -52,23 +52,17 @@ enum CurseForgeManifestParser {
             // 提取加载器信息
             let loaderInfo = determineLoaderInfo(from: manifest.minecraft.modLoaders)
             
-            // 创建索引信息
-            let indexInfo = CurseForgeIndexInfo(
-                gameVersion: manifest.minecraft.version,
-                loaderType: loaderInfo.type,
-                loaderVersion: loaderInfo.version,
-                modPackName: manifest.name,
-                modPackVersion: manifest.version,
-                author: manifest.author,
-                files: manifest.files,
-                overridesPath: manifest.overrides
+            // 转换为 Modrinth 格式
+            let modrinthInfo = await convertToModrinthFormat(
+                manifest: manifest,
+                loaderInfo: loaderInfo
             )
             
             Logger.shared.info("解析 CurseForge manifest.json 成功: \(manifest.name) v\(manifest.version)")
             Logger.shared.info("游戏版本: \(manifest.minecraft.version), 加载器: \(loaderInfo.type) \(loaderInfo.version)")
             Logger.shared.info("文件数量: \(manifest.files.count)")
             
-            return indexInfo
+            return modrinthInfo
         } catch {
             Logger.shared.error("解析 CurseForge manifest.json 详细错误: \(error)")
             
@@ -137,5 +131,123 @@ enum CurseForgeManifestParser {
         default:
             return loaderType.lowercased()
         }
+    }
+    
+    /// 将 CurseForge manifest 转换为 Modrinth 格式
+    /// - Parameters:
+    ///   - manifest: CurseForge manifest
+    ///   - loaderInfo: 加载器信息
+    /// - Returns: Modrinth 索引信息
+    private static func convertToModrinthFormat(
+        manifest: CurseForgeManifest,
+        loaderInfo: (type: String, version: String)
+    ) async -> ModrinthIndexInfo {
+        Logger.shared.info("转换 CurseForge 格式到 Modrinth 格式")
+        
+        // CurseForge 的 files 应该转换为 Modrinth 的 files，而不是 dependencies
+        // 创建虚拟的 ModrinthIndexFile 来兼容现有系统
+        var modrinthFiles: [ModrinthIndexFile] = []
+        
+        for file in manifest.files {
+            // 获取文件详情以生成正确的路径
+            let fileDetail = await CurseForgeService.fetchFileDetail(projectId: file.projectID, fileId: file.fileID)
+            
+            var fileName: String = ""
+            var subDirectory: String = ""
+            var downloadUrls: [String] = []
+
+            if let detail = fileDetail {
+                fileName = detail.fileName
+                // 根据文件详情确定子目录
+                subDirectory = getSubDirectoryForFileDetail(detail)
+                
+                // 获取下载URL
+                if let downloadUrl = detail.downloadUrl, !downloadUrl.isEmpty {
+                    downloadUrls = [downloadUrl]
+                    Logger.shared.info("获取到文件下载URL: \(downloadUrl)")
+                } else {
+                    // 使用备用下载地址
+                    let fallbackUrl = generateFallbackDownloadUrl(fileId: file.fileID, fileName: detail.fileName)
+                    downloadUrls = [fallbackUrl]
+                    Logger.shared.warning("文件 \(detail.fileName) 没有可用的下载URL，使用备用地址: \(fallbackUrl)")
+                }
+            } else {
+                Logger.shared.warning("无法获取文件详情，项目ID: \(file.projectID), 文件ID: \(file.fileID)")
+            }
+            
+            let filePath = "\(subDirectory)/\(fileName)"
+            
+            modrinthFiles.append(ModrinthIndexFile(
+                path: filePath,
+                hashes: [:], // CurseForge 不提供哈希
+                downloads: downloadUrls, // 设置实际的下载URL
+                fileSize: fileDetail?.fileLength ?? 0,
+                env: nil, // 默认环境
+                source: .curseforge // 标记来源为 CurseForge
+            ))
+        }
+        
+        return ModrinthIndexInfo(
+            gameVersion: manifest.minecraft.version,
+            loaderType: loaderInfo.type,
+            loaderVersion: loaderInfo.version,
+            modPackName: manifest.name,
+            modPackVersion: manifest.version,
+            summary: "",
+            files: modrinthFiles, // CurseForge 文件转换为 Modrinth 文件
+            dependencies: [], // CurseForge 格式没有额外的依赖项
+            source: .curseforge
+        )
+    }
+    
+    
+    /// 根据文件详情确定应该下载到的子目录
+    /// - Parameter fileDetail: CurseForge 文件详情
+    /// - Returns: 子目录名称
+    private static func getSubDirectoryForFileDetail(_ fileDetail: CurseForgeModFileDetail) -> String {
+        // 根据 modules 信息来确定文件类型
+        if let modules = fileDetail.modules, !modules.isEmpty {
+            for module in modules {
+                let moduleName = module.name.lowercased()
+                
+                // 根据 module name 映射到相应的目录
+                switch moduleName {
+                case "shaders", "shaderpacks":
+                    return "shaderpacks"
+                case "resourcepacks", "resources", "textures":
+                    return "resourcepacks"
+                case "datapacks", "datapack":
+                    return "datapacks"
+                case "saves", "worlds":
+                    return "saves"
+                case "mods", "mod":
+                    return "mods"
+                case "config", "configs":
+                    return "config"
+                case "scripts":
+                    return "scripts"
+                default:
+                    // 如果模块名称不匹配已知类型，继续检查其他模块
+                    continue
+                }
+            }
+        }
+        
+        // 如果没有 modules 或没有匹配到已知类型，默认使用 mods 目录
+        return "mods"
+    }
+    
+
+    
+    /// 生成备用下载地址
+    /// - Parameters:
+    ///   - fileId: 文件ID
+    ///   - fileName: 文件名
+    /// - Returns: 备用下载地址
+    private static func generateFallbackDownloadUrl(fileId: Int, fileName: String) -> String {
+        // 使用配置的备用下载地址
+        let fallbackUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(fileId: fileId, fileName: fileName).absoluteString
+        Logger.shared.info("生成备用下载地址: \(fallbackUrl)")
+        return fallbackUrl
     }
 }
