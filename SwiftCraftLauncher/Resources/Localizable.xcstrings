@@ -81678,9 +81678,6 @@
         }
       }
     },
-    "支持 Modrinth (.mrpack) 和 CurseForge (.zip) 格式的整合包" : {
-
-    },
     "暂不可用" : {
       "shouldTranslate" : false
     }
