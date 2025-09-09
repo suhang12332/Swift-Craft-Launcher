@@ -16,12 +16,12 @@ struct CurseForgeModDetail: Codable {
     let summary: String
     let classId: Int
     let categories: [CurseForgeCategory]
-    
+
     /// 获取对应的内容类型枚举
     var contentType: CurseForgeClassId? {
         return CurseForgeClassId(rawValue: classId)
     }
-    
+
     /// 获取目录名称
     var directoryName: String {
         return contentType?.directoryName ?? "mods"
@@ -34,8 +34,7 @@ enum CurseForgeClassId: Int, CaseIterable {
     case resourcePacks = 12 // 资源包
     case shaders = 6552     // 光影
     case datapacks = 6945   // 数据包
-    
-    
+
     var directoryName: String {
         switch self {
         case .mods:
@@ -114,7 +113,7 @@ struct CurseForgeManifest: Codable {
     let author: String?
     let files: [CurseForgeManifestFile]
     let overrides: String?
-    
+
     enum CodingKeys: String, CodingKey {
         case minecraft
         case manifestType
@@ -144,7 +143,7 @@ struct CurseForgeManifestFile: Codable {
     let projectID: Int
     let fileID: Int
     let required: Bool
-    
+
     enum CodingKeys: String, CodingKey {
         case projectID
         case fileID

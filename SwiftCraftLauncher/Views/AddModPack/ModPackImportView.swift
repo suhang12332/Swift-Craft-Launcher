@@ -51,9 +51,9 @@ struct ModPackImportView: View {
         .fileImporter(
             isPresented: $showModPackFilePicker,
             allowedContentTypes: [
-                UTType(filenameExtension: "mrpack") ?? UTType.data, 
+                UTType(filenameExtension: "mrpack") ?? UTType.data,
                 .zip,
-                UTType(filenameExtension: "zip") ?? UTType.zip
+                UTType(filenameExtension: "zip") ?? UTType.zip,
             ],
             allowsMultipleSelection: false
         ) { result in

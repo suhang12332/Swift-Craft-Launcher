@@ -40,7 +40,7 @@ enum NeoForgeLoaderService {
         }
         return result
     }
-    
+
     /// 获取指定版本的 NeoForge profile
     /// - Parameters:
     ///   - minecraftVersion: Minecraft 版本
@@ -49,15 +49,15 @@ enum NeoForgeLoaderService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchSpecificNeoForgeProfile(for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
-        
+
         // 1. 查全局缓存
         if let cached = AppCacheManager.shared.get(namespace: "neoforge", key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
-        
+
         // 2. 直接下载指定版本的 version.json
         let (data, response) = try await URLSession.shared.data(from: URLConfig.API.Modrinth.loaderProfile(loader: "neo", version: loaderVersion))
-        
+
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 NeoForge profile 失败: HTTP \(response)",
@@ -65,7 +65,7 @@ enum NeoForgeLoaderService {
                 level: .notification
             )
         }
-        
+
         var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
         // 3. 存入缓存
@@ -191,7 +191,7 @@ enum NeoForgeLoaderService {
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         return try await setupNeoForge(for: gameVersion, gameInfo: gameInfo, onProgressUpdate: onProgressUpdate)
     }
-    
+
     /// 设置指定版本的 NeoForge 加载器（静默版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -219,7 +219,7 @@ enum NeoForgeLoaderService {
             return nil
         }
     }
-    
+
     /// 设置指定版本的 NeoForge 加载器（抛出异常版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -235,7 +235,7 @@ enum NeoForgeLoaderService {
         onProgressUpdate: @escaping (String, Int, Int) -> Void
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         Logger.shared.info("开始设置指定版本的 NeoForge 加载器: \(loaderVersion)")
-        
+
         let neoForgeProfile = try await fetchSpecificNeoForgeProfile(for: gameVersion, loaderVersion: loaderVersion)
         let librariesDirectory = AppPaths.librariesDirectory
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)

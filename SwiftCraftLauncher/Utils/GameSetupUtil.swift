@@ -35,7 +35,7 @@ class GameSetupUtil: ObservableObject {
     ///   - gameRepository: 游戏仓库
     ///   - onSuccess: 成功回调
     ///   - onError: 错误回调
-    public func saveGame( // swiftlint:disable:this function_parameter_count
+    func saveGame( // swiftlint:disable:this function_parameter_count
         gameName: String,
         gameIcon: String,
         selectedGameVersion: String,
@@ -337,7 +337,7 @@ class GameSetupUtil: ObservableObject {
                 }
             }
         }
-        
+
         if let specifiedVersion = specifiedLoaderVersion {
             // 使用指定版本
             Logger.shared.info("使用整合包指定的加载器版本: \(specifiedVersion)")

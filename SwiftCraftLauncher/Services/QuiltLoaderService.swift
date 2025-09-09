@@ -67,7 +67,7 @@ enum QuiltLoaderService {
         AppCacheManager.shared.setSilently(namespace: "quilt", key: cacheKey, value: loader)
         return loader
     }
-    
+
     /// 获取指定版本的 Quilt Loader
     /// - Parameters:
     ///   - minecraftVersion: Minecraft 版本
@@ -76,15 +76,15 @@ enum QuiltLoaderService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchSpecificLoaderVersion(for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
-        
+
         // 1. 查全局缓存
         if let cached = AppCacheManager.shared.get(namespace: "quilt", key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
-        
+
         // 2. 直接下载指定版本的 version.json
         let (data, response) = try await URLSession.shared.data(from: URLConfig.API.Modrinth.loaderProfile(loader: "quilt", version: loaderVersion))
-        
+
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Quilt profile 失败: HTTP \(response)",
@@ -92,12 +92,12 @@ enum QuiltLoaderService {
                 level: .notification
             )
         }
-        
+
         let result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
-        
+
         // 3. 存入缓存
         try AppCacheManager.shared.set(namespace: "quilt", key: cacheKey, value: result)
-        
+
         return result
     }
 
@@ -179,7 +179,7 @@ enum QuiltLoaderService {
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         return try await setupQuiltThrowing(for: gameVersion, gameInfo: gameInfo, onProgressUpdate: onProgressUpdate)
     }
-    
+
     /// 设置指定版本的 Quilt 加载器（静默版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -207,7 +207,7 @@ enum QuiltLoaderService {
             return nil
         }
     }
-    
+
     /// 设置指定版本的 Quilt 加载器（抛出异常版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本
@@ -223,7 +223,7 @@ enum QuiltLoaderService {
         onProgressUpdate: @escaping (String, Int, Int) -> Void
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         Logger.shared.info("开始设置指定版本的 Quilt 加载器: \(loaderVersion)")
-        
+
         let quiltProfile = try await fetchSpecificLoaderVersion(for: gameVersion, loaderVersion: loaderVersion)
         let librariesDirectory = AppPaths.librariesDirectory
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)

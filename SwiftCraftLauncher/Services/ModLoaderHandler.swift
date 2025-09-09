@@ -30,7 +30,7 @@ protocol ModLoaderHandler {
         gameInfo: GameVersionInfo,
         onProgressUpdate: @escaping (String, Int, Int) -> Void
     ) async -> (loaderVersion: String, classpath: String, mainClass: String)?
-    
+
     /// 设置指定版本的加载器（抛出异常版本）
     /// - Parameters:
     ///   - gameVersion: 游戏版本

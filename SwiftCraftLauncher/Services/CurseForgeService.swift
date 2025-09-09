@@ -3,9 +3,9 @@ import Foundation
 /// CurseForge 服务
 /// 提供统一的 CurseForge API 访问接口
 enum CurseForgeService {
-    
+
     // MARK: - Public Methods
-    
+
     /// 获取 CurseForge 文件详情
     /// - Parameters:
     ///   - projectId: 项目 ID
@@ -19,7 +19,7 @@ enum CurseForgeService {
             return nil
         }
     }
-    
+
     /// 获取 CurseForge 文件详情（抛出异常版本）
     /// - Parameters:
     ///   - projectId: 项目 ID
@@ -29,10 +29,10 @@ enum CurseForgeService {
     static func fetchFileDetailThrowing(projectId: Int, fileId: Int) async throws -> CurseForgeModFileDetail {
         // 使用配置的 CurseForge API URL
         let url = URLConfig.API.CurseForge.fileDetail(projectId: projectId, fileId: fileId)
-        
+
         return try await tryFetchFileDetail(from: url.absoluteString)
     }
-    
+
     /// 获取 CurseForge 模组详情
     /// - Parameter modId: 模组 ID
     /// - Returns: 模组详情，如果获取失败则返回 nil
@@ -44,7 +44,7 @@ enum CurseForgeService {
             return nil
         }
     }
-    
+
     /// 获取 CurseForge 模组详情（抛出异常版本）
     /// - Parameter modId: 模组 ID
     /// - Returns: 模组详情
@@ -52,12 +52,12 @@ enum CurseForgeService {
     static func fetchModDetailThrowing(modId: Int) async throws -> CurseForgeModDetail {
         // 使用配置的 CurseForge API URL
         let url = URLConfig.API.CurseForge.modDetail(modId: modId)
-        
+
         return try await tryFetchModDetail(from: url.absoluteString)
     }
-    
+
     // MARK: - Private Methods
-    
+
     /// 尝试从指定 URL 获取文件详情
     /// - Parameter urlString: API URL
     /// - Returns: 文件详情
@@ -70,14 +70,14 @@ enum CurseForgeService {
                 level: .notification
             )
         }
-        
+
         // 创建请求
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        
+
         // 发送请求
         let (data, response) = try await URLSession.shared.data(for: request)
-        
+
         // 检查响应
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
@@ -86,7 +86,7 @@ enum CurseForgeService {
                 level: .notification
             )
         }
-        
+
         guard httpResponse.statusCode == 200 else {
             Logger.shared.error("镜像 API 请求失败，状态码: \(httpResponse.statusCode)")
             throw GlobalError.network(
@@ -95,12 +95,12 @@ enum CurseForgeService {
                 level: .notification
             )
         }
-        
+
         // 解析响应
         let result = try JSONDecoder().decode(CurseForgeFileResponse.self, from: data)
         return result.data
     }
-    
+
     /// 尝试从指定 URL 获取模组详情
     /// - Parameter urlString: API URL
     /// - Returns: 模组详情
@@ -113,14 +113,14 @@ enum CurseForgeService {
                 level: .notification
             )
         }
-        
+
         // 创建请求
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        
+
         // 发送请求
         let (data, response) = try await URLSession.shared.data(for: request)
-        
+
         // 检查响应
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
@@ -129,7 +129,7 @@ enum CurseForgeService {
                 level: .notification
             )
         }
-        
+
         guard httpResponse.statusCode == 200 else {
             Logger.shared.error("镜像 API 请求失败，状态码: \(httpResponse.statusCode)")
             throw GlobalError.network(
@@ -138,7 +138,7 @@ enum CurseForgeService {
                 level: .notification
             )
         }
-        
+
         // 解析响应
         let result = try JSONDecoder().decode(CurseForgeModDetailResponse.self, from: data)
         return result.data
@@ -151,4 +151,3 @@ enum CurseForgeService {
 private struct CurseForgeFileResponse: Codable {
     let data: CurseForgeModFileDetail
 }
-

@@ -157,15 +157,15 @@ enum URLConfig {
         enum CurseForge {
             static let mirrorBaseURL = URLConfig.url("https://mod.mcimirror.top/curseforge/v1")
             static let fallbackDownloadBaseURL = URLConfig.url("https://edge.forgecdn.net/files")
-            
+
             static func fileDetail(projectId: Int, fileId: Int) -> URL {
                 mirrorBaseURL.appendingPathComponent("mods/\(projectId)/files/\(fileId)")
             }
-            
+
             static func modDetail(modId: Int) -> URL {
                 mirrorBaseURL.appendingPathComponent("mods/\(modId)")
             }
-            
+
             static func fallbackDownloadUrl(fileId: Int, fileName: String) -> URL {
                 // 格式：https://edge.forgecdn.net/files/{fileId前三位}/{fileId后三位}/{fileName}
                 fallbackDownloadBaseURL

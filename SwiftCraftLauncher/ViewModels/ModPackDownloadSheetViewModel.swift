@@ -293,12 +293,12 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         if let modrinthInfo = await parseModrinthIndexInternal(extractedPath: extractedPath) {
             return modrinthInfo
         }
-        
+
         // 如果不是 Modrinth 格式，尝试解析 CurseForge 格式
         if let modrinthInfo = await CurseForgeManifestParser.parseManifest(extractedPath: extractedPath) {
             return modrinthInfo
         }
-        
+
         // 都不是支持的格式
         handleDownloadError(
             "不支持的整合包格式，请使用 Modrinth (.mrpack) 或 CurseForge (.zip) 格式的整合包",
@@ -306,7 +306,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         )
         return nil
     }
-    
+
     private func parseModrinthIndexInternal(extractedPath: URL) async -> ModrinthIndexInfo? {
         do {
             // 查找并解析 modrinth.index.json
@@ -381,7 +381,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             return nil
         }
     }
-    
 
     // MARK: - Helper Methods
 
@@ -532,16 +531,18 @@ struct ModrinthIndexFile: Codable {
         case curseForgeProjectId
         case curseForgeFileId
     }
-    
+
     // 为兼容性提供默认初始化器
-    init(path: String, 
-         hashes: [String: String], 
-         downloads: [String], 
-         fileSize: Int, 
-         env: ModrinthIndexFileEnv? = nil, 
-         source: FileSource? = nil,
-         curseForgeProjectId: Int? = nil,
-         curseForgeFileId: Int? = nil) {
+    init(
+        path: String,
+        hashes: [String: String],
+        downloads: [String],
+        fileSize: Int,
+        env: ModrinthIndexFileEnv? = nil,
+        source: FileSource? = nil,
+        curseForgeProjectId: Int? = nil,
+        curseForgeFileId: Int? = nil
+    ) {
         self.path = path
         self.hashes = hashes
         self.downloads = downloads
@@ -613,7 +614,7 @@ struct ModrinthIndexInfo {
     let files: [ModrinthIndexFile]
     let dependencies: [ModrinthIndexProjectDependency]
     let source: FileSource
-    
+
     init(
         gameVersion: String,
         loaderType: String,
