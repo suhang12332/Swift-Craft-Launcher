@@ -6,8 +6,6 @@ class JavaManager {
 
     private let fileManager = FileManager.default
 
-    private init() {}
-
     func findJavaExecutable(version: String) -> String {
 
         let javaPath = AppPaths.runtimeDirectory.appendingPathComponent(version).appendingPathComponent("jre.bundle/Contents/Home/bin/java")
