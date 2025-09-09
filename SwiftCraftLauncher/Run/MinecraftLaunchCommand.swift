@@ -111,7 +111,6 @@ struct MinecraftLaunchCommand {
     private func launchGameProcess(command: [String]) async throws {
         // 直接使用游戏指定的Java路径
         let javaExecutable = game.javaPath
-        
         guard !javaExecutable.isEmpty else {
             throw GlobalError.configuration(
                 chineseMessage: "Java 路径未设置",
@@ -168,7 +167,6 @@ struct MinecraftLaunchCommand {
             )
         }
     }
-
 
     /// 处理启动错误
     /// - Parameter error: 启动错误
