@@ -257,7 +257,7 @@ enum FabricLoaderService {
 
         await fileManager.downloadFabricJars(libraries: fabricProfile.libraries)
 
-        let classpathString = CommonService.generateClasspath(from: fabricProfile, librariesDir: librariesDirectory)
+        let classpathString = CommonService.generateFabricClasspath(from: fabricProfile, librariesDir: librariesDirectory)
         let mainClass = fabricProfile.mainClass
         guard let version = fabricProfile.version else {
             throw GlobalError.validation(

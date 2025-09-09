@@ -518,6 +518,9 @@ struct ModrinthIndexFile: Codable {
     let fileSize: Int
     let env: ModrinthIndexFileEnv?
     let source: FileSource?
+    // CurseForge 特有字段，用于延迟获取文件详情
+    let curseForgeProjectId: Int?
+    let curseForgeFileId: Int?
 
     enum CodingKeys: String, CodingKey {
         case path
@@ -526,6 +529,27 @@ struct ModrinthIndexFile: Codable {
         case fileSize = "fileSize"
         case env
         case source
+        case curseForgeProjectId
+        case curseForgeFileId
+    }
+    
+    // 为兼容性提供默认初始化器
+    init(path: String, 
+         hashes: [String: String], 
+         downloads: [String], 
+         fileSize: Int, 
+         env: ModrinthIndexFileEnv? = nil, 
+         source: FileSource? = nil,
+         curseForgeProjectId: Int? = nil,
+         curseForgeFileId: Int? = nil) {
+        self.path = path
+        self.hashes = hashes
+        self.downloads = downloads
+        self.fileSize = fileSize
+        self.env = env
+        self.source = source
+        self.curseForgeProjectId = curseForgeProjectId
+        self.curseForgeFileId = curseForgeFileId
     }
 }
 

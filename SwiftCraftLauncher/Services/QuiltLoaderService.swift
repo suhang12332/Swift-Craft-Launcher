@@ -231,7 +231,7 @@ enum QuiltLoaderService {
 
         await fileManager.downloadFabricJars(libraries: quiltProfile.libraries)
 
-        let classpathString = CommonService.generateClasspath(from: quiltProfile, librariesDir: librariesDirectory)
+        let classpathString = CommonService.generateFabricClasspath(from: quiltProfile, librariesDir: librariesDirectory)
         let mainClass = quiltProfile.mainClass
         guard let version = quiltProfile.version else {
             throw GlobalError.resource(

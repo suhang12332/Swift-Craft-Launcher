@@ -10,6 +10,56 @@ struct CurseForgeMod: Codable {
     let summary: String
 }
 
+struct CurseForgeModDetail: Codable {
+    let id: Int
+    let name: String
+    let summary: String
+    let classId: Int
+    let categories: [CurseForgeCategory]
+    
+    /// 获取对应的内容类型枚举
+    var contentType: CurseForgeClassId? {
+        return CurseForgeClassId(rawValue: classId)
+    }
+    
+    /// 获取目录名称
+    var directoryName: String {
+        return contentType?.directoryName ?? "mods"
+    }
+}
+
+/// CurseForge 内容类型枚举
+enum CurseForgeClassId: Int, CaseIterable {
+    case mods = 6           // 模组
+    case resourcePacks = 12 // 资源包
+    case shaders = 6552     // 光影
+    case datapacks = 6945   // 数据包
+    
+    
+    var directoryName: String {
+        switch self {
+        case .mods:
+            return "mods"
+        case .resourcePacks:
+            return "resourcepacks"
+        case .shaders:
+            return "shaderpacks"
+        case .datapacks:
+            return "datapacks"
+        }
+    }
+}
+
+struct CurseForgeCategory: Codable {
+    let id: Int
+    let name: String
+    let slug: String
+}
+
+struct CurseForgeModDetailResponse: Codable {
+    let data: CurseForgeModDetail
+}
+
 struct CurseForgeFilesResult: Codable {
     let data: [CurseForgeModFileDetail]
 }
