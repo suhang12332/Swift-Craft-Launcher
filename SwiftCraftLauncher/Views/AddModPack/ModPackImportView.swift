@@ -50,7 +50,11 @@ struct ModPackImportView: View {
         formContentView
         .fileImporter(
             isPresented: $showModPackFilePicker,
-            allowedContentTypes: [UTType(filenameExtension: "mrpack") ?? UTType.data, .zip],
+            allowedContentTypes: [
+                UTType(filenameExtension: "mrpack") ?? UTType.data, 
+                .zip,
+                UTType(filenameExtension: "zip") ?? UTType.zip
+            ],
             allowsMultipleSelection: false
         ) { result in
             handleModPackFileSelection(result)
@@ -508,6 +512,7 @@ struct ModPackImportView: View {
                     gameIcon: AppConstants.defaultGameIcon,
                     selectedGameVersion: indexInfo.gameVersion,
                     selectedModLoader: indexInfo.loaderType,
+                    specifiedLoaderVersion: indexInfo.loaderVersion,
                     pendingIconData: nil,
                     playerListViewModel: playerListViewModel,
                     gameRepository: gameRepository,

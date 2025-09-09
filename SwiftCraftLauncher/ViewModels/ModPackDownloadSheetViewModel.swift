@@ -289,6 +289,26 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     }
 
     func parseModrinthIndex(extractedPath: URL) async -> ModrinthIndexInfo? {
+        // 首先尝试解析 Modrinth 格式
+        if let modrinthInfo = await parseModrinthIndexInternal(extractedPath: extractedPath) {
+            return modrinthInfo
+        }
+        
+        // 如果不是 Modrinth 格式，尝试解析 CurseForge 格式
+        if let curseForgeInfo = await CurseForgeManifestParser.parseManifest(extractedPath: extractedPath) {
+            // 将 CurseForge 格式转换为 Modrinth 格式
+            return convertCurseForgeToModrinthIndex(curseForgeInfo)
+        }
+        
+        // 都不是支持的格式
+        handleDownloadError(
+            "不支持的整合包格式，请使用 Modrinth (.mrpack) 或 CurseForge (.zip) 格式的整合包",
+            "error.resource.unsupported_modpack_format"
+        )
+        return nil
+    }
+    
+    private func parseModrinthIndexInternal(extractedPath: URL) async -> ModrinthIndexInfo? {
         do {
             // 查找并解析 modrinth.index.json
             let indexPath = extractedPath.appendingPathComponent(
@@ -298,25 +318,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             Logger.shared.info("尝试解析 modrinth.index.json: \(indexPath.path)")
 
             guard FileManager.default.fileExists(atPath: indexPath.path) else {
-                // 列出解压目录中的文件，帮助调试
-                do {
-                    let contents = try FileManager.default.contentsOfDirectory(
-                        at: extractedPath,
-                        includingPropertiesForKeys: nil
-                    )
-                    Logger.shared.info(
-                        "解压目录内容: \(contents.map { $0.lastPathComponent })"
-                    )
-                } catch {
-                    Logger.shared.error(
-                        "无法列出解压目录内容: \(error.localizedDescription)"
-                    )
-                }
-
-                handleDownloadError(
-                    "整合包中未找到 modrinth.index.json 文件",
-                    "error.resource.modrinth_index_not_found"
-                )
+                Logger.shared.info("未找到 modrinth.index.json，可能是 CurseForge 格式")
                 return nil
             }
 
@@ -377,12 +379,38 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 Logger.shared.error("JSON 解析错误: \(jsonError)")
             }
 
-            handleDownloadError(
-                "解析 modrinth.index.json 失败: \(error.localizedDescription)",
-                "error.resource.modrinth_index_parse_failed"
-            )
             return nil
         }
+    }
+    
+    /// 将 CurseForge 索引信息转换为 Modrinth 索引信息
+    /// - Parameter curseForgeInfo: CurseForge 索引信息
+    /// - Returns: Modrinth 索引信息
+    private func convertCurseForgeToModrinthIndex(_ curseForgeInfo: CurseForgeIndexInfo) -> ModrinthIndexInfo {
+        Logger.shared.info("转换 CurseForge 格式到 Modrinth 格式")
+        
+        // CurseForge 的 files 应该转换为 Modrinth 的 files，而不是 dependencies
+        // 创建虚拟的 ModrinthIndexFile 来兼容现有系统
+        let modrinthFiles = curseForgeInfo.files.map { file in
+            ModrinthIndexFile(
+                path: "mods/curseforge_\(file.projectID)_\(file.fileID).jar", // 虚拟路径
+                hashes: [:], // CurseForge 不提供哈希
+                downloads: [], // 将通过 CurseForgeFileDownloader 下载
+                fileSize: 0, // 未知大小
+                env: nil // 默认环境
+            )
+        }
+        
+        return ModrinthIndexInfo(
+            gameVersion: curseForgeInfo.gameVersion,
+            loaderType: curseForgeInfo.loaderType,
+            loaderVersion: curseForgeInfo.loaderVersion,
+            modPackName: curseForgeInfo.modPackName,
+            modPackVersion: curseForgeInfo.modPackVersion,
+            summary: curseForgeInfo.author.map { "作者: \($0)" },
+            files: modrinthFiles, // CurseForge 文件转换为 Modrinth 文件
+            dependencies: [] // CurseForge 格式没有额外的依赖项
+        )
     }
 
     // MARK: - Helper Methods

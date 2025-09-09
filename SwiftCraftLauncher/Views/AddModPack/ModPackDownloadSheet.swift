@@ -529,6 +529,7 @@ struct ModPackDownloadSheet: View {
                     gameIcon: iconPath ?? "",
                     selectedGameVersion: selectedGameVersion,
                     selectedModLoader: indexInfo.loaderType,
+                    specifiedLoaderVersion: indexInfo.loaderVersion,
                     pendingIconData: nil,
                     playerListViewModel: nil,
                     gameRepository: gameRepository,

@@ -533,6 +533,7 @@ struct GameCreationView: View {
             gameIcon: gameIcon,
             selectedGameVersion: selectedGameVersion,
             selectedModLoader: selectedModLoader,
+            specifiedLoaderVersion: nil,
             pendingIconData: pendingIconData,
             playerListViewModel: playerListViewModel,
             gameRepository: gameRepository,
