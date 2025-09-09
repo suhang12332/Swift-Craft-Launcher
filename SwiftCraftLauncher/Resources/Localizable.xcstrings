@@ -65888,133 +65888,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "هل أنت متأكد من رغبتك في حذف \\\"%@\\\"? قد يؤدي الحذف إلى فشل في تشغيل اللعبة"
+            "value" : "هل أنت متأكد من رغبتك في حذف \"%@\"? قد يؤدي الحذف إلى فشل في تشغيل اللعبة"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Er du sikker på, at du vil slette \\\"%@\\\"? Sletning kan forårsage spillancering at mislykkes"
+            "value" : "Er du sikker på, at du vil slette \"%@\"? Sletning kan forårsage spillancering at mislykkes"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Möchten Sie \\\"%@\\\" wirklich löschen? Das Löschen kann zu einem Spielstart-Fehler führen"
+            "value" : "Möchten Sie \"%@\" wirklich löschen? Das Löschen kann zu einem Spielstart-Fehler führen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Are you sure you want to delete \\\"%@\\\"? Deletion may cause game launch failure"
+            "value" : "Are you sure you want to delete \"%@\"? Deletion may cause game launch failure"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿ Estás seguro de que quieres eliminar \\\"%@\\\"? La eliminación puede causar un fallo en el lanzamiento del juego"
+            "value" : "¿ Estás seguro de que quieres eliminar \"%@\"? La eliminación puede causar un fallo en el lanzamiento del juego"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Haluatko varmasti poistaa \\\"%@\\\"? Poistaminen voi aiheuttaa pelin käynnistysvirheen"
+            "value" : "Haluatko varmasti poistaa \"%@\"? Poistaminen voi aiheuttaa pelin käynnistysvirheen"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Êtes-vous sûr de vouloir supprimer \\\"%@\\\" ? La suppression peut causer un échec de lancement du jeu"
+            "value" : "Êtes-vous sûr de vouloir supprimer \"%@\" ? La suppression peut causer un échec de lancement du jeu"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "क्या आप वाकई \\\"%@\\\" को हटाना चाहते हैं? हटाने से गेम लॉन्च फेल हो सकता है"
+            "value" : "क्या आप वाकई \"%@\" को हटाना चाहते हैं? हटाने से गेम लॉन्च फेल हो सकता है"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sei sicuro di voler eliminare \\\"%@\\\"? L'eliminazione potrebbe causare un errore di avvio del gioco"
+            "value" : "Sei sicuro di voler eliminare \"%@\"? L'eliminazione potrebbe causare un errore di avvio del gioco"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\\\"%@\\\"を削除してもよろしいですか？削除するとゲームの起動に失敗する可能性があります"
+            "value" : "\"%@\"を削除してもよろしいですか？削除するとゲームの起動に失敗する可能性があります"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\\\"%@\\\"을(를) 삭제하시겠습니까? 삭제하면 게임 실행에 실패할 수 있습니다"
+            "value" : "\"%@\"을(를) 삭제하시겠습니까? 삭제하면 게임 실행에 실패할 수 있습니다"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Er du sikker på at du vil slette \\\"%@\\\"? Sletting kan forårsake spilloppstart-feil"
+            "value" : "Er du sikker på at du vil slette \"%@\"? Sletting kan forårsake spilloppstart-feil"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Weet je zeker dat je \\\"%@\\\" wilt verwijderen? Verwijdering kan spelstartfout veroorzaken"
+            "value" : "Weet je zeker dat je \"%@\" wilt verwijderen? Verwijdering kan spelstartfout veroorzaken"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Czy na pewno chcesz usunąć \\\"%@\\\"? Usunięcie może spowodować błąd uruchamiania gry"
+            "value" : "Czy na pewno chcesz usunąć \"%@\"? Usunięcie może spowodować błąd uruchamiania gry"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tem certeza de que deseja excluir \\\"%@\\\"? A exclusão pode causar falha na inicialização do jogo"
+            "value" : "Tem certeza de que deseja excluir \"%@\"? A exclusão pode causar falha na inicialização do jogo"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Вы уверены, что хотите удалить \\\"%@\\\"? Удаление может привести к сбою запуска игры"
+            "value" : "Вы уверены, что хотите удалить \"%@\"? Удаление может привести к сбою запуска игры"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Är du säker på att du vill ta bort \\\"%@\\\"? Borttagning kan orsaka spelstartfel"
+            "value" : "Är du säker på att du vill ta bort \"%@\"? Borttagning kan orsaka spelstartfel"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "คุณแน่ใจว่าต้องการลบ \\\"%@\\\" หรือไม่? การลบอาจทำให้เกมเริ่มไม่ได้"
+            "value" : "คุณแน่ใจว่าต้องการลบ \"%@\" หรือไม่? การลบอาจทำให้เกมเริ่มไม่ได้"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\\\"%@\\\" dosyasını silmek istediğinizden emin misiniz? Silme işlemi oyun başlatma hatasına neden olabilir"
+            "value" : "\"%@\" dosyasını silmek istediğinizden emin misiniz? Silme işlemi oyun başlatma hatasına neden olabilir"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bạn có chắc chắn muốn xóa \\\"%@\\\" không? Việc xóa có thể gây lỗi khởi động trò chơi"
+            "value" : "Bạn có chắc chắn muốn xóa \"%@\" không? Việc xóa có thể gây lỗi khởi động trò chơi"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "确定要删除\\\"%@\\\"吗？删除可能会导致游戏启动失败"
+            "value" : "确定要删除\"%@\"吗？删除可能会导致游戏启动失败"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "確定要刪除「%@」嗎？刪除可能會導致遊戲啟動失敗"
+            "value" : "確定要刪除\"%@\"嗎？刪除可能會導致遊戲啟動失敗"
           }
         }
       }
