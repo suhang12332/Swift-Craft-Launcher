@@ -2,6 +2,9 @@ import SwiftUI
 
 public struct ContributorsView: View {
     @StateObject private var viewModel = ContributorsViewModel()
+    @State private var staticContributors: [StaticContributor] = []
+    @State private var staticContributorsLoaded = false
+    @State private var staticContributorsLoadFailed = false
 
     public init() {}
 
@@ -12,75 +15,6 @@ public struct ContributorsView: View {
         let avatar: String
         let contributions: [Contribution]
     }
-
-    private let staticContributors: [StaticContributor] = [
-        StaticContributor(
-            name: "喵凹条",
-            url: "https://www.instagram.com/houjustin732?igsh=MWdwdmN4d2I0Zm80bw==",
-            avatar: "https://s2.loli.net/2025/08/31/JhG9oXzYBZrkRa4.png",
-            contributions: [.design]
-        ),
-        StaticContributor(
-            name: "CarnonLee",
-            url: "",
-            avatar: "👨‍💻",
-            contributions: [.code]
-        ),
-        StaticContributor(
-            name: "jiangyin14",
-            url: "https://github.com/jiangyin14",
-            avatar: "👨‍💻",
-            contributions: [.code]
-        ),
-        StaticContributor(
-            name: "逗趣狂想",
-            url: "https://space.bilibili.com/3493127828540221",
-            avatar: "🔧",
-            contributions: [.infra]
-        ),
-        StaticContributor(
-            name: "Nzcorz",
-            url: "",
-            avatar: "👩‍💻",
-            contributions: [.code]
-        ),
-        StaticContributor(
-            name: "桜子ちゃん",
-            url: "",
-            avatar: "👩‍💻",
-            contributions: [.code]
-        ),
-        StaticContributor(
-            name: "ZeroSnow",
-            url: "https://github.com/chencomcdyun",
-            avatar: "🎨",
-            contributions: [.design]
-        ),
-        StaticContributor(
-            name: "猫白GAF",
-            url: "https://space.bilibili.com/508878020",
-            avatar: "https://s2.loli.net/2025/08/31/KLGzDOtQ3A9qFxE.jpg",
-            contributions: [.design]
-        ),
-        StaticContributor(
-            name: "小希Lusiey_",
-            url: "",
-            avatar: "👩‍💻",
-            contributions: [.test]
-        ),
-        StaticContributor(
-            name: "骑老奶奶过马路",
-            url: "",
-            avatar: "👩‍💻",
-            contributions: [.test]
-        ),
-        StaticContributor(
-            name: "laiTM",
-            url: "",
-            avatar: "👩‍💻",
-            contributions: [.test]
-        ),
-    ]
 
     // 贡献类型枚举
     enum Contribution: String, CaseIterable {
@@ -119,12 +53,16 @@ public struct ContributorsView: View {
             .padding(.vertical, 8)
         }
         .onAppear {
-            // 只有在视图出现时才获取贡献者数据
-            if viewModel.contributors.isEmpty && !viewModel.isLoading {
-                Task {
-                    await viewModel.fetchContributors()
-                }
+            // 每次打开都重新获取GitHub贡献者数据
+            Task {
+                await viewModel.fetchContributors()
             }
+            // 每次打开都重新加载静态贡献者数据
+            loadStaticContributors()
+        }
+        .onDisappear {
+            // 页面关闭时清空数据
+            clearStaticContributorsData()
         }
     }
 
@@ -145,8 +83,10 @@ public struct ContributorsView: View {
             } else {
                 EmptyView()
             }
-            // 静态贡献者列表
-            staticContributorsList
+            // 静态贡献者列表（只有成功加载时才显示）
+            if staticContributorsLoaded && !staticContributorsLoadFailed {
+                staticContributorsList
+            }
         }
     }
 
@@ -481,6 +421,75 @@ public struct ContributorsView: View {
         .padding(.vertical, 12)
         .contentShape(Rectangle())
     }
+    // MARK: - Load Static Contributors
+    private func loadStaticContributors() {
+        // 重置状态
+        staticContributorsLoaded = false
+        staticContributorsLoadFailed = false
+
+        // 从URLConfig获取贡献者数据URL（带时间戳避免缓存）
+        let url = URLConfig.API.GitHub.staticContributors()
+
+        Task {
+            do {
+                let (data, response) = try await URLSession.shared.data(from: url)
+
+                // 检查HTTP响应状态
+                if let httpResponse = response as? HTTPURLResponse {
+                    guard httpResponse.statusCode == 200 else {
+                        Logger.shared.error("HTTP error:", httpResponse.statusCode)
+                        await MainActor.run {
+                            staticContributorsLoadFailed = true
+                        }
+                        return
+                    }
+                }
+
+                let decoder = JSONDecoder()
+                let contributorsData = try decoder.decode(ContributorsData.self, from: data)
+
+                await MainActor.run {
+                    staticContributors = contributorsData.contributors.map { contributorData in
+                        StaticContributor(
+                            name: contributorData.name,
+                            url: contributorData.url,
+                            avatar: contributorData.avatar,
+                            contributions: contributorData.contributions.compactMap { Contribution(rawValue: "contributor.contribution.\($0)") }
+                        )
+                    }
+                    staticContributorsLoaded = true
+                    staticContributorsLoadFailed = false
+                    Logger.shared.info("Successfully loaded", staticContributors.count, "contributors from URL")
+                }
+            } catch {
+                Logger.shared.error("Failed to load contributors from URL:", error)
+                await MainActor.run {
+                    staticContributorsLoadFailed = true
+                }
+            }
+        }
+    }
+
+    // MARK: - Clear Static Contributors Data
+    private func clearStaticContributorsData() {
+        staticContributors = []
+        staticContributorsLoaded = false
+        staticContributorsLoadFailed = false
+        Logger.shared.info("Static contributors data cleared")
+    }
+
+    // MARK: - JSON Data Models
+    private struct ContributorsData: Codable {
+        let contributors: [ContributorData]
+    }
+
+    private struct ContributorData: Codable {
+        let name: String
+        let url: String
+        let avatar: String
+        let contributions: [String]
+    }
+
     private struct ActionButton: View {
         @Environment(\.openURL)
         private var openURL

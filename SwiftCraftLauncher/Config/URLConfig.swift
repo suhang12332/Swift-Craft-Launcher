@@ -75,6 +75,13 @@ enum URLConfig {
                     return URLConfig.url("https://github.com/\(repositoryOwner)/\(repositoryName)/releases/latest/download/\(appcastFileName)")
                 }
             }
+
+            // 静态贡献者数据
+            static func staticContributors() -> URL {
+                let timestamp = Int(Date().timeIntervalSince1970)
+                let urlString = "https://raw.githubusercontent.com/\(repositoryOwner)/Swift-Craft-Launcher-Contributors/refs/heads/main/contributors.json?timestamp=\(timestamp)"
+                return URLConfig.url(urlString)
+            }
         }
 
         // Modrinth API
