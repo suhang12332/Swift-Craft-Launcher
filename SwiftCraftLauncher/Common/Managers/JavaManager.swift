@@ -17,9 +17,9 @@ class JavaManager {
         return ""
     }
 
-    /// 检查Java是否存在，如果不存在则下载
+    /// 检查Java是否存在，如果不存在则使用进度窗口下载
     /// - Parameter version: Java版本
-    func ensureJavaExists(version: String) async throws {
+    func ensureJavaExists(version: String) async {
         // 检查Java是否已存在
         let javaPath = findJavaExecutable(version: version)
         if !javaPath.isEmpty {
@@ -27,15 +27,9 @@ class JavaManager {
             return
         }
 
-        // 如果不存在，则并发下载Java运行时
-        Logger.shared.info("Java版本 \(version) 不存在，开始并发下载...")
-        try await withThrowingTaskGroup(of: Void.self) { group in
-            group.addTask {
-                try await JavaRuntimeService.shared.downloadJavaRuntime(for: version)
-            }
-
-            try await group.waitForAll()
-        }
-        Logger.shared.info("Java版本 \(version) 并发下载完成")
+        // 如果不存在，则使用进度窗口下载Java运行时
+        Logger.shared.info("Java版本 \(version) 不存在，开始下载...")
+        await JavaDownloadManager.shared.downloadJavaRuntime(version: version)
+        Logger.shared.info("Java版本 \(version) 下载完成")
     }
 }

@@ -113,7 +113,7 @@ class GameSetupUtil: ObservableObject {
             // 下载 Mojang manifest
             let downloadedManifest = try await fetchMojangManifest(from: mojangVersion.url)
 
-            try await JavaManager.shared.ensureJavaExists(version: downloadedManifest.javaVersion.component)
+            await JavaManager.shared.ensureJavaExists(version: downloadedManifest.javaVersion.component)
 
             // 设置文件管理器
             let fileManager = try await setupFileManager(manifest: downloadedManifest, modLoader: gameInfo.modLoader)

@@ -4,6 +4,11 @@ import Foundation
 class JavaRuntimeService {
     static let shared = JavaRuntimeService()
     private let downloadSession = URLSession.shared
+
+    // 进度回调
+    var onProgressUpdate: ((String, Int, Int) -> Void)?
+    // 取消检查回调
+    var shouldCancel: (() -> Bool)?
     /// 解析Java运行时API并获取gamecore平台支持的版本名称
     func getGamecoreSupportedVersions() async throws -> [String] {
         let json = try await fetchJavaRuntimeAPI()
@@ -88,8 +93,30 @@ class JavaRuntimeService {
         // 创建目标目录
         let targetDirectory = AppPaths.runtimeDirectory.appendingPathComponent(version)
         try FileManager.default.createDirectory(at: targetDirectory, withIntermediateDirectories: true)
+
+        // 计算总文件数 - 只统计type为file的项目
+        let totalFiles = files.compactMap { _, fileInfo -> [String: Any]? in
+            guard let fileData = fileInfo as? [String: Any],
+                  let fileType = fileData["type"] as? String,
+                  fileType == "file" else {
+                return nil
+            }
+            return fileData
+        }.count
+        var completedFiles = 0
+
         // 下载所有文件
         for (filePath, fileInfo) in files {
+            // 检查是否应该取消
+            if shouldCancel?() == true {
+                Logger.shared.info("Java下载已被取消")
+                throw GlobalError.download(
+                    chineseMessage: "下载已被取消",
+                    i18nKey: "error.download.cancelled",
+                    level: .notification
+                )
+            }
+
             guard let fileData = fileInfo as? [String: Any],
                   let downloads = fileData["downloads"] as? [String: Any] else {
                 continue
@@ -126,6 +153,12 @@ class JavaRuntimeService {
             if fileType == "file" && isExecutable {
                 try setExecutablePermission(for: localFilePath)
                 Logger.shared.info("已为可执行文件设置执行权限: \(filePath)")
+            }
+
+            // 只有type为file的项目才计入完成文件数
+            if fileType == "file" {
+                completedFiles += 1
+                onProgressUpdate?(filePath, completedFiles, totalFiles)
             }
         }
 
