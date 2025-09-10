@@ -23,6 +23,16 @@ func emptyResultView() -> some View {
     }
 }
 
+func emptyDropBackground() -> some View {
+    RoundedRectangle(cornerRadius: 12)
+        .fill(Color.gray.opacity(0.05))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(style: StrokeStyle(lineWidth: 1, dash: [5, 5]))
+                .foregroundColor(.secondary.opacity(0.5))
+        )
+}
+
 func spacerView() -> some View {
     Spacer().frame(maxHeight: 20)
 }
@@ -136,6 +146,18 @@ struct PathBreadcrumbView: View {
                     segmentView(idx: idx)
                 }
             }
+        }
+    }
+}
+
+// MARK: - Extension
+extension View {
+    @ViewBuilder
+    func applyReplaceTransition() -> some View {
+        if #available(macOS 15.0, *) {
+            self.contentTransition(.symbolEffect(.replace.magic(fallback: .offUp.byLayer), options: .nonRepeating))
+        } else {
+            self.contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
         }
     }
 }

@@ -123,7 +123,7 @@ public struct DetailToolbarView: ToolbarContent {
                     .help(
                         (isGameRunning(gameId: game.id) ? "stop.fill" : "play.fill").localized()
                     )
-                    .contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
+                    .applyReplaceTransition()
 
                     Button {
                         let gameDir = AppPaths.profileDirectory(gameName: game.gameName)
@@ -217,7 +217,7 @@ public struct DetailToolbarView: ToolbarContent {
             ).foregroundStyle(.primary)
         }
         .help("resource.content.location.help".localized())
-        .contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
+        .applyReplaceTransition()
     }
 
     private var paginationControls: some View {

@@ -171,7 +171,7 @@ struct SkinToolDetailView: View {
                 .font(.callout).foregroundColor(.secondary).multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, minHeight: 80)
-        .background(emptyDropBackground)
+        .background(emptyDropBackground())
     }
 
     private var selectedSkinBackground: some View {
@@ -180,16 +180,6 @@ struct SkinToolDetailView: View {
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
-            )
-    }
-
-    private var emptyDropBackground: some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(Color.gray.opacity(0.05))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(style: StrokeStyle(lineWidth: 2, dash: [5, 5]))
-                    .foregroundColor(.secondary.opacity(0.5))
             )
     }
 

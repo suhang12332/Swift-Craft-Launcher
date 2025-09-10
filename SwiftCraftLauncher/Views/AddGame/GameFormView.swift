@@ -66,7 +66,7 @@ struct GameFormView: View {
                 .help(
                     (!isImportMode ? "game.form.mode.import" : "game.form.mode.create").localized()
                 )
-                .contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
+                .applyReplaceTransition()
             }
         }
     }

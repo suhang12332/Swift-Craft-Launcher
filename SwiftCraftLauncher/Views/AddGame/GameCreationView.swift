@@ -5,8 +5,8 @@ import UserNotifications
 // MARK: - Constants
 private enum Constants {
     static let formSpacing: CGFloat = 16
-    static let iconSize: CGFloat = 64
-    static let cornerRadius: CGFloat = 8
+    static let iconSize: CGFloat = 80
+    static let cornerRadius: CGFloat = 12
     static let maxImageSize: CGFloat = 1024
     static let versionGridColumns = 6
     static let versionPopoverMinWidth: CGFloat = 320
@@ -57,6 +57,8 @@ struct GameCreationView: View {
     @State private var selectedGameVersion = ""
     @State private var versionTime = ""
     @State private var selectedModLoader = "vanilla"
+    @State private var selectedLoaderVersion = ""  // 新增：选择的加载器版本
+    @State private var availableLoaderVersions: [String] = []  // 新增：可用的加载器版本列表
     @State private var mojangVersions: [MojangVersionInfo] = []
     @State private var availableVersions: [String] = []  // 新增：存储可用版本字符串列表
     @State private var downloadTask: Task<Void, Error>?
@@ -98,6 +100,9 @@ struct GameCreationView: View {
                 triggerConfirm = false
             }
         }
+        .onChange(of: selectedLoaderVersion) {
+            updateParentState()
+        }
     }
 
     // MARK: - View Components
@@ -105,6 +110,9 @@ struct GameCreationView: View {
     private var formContentView: some View {
         VStack {
             gameIconAndVersionSection
+            if selectedModLoader != "vanilla" {
+                loaderVersionPicker
+            }
             gameNameSection
 
             if shouldShowProgress {
@@ -117,6 +125,7 @@ struct GameCreationView: View {
         FormSection {
             HStack(alignment: .top, spacing: Constants.formSpacing) {
                 gameIconView
+                    .padding(.trailing, 6)
                 gameVersionAndLoaderView
             }
         }
@@ -141,10 +150,6 @@ struct GameCreationView: View {
                         false
                     }
                 }
-
-            Text("game.form.icon.description".localized())
-                .font(.caption)
-                .foregroundColor(.secondary)
         }
         .disabled(gameSetupService.downloadState.isDownloading)
     }
@@ -183,51 +188,18 @@ struct GameCreationView: View {
                     }
                 }
             } else {
-                let iconURL = AppPaths.profileDirectory(
-                    gameName: gameNameValidator.gameName
-                )
-                .appendingPathComponent(AppConstants.defaultGameIcon)
-
-                if FileManager.default.fileExists(atPath: iconURL.path) {
-                AsyncImage(url: iconURL) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .interpolation(.none)
-                            .scaledToFill()
-                            .frame(
-                                width: Constants.iconSize,
-                                height: Constants.iconSize
-                            )
-                            .clipShape(
-                                RoundedRectangle(
-                                    cornerRadius: Constants.cornerRadius
-                                )
-                            )
-                            .contentShape(Rectangle())
-                    case .failure:
-                        RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                            .stroke(
-                                Color.accentColor.opacity(0.3),
-                                lineWidth: 1
-                            )
-                            .background(Color.gray.opacity(0.08))
-                    @unknown default:
-                        EmptyView()
-                    }
+                VStack(spacing: 12) {
+                    Image(systemName: "photo.badge.plus")
+                        .symbolRenderingMode(.multicolor)
+                        .symbolVariant(.none)
+                        .fontWeight(.regular)
+                        .font(.system(size: 16))
                 }
-                } else {
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
-                        .background(Color.gray.opacity(0.08))
-                }
+                .frame(maxWidth: .infinity, minHeight: 80)
+                .background(emptyDropBackground())
             }
         }
         .frame(width: Constants.iconSize, height: Constants.iconSize)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
     }
 
     private var gameVersionAndLoaderView: some View {
@@ -266,6 +238,16 @@ struct GameCreationView: View {
                     let compatibleVersions =
                         await CommonService.compatibleVersions(for: new)
                     await updateAvailableVersions(compatibleVersions)
+
+                    // 更新加载器版本列表
+                    if new != "vanilla" && !selectedGameVersion.isEmpty {
+                        await updateLoaderVersions(for: new, gameVersion: selectedGameVersion)
+                    } else {
+                        await MainActor.run {
+                            availableLoaderVersions = []
+                            selectedLoaderVersion = ""
+                        }
+                    }
                 }
             }
             .onAppear {
@@ -275,6 +257,27 @@ struct GameCreationView: View {
                             for: selectedModLoader
                         )
                     await updateAvailableVersions(compatibleVersions)
+                }
+            }
+        }
+    }
+
+    private var loaderVersionPicker: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("game.form.loader.version".localized())
+                .font(.subheadline)
+                .foregroundColor(.primary)
+            Picker("", selection: $selectedLoaderVersion) {
+                ForEach(availableLoaderVersions, id: \.self) { version in
+                    Text(version).tag(version)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(MenuPickerStyle())
+            .disabled(gameSetupService.downloadState.isDownloading || availableLoaderVersions.isEmpty)
+            .onChange(of: selectedGameVersion) { _, newGameVersion in
+                Task {
+                    await updateLoaderVersions(for: selectedModLoader, gameVersion: newGameVersion)
                 }
             }
         }
@@ -416,6 +419,59 @@ struct GameCreationView: View {
         await updateAvailableVersions(compatibleVersions)
     }
 
+    /// 更新加载器版本列表
+    /// - Parameters:
+    ///   - loader: 加载器类型
+    ///   - gameVersion: 游戏版本
+    private func updateLoaderVersions(for loader: String, gameVersion: String) async {
+        guard loader != "vanilla" && !gameVersion.isEmpty else {
+            await MainActor.run {
+                availableLoaderVersions = []
+                selectedLoaderVersion = ""
+            }
+            return
+        }
+
+        var versions: [String] = []
+
+        switch loader.lowercased() {
+        case "fabric":
+            let fabricVersions = await FabricLoaderService.fetchAllLoaderVersions(for: gameVersion)
+            versions = fabricVersions.map { $0.loader.version }
+        case "forge":
+            do {
+                let forgeVersions = try await ForgeLoaderService.fetchAllForgeVersions(for: gameVersion)
+                versions = forgeVersions.loaders.map { $0.id }
+            } catch {
+                Logger.shared.error("获取 Forge 版本失败: \(error.localizedDescription)")
+                versions = []
+            }
+        case "neoforge":
+            do {
+                let neoforgeVersions = try await NeoForgeLoaderService.fetchAllNeoForgeVersions(for: gameVersion)
+                versions = neoforgeVersions.loaders.map { $0.id }
+            } catch {
+                Logger.shared.error("获取 NeoForge 版本失败: \(error.localizedDescription)")
+                versions = []
+            }
+        case "quilt":
+            let quiltVersions = await QuiltLoaderService.fetchAllQuiltLoaders(for: gameVersion)
+            versions = quiltVersions.map { $0.loader.version }
+        default:
+            versions = []
+        }
+
+        await MainActor.run {
+            availableLoaderVersions = versions
+            // 如果当前选中的版本不在列表中，选择第一个版本
+            if !versions.contains(selectedLoaderVersion) && !versions.isEmpty {
+                selectedLoaderVersion = versions.first ?? ""
+            } else if versions.isEmpty {
+                selectedLoaderVersion = ""
+            }
+        }
+    }
+
     private func handleNonCriticalError(_ error: GlobalError, message: String) {
         Logger.shared.error("\(message): \(error.chineseMessage)")
         GlobalErrorHandler.shared.handle(error)
@@ -528,12 +584,15 @@ struct GameCreationView: View {
 
     // MARK: - Game Save Methods
     private func saveGame() async {
+        // 对于非vanilla加载器，如果没有选择版本，则不允许保存
+        let loaderVersion = selectedModLoader == "vanilla" ? selectedModLoader : selectedLoaderVersion
+
         await gameSetupService.saveGame(
             gameName: gameNameValidator.gameName,
             gameIcon: gameIcon,
             selectedGameVersion: selectedGameVersion,
             selectedModLoader: selectedModLoader,
-            specifiedLoaderVersion: nil,
+            specifiedLoaderVersion: loaderVersion,
             pendingIconData: pendingIconData,
             playerListViewModel: playerListViewModel,
             gameRepository: gameRepository,
@@ -570,6 +629,9 @@ struct GameCreationView: View {
 
     private func updateParentState() {
         isDownloading = gameSetupService.downloadState.isDownloading
-        isFormValid = gameNameValidator.isFormValid
+
+        // 检查表单是否有效：基本验证 + 加载器版本验证
+        let isLoaderVersionValid = selectedModLoader == "vanilla" || !selectedLoaderVersion.isEmpty
+        isFormValid = gameNameValidator.isFormValid && isLoaderVersionValid
     }
 }
