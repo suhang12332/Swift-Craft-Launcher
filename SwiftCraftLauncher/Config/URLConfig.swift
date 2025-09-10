@@ -37,6 +37,19 @@ enum URLConfig {
             static let versionList = URLConfig.url("https://launchermeta.mojang.com/mc/game/version_manifest.json")
         }
 
+        // Java Runtime API
+        enum JavaRuntime {
+            static let baseURL = URLConfig.url("https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871")
+            static let allRuntimes = baseURL.appendingPathComponent("all.json")
+
+            /// 获取Java运行时清单
+            /// - Parameter manifestURL: 清单URL
+            /// - Returns: 清单URL
+            static func manifest(_ manifestURL: String) -> URL {
+                return URLConfig.url(manifestURL)
+            }
+        }
+
         // GitHub API
         enum GitHub {
             static let baseURL = URLConfig.url("https://api.github.com")
@@ -74,6 +87,13 @@ enum URLConfig {
                 } else {
                     return URLConfig.url("https://github.com/\(repositoryOwner)/\(repositoryName)/releases/latest/download/\(appcastFileName)")
                 }
+            }
+
+            // 静态贡献者数据
+            static func staticContributors() -> URL {
+                let timestamp = Int(Date().timeIntervalSince1970)
+                let urlString = "https://raw.githubusercontent.com/\(repositoryOwner)/Swift-Craft-Launcher-Contributors/refs/heads/main/contributors.json?timestamp=\(timestamp)"
+                return URLConfig.url(urlString)
             }
         }
 
