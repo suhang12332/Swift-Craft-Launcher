@@ -173,6 +173,77 @@ enum ModPackDependencyInstaller {
     ///   - resourceDir: 资源目录
     /// - Returns: 是否下载成功
     private static func downloadSingleFile(file: ModrinthIndexFile, resourceDir: URL) async -> Bool {
+        // 检查是否是 CurseForge 文件（需要延迟获取详情）
+        if file.source == .curseforge,
+           let projectId = file.curseForgeProjectId,
+           let fileId = file.curseForgeFileId {
+            // CurseForge 文件：在下载时获取真实的文件详情
+            return await downloadCurseForgeFile(
+                projectId: projectId,
+                fileId: fileId,
+                resourceDir: resourceDir
+            )
+        } else {
+            // Modrinth 文件：使用原有逻辑
+            return await downloadModrinthFile(file: file, resourceDir: resourceDir)
+        }
+    }
+
+    /// 下载 CurseForge 文件（并发获取文件详情）
+    /// - Parameters:
+    ///   - projectId: 项目ID
+    ///   - fileId: 文件ID
+    ///   - resourceDir: 资源目录
+    /// - Returns: 是否下载成功
+    private static func downloadCurseForgeFile(projectId: Int, fileId: Int, resourceDir: URL) async -> Bool {
+        do {
+            // 并发获取文件详情
+            guard let fileDetail = await CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId) else {
+                Logger.shared.error("无法获取 CurseForge 文件详情: \(projectId)/\(fileId)")
+                return false
+            }
+
+            // 确定下载URL
+            let downloadUrl: String
+            if let directUrl = fileDetail.downloadUrl, !directUrl.isEmpty {
+                downloadUrl = directUrl
+            } else {
+                // 使用配置的备用下载地址
+                downloadUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(fileId: fileId, fileName: fileDetail.fileName).absoluteString
+            }
+
+            // 根据文件详情确定子目录
+            let modDetail = try await CurseForgeService.fetchModDetailThrowing(modId: projectId)
+            let subDirectory = modDetail.directoryName
+            let destinationPath = resourceDir.appendingPathComponent(subDirectory).appendingPathComponent(fileDetail.fileName)
+
+            // 确保目录存在
+            try FileManager.default.createDirectory(
+                at: destinationPath.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+
+            // 下载文件
+             _ = try await DownloadManager.downloadFile(
+                urlString: downloadUrl,
+                destinationURL: destinationPath,
+                expectedSha1: fileDetail.hash?.value
+            )
+
+            Logger.shared.info("已下载 CurseForge 文件: \(fileDetail.fileName)")
+            return true
+        } catch {
+            Logger.shared.error("下载 CurseForge 文件失败: \(projectId)/\(fileId), 错误: \(error.localizedDescription)")
+            return false
+        }
+    }
+
+    /// 下载 Modrinth 文件
+    /// - Parameters:
+    ///   - file: 文件信息
+    ///   - resourceDir: 资源目录
+    /// - Returns: 是否下载成功
+    private static func downloadModrinthFile(file: ModrinthIndexFile, resourceDir: URL) async -> Bool {
         guard let urlString = file.downloads.first, !urlString.isEmpty else {
             Logger.shared.error("文件无可用下载链接: \(file.path)")
             return false
@@ -198,9 +269,9 @@ enum ModPackDependencyInstaller {
 
                             // 存入缓存
                             ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
-                            Logger.shared.info("已缓存文件详情: \(file.path)")
+                            Logger.shared.info("已缓存 Modrinth 文件详情: \(file.path)")
                         } else {
-                            Logger.shared.warning("无法获取文件详情: \(file.path)")
+                            Logger.shared.warning("无法获取 Modrinth 文件详情: \(file.path)")
                         }
                         continuation.resume()
                     }
@@ -337,12 +408,33 @@ enum ModPackDependencyInstaller {
         resourceDir: URL,
         onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
     ) async -> Bool {
-        let overridesPath = extractedPath.appendingPathComponent("overrides")
+        // 首先检查 Modrinth 格式的 overrides 文件夹
+        var overridesPath = extractedPath.appendingPathComponent("overrides")
 
-        // 检查 overrides 文件夹是否存在
-        guard FileManager.default.fileExists(atPath: overridesPath.path) else {
-            Logger.shared.info("overrides 文件夹不存在，跳过处理")
-            return true
+        // 如果不存在，检查 CurseForge 格式的 overrides 文件夹
+        if !FileManager.default.fileExists(atPath: overridesPath.path) {
+            // CurseForge 格式可能使用不同的 overrides 路径名
+            let possiblePaths = [
+                "overrides",
+                "Override",
+                "override",
+            ]
+
+            var foundPath: URL?
+            for pathName in possiblePaths {
+                let testPath = extractedPath.appendingPathComponent(pathName)
+                if FileManager.default.fileExists(atPath: testPath.path) {
+                    foundPath = testPath
+                    break
+                }
+            }
+
+            if let found = foundPath {
+                overridesPath = found
+            } else {
+                Logger.shared.info("overrides 文件夹不存在，跳过处理")
+                return true
+            }
         }
 
         Logger.shared.info("开始处理 overrides 文件夹: \(overridesPath.path)")
@@ -464,6 +556,7 @@ enum ModPackDependencyInstaller {
             return false
         }
 
+        // Modrinth 格式：使用原有逻辑
         if let versionId = dep.versionId {
             // 如果有指定版本ID，直接使用该版本
             return await addProjectFromVersion(

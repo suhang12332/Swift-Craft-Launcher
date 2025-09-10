@@ -289,6 +289,25 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     }
 
     func parseModrinthIndex(extractedPath: URL) async -> ModrinthIndexInfo? {
+        // 首先尝试解析 Modrinth 格式
+        if let modrinthInfo = await parseModrinthIndexInternal(extractedPath: extractedPath) {
+            return modrinthInfo
+        }
+
+        // 如果不是 Modrinth 格式，尝试解析 CurseForge 格式
+        if let modrinthInfo = await CurseForgeManifestParser.parseManifest(extractedPath: extractedPath) {
+            return modrinthInfo
+        }
+
+        // 都不是支持的格式
+        handleDownloadError(
+            "不支持的整合包格式，请使用 Modrinth (.mrpack) 或 CurseForge (.zip) 格式的整合包",
+            "error.resource.unsupported_modpack_format"
+        )
+        return nil
+    }
+
+    private func parseModrinthIndexInternal(extractedPath: URL) async -> ModrinthIndexInfo? {
         do {
             // 查找并解析 modrinth.index.json
             let indexPath = extractedPath.appendingPathComponent(
@@ -298,25 +317,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             Logger.shared.info("尝试解析 modrinth.index.json: \(indexPath.path)")
 
             guard FileManager.default.fileExists(atPath: indexPath.path) else {
-                // 列出解压目录中的文件，帮助调试
-                do {
-                    let contents = try FileManager.default.contentsOfDirectory(
-                        at: extractedPath,
-                        includingPropertiesForKeys: nil
-                    )
-                    Logger.shared.info(
-                        "解压目录内容: \(contents.map { $0.lastPathComponent })"
-                    )
-                } catch {
-                    Logger.shared.error(
-                        "无法列出解压目录内容: \(error.localizedDescription)"
-                    )
-                }
-
-                handleDownloadError(
-                    "整合包中未找到 modrinth.index.json 文件",
-                    "error.resource.modrinth_index_not_found"
-                )
+                Logger.shared.info("未找到 modrinth.index.json，可能是 CurseForge 格式")
                 return nil
             }
 
@@ -377,10 +378,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 Logger.shared.error("JSON 解析错误: \(jsonError)")
             }
 
-            handleDownloadError(
-                "解析 modrinth.index.json 失败: \(error.localizedDescription)",
-                "error.resource.modrinth_index_parse_failed"
-            )
             return nil
         }
     }
@@ -519,6 +516,10 @@ struct ModrinthIndexFile: Codable {
     let downloads: [String]
     let fileSize: Int
     let env: ModrinthIndexFileEnv?
+    let source: FileSource?
+    // CurseForge 特有字段，用于延迟获取文件详情
+    let curseForgeProjectId: Int?
+    let curseForgeFileId: Int?
 
     enum CodingKeys: String, CodingKey {
         case path
@@ -526,7 +527,36 @@ struct ModrinthIndexFile: Codable {
         case downloads
         case fileSize = "fileSize"
         case env
+        case source
+        case curseForgeProjectId
+        case curseForgeFileId
     }
+
+    // 为兼容性提供默认初始化器
+    init(
+        path: String,
+        hashes: [String: String],
+        downloads: [String],
+        fileSize: Int,
+        env: ModrinthIndexFileEnv? = nil,
+        source: FileSource? = nil,
+        curseForgeProjectId: Int? = nil,
+        curseForgeFileId: Int? = nil
+    ) {
+        self.path = path
+        self.hashes = hashes
+        self.downloads = downloads
+        self.fileSize = fileSize
+        self.env = env
+        self.source = source
+        self.curseForgeProjectId = curseForgeProjectId
+        self.curseForgeFileId = curseForgeFileId
+    }
+}
+
+enum FileSource: String, Codable {
+    case modrinth = "modrinth"
+    case curseforge = "curseforge"
 }
 
 struct ModrinthIndexFileEnv: Codable {
@@ -583,6 +613,29 @@ struct ModrinthIndexInfo {
     let summary: String?
     let files: [ModrinthIndexFile]
     let dependencies: [ModrinthIndexProjectDependency]
+    let source: FileSource
+
+    init(
+        gameVersion: String,
+        loaderType: String,
+        loaderVersion: String,
+        modPackName: String,
+        modPackVersion: String,
+        summary: String?,
+        files: [ModrinthIndexFile],
+        dependencies: [ModrinthIndexProjectDependency],
+        source: FileSource = .modrinth
+    ) {
+        self.gameVersion = gameVersion
+        self.loaderType = loaderType
+        self.loaderVersion = loaderVersion
+        self.modPackName = modPackName
+        self.modPackVersion = modPackVersion
+        self.summary = summary
+        self.files = files
+        self.dependencies = dependencies
+        self.source = source
+    }
 }
 
 // MARK: - ModPack Install State

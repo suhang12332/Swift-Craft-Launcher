@@ -62,6 +62,9 @@ enum DownloadManager {
             case .shader:
                 return AppPaths.shaderpacksDirectory(gameName: game.gameName)
             case .resourcepack:
+                if url.lastPathComponent.lowercased().hasSuffix(".jar") {
+                    return AppPaths.modsDirectory(gameName: game.gameName)
+                }
                 return AppPaths.resourcepacksDirectory(gameName: game.gameName)
             }
         }()
