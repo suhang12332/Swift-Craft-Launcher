@@ -111,8 +111,7 @@ class PlayerListViewModel: ObservableObject {
             avatarName: avatarUrl,
             accToken: profile.accessToken,
             refreshToken: profile.refreshToken,
-            xuid: profile.authXuid,
-            tokenExpiresAt: profile.tokenExpiresAt
+            xuid: profile.authXuid
         )
         try loadPlayersThrowing()
         Logger.shared.debug("玩家 \(profile.name) 添加成功，列表已更新。")

@@ -21,14 +21,15 @@ class GameSetupUtil: ObservableObject {
 
     private var downloadTask: Task<Void, Never>?
 
-    // MARK: - Public Methods
+    // MARK: - Public Methods    
 
-    /// 保存游戏配置
+    /// 内部游戏保存方法
     /// - Parameters:
     ///   - gameName: 游戏名称
     ///   - gameIcon: 游戏图标
     ///   - selectedGameVersion: 选择的游戏版本
     ///   - selectedModLoader: 选择的模组加载器
+    ///   - specifiedLoaderVersion: 指定的加载器版本（可选）
     ///   - pendingIconData: 待保存的图标数据
     ///   - playerListViewModel: 玩家列表视图模型（可选，为 nil 时跳过玩家校验）
     ///   - gameRepository: 游戏仓库
@@ -39,6 +40,7 @@ class GameSetupUtil: ObservableObject {
         gameIcon: String,
         selectedGameVersion: String,
         selectedModLoader: String,
+        specifiedLoaderVersion: String?,
         pendingIconData: Data?,
         playerListViewModel: PlayerListViewModel?,
         gameRepository: GameRepository,
@@ -129,7 +131,8 @@ class GameSetupUtil: ObservableObject {
                 selectedModLoader: selectedModLoader,
                 selectedGameVersion: selectedGameVersion,
                 gameName: gameName,
-                gameIcon: gameIcon
+                gameIcon: gameIcon,
+                specifiedLoaderVersion: specifiedLoaderVersion
             )
             // 完善游戏信息
             gameInfo = await finalizeGameInfo(
@@ -286,7 +289,8 @@ class GameSetupUtil: ObservableObject {
         selectedModLoader: String,
         selectedGameVersion: String,
         gameName: String,
-        gameIcon: String
+        gameIcon: String,
+        specifiedLoaderVersion: String? = nil
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String)? {
         let loaderType = selectedModLoader.lowercased()
         let handler: (any ModLoaderHandler.Type)?
@@ -316,7 +320,8 @@ class GameSetupUtil: ObservableObject {
             isUserAdded: true
         )
 
-        return await handler.setup(for: selectedGameVersion, gameInfo: gameInfo) { [weak self] fileName, completed, total in
+        // 根据是否指定了加载器版本来选择不同的方法
+        let progressCallback: (String, Int, Int) -> Void = { [weak self] fileName, completed, total in
             Task { @MainActor in
                 guard let self = self else { return }
                 self.objectWillChange.send()
@@ -333,6 +338,20 @@ class GameSetupUtil: ObservableObject {
                     break
                 }
             }
+        }
+
+        if let specifiedVersion = specifiedLoaderVersion {
+            // 使用指定版本
+            Logger.shared.info("使用整合包指定的加载器版本: \(specifiedVersion)")
+            return await handler.setupWithSpecificVersion(
+                for: selectedGameVersion,
+                loaderVersion: specifiedVersion,
+                gameInfo: gameInfo,
+                onProgressUpdate: progressCallback
+            )
+        } else {
+            // 使用最新版本
+            return await handler.setup(for: selectedGameVersion, gameInfo: gameInfo, onProgressUpdate: progressCallback)
         }
     }
 
