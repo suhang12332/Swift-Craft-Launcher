@@ -571,7 +571,7 @@ extension MinecraftAuthService {
             let globalError = GlobalError.authentication(
                 chineseMessage: "刷新 Token 时发生未知错误: \(error.localizedDescription)",
                 i18nKey: "error.authentication.unknown_refresh_error",
-                level: .notification
+                level: .popup
             )
             return .failure(globalError)
         }
@@ -695,7 +695,8 @@ extension MinecraftAuthService {
     /// - Parameter player: 玩家对象
     /// - Returns: 是否过期
     func isTokenExpiredBasedOnTime(for player: Player) async -> Bool {
-        return JWTDecoder.isTokenExpiringSoon(player.authAccessToken)
+//        return JWTDecoder.isTokenExpiringSoon(player.authAccessToken)
+        return true
     }
 
     /// 提示用户重新登录指定玩家
