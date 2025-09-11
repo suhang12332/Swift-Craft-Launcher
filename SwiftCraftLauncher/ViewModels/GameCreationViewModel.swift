@@ -58,7 +58,46 @@ class GameCreationViewModel: BaseGameFormViewModel {
     }
 
     override func handleCancel() {
-        cancelDownloadIfNeeded()
+        if isDownloading {
+            // 停止下载任务
+            downloadTask?.cancel()
+            downloadTask = nil
+
+            // 取消下载状态
+            gameSetupService.downloadState.cancel()
+
+            // 执行取消后的清理工作
+            Task {
+                await performCancelCleanup()
+            }
+        } else {
+            configuration.actions.onCancel()
+        }
+    }
+
+    override func performCancelCleanup() async {
+        // 如果正在下载时取消，需要删除已创建的游戏文件夹
+        let gameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !gameName.isEmpty {
+            do {
+                let profileDir = AppPaths.profileDirectory(gameName: gameName)
+
+                // 检查目录是否存在
+                if FileManager.default.fileExists(atPath: profileDir.path) {
+                    try FileManager.default.removeItem(at: profileDir)
+                    Logger.shared.info("已删除取消创建的游戏文件夹: \(profileDir.path)")
+                }
+            } catch {
+                Logger.shared.error("删除游戏文件夹失败: \(error.localizedDescription)")
+                // 即使删除失败，也不应该阻止关闭窗口
+            }
+        }
+
+        // 重置下载状态并关闭窗口
+        await MainActor.run {
+            gameSetupService.downloadState.reset()
+            configuration.actions.onCancel()
+        }
     }
 
     override func computeIsDownloading() -> Bool {

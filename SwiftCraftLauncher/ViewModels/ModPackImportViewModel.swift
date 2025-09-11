@@ -58,7 +58,66 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     }
 
     override func handleCancel() {
-        cancelDownloadIfNeeded()
+        if computeIsDownloading() {
+            // 停止下载任务
+            downloadTask?.cancel()
+            downloadTask = nil
+
+            // 取消下载状态
+            gameSetupService.downloadState.cancel()
+            // ModPackInstallState没有专门的cancel方法，直接重置状态
+            modPackViewModel.modPackInstallState.reset()
+
+            // 停止处理状态
+            isProcessingModPack = false
+            onProcessingStateChanged(false)
+
+            // 执行取消后的清理工作
+            Task {
+                await performCancelCleanup()
+            }
+        } else {
+            configuration.actions.onCancel()
+        }
+    }
+
+    override func performCancelCleanup() async {
+        // 如果正在下载时取消，需要删除已创建的游戏文件夹和临时文件
+        let gameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if !gameName.isEmpty {
+            do {
+                let profileDir = AppPaths.profileDirectory(gameName: gameName)
+
+                // 检查目录是否存在
+                if FileManager.default.fileExists(atPath: profileDir.path) {
+                    try FileManager.default.removeItem(at: profileDir)
+                    Logger.shared.info("已删除取消创建的ModPack游戏文件夹: \(profileDir.path)")
+                }
+            } catch {
+                Logger.shared.error("删除ModPack游戏文件夹失败: \(error.localizedDescription)")
+                // 即使删除失败，也不应该阻止关闭窗口
+            }
+        }
+
+        // 清理解压的临时文件
+        if let extractedPath = extractedModPackPath {
+            do {
+                if FileManager.default.fileExists(atPath: extractedPath.path) {
+                    try FileManager.default.removeItem(at: extractedPath)
+                    Logger.shared.info("已删除ModPack临时解压文件: \(extractedPath.path)")
+                }
+            } catch {
+                Logger.shared.error("删除ModPack临时文件失败: \(error.localizedDescription)")
+            }
+        }
+
+        // 重置下载状态并关闭窗口
+        await MainActor.run {
+            gameSetupService.downloadState.reset()
+            modPackViewModel.modPackInstallState.reset()
+            configuration.actions.onCancel()
+        }
     }
 
     override func computeIsDownloading() -> Bool {

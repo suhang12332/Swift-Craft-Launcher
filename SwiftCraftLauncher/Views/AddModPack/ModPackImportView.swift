@@ -8,6 +8,7 @@ struct ModPackImportView: View {
 
     // Bindings from parent
     private let triggerConfirm: Binding<Bool>
+    private let triggerCancel: Binding<Bool>
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @Environment(\.dismiss)
     private var dismiss
@@ -20,6 +21,7 @@ struct ModPackImportView: View {
         onProcessingStateChanged: @escaping (Bool) -> Void = { _ in }
     ) {
         self.triggerConfirm = configuration.triggerConfirm
+        self.triggerCancel = configuration.triggerCancel
 
         self._viewModel = StateObject(wrappedValue: ModPackImportViewModel(
             configuration: configuration,
@@ -35,7 +37,7 @@ struct ModPackImportView: View {
         .onAppear {
             viewModel.setup(gameRepository: gameRepository)
         }
-        .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm)
+        .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
         .onChange(of: viewModel.selectedModPackFile) { _, _ in
             viewModel.updateParentState()
         }

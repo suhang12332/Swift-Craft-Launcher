@@ -27,6 +27,7 @@ struct GameFormView: View {
     @State private var isDownloading = false
     @State private var isFormValid = false
     @State private var triggerConfirm = false
+    @State private var triggerCancel = false
     @State private var showModPackFilePicker = false
     @State private var mode: GameFormMode = .creation
     @State private var isModPackParsed = false
@@ -44,6 +45,7 @@ struct GameFormView: View {
                             isDownloading: $isDownloading,
                             isFormValid: $isFormValid,
                             triggerConfirm: $triggerConfirm,
+                            triggerCancel: $triggerCancel,
                             onCancel: { dismiss() },
                             onConfirm: { dismiss() }
                         )
@@ -53,6 +55,7 @@ struct GameFormView: View {
                                 isDownloading: $isDownloading,
                                 isFormValid: $isFormValid,
                                 triggerConfirm: $triggerConfirm,
+                                triggerCancel: $triggerCancel,
                                 onCancel: { dismiss() },
                                 onConfirm: { dismiss() }
                             ),
@@ -123,8 +126,16 @@ struct GameFormView: View {
     }
 
     private var cancelButton: some View {
-        Button("common.cancel".localized()) {
+        Button {
+            if isDownloading {
+                // 当正在下载时，触发取消处理逻辑
+                triggerCancel = true
+            } else {
+                // 非下载状态直接关闭窗口
                 dismiss()
+            }
+        } label: {
+            Text(isDownloading ? "common.stop".localized() : "common.cancel".localized())
         }
         .keyboardShortcut(.cancelAction)
     }

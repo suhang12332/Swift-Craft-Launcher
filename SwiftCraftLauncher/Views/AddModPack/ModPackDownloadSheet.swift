@@ -186,8 +186,10 @@ struct ModPackDownloadSheet: View {
     private var versionSelectionSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             gameVersionPicker
-            modPackVersionPicker
-            gameNameInputSection
+            if !selectedGameVersion.isEmpty {
+                modPackVersionPicker
+                gameNameInputSection
+            }
         }
     }
 
@@ -257,7 +259,7 @@ struct ModPackDownloadSheet: View {
     }
 
     private var cancelButton: some View {
-        Button("common.cancel".localized()) {
+        Button(isDownloading ? "common.stop".localized() : "common.cancel".localized()) {
             handleCancel()
         }
         .keyboardShortcut(.cancelAction)
@@ -399,6 +401,8 @@ struct ModPackDownloadSheet: View {
             Task {
                 await cleanupGameDirectories(gameName: gameNameValidator.gameName)
             }
+            // 停止后直接关闭sheet
+            dismiss()
         } else {
             dismiss()
         }

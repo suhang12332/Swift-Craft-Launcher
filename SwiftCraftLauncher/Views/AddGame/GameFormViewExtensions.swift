@@ -12,7 +12,8 @@ extension View {
     /// 通用的游戏表单状态监听修饰符
     func gameFormStateListeners<T: BaseGameFormViewModel>(
         viewModel: T,
-        triggerConfirm: Binding<Bool>
+        triggerConfirm: Binding<Bool>,
+        triggerCancel: Binding<Bool>
     ) -> some View {
         self
             .onChange(of: viewModel.gameNameValidator.gameName) { _, _ in
@@ -28,6 +29,12 @@ extension View {
                 if newValue {
                     viewModel.handleConfirm()
                     triggerConfirm.wrappedValue = false
+                }
+            }
+            .onChange(of: triggerCancel.wrappedValue) { _, newValue in
+                if newValue {
+                    viewModel.handleCancel()
+                    triggerCancel.wrappedValue = false
                 }
             }
     }

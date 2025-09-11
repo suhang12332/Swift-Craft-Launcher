@@ -14,11 +14,12 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     @Published var isDownloading: Bool = false
     @Published var isFormValid: Bool = false
     @Published var triggerConfirm: Bool = false
+    @Published var triggerCancel: Bool = false
 
     let gameSetupService = GameSetupUtil()
     let gameNameValidator: GameNameValidator
 
-    private var downloadTask: Task<Void, Error>?
+    internal var downloadTask: Task<Void, Error>?
     private var cancellables = Set<AnyCancellable>()
     let configuration: GameFormConfiguration
 
@@ -57,10 +58,20 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     // MARK: - GameFormStateProtocol Implementation
     func handleCancel() {
         if isDownloading {
+            // 停止下载任务
             downloadTask?.cancel()
             downloadTask = nil
+
+            // 取消下载状态
+            gameSetupService.downloadState.cancel()
+
+            // 执行取消后的清理工作
+            Task {
+                await performCancelCleanup()
+            }
+        } else {
+            configuration.actions.onCancel()
         }
-        configuration.actions.onCancel()
     }
 
     func handleConfirm() {
@@ -90,6 +101,15 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     func performConfirmAction() async {
         // Override in subclasses
         configuration.actions.onConfirm()
+    }
+
+    func performCancelCleanup() async {
+        // Override in subclasses for custom cleanup logic
+        // 默认实现：重置下载状态并关闭窗口
+        await MainActor.run {
+            gameSetupService.downloadState.reset()
+            configuration.actions.onCancel()
+        }
     }
 
     func computeIsDownloading() -> Bool {

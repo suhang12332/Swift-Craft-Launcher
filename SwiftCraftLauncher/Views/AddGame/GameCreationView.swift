@@ -25,20 +25,24 @@ struct GameCreationView: View {
 
     // Bindings from parent
     private let triggerConfirm: Binding<Bool>
+    private let triggerCancel: Binding<Bool>
 
     // MARK: - Initializer
     init(
         isDownloading: Binding<Bool>,
         isFormValid: Binding<Bool>,
         triggerConfirm: Binding<Bool>,
+        triggerCancel: Binding<Bool>,
         onCancel: @escaping () -> Void,
         onConfirm: @escaping () -> Void
     ) {
         self.triggerConfirm = triggerConfirm
+        self.triggerCancel = triggerCancel
         let configuration = GameFormConfiguration(
             isDownloading: isDownloading,
             isFormValid: isFormValid,
             triggerConfirm: triggerConfirm,
+            triggerCancel: triggerCancel,
             onCancel: onCancel,
             onConfirm: onConfirm
         )
@@ -58,7 +62,7 @@ struct GameCreationView: View {
         .onAppear {
             viewModel.setup(gameRepository: gameRepository, playerListViewModel: playerListViewModel)
         }
-        .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm)
+        .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
         .onChange(of: viewModel.selectedLoaderVersion) { _, _ in
             viewModel.updateParentState()
         }

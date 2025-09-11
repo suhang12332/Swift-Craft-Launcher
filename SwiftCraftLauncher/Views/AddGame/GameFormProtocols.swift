@@ -42,18 +42,21 @@ struct GameFormConfiguration {
     let isDownloading: Binding<Bool>
     let isFormValid: Binding<Bool>
     let triggerConfirm: Binding<Bool>
+    let triggerCancel: Binding<Bool>
     let actions: GameFormActions
 
     init(
         isDownloading: Binding<Bool>,
         isFormValid: Binding<Bool>,
         triggerConfirm: Binding<Bool>,
+        triggerCancel: Binding<Bool>,
         onCancel: @escaping () -> Void,
         onConfirm: @escaping () -> Void
     ) {
         self.isDownloading = isDownloading
         self.isFormValid = isFormValid
         self.triggerConfirm = triggerConfirm
+        self.triggerCancel = triggerCancel
         self.actions = GameFormActions(onCancel: onCancel, onConfirm: onConfirm)
     }
 }
