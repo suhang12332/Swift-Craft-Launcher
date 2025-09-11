@@ -125,7 +125,7 @@ struct ModrinthProjectDetailToolbarView: View {
 
     private var backButton: some View {
         Button(action: onBack) {
-            Label("return".localized(), systemImage: "return").help(
+            Label("return".localized(), systemImage: "arrow.backward").help(
                 "return".localized()
             )
         }

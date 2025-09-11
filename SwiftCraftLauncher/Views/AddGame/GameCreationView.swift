@@ -5,8 +5,8 @@ import UserNotifications
 // MARK: - Constants
 private enum Constants {
     static let formSpacing: CGFloat = 16
-    static let iconSize: CGFloat = 64
-    static let cornerRadius: CGFloat = 8
+    static let iconSize: CGFloat = 80
+    static let cornerRadius: CGFloat = 12
     static let maxImageSize: CGFloat = 1024
     static let versionGridColumns = 6
     static let versionPopoverMinWidth: CGFloat = 320
@@ -17,86 +17,60 @@ private enum Constants {
 
 // MARK: - GameCreationView
 struct GameCreationView: View {
-    @Binding var isDownloading: Bool
-    @Binding var isFormValid: Bool
-    @Binding var triggerConfirm: Bool
-    let onCancel: () -> Void
-    let onConfirm: () -> Void
+    @StateObject private var viewModel: GameCreationViewModel
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 
-    // MARK: - State
-    @StateObject private var gameSetupService = GameSetupUtil()
-    @StateObject private var gameNameValidator: GameNameValidator
+    // Bindings from parent
+    private let triggerConfirm: Binding<Bool>
+    private let triggerCancel: Binding<Bool>
 
     // MARK: - Initializer
     init(
         isDownloading: Binding<Bool>,
         isFormValid: Binding<Bool>,
         triggerConfirm: Binding<Bool>,
+        triggerCancel: Binding<Bool>,
         onCancel: @escaping () -> Void,
         onConfirm: @escaping () -> Void
     ) {
-        self._isDownloading = isDownloading
-        self._isFormValid = isFormValid
-        self._triggerConfirm = triggerConfirm
-        self.onCancel = onCancel
-        self.onConfirm = onConfirm
-
-        // Initialize gameNameValidator with a temporary GameSetupUtil
-        // The actual gameSetupService will be set in onAppear
-        let tempGameSetupService = GameSetupUtil()
-        self._gameNameValidator = StateObject(wrappedValue: GameNameValidator(gameSetupService: tempGameSetupService))
+        self.triggerConfirm = triggerConfirm
+        self.triggerCancel = triggerCancel
+        let configuration = GameFormConfiguration(
+            isDownloading: isDownloading,
+            isFormValid: isFormValid,
+            triggerConfirm: triggerConfirm,
+            triggerCancel: triggerCancel,
+            onCancel: onCancel,
+            onConfirm: onConfirm
+        )
+        self._viewModel = StateObject(wrappedValue: GameCreationViewModel(configuration: configuration))
     }
-
-    @State private var gameIcon = AppConstants.defaultGameIcon
-    @State private var iconImage: Image?
-    @State private var showImagePicker = false
-    @State private var selectedGameVersion = ""
-    @State private var versionTime = ""
-    @State private var selectedModLoader = "vanilla"
-    @State private var mojangVersions: [MojangVersionInfo] = []
-    @State private var availableVersions: [String] = []  // 新增：存储可用版本字符串列表
-    @State private var downloadTask: Task<Void, Error>?
-    @State private var pendingIconData: Data?
-    @State private var pendingIconURL: URL?
-    @State private var didInit = false
 
     // MARK: - Body
     var body: some View {
         formContentView
         .fileImporter(
-            isPresented: $showImagePicker,
+            isPresented: $viewModel.showImagePicker,
             allowedContentTypes: [.png, .jpeg, .gif],
             allowsMultipleSelection: false
         ) { result in
-            handleImagePickerResult(result)
+            viewModel.handleImagePickerResult(result)
         }
         .onAppear {
-            if !didInit {
-                didInit = true
-                Task {
-                    await initializeVersionPicker()
-                }
-            }
-            updateParentState()
+            viewModel.setup(gameRepository: gameRepository, playerListViewModel: playerListViewModel)
         }
-        .onChange(of: gameNameValidator.gameName) {
-            updateParentState()
+        .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
+        .onChange(of: viewModel.selectedLoaderVersion) { _, _ in
+            viewModel.updateParentState()
         }
-        .onChange(of: gameNameValidator.isGameNameDuplicate) {
-            updateParentState()
+        .onChange(of: viewModel.selectedModLoader) { _, newLoader in
+            viewModel.handleModLoaderChange(newLoader)
         }
-        .onChange(of: gameSetupService.downloadState.isDownloading) {
-            updateParentState()
-        }
-        .onChange(of: triggerConfirm) {
-            if triggerConfirm {
-                handleConfirm()
-                triggerConfirm = false
-            }
+        .onChange(of: viewModel.selectedGameVersion) { _, newVersion in
+            viewModel.handleGameVersionChange(newVersion)
         }
     }
 
@@ -105,9 +79,12 @@ struct GameCreationView: View {
     private var formContentView: some View {
         VStack {
             gameIconAndVersionSection
+            if viewModel.selectedModLoader != "vanilla" {
+                loaderVersionPicker
+            }
             gameNameSection
 
-            if shouldShowProgress {
+            if viewModel.shouldShowProgress {
                 downloadProgressSection
             }
         }
@@ -117,6 +94,7 @@ struct GameCreationView: View {
         FormSection {
             HStack(alignment: .top, spacing: Constants.formSpacing) {
                 gameIconView
+                    .padding(.trailing, 6)
                 gameVersionAndLoaderView
             }
         }
@@ -130,28 +108,24 @@ struct GameCreationView: View {
 
             iconContainer
                 .onTapGesture {
-                    if !gameSetupService.downloadState.isDownloading {
-                        showImagePicker = true
+                    if !viewModel.gameSetupService.downloadState.isDownloading {
+                        viewModel.showImagePicker = true
                     }
                 }
                 .onDrop(of: [UTType.image.identifier], isTargeted: nil) { providers in
-                    if !gameSetupService.downloadState.isDownloading {
-                        handleImageDrop(providers)
+                    if !viewModel.gameSetupService.downloadState.isDownloading {
+                        return viewModel.handleImageDrop(providers)
                     } else {
-                        false
+                        return false
                     }
                 }
-
-            Text("game.form.icon.description".localized())
-                .font(.caption)
-                .foregroundColor(.secondary)
         }
-        .disabled(gameSetupService.downloadState.isDownloading)
+        .disabled(viewModel.gameSetupService.downloadState.isDownloading)
     }
 
     private var iconContainer: some View {
         ZStack {
-            if let url = pendingIconURL {
+            if let url = viewModel.pendingIconURLForDisplay {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
@@ -183,51 +157,18 @@ struct GameCreationView: View {
                     }
                 }
             } else {
-                let iconURL = AppPaths.profileDirectory(
-                    gameName: gameNameValidator.gameName
-                )
-                .appendingPathComponent(AppConstants.defaultGameIcon)
-
-                if FileManager.default.fileExists(atPath: iconURL.path) {
-                AsyncImage(url: iconURL) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .interpolation(.none)
-                            .scaledToFill()
-                            .frame(
-                                width: Constants.iconSize,
-                                height: Constants.iconSize
-                            )
-                            .clipShape(
-                                RoundedRectangle(
-                                    cornerRadius: Constants.cornerRadius
-                                )
-                            )
-                            .contentShape(Rectangle())
-                    case .failure:
-                        RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                            .stroke(
-                                Color.accentColor.opacity(0.3),
-                                lineWidth: 1
-                            )
-                            .background(Color.gray.opacity(0.08))
-                    @unknown default:
-                        EmptyView()
-                    }
+                VStack(spacing: 12) {
+                    Image(systemName: "photo.badge.plus")
+                        .symbolRenderingMode(.multicolor)
+                        .symbolVariant(.none)
+                        .fontWeight(.regular)
+                        .font(.system(size: 16))
                 }
-                } else {
-                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                        .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
-                        .background(Color.gray.opacity(0.08))
-                }
+                .frame(maxWidth: .infinity, minHeight: 80)
+                .background(emptyDropBackground())
             }
         }
         .frame(width: Constants.iconSize, height: Constants.iconSize)
-        .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
     }
 
     private var gameVersionAndLoaderView: some View {
@@ -239,13 +180,13 @@ struct GameCreationView: View {
 
     private var versionPicker: some View {
         CustomVersionPicker(
-            selected: $selectedGameVersion,
-            availableVersions: availableVersions,
-            time: $versionTime
+            selected: $viewModel.selectedGameVersion,
+            availableVersions: viewModel.availableVersions,
+            time: $viewModel.versionTime
         ) { version in
             await MinecraftService.fetchVersionTime(for: version)
         }
-        .disabled(gameSetupService.downloadState.isDownloading)
+        .disabled(viewModel.gameSetupService.downloadState.isDownloading)
     }
 
     private var modLoaderPicker: some View {
@@ -253,323 +194,54 @@ struct GameCreationView: View {
             Text("game.form.modloader".localized())
                 .font(.subheadline)
                 .foregroundColor(.primary)
-            Picker("", selection: $selectedModLoader) {
+            Picker("", selection: $viewModel.selectedModLoader) {
                 ForEach(AppConstants.modLoaders, id: \.self) {
                     Text($0).tag($0)
                 }
             }
             .labelsHidden()
             .pickerStyle(MenuPickerStyle())
-            .disabled(gameSetupService.downloadState.isDownloading)
-            .onChange(of: selectedModLoader) { _, new in
-                Task {
-                    let compatibleVersions =
-                        await CommonService.compatibleVersions(for: new)
-                    await updateAvailableVersions(compatibleVersions)
+            .disabled(viewModel.gameSetupService.downloadState.isDownloading)
+        }
+    }
+
+    private var loaderVersionPicker: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("game.form.loader.version".localized())
+                .font(.subheadline)
+                .foregroundColor(.primary)
+            Picker("", selection: $viewModel.selectedLoaderVersion) {
+                ForEach(viewModel.availableLoaderVersions, id: \.self) { version in
+                    Text(version).tag(version)
                 }
             }
-            .onAppear {
-                Task {
-                    let compatibleVersions =
-                        await CommonService.compatibleVersions(
-                            for: selectedModLoader
-                        )
-                    await updateAvailableVersions(compatibleVersions)
-                }
-            }
+            .labelsHidden()
+            .pickerStyle(MenuPickerStyle())
+            .disabled(viewModel.gameSetupService.downloadState.isDownloading || viewModel.availableLoaderVersions.isEmpty)
         }
     }
 
     private var gameNameSection: some View {
         FormSection {
             GameNameInputView(
-                gameName: $gameNameValidator.gameName,
-                isGameNameDuplicate: $gameNameValidator.isGameNameDuplicate,
-                isDisabled: gameSetupService.downloadState.isDownloading,
-                gameSetupService: gameSetupService
+                gameName: Binding(
+                    get: { viewModel.gameNameValidator.gameName },
+                    set: { viewModel.gameNameValidator.gameName = $0 }
+                ),
+                isGameNameDuplicate: Binding(
+                    get: { viewModel.gameNameValidator.isGameNameDuplicate },
+                    set: { _ in }
+                ),
+                isDisabled: viewModel.gameSetupService.downloadState.isDownloading,
+                gameSetupService: viewModel.gameSetupService
             )
         }
     }
 
     private var downloadProgressSection: some View {
-        VStack(spacing: 24) {
-            gameDownloadProgressView
-        }
-    }
-
-    private var gameDownloadProgressView: some View {
-        VStack(spacing: 24) {
-            FormSection {
-                DownloadProgressRow(
-                    title: "download.core.title".localized(),
-                    progress: gameSetupService.downloadState.coreProgress,
-                    currentFile: gameSetupService.downloadState.currentCoreFile,
-                    completed: gameSetupService.downloadState
-                        .coreCompletedFiles,
-                    total: gameSetupService.downloadState.coreTotalFiles,
-                    version: nil
-                )
-            }
-            FormSection {
-                DownloadProgressRow(
-                    title: "download.resources.title".localized(),
-                    progress: gameSetupService.downloadState.resourcesProgress,
-                    currentFile: gameSetupService.downloadState
-                        .currentResourceFile,
-                    completed: gameSetupService.downloadState
-                        .resourcesCompletedFiles,
-                    total: gameSetupService.downloadState.resourcesTotalFiles,
-                    version: nil
-                )
-            }
-
-            if selectedModLoader.lowercased() == "fabric" || selectedModLoader.lowercased() == "quilt" {
-                FormSection {
-                    DownloadProgressRow(
-                        title: (selectedModLoader.lowercased() == "fabric"
-                            ? "fabric.loader.title" : "quilt.loader.title")
-                            .localized(),
-                        progress: gameSetupService.fabricDownloadState
-                            .coreProgress,
-                        currentFile: gameSetupService.fabricDownloadState
-                            .currentCoreFile,
-                        completed: gameSetupService.fabricDownloadState
-                            .coreCompletedFiles,
-                        total: gameSetupService.fabricDownloadState
-                            .coreTotalFiles,
-                        version: nil
-                    )
-                }
-            }
-            if selectedModLoader.lowercased() == "forge" {
-                FormSection {
-                    DownloadProgressRow(
-                        title: "forge.loader.title".localized(),
-                        progress: gameSetupService.forgeDownloadState
-                            .coreProgress,
-                        currentFile: gameSetupService.forgeDownloadState
-                            .currentCoreFile,
-                        completed: gameSetupService.forgeDownloadState
-                            .coreCompletedFiles,
-                        total: gameSetupService.forgeDownloadState
-                            .coreTotalFiles,
-                        version: nil
-                    )
-                }
-            }
-            if selectedModLoader.lowercased() == "neoforge" {
-                FormSection {
-                    DownloadProgressRow(
-                        title: "neoforge.loader.title".localized(),
-                        progress: gameSetupService.neoForgeDownloadState
-                            .coreProgress,
-                        currentFile: gameSetupService.neoForgeDownloadState
-                            .currentCoreFile,
-                        completed: gameSetupService.neoForgeDownloadState
-                            .coreCompletedFiles,
-                        total: gameSetupService.neoForgeDownloadState
-                            .coreTotalFiles,
-                        version: nil
-                    )
-                }
-            }
-        }
-    }
-
-    // MARK: - Computed Properties
-
-    private var shouldShowProgress: Bool {
-        gameSetupService.downloadState.isDownloading
-    }
-
-    // MARK: - Helper Methods
-
-    /// 更新可用版本并设置默认选择
-    private func updateAvailableVersions(_ versions: [String]) async {
-        await MainActor.run {
-            self.availableVersions = versions
-            // 如果当前选中的版本不在兼容版本列表中，选择第一个兼容版本
-            if !versions.contains(self.selectedGameVersion) && !versions.isEmpty {
-                self.selectedGameVersion = versions.first ?? ""
-            }
-        }
-
-        // 获取当前选中版本的时间信息
-        if !versions.isEmpty {
-            let targetVersion =
-                versions.contains(self.selectedGameVersion)
-                ? self.selectedGameVersion : (versions.first ?? "")
-            let timeString = await MinecraftService.fetchVersionTime(
-                for: targetVersion
-            )
-            await MainActor.run {
-                self.versionTime = timeString
-            }
-        }
-    }
-
-    /// 初始化版本选择器
-    private func initializeVersionPicker() async {
-        let compatibleVersions = await CommonService.compatibleVersions(
-            for: selectedModLoader
+        DownloadProgressSection(
+            gameSetupService: viewModel.gameSetupService,
+            selectedModLoader: viewModel.selectedModLoader
         )
-        await updateAvailableVersions(compatibleVersions)
-    }
-
-    private func handleNonCriticalError(_ error: GlobalError, message: String) {
-        Logger.shared.error("\(message): \(error.chineseMessage)")
-        GlobalErrorHandler.shared.handle(error)
-    }
-
-    private func handleImagePickerResult(_ result: Result<[URL], Error>) {
-        switch result {
-        case .success(let urls):
-            guard let url = urls.first else {
-                handleNonCriticalError(
-                    GlobalError.validation(
-                        chineseMessage: "未选择文件",
-                        i18nKey: "error.validation.no_file_selected",
-                        level: .notification
-                    ),
-                    message: "error.image.pick.failed".localized()
-                )
-                return
-            }
-            guard url.startAccessingSecurityScopedResource() else {
-                handleNonCriticalError(
-                    GlobalError.fileSystem(
-                        chineseMessage: "无法访问所选文件",
-                        i18nKey: "error.filesystem.file_access_failed",
-                        level: .notification
-                    ),
-                    message: "error.image.access.failed".localized()
-                )
-                return
-            }
-            defer { url.stopAccessingSecurityScopedResource() }
-            Task { @MainActor in
-                do {
-                    let data = try Data(contentsOf: url)
-                    let tempURL = FileManager.default.temporaryDirectory
-                        .appendingPathComponent(UUID().uuidString + ".png")
-                    try data.write(to: tempURL)
-                    pendingIconURL = tempURL
-                    pendingIconData = data
-                    iconImage = nil
-                } catch {
-                    handleNonCriticalError(
-                        GlobalError.fileSystem(
-                            chineseMessage: "无法读取图片文件",
-                            i18nKey: "error.filesystem.image_read_failed",
-                            level: .notification
-                        ),
-                        message: "error.image.read.failed".localized()
-                    )
-                }
-            }
-        case .failure(let error):
-            let globalError = GlobalError.from(error)
-            handleNonCriticalError(
-                globalError,
-                message: "error.image.pick.failed".localized()
-            )
-        }
-    }
-
-    private func handleImageDrop(_ providers: [NSItemProvider]) -> Bool {
-        guard let provider = providers.first else {
-            Logger.shared.error("图片拖放失败：没有提供者")
-            return false
-        }
-
-        if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-            provider.loadDataRepresentation(
-                forTypeIdentifier: UTType.image.identifier
-            ) { data, error in
-                if let error = error {
-                    DispatchQueue.main.async {
-                        let globalError = GlobalError.from(error)
-                        handleNonCriticalError(
-                            globalError,
-                            message: "error.image.load.drag.failed".localized()
-                        )
-                    }
-                    return
-                }
-
-                if let data = data {
-                    DispatchQueue.main.async {
-                        let tempURL = FileManager.default.temporaryDirectory
-                            .appendingPathComponent(UUID().uuidString + ".png")
-                        do {
-                            try data.write(to: tempURL)
-                            pendingIconURL = tempURL
-                            pendingIconData = data
-                            iconImage = nil
-                        } catch {
-                            handleNonCriticalError(
-                                GlobalError.fileSystem(
-                                    chineseMessage: "图片保存失败",
-                                    i18nKey:
-                                        "error.filesystem.image_save_failed",
-                                    level: .notification
-                                ),
-                                message: "error.image.save.failed".localized()
-                            )
-                        }
-                    }
-                }
-            }
-            return true
-        }
-        Logger.shared.warning("图片拖放失败：不支持的类型")
-        return false
-    }
-
-    // MARK: - Game Save Methods
-    private func saveGame() async {
-        await gameSetupService.saveGame(
-            gameName: gameNameValidator.gameName,
-            gameIcon: gameIcon,
-            selectedGameVersion: selectedGameVersion,
-            selectedModLoader: selectedModLoader,
-            specifiedLoaderVersion: nil,
-            pendingIconData: pendingIconData,
-            playerListViewModel: playerListViewModel,
-            gameRepository: gameRepository,
-            onSuccess: {
-                Task { @MainActor in
-                    self.dismiss()
-                }
-            },
-            onError: { error, message in
-                Task { @MainActor in
-                    self.handleNonCriticalError(error, message: message)
-                }
-            }
-        )
-    }
-
-    // MARK: - Public Methods for Parent View
-
-    func handleCancel() {
-        if gameSetupService.downloadState.isDownloading {
-            downloadTask?.cancel()
-            downloadTask = nil
-        } else {
-            dismiss()
-        }
-    }
-
-    func handleConfirm() {
-        downloadTask?.cancel()
-        downloadTask = Task {
-            await saveGame()
-        }
-    }
-
-    private func updateParentState() {
-        isDownloading = gameSetupService.downloadState.isDownloading
-        isFormValid = gameNameValidator.isFormValid
     }
 }

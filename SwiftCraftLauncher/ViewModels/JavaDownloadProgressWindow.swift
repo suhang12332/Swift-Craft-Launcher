@@ -12,7 +12,7 @@ struct JavaDownloadProgressWindow: View {
                 // 错误状态 要显示重试按钮
                 DownloadItemView(
                     icon: "exclamationmark.triangle.fill",
-                    title: "Java \(downloadState.version)",
+                    title: downloadState.version,
                     subtitle: downloadState.errorMessage,
                     status: .error,
                     onCancel: {

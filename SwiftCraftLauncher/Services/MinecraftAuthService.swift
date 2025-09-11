@@ -511,9 +511,6 @@ class MinecraftAuthService: NSObject, ObservableObject {
         do {
             let profile = try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
 
-            // 从JWT中解析token过期时间
-            let finalTokenExpiresAt = JWTDecoder.getMinecraftTokenExpiration(from: accessToken)
-
             // 由于 accessToken、authXuid 和 refreshToken 不是从 API 响应中获取的，我们需要手动设置
             return MinecraftProfileResponse(
                 id: profile.id,

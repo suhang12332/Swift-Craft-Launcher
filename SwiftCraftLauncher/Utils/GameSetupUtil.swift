@@ -40,7 +40,7 @@ class GameSetupUtil: ObservableObject {
         gameIcon: String,
         selectedGameVersion: String,
         selectedModLoader: String,
-        specifiedLoaderVersion: String?,
+        specifiedLoaderVersion: String,
         pendingIconData: Data?,
         playerListViewModel: PlayerListViewModel?,
         gameRepository: GameRepository,
@@ -140,6 +140,7 @@ class GameSetupUtil: ObservableObject {
                 manifest: downloadedManifest,
                 selectedModLoader: selectedModLoader,
                 selectedGameVersion: selectedGameVersion,
+                specifiedLoaderVersion: specifiedLoaderVersion,
                 fabricResult: selectedModLoader.lowercased() == "fabric" ? modLoaderResult : nil,
                 forgeResult: selectedModLoader.lowercased() == "forge" ? modLoaderResult : nil,
                 neoForgeResult: selectedModLoader.lowercased() == "neoforge" ? modLoaderResult : nil,
@@ -290,7 +291,7 @@ class GameSetupUtil: ObservableObject {
         selectedGameVersion: String,
         gameName: String,
         gameIcon: String,
-        specifiedLoaderVersion: String? = nil
+        specifiedLoaderVersion: String
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String)? {
         let loaderType = selectedModLoader.lowercased()
         let handler: (any ModLoaderHandler.Type)?
@@ -340,19 +341,12 @@ class GameSetupUtil: ObservableObject {
             }
         }
 
-        if let specifiedVersion = specifiedLoaderVersion {
-            // 使用指定版本
-            Logger.shared.info("使用整合包指定的加载器版本: \(specifiedVersion)")
-            return await handler.setupWithSpecificVersion(
-                for: selectedGameVersion,
-                loaderVersion: specifiedVersion,
-                gameInfo: gameInfo,
-                onProgressUpdate: progressCallback
-            )
-        } else {
-            // 使用最新版本
-            return await handler.setup(for: selectedGameVersion, gameInfo: gameInfo, onProgressUpdate: progressCallback)
-        }
+        return await handler.setupWithSpecificVersion(
+            for: selectedGameVersion,
+            loaderVersion: specifiedLoaderVersion,
+            gameInfo: gameInfo,
+            onProgressUpdate: progressCallback
+        )
     }
 
     private func finalizeGameInfo(
@@ -360,6 +354,7 @@ class GameSetupUtil: ObservableObject {
         manifest: MinecraftVersionManifest,
         selectedModLoader: String,
         selectedGameVersion: String,
+        specifiedLoaderVersion: String,
         fabricResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil,
         forgeResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil,
         neoForgeResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil,
@@ -377,14 +372,14 @@ class GameSetupUtil: ObservableObject {
                 updatedGameInfo.mainClass = result.mainClass
 
                 if selectedModLoader.lowercased() == "fabric" {
-                    if let fabricLoader = try? await FabricLoaderService.fetchLatestStableLoaderVersion(for: selectedGameVersion) {
+                    if let fabricLoader = try? await FabricLoaderService.fetchSpecificLoaderVersion(for: selectedGameVersion, loaderVersion: specifiedLoaderVersion) {
                         let jvmArgs = fabricLoader.arguments.jvm ?? []
                         updatedGameInfo.modJvm = jvmArgs
                         let gameArgs = fabricLoader.arguments.game ?? []
                         updatedGameInfo.gameArguments = gameArgs
                     }
                 } else {
-                    if let quiltLoader = try? await QuiltLoaderService.fetchLatestStableLoaderVersion(for: selectedGameVersion) {
+                    if let quiltLoader = try? await QuiltLoaderService.fetchSpecificLoaderVersion(for: selectedGameVersion, loaderVersion: specifiedLoaderVersion) {
                         let jvmArgs = quiltLoader.arguments.jvm ?? []
                         updatedGameInfo.modJvm = jvmArgs
                         let gameArgs = quiltLoader.arguments.game ?? []
@@ -399,7 +394,7 @@ class GameSetupUtil: ObservableObject {
                 updatedGameInfo.modClassPath = result.classpath
                 updatedGameInfo.mainClass = result.mainClass
 
-                if let forgeLoader = try? await ForgeLoaderService.fetchLatestForgeProfile(for: selectedGameVersion) {
+                if let forgeLoader = try? await ForgeLoaderService.fetchSpecificForgeProfile(for: selectedGameVersion, loaderVersion: specifiedLoaderVersion) {
                     let gameArgs = forgeLoader.arguments.game ?? []
                     updatedGameInfo.gameArguments = gameArgs
                     let jvmArgs = forgeLoader.arguments.jvm ?? []
@@ -417,7 +412,7 @@ class GameSetupUtil: ObservableObject {
                 updatedGameInfo.modClassPath = result.classpath
                 updatedGameInfo.mainClass = result.mainClass
 
-                if let neoForgeLoader = try? await NeoForgeLoaderService.fetchLatestNeoForgeProfile(for: selectedGameVersion) {
+                if let neoForgeLoader = try? await NeoForgeLoaderService.fetchSpecificNeoForgeProfile(for: selectedGameVersion, loaderVersion: specifiedLoaderVersion) {
                     let gameArgs = neoForgeLoader.arguments.game ?? []
                     updatedGameInfo.gameArguments = gameArgs
 

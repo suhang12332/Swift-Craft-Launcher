@@ -38,6 +38,12 @@
       },
       "shouldTranslate" : false
     },
+    "%lld%%" : {
+
+    },
+    "+%lld" : {
+
+    },
     "about.acknowledgements" : {
       "comment" : "About View",
       "extractionState" : "manual",
@@ -3895,6 +3901,143 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "取消"
+          }
+        }
+      }
+    },
+    "common.stop" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إيقاف"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stoppen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detener"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pysäytä"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arrêter"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "रोकें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermare"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중지"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stopp"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stoppen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zatrzymaj"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parar"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Остановить"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stoppa"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "หยุด"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Durdur"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dừng"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
           }
         }
       }
@@ -12952,143 +13095,6 @@
         }
       }
     },
-    "error.download.fabric_profile_fetch_failed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "فشل في الحصول على ملف تعريف Fabric"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hentning af Fabric profil mislykkedes"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrufen des Fabric-Profils fehlgeschlagen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric Profile Fetch Failed"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falló la obtención del perfil Fabric"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric-profiilin hakeminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec de la récupération du profil Fabric"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric प्रोफाइल प्राप्त करने में विफल"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recupero profilo Fabric fallito"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabricプロファイルの取得に失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric 프로필 가져오기에 실패했습니다"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Henting av Fabric profil mislyktes"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ophalen van Fabric profiel mislukt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pobieranie profilu Fabric nie powiodło się"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha ao obter o perfil Fabric"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не удалось получить профиль Fabric"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hämtning av Fabric profil misslyckades"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "การดึง Fabric profile ล้มเหลว"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fabric profili alma başarısız"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lấy hồ sơ Fabric thất bại"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "获取Fabric profile失败"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "獲取Fabric profile失敗"
-          }
-        }
-      }
-    },
     "error.download.file_download_failed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -13222,143 +13228,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載檔案失敗"
-          }
-        }
-      }
-    },
-    "error.download.forge_profile_fetch_failed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "فشل في الحصول على ملف تعريف Forge"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hentning af Forge profil mislykkedes"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrufen des Forge-Profils fehlgeschlagen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forge Profile Fetch Failed"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falló la obtención del perfil Forge"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forge-profiilin hakeminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec de la récupération du profil Forge"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forge प्रोफाइल प्राप्त करने में विफल"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recupero profilo Forge fallito"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forgeプロファイルの取得に失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forge 프로필 가져오기에 실패했습니다"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Henting av Forge profil mislyktes"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ophalen van Forge profiel mislukt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pobieranie profilu Forge nie powiodło się"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha ao obter o perfil Forge"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не удалось получить профиль Forge"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hämtning av Forge profil misslyckades"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "การดึง Forge profile ล้มเหลว"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forge profili alma başarısız"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lấy hồ sơ Forge thất bại"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "获取Forge profile失败"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "獲取Forge profile失敗"
           }
         }
       }
@@ -13907,143 +13776,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無效的HTTP響應"
-          }
-        }
-      }
-    },
-    "error.download.invalid_url" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "رابط تحميل غير صالح"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ugyldig download URL"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ungültige Download-URL"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Invalid download URL"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL de descarga inválida"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Virheellinen lataus-URL"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL de téléchargement invalide"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "अमान्य डाउनलोड URL"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL di download non valido"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無効なダウンロードURL"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "잘못된 다운로드 URL"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ugyldig nedlasting URL"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ongeldige download URL"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nieprawidłowy adres URL pobierania"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL de download inválida"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Недопустимый URL загрузки"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ogiltig nedladdnings-URL"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL ดาวน์โหลดไม่ถูกต้อง"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geçersiz indirme URL'si"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL tải xuống không hợp lệ"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无效的下载链接"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無效的下載連結"
           }
         }
       }
@@ -22410,143 +22142,6 @@
         }
       }
     },
-    "error.filesystem.image_read_failed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "فشل في قراءة ملف الصورة"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Læs billedfil mislykkedes"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bilddatei lesen fehlgeschlagen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Image Read Failed"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falló la lectura del archivo de imagen"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kuvatiedoston lukeminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec de la lecture du fichier image"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "छवि फ़ाइल पढ़ने में विफल"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lettura file immagine fallita"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "画像ファイルの読み込みに失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이미지 파일 읽기에 실패했습니다"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les bildefil mislyktes"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afbeeldingsbestand lezen mislukt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Odczyt pliku obrazu nie powiodło się"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha na leitura do arquivo de imagem"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не удалось прочитать файл изображения"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Läsa bildfil misslyckades"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "การอ่านไฟล์รูปภาพล้มเหลว"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resim dosyası okuma başarısız"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Đọc tệp hình ảnh thất bại"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法读取图片文件"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無法讀取圖片檔案"
-          }
-        }
-      }
-    },
     "error.filesystem.image_save_failed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -23370,143 +22965,6 @@
         }
       }
     },
-    "error.image.access.failed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "فشل في الوصول إلى الصورة"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Billedadgang mislykkedes"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bildzugriff fehlgeschlagen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Image Access Failed"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falló el acceso a la imagen"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kuvatietojen käyttö epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec de l'accès à l'image"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "छवि तक पहुंच में विफल"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Accesso immagine fallito"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "画像へのアクセスに失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이미지 접근에 실패했습니다"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bildeadgang mislyktes"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afbeelding toegang mislukt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dostęp do obrazu nie powiodło się"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha no acesso à imagem"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не удалось получить доступ к изображению"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bildåtkomst misslyckades"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "การเข้าถึงรูปภาพล้มเหลว"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resim erişimi başarısız"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Truy cập hình ảnh thất bại"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "图片访问失败"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "圖片訪問失敗"
-          }
-        }
-      }
-    },
     "error.image.load.drag.failed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -23777,143 +23235,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "圖片選取失敗"
-          }
-        }
-      }
-    },
-    "error.image.read.failed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "فشل في قراءة ملف الصورة"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Læs billedfil mislykkedes"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bilddatei lesen fehlgeschlagen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Failed to Read Image File"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falló la lectura del archivo de imagen"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kuvatiedoston lukeminen epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec de la lecture du fichier image"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "छवि फ़ाइल पढ़ने में विफल"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lettura file immagine fallita"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "画像ファイルの読み込みに失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이미지 파일 읽기에 실패했습니다"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Les bildefil mislyktes"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afbeeldingsbestand lezen mislukt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Odczyt pliku obrazu nie powiodło się"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha na leitura do arquivo de imagem"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не удалось прочитать файл изображения"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Läsa bildfil misslyckades"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "การอ่านไฟล์รูปภาพล้มเหลว"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resim dosyası okuma başarısız"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Đọc tệp hình ảnh thất bại"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法读取图片文件"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無法讀取圖片檔案"
           }
         }
       }
@@ -29952,143 +29273,6 @@
         }
       }
     },
-    "error.resource.invalid_neoforge_url" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "رابط NeoForge غير صالح"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ugyldig NeoForge URL"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ungültige NeoForge-URL"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Invalid NeoForge URL"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL de NeoForge inválida"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Virheellinen NeoForge-URL"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL NeoForge invalide"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "अमान्य NeoForge URL"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL NeoForge non valido"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無効なNeoForge URL"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "잘못된 NeoForge URL"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ugyldig NeoForge URL"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ongeldige NeoForge URL"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nieprawidłowy adres URL NeoForge"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL do NeoForge inválida"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Недопустимый URL NeoForge"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ogiltig NeoForge URL"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL NeoForge ไม่ถูกต้อง"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geçersiz NeoForge URL'si"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL NeoForge không hợp lệ"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无效的 NeoForge 链接"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無效的 NeoForge 連結"
-          }
-        }
-      }
-    },
     "error.resource.loader_version_not_found" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -30638,6 +29822,144 @@
         }
       }
     },
+    "error.resource.modpack_parse_failed" : {
+      "comment" : "Error when modpack parsing fails",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل في تحليل حزمة التعديل، يرجى التحقق من تنسيق الملف"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-analyse mislykkedes, tjek venligst filformatet"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-Analyse fehlgeschlagen, bitte Dateiformat überprüfen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack parsing failed, please check file format"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falló el análisis del modpack, por favor verifica el formato del archivo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpackin jäsentäminen epäonnistui, tarkista tiedostomuoto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'analyse du modpack a échoué, veuillez vérifier le format du fichier"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मॉडपैक पार्सिंग असफल, कृपया फ़ाइल प्रारूप जांचें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analisi modpack fallita, controlla il formato del file"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モッドパックの解析に失敗しました。ファイル形式を確認してください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모드팩 파싱 실패, 파일 형식을 확인해주세요"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-analyse mislyktes, sjekk filformatet"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-analyse mislukt, controleer het bestandsformaat"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analiza modpack nie powiodła się, sprawdź format pliku"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha na análise do modpack, verifique o formato do arquivo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось проанализировать модпак, проверьте формат файла"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-analys misslyckades, kontrollera filformatet"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การแยกวิเคราะห์มอดแพ็คล้มเหลว กรุณาตรวจสอบรูปแบบไฟล์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack ayrıştırma başarısız, lütfen dosya formatını kontrol edin"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phân tích modpack thất bại, vui lòng kiểm tra định dạng tệp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析整合包失败，请检查文件格式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析整合包失敗，請檢查檔案格式"
+          }
+        }
+      }
+    },
     "error.resource.neoforge_loader_version_not_found" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -31182,417 +30504,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "沒有 Forge 版本"
-          }
-        }
-      }
-    },
-    "error.resource.no_neoforge_loader_versions" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لا توجد نسخ محمل NeoForge"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingen NeoForge loader versioner"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine NeoForge Loader Versionen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No NeoForge loader versions"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No hay versiones del cargador NeoForge"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ei NeoForge loader -versioita"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucune version du chargeur NeoForge"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "कोई NeoForge लोडर संस्करण नहीं"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nessuna versione del caricatore NeoForge"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "NeoForgeローダーのバージョンがありません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "NeoForge 로더 버전이 없음"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingen NeoForge loader versjoner"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geen NeoForge loader versies"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brak wersji ładowarki NeoForge"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nenhuma versão do carregador NeoForge"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Нет версий загрузчика NeoForge"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inga NeoForge loader versioner"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ไม่มีเวอร์ชัน NeoForge loader"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "NeoForge yükleyici sürümü yok"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Không có phiên bản trình tải NeoForge"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有 NeoForge 加载器版本"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有 NeoForge 載入器版本"
-          }
-        }
-      }
-    },
-    "error.resource.no_quilt_loader_versions" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لا توجد نسخ محمل Quilt"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingen Quilt loader versioner"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Quilt Loader Versionen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Quilt loader versions"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No hay versiones del cargador Quilt"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ei Quilt loader -versioita"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucune version du chargeur Quilt"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "कोई Quilt लोडर संस्करण नहीं"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nessuna versione del caricatore Quilt"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quiltローダーのバージョンがありません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quilt 로더 버전이 없음"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingen Quilt loader versjoner"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geen Quilt loader versies"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brak wersji ładowarki Quilt"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nenhuma versão do carregador Quilt"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Нет версий загрузчика Quilt"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inga Quilt loader versioner"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ไม่มีเวอร์ชัน Quilt loader"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quilt yükleyici sürümü yok"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Không có phiên bản trình tải Quilt"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有 Quilt 加载器版本"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有 Quilt 載入器版本"
-          }
-        }
-      }
-    },
-    "error.resource.no_stable_forge_version" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لا توجد نسخة مستقرة من Forge"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingen stabil Forge version"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine stabile Forge-Version"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No stable Forge version"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No hay versión estable de Forge"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ei vakaata Forge-versiota"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucune version stable de Forge"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "कोई स्थिर Forge संस्करण नहीं"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nessuna versione stabile di Forge"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "安定版のForgeバージョンがありません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "안정적인 Forge 버전이 없음"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingen stabil Forge versjon"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geen stabiele Forge versie"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brak stabilnej wersji Forge"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nenhuma versão estável do Forge"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Нет стабильной версии Forge"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingen stabil Forge version"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ไม่มีเวอร์ชัน Forge ที่เสถียร"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kararlı Forge sürümü yok"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Không có phiên bản Forge ổn định"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有稳定的 Forge 版本"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "沒有穩定的 Forge 版本"
           }
         }
       }
@@ -45173,277 +44084,139 @@
         }
       }
     },
-    "game.form.icon.description" : {
+    "game.form.loader.version" : {
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اختر أيقونة للعبة"
+            "value" : "إصدار المحمل"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vælg ikon til spil"
+            "value" : "Loader Version"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Symbol für das Spiel auswählen"
+            "value" : "Loader-Version"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Description"
+            "value" : "Loader Version"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seleccionar icono para el juego"
+            "value" : "Versión del Cargador"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Valitse pelikuvake"
+            "value" : "Latausversio"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sélectionner l'icône du jeu"
+            "value" : "Version du Chargeur"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "खेल के लिए आइकन चुनें"
+            "value" : "लोडर संस्करण"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seleziona icona per il gioco"
+            "value" : "Versione del Caricatore"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ゲームのアイコンを選択"
+            "value" : "ローダーバージョン"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게임 아이콘 선택"
+            "value" : "로더 버전"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Velg ikon for spill"
+            "value" : "Laster-versjon"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Selecteer icoon voor spel"
+            "value" : "Loader Versie"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybierz ikonę dla gry"
+            "value" : "Wersja Loadera"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Selecionar ícone para o jogo"
+            "value" : "Versão do Carregador"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Выбрать значок для игры"
+            "value" : "Версия загрузчика"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Välj ikon för spel"
+            "value" : "Laddare Version"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เลือกไอคอนสำหรับเกม"
+            "value" : "เวอร์ชันโหลดเดอร์"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oyun için simge seç"
+            "value" : "Yükleyici Sürümü"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chọn biểu tượng cho trò chơi"
+            "value" : "Phiên bản Trình tải"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "为游戏选择图标"
+            "value" : "加载器版本"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "為遊戲選取圖標"
-          }
-        }
-      }
-    },
-    "game.form.mode.create" : {
-      "comment" : "Create new game mode",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "إنشاء لعبة جديدة"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opret nyt spil"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Neues Spiel erstellen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Create New Game"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crear nuevo juego"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Luo uusi peli"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Créer un nouveau jeu"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "नया गेम बनाएं"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crea nuovo gioco"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新しいゲームを作成"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "새 게임 생성"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opprett nytt spill"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nieuw spel maken"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utwórz nową grę"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Criar novo jogo"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Создать новую игру"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Skapa nytt spel"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "สร้างเกมใหม่"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yeni oyun oluştur"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tạo trò chơi mới"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "创建新游戏"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "建立新遊戲"
+            "value" : "加載器版本"
           }
         }
       }
@@ -57105,144 +55878,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇檔案"
-          }
-        }
-      }
-    },
-    "modpack.import.local.title" : {
-      "comment" : "Local ModPack Import",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "استيراد حزمة التعديل المحلية"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importér lokal modpack"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lokales Modpack importieren"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Import Local Modpack"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importar modpack local"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tuo paikallinen modpack"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importer un modpack local"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "स्थानीय मॉडपैक आयात करें"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importa modpack locale"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ローカルモッドパックをインポート"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로컬 모드팩 가져오기"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importér lokal modpack"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lokale modpack importeren"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importuj lokalny modpack"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importar modpack local"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Импорт локального модпака"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importera lokal modpack"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "นำเข้ามอดแพ็คภายในเครื่อง"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yerel modpack'i içe aktar"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nhập modpack cục bộ"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "导入本地整合包"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "匯入本地整合包"
           }
         }
       }
@@ -77973,133 +76608,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 مرحباً بك في %@ Beta!\n\nهذه نسخة تجريبية من %@. بينما نسعى لتوفير تجربة مستقرة، يرجى ملاحظة المعلومات المهمة التالية:\n\n🔒 أمان البيانات: يرجى عمل نسخ احتياطية منتظمة لحفظات Minecraft وبيانات المشغل\n🐛 تقارير الأخطاء: إذا واجهت أي مشاكل، يرجى الإبلاغ عنها في مستودع GitHub الخاص بنا\n⚠️ ميزات محدودة: الميزات التالية غير متوفرة حالياً:\n  - استيراد وتثبيت حزم التعديل\n  - استيراد بيانات الحفظ من مشغلات أخرى\n  - إعدادات المشغل المتقدمة\n🖥️ التوافق: أجهزة Apple Silicon التي تشغل إصدارات Minecraft أقل من 1.19 غير مدعومة حالياً\n\n🙏 شكراً لك لاختبار %@ ومساعدتنا في التحسين!"
+            "value" : "🎮 مرحباً بك في %@ Beta!\n\nهذه نسخة تجريبية من %@. بينما نسعى لتوفير تجربة مستقرة، يرجى ملاحظة المعلومات المهمة التالية:\n\n🔒 أمان البيانات: يرجى عمل نسخ احتياطية منتظمة لحفظات Minecraft وبيانات المشغل\n🐛 تقارير الأخطاء: إذا واجهت أي مشاكل، يرجى الإبلاغ عنها في مستودع GitHub الخاص بنا\n⚠️ ميزات محدودة: الميزات التالية غير متوفرة حالياً:\n  - استيراد بيانات الحفظ من مشغلات أخرى\n  - إعدادات المشغل المتقدمة\n🖥️ التوافق: أجهزة Apple Silicon التي تشغل إصدارات Minecraft أقل من 1.19 غير مدعومة حالياً\n\n🙏 شكراً لك لاختبار %@ ومساعدتنا في التحسين!"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Velkommen til %@ Beta!\n\nDette er en beta-version af %@. Selvom vi stræber efter at give en stabil oplevelse, skal du bemærke følgende vigtige information:\n\n🔒 Datasikkerhed: Lav regelmæssigt backup af dine Minecraft-gemmer og launcher-data\n🐛 Fejlrapporter: Hvis du støder på problemer, så rapportér dem venligst på vores GitHub-repository\n⚠️ Begrænsede funktioner: Følgende funktioner er i øjeblikket utilgængelige:\n  - Modpack-import og installation\n  - Import af gemmedata fra andre launchere\n  - Avancerede launcher-indstillinger\n🖥️ Kompatibilitet: Apple Silicon-enheder, der kører Minecraft-versioner under 1.19, understøttes endnu ikke\n\n🙏 Tak fordi du tester %@ og hjælper os med at forbedre det!"
+            "value" : "🎮 Velkommen til %@ Beta!\n\nDette er en beta-version af %@. Selvom vi stræber efter at give en stabil oplevelse, skal du bemærke følgende vigtige information:\n\n🔒 Datasikkerhed: Lav regelmæssigt backup af dine Minecraft-gemmer og launcher-data\n🐛 Fejlrapporter: Hvis du støder på problemer, så rapportér dem venligst på vores GitHub-repository\n⚠️ Begrænsede funktioner: Følgende funktioner er i øjeblikket utilgængelige:\n  - Import af gemmedata fra andre launchere\n  - Avancerede launcher-indstillinger\n🖥️ Kompatibilitet: Apple Silicon-enheder, der kører Minecraft-versioner under 1.19, understøttes endnu ikke\n\n🙏 Tak fordi du tester %@ og hjælper os med at forbedre det!"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Willkommen bei %@ Beta!\n\nDies ist eine Beta-Version von %@. Während wir uns bemühen, eine stabile Erfahrung zu bieten, beachten Sie bitte die folgenden wichtigen Informationen:\n\n🔒 Datensicherheit: Erstellen Sie regelmäßig Backups Ihrer Minecraft-Spielstände und Launcher-Daten\n🐛 Fehlerberichte: Wenn Sie Probleme feststellen, melden Sie diese bitte in unserem GitHub-Repository\n⚠️ Eingeschränkte Funktionen: Die folgenden Funktionen sind derzeit nicht verfügbar:\n  - Modpack-Import und -Installation\n  - Import von Speicherdaten von anderen Launchern\n  - Erweiterte Launcher-Einstellungen\n🖥️ Kompatibilität: Apple Silicon-Geräte mit Minecraft-Versionen unter 1.19 werden noch nicht unterstützt\n\n🙏 Vielen Dank, dass Sie %@ testen und uns bei der Verbesserung helfen!"
+            "value" : "🎮 Willkommen bei %@ Beta!\n\nDies ist eine Beta-Version von %@. Während wir uns bemühen, eine stabile Erfahrung zu bieten, beachten Sie bitte die folgenden wichtigen Informationen:\n\n🔒 Datensicherheit: Erstellen Sie regelmäßig Backups Ihrer Minecraft-Spielstände und Launcher-Daten\n🐛 Fehlerberichte: Wenn Sie Probleme feststellen, melden Sie diese bitte in unserem GitHub-Repository\n⚠️ Eingeschränkte Funktionen: Die folgenden Funktionen sind derzeit nicht verfügbar:\n  - Import von Speicherdaten von anderen Launchern\n  - Erweiterte Launcher-Einstellungen\n🖥️ Kompatibilität: Apple Silicon-Geräte mit Minecraft-Versionen unter 1.19 werden noch nicht unterstützt\n\n🙏 Vielen Dank, dass Sie %@ testen und uns bei der Verbesserung helfen!"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Welcome to %@ Beta!\n\nThis is a beta version of %@. While we strive to provide a stable experience, please note the following important information:\n\n🔒 Data Safety: Please regularly back up your Minecraft saves and launcher data\n🐛 Bug Reports: If you encounter any issues, please report them on our GitHub repository\n⚠️ Limited Features: The following features are currently unavailable:\n  - Modpack import and installation\n  - Save data import from other launchers\n  - Advanced launcher settings\n🖥️ Compatibility: Apple Silicon devices running Minecraft versions below 1.19 are not yet supported\n\n🙏 Thank you for testing %@ and helping us improve!"
+            "value" : "🎮 Welcome to %@ Beta!\n\nThis is a beta version of %@. While we strive to provide a stable experience, please note the following important information:\n\n🔒 Data Safety: Please regularly back up your Minecraft saves and launcher data\n🐛 Bug Reports: If you encounter any issues, please report them on our GitHub repository\n⚠️ Limited Features: The following features are currently unavailable:\n  - Save data import from other launchers\n  - Advanced launcher settings\n🖥️ Compatibility: Apple Silicon devices running Minecraft versions below 1.19 are not yet supported\n\n🙏 Thank you for testing %@ and helping us improve!"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 ¡Bienvenido a %@ Beta!\n\nEsta es una versión beta de %@. Aunque nos esforzamos por brindar una experiencia estable, tenga en cuenta la siguiente información importante:\n\n🔒 Seguridad de datos: Haga copias de seguridad regulares de sus partidas de Minecraft y datos del launcher\n🐛 Informes de errores: Si encuentra algún problema, repórtelo en nuestro repositorio de GitHub\n⚠️ Funciones limitadas: Las siguientes funciones no están disponibles actualmente:\n  - Importación e instalación de modpacks\n  - Importación de datos de guardado de otros launchers\n  - Configuraciones avanzadas del launcher\n🖥️ Compatibilidad: Los dispositivos Apple Silicon que ejecutan versiones de Minecraft inferiores a 1.19 aún no son compatibles\n\n🙏 ¡Gracias por probar %@ y ayudarnos a mejorar!"
+            "value" : "🎮 ¡Bienvenido a %@ Beta!\n\nEsta es una versión beta de %@. Aunque nos esforzamos por brindar una experiencia estable, tenga en cuenta la siguiente información importante:\n\n🔒 Seguridad de datos: Haga copias de seguridad regulares de sus partidas de Minecraft y datos del launcher\n🐛 Informes de errores: Si encuentra algún problema, repórtelo en nuestro repositorio de GitHub\n⚠️ Funciones limitadas: Las siguientes funciones no están disponibles actualmente:\n  - Importación de datos de guardado de otros launchers\n  - Configuraciones avanzadas del launcher\n🖥️ Compatibilidad: Los dispositivos Apple Silicon que ejecutan versiones de Minecraft inferiores a 1.19 aún no son compatibles\n\n🙏 ¡Gracias por probar %@ y ayudarnos a mejorar!"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Tervetuloa %@ Betaan!\n\nTämä on %@in beta-versio. Vaikka pyrimme tarjoamaan vakaan kokemuksen, huomioi seuraavat tärkeät tiedot:\n\n🔒 Tietoturva: Varmuuskopioi säännöllisesti Minecraft-tallennuksesi ja launcherin tiedot\n🐛 Virheraportointi: Jos kohtaat ongelmia, raportoi ne GitHub-repositoriossämme\n⚠️ Rajoitetut ominaisuudet: Seuraavat ominaisuudet eivät ole tällä hetkellä käytettävissä:\n  - Modpackien tuonti ja asennus\n  - Tallennustietojen tuonti muista launchereista\n  - Launcherin edistyneet asetukset\n🖥️ Yhteensopivuus: Apple Silicon -laitteet, joissa käytetään Minecraft-versioita alle 1.19, eivät ole vielä tuettuja\n\n🙏 Kiitos %@in testaamisesta ja auttamisesta parantamisessa!"
+            "value" : "🎮 Tervetuloa %@ Betaan!\n\nTämä on %@in beta-versio. Vaikka pyrimme tarjoamaan vakaan kokemuksen, huomioi seuraavat tärkeät tiedot:\n\n🔒 Tietoturva: Varmuuskopioi säännöllisesti Minecraft-tallennuksesi ja launcherin tiedot\n🐛 Virheraportointi: Jos kohtaat ongelmia, raportoi ne GitHub-repositoriossämme\n⚠️ Rajoitetut ominaisuudet: Seuraavat ominaisuudet eivät ole tällä hetkellä käytettävissä:\n  - Tallennustietojen tuonti muista launchereista\n  - Launcherin edistyneet asetukset\n🖥️ Yhteensopivuus: Apple Silicon -laitteet, joissa käytetään Minecraft-versioita alle 1.19, eivät ole vielä tuettuja\n\n🙏 Kiitos %@in testaamisesta ja auttamisesta parantamisessa!"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Bienvenue dans %@ Beta !\n\nCeci est une version bêta de %@. Bien que nous nous efforcions de fournir une expérience stable, veuillez noter les informations importantes suivantes :\n\n🔒 Sécurité des données : Sauvegardez régulièrement vos sauvegardes Minecraft et les données du launcher\n🐛 Rapports de bugs : Si vous rencontrez des problèmes, veuillez les signaler sur notre dépôt GitHub\n⚠️ Fonctionnalités limitées : Les fonctionnalités suivantes sont actuellement indisponibles :\n  - Importation et installation de modpacks\n  - Importation de données de sauvegarde d'autres launchers\n  - Paramètres avancés du launcher\n🖥️ Compatibilité : Les appareils Apple Silicon exécutant des versions de Minecraft inférieures à 1.19 ne sont pas encore pris en charge\n\n🙏 Merci de tester %@ et de nous aider à l'améliorer !"
+            "value" : "🎮 Bienvenue dans %@ Beta !\n\nCeci est une version bêta de %@. Bien que nous nous efforcions de fournir une expérience stable, veuillez noter les informations importantes suivantes :\n\n🔒 Sécurité des données : Sauvegardez régulièrement vos sauvegardes Minecraft et les données du launcher\n🐛 Rapports de bugs : Si vous rencontrez des problèmes, veuillez les signaler sur notre dépôt GitHub\n⚠️ Fonctionnalités limitées : Les fonctionnalités suivantes sont actuellement indisponibles :\n  - Importation de données de sauvegarde d'autres launchers\n  - Paramètres avancés du launcher\n🖥️ Compatibilité : Les appareils Apple Silicon exécutant des versions de Minecraft inférieures à 1.19 ne sont pas encore pris en charge\n\n🙏 Merci de tester %@ et de nous aider à l'améliorer !"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 %@ Beta में आपका स्वागत है!\n\nयह %@ का बीटा संस्करण है। जबकि हम एक स्थिर अनुभव प्रदान करने का प्रयास करते हैं, कृपया निम्नलिखित महत्वपूर्ण जानकारी पर ध्यान दें:\n\n🔒 डेटा सुरक्षा: कृपया नियमित रूप से अपने Minecraft सेव और लॉन्चर डेटा का बैकअप लें\n🐛 बग रिपोर्ट: यदि आपको कोई समस्या आती है, तो कृपया उन्हें हमारे GitHub रिपॉजिटरी पर रिपोर्ट करें\n⚠️ सीमित सुविधाएं: निम्नलिखित सुविधाएं वर्तमान में अनुपलब्ध हैं:\n  - मॉडपैक आयात और स्थापना\n  - अन्य लॉन्चरों से सेव डेटा आयात\n  - उन्नत लॉन्चर सेटिंग्स\n🖥️ संगतता: Minecraft संस्करण 1.19 से कम चलाने वाले Apple Silicon डिवाइस अभी तक समर्थित नहीं हैं\n\n🙏 %@ का परीक्षण करने और हमें सुधारने में मदद करने के लिए धन्यवाद!"
+            "value" : "🎮 %@ Beta में आपका स्वागत है!\n\nयह %@ का बीटा संस्करण है। जबकि हम एक स्थिर अनुभव प्रदान करने का प्रयास करते हैं, कृपया निम्नलिखित महत्वपूर्ण जानकारी पर ध्यान दें:\n\n🔒 डेटा सुरक्षा: कृपया नियमित रूप से अपने Minecraft सेव और लॉन्चर डेटा का बैकअप लें\n🐛 बग रिपोर्ट: यदि आपको कोई समस्या आती है, तो कृपया उन्हें हमारे GitHub रिपॉजिटरी पर रिपोर्ट करें\n⚠️ सीमित सुविधाएं: निम्नलिखित सुविधाएं वर्तमान में अनुपलब्ध हैं:\n  - अन्य लॉन्चरों से सेव डेटा आयात\n  - उन्नत लॉन्चर सेटिंग्स\n🖥️ संगतता: Minecraft संस्करण 1.19 से कम चलाने वाले Apple Silicon डिवाइस अभी तक समर्थित नहीं हैं\n\n🙏 %@ का परीक्षण करने और हमें सुधारने में मदद करने के लिए धन्यवाद!"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Benvenuto in %@ Beta!\n\nQuesta è una versione beta di %@. Mentre ci sforziamo di fornire un'esperienza stabile, si prega di notare le seguenti informazioni importanti:\n\n🔒 Sicurezza dei dati: Esegui regolarmente il backup dei tuoi salvataggi Minecraft e dei dati del launcher\n🐛 Segnalazione bug: Se riscontri problemi, segnalali nel nostro repository GitHub\n⚠️ Funzionalità limitate: Le seguenti funzionalità sono attualmente non disponibili:\n  - Importazione e installazione di modpack\n  - Importazione di dati di salvataggio da altri launcher\n  - Impostazioni avanzate del launcher\n🖥️ Compatibilità: I dispositivi Apple Silicon che eseguono versioni di Minecraft inferiori alla 1.19 non sono ancora supportati\n\n🙏 Grazie per testare %@ e aiutarci a migliorare!"
+            "value" : "🎮 Benvenuto in %@ Beta!\n\nQuesta è una versione beta di %@. Mentre ci sforziamo di fornire un'esperienza stabile, si prega di notare le seguenti informazioni importanti:\n\n🔒 Sicurezza dei dati: Esegui regolarmente il backup dei tuoi salvataggi Minecraft e dei dati del launcher\n🐛 Segnalazione bug: Se riscontri problemi, segnalali nel nostro repository GitHub\n⚠️ Funzionalità limitate: Le seguenti funzionalità sono attualmente non disponibili:\n  - Importazione di dati di salvataggio da altri launcher\n  - Impostazioni avanzate del launcher\n🖥️ Compatibilità: I dispositivi Apple Silicon che eseguono versioni di Minecraft inferiori alla 1.19 non sono ancora supportati\n\n🙏 Grazie per testare %@ e aiutarci a migliorare!"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 %@ Betaへようこそ！\n\nこれは%@のベータ版です。安定した体験を提供するよう努めていますが、以下の重要な情報にご注意ください：\n\n🔒 データ安全性：Minecraftのセーブデータとランチャーデータを定期的にバックアップしてください\n🐛 バグ報告：問題が発生した場合は、GitHubリポジトリで報告してください\n⚠️ 機能制限：以下の機能は現在利用できません：\n  - Modpackのインポートとインストール\n  - 他のランチャーからのセーブデータインポート\n  - ランチャーの高度な設定\n🖥️ 互換性：Minecraft 1.19未満のバージョンを実行するApple Siliconデバイスはまだサポートされていません\n\n🙏 %@のテストと改善にご協力いただき、ありがとうございます！"
+            "value" : "🎮 %@ Betaへようこそ！\n\nこれは%@のベータ版です。安定した体験を提供するよう努めていますが、以下の重要な情報にご注意ください：\n\n🔒 データ安全性：Minecraftのセーブデータとランチャーデータを定期的にバックアップしてください\n🐛 バグ報告：問題が発生した場合は、GitHubリポジトリで報告してください\n⚠️ 機能制限：以下の機能は現在利用できません：\n  - 他のランチャーからのセーブデータインポート\n  - ランチャーの高度な設定\n🖥️ 互換性：Minecraft 1.19未満のバージョンを実行するApple Siliconデバイスはまだサポートされていません\n\n🙏 %@のテストと改善にご協力いただき、ありがとうございます！"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 %@ 베타에 오신 것을 환영합니다!\n\n이것은 %@의 베타 버전입니다. 안정적인 경험을 제공하기 위해 노력하고 있지만, 다음 중요한 정보를 참고해 주세요:\n\n🔒 데이터 안전: Minecraft 세이브 파일과 런처 데이터를 정기적으로 백업해 주세요\n🐛 버그 리포트: 문제가 발생하면 GitHub 저장소에서 신고해 주세요\n⚠️ 제한된 기능: 다음 기능들은 현재 사용할 수 없습니다:\n  - 모드팩 가져오기 및 설치\n  - 다른 런처에서 세이브 데이터 가져오기\n  - 고급 런처 설정\n🖥️ 호환성: Minecraft 1.19 미만 버전을 실행하는 Apple Silicon 기기는 아직 지원되지 않습니다\n\n🙏 %@를 테스트하고 개선에 도움을 주셔서 감사합니다!"
+            "value" : "🎮 %@ 베타에 오신 것을 환영합니다!\n\n이것은 %@의 베타 버전입니다. 안정적인 경험을 제공하기 위해 노력하고 있지만, 다음 중요한 정보를 참고해 주세요:\n\n🔒 데이터 안전: Minecraft 세이브 파일과 런처 데이터를 정기적으로 백업해 주세요\n🐛 버그 리포트: 문제가 발생하면 GitHub 저장소에서 신고해 주세요\n⚠️ 제한된 기능: 다음 기능들은 현재 사용할 수 없습니다:\n  - 다른 런처에서 세이브 데이터 가져오기\n  - 고급 런처 설정\n🖥️ 호환성: Minecraft 1.19 미만 버전을 실행하는 Apple Silicon 기기는 아직 지원되지 않습니다\n\n🙏 %@를 테스트하고 개선에 도움을 주셔서 감사합니다!"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Velkommen til %@ Beta!\n\nDette er en beta-versjon av %@. Selv om vi streber etter å gi en stabil opplevelse, vær oppmerksom på følgende viktige informasjon:\n\n🔒 Datasikkerhet: Ta regelmessig sikkerhetskopi av dine Minecraft-lagringer og launcher-data\n🐛 Feilrapporter: Hvis du støter på problemer, rapporter dem i vårt GitHub-repository\n⚠️ Begrensede funksjoner: Følgende funksjoner er for øyeblikket utilgjengelige:\n  - Modpack-import og installasjon\n  - Import av lagringsdata fra andre launchere\n  - Avanserte launcher-innstillinger\n🖥️ Kompatibilitet: Apple Silicon-enheter som kjører Minecraft-versjoner under 1.19 støttes ikke ennå\n\n🙏 Takk for at du tester %@ og hjelper oss å forbedre det!"
+            "value" : "🎮 Velkommen til %@ Beta!\n\nDette er en beta-versjon av %@. Selv om vi streber etter å gi en stabil opplevelse, vær oppmerksom på følgende viktige informasjon:\n\n🔒 Datasikkerhet: Ta regelmessig sikkerhetskopi av dine Minecraft-lagringer og launcher-data\n🐛 Feilrapporter: Hvis du støter på problemer, rapporter dem i vårt GitHub-repository\n⚠️ Begrensede funksjoner: Følgende funksjoner er for øyeblikket utilgjengelige:\n  - Import av lagringsdata fra andre launchere\n  - Avanserte launcher-innstillinger\n🖥️ Kompatibilitet: Apple Silicon-enheter som kjører Minecraft-versjoner under 1.19 støttes ikke ennå\n\n🙏 Takk for at du tester %@ og hjelper oss å forbedre det!"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Welkom bij %@ Beta!\n\nDit is een bètaversie van %@. Hoewel we streven naar een stabiele ervaring, let op de volgende belangrijke informatie:\n\n🔒 Gegevensveiligheid: Maak regelmatig back-ups van je Minecraft-saves en launcher-gegevens\n🐛 Bugrapporten: Als je problemen tegenkomt, meld ze dan in onze GitHub-repository\n⚠️ Beperkte functies: De volgende functies zijn momenteel niet beschikbaar:\n  - Modpack-import en installatie\n  - Save-gegevens importeren van andere launchers\n  - Geavanceerde launcher-instellingen\n🖥️ Compatibiliteit: Apple Silicon-apparaten met Minecraft-versies onder 1.19 worden nog niet ondersteund\n\n🙏 Bedankt voor het testen van %@ en het helpen verbeteren!"
+            "value" : "🎮 Welkom bij %@ Beta!\n\nDit is een bètaversie van %@. Hoewel we streven naar een stabiele ervaring, let op de volgende belangrijke informatie:\n\n🔒 Gegevensveiligheid: Maak regelmatig back-ups van je Minecraft-saves en launcher-gegevens\n🐛 Bugrapporten: Als je problemen tegenkomt, meld ze dan in onze GitHub-repository\n⚠️ Beperkte functies: De volgende functies zijn momenteel niet beschikbaar:\n  - Save-gegevens importeren van andere launchers\n  - Geavanceerde launcher-instellingen\n🖥️ Compatibiliteit: Apple Silicon-apparaten met Minecraft-versies onder 1.19 worden nog niet ondersteund\n\n🙏 Bedankt voor het testen van %@ en het helpen verbeteren!"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Witamy w %@ Beta!\n\nTo jest wersja beta %@. Choć staramy się zapewnić stabilne doświadczenie, zwróć uwagę na następujące ważne informacje:\n\n🔒 Bezpieczeństwo danych: Regularnie twórz kopie zapasowe swoich zapisów Minecraft i danych launchera\n🐛 Zgłaszanie błędów: Jeśli napotkasz jakiekolwiek problemy, zgłoś je w naszym repozytorium GitHub\n⚠️ Ograniczone funkcje: Następujące funkcje są obecnie niedostępne:\n  - Import i instalacja modpacków\n  - Import danych zapisów z innych launcherów\n  - Zaawansowane ustawienia launchera\n🖥️ Kompatybilność: Urządzenia Apple Silicon z wersjami Minecraft poniżej 1.19 nie są jeszcze obsługiwane\n\n🙏 Dziękujemy za testowanie %@ i pomoc w ulepszaniu!"
+            "value" : "🎮 Witamy w %@ Beta!\n\nTo jest wersja beta %@. Choć staramy się zapewnić stabilne doświadczenie, zwróć uwagę na następujące ważne informacje:\n\n🔒 Bezpieczeństwo danych: Regularnie twórz kopie zapasowe swoich zapisów Minecraft i danych launchera\n🐛 Zgłaszanie błędów: Jeśli napotkasz jakiekolwiek problemy, zgłoś je w naszym repozytorium GitHub\n⚠️ Ograniczone funkcje: Następujące funkcje są obecnie niedostępne:\n  - Import danych zapisów z innych launcherów\n  - Zaawansowane ustawienia launchera\n🖥️ Kompatybilność: Urządzenia Apple Silicon z wersjami Minecraft poniżej 1.19 nie są jeszcze obsługiwane\n\n🙏 Dziękujemy za testowanie %@ i pomoc w ulepszaniu!"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Bem-vindo ao %@ Beta!\n\nEsta é uma versão beta do %@. Embora nos esforcemos para fornecer uma experiência estável, observe as seguintes informações importantes:\n\n🔒 Segurança de dados: Faça backup regularmente de seus saves do Minecraft e dados do launcher\n🐛 Relatórios de bugs: Se encontrar problemas, relate-os em nosso repositório GitHub\n⚠️ Recursos limitados: Os seguintes recursos estão atualmente indisponíveis:\n  - Importação e instalação de modpacks\n  - Importação de dados de save de outros launchers\n  - Configurações avançadas do launcher\n🖥️ Compatibilidade: Dispositivos Apple Silicon executando versões do Minecraft abaixo de 1.19 ainda não são suportados\n\n🙏 Obrigado por testar o %@ e nos ajudar a melhorar!"
+            "value" : "🎮 Bem-vindo ao %@ Beta!\n\nEsta é uma versão beta do %@. Embora nos esforcemos para fornecer uma experiência estável, observe as seguintes informações importantes:\n\n🔒 Segurança de dados: Faça backup regularmente de seus saves do Minecraft e dados do launcher\n🐛 Relatórios de bugs: Se encontrar problemas, relate-os em nosso repositório GitHub\n⚠️ Recursos limitados: Os seguintes recursos estão atualmente indisponíveis:\n  - Importação de dados de save de outros launchers\n  - Configurações avançadas do launcher\n🖥️ Compatibilidade: Dispositivos Apple Silicon executando versões do Minecraft abaixo de 1.19 ainda não são suportados\n\n🙏 Obrigado por testar o %@ e nos ajudar a melhorar!"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Добро пожаловать в %@ Beta!\n\nЭто бета-версия %@. Хотя мы стремимся обеспечить стабильную работу, обратите внимание на следующую важную информацию:\n\n🔒 Безопасность данных: Регулярно создавайте резервные копии ваших сохранений Minecraft и данных лаунчера\n🐛 Отчеты об ошибках: Если вы столкнулись с проблемами, сообщите о них в нашем GitHub репозитории\n⚠️ Ограниченные функции: Следующие функции в настоящее время недоступны:\n  - Импорт и установка модпаков\n  - Импорт данных сохранений из других лаунчеров\n  - Расширенные настройки лаунчера\n🖥️ Совместимость: Устройства Apple Silicon с версиями Minecraft ниже 1.19 пока не поддерживаются\n\n🙏 Спасибо за тестирование %@ и помощь в улучшении!"
+            "value" : "🎮 Добро пожаловать в %@ Beta!\n\nЭто бета-версия %@. Хотя мы стремимся обеспечить стабильную работу, обратите внимание на следующую важную информацию:\n\n🔒 Безопасность данных: Регулярно создавайте резервные копии ваших сохранений Minecraft и данных лаунчера\n🐛 Отчеты об ошибках: Если вы столкнулись с проблемами, сообщите о них в нашем GitHub репозитории\n⚠️ Ограниченные функции: Следующие функции в настоящее время недоступны:\n  - Импорт данных сохранений из других лаунчеров\n  - Расширенные настройки лаунчера\n🖥️ Совместимость: Устройства Apple Silicon с версиями Minecraft ниже 1.19 пока не поддерживаются\n\n🙏 Спасибо за тестирование %@ и помощь в улучшении!"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Välkommen till %@ Beta!\n\nDetta är en beta-version av %@. Medan vi strävar efter att ge en stabil upplevelse, observera följande viktiga information:\n\n🔒 Datasäkerhet: Säkerhetskopiera regelbundet dina Minecraft-sparfiler och launcher-data\n🐛 Felrapporter: Om du stöter på problem, rapportera dem i vårt GitHub-repository\n⚠️ Begränsade funktioner: Följande funktioner är för närvarande otillgängliga:\n  - Modpack-import och installation\n  - Import av spardata från andra launchers\n  - Avancerade launcher-inställningar\n🖥️ Kompatibilitet: Apple Silicon-enheter som kör Minecraft-versioner under 1.19 stöds inte ännu\n\n🙏 Tack för att du testar %@ och hjälper oss förbättra!"
+            "value" : "🎮 Välkommen till %@ Beta!\n\nDetta är en beta-version av %@. Medan vi strävar efter att ge en stabil upplevelse, observera följande viktiga information:\n\n🔒 Datasäkerhet: Säkerhetskopiera regelbundet dina Minecraft-sparfiler och launcher-data\n🐛 Felrapporter: Om du stöter på problem, rapportera dem i vårt GitHub-repository\n⚠️ Begränsade funktioner: Följande funktioner är för närvarande otillgängliga:\n  - Import av spardata från andra launchers\n  - Avancerade launcher-inställningar\n🖥️ Kompatibilitet: Apple Silicon-enheter som kör Minecraft-versioner under 1.19 stöds inte ännu\n\n🙏 Tack för att du testar %@ och hjälper oss förbättra!"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 ยินดีต้อนรับสู่ %@ Beta!\n\nนี่คือเวอร์ชั่น beta ของ %@ แม้ว่าเราจะพยายามให้ประสบการณ์ที่เสถียร แต่โปรดทราบข้อมูลสำคัญต่อไปนี้:\n\n🔒 ความปลอดภัยของข้อมูล: กรุณาสำรองข้อมูล Minecraft saves และข้อมูล launcher อย่างสม่ำเสมо\n🐛 รายงานข้อผิดพลาด: หากพบปัญหา กรุณารายงานใน GitHub repository ของเรา\n⚠️ ฟีเจอร์จำกัด: ฟีเจอร์ต่อไปนี้ยังไม่พร้อมใช้งาน:\n  - การนำเข้าและติดตั้ง modpack\n  - การนำเข้าข้อมูล save จาก launcher อื่น\n  - การตั้งค่า launcher ขั้นสูง\n🖥️ ความเข้ากันได้: อุปกรณ์ Apple Silicon ที่รัน Minecraft เวอร์ชั่นต่ำกว่า 1.19 ยังไม่รองรับ\n\n🙏 ขอบคุณสำหรับการทดสอบ %@ และช่วยเราปรับปรุง!"
+            "value" : "🎮 ยินดีต้อนรับสู่ %@ Beta!\n\nนี่คือเวอร์ชั่น beta ของ %@ แม้ว่าเราจะพยายามให้ประสบการณ์ที่เสถียร แต่โปรดทราบข้อมูลสำคัญต่อไปนี้:\n\n🔒 ความปลอดภัยของข้อมูล: กรุณาสำรองข้อมูล Minecraft saves และข้อมูล launcher อย่างสม่ำเสมо\n🐛 รายงานข้อผิดพลาด: หากพบปัญหา กรุณารายงานใน GitHub repository ของเรา\n⚠️ ฟีเจอร์จำกัด: ฟีเจอร์ต่อไปนี้ยังไม่พร้อมใช้งาน:\n  - การนำเข้าข้อมูล save จาก launcher อื่น\n  - การตั้งค่า launcher ขั้นสูง\n🖥️ ความเข้ากันได้: อุปกรณ์ Apple Silicon ที่รัน Minecraft เวอร์ชั่นต่ำกว่า 1.19 ยังไม่รองรับ\n\n🙏 ขอบคุณสำหรับการทดสอบ %@ และช่วยเราปรับปรุง!"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 %@ Beta'ya hoş geldiniz!\n\nBu, %@'ın beta sürümüdür. Kararlı bir deneyim sunmaya çalışsak da, lütfen aşağıdaki önemli bilgileri not edin:\n\n🔒 Veri Güvenliği: Minecraft kayıtlarınızı ve launcher verilerinizi düzenli olarak yedekleyin\n🐛 Hata Raporları: Herhangi bir sorunla karşılaşırsanız, lütfen GitHub repository'mizde bildirin\n⚠️ Sınırlı Özellikler: Aşağıdaki özellikler şu anda kullanılamaz:\n  - Modpack içe aktarma ve kurulum\n  - Diğer launcher'lardan kayıt verisi içe aktarma\n  - Gelişmiş launcher ayarları\n🖥️ Uyumluluk: Minecraft 1.19'un altındaki sürümleri çalıştıran Apple Silicon cihazları henüz desteklenmiyor\n\n🙏 %@'ı test ettiğiniz ve geliştirmemize yardım ettiğiniz için teşekkürler!"
+            "value" : "🎮 %@ Beta'ya hoş geldiniz!\n\nBu, %@'ın beta sürümüdür. Kararlı bir deneyim sunmaya çalışsak da, lütfen aşağıdaki önemli bilgileri not edin:\n\n🔒 Veri Güvenliği: Minecraft kayıtlarınızı ve launcher verilerinizi düzenli olarak yedekleyin\n🐛 Hata Raporları: Herhangi bir sorunla karşılaşırsanız, lütfen GitHub repository'mizde bildirin\n⚠️ Sınırlı Özellikler: Aşağıdaki özellikler şu anda kullanılamaz:\n  - Diğer launcher'lardan kayıt verisi içe aktarma\n  - Gelişmiş launcher ayarları\n🖥️ Uyumluluk: Minecraft 1.19'un altındaki sürümleri çalıştıran Apple Silicon cihazları henüz desteklenmiyor\n\n🙏 %@'ı test ettiğiniz ve geliştirmemize yardım ettiğiniz için teşekkürler!"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Chào mừng đến với %@ Beta!\n\nĐây là phiên bản beta của %@. Mặc dù chúng tôi cố gắng cung cấp trải nghiệm ổn định, vui lòng lưu ý những thông tin quan trọng sau:\n\n🔒 An toàn dữ liệu: Vui lòng thường xuyên sao lưu các file save Minecraft và dữ liệu launcher\n🐛 Báo cáo lỗi: Nếu gặp vấn đề, vui lòng báo cáo trên GitHub repository của chúng tôi\n⚠️ Tính năng hạn chế: Các tính năng sau hiện chưa khả dụng:\n  - Nhập và cài đặt modpack\n  - Nhập dữ liệu save từ launcher khác\n  - Cài đặt launcher nâng cao\n🖥️ Tương thích: Thiết bị Apple Silicon chạy phiên bản Minecraft dưới 1.19 chưa được hỗ trợ\n\n🙏 Cảm ơn bạn đã thử nghiệm %@ và giúp chúng tôi cải thiện!"
+            "value" : "🎮 Chào mừng đến với %@ Beta!\n\nĐây là phiên bản beta của %@. Mặc dù chúng tôi cố gắng cung cấp trải nghiệm ổn định, vui lòng lưu ý những thông tin quan trọng sau:\n\n🔒 An toàn dữ liệu: Vui lòng thường xuyên sao lưu các file save Minecraft và dữ liệu launcher\n🐛 Báo cáo lỗi: Nếu gặp vấn đề, vui lòng báo cáo trên GitHub repository của chúng tôi\n⚠️ Tính năng hạn chế: Các tính năng sau hiện chưa khả dụng:\n  - Nhập dữ liệu save từ launcher khác\n  - Cài đặt launcher nâng cao\n🖥️ Tương thích: Thiết bị Apple Silicon chạy phiên bản Minecraft dưới 1.19 chưa được hỗ trợ\n\n🙏 Cảm ơn bạn đã thử nghiệm %@ và giúp chúng tôi cải thiện!"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 欢迎使用 %@ 测试版！\n\n这是 %@ 的测试版本。虽然我们努力提供稳定的使用体验，但请注意以下重要信息：\n\n🔒 数据安全：请定期备份您的 Minecraft 存档和启动器数据\n🐛 问题反馈：如果您遇到任何问题，请在我们的 GitHub 仓库中反馈\n⚠️ 功能限制：以下功能目前暂不可用：\n  - 整合包导入和安装\n  - 从其他启动器导入存档数据\n  - 启动器高级设置\n🖥️ 兼容性：运行 Minecraft 1.19 以下版本的 Apple Silicon 设备暂不支持\n\n🙏 感谢您测试 %@ 并帮助我们改进！"
+            "value" : "🎮 欢迎使用 %@ 测试版！\n\n这是 %@ 的测试版本。虽然我们努力提供稳定的使用体验，但请注意以下重要信息：\n\n🔒 数据安全：请定期备份您的 Minecraft 存档和启动器数据\n🐛 问题反馈：如果您遇到任何问题，请在我们的 GitHub 仓库中反馈\n⚠️ 功能限制：以下功能目前暂不可用：\n  - 从其他启动器导入存档数据\n  - 启动器高级设置\n🖥️ 兼容性：运行 Minecraft 1.19 以下版本的 Apple Silicon 设备暂不支持\n\n🙏 感谢您测试 %@ 并帮助我们改进！"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 歡迎使用 %@ 測試版！\n\n這是 %@ 的測試版本。雖然我們努力提供穩定的使用體驗，但請注意以下重要資訊：\n\n🔒 資料安全：請定期備份您的 Minecraft 存檔和啟動器資料\n🐛 問題回饋：如果您遇到任何問題，請在我們的 GitHub 儲存庫中回饋\n⚠️ 功能限制：以下功能目前暫不可用：\n  - 整合包匯入和安裝\n  - 從其他啟動器匯入存檔資料\n  - 啟動器進階設定\n🖥️ 相容性：執行 Minecraft 1.19 以下版本的 Apple Silicon 裝置暫不支援\n\n🙏 感謝您測試 %@ 並幫助我們改進！"
+            "value" : "🎮 歡迎使用 %@ 測試版！\n\n這是 %@ 的測試版本。雖然我們努力提供穩定的使用體驗，但請注意以下重要資訊：\n\n🔒 資料安全：請定期備份您的 Minecraft 存檔和啟動器資料\n🐛 問題回饋：如果您遇到任何問題，請在我們的 GitHub 儲存庫中回饋\n⚠️ 功能限制：以下功能目前暫不可用：\n  - 從其他啟動器匯入存檔資料\n  - 啟動器進階設定\n🖥️ 相容性：執行 Minecraft 1.19 以下版本的 Apple Silicon 裝置暫不支援\n\n🙏 感謝您測試 %@ 並幫助我們改進！"
           }
         }
       }
