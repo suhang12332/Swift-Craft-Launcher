@@ -13,7 +13,7 @@ protocol GameFormStateProtocol: ObservableObject {
     var isDownloading: Bool { get set }
     var isFormValid: Bool { get set }
     var triggerConfirm: Bool { get set }
-    
+
     func handleCancel()
     func handleConfirm()
     func updateParentState()
@@ -43,7 +43,7 @@ struct GameFormConfiguration {
     let isFormValid: Binding<Bool>
     let triggerConfirm: Binding<Bool>
     let actions: GameFormActions
-    
+
     init(
         isDownloading: Binding<Bool>,
         isFormValid: Binding<Bool>,

@@ -11,17 +11,16 @@ import SwiftUI
 @MainActor
 class ModPackImportViewModel: BaseGameFormViewModel {
     private let modPackViewModel = ModPackDownloadSheetViewModel()
-    
+
     @Published var selectedModPackFile: URL?
     @Published var extractedModPackPath: URL?
     @Published var modPackIndexInfo: ModrinthIndexInfo?
     @Published var isProcessingModPack = false
-    
+
     private let onProcessingStateChanged: (Bool) -> Void
     private var gameRepository: GameRepository?
-    
+
     // MARK: - Initialization
-    
     init(
         configuration: GameFormConfiguration,
         preselectedFile: URL? = nil,
@@ -30,54 +29,52 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     ) {
         self.onProcessingStateChanged = onProcessingStateChanged
         super.init(configuration: configuration)
-        
+
         self.selectedModPackFile = preselectedFile
         self.isProcessingModPack = shouldStartProcessing
     }
-    
+
     // MARK: - Setup Methods
-    
+
     func setup(gameRepository: GameRepository) {
         self.gameRepository = gameRepository
         modPackViewModel.setGameRepository(gameRepository)
-        
+
         // 如果有预选文件，启动处理
         if selectedModPackFile != nil && isProcessingModPack {
             Task {
                 await parseSelectedModPack()
             }
         }
-        
+
         updateParentState()
     }
-    
+
     // MARK: - Override Methods
-    
     override func performConfirmAction() async {
         startDownloadTask {
             await self.importModPack()
         }
     }
-    
+
     override func handleCancel() {
         cancelDownloadIfNeeded()
     }
-    
+
     override func computeIsDownloading() -> Bool {
         return gameSetupService.downloadState.isDownloading
             || modPackViewModel.modPackInstallState.isInstalling
             || isProcessingModPack
     }
-    
+
     override func computeIsFormValid() -> Bool {
         let hasFile = selectedModPackFile != nil
         let hasInfo = modPackIndexInfo != nil
         let nameValid = gameNameValidator.isFormValid
         return hasFile && hasInfo && nameValid
     }
-    
+
     // MARK: - ModPack Processing
-    
     func parseSelectedModPack() async {
         guard let selectedFile = selectedModPackFile else { return }
 
@@ -108,13 +105,13 @@ class ModPackImportViewModel: BaseGameFormViewModel {
             onProcessingStateChanged(false)
         }
     }
-    
+
     // MARK: - ModPack Import
-    
     private func importModPack() async {
         guard selectedModPackFile != nil,
               let extractedPath = extractedModPackPath,
-              let indexInfo = modPackIndexInfo else { return }
+              let indexInfo = modPackIndexInfo,
+              let gameRepository = gameRepository else { return }
 
         isProcessingModPack = true
 
@@ -179,7 +176,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
                     specifiedLoaderVersion: indexInfo.loaderVersion,
                     pendingIconData: nil,
                     playerListViewModel: nil, // Will be set from environment
-                    gameRepository: gameRepository!,
+                    gameRepository: gameRepository,
                     onSuccess: {
                         continuation.resume(returning: true)
                     },
@@ -196,9 +193,8 @@ class ModPackImportViewModel: BaseGameFormViewModel {
 
         handleModPackInstallationResult(success: gameSuccess, gameName: gameNameValidator.gameName)
     }
-    
+
     // MARK: - Helper Methods
-    
     private func createProfileDirectories(for gameName: String) async -> Bool {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
 
@@ -227,7 +223,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
 
         return true
     }
-    
+
     private func calculateInstallationCounts(
         from indexInfo: ModrinthIndexInfo
     ) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
@@ -244,7 +240,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
 
         return (filesToDownload, requiredDependencies)
     }
-    
+
     private func updateModPackInstallProgress(
         fileName: String,
         completed: Int,
@@ -268,7 +264,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
             break
         }
     }
-    
+
     private func handleModPackInstallationResult(success: Bool, gameName: String) {
         if success {
             Logger.shared.info("本地整合包导入完成: \(gameName)")
@@ -290,7 +286,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         }
         isProcessingModPack = false
     }
-    
+
     private func cleanupGameDirectories(gameName: String) async {
         do {
             let fileManager = MinecraftFileManager()
@@ -299,39 +295,37 @@ class ModPackImportViewModel: BaseGameFormViewModel {
             Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
         }
     }
-    
+
     // MARK: - Computed Properties for UI Updates
-    
     var shouldShowProgress: Bool {
         gameSetupService.downloadState.isDownloading
             || modPackViewModel.modPackInstallState.isInstalling
     }
-    
+
     var hasSelectedModPack: Bool {
         selectedModPackFile != nil
     }
-    
+
     var modPackName: String {
         modPackIndexInfo?.modPackName ?? ""
     }
-    
+
     var gameVersion: String {
         modPackIndexInfo?.gameVersion ?? ""
     }
-    
+
     var modPackVersion: String {
         modPackIndexInfo?.modPackVersion ?? ""
     }
-    
+
     var loaderInfo: String {
         guard let indexInfo = modPackIndexInfo else { return "" }
         return indexInfo.loaderVersion.isEmpty
             ? indexInfo.loaderType
             : "\(indexInfo.loaderType)-\(indexInfo.loaderVersion)"
     }
-    
-    // MARK: - Expose Internal Objects
-    
+
+    // MARK: - Expose Internal Objects    
     var modPackViewModelForProgress: ModPackDownloadSheetViewModel {
         modPackViewModel
     }

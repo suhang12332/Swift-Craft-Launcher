@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 enum GameFormMode {
     case creation
     case modPackImport(file: URL, shouldProcess: Bool)
-    
+
     var isImportMode: Bool {
         switch self {
         case .creation:
@@ -20,7 +20,8 @@ enum GameFormMode {
 struct GameFormView: View {
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
 
     // MARK: - State
     @State private var isDownloading = false
@@ -46,24 +47,25 @@ struct GameFormView: View {
                             onCancel: { dismiss() },
                             onConfirm: { dismiss() }
                         )
-                    case .modPackImport(let file, let shouldProcess):
+                    case let .modPackImport(file, shouldProcess):
                         ModPackImportView(
-                            isDownloading: $isDownloading,
-                            isFormValid: $isFormValid,
-                            triggerConfirm: $triggerConfirm,
-                            onCancel: { dismiss() },
-                            onConfirm: { dismiss() },
+                            configuration: GameFormConfiguration(
+                                isDownloading: $isDownloading,
+                                isFormValid: $isFormValid,
+                                triggerConfirm: $triggerConfirm,
+                                onCancel: { dismiss() },
+                                onConfirm: { dismiss() }
+                            ),
                             preselectedFile: file,
-                            shouldStartProcessing: shouldProcess,
-                            onProcessingStateChanged: { isProcessing in
-                                if !isProcessing {
-                                    if case .modPackImport(let file, _) = mode {
-                                        mode = .modPackImport(file: file, shouldProcess: false)
-                                    }
-                                    isModPackParsed = true
+                            shouldStartProcessing: shouldProcess
+                        ) { isProcessing in
+                            if !isProcessing {
+                                if case .modPackImport(let file, _) = mode {
+                                    mode = .modPackImport(file: file, shouldProcess: false)
                                 }
+                                isModPackParsed = true
                             }
-                        )
+                        }
                     }
                 }
             },
@@ -89,20 +91,22 @@ struct GameFormView: View {
                 Text("game.form.title".localized())
                     .font(.headline)
                 Spacer()
-                
                 // 只在创建模式或未解析完成时显示导入按钮
                 if !mode.isImportMode || !isModPackParsed {
                     let buttonText = "game.form.mode.import".localized()
                     let buttonImage = "document.badge.arrow.up"
 
-                    Button(action: {
-                        showModPackFilePicker = true
-                    }) {
-                        Label(buttonText, systemImage: buttonImage)
-                            .labelStyle(.iconOnly)
-                            .font(.title3)
-                            .fontWeight(.regular)
-                    }
+                    Button(
+                        action: {
+                            showModPackFilePicker = true
+                        },
+                        label: {
+                            Label(buttonText, systemImage: buttonImage)
+                                .labelStyle(.iconOnly)
+                                .font(.title3)
+                                .fontWeight(.regular)
+                        }
+                    )
                     .buttonStyle(.borderless)
                     .help(buttonText)
                 }
@@ -141,14 +145,14 @@ struct GameFormView: View {
         .keyboardShortcut(.defaultAction)
         .disabled(!isFormValid || isDownloading)
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func handleModPackFileSelection(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):
             guard let url = urls.first else { return }
-            
+
             guard url.startAccessingSecurityScopedResource() else {
                 let globalError = GlobalError.fileSystem(
                     chineseMessage: "无法访问所选文件",
@@ -158,9 +162,9 @@ struct GameFormView: View {
                 GlobalErrorHandler.shared.handle(globalError)
                 return
             }
-            
+
             defer { url.stopAccessingSecurityScopedResource() }
-            
+
             // 复制文件到临时目录以便后续使用
             do {
                 let tempDir = FileManager.default.temporaryDirectory
@@ -170,19 +174,18 @@ struct GameFormView: View {
                     at: tempDir,
                     withIntermediateDirectories: true
                 )
-                
+
                 let tempFile = tempDir.appendingPathComponent(url.lastPathComponent)
                 try FileManager.default.copyItem(at: url, to: tempFile)
-                
+
                 // 切换到导入模式并开始处理
                 mode = .modPackImport(file: tempFile, shouldProcess: true)
                 isModPackParsed = false
-                
             } catch {
                 let globalError = GlobalError.from(error)
                 GlobalErrorHandler.shared.handle(globalError)
             }
-            
+
         case .failure(let error):
             let globalError = GlobalError.from(error)
             GlobalErrorHandler.shared.handle(globalError)

@@ -44,7 +44,7 @@ extension BaseGameFormViewModel {
         )
         handleNonCriticalError(globalError, message: "error.file.access.failed".localized())
     }
-    
+
     /// 统一的文件读取错误处理
     func handleFileReadError(_ error: Error, context: String) {
         let globalError = GlobalError.fileSystem(

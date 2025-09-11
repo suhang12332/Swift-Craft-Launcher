@@ -13,7 +13,7 @@ struct DownloadProgressSection: View {
     var modPackViewModel: ModPackDownloadSheetViewModel?
     let modPackIndexInfo: ModrinthIndexInfo?
     let selectedModLoader: String
-    
+
     init(
         gameSetupService: GameSetupUtil,
         selectedModLoader: String = "vanilla",
@@ -25,22 +25,20 @@ struct DownloadProgressSection: View {
         self.modPackViewModel = modPackViewModel
         self.modPackIndexInfo = modPackIndexInfo
     }
-    
+
     var body: some View {
         VStack(spacing: 24) {
             // 游戏核心下载进度
             gameDownloadProgressView
-            
             // 模组加载器下载进度
             modLoaderProgressView
-            
             // 整合包安装进度
             if let modPackViewModel = modPackViewModel {
                 ModPackProgressView(modPackViewModel: modPackViewModel)
             }
         }
     }
-    
+
     // MARK: - Game Download Progress
     private var gameDownloadProgressView: some View {
         VStack(spacing: 24) {
@@ -49,7 +47,6 @@ struct DownloadProgressSection: View {
                 state: gameSetupService.downloadState,
                 type: .core
             )
-            
             progressSection(
                 title: "download.resources.title".localized(),
                 state: gameSetupService.downloadState,
@@ -57,10 +54,9 @@ struct DownloadProgressSection: View {
             )
         }
     }
-    
+
     // MARK: - Mod Loader Progress
-    @ViewBuilder
-    private var modLoaderProgressView: some View {
+    @ViewBuilder private var modLoaderProgressView: some View {
         if let loaderProgressInfo = getLoaderProgressInfo() {
             progressSection(
                 title: loaderProgressInfo.title,
@@ -70,15 +66,14 @@ struct DownloadProgressSection: View {
             )
         }
     }
-    
-    
+
     // MARK: - Helper Methods
-    
+
     private enum ProgressType {
         case core
         case resources
     }
-    
+
     private func progressSection(
         title: String,
         state: DownloadState,
@@ -96,21 +91,21 @@ struct DownloadProgressSection: View {
             )
         }
     }
-    
+
     private struct LoaderProgressInfo {
         let title: String
         let state: DownloadState
         let version: String?
     }
-    
+
     private func getLoaderProgressInfo() -> LoaderProgressInfo? {
         let loaderType = selectedModLoader.lowercased()
-        
+
         // 如果是整合包模式，使用整合包的加载器信息
         if let indexInfo = modPackIndexInfo {
             let loaderState = getLoaderDownloadState(for: indexInfo.loaderType)
             let title = getLoaderTitle(for: indexInfo.loaderType)
-            
+
             if let state = loaderState {
                 return LoaderProgressInfo(
                     title: title,
@@ -122,7 +117,7 @@ struct DownloadProgressSection: View {
             // 普通游戏创建模式
             let state = getLoaderDownloadState(for: loaderType)
             let title = getLoaderTitle(for: loaderType)
-            
+
             if let state = state {
                 return LoaderProgressInfo(
                     title: title,
@@ -131,10 +126,10 @@ struct DownloadProgressSection: View {
                 )
             }
         }
-        
+
         return nil
     }
-    
+
     private func getLoaderDownloadState(for loaderType: String) -> DownloadState? {
         switch loaderType.lowercased() {
         case "fabric", "quilt":
@@ -147,7 +142,7 @@ struct DownloadProgressSection: View {
             return nil
         }
     }
-    
+
     private func getLoaderTitle(for loaderType: String) -> String {
         switch loaderType.lowercased() {
         case "fabric":
@@ -167,7 +162,7 @@ struct DownloadProgressSection: View {
 // MARK: - ModPack Progress View
 private struct ModPackProgressView: View {
     @ObservedObject var modPackViewModel: ModPackDownloadSheetViewModel
-    
+
     var body: some View {
         if modPackViewModel.modPackInstallState.isInstalling {
             VStack(spacing: 24) {
@@ -176,7 +171,7 @@ private struct ModPackProgressView: View {
                     state: modPackViewModel.modPackInstallState,
                     type: .files
                 )
-                
+
                 if modPackViewModel.modPackInstallState.dependenciesTotal > 0 {
                     modPackProgressSection(
                         title: "modpack.dependencies.title".localized(),
@@ -187,12 +182,12 @@ private struct ModPackProgressView: View {
             }
         }
     }
-    
+
     private enum ModPackProgressType {
         case files
         case dependencies
     }
-    
+
     private func modPackProgressSection(
         title: String,
         state: ModPackInstallState,

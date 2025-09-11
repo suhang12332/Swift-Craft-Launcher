@@ -21,27 +21,26 @@ class GameCreationViewModel: BaseGameFormViewModel {
     @Published var selectedLoaderVersion = ""
     @Published var availableLoaderVersions: [String] = []
     @Published var availableVersions: [String] = []
-    
+
     // MARK: - Private Properties
     private var pendingIconData: Data?
     private var pendingIconURL: URL?
     private var didInit = false
-    
+
     // MARK: - Environment Objects (to be set from view)
     private var gameRepository: GameRepository?
     private var playerListViewModel: PlayerListViewModel?
-    
+
     // MARK: - Initialization
     override init(configuration: GameFormConfiguration) {
         super.init(configuration: configuration)
     }
-    
+
     // MARK: - Setup Methods
-    
     func setup(gameRepository: GameRepository, playerListViewModel: PlayerListViewModel) {
         self.gameRepository = gameRepository
         self.playerListViewModel = playerListViewModel
-        
+
         if !didInit {
             didInit = true
             Task {
@@ -50,36 +49,34 @@ class GameCreationViewModel: BaseGameFormViewModel {
         }
         updateParentState()
     }
-    
+
     // MARK: - Override Methods
-    
     override func performConfirmAction() async {
         startDownloadTask {
             await self.saveGame()
         }
     }
-    
+
     override func handleCancel() {
         cancelDownloadIfNeeded()
     }
-    
+
     override func computeIsDownloading() -> Bool {
         return gameSetupService.downloadState.isDownloading
     }
-    
+
     override func computeIsFormValid() -> Bool {
         let isLoaderVersionValid = selectedModLoader == "vanilla" || !selectedLoaderVersion.isEmpty
         return gameNameValidator.isFormValid && isLoaderVersionValid
     }
-    
+
     // MARK: - Version Management
-    
     /// 初始化版本选择器
     func initializeVersionPicker() async {
         let compatibleVersions = await CommonService.compatibleVersions(for: selectedModLoader)
         await updateAvailableVersions(compatibleVersions)
     }
-    
+
     /// 更新可用版本并设置默认选择
     func updateAvailableVersions(_ versions: [String]) async {
         self.availableVersions = versions
@@ -90,14 +87,12 @@ class GameCreationViewModel: BaseGameFormViewModel {
 
         // 获取当前选中版本的时间信息
         if !versions.isEmpty {
-            let targetVersion = versions.contains(self.selectedGameVersion) 
-                ? self.selectedGameVersion 
-                : (versions.first ?? "")
+            let targetVersion = versions.contains(self.selectedGameVersion) ? self.selectedGameVersion : (versions.first ?? "")
             let timeString = await MinecraftService.fetchVersionTime(for: targetVersion)
             self.versionTime = timeString
         }
     }
-    
+
     /// 处理模组加载器变化
     func handleModLoaderChange(_ newLoader: String) {
         Task {
@@ -115,14 +110,14 @@ class GameCreationViewModel: BaseGameFormViewModel {
             }
         }
     }
-    
+
     /// 处理游戏版本变化
     func handleGameVersionChange(_ newGameVersion: String) {
         Task {
             await updateLoaderVersions(for: selectedModLoader, gameVersion: newGameVersion)
         }
     }
-    
+
     /// 更新加载器版本列表
     private func updateLoaderVersions(for loader: String, gameVersion: String) async {
         guard loader != "vanilla" && !gameVersion.isEmpty else {
@@ -168,9 +163,8 @@ class GameCreationViewModel: BaseGameFormViewModel {
             selectedLoaderVersion = ""
         }
     }
-    
+
     // MARK: - Image Handling
-    
     func handleImagePickerResult(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):
@@ -190,7 +184,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
                 return
             }
             defer { url.stopAccessingSecurityScopedResource() }
-            
+
             do {
                 let data = try Data(contentsOf: url)
                 let tempURL = FileManager.default.temporaryDirectory
@@ -202,7 +196,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
             } catch {
                 handleFileReadError(error, context: "图片文件")
             }
-            
+
         case .failure(let error):
             let globalError = GlobalError.from(error)
             handleNonCriticalError(
@@ -211,7 +205,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
             )
         }
     }
-    
+
     func handleImageDrop(_ providers: [NSItemProvider]) -> Bool {
         guard let provider = providers.first else {
             Logger.shared.error("图片拖放失败：没有提供者")
@@ -253,16 +247,15 @@ class GameCreationViewModel: BaseGameFormViewModel {
         Logger.shared.warning("图片拖放失败：不支持的类型")
         return false
     }
-    
+
     // MARK: - Game Save Methods
-    
     private func saveGame() async {
         guard let gameRepository = gameRepository,
               let playerListViewModel = playerListViewModel else {
             Logger.shared.error("GameRepository 或 PlayerListViewModel 未设置")
             return
         }
-        
+
         // 对于非vanilla加载器，如果没有选择版本，则不允许保存
         let loaderVersion = selectedModLoader == "vanilla" ? selectedModLoader : selectedLoaderVersion
 
@@ -287,17 +280,16 @@ class GameCreationViewModel: BaseGameFormViewModel {
             }
         )
     }
-    
+
     // MARK: - Computed Properties for UI Updates
-    
     var shouldShowProgress: Bool {
         gameSetupService.downloadState.isDownloading
     }
-    
+
     var pendingIconURLForDisplay: URL? {
         pendingIconURL
     }
-    
+
     var hasImagePicker: Bool {
         showImagePicker
     }

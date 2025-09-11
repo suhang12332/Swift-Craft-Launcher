@@ -5,33 +5,22 @@ import UniformTypeIdentifiers
 struct ModPackImportView: View {
     @StateObject private var viewModel: ModPackImportViewModel
     @EnvironmentObject var gameRepository: GameRepository
-    
+
     // Bindings from parent
     private let triggerConfirm: Binding<Bool>
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
 
     // MARK: - Initializer
     init(
-        isDownloading: Binding<Bool>,
-        isFormValid: Binding<Bool>,
-        triggerConfirm: Binding<Bool>,
-        onCancel: @escaping () -> Void,
-        onConfirm: @escaping () -> Void,
+        configuration: GameFormConfiguration,
         preselectedFile: URL? = nil,
         shouldStartProcessing: Bool = false,
         onProcessingStateChanged: @escaping (Bool) -> Void = { _ in }
     ) {
-        self.triggerConfirm = triggerConfirm
-        
-        let configuration = GameFormConfiguration(
-            isDownloading: isDownloading,
-            isFormValid: isFormValid,
-            triggerConfirm: triggerConfirm,
-            onCancel: onCancel,
-            onConfirm: onConfirm
-        )
-        
+        self.triggerConfirm = configuration.triggerConfirm
+
         self._viewModel = StateObject(wrappedValue: ModPackImportViewModel(
             configuration: configuration,
             preselectedFile: preselectedFile,
@@ -167,7 +156,6 @@ struct ModPackImportView: View {
         }
     }
 
-
     private var modPackGameNameInputSection: some View {
         FormSection {
             GameNameInputView(
@@ -192,5 +180,4 @@ struct ModPackImportView: View {
             modPackIndexInfo: viewModel.modPackIndexInfo
         )
     }
-
 }

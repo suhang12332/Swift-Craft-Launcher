@@ -20,8 +20,9 @@ struct GameCreationView: View {
     @StateObject private var viewModel: GameCreationViewModel
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.dismiss)
+    private var dismiss
+
     // Bindings from parent
     private let triggerConfirm: Binding<Bool>
 
@@ -34,7 +35,6 @@ struct GameCreationView: View {
         onConfirm: @escaping () -> Void
     ) {
         self.triggerConfirm = triggerConfirm
-        
         let configuration = GameFormConfiguration(
             isDownloading: isDownloading,
             isFormValid: isFormValid,
@@ -42,7 +42,6 @@ struct GameCreationView: View {
             onCancel: onCancel,
             onConfirm: onConfirm
         )
-        
         self._viewModel = StateObject(wrappedValue: GameCreationViewModel(configuration: configuration))
     }
 
@@ -241,5 +240,4 @@ struct GameCreationView: View {
             selectedModLoader: viewModel.selectedModLoader
         )
     }
-
 }
