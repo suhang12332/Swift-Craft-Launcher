@@ -106,7 +106,6 @@ public struct ContentToolbarView: ToolbarContent {
                 GameFormView()
                     .environmentObject(gameRepository)
                     .environmentObject(playerListViewModel)
-                    .presentationDetents([.medium, .large])
                     .presentationBackgroundInteraction(.automatic)
             }
             .sheet(isPresented: $showStartupInfo) {
