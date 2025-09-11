@@ -65,8 +65,7 @@ struct GameFormView: View {
                             }
                         )
                     }
-                }.frame(minHeight: 200) // 设置最小高度
-                    .fixedSize(horizontal: false, vertical: true) // 高度随内容自适应
+                }
             },
             footer: { footerView }
         )
@@ -94,13 +93,15 @@ struct GameFormView: View {
                 // 只在创建模式或未解析完成时显示导入按钮
                 if !mode.isImportMode || !isModPackParsed {
                     let buttonText = "game.form.mode.import".localized()
-                    let buttonImage = "square.and.arrow.down"
+                    let buttonImage = "document.badge.arrow.up"
 
                     Button(action: {
                         showModPackFilePicker = true
                     }) {
                         Label(buttonText, systemImage: buttonImage)
                             .labelStyle(.iconOnly)
+                            .font(.title3)
+                            .fontWeight(.regular)
                     }
                     .buttonStyle(.borderless)
                     .help(buttonText)

@@ -65,9 +65,9 @@ struct ModPackImportView: View {
 
     private var formContentView: some View {
         VStack {
-            modPackImportContentView
+            modPackImportContentView.padding(.bottom, 20)
             if viewModel.hasSelectedModPack && !viewModel.isProcessingModPack && viewModel.modPackIndexInfo != nil {
-                modPackGameNameInputSection
+                modPackGameNameInputSection.padding(.bottom, 10)
             }
 
             if viewModel.shouldShowProgress {
@@ -81,7 +81,7 @@ struct ModPackImportView: View {
             if viewModel.isProcessingModPack {
                 modPackProcessingView
             } else {
-                modPackFileSelectionSection
+                selectedModPackView
             }
         }
     }
@@ -98,27 +98,26 @@ struct ModPackImportView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
-
-            Spacer()
         }
-        .frame(maxWidth: .infinity, minHeight: 130)
         .padding()
     }
 
-    private var modPackFileSelectionSection: some View {
-        FormSection {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    if viewModel.hasSelectedModPack {
-                        selectedModPackView
-                    } else {
-                        unselectedModPackView
-                    }
-                    Spacer()
-                }
-                .padding(.vertical, 8)
-            }
+    private var modPackParseErrorView: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "square.and.arrow.up.trianglebadge.exclamationmark")
+                .symbolRenderingMode(.multicolor)
+                .symbolVariant(.none)
+                .foregroundStyle(.secondary)
+                .font(.system(size: 32))
+            Text(viewModel.selectedModPackFile?.lastPathComponent ?? "")
+                .font(.headline)
+                .bold()
+
+            Text("error.resource.modpack_parse_failed".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
         }
+        .padding()
     }
 
     // MARK: - ModPack Selection View Components
@@ -127,23 +126,18 @@ struct ModPackImportView: View {
         VStack(alignment: .leading, spacing: 4) {
             if viewModel.modPackIndexInfo != nil {
                 // 解析完成，显示完整信息
-                Text(viewModel.modPackName)
-                    .font(.headline)
-                    .bold()
-                selectedModPackInfoRow
-            } else {
-                // 解析中，显示文件名和加载状态
                 HStack {
-                    Text(viewModel.selectedModPackFile?.lastPathComponent ?? "")
-                        .font(.headline)
-                        .bold()
+                    VStack(alignment: .leading) {
+                        Text(viewModel.modPackName)
+                            .font(.title2)
+                            .bold()
+                        selectedModPackInfoRow
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     Spacer()
-                    ProgressView()
-                        .controlSize(.small)
                 }
-                Text("正在解析整合包...")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+            } else {
+                modPackParseErrorView
             }
         }
     }
@@ -173,17 +167,6 @@ struct ModPackImportView: View {
         }
     }
 
-    private var unselectedModPackView: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("等待文件选择...")
-                .font(.body)
-                .foregroundColor(.secondary)
-
-            Text("请从上方选择整合包文件")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-    }
 
     private var modPackGameNameInputSection: some View {
         FormSection {

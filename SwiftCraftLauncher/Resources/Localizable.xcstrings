@@ -38,6 +38,12 @@
       },
       "shouldTranslate" : false
     },
+    "%lld%%" : {
+
+    },
+    "+%lld" : {
+
+    },
     "about.acknowledgements" : {
       "comment" : "About View",
       "extractionState" : "manual",
@@ -29675,6 +29681,144 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "模組包依賴失敗"
+          }
+        }
+      }
+    },
+    "error.resource.modpack_parse_failed" : {
+      "comment" : "Error when modpack parsing fails",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل في تحليل حزمة التعديل، يرجى التحقق من تنسيق الملف"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-analyse mislykkedes, tjek venligst filformatet"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-Analyse fehlgeschlagen, bitte Dateiformat überprüfen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack parsing failed, please check file format"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falló el análisis del modpack, por favor verifica el formato del archivo"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpackin jäsentäminen epäonnistui, tarkista tiedostomuoto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'analyse du modpack a échoué, veuillez vérifier le format du fichier"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मॉडपैक पार्सिंग असफल, कृपया फ़ाइल प्रारूप जांचें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analisi modpack fallita, controlla il formato del file"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モッドパックの解析に失敗しました。ファイル形式を確認してください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모드팩 파싱 실패, 파일 형식을 확인해주세요"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-analyse mislyktes, sjekk filformatet"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-analyse mislukt, controleer het bestandsformaat"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analiza modpack nie powiodła się, sprawdź format pliku"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha na análise do modpack, verifique o formato do arquivo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось проанализировать модпак, проверьте формат файла"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-analys misslyckades, kontrollera filformatet"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การแยกวิเคราะห์มอดแพ็คล้มเหลว กรุณาตรวจสอบรูปแบบไฟล์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack ayrıştırma başarısız, lütfen dosya formatını kontrol edin"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phân tích modpack thất bại, vui lòng kiểm tra định dạng tệp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析整合包失败，请检查文件格式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析整合包失敗，請檢查檔案格式"
           }
         }
       }
@@ -79616,15 +79760,6 @@
     },
     "暂不可用" : {
       "shouldTranslate" : false
-    },
-    "正在解析整合包..." : {
-
-    },
-    "等待文件选择..." : {
-
-    },
-    "请从上方选择整合包文件" : {
-
     }
   },
   "version" : "1.1"
