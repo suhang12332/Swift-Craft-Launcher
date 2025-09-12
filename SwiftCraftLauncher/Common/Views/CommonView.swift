@@ -160,6 +160,17 @@ extension View {
             self.contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
         }
     }
+    @ViewBuilder
+    func `if`<Content: View>(
+        _ condition: Bool,
+        transform: (Self) -> Content
+    ) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
 }
 extension Scene {
     func conditionalRestorationBehavior() -> some Scene {
