@@ -9,4 +9,5 @@
     * [2.Add Games](en_us/guide/addgame.md)
     * [3.Add Resources](en_us/guide/addresources.md)
     * [4.Launcher Settings](en_us/guide/settings.md)
+    * [5.Edit Skin](en_us/guide/editskins.md)
     
