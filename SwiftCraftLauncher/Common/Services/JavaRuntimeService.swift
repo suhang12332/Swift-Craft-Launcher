@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 /// Java运行时下载器
 class JavaRuntimeService {
@@ -80,7 +81,7 @@ class JavaRuntimeService {
         let manifestURL = try await getManifestURL(for: version)
         Logger.shared.info("开始下载Java运行时版本: \(version)")
         // 下载manifest.json
-        let manifestData = try await downloadFromURL(manifestURL)
+        let manifestData = try await fetchDataFromURL(manifestURL)
         guard let manifest = try JSONSerialization.jsonObject(with: manifestData) as? [String: Any],
               let files = manifest["files"] as? [String: Any] else {
             throw GlobalError.validation(
@@ -138,16 +139,18 @@ class JavaRuntimeService {
                 continue
             }
 
-            // 下载文件
-            let downloadedData = try await downloadFromURL(fileURL)
+            // 获取期望的SHA1值
+            let expectedSHA1 = downloadInfo["sha1"] as? String
 
-            // 保存文件
+            // 确定本地文件路径
             let localFilePath = targetDirectory.appendingPathComponent(filePath)
-            let localDirectory = localFilePath.deletingLastPathComponent()
-            try FileManager.default.createDirectory(at: localDirectory, withIntermediateDirectories: true)
-            // 直接保存RAW文件
-            try downloadedData.write(to: localFilePath)
-            Logger.shared.info("已下载RAW文件: \(filePath)")
+
+            // 使用DownloadManager下载文件，它已经包含了文件存在性检查和SHA1校验
+            _ = try await DownloadManager.downloadFile(
+                urlString: fileURL,
+                destinationURL: localFilePath,
+                expectedSha1: expectedSHA1
+            )
 
             // 如果文件类型为"file"且executable为true，给文件添加执行权限
             if fileType == "file" && isExecutable {
@@ -164,8 +167,26 @@ class JavaRuntimeService {
 
         Logger.shared.info("Java运行时版本 \(version) 下载完成")
     }
-    /// 下载指定URL的内容
-    private func downloadFromURL(_ urlString: String) async throws -> Data {
+    /// 获取Java运行时API数据
+    private func fetchJavaRuntimeAPI() async throws -> [String: Any] {
+        let url = URLConfig.API.JavaRuntime.allRuntimes
+        let data = try await fetchDataFromURL(url.absoluteString)
+
+        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw GlobalError.validation(
+                chineseMessage: "解析JSON失败",
+                i18nKey: "error.validation.json_parse_failed",
+                level: .notification
+            )
+        }
+
+        return json
+    }
+
+    /// 下载指定URL的数据
+    /// - Parameter urlString: URL字符串
+    /// - Returns: 下载的数据
+    private func fetchDataFromURL(_ urlString: String) async throws -> Data {
         Logger.shared.info("开始下载: \(urlString)")
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
@@ -188,31 +209,6 @@ class JavaRuntimeService {
 
         Logger.shared.info("下载完成: \(urlString)")
         return data
-    }
-    /// 获取Java运行时API数据
-    private func fetchJavaRuntimeAPI() async throws -> [String: Any] {
-        let url = URLConfig.API.JavaRuntime.allRuntimes
-        Logger.shared.info("开始下载: \(url.absoluteString)")
-        let (data, response) = try await downloadSession.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw GlobalError.network(
-                chineseMessage: "下载失败",
-                i18nKey: "error.network.download_failed",
-                level: .notification
-            )
-        }
-
-        guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-            throw GlobalError.validation(
-                chineseMessage: "解析JSON失败",
-                i18nKey: "error.validation.json_parse_failed",
-                level: .notification
-            )
-        }
-
-        return json
     }
     /// 获取当前macOS平台标识
     private func getCurrentMacPlatform() -> String {

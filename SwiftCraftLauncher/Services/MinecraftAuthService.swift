@@ -695,8 +695,7 @@ extension MinecraftAuthService {
     /// - Parameter player: 玩家对象
     /// - Returns: 是否过期
     func isTokenExpiredBasedOnTime(for player: Player) async -> Bool {
-//        return JWTDecoder.isTokenExpiringSoon(player.authAccessToken)
-        return true
+        return JWTDecoder.isTokenExpiringSoon(player.authAccessToken)
     }
 
     /// 提示用户重新登录指定玩家

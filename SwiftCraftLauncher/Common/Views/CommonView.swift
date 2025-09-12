@@ -161,3 +161,12 @@ extension View {
         }
     }
 }
+extension Scene {
+    func conditionalRestorationBehavior() -> some Scene {
+        if #available(macOS 15.0, *) {
+            return self.restorationBehavior(.disabled)
+        } else {
+            return self
+        }
+    }
+}
