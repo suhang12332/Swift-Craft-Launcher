@@ -56,13 +56,13 @@ struct ModPackImportView: View {
 
     private var formContentView: some View {
         VStack {
-            modPackImportContentView.padding(.bottom, 20)
+            modPackImportContentView.padding(.bottom, 10)
             if viewModel.hasSelectedModPack && !viewModel.isProcessingModPack && viewModel.modPackIndexInfo != nil {
-                modPackGameNameInputSection.padding(.bottom, 10)
+                modPackGameNameInputSection
             }
 
             if viewModel.shouldShowProgress {
-                downloadProgressSection
+                downloadProgressSection.padding(.top, 10)
             }
         }
     }
