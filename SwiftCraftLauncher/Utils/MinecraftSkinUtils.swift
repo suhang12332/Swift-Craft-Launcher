@@ -10,7 +10,6 @@ enum SkinType {
 private enum Constants {
     static let padding: CGFloat = 6
     static let networkTimeout: TimeInterval = 10.0
-    static let maxCacheSize = 50
 
     // Minecraft skin coordinates (64x64 format)
     static let headStartX: CGFloat = 8
@@ -25,28 +24,6 @@ private enum Constants {
     static let layerHeight: CGFloat = 8
 }
 
-// MARK: - Image Cache
-
-private actor ImageCache {
-    static let shared = ImageCache()
-    private var cache: [String: CIImage] = [:]
-
-    func get(for key: String) -> CIImage? { cache[key] }
-
-    func set(_ image: CIImage, for key: String) {
-        if cache.count >= Constants.maxCacheSize {
-            cache.removeValue(forKey: cache.keys.first ?? "")
-        }
-        cache[key] = image
-    }
-
-    func clear() { cache.removeAll() }
-
-    // 添加清理方法，避免内存泄漏
-    func cleanup() {
-        cache.removeAll()
-    }
-}
 
 // MARK: - Main Component
 
@@ -60,7 +37,17 @@ struct MinecraftSkinUtils: View {
     @State private var isLoading: Bool = false
     @State private var loadTask: Task<Void, Never>?
 
-    private static let ciContext = CIContext()
+    private static let ciContext: CIContext = {
+        // Create CIContext with CPU-based rendering to avoid Metal shader cache conflicts
+        // This is more appropriate for simple image cropping operations and prevents
+        // Metal shader compilation lock file conflicts during development
+        let options: [CIContextOption: Any] = [
+            .useSoftwareRenderer: true,
+            .cacheIntermediates: false,
+            .name: "MinecraftSkinProcessor"
+        ]
+        return CIContext(options: options)
+    }()
 
     init(type: SkinType, src: String, size: CGFloat = 64) {
         self.type = type
@@ -128,15 +115,6 @@ struct MinecraftSkinUtils: View {
                 // 检查任务是否被取消
                 try Task.checkCancellation()
 
-                // 检查缓存
-                if let cachedImage = await ImageCache.shared.get(for: src) {
-                    await MainActor.run {
-                        self.image = cachedImage
-                        self.isLoading = false
-                    }
-                    return
-                }
-
                 Logger.shared.debug("Loading skin: \(src)")
 
                 let data = try await loadData()
@@ -161,9 +139,6 @@ struct MinecraftSkinUtils: View {
                 }
 
                 try Task.checkCancellation()
-
-                // 缓存图像
-                await ImageCache.shared.set(ciImage, for: src)
 
                 await MainActor.run {
                     self.image = ciImage
@@ -300,6 +275,10 @@ struct CropImageView: View {
         )
 
         let croppedImage = ciImage.cropped(to: croppedRect)
-        return context.createCGImage(croppedImage, from: croppedImage.extent)
+        
+        // Use autoreleasepool to ensure proper memory management
+        return autoreleasepool {
+            return context.createCGImage(croppedImage, from: croppedImage.extent)
+        }
     }
 }
