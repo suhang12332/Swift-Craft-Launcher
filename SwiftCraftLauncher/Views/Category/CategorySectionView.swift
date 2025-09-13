@@ -96,8 +96,11 @@ struct CategorySectionView: View {
             if isLoading {
                 loadingPlaceholder
             } else if isVersionSection {
-                ScrollView {
-                    versionGroupedContent(allItems: items)
+                VersionGroupedView(
+                    items: items,
+                    selectedItems: $selectedItems
+                ) { itemId in
+                    toggleSelection(for: itemId)
                 }
                 .frame(maxHeight: CategorySectionConstants.popoverMaxHeight)
             } else {
@@ -165,36 +168,6 @@ struct CategorySectionView: View {
         .padding(.vertical, CategorySectionConstants.verticalPadding)
     }
 
-    // MARK: - Version Grouped Content
-    @ViewBuilder
-    private func versionGroupedContent(allItems: [FilterItem]) -> some View {
-        let groups = groupVersions(allItems)
-        let sortedKeys = sortVersionKeys(groups.keys)
-
-        ScrollView {
-            VStack(alignment: .leading, spacing: 8) {
-                ForEach(sortedKeys, id: \.self) { key in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(key)
-                            .font(.headline.bold())
-                            .foregroundColor(.primary)
-                            .padding(.top, 4)
-
-                        FlowLayout {
-                            ForEach(groups[key] ?? []) { item in
-                                FilterChip(
-                                    title: item.name,
-                                    isSelected: selectedItems.contains(item.id)
-                                ) { toggleSelection(for: item.id) }
-                            }
-                        }
-                    }
-                }
-            }
-            .padding()
-        }
-    }
-
     // MARK: - Helper Methods
     private func computeVisibleAndOverflowItems() -> (
         [FilterItem], [FilterItem]
@@ -228,30 +201,6 @@ struct CategorySectionView: View {
         let overflowItems = Array(items.dropFirst(visibleItems.count))
 
         return (visibleItems, overflowItems)
-    }
-
-    private func groupVersions(
-        _ items: [FilterItem]
-    ) -> [String: [FilterItem]] {
-        Dictionary(grouping: items) { item in
-            let components = item.name.split(separator: ".")
-            if components.count >= 2 {
-                return "\(components[0]).\(components[1])"
-            } else {
-                return item.name
-            }
-        }
-    }
-
-    private func sortVersionKeys(
-        _ keys: Dictionary<String, [FilterItem]>.Keys
-    ) -> [String] {
-        keys.sorted { key1, key2 in
-            let components1 = key1.split(separator: ".").compactMap { Int($0) }
-            let components2 = key2.split(separator: ".").compactMap { Int($0) }
-            return components1.lexicographicallyPrecedes(components2)
-        }
-        .reversed()
     }
 
     // MARK: - Actions
