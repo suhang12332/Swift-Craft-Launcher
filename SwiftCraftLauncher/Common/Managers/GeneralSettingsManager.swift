@@ -46,6 +46,32 @@ class GeneralSettingsManager: ObservableObject {
         }
     }
 
+    @AppStorage("minecraftVersionManifestURL")
+    var minecraftVersionManifestURL: String = "https://launchermeta.mojang.com/mc/game/version_manifest.json" {
+        didSet { objectWillChange.send() }
+    }
+
+    @AppStorage("gitProxyURL")
+    var gitProxyURL: String = "https://ghfast.top" {
+        didSet { objectWillChange.send() }
+    }
+
+    @AppStorage("modrinthAPIBaseURL")
+    var modrinthAPIBaseURL: String = "https://api.modrinth.com/v2" {
+        didSet { objectWillChange.send() }
+    }
+
+    // MARK: - 应用设置属性
+    @AppStorage("concurrentDownloads")
+    var concurrentDownloads: Int = 64 {
+        didSet {
+            if concurrentDownloads < 1 {
+                concurrentDownloads = 1
+            }
+            objectWillChange.send()
+        }
+    }
+
     // 新增：启动器工作目录
     @AppStorage("launcherWorkingDirectory")
     var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {

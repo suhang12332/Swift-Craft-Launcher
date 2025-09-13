@@ -1,8 +1,7 @@
 import SwiftUI
 
 public struct GeneralSettingsView: View {
-    @ObservedObject private var general = GeneralSettingsManager.shared
-    @ObservedObject private var gameSettings = GameSettingsManager.shared
+    @ObservedObject private var generalSettings = GeneralSettingsManager.shared
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var sparkleUpdateService: SparkleUpdateService
     @State private var showDirectoryPicker = false
@@ -59,7 +58,7 @@ public struct GeneralSettingsView: View {
             GridRow {
                 Text("settings.theme.picker".localized()) // 长标题
                     .gridColumnAlignment(.trailing) // 右对齐
-                ThemeSelectorView(selectedTheme: $general.themeMode)
+                ThemeSelectorView(selectedTheme: $generalSettings.themeMode)
                     .gridColumnAlignment(.leading)
             }.padding(.bottom, 20)
 
@@ -67,7 +66,7 @@ public struct GeneralSettingsView: View {
                 Text("settings.launcher_working_directory".localized()).gridColumnAlignment(.trailing)
                 DirectorySettingRow(
                     title: "settings.launcher_working_directory".localized(),
-                    path: general.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : general.launcherWorkingDirectory,
+                    path: generalSettings.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : generalSettings.launcherWorkingDirectory,
                     description: "settings.working_directory.description".localized(),
                     onChoose: { showDirectoryPicker = true },
                     onReset: {
@@ -86,10 +85,10 @@ public struct GeneralSettingsView: View {
                     Slider(
                         value: Binding(
                             get: {
-                                Double(gameSettings.concurrentDownloads)
+                                Double(generalSettings.concurrentDownloads)
                             },
                             set: {
-                                gameSettings.concurrentDownloads = Int(
+                                generalSettings.concurrentDownloads = Int(
                                     $0
                                 )
                             }
@@ -99,9 +98,9 @@ public struct GeneralSettingsView: View {
                         //                        minimumValueLabel: { EmptyView() },
                         //                        maximumValueLabel: { EmptyView() }
                     ).controlSize(.mini)
-                        .animation(.easeOut(duration: 0.5), value: gameSettings.concurrentDownloads)
+                        .animation(.easeOut(duration: 0.5), value: generalSettings.concurrentDownloads)
                     // 当前内存值显示（右对齐，固定宽度）
-                    Text("\(gameSettings.concurrentDownloads)").font(
+                    Text("\(generalSettings.concurrentDownloads)").font(
                         .subheadline
                     )
                     .foregroundColor(.secondary)
@@ -114,17 +113,17 @@ public struct GeneralSettingsView: View {
 
             GridRow {
                 Text("settings.minecraft_versions_url.label".localized()).gridColumnAlignment(.trailing)
-                TextField("", text: $gameSettings.minecraftVersionManifestURL).focusable(false)
+                TextField("", text: $generalSettings.minecraftVersionManifestURL).focusable(false)
                     .fixedSize()
             }
             GridRow {
                 Text("settings.modrinth_api_url.label".localized()).gridColumnAlignment(.trailing)
-                TextField("", text: $gameSettings.modrinthAPIBaseURL).focusable(false)
+                TextField("", text: $generalSettings.modrinthAPIBaseURL).focusable(false)
                     .fixedSize()
             }
             GridRow {
                 Text("settings.git_proxy_url.label".localized()).gridColumnAlignment(.trailing)
-                TextField("", text: $gameSettings.gitProxyURL).focusable(false)
+                TextField("", text: $generalSettings.gitProxyURL).focusable(false)
                     .fixedSize()
             }
         }
@@ -152,7 +151,7 @@ public struct GeneralSettingsView: View {
             // 确保目录存在
             try FileManager.default.createDirectory(at: supportDir, withIntermediateDirectories: true)
 
-            general.launcherWorkingDirectory = supportDir.path
+            generalSettings.launcherWorkingDirectory = supportDir.path
             gameRepository.loadGames()
 
             Logger.shared.info("工作目录已重置为: \(supportDir.path)")
@@ -179,7 +178,7 @@ public struct GeneralSettingsView: View {
                         )
                     }
 
-                    general.launcherWorkingDirectory = url.path
+                    generalSettings.launcherWorkingDirectory = url.path
                     gameRepository.loadGames()
 
                     Logger.shared.info("工作目录已设置为: \(url.path)")

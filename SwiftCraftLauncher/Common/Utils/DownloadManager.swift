@@ -97,7 +97,7 @@ enum DownloadManager {
 
         var finalURLString = urlString
         if urlString.hasPrefix("https://github.com/") {
-            let proxy = GameSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
+            let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
             if !proxy.isEmpty {
                 finalURLString = proxy + "/" + urlString
             }

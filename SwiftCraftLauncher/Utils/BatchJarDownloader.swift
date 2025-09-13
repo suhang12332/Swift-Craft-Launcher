@@ -17,7 +17,7 @@ enum BatchJarDownloader {
         let counter = Counter()
 
         // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GameSettingsManager.shared.concurrentDownloads)
+        let semaphore = AsyncSemaphore(value: GeneralSettingsManager.shared.concurrentDownloads)
 
         try await withThrowingTaskGroup(of: Void.self) { group in
             for task in tasks {

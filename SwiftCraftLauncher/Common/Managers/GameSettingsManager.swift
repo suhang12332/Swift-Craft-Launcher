@@ -5,39 +5,13 @@ class GameSettingsManager: ObservableObject {
     // MARK: - 单例实例
     static let shared = GameSettingsManager()
 
-    // MARK: - 应用设置属性
-    @AppStorage("concurrentDownloads")
-    var concurrentDownloads: Int = 64 {
-        didSet {
-            if concurrentDownloads < 1 {
-                concurrentDownloads = 1
-            }
-            objectWillChange.send()
-        }
-    }
-
     @AppStorage("autoDownloadDependencies")
     var autoDownloadDependencies: Bool = false {
         didSet { objectWillChange.send() }
     }
 
-    @AppStorage("minecraftVersionManifestURL")
-    var minecraftVersionManifestURL: String = "https://launchermeta.mojang.com/mc/game/version_manifest.json" {
-        didSet { objectWillChange.send() }
-    }
-
-    @AppStorage("modrinthAPIBaseURL")
-    var modrinthAPIBaseURL: String = "https://api.modrinth.com/v2" {
-        didSet { objectWillChange.send() }
-    }
-
     @AppStorage("forgeMavenMirrorURL")
     var forgeMavenMirrorURL: String = "" {
-        didSet { objectWillChange.send() }
-    }
-
-    @AppStorage("gitProxyURL")
-    var gitProxyURL: String = "https://ghfast.top" {
         didSet { objectWillChange.send() }
     }
 

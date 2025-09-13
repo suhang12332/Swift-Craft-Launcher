@@ -50,6 +50,13 @@ enum URLConfig {
             }
         }
 
+        // ARM平台专用版本的Zulu JDK下载URL
+        enum JavaRuntimeARM {
+            static let jreLegacy = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu8.88.0.19-ca-jre8.0.462-macosx_aarch64.zip")
+            static let javaRuntimeAlpha = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu16.32.15-ca-jre16.0.2-macosx_aarch64.zip")
+            static let javaRuntimeBeta = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu17.60.17-ca-jre17.0.16-macosx_aarch64.zip")
+        }
+
         // GitHub API
         enum GitHub {
             static let baseURL = URLConfig.url("https://api.github.com")
@@ -100,8 +107,8 @@ enum URLConfig {
         // Modrinth API
         enum Modrinth {
             static var baseURL: URL {
-                guard let url = URL(string: GameSettingsManager.shared.modrinthAPIBaseURL) else {
-                    fatalError("Invalid Modrinth API base URL: \(GameSettingsManager.shared.modrinthAPIBaseURL)")
+                guard let url = URL(string: GeneralSettingsManager.shared.modrinthAPIBaseURL) else {
+                    fatalError("Invalid Modrinth API base URL: \(GeneralSettingsManager.shared.modrinthAPIBaseURL)")
                 }
                 return url
             }

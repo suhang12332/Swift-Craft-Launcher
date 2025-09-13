@@ -24,9 +24,7 @@ private enum Constants {
     static let layerHeight: CGFloat = 8
 }
 
-
 // MARK: - Main Component
-
 struct MinecraftSkinUtils: View {
     let type: SkinType
     let src: String
@@ -44,7 +42,7 @@ struct MinecraftSkinUtils: View {
         let options: [CIContextOption: Any] = [
             .useSoftwareRenderer: true,
             .cacheIntermediates: false,
-            .name: "MinecraftSkinProcessor"
+            .name: "MinecraftSkinProcessor",
         ]
         return CIContext(options: options)
     }()
@@ -275,7 +273,7 @@ struct CropImageView: View {
         )
 
         let croppedImage = ciImage.cropped(to: croppedRect)
-        
+
         // Use autoreleasepool to ensure proper memory management
         return autoreleasepool {
             return context.createCGImage(croppedImage, from: croppedImage.extent)
