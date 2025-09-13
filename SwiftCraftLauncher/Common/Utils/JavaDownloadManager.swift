@@ -25,7 +25,7 @@ class JavaDownloadManager: ObservableObject {
             isWindowVisible = true
 
             // 设置进度回调
-            javaRuntimeService.onProgressUpdate = { [weak self] fileName, completed, total in
+            javaRuntimeService.setProgressCallback { [weak self] fileName, completed, total in
                 Task { @MainActor in
                     // 检查是否已取消
                     guard let self = self, !self.downloadState.isCancelled else { return }
@@ -35,7 +35,7 @@ class JavaDownloadManager: ObservableObject {
             }
 
             // 设置取消检查回调
-            javaRuntimeService.shouldCancel = { [weak self] in
+            javaRuntimeService.setCancelCallback { [weak self] in
                 return self?.downloadState.isCancelled ?? false
             }
 

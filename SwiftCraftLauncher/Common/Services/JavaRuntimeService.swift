@@ -2,14 +2,27 @@ import Foundation
 import ZIPFoundation
 
 /// Java运行时下载器
-class JavaRuntimeService: @unchecked Sendable {
+class JavaRuntimeService {
     static let shared = JavaRuntimeService()
     private let downloadSession = URLSession.shared
 
-    // 进度回调
-    var onProgressUpdate: ((String, Int, Int) -> Void)?
-    // 取消检查回调
-    var shouldCancel: (() -> Bool)?
+    // 进度回调 - 使用actor来确保线程安全
+    private let progressActor = ProgressActor()
+    // 取消检查回调 - 使用actor来确保线程安全
+    private let cancelActor = CancelActor()
+
+    // 公共接口方法
+    func setProgressCallback(_ callback: @escaping (String, Int, Int) -> Void) {
+        Task {
+            await progressActor.setCallback(callback)
+        }
+    }
+
+    func setCancelCallback(_ callback: @escaping () -> Bool) {
+        Task {
+            await cancelActor.setCallback(callback)
+        }
+    }
 
     /// ARM平台专用版本的Zulu JDK配置
     private static let armJavaVersions: [String: URL] = [
@@ -101,71 +114,107 @@ class JavaRuntimeService: @unchecked Sendable {
         let targetDirectory = AppPaths.runtimeDirectory.appendingPathComponent(version)
         try FileManager.default.createDirectory(at: targetDirectory, withIntermediateDirectories: true)
 
-        // 计算总文件数 - 只统计type为file的项目
-        let totalFiles = files.compactMap { _, fileInfo -> [String: Any]? in
-            guard let fileData = fileInfo as? [String: Any],
-                  let fileType = fileData["type"] as? String,
-                  fileType == "file" else {
-                return nil
+        // 计算总文件数 - 只统计type为file且实际需要下载的项目
+        let totalFiles = files
+            .compactMap { filePath, fileInfo -> Int? in
+                guard let fileData = fileInfo as? [String: Any],
+                      let fileType = fileData["type"] as? String,
+                      fileType == "file" else {
+                    return nil
+                }
+
+                // 检查文件是否已存在
+                let localFilePath = targetDirectory.appendingPathComponent(filePath)
+                let fileExists = FileManager.default.fileExists(atPath: localFilePath.path)
+
+                // 只有不存在的文件才计入总数
+                return fileExists ? nil : 1
             }
-            return fileData
-        }.count
-        var completedFiles = 0
+            .reduce(0, +)
 
-        // 下载所有文件
-        for (filePath, fileInfo) in files {
-            // 检查是否应该取消
-            if shouldCancel?() == true {
-                Logger.shared.info("Java下载已被取消")
-                throw GlobalError.download(
-                    chineseMessage: "下载已被取消",
-                    i18nKey: "error.download.cancelled",
-                    level: .notification
-                )
+        // 创建信号量控制并发数量
+        let semaphore = AsyncSemaphore(
+            value: GeneralSettingsManager.shared.concurrentDownloads
+        )
+
+        // 创建计数器用于进度跟踪
+        let counter = Counter()
+
+        // 使用并发下载所有文件
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for (filePath, fileInfo) in files {
+                group.addTask { [progressActor, cancelActor, self] in
+                    // 检查是否应该取消
+                    if await cancelActor.shouldCancel() {
+                        Logger.shared.info("Java下载已被取消")
+                        throw GlobalError.download(
+                            chineseMessage: "下载已被取消",
+                            i18nKey: "error.download.cancelled",
+                            level: .notification
+                        )
+                    }
+
+                    guard let fileData = fileInfo as? [String: Any],
+                          let downloads = fileData["downloads"] as? [String: Any] else {
+                        return
+                    }
+
+                    // 获取文件类型和可执行属性
+                    let fileType = fileData["type"] as? String
+                    let isExecutable = fileData["executable"] as? Bool ?? false
+
+                    // 只使用raw格式
+                    guard let raw = downloads["raw"] as? [String: Any] else {
+                        Logger.shared.warning("文件 \(filePath) 没有RAW格式，跳过")
+                        return
+                    }
+
+                    guard let fileURL = raw["url"] as? String else {
+                        return
+                    }
+
+                    // 获取期望的SHA1值
+                    let expectedSHA1 = raw["sha1"] as? String
+
+                    // 确定本地文件路径
+                    let localFilePath = targetDirectory.appendingPathComponent(filePath)
+
+                    // 等待信号量
+                    await semaphore.wait()
+                    defer { Task { await semaphore.signal() } }
+
+                    // 检查文件是否已存在
+                    let fileExistsBefore = FileManager.default.fileExists(atPath: localFilePath.path)
+
+                    // 使用DownloadManager下载文件，它已经包含了文件存在性检查和SHA1校验
+                    _ = try await DownloadManager.downloadFile(
+                        urlString: fileURL,
+                        destinationURL: localFilePath,
+                        expectedSha1: expectedSHA1
+                    )
+
+                    // 如果文件类型为"file"且executable为true，给文件添加执行权限
+                    if fileType == "file" && isExecutable {
+                        try setExecutablePermission(for: localFilePath)
+                    }
+
+                    // 只有type为file的项目才计入完成文件数
+                    // 并且只有在文件真正被下载时才增加计数（文件之前不存在）
+                    if fileType == "file" && !fileExistsBefore {
+                        // 验证文件确实存在且有内容
+                        do {
+                            let fileAttributes = try FileManager.default.attributesOfItem(atPath: localFilePath.path)
+                            if let fileSize = fileAttributes[.size] as? Int64, fileSize > 0 {
+                                let completed = await counter.increment()
+                                await progressActor.callProgressUpdate(filePath, completed, totalFiles)
+                            }
+                        } catch {
+                            Logger.shared.warning("无法验证文件 \(filePath) 的下载状态: \(error.localizedDescription)")
+                        }
+                    }
+                }
             }
-
-            guard let fileData = fileInfo as? [String: Any],
-                  let downloads = fileData["downloads"] as? [String: Any] else {
-                continue
-            }
-
-            // 获取文件类型和可执行属性
-            let fileType = fileData["type"] as? String
-            let isExecutable = fileData["executable"] as? Bool ?? false
-
-            // 只使用raw格式
-            guard let raw = downloads["raw"] as? [String: Any] else {
-                Logger.shared.warning("文件 \(filePath) 没有RAW格式，跳过")
-                continue
-            }
-
-            guard let fileURL = raw["url"] as? String else {
-                continue
-            }
-
-            // 获取期望的SHA1值
-            let expectedSHA1 = raw["sha1"] as? String
-
-            // 确定本地文件路径
-            let localFilePath = targetDirectory.appendingPathComponent(filePath)
-
-            // 使用DownloadManager下载文件，它已经包含了文件存在性检查和SHA1校验
-            _ = try await DownloadManager.downloadFile(
-                urlString: fileURL,
-                destinationURL: localFilePath,
-                expectedSha1: expectedSHA1
-            )
-
-            // 如果文件类型为"file"且executable为true，给文件添加执行权限
-            if fileType == "file" && isExecutable {
-                try setExecutablePermission(for: localFilePath)
-            }
-
-            // 只有type为file的项目才计入完成文件数
-            if fileType == "file" {
-                completedFiles += 1
-                onProgressUpdate?(filePath, completedFiles, totalFiles)
-            }
+            try await group.waitForAll()
         }
     }
     /// 获取Java运行时API数据
@@ -260,7 +309,7 @@ class JavaRuntimeService: @unchecked Sendable {
         )
 
         // 更新进度 - 完成
-        onProgressUpdate?("Java运行时 \(version) 安装完成", 1, 1)
+        await progressActor.callProgressUpdate("Java运行时 \(version) 安装完成", 1, 1)
     }
 
     /// 解压并处理ARM Java运行时zip文件
@@ -407,13 +456,13 @@ class JavaRuntimeService: @unchecked Sendable {
         let fileSize = try await getFileSize(from: url)
 
         // 设置初始进度
-        onProgressUpdate?(fileName, 0, Int(fileSize))
+        await progressActor.callProgressUpdate(fileName, 0, Int(fileSize))
 
         // 创建进度跟踪器
-        let progressCallback: (Int64, Int64) -> Void = { [weak self] downloadedBytes, totalBytes in
+        let progressCallback: (Int64, Int64) -> Void = { [progressActor] downloadedBytes, totalBytes in
             // 传递实际字节数用于字节大小进度显示
-            DispatchQueue.main.async {
-                self?.onProgressUpdate?(fileName, Int(downloadedBytes), Int(totalBytes))
+            Task {
+                await progressActor.callProgressUpdate(fileName, Int(downloadedBytes), Int(totalBytes))
             }
         }
         let progressTracker = DownloadProgressTracker(totalSize: fileSize, progressCallback: progressCallback)
@@ -523,5 +572,41 @@ private class DownloadProgressTracker: NSObject, URLSessionDownloadDelegate {
         if let error = error {
             completionHandler?(.failure(error))
         }
+    }
+}
+
+/// 线程安全的计数器，用于跟踪并发下载进度
+private actor Counter {
+    private var value = 0
+
+    func increment() -> Int {
+        value += 1
+        return value
+    }
+}
+
+/// 线程安全的进度回调actor
+private actor ProgressActor {
+    private var callback: ((String, Int, Int) -> Void)?
+
+    func setCallback(_ callback: @escaping (String, Int, Int) -> Void) {
+        self.callback = callback
+    }
+
+    func callProgressUpdate(_ fileName: String, _ completed: Int, _ total: Int) {
+        callback?(fileName, completed, total)
+    }
+}
+
+/// 线程安全的取消检查actor
+private actor CancelActor {
+    private var callback: (() -> Bool)?
+
+    func setCallback(_ callback: @escaping () -> Bool) {
+        self.callback = callback
+    }
+
+    func shouldCancel() -> Bool {
+        return callback?() ?? false
     }
 }
