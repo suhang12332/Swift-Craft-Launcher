@@ -52,13 +52,26 @@ enum CurseForgeManifestParser {
             // 提取加载器信息
             let loaderInfo = determineLoaderInfo(from: manifest.minecraft.modLoaders)
 
-            // 转换为 Modrinth 格式
-            let modrinthInfo = await convertToModrinthFormat(
-                manifest: manifest,
+            // 生成版本信息（如果缺少版本字段）
+            let modPackVersion = manifest.version ?? generateAutoVersion(
+                modPackName: manifest.name,
+                gameVersion: manifest.minecraft.version,
                 loaderInfo: loaderInfo
             )
 
-            Logger.shared.info("解析 CurseForge manifest.json 成功: \(manifest.name) v\(manifest.version)")
+            // 转换为 Modrinth 格式
+            let modrinthInfo = await convertToModrinthFormat(
+                manifest: manifest,
+                loaderInfo: loaderInfo,
+                generatedVersion: modPackVersion
+            )
+
+            Logger.shared.info("解析 CurseForge manifest.json 成功: \(manifest.name) v\(modPackVersion)")
+            if manifest.version == nil {
+                Logger.shared.info("⚠️ 整合包缺少version字段，已自动生成版本: \(modPackVersion)")
+                // 也可以使用本地化消息（如果需要显示给用户）
+                // Logger.shared.info("modpack.version.auto_generated".localized(modPackVersion))
+            }
             Logger.shared.info("游戏版本: \(manifest.minecraft.version), 加载器: \(loaderInfo.type) \(loaderInfo.version)")
             Logger.shared.info("文件数量: \(manifest.files.count)")
 
@@ -133,14 +146,40 @@ enum CurseForgeManifestParser {
         }
     }
 
+    /// 自动生成整合包版本号
+    /// - Parameters:
+    ///   - modPackName: 整合包名称
+    ///   - gameVersion: 游戏版本
+    ///   - loaderInfo: 加载器信息
+    /// - Returns: 自动生成的版本号
+    private static func generateAutoVersion(
+        modPackName: String,
+        gameVersion: String,
+        loaderInfo: (type: String, version: String)
+    ) -> String {
+        // 创建当前时间戳
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyyMMdd"
+        let dateString = dateFormatter.string(from: Date())
+
+        // 生成版本格式：游戏版本-加载器类型-日期
+        // 例如：1.20.1-forge-20241212
+        let autoVersion = "\(gameVersion)-\(loaderInfo.type)-\(dateString)"
+
+        Logger.shared.info("自动生成整合包版本: \(autoVersion)")
+        return autoVersion
+    }
+
     /// 将 CurseForge manifest 转换为 Modrinth 格式
     /// - Parameters:
     ///   - manifest: CurseForge manifest
     ///   - loaderInfo: 加载器信息
+    ///   - generatedVersion: 生成的版本号（用于缺少version字段的情况）
     /// - Returns: Modrinth 索引信息
     private static func convertToModrinthFormat(
         manifest: CurseForgeManifest,
-        loaderInfo: (type: String, version: String)
+        loaderInfo: (type: String, version: String),
+        generatedVersion: String
     ) async -> ModrinthIndexInfo {
         Logger.shared.info("转换 CurseForge 格式到 Modrinth 格式，模组数量: \(manifest.files.count)")
 
@@ -173,7 +212,7 @@ enum CurseForgeManifestParser {
             loaderType: loaderInfo.type,
             loaderVersion: loaderInfo.version,
             modPackName: manifest.name,
-            modPackVersion: manifest.version,
+            modPackVersion: generatedVersion,
             summary: "",
             files: modrinthFiles, // CurseForge 文件转换为 Modrinth 文件（占位符）
             dependencies: [], // CurseForge 格式没有额外的依赖项

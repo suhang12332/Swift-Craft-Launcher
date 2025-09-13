@@ -109,7 +109,7 @@ struct CurseForgeManifest: Codable {
     let manifestType: String
     let manifestVersion: Int
     let name: String
-    let version: String
+    let version: String?  // 修改为可选类型，因为某些整合包可能缺少此字段
     let author: String?
     let files: [CurseForgeManifestFile]
     let overrides: String?
