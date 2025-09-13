@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03A9887C2E75C96E005B7EFA /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A9887B2E75C96E005B7EFA /* SkinRenderKit */; };
 		9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91B2E313A67005A53F1 /* ZIPFoundation */; };
 		9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91E2E313A9C005A53F1 /* MarkdownUI */; };
 		90C51D072E421BAB0014D7B4 /* MinecraftNBT in Frameworks */ = {isa = PBXBuildFile; productRef = 90C51D062E421BAB0014D7B4 /* MinecraftNBT */; };
@@ -31,6 +32,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				90C51D072E421BAB0014D7B4 /* MinecraftNBT in Frameworks */,
+				03A9887C2E75C96E005B7EFA /* SkinRenderKit in Frameworks */,
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
 				9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */,
 				90E123456789ABCD0001 /* Sparkle in Frameworks */,
@@ -72,6 +74,7 @@
 				9023D91E2E313A9C005A53F1 /* MarkdownUI */,
 				90C51D062E421BAB0014D7B4 /* MinecraftNBT */,
 				90E123456789ABCD0002 /* Sparkle */,
+				03A9887B2E75C96E005B7EFA /* SkinRenderKit */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = BE59AB1B2E6B155200ECAB58 /* Swift Craft Launcher.app */;
@@ -109,6 +112,7 @@
 				90C51D052E421BAB0014D7B4 /* XCRemoteSwiftPackageReference "swift-nbt" */,
 				90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+				03A9887A2E75C96E005B7EFA /* XCRemoteSwiftPackageReference "NSSkinRender" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -374,6 +378,14 @@
 				minimumVersion = 0.59.1;
 			};
 		};
+		03A9887A2E75C96E005B7EFA /* XCRemoteSwiftPackageReference "NSSkinRender" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/irisWirisW/NSSkinRender";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		9023D91A2E313A67005A53F1 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
@@ -413,6 +425,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
 			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
+		03A9887B2E75C96E005B7EFA /* SkinRenderKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 03A9887A2E75C96E005B7EFA /* XCRemoteSwiftPackageReference "NSSkinRender" */;
+			productName = SkinRenderKit;
 		};
 		9023D91B2E313A67005A53F1 /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;

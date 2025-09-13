@@ -1,5 +1,5 @@
 {
-  "originHash" : "ab57a55851135cf042aa45da378d218d91289dca9cf8a63d60e832dcdc41e766",
+  "originHash" : "9280a0160be61afe798120c37442e1beb3db15f8b095cf2f650587ad2b42ac7c",
   "pins" : [
     {
       "identity" : "gzipswift",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "2849f5323265386e200484b0d0f896e73c3411b9",
         "version" : "6.0.1"
+      }
+    },
+    {
+      "identity" : "nsskinrender",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/irisWirisW/NSSkinRender",
+      "state" : {
+        "branch" : "main",
+        "revision" : "502e40a60f5b2be9b0cfd95fc31d1db619c22d77"
       }
     },
     {

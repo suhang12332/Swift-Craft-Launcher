@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
+import SkinRenderKit
 
 struct SkinToolDetailView: View {
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
@@ -12,6 +13,8 @@ struct SkinToolDetailView: View {
     @State private var operationInProgress = false
     @State private var selectedSkinData: Data?
     @State private var selectedSkinImage: NSImage?
+    @State private var selectedSkinPath: String?
+    @State private var showingSkinPreview = false
     @State private var selectedCapeId: String?
     @State private var publicSkinInfo: PlayerSkinService.PublicSkinInfo?
     @State private var playerProfile: MinecraftProfileResponse?
@@ -144,20 +147,61 @@ struct SkinToolDetailView: View {
     }
 
     private func selectedSkinView(image: NSImage) -> some View {
-        HStack(spacing: 12) {
-            Image(nsImage: image)
-                .resizable()
-                .interpolation(.none)
-                .frame(width: 48, height: 48)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(6)
-            VStack(alignment: .leading, spacing: 4) {
-                Text("skin.selected".localized()).font(.callout).fontWeight(.medium)
-                Text("skin.click_apply".localized()).font(.caption).foregroundColor(.secondary)
+        VStack(spacing: 12) {
+            HStack(spacing: 12) {
+                Image(nsImage: image)
+                    .resizable()
+                    .interpolation(.none)
+                    .frame(width: 48, height: 48)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(6)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("skin.selected".localized()).font(.callout).fontWeight(.medium)
+                    Text("skin.click_apply".localized()).font(.caption).foregroundColor(.secondary)
+                }
+                Spacer()
+
+                Button("skin.preview_3d".localized()) {
+                    showingSkinPreview = true
+                }
+                .buttonStyle(.plain)
+                .foregroundColor(.accentColor)
+                .font(.caption)
+
+                Button("skin.remove".localized()) { clearSelectedSkin() }
+                    .buttonStyle(.plain).foregroundColor(.secondary).font(.caption)
             }
-            Spacer()
-            Button("skin.remove".localized()) { clearSelectedSkin() }
-                .buttonStyle(.plain).foregroundColor(.secondary).font(.caption)
+
+            if showingSkinPreview {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("skin.3d_preview".localized())
+                            .font(.headline)
+                        Spacer()
+                        Button("skin.hide_preview".localized()) {
+                            showingSkinPreview = false
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundColor(.secondary)
+                        .font(.caption)
+                    }
+
+                    if let skinPath = selectedSkinPath {
+                        SkinRenderView(texturePath: skinPath)
+                            .frame(height: 200)
+                            .background(Color.black.opacity(0.05))
+                            .cornerRadius(8)
+                    } else {
+                        Text("skin.preview_unavailable".localized())
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .frame(height: 200)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.gray.opacity(0.1))
+                            .cornerRadius(8)
+                    }
+                }
+            }
         }
         .padding(12)
         .background(selectedSkinBackground)
@@ -322,7 +366,7 @@ struct SkinToolDetailView: View {
 
             do {
                 let data = try Data(contentsOf: url)
-                processSkinData(data)
+                processSkinData(data, filePath: url.path)
             } catch {
                 Logger.shared.error("Failed to read skin file: \(error)")
             }
@@ -337,22 +381,40 @@ struct SkinToolDetailView: View {
         provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in
             guard let data = data else { return }
             DispatchQueue.main.async {
-                self.processSkinData(data)
+                let tempURL = self.saveTempSkinFile(data: data)
+                self.processSkinData(data, filePath: tempURL?.path)
             }
         }
         return true
     }
 
-    private func processSkinData(_ data: Data) {
+    private func processSkinData(_ data: Data, filePath: String? = nil) {
         guard data.isPNG else { return }
         selectedSkinData = data
         selectedSkinImage = NSImage(data: data)
+        selectedSkinPath = filePath
         updateHasChanges()
+    }
+
+    private func saveTempSkinFile(data: Data) -> URL? {
+        let tempDir = FileManager.default.temporaryDirectory
+        let fileName = "temp_skin_\(UUID().uuidString).png"
+        let tempURL = tempDir.appendingPathComponent(fileName)
+
+        do {
+            try data.write(to: tempURL)
+            return tempURL
+        } catch {
+            Logger.shared.error("Failed to save temporary skin file: \(error)")
+            return nil
+        }
     }
 
     private func clearSelectedSkin() {
         selectedSkinData = nil
         selectedSkinImage = nil
+        selectedSkinPath = nil
+        showingSkinPreview = false
         updateHasChanges()
     }
 
