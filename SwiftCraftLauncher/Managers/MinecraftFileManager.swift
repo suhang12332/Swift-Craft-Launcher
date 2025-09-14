@@ -46,7 +46,7 @@ class MinecraftFileManager {
         config.timeoutIntervalForRequest = Constants.downloadTimeout
         config.timeoutIntervalForResource = Constants.downloadTimeout
         config.httpMaximumConnectionsPerHost =
-            GameSettingsManager.shared.concurrentDownloads
+            GeneralSettingsManager.shared.concurrentDownloads
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
         self.session = URLSession(configuration: config)
     }
@@ -240,7 +240,7 @@ class MinecraftFileManager {
 
         // 创建信号量控制并发数量
         let semaphore = AsyncSemaphore(
-            value: GameSettingsManager.shared.concurrentDownloads
+            value: GeneralSettingsManager.shared.concurrentDownloads
         )
 
         try await withThrowingTaskGroup(of: Void.self) { group in
@@ -573,7 +573,7 @@ class MinecraftFileManager {
 
         // 创建信号量控制并发数量
         let semaphore = AsyncSemaphore(
-            value: GameSettingsManager.shared.concurrentDownloads
+            value: GeneralSettingsManager.shared.concurrentDownloads
         )
 
         // Process assets in chunks to balance memory usage and performance

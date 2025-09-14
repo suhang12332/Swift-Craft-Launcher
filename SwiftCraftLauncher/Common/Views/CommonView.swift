@@ -160,4 +160,24 @@ extension View {
             self.contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
         }
     }
+    @ViewBuilder
+    func `if`<Content: View>(
+        _ condition: Bool,
+        transform: (Self) -> Content
+    ) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+}
+extension Scene {
+    func conditionalRestorationBehavior() -> some Scene {
+        if #available(macOS 15.0, *) {
+            return self.restorationBehavior(.disabled)
+        } else {
+            return self
+        }
+    }
 }

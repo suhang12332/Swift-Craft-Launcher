@@ -49,8 +49,8 @@ public struct ContentToolbarView: ToolbarContent {
                 Button {
                     showEditSkin = true
                 } label: {
-                    Image(systemName: "tshirt")
-                        .help("player.remove".localized())
+                    Label("skin.title".localized(), systemImage: "tshirt")
+                        .help("skin.title".localized())
                 }
             }
 

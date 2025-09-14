@@ -68,7 +68,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         let appcastURL = URLConfig.API.GitHub.appcastURL(version: nil, architecture: architecture)
 
         // 拼接git代理地址
-        let proxy = GameSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
         if !proxy.isEmpty && appcastURL.absoluteString.hasPrefix("https://github.com/") {
             return proxy + "/" + appcastURL.absoluteString
         }
@@ -176,7 +176,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
 // 拦截下载请求，按需为 GitHub 资源地址加上代理前缀
 extension SparkleUpdateService {
     func updater(_ updater: SPUUpdater, willDownloadUpdate item: SUAppcastItem, with request: NSMutableURLRequest) {
-        let proxy = GameSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !proxy.isEmpty else { return }
         guard let originalURL = request.url else { return }
 

@@ -105,7 +105,7 @@ enum ModPackDependencyInstaller {
         onProgressUpdate?("开始下载整合包文件", 0, filesToDownload.count, .files)
 
         // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GameSettingsManager.shared.concurrentDownloads)
+        let semaphore = AsyncSemaphore(value: GeneralSettingsManager.shared.concurrentDownloads)
 
         // 使用计数器跟踪完成的文件数量
         let completedCount = ModPackCounter()
@@ -310,7 +310,7 @@ enum ModPackDependencyInstaller {
         onProgressUpdate?("开始安装整合包依赖", 0, requiredDependencies.count, .dependencies)
 
         // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GameSettingsManager.shared.concurrentDownloads)
+        let semaphore = AsyncSemaphore(value: GeneralSettingsManager.shared.concurrentDownloads)
 
         // 使用计数器跟踪完成的依赖数量
         let completedCount = ModPackCounter()

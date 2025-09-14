@@ -78,6 +78,7 @@ struct SwiftCraftLauncherApp: App {
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: true))
         .windowResizability(.contentSize)
+        .conditionalRestorationBehavior()
 
         // Java下载进度窗口
         WindowGroup("global_resource.download".localized(), id: "javaDownloadWindow") {
@@ -96,8 +97,8 @@ struct SwiftCraftLauncherApp: App {
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: true))
-
         .windowResizability(.contentSize)
+        .conditionalRestorationBehavior()
 
         .commands {
             CommandGroup(after: .appInfo) {
@@ -135,6 +136,8 @@ struct SwiftCraftLauncherApp: App {
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
         }
+        .conditionalRestorationBehavior()
+
         // 右上角的状态栏(可以显示图标的)
         MenuBarExtra(
             content: {

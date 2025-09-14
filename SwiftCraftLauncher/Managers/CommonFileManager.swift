@@ -18,7 +18,7 @@ class CommonFileManager {
         self.librariesDir = librariesDir
         let config = URLSessionConfiguration.ephemeral
         config.httpMaximumConnectionsPerHost =
-            GameSettingsManager.shared.concurrentDownloads
+            GeneralSettingsManager.shared.concurrentDownloads
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
         self.session = URLSession(configuration: config)
     }

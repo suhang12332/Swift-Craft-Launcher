@@ -39,7 +39,7 @@ enum ModrinthDependencyDownloader {
 
             // 3. 读取最大并发数，最少为1
             let semaphore = AsyncSemaphore(
-                value: GameSettingsManager.shared.concurrentDownloads
+                value: GeneralSettingsManager.shared.concurrentDownloads
             )  // 控制最大并发数
 
             // 4. 并发下载所有依赖和主mod，收集结果
@@ -279,7 +279,7 @@ enum ModrinthDependencyDownloader {
         var resourcesToAdd: [ModrinthProjectDetail] = []
         var allSuccess = true
         let semaphore = AsyncSemaphore(
-            value: GameSettingsManager.shared.concurrentDownloads
+            value: GeneralSettingsManager.shared.concurrentDownloads
         )
 
         await withTaskGroup(of: (String, Bool, ModrinthProjectDetail?).self) { group in
