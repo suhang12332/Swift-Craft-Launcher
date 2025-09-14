@@ -191,7 +191,8 @@ struct SkinToolDetailView: View {
                     if let skinPath = selectedSkinPath {
                         SkinRenderView(
                             texturePath: skinPath,
-                            capeTexturePath: selectedCapeLocalPath
+                            capeTexturePath: selectedCapeLocalPath,
+                            playerModel: convertToPlayerModel(currentModel)
                         )
                             .frame(height: 200)
                             .background(Color.black.opacity(0.05))
@@ -595,6 +596,15 @@ extension SkinToolDetailView {
             }
         } catch {
             Logger.shared.error("Cape download error: \(error)")
+        }
+    }
+
+    private func convertToPlayerModel(_ skinModel: PlayerSkinService.PublicSkinInfo.SkinModel) -> PlayerModel {
+        switch skinModel {
+        case .classic:
+            return .steve
+        case .slim:
+            return .alex
         }
     }
 }
