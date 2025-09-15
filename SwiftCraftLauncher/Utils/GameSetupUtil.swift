@@ -99,21 +99,8 @@ class GameSetupUtil: ObservableObject {
         Logger.shared.info("开始为游戏下载文件: \(gameInfo.gameName)")
 
         do {
-            // 获取 Mojang 版本信息
-            guard let mojangVersion = await MinecraftService.getCurrentVersion(currentVersion: selectedGameVersion) else {
-                onError(
-                    GlobalError.resource(
-                        chineseMessage: "版本未找到: \(selectedGameVersion)",
-                        i18nKey: "error.resource.version_not_found",
-                        level: .notification
-                    ),
-                    "error.version.not.found".localized()
-                )
-                return
-            }
-
             // 下载 Mojang manifest
-            let downloadedManifest = try await fetchMojangManifest(from: mojangVersion.url)
+            let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
 
             await JavaManager.shared.ensureJavaExists(version: downloadedManifest.javaVersion.component)
 
@@ -212,10 +199,6 @@ class GameSetupUtil: ObservableObject {
                 "error.image.save.failed".localized()
             )
         }
-    }
-
-    private func fetchMojangManifest(from url: URL) async throws -> MinecraftVersionManifest {
-        return try await MinecraftService.fetchMojangManifestThrowing(from: url)
     }
 
     private func setupFileManager(manifest: MinecraftVersionManifest, modLoader: String) async throws -> MinecraftFileManager {

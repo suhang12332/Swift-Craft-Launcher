@@ -184,7 +184,7 @@ struct GameCreationView: View {
             availableVersions: viewModel.availableVersions,
             time: $viewModel.versionTime
         ) { version in
-            await MinecraftService.fetchVersionTime(for: version)
+            await ModrinthService.queryVersionTime(from: version)
         }
         .disabled(viewModel.gameSetupService.downloadState.isDownloading)
     }

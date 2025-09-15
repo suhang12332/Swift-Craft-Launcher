@@ -44,24 +44,20 @@ enum CommonService {
                     }
                 }
         default:
-            guard let manifest = await MinecraftService.fetchVersionManifest()
-            else {
-                Logger.shared.error("无法获取 Minecraft 版本清单")
-                return []
-            }
-            let allVersions = manifest.versions.filter { $0.type == "release" }
+            let gameVersions = await ModrinthService.fetchGameVersions()
+            let allVersions = gameVersions
                 .map { version in
                     // 缓存每个版本的时间信息
-                    let cacheKey = "version_time_\(version.id)"
+                    let cacheKey = "version_time_\(version.version)"
                     let formattedTime = CommonUtil.formatRelativeTime(
-                        version.releaseTime
+                        version.date
                     )
                     AppCacheManager.shared.setSilently(
                         namespace: "version_time",
                         key: cacheKey,
                         value: formattedTime
                     )
-                    return version.id
+                    return version.version
                 }
                 .filter { version in
                     // 过滤出纯数字版本（如 1.21.1, 1.20.4 等）
@@ -87,7 +83,8 @@ enum CommonService {
             if lib.includeInClasspath {
                 guard let downloads = lib.downloads else { return nil }
                 let artifact = downloads.artifact
-                return librariesDir.appendingPathComponent(artifact.path).path
+                guard let artifactPath = artifact.path else { return nil }
+                return librariesDir.appendingPathComponent(artifactPath).path
             } else {
                 return ""
             }
@@ -143,22 +140,6 @@ enum CommonService {
         }
 
         return firstVersion
-    }
-
-    /// 获取指定加载器类型的所有版本（静默版本）
-    /// - Parameter type: 加载器类型
-    /// - Returns: 版本列表，失败时返回空数组
-    static func fetchAllVersion(type: String) async -> [LoaderVersion] {
-        do {
-            return try await fetchAllVersionThrowing(type: type)
-        } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error(
-                "获取 \(type) 版本失败: \(globalError.chineseMessage)"
-            )
-            GlobalErrorHandler.shared.handle(globalError)
-            return []
-        }
     }
 
     /// 获取指定加载器类型的所有版本（抛出异常版本）

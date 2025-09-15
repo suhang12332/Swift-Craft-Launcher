@@ -24,6 +24,135 @@ private extension JSONDecoder {
 }
 
 enum ModrinthService {
+
+    /// 直接从 Modrinth API 获取指定版本的详细信息
+    /// - Parameter version: 版本号（如 "1.21.1"）
+    /// - Returns: 版本信息
+    /// - Throws: GlobalError 当操作失败时
+    static func fetchVersionInfo(from version: String) async throws -> MinecraftVersionManifest {
+        do {
+            return try await fetchVersionInfoThrowing(from: version)
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("获取版本 \(version) 信息失败: \(globalError.chineseMessage)")
+
+            // 如果是解析错误，尝试从 Mojang API 获取版本信息作为备选方案
+            if case .validation = globalError {
+                do {
+                    return try await fetchVersionInfoFromMojang(version: version)
+                } catch {
+                    Logger.shared.error("❌ [ModrinthService] Mojang API 备选方案也失败: \(error.localizedDescription)")
+                }
+            }
+
+            GlobalErrorHandler.shared.handle(globalError)
+            throw globalError
+        }
+    }
+
+    /// 从 Mojang API 获取版本信息作为备选方案
+    /// - Parameter version: 版本号
+    /// - Returns: 版本信息
+    /// - Throws: GlobalError 当操作失败时
+    private static func fetchVersionInfoFromMojang(version: String) async throws -> MinecraftVersionManifest {
+
+        // 获取版本清单
+        let (manifestData, manifestResponse) = try await URLSession.shared.data(from: URLConfig.API.Minecraft.versionList)
+
+        guard let httpResponse = manifestResponse as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw GlobalError.download(
+                chineseMessage: "获取 Mojang 版本清单失败: HTTP \(manifestResponse)",
+                i18nKey: "error.download.mojang_manifest_failed",
+                level: .notification
+            )
+        }
+
+        // 查找指定版本
+        let manifest = try JSONDecoder().decode(MojangVersionManifest.self, from: manifestData)
+        guard let versionInfo = manifest.versions.first(where: { $0.id == version }) else {
+            throw GlobalError.resource(
+                chineseMessage: "在 Mojang API 中未找到版本 \(version)",
+                i18nKey: "error.resource.version_not_found_mojang",
+                level: .notification
+            )
+        }
+
+        // 获取版本详细信息
+        let (versionData, versionResponse) = try await URLSession.shared.data(from: versionInfo.url)
+
+        guard let versionHttpResponse = versionResponse as? HTTPURLResponse, versionHttpResponse.statusCode == 200 else {
+            throw GlobalError.download(
+                chineseMessage: "获取版本 \(version) 详细信息失败: HTTP \(versionResponse)",
+                i18nKey: "error.download.version_details_failed",
+                level: .notification
+            )
+        }
+
+        // 解析版本详细信息
+        let decoder = JSONDecoder()
+        decoder.configureForModrinth()
+        let versionManifest = try decoder.decode(MinecraftVersionManifest.self, from: versionData)
+
+        return versionManifest
+    }
+
+    static func queryVersionTime(from version: String) async -> String {
+        let cacheKey = "version_time_\(version)"
+
+        // 检查缓存
+        if let cachedTime: String = AppCacheManager.shared.get(namespace: "version_time", key: cacheKey, as: String.self) {
+            return cachedTime
+        }
+
+        do {
+            let versionInfo = try await Self.fetchVersionInfo(from: version)
+            let formattedTime = CommonUtil.formatRelativeTime(versionInfo.releaseTime)
+
+            // 缓存版本时间信息
+            AppCacheManager.shared.setSilently(
+                namespace: "version_time",
+                key: cacheKey,
+                value: formattedTime
+            )
+            return formattedTime
+        } catch {
+            return ""
+        }
+    }
+
+    /// 直接从 Modrinth API 获取指定版本的详细信息（抛出异常版本）
+    /// - Parameter version: 版本号（如 "1.21.1"）
+    /// - Returns: 版本信息
+    /// - Throws: GlobalError 当操作失败时
+    static func fetchVersionInfoThrowing(from version: String) async throws -> MinecraftVersionManifest {
+        let url = URLConfig.API.Modrinth.versionInfo(version: version)
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            Logger.shared.error("❌ [ModrinthService] HTTP错误响应: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
+            throw GlobalError.download(
+                chineseMessage: "获取版本 \(version) 信息失败: HTTP \(response)",
+                i18nKey: "error.download.version_info_failed",
+                level: .notification
+            )
+        }
+
+        do {
+            let decoder = JSONDecoder()
+            decoder.configureForModrinth()
+            let versionInfo = try decoder.decode(MinecraftVersionManifest.self, from: data)
+            return versionInfo
+        } catch {
+            Logger.shared.error("❌ [ModrinthService] 其他解析错误: \(error)")
+            throw GlobalError.validation(
+                chineseMessage: "解析版本 \(version) 信息失败: \(error.localizedDescription)",
+                i18nKey: "error.validation.version_info_parse_failed",
+                level: .notification
+            )
+        }
+    }
+
     /// 搜索项目（静默版本）
     /// - Parameters:
     ///   - facets: 搜索条件
@@ -113,8 +242,6 @@ enum ModrinthService {
                 level: .notification
             )
         }
-        Logger.shared.info("Modrinth 搜索 URL：\(url.absoluteString)")
-
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
@@ -124,7 +251,9 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            let result = try JSONDecoder().decode(ModrinthResult.self, from: data)
+            let decoder = JSONDecoder()
+            decoder.configureForModrinth()
+            let result = try decoder.decode(ModrinthResult.self, from: data)
             return result
         } catch {
             let globalError = GlobalError.from(error)
@@ -160,7 +289,6 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.loaderTag)")
             let result = try JSONDecoder().decode([Loader].self, from: data)
             return result
         } catch {
@@ -197,7 +325,6 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.categoryTag)")
             let result = try JSONDecoder().decode([Category].self, from: data)
             return result
         } catch {
@@ -234,7 +361,6 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.gameVersionTag)")
             let result = try JSONDecoder().decode([GameVersion].self, from: data)
             return result.filter { $0.version_type == "release" }
         } catch {
@@ -275,7 +401,6 @@ enum ModrinthService {
 
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
-            Logger.shared.info("Modrinth 搜索 URL：\(url)")
             let detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
             return detail
         } catch {
@@ -316,7 +441,6 @@ enum ModrinthService {
 
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
-            Logger.shared.info("Modrinth 搜索 URL：\(url)")
             return try decoder.decode([ModrinthProjectDetailVersion].self, from: data)
         } catch {
             let globalError = GlobalError.from(error)
@@ -502,7 +626,6 @@ enum ModrinthService {
 
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
-            Logger.shared.info("Modrinth 版本 URL：\(url)")
             return try decoder.decode(ModrinthProjectDetailVersion.self, from: data)
         } catch {
             let globalError = GlobalError.from(error)

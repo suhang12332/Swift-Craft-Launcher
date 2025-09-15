@@ -4,7 +4,7 @@ struct MinecraftVersionManifest: Codable {
     let arguments: Arguments
     let assetIndex: AssetIndex
     let assets: String
-    let complianceLevel: Int
+    let complianceLevel: Int?
     let downloads: Downloads
     let id: String
     let javaVersion: JavaVersion
@@ -15,6 +15,30 @@ struct MinecraftVersionManifest: Codable {
     let releaseTime: String
     let time: String
     let type: String
+
+    enum CodingKeys: String, CodingKey {
+        case arguments, assetIndex, assets, downloads, id, javaVersion, libraries, logging, mainClass, minimumLauncherVersion, releaseTime, time, type
+        case complianceLevel = "complianceLevel"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        arguments = try container.decode(Arguments.self, forKey: .arguments)
+        assetIndex = try container.decode(AssetIndex.self, forKey: .assetIndex)
+        assets = try container.decode(String.self, forKey: .assets)
+        complianceLevel = try container.decodeIfPresent(Int.self, forKey: .complianceLevel)
+        downloads = try container.decode(Downloads.self, forKey: .downloads)
+        id = try container.decode(String.self, forKey: .id)
+        javaVersion = try container.decode(JavaVersion.self, forKey: .javaVersion)
+        libraries = try container.decode([Library].self, forKey: .libraries)
+        logging = try container.decode(Logging.self, forKey: .logging)
+        mainClass = try container.decode(String.self, forKey: .mainClass)
+        minimumLauncherVersion = try container.decode(Int.self, forKey: .minimumLauncherVersion)
+        releaseTime = try container.decode(String.self, forKey: .releaseTime)
+        time = try container.decode(String.self, forKey: .time)
+        type = try container.decode(String.self, forKey: .type)
+    }
 }
 
 struct Arguments: Codable {
@@ -117,12 +141,14 @@ struct Features: Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        is_demo_user = try container.decodeIfPresent(Bool.self, forKey: .is_demo_user) ?? false
-        has_custom_resolution = try container.decodeIfPresent(Bool.self, forKey: .has_custom_resolution) ?? false
-        has_quick_plays_support = try container.decodeIfPresent(Bool.self, forKey: .has_quick_plays_support) ?? false
-        is_quick_play_singleplayer = try container.decodeIfPresent(Bool.self, forKey: .is_quick_play_singleplayer) ?? false
-        is_quick_play_multiplayer = try container.decodeIfPresent(Bool.self, forKey: .is_quick_play_multiplayer) ?? false
-        is_quick_play_realms = try container.decodeIfPresent(Bool.self, forKey: .is_quick_play_realms) ?? false
+
+        // Handle both missing keys and null values
+        is_demo_user = (try? container.decodeIfPresent(Bool.self, forKey: .is_demo_user)) ?? false
+        has_custom_resolution = (try? container.decodeIfPresent(Bool.self, forKey: .has_custom_resolution)) ?? false
+        has_quick_plays_support = (try? container.decodeIfPresent(Bool.self, forKey: .has_quick_plays_support)) ?? false
+        is_quick_play_singleplayer = (try? container.decodeIfPresent(Bool.self, forKey: .is_quick_play_singleplayer)) ?? false
+        is_quick_play_multiplayer = (try? container.decodeIfPresent(Bool.self, forKey: .is_quick_play_multiplayer)) ?? false
+        is_quick_play_realms = (try? container.decodeIfPresent(Bool.self, forKey: .is_quick_play_realms)) ?? false
     }
 
     enum CodingKeys: String, CodingKey {
@@ -165,6 +191,26 @@ struct Library: Codable {
     let natives: [String: String]?
     let extract: LibraryExtract?
     let url: URL?
+    let includeInClasspath: Bool
+    let downloadable: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case downloads, name, rules, natives, extract, url
+        case includeInClasspath = "include_in_classpath"
+        case downloadable
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        downloads = try container.decode(LibraryDownloads.self, forKey: .downloads)
+        name = try container.decode(String.self, forKey: .name)
+        rules = try container.decodeIfPresent([Rule].self, forKey: .rules)
+        natives = try container.decodeIfPresent([String: String].self, forKey: .natives)
+        extract = try container.decodeIfPresent(LibraryExtract.self, forKey: .extract)
+        url = try container.decodeIfPresent(URL.self, forKey: .url)
+        includeInClasspath = try container.decodeIfPresent(Bool.self, forKey: .includeInClasspath) ?? true
+        downloadable = try container.decodeIfPresent(Bool.self, forKey: .downloadable) ?? true
+    }
 }
 
 struct LibraryDownloads: Codable {
@@ -178,13 +224,13 @@ struct LibraryDownloads: Codable {
 }
 
 struct LibraryArtifact: Codable {
-    let path: String
+    let path: String?
     let sha1: String
     let size: Int
     var url: URL?
 
     // 自定义初始化器，用于直接创建实例
-    init(path: String, sha1: String, size: Int, url: URL?) {
+    init(path: String?, sha1: String, size: Int, url: URL?) {
         self.path = path
         self.sha1 = sha1
         self.size = size
@@ -193,7 +239,9 @@ struct LibraryArtifact: Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        path = try container.decode(String.self, forKey: .path)
+
+        // path 字段可能不存在（特别是对于 LWJGL 原生库）
+        path = try container.decodeIfPresent(String.self, forKey: .path)
         sha1 = try container.decode(String.self, forKey: .sha1)
         size = try container.decode(Int.self, forKey: .size)
 
@@ -208,7 +256,7 @@ struct LibraryArtifact: Codable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(path, forKey: .path)
+        try container.encodeIfPresent(path, forKey: .path)
         try container.encode(sha1, forKey: .sha1)
         try container.encode(size, forKey: .size)
         try container.encode(url?.absoluteString ?? "", forKey: .url)
