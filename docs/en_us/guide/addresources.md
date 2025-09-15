@@ -57,3 +57,13 @@ SCL supports automatically downloading Mods, Resource Packs (or Texture Packs), 
 > saves:Saves files\
 > shaderpacks:ShaderPacks files
 - If you’re adding configuration files or mods, restart the game for them to take effect; the rest do not require a restart.
+
+## 3.6 Add Modpacks
+- 1-3.In the left-side “Resource List”, select “Modpacks”. In the top search bar, search for the modpack you want to add and click “Install”.
+![3-6_1](../../resources/addresources/3-6_1.png)
+- 4-7.Select “Game Version” and “Modpack Version”, name the version, and click “Download”.
+![3-6_2](../../resources/addresources/3-6_2.png)
+- 7.The launcher will automatically install Java and the modpack for you.
+![3-6_3](../../resources/addresources/3-6_3.png)
+- 8.The installed modpack will appear in the left-side “Game List”.
+![3-6_4](../../resources/addresources/3-6_4.png)

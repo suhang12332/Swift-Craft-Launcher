@@ -10,22 +10,18 @@ SCL supports three main login methods: Offline Mode, Microsoft Official Login, a
 - 5. When your player information appears in the bottom left of the launcher, the account has been added successfully
 ![1-1_3](../../resources/register/1-1_3.png)
 
-## 1.2 Online Mode
-> Authenticate using your official Microsoft account. This is the only way to access all official Minecraft features. You must own a genuine copy of Minecraft.
+## 1.2 Microsoft Login
+> Authenticate using your official Microsoft account. This is the only way to access all official Minecraft features. You must own a purchased copy of Minecraft to use this method.
 - 1. Click "Add Player"
-![1-2_1](../../resources/register/1-2_1.png)
+![1-2_1_reuse](../../resources/register/1-1_1.png)
 - 2-3. Select the "Microsoft" option in the top right and click "Start Login"
 ![1-2_2](../../resources/register/1-2_2.png)
-- 4. The launcher will display a code and automatically copy it to your clipboard
+- 4. Click to allow opening the browser, then follow the instructions on the webpage to log in to your Microsoft account and authorize SCL
 ![1-2_3](../../resources/register/1-2_3.png)
-- 5-6. Enter the code on the redirected webpage and click "Allow Access", then follow the instructions to log in to your Microsoft account
+- 5. Return to the launcher and confirm the addition
 ![1-2_4](../../resources/register/1-2_4.png)
-- 7. When you see the page shown below, you can close the browser
+- 6. When your player information appears in the bottom left of the launcher, the account has been added successfully
 ![1-2_5](../../resources/register/1-2_5.png)
-- 8. Return to the launcher and click "Add"
-![1-2_6](../../resources/register/1-2_6.png)
-- 9. When your player information appears in the bottom left of the launcher, the account has been added successfully
-![1-2_7](../../resources/register/1-2_7.png)
 
 ## 1.3 LittleSkin Login
 > A third-party login method. Authenticate using an account provided by the LittleSkin skin site, commonly used for custom skins and capes. Only supports single-player mode and servers that support this login method.

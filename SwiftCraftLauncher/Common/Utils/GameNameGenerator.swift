@@ -7,30 +7,57 @@
 
 import Foundation
 
+// MARK: - DateFormatter Extension
+extension DateFormatter {
+    static let timestampFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd-HHmmss"
+        return formatter
+    }()
+}
+
 // MARK: - GameNameGenerator
 enum GameNameGenerator {
     /// 为 ModPack 下载生成默认游戏名称
     /// - Parameters:
     ///   - projectTitle: 项目标题
     ///   - gameVersion: 游戏版本
+    ///   - includeTimestamp: 是否包含时间戳（默认 true）
     /// - Returns: 生成的游戏名称
     static func generateModPackName(
         projectTitle: String?,
-        gameVersion: String
+        gameVersion: String,
+        includeTimestamp: Bool = true
     ) -> String {
-        return "\(projectTitle ?? "ModPack")-\(gameVersion)"
+        let baseName = "\(projectTitle ?? "ModPack")-\(gameVersion)"
+
+        if includeTimestamp {
+            let timestamp = DateFormatter.timestampFormatter.string(from: Date())
+            return "\(baseName)-\(timestamp)"
+        }
+
+        return baseName
     }
 
     /// 为 ModPack 导入生成默认游戏名称
     /// - Parameters:
     ///   - modPackName: 整合包名称
     ///   - modPackVersion: 整合包版本
+    ///   - includeTimestamp: 是否包含时间戳（默认 true）
     /// - Returns: 生成的游戏名称
     static func generateImportName(
         modPackName: String,
-        modPackVersion: String
+        modPackVersion: String,
+        includeTimestamp: Bool = true
     ) -> String {
-        return "\(modPackName)-\(modPackVersion)"
+        let baseName = "\(modPackName)-\(modPackVersion)"
+
+        if includeTimestamp {
+            let timestamp = DateFormatter.timestampFormatter.string(from: Date())
+            return "\(baseName)-\(timestamp)"
+        }
+
+        return baseName
     }
 
     /// 为普通游戏创建生成默认游戏名称

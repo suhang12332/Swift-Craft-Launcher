@@ -52,11 +52,11 @@ class CommonFileManager {
             guard lib.downloadable else { return nil }
 
             // 优先使用LibraryDownloads.artifact
-            if let downloads = lib.downloads, let artifactUrl = downloads.artifact.url {
+            if let downloads = lib.downloads, let artifactUrl = downloads.artifact.url, let artifactPath = downloads.artifact.path {
                 return JarDownloadTask(
                     name: lib.name,
                     url: artifactUrl,
-                    destinationPath: downloads.artifact.path,
+                    destinationPath: artifactPath,
                     expectedSha1: downloads.artifact.sha1.isEmpty ? nil : downloads.artifact.sha1
                 )
             }

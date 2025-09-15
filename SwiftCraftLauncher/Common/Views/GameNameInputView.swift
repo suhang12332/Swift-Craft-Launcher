@@ -40,8 +40,10 @@ struct GameNameInputView: View {
             .onChange(of: gameName) { _, newName in
                 Task {
                     let isDuplicate = await gameSetupService.checkGameNameDuplicate(newName)
-                    if isDuplicate != isGameNameDuplicate {
-                        isGameNameDuplicate = isDuplicate
+                    await MainActor.run {
+                        if isDuplicate != isGameNameDuplicate {
+                            isGameNameDuplicate = isDuplicate
+                        }
                     }
                 }
             }

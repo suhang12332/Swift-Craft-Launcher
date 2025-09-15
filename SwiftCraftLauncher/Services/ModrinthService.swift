@@ -24,6 +24,71 @@ private extension JSONDecoder {
 }
 
 enum ModrinthService {
+
+    /// 直接从 Modrinth API 获取指定版本的详细信息
+    /// - Parameter version: 版本号（如 "1.21.1"）
+    /// - Returns: 版本信息
+    /// - Throws: GlobalError 当操作失败时
+    static func fetchVersionInfo(from version: String) async throws -> MinecraftVersionManifest {
+        return try await fetchVersionInfoThrowing(from: version)
+    }
+
+
+    static func queryVersionTime(from version: String) async -> String {
+        let cacheKey = "version_time_\(version)"
+
+        // 检查缓存
+        if let cachedTime: String = AppCacheManager.shared.get(namespace: "version_time", key: cacheKey, as: String.self) {
+            return cachedTime
+        }
+
+        do {
+            let versionInfo = try await Self.fetchVersionInfo(from: version)
+            let formattedTime = CommonUtil.formatRelativeTime(versionInfo.releaseTime)
+
+            // 缓存版本时间信息
+            AppCacheManager.shared.setSilently(
+                namespace: "version_time",
+                key: cacheKey,
+                value: formattedTime
+            )
+            return formattedTime
+        } catch {
+            return ""
+        }
+    }
+
+    /// 直接从 Modrinth API 获取指定版本的详细信息（抛出异常版本）
+    /// - Parameter version: 版本号（如 "1.21.1"）
+    /// - Returns: 版本信息
+    /// - Throws: GlobalError 当操作失败时
+    static func fetchVersionInfoThrowing(from version: String) async throws -> MinecraftVersionManifest {
+        let url = URLConfig.API.Modrinth.versionInfo(version: version)
+
+        let (data, response) = try await URLSession.shared.data(from: url)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw GlobalError.download(
+                chineseMessage: "获取版本 \(version) 信息失败: HTTP \(response)",
+                i18nKey: "error.download.version_info_failed",
+                level: .notification
+            )
+        }
+
+        do {
+            let decoder = JSONDecoder()
+            decoder.configureForModrinth()
+            let versionInfo = try decoder.decode(MinecraftVersionManifest.self, from: data)
+            return versionInfo
+        } catch {
+            throw GlobalError.validation(
+                chineseMessage: "解析版本 \(version) 信息失败: \(error.localizedDescription)",
+                i18nKey: "error.validation.version_info_parse_failed",
+                level: .notification
+            )
+        }
+    }
+
     /// 搜索项目（静默版本）
     /// - Parameters:
     ///   - facets: 搜索条件
@@ -113,8 +178,6 @@ enum ModrinthService {
                 level: .notification
             )
         }
-        Logger.shared.info("Modrinth 搜索 URL：\(url.absoluteString)")
-
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
@@ -124,7 +187,9 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            let result = try JSONDecoder().decode(ModrinthResult.self, from: data)
+            let decoder = JSONDecoder()
+            decoder.configureForModrinth()
+            let result = try decoder.decode(ModrinthResult.self, from: data)
             return result
         } catch {
             let globalError = GlobalError.from(error)
@@ -160,7 +225,6 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.loaderTag)")
             let result = try JSONDecoder().decode([Loader].self, from: data)
             return result
         } catch {
@@ -197,7 +261,6 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.categoryTag)")
             let result = try JSONDecoder().decode([Category].self, from: data)
             return result
         } catch {
@@ -234,7 +297,6 @@ enum ModrinthService {
                     level: .notification
                 )
             }
-            Logger.shared.info("Modrinth 搜索 URL：\(URLConfig.API.Modrinth.gameVersionTag)")
             let result = try JSONDecoder().decode([GameVersion].self, from: data)
             return result.filter { $0.version_type == "release" }
         } catch {
@@ -275,7 +337,6 @@ enum ModrinthService {
 
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
-            Logger.shared.info("Modrinth 搜索 URL：\(url)")
             let detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
             return detail
         } catch {
@@ -316,7 +377,6 @@ enum ModrinthService {
 
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
-            Logger.shared.info("Modrinth 搜索 URL：\(url)")
             return try decoder.decode([ModrinthProjectDetailVersion].self, from: data)
         } catch {
             let globalError = GlobalError.from(error)
@@ -502,7 +562,6 @@ enum ModrinthService {
 
             let decoder = JSONDecoder()
             decoder.configureForModrinth()
-            Logger.shared.info("Modrinth 版本 URL：\(url)")
             return try decoder.decode(ModrinthProjectDetailVersion.self, from: data)
         } catch {
             let globalError = GlobalError.from(error)
