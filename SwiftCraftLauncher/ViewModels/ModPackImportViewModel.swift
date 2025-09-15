@@ -154,7 +154,8 @@ class ModPackImportViewModel: BaseGameFormViewModel {
             modPackIndexInfo = parsed
             let defaultName = GameNameGenerator.generateImportName(
                 modPackName: parsed.modPackName,
-                modPackVersion: parsed.modPackVersion
+                modPackVersion: parsed.modPackVersion,
+                includeTimestamp: true
             )
             gameNameValidator.setDefaultName(defaultName)
             isProcessingModPack = false

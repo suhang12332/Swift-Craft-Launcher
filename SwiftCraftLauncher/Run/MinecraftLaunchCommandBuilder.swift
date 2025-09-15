@@ -40,7 +40,6 @@ enum MinecraftLaunchCommandBuilder {
             manifest.libraries,
             librariesDir: paths.librariesDir,
             clientJarPath: paths.clientJarPath,
-            environment: getCurrentLaunchEnvironment(),
             modClassPath: gameInfo.modClassPath
         )
 
@@ -127,80 +126,127 @@ enum MinecraftLaunchCommandBuilder {
         return result
     }
 
-    private static func getCurrentLaunchEnvironment() -> LaunchEnvironment {
-        #if os(macOS)
-        #if arch(x86_64)
-        return LaunchEnvironment(osName: "osx", arch: "x86")
-        #elseif arch(arm64)
-        return LaunchEnvironment(osName: "osx", arch: "arm64")
-        #else
-        return LaunchEnvironment(osName: "unknown", arch: "unknown")
-        #endif
-        #else
-        return LaunchEnvironment(osName: "unknown", arch: "unknown")
-        #endif
+    private static func buildClasspath(_ libraries: [Library], librariesDir: URL, clientJarPath: String, modClassPath: String) -> String {
+        Logger.shared.debug("开始构建类路径 - 库数量: \(libraries.count), mod类路径: \(modClassPath.isEmpty ? "无" : "\(modClassPath.split(separator: ":").count)个路径")")
+
+        // 解析 mod 类路径并提取已存在的库路径
+        let modClassPaths = parseModClassPath(modClassPath, librariesDir: librariesDir)
+        let existingModBasePaths = extractBasePaths(from: modClassPaths, librariesDir: librariesDir)
+        Logger.shared.debug("解析到 \(modClassPaths.count) 个 mod 类路径，\(existingModBasePaths.count) 个基础路径")
+
+        // 过滤并处理 manifest 库
+        let manifestLibraryPaths = libraries
+            .filter(shouldIncludeLibrary)
+            .compactMap { library in
+                processLibrary(library, librariesDir: librariesDir, existingModBasePaths: existingModBasePaths)
+            }
+            .flatMap { $0 }
+
+        Logger.shared.debug("处理完成 - manifest库路径: \(manifestLibraryPaths.count)个")
+
+        // 构建最终的类路径并去重
+        let allPaths = manifestLibraryPaths + [clientJarPath] + modClassPaths
+        let uniquePaths = removeDuplicatePaths(allPaths)
+        let classpath = uniquePaths.joined(separator: ":")
+
+        Logger.shared.debug("类路径构建完成 - 原始路径数: \(allPaths.count), 去重后: \(uniquePaths.count)")
+        return classpath
     }
 
-    private static func buildClasspath(_ libraries: [Library], librariesDir: URL, clientJarPath: String, environment: LaunchEnvironment, modClassPath: String) -> String {
-        // 1. 拆分 modClassPath，提取 basePath 集合（相对路径）
-        let librariesDirPath = librariesDir.path.hasSuffix("/") ? librariesDir.path : librariesDir.path + "/"
-        let modClassPathArray = modClassPath.split(separator: ":").map { String($0) }
-        let modClassBasePaths: Set<String> = Set(modClassPathArray.compactMap { path in
+    /// 解析 mod 类路径字符串
+    private static func parseModClassPath(_ modClassPath: String, librariesDir: URL) -> [String] {
+        return modClassPath.split(separator: ":").map { String($0) }
+    }
+
+    /// 移除重复的路径，保持原始顺序
+    private static func removeDuplicatePaths(_ paths: [String]) -> [String] {
+        var seen = Set<String>()
+        return paths.filter { path in
+            let normalizedPath = path.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !normalizedPath.isEmpty else { return false }
+
+            if seen.contains(normalizedPath) {
+                Logger.shared.debug("发现重复路径，已跳过: \(normalizedPath)")
+                return false
+            } else {
+                seen.insert(normalizedPath)
+                return true
+            }
+        }
+    }
+
+    /// 从路径列表中提取基础路径（用于去重）
+    private static func extractBasePaths(from paths: [String], librariesDir: URL) -> Set<String> {
+        let librariesDirPath = librariesDir.path.appending("/")
+
+        return Set(paths.compactMap { path in
             guard path.hasPrefix(librariesDirPath) else { return nil }
             let relPath = String(path.dropFirst(librariesDirPath.count))
-            let pathComponents = relPath.split(separator: "/")
-            guard pathComponents.count >= 2 else { return nil }
-            return pathComponents.dropLast(2).joined(separator: "/")
+            return extractBasePath(from: relPath)
         })
-
-        // 2. 遍历 libraries，先根据 rules 判断是否允许 osx，再做 basePath 去重
-        let manifestLibraryPaths = libraries.compactMap { library -> [String]? in
-            guard shouldIncludeLibrary(library) else { return nil }
-            let artifact = library.downloads.artifact
-            let libraryPath = librariesDir.appendingPathComponent(artifact.path).path
-            let pathComponents = artifact.path.split(separator: "/")
-            guard pathComponents.count >= 2 else { return nil }
-            let basePath = pathComponents.dropLast(2).joined(separator: "/")
-            if modClassBasePaths.contains(basePath) {
-                return nil // modClassPath 已有，跳过
-            }
-            var paths = [libraryPath]
-            // 加入 classifiers
-            if let classifiers = library.downloads.classifiers {
-                for classifierArtifact in classifiers.values {
-                    let classifierPath = librariesDir.appendingPathComponent(classifierArtifact.path).path
-                    paths.append(classifierPath)
-                }
-            }
-            return paths
-        }
-        .flatMap { $0 }
-
-        // 3. 拼接 manifest.libraries + modClassPath（原始顺序）+ clientJarPath
-        let classpathList = manifestLibraryPaths + [clientJarPath] + modClassPathArray
-        return classpathList.joined(separator: ":")
     }
 
-    // 判断该库是否适用于 osx
+    /// 从相对路径中提取基础路径（去掉最后两级目录）
+    private static func extractBasePath(from relativePath: String) -> String? {
+        let pathComponents = relativePath.split(separator: "/")
+        guard pathComponents.count >= 2 else { return nil }
+        return pathComponents.dropLast(2).joined(separator: "/")
+    }
+
+    /// 处理单个库，返回其所有相关路径
+    private static func processLibrary(_ library: Library, librariesDir: URL, existingModBasePaths: Set<String>) -> [String]? {
+        let artifact = library.downloads.artifact
+
+        // 获取主库路径
+        let libraryPath = getLibraryPath(artifact: artifact, libraryName: library.name, librariesDir: librariesDir)
+
+        // 检查是否与 mod 路径重复
+        let relativePath = String(libraryPath.dropFirst(librariesDir.path.appending("/").count))
+        guard let basePath = extractBasePath(from: relativePath) else { return nil }
+
+        if existingModBasePaths.contains(basePath) {
+            return nil // mod 路径已存在，跳过
+        }
+
+        // 获取分类器路径
+        let classifierPaths = getClassifierPaths(library: library, librariesDir: librariesDir)
+
+        return [libraryPath] + classifierPaths
+    }
+
+    /// 获取库文件路径
+    private static func getLibraryPath(artifact: LibraryArtifact, libraryName: String, librariesDir: URL) -> String {
+        if let existingPath = artifact.path {
+            return librariesDir.appendingPathComponent(existingPath).path
+        } else {
+            let fullPath = CommonService.convertMavenCoordinateToPath(libraryName)
+            Logger.shared.debug("库文件 \(libraryName) 缺少路径信息，使用 Maven 坐标生成路径: \(fullPath)")
+            return fullPath
+        }
+    }
+
+    /// 获取分类器库路径
+    private static func getClassifierPaths(library: Library, librariesDir: URL) -> [String] {
+        return library.downloads.classifiers?.values.compactMap { classifierArtifact in
+            if let existingPath = classifierArtifact.path {
+                return librariesDir.appendingPathComponent(existingPath).path
+            } else {
+                // 分类器没有路径信息时，跳过该分类器
+                Logger.shared.warning("分类器库文件缺少路径信息，跳过: \(library.name)")
+                return nil
+            }
+        } ?? []
+    }
+
+    /// 判断该库是否应该包含在类路径中
     private static func shouldIncludeLibrary(_ library: Library) -> Bool {
-        guard let rules = library.rules, !rules.isEmpty else {
-            return true // 没有规则，直接放行
+        // 检查基本条件：可下载且包含在类路径中
+        guard library.downloadable == true && library.includeInClasspath == true else {
+            return false
         }
-        var allowed = false
-        for rule in rules {
-            if let os = rule.os, let name = os.name, name == "osx" {
-                if rule.action == "disallow" {
-                    return false // 有 disallow，直接禁止
-                } else if rule.action == "allow" {
-                    allowed = true // 有 allow，允许
-                }
-            }
-        }
-        return allowed
-    }
-}
 
-struct LaunchEnvironment {
-    let osName: String
-    let arch: String
+        // 检查系统规则（没有规则或空规则默认允许）
+        guard let rules = library.rules, !rules.isEmpty else { return true }
+        return MacRuleEvaluator.isAllowed(rules)
+    }
 }

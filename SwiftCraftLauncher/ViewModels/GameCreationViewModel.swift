@@ -127,7 +127,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
         // 获取当前选中版本的时间信息
         if !versions.isEmpty {
             let targetVersion = versions.contains(self.selectedGameVersion) ? self.selectedGameVersion : (versions.first ?? "")
-            let timeString = await MinecraftService.fetchVersionTime(for: targetVersion)
+            let timeString = await ModrinthService.queryVersionTime(from: targetVersion)
             self.versionTime = timeString
         }
     }

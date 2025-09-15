@@ -192,18 +192,11 @@ enum DownloadManager {
             }
 
             // 原子性地移动到最终位置
-            do {
-                // 如果目标文件已存在，先删除它
-                if fileManager.fileExists(atPath: destinationURL.path) {
-                    try fileManager.removeItem(at: destinationURL)
-                }
+            if fileManager.fileExists(atPath: destinationURL.path) {
+                // 先尝试直接替换
+                try fileManager.replaceItem(at: destinationURL, withItemAt: tempFileURL, backupItemName: nil, options: [], resultingItemURL: nil)
+            } else {
                 try fileManager.moveItem(at: tempFileURL, to: destinationURL)
-            } catch {
-                throw GlobalError.fileSystem(
-                    chineseMessage: "移动文件失败: \(error.localizedDescription)",
-                    i18nKey: "error.filesystem.download_file_move_failed",
-                    level: .notification
-                )
             }
 
             return destinationURL

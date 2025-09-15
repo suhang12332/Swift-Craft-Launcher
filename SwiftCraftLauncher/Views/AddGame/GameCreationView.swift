@@ -184,7 +184,7 @@ struct GameCreationView: View {
             availableVersions: viewModel.availableVersions,
             time: $viewModel.versionTime
         ) { version in
-            await MinecraftService.fetchVersionTime(for: version)
+            await ModrinthService.queryVersionTime(from: version)
         }
         .disabled(viewModel.gameSetupService.downloadState.isDownloading)
     }
@@ -230,7 +230,7 @@ struct GameCreationView: View {
                 ),
                 isGameNameDuplicate: Binding(
                     get: { viewModel.gameNameValidator.isGameNameDuplicate },
-                    set: { _ in }
+                    set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 }
                 ),
                 isDisabled: viewModel.gameSetupService.downloadState.isDownloading,
                 gameSetupService: viewModel.gameSetupService

@@ -142,7 +142,25 @@ class MinecraftFileManager {
 
     // MARK: - Private Methods
     private func calculateTotalFiles(_ manifest: MinecraftVersionManifest) -> Int {
-        1 + manifest.libraries.count + 1 + 1  // Client JAR + Libraries + Asset index + Logging config
+        let applicableLibraries = manifest.libraries.filter { shouldDownloadLibrary($0) }
+        let nativeLibraries = applicableLibraries.compactMap { library in
+            library.downloads.classifiers?.keys.contains { isNativeClassifier($0) }
+        }.count
+
+        return 1 + applicableLibraries.count + nativeLibraries + 2  // Client JAR + Libraries + Native Libraries + Asset Index + Logging Config
+    }
+
+    /// 检查分类器是否为当前平台的原生库
+    private func isNativeClassifier(_ key: String) -> Bool {
+        #if os(macOS)
+        return key == "osx-arm64" || key == "osx-x86_64" || key == "osx"
+        #elseif os(Linux)
+        return key == "linux"
+        #elseif os(Windows)
+        return key == "windows"
+        #else
+        return false
+        #endif
     }
 
     private func createDirectories(
@@ -235,7 +253,7 @@ class MinecraftFileManager {
 
         Logger.shared.info("开始下载库文件")
         let osxLibraries = manifest.libraries.filter {
-            isLibraryAllowedOnOSX($0.rules)
+            shouldDownloadLibrary($0)
         }
 
         // 创建信号量控制并发数量
@@ -264,8 +282,30 @@ class MinecraftFileManager {
         _ library: Library,
         metaDirectory: URL
     ) async throws {
-        let destinationURL = metaDirectory.appendingPathComponent("libraries")
-            .appendingPathComponent(library.downloads.artifact.path)
+        // 检查库的规则是否适用于当前系统（包含 downloadable 检查）
+        guard shouldDownloadLibrary(library) else {
+            Logger.shared.debug("跳过不适用于当前系统的库文件: \(library.name)")
+            return
+        }
+
+        // 如果 path 为 nil，使用 Maven 坐标生成路径
+        let destinationURL: URL
+        if let existingPath = library.downloads.artifact.path {
+            // 检查 existingPath 是否是完整路径
+            if existingPath.hasPrefix("/") {
+                // 如果是完整路径，直接使用
+                destinationURL = URL(fileURLWithPath: existingPath)
+            } else {
+                // 如果是相对路径，添加到 libraries 目录
+                destinationURL = metaDirectory.appendingPathComponent("libraries")
+                    .appendingPathComponent(existingPath)
+            }
+        } else {
+            // 使用 Maven 坐标生成完整路径
+            let fullPath = CommonService.convertMavenCoordinateToPath(library.name)
+            destinationURL = URL(fileURLWithPath: fullPath)
+            Logger.shared.debug("库文件 \(library.name) 缺少路径信息，使用 Maven 坐标生成路径: \(fullPath)")
+        }
 
         guard let artifactURL = library.downloads.artifact.url else {
             throw GlobalError.download(
@@ -276,25 +316,13 @@ class MinecraftFileManager {
         }
 
         do {
+            // DownloadManager.downloadFile 已经包含了文件存在性和校验逻辑
             _ = try await DownloadManager.downloadFile(
                 urlString: artifactURL.absoluteString,
                 destinationURL: destinationURL,
                 expectedSha1: library.downloads.artifact.sha1
             )
-            incrementCompletedFilesCount(
-                fileName: String(
-                    format: "file.library".localized(),
-                    library.name
-                ),
-                type: .core
-            )
-            if let classifiers = library.downloads.classifiers {
-                try await downloadNativeLibrary(
-                    library: library,
-                    classifiers: classifiers,
-                    metaDirectory: metaDirectory
-                )
-            }
+            await handleLibraryDownloadComplete(library: library, metaDirectory: metaDirectory)
         } catch {
             let globalError = GlobalError.from(error)
             throw GlobalError.download(
@@ -311,50 +339,53 @@ class MinecraftFileManager {
         classifiers: [String: LibraryArtifact],
         metaDirectory: URL
     ) async throws {
-        #if os(macOS)
-            let osClassifier = library.natives?["osx"]
-        #elseif os(Linux)
-            let osClassifier = library.natives?["linux"]
-        #elseif os(Windows)
-            let osClassifier = library.natives?["windows"]
-        #else
-            let osClassifier = nil
-        #endif
+        let osClassifier = library.natives?.keys.first { isNativeClassifier($0) }
 
-        if let classifierKey = osClassifier, let nativeArtifact = classifiers[classifierKey] {
-            let destinationURL = metaDirectory.appendingPathComponent("natives")
-                .appendingPathComponent(nativeArtifact.path)
+        guard let classifierKey = osClassifier, let nativeArtifact = classifiers[classifierKey] else {
+            return
+        }
 
-            guard let nativeURL = nativeArtifact.url else {
-                throw GlobalError.download(
-                    chineseMessage: "原生库文件 \(library.name) 缺少下载 URL",
-                    i18nKey: "error.download.missing_native_url",
-                    level: .notification
-                )
+        // 生成目标路径
+        let destinationURL: URL
+        if let existingPath = nativeArtifact.path {
+            if existingPath.hasPrefix("/") {
+                destinationURL = URL(fileURLWithPath: existingPath)
+            } else {
+                destinationURL = metaDirectory.appendingPathComponent("natives")
+                    .appendingPathComponent(existingPath)
             }
+        } else {
+            let relativePath = CommonService.mavenCoordinateToRelativePath(library.name) ?? "\(library.name.replacingOccurrences(of: ":", with: "-")).jar"
+            destinationURL = metaDirectory.appendingPathComponent("natives")
+                .appendingPathComponent(relativePath)
+        }
 
-            do {
-                _ = try await DownloadManager.downloadFile(
-                    urlString: nativeURL.absoluteString,
-                    destinationURL: destinationURL,
-                    expectedSha1: nativeArtifact.sha1
-                )
-                incrementCompletedFilesCount(
-                    fileName: String(
-                        format: "file.native".localized(),
-                        library.name
-                    ),
-                    type: .core
-                )
-            } catch {
-                let globalError = GlobalError.from(error)
-                throw GlobalError.download(
-                    chineseMessage:
-                        "下载原生库文件失败 \(library.name): \(globalError.chineseMessage)",
-                    i18nKey: "error.download.native_library_failed",
-                    level: .notification
-                )
-            }
+        guard let nativeURL = nativeArtifact.url else {
+            throw GlobalError.download(
+                chineseMessage: "原生库文件 \(library.name) 缺少下载 URL",
+                i18nKey: "error.download.missing_native_url",
+                level: .notification
+            )
+        }
+
+        do {
+            // DownloadManager.downloadFile 已经包含了文件存在性和校验逻辑
+            _ = try await DownloadManager.downloadFile(
+                urlString: nativeURL.absoluteString,
+                destinationURL: destinationURL,
+                expectedSha1: nativeArtifact.sha1
+            )
+            incrementCompletedFilesCount(
+                fileName: String(format: "file.native".localized(), library.name),
+                type: .core
+            )
+        } catch {
+            let globalError = GlobalError.from(error)
+            throw GlobalError.download(
+                chineseMessage: "下载原生库文件失败 \(library.name): \(globalError.chineseMessage)",
+                i18nKey: "error.download.native_library_failed",
+                level: .notification
+            )
         }
     }
 
@@ -672,22 +703,37 @@ extension Library {
 }
 
 extension MinecraftFileManager {
-    /// 判断库是否允许在 macOS (osx) 下加载
-    func isLibraryAllowedOnOSX(_ rules: [Rule]?) -> Bool {
-        guard let rules = rules else { return true }  // 没有规则默认允许
-        var allowed = true  // 默认允许
-        for rule in rules {
-            let osMatch = rule.os?.name == nil || rule.os?.name == "osx"
-            if osMatch {
-                if rule.action == "allow" {
-                    allowed = true
-                } else if rule.action == "disallow" {
-                    allowed = false
-                }
+    /// 处理库下载完成后的逻辑
+    private func handleLibraryDownloadComplete(library: Library, metaDirectory: URL) async {
+        incrementCompletedFilesCount(
+            fileName: String(format: "file.library".localized(), library.name),
+            type: .core
+        )
+
+        // 处理原生库
+        if let classifiers = library.downloads.classifiers {
+            do {
+                try await downloadNativeLibrary(
+                    library: library,
+                    classifiers: classifiers,
+                    metaDirectory: metaDirectory
+                )
+            } catch {
+                Logger.shared.error("下载原生库失败: \(error.localizedDescription)")
             }
         }
-        return allowed
+    }
+
+    /// 判断库是否应该下载
+    private func shouldDownloadLibrary(_ library: Library) -> Bool {
+        guard library.downloadable else { return false }
+        guard let rules = library.rules, !rules.isEmpty else { return true }
+        return MacRuleEvaluator.isAllowed(rules)
+    }
+
+    /// 判断库是否允许在 macOS (osx) 下加载（保留向后兼容性）
+    func isLibraryAllowedOnOSX(_ rules: [Rule]?) -> Bool {
+        guard let rules = rules, !rules.isEmpty else { return true }
+        return MacRuleEvaluator.isAllowed(rules)
     }
 }
-
-// 移除了 DownloadedAssetIndex 和 AssetIndexData 的定义，直接引用 Models/MinecraftManifest.swift 中的类型。
