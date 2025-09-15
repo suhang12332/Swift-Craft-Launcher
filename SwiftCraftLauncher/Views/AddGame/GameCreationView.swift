@@ -230,7 +230,7 @@ struct GameCreationView: View {
                 ),
                 isGameNameDuplicate: Binding(
                     get: { viewModel.gameNameValidator.isGameNameDuplicate },
-                    set: { _ in }
+                    set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 }
                 ),
                 isDisabled: viewModel.gameSetupService.downloadState.isDownloading,
                 gameSetupService: viewModel.gameSetupService

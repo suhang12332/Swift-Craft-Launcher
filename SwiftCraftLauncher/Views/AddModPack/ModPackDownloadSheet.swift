@@ -385,7 +385,8 @@ struct ModPackDownloadSheet: View {
     private func setDefaultGameName() {
         let defaultName = GameNameGenerator.generateModPackName(
             projectTitle: viewModel.projectDetail?.title,
-            gameVersion: selectedGameVersion
+            gameVersion: selectedGameVersion,
+            includeTimestamp: true
         )
         gameNameValidator.setDefaultName(defaultName)
     }

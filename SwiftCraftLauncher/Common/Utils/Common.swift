@@ -52,7 +52,7 @@ enum CommonUtil {
         return nil
     }
 
-    /// 格式化 ISO8601 字符串为相对时间（如“3天前”）
+    /// 格式化 ISO8601 字符串为相对时间（如"3天前"）
     static func formatRelativeTime(_ isoString: String) -> String {
         let isoFormatter = ISO8601DateFormatter()
         isoFormatter.formatOptions = [
@@ -68,5 +68,47 @@ enum CommonUtil {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
         return formatter.localizedString(for: date, relativeTo: Date())
+    }
+
+    // MARK: - Minecraft 版本比较和排序
+
+    /// 比较两个 Minecraft 版本号
+    /// - Parameters:
+    ///   - version1: 第一个版本号
+    ///   - version2: 第二个版本号
+    /// - Returns: 比较结果：-1 表示 version1 < version2，0 表示相等，1 表示 version1 > version2
+    static func compareMinecraftVersions(_ version1: String, _ version2: String) -> Int {
+        let components1 = parseVersionComponents(version1)
+        let components2 = parseVersionComponents(version2)
+
+        // 比较主版本号
+        for i in 0..<max(components1.count, components2.count) {
+            let v1 = i < components1.count ? components1[i] : 0
+            let v2 = i < components2.count ? components2[i] : 0
+            if v1 < v2 {
+                return -1
+            } else if v1 > v2 {
+                return 1
+            }
+        }
+
+        return 0
+    }
+
+    /// 解析版本号组件
+    /// - Parameter version: 版本号字符串
+    /// - Returns: 版本号组件数组
+    private static func parseVersionComponents(_ version: String) -> [Int] {
+        return version.components(separatedBy: ".")
+            .compactMap { Int($0.trimmingCharacters(in: .whitespacesAndNewlines)) }
+    }
+
+    /// 对 Minecraft 版本列表进行排序（从大到小）
+    /// - Parameter versions: 版本号数组
+    /// - Returns: 排序后的版本号数组
+    static func sortMinecraftVersions(_ versions: [String]) -> [String] {
+        return versions.sorted { version1, version2 in
+            compareMinecraftVersions(version1, version2) > 0
+        }
     }
 }

@@ -33,7 +33,7 @@ enum CommonService {
             let loaderVersions = try await fetchAllVersionThrowing(
                 type: loaderType
             )
-            result = loaderVersions.map { $0.id }
+            let filteredVersions = loaderVersions.map { $0.id }
                 .filter { version in
                     // 过滤出纯数字版本（如 1.21.1, 1.20.4 等）
                     let components = version.components(separatedBy: ".")
@@ -43,6 +43,7 @@ enum CommonService {
                         ) == nil
                     }
                 }
+            result = CommonUtil.sortMinecraftVersions(filteredVersions)
         default:
             let gameVersions = await ModrinthService.fetchGameVersions()
             let allVersions = gameVersions
@@ -68,7 +69,7 @@ enum CommonService {
                         ) == nil
                     }
                 }
-            result = allVersions
+            result = CommonUtil.sortMinecraftVersions(allVersions)
         }
         return result
     }

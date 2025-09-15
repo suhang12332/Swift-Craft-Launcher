@@ -39,7 +39,8 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 try await ModrinthService.fetchProjectDetailsThrowing(
                     id: projectId
                 )
-            availableGameVersions = projectDetail?.gameVersions ?? []
+            let gameVersions = projectDetail?.gameVersions ?? []
+            availableGameVersions = CommonUtil.sortMinecraftVersions(gameVersions)
         } catch {
             let globalError = GlobalError.from(error)
             GlobalErrorHandler.shared.handle(globalError)
@@ -58,9 +59,14 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 try await ModrinthService.fetchProjectVersionsThrowing(
                     id: projectDetail.id
                 )
-            filteredModPackVersions = allModPackVersions.filter { version in
-                version.gameVersions.contains(gameVersion)
-            }
+            filteredModPackVersions = allModPackVersions
+                .filter { version in
+                    version.gameVersions.contains(gameVersion)
+                }
+                .sorted { version1, version2 in
+                    // 按发布日期排序，最新的在前
+                    version1.datePublished < version2.datePublished
+                }
         } catch {
             let globalError = GlobalError.from(error)
             GlobalErrorHandler.shared.handle(globalError)

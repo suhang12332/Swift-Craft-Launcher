@@ -167,7 +167,7 @@ struct ModPackImportView: View {
                 ),
                 isGameNameDuplicate: Binding(
                     get: { viewModel.gameNameValidator.isGameNameDuplicate },
-                    set: { _ in }
+                    set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 }
                 ),
                 isDisabled: viewModel.isProcessingModPack || viewModel.isDownloading,
                 gameSetupService: viewModel.gameSetupService
