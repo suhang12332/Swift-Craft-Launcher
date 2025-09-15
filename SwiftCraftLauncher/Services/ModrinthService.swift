@@ -33,7 +33,6 @@ enum ModrinthService {
         return try await fetchVersionInfoThrowing(from: version)
     }
 
-
     static func queryVersionTime(from version: String) async -> String {
         let cacheKey = "version_time_\(version)"
 
