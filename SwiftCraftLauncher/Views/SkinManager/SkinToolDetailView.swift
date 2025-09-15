@@ -16,6 +16,8 @@ struct SkinToolDetailView: View {
     @State private var selectedSkinPath: String?
     @State private var showingSkinPreview = false
     @State private var selectedCapeId: String?
+    @State private var selectedCapeImageURL: String?
+    @State private var selectedCapeLocalPath: String?
     @State private var publicSkinInfo: PlayerSkinService.PublicSkinInfo?
     @State private var playerProfile: MinecraftProfileResponse?
     @State private var isLoading = true
@@ -187,7 +189,11 @@ struct SkinToolDetailView: View {
                     }
 
                     if let skinPath = selectedSkinPath {
-                        SkinRenderView(texturePath: skinPath)
+                        SkinRenderView(
+                            texturePath: skinPath,
+                            capeTexturePath: selectedCapeLocalPath,
+                            playerModel: convertToPlayerModel(currentModel)
+                        )
                             .frame(height: 200)
                             .background(Color.black.opacity(0.05))
                             .cornerRadius(8)
@@ -254,6 +260,13 @@ struct SkinToolDetailView: View {
 
         return Button {
             selectedCapeId = id
+            if let imageURL = imageURL, id != nil {
+                selectedCapeImageURL = imageURL
+                Task { await downloadCapeTextureIfNeeded(from: imageURL) }
+            } else {
+                selectedCapeImageURL = nil
+                selectedCapeLocalPath = nil
+            }
             updateHasChanges()
         } label: {
             VStack(spacing: 6) {
@@ -553,6 +566,45 @@ struct CapeTextureView: View {
             @unknown default:
                 Image(systemName: "photo").font(.system(size: 16)).foregroundColor(.secondary)
             }
+        }
+    }
+}
+
+// MARK: - Cape Download Extension
+extension SkinToolDetailView {
+    fileprivate func downloadCapeTextureIfNeeded(from urlString: String) async {
+        if let current = selectedCapeImageURL, current == urlString, selectedCapeLocalPath != nil {
+            return
+        }
+        guard let url = URL(string: urlString.httpToHttps()) else {
+            Logger.shared.error("Invalid cape URL: \(urlString)")
+            return
+        }
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            if let http = response as? HTTPURLResponse, http.statusCode != 200 {
+                Logger.shared.error("Cape download failed: status=\(http.statusCode)")
+                return
+            }
+            if data.isEmpty { return }
+            let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent("cape_\(UUID().uuidString).png")
+            try data.write(to: tempFile)
+            await MainActor.run {
+                if selectedCapeImageURL == urlString {
+                    selectedCapeLocalPath = tempFile.path
+                }
+            }
+        } catch {
+            Logger.shared.error("Cape download error: \(error)")
+        }
+    }
+
+    private func convertToPlayerModel(_ skinModel: PlayerSkinService.PublicSkinInfo.SkinModel) -> PlayerModel {
+        switch skinModel {
+        case .classic:
+            return .steve
+        case .slim:
+            return .alex
         }
     }
 }
