@@ -3,6 +3,7 @@ import SwiftUI
 private enum Constants {
     static let versionPopoverMinWidth: CGFloat = 320
     static let versionPopoverMaxHeight: CGFloat = 360
+    static let versionPopoverMinHeight: CGFloat = 200
 }
 
 struct CustomVersionPicker: View {
@@ -103,6 +104,7 @@ struct CustomVersionPicker: View {
         .frame(
             minWidth: Constants.versionPopoverMinWidth,
             maxWidth: Constants.versionPopoverMinWidth,
+            minHeight: Constants.versionPopoverMinHeight,
             maxHeight: Constants.versionPopoverMaxHeight
         )
     }
