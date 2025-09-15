@@ -114,9 +114,7 @@ private struct GameVersionFilterPopover: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("versions.game_versions".localized())
-                    .font(.headline)
-                Spacer()
+                Spacer() // 占位，把按钮推到右边
                 if selectedGameVersion != nil {
                     Button {
                         selectedGameVersion = nil
@@ -128,67 +126,17 @@ private struct GameVersionFilterPopover: View {
                     .foregroundColor(.primary)
                 }
             }
+            .padding()
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    ForEach(groupedGameVersions(availableGameVersions).keys.sorted(by: versionSort), id: \.self) { majorVersion in
-                        GameVersionGroup(
-                            majorVersion: majorVersion,
-                            versions: groupedGameVersions(availableGameVersions)[majorVersion] ?? [],
-                            selectedGameVersion: $selectedGameVersion,
-                            showingVersionFilter: $showingVersionFilter
-                        )
-                    }
-                }
+            VersionGroupedView(
+                items: availableGameVersions.map { FilterItem(id: $0, name: $0) },
+                selectedItem: $selectedGameVersion
+            ) { selectedVersion in
+                selectedGameVersion = selectedVersion
+                showingVersionFilter = false
             }
         }
-        .padding()
         .frame(width: Constants.filterPopoverWidth, height: Constants.filterPopoverHeight)
-    }
-
-    private func versionSort(_ version1: String, _ version2: String) -> Bool {
-        let components1 = version1.split(separator: ".").compactMap { Int($0) }
-        let components2 = version2.split(separator: ".").compactMap { Int($0) }
-
-        for i in 0..<min(components1.count, components2.count) where components1[i] != components2[i] {
-            return components1[i] > components2[i]
-        }
-        return components1.count > components2.count
-    }
-}
-
-private struct GameVersionGroup: View {
-    let majorVersion: String
-    let versions: [String]
-    @Binding var selectedGameVersion: String?
-    @Binding var showingVersionFilter: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(majorVersion)
-                .font(.headline.bold())
-                .foregroundColor(.primary)
-
-            FlowLayout(spacing: Constants.tagSpacing) {
-                ForEach(versions, id: \.self) { version in
-                    Button {
-                        selectedGameVersion = version
-                        showingVersionFilter = false
-                    } label: {
-                        Text(version)
-                            .font(.caption)
-                            .padding(.horizontal, Constants.tagPadding)
-                            .padding(.vertical, Constants.tagVerticalPadding)
-                            .background(
-                                RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                                    .fill(selectedGameVersion == version ? Color.accentColor.opacity(0.2) : Color.gray.opacity(0.1))
-                            )
-                            .foregroundColor(selectedGameVersion == version ? Color.accentColor : .primary)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-        }
     }
 }
 
@@ -304,22 +252,11 @@ private struct GameVersionsPopover: View {
             Text("versions.game_versions".localized())
                 .font(.headline)
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    ForEach(groupedGameVersions(version.gameVersions).keys.sorted(by: >), id: \.self) { majorVersion in
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(majorVersion)
-                                .font(.headline.bold())
-                                .foregroundColor(.secondary)
-
-                            FlowLayout(spacing: Constants.tagSpacing) {
-                                ForEach(groupedGameVersions(version.gameVersions)[majorVersion] ?? [], id: \.self) { gameVersion in
-                                    VersionTag(text: gameVersion)
-                                }
-                            }
-                        }
-                    }
-                }
+            VersionGroupedView(
+                items: version.gameVersions.map { FilterItem(id: $0, name: $0) },
+                selectedItems: .constant([])
+            ) { _ in
+                // No action needed for display-only popover
             }
         }
         .padding()
@@ -410,62 +347,6 @@ private struct VersionActions: View {
             Image(systemName: "safari")
                 .foregroundColor(.accentColor)
         }
-    }
-}
-
-// MARK: - Version Grouping
-private func groupedGameVersions(_ versions: [String]) -> [String: [String]] {
-    var groups: [String: [String]] = [:]
-
-    for version in versions {
-        let groupKey = getVersionGroupKey(version)
-        if groups[groupKey] == nil {
-            groups[groupKey] = []
-        }
-        groups[groupKey]?.append(version)
-    }
-
-    // 对每个组内的版本进行排序
-    for key in groups.keys {
-        groups[key]?.sort { version1, version2 in
-            let v1 = version1.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-            let v2 = version2.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-            return v1 > v2
-        }
-    }
-
-    return groups
-}
-
-private func getVersionGroupKey(_ version: String) -> String {
-    // 处理快照版本 (如 23w43a)
-    if version.contains("w") {
-        let year = String(version.prefix(2))
-        return "Snapshot \(year)"
-    }
-
-    // 处理预发布版本 (如 1.20.4-pre1)
-    if version.contains("-pre") {
-        let baseVersion = version.components(separatedBy: "-pre")[0]
-        return getMajorVersion(from: baseVersion)
-    }
-
-    // 处理候选版本 (如 1.20.4-rc1)
-    if version.contains("-rc") {
-        let baseVersion = version.components(separatedBy: "-rc")[0]
-        return getMajorVersion(from: baseVersion)
-    }
-
-    // 处理正式版本 (如 1.20.4)
-    return getMajorVersion(from: version)
-}
-
-private func getMajorVersion(from version: String) -> String {
-    let components = version.split(separator: ".")
-    if components.count >= 2 {
-        return "\(components[0]).\(components[1])"
-    } else {
-        return "Other"
     }
 }
 

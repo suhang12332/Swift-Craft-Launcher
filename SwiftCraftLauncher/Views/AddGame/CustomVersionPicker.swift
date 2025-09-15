@@ -1,11 +1,8 @@
 import SwiftUI
 
 private enum Constants {
-    static let versionGridColumns = 6
     static let versionPopoverMinWidth: CGFloat = 320
     static let versionPopoverMaxHeight: CGFloat = 360
-    static let versionButtonPadding: CGFloat = 6
-    static let versionButtonVerticalPadding: CGFloat = 3
 }
 
 struct CustomVersionPicker: View {
@@ -16,22 +13,9 @@ struct CustomVersionPicker: View {
     @State private var showMenu = false
     @State private var error: GlobalError?
 
-    private var groupedVersions: [(String, [String])] {
-        let dict = Dictionary(grouping: availableVersions) { version in
-            version.split(separator: ".").prefix(2).joined(separator: ".")
-        }
-        return dict.sorted {
-            let lhs = $0.key.split(separator: ".").compactMap { Int($0) }
-            let rhs = $1.key.split(separator: ".").compactMap { Int($0) }
-            return lhs.lexicographicallyPrecedes(rhs)
-        }
-        .reversed()
+    private var versionItems: [FilterItem] {
+        availableVersions.map { FilterItem(id: $0, name: $0) }
     }
-
-    private let columns = Array(
-        repeating: GridItem(.flexible(), spacing: 8),
-        count: Constants.versionGridColumns
-    )
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -93,35 +77,22 @@ struct CustomVersionPicker: View {
     }
 
     private var versionPopoverContent: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                ForEach(groupedVersions, id: \.0) { major, versions in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(major)
-                            .font(.headline)
-                            .padding(.vertical, 2)
-                        LazyVGrid(
-                            columns: columns,
-                            alignment: .leading,
-                            spacing: 8
-                        ) {
-                            ForEach(versions, id: \.self) { version in
-                                versionButton(for: version)
-                            }
+        VersionGroupedView(
+            items: versionItems,
+            selectedItem: Binding<String?>(
+                get: { selected.isEmpty ? nil : selected },
+                set: { newValue in
+                    if let newValue = newValue {
+                        selected = newValue
+                        showMenu = false
+                        // 使用版本时间映射来设置时间信息
+                        Task {
+                            time = await onVersionSelected(newValue)
                         }
                     }
                 }
-            }
-            .padding(12)
-        }
-        .frame(
-            minWidth: Constants.versionPopoverMinWidth,
-            maxHeight: Constants.versionPopoverMaxHeight
-        )
-    }
-
-    private func versionButton(for version: String) -> some View {
-        Button(version) {
+            )
+        ) { version in
             selected = version
             showMenu = false
             // 使用版本时间映射来设置时间信息
@@ -129,20 +100,11 @@ struct CustomVersionPicker: View {
                 time = await onVersionSelected(version)
             }
         }
-        .padding(.horizontal, Constants.versionButtonPadding)
-        .padding(.vertical, Constants.versionButtonVerticalPadding)
-        .font(.subheadline)
-        .cornerRadius(4)
-        .background(
-            RoundedRectangle(cornerRadius: 4)
-                .fill(
-                    selected == version
-                        ? Color.accentColor : Color.gray.opacity(0.15)
-                )
+        .frame(
+            minWidth: Constants.versionPopoverMinWidth,
+            maxWidth: Constants.versionPopoverMinWidth,
+            maxHeight: Constants.versionPopoverMaxHeight
         )
-        .foregroundStyle(selected == version ? .white : .primary)
-        .buttonStyle(.plain)
-        .fixedSize()
     }
 
     private func handleEmptyVersionsError() {

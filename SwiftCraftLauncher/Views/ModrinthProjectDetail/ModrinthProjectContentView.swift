@@ -107,36 +107,12 @@ private struct GameVersionsPopover: View {
     let versions: [String]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("project.info.versions".localized())
-                .font(.headline)
-
-            ScrollView {
-                VStack(alignment: .leading, spacing: 12) {
-                    ForEach(
-                        groupedVersions(versions).keys.sorted(by: >),
-                        id: \.self
-                    ) { majorVersion in
-                        VStack(alignment: .leading, spacing: 6) {
-                            Text(majorVersion)
-                                .font(.headline.bold())
-                                .foregroundColor(.primary)
-
-                            FlowLayout(spacing: Constants.spacing) {
-                                ForEach(
-                                    groupedVersions(versions)[majorVersion]
-                                        ?? [],
-                                    id: \.self
-                                ) { version in
-                                    VersionTag(version: version)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        VersionGroupedView(
+            items: versions.map { FilterItem(id: $0, name: $0) },
+            selectedItems: .constant([])
+        ) { _ in
+            // No action needed for display-only popover
         }
-        .padding()
         .frame(width: Constants.popoverWidth, height: Constants.popoverHeight)
     }
 }
@@ -377,86 +353,6 @@ struct ModrinthProjectContentView: View {
             "Successfully loaded project details for ID: \(projectId)"
         )
     }
-}
-
-// MARK: - Helper Functions
-private func groupedVersions(_ versions: [String]) -> [String: [String]] {
-    var groups: [String: [String]] = [:]
-
-    for version in versions {
-        // 处理快照版本 (如 23w43a)
-        if version.contains("w") {
-            let year = String(version.prefix(2))
-            let groupKey = "Snapshot \(year)"
-            if groups[groupKey] == nil {
-                groups[groupKey] = []
-            }
-            groups[groupKey]?.append(version)
-            continue
-        }
-
-        // 处理预发布版本 (如 1.20.4-pre1)
-        if version.contains("-pre") {
-            let baseVersion = version.components(separatedBy: "-pre")[0]
-            let components = baseVersion.split(separator: ".")
-            if components.count >= 2 {
-                let majorVersion = "\(components[0]).\(components[1])"
-                if groups[majorVersion] == nil {
-                    groups[majorVersion] = []
-                }
-                groups[majorVersion]?.append(version)
-            }
-            continue
-        }
-
-        // 处理候选版本 (如 1.20.4-rc1)
-        if version.contains("-rc") {
-            let baseVersion = version.components(separatedBy: "-rc")[0]
-            let components = baseVersion.split(separator: ".")
-            if components.count >= 2 {
-                let majorVersion = "\(components[0]).\(components[1])"
-                if groups[majorVersion] == nil {
-                    groups[majorVersion] = []
-                }
-                groups[majorVersion]?.append(version)
-            }
-            continue
-        }
-
-        // 处理正式版本 (如 1.20.4)
-        let components = version.split(separator: ".")
-        if components.count >= 2 {
-            let majorVersion = "\(components[0]).\(components[1])"
-            if groups[majorVersion] == nil {
-                groups[majorVersion] = []
-            }
-            groups[majorVersion]?.append(version)
-        } else {
-            // 处理其他格式的版本
-            if groups["Other"] == nil {
-                groups["Other"] = []
-            }
-            groups["Other"]?.append(version)
-        }
-    }
-
-    // 对每个组内的版本进行排序
-    for key in groups.keys {
-        groups[key]?.sort { version1, version2 in
-            // 移除所有非数字字符后比较
-            let v1 = version1.components(
-                separatedBy: CharacterSet.decimalDigits.inverted
-            )
-            .joined()
-            let v2 = version2.components(
-                separatedBy: CharacterSet.decimalDigits.inverted
-            )
-            .joined()
-            return v1 > v2
-        }
-    }
-
-    return groups
 }
 
 // MARK: - Helper Views
