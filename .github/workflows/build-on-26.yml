@@ -38,7 +38,7 @@ jobs:
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
           else
-            VERSION="${MARKETING_VERSION}"
+            VERSION=${MARKETING_VERSION}
           fi
           
           echo "version=$VERSION" >> $GITHUB_OUTPUT
