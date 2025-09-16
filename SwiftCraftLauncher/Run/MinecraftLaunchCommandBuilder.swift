@@ -40,7 +40,8 @@ enum MinecraftLaunchCommandBuilder {
             manifest.libraries,
             librariesDir: paths.librariesDir,
             clientJarPath: paths.clientJarPath,
-            modClassPath: gameInfo.modClassPath
+            modClassPath: gameInfo.modClassPath,
+            minecraftVersion: manifest.id
         )
 
         // 变量映射
@@ -126,7 +127,7 @@ enum MinecraftLaunchCommandBuilder {
         return result
     }
 
-    private static func buildClasspath(_ libraries: [Library], librariesDir: URL, clientJarPath: String, modClassPath: String) -> String {
+    private static func buildClasspath(_ libraries: [Library], librariesDir: URL, clientJarPath: String, modClassPath: String, minecraftVersion: String) -> String {
         Logger.shared.debug("开始构建类路径 - 库数量: \(libraries.count), mod类路径: \(modClassPath.isEmpty ? "无" : "\(modClassPath.split(separator: ":").count)个路径")")
 
         // 解析 mod 类路径并提取已存在的库路径
@@ -136,9 +137,9 @@ enum MinecraftLaunchCommandBuilder {
 
         // 过滤并处理 manifest 库
         let manifestLibraryPaths = libraries
-            .filter(shouldIncludeLibrary)
+            .filter { shouldIncludeLibrary($0, minecraftVersion: minecraftVersion) }
             .compactMap { library in
-                processLibrary(library, librariesDir: librariesDir, existingModBasePaths: existingModBasePaths)
+                processLibrary(library, librariesDir: librariesDir, existingModBasePaths: existingModBasePaths, minecraftVersion: minecraftVersion)
             }
             .flatMap { $0 }
 
@@ -194,7 +195,7 @@ enum MinecraftLaunchCommandBuilder {
     }
 
     /// 处理单个库，返回其所有相关路径
-    private static func processLibrary(_ library: Library, librariesDir: URL, existingModBasePaths: Set<String>) -> [String]? {
+    private static func processLibrary(_ library: Library, librariesDir: URL, existingModBasePaths: Set<String>, minecraftVersion: String) -> [String]? {
         let artifact = library.downloads.artifact
 
         // 获取主库路径
@@ -208,10 +209,9 @@ enum MinecraftLaunchCommandBuilder {
             return nil // mod 路径已存在，跳过
         }
 
-        // 获取分类器路径
-        let classifierPaths = getClassifierPaths(library: library, librariesDir: librariesDir)
-
-        return [libraryPath] + classifierPaths
+        // 只返回 artifact 路径，不包含 classifiers
+        // classifiers 是原生库，不应该添加到 classpath 中
+        return [libraryPath]
     }
 
     /// 获取库文件路径
@@ -226,50 +226,20 @@ enum MinecraftLaunchCommandBuilder {
     }
 
     /// 获取分类器库路径
-    private static func getClassifierPaths(library: Library, librariesDir: URL) -> [String] {
-        guard let classifiers = library.downloads.classifiers else { return [] }
-
-        // 如果有natives字段，只包含当前平台的原生库
-        if let natives = library.natives {
-            #if os(macOS)
-            let platformKey = "osx"
-            #elseif os(Linux)
-            let platformKey = "linux"
-            #elseif os(Windows)
-            let platformKey = "windows"
-            #else
-            let platformKey = ""
-            #endif
-
-            guard let classifierKey = natives[platformKey],
-                  let classifierArtifact = classifiers[classifierKey],
-                  let existingPath = classifierArtifact.path else {
-                return []
-            }
-
-            return [librariesDir.appendingPathComponent(existingPath).path]
-        }
-
-        // 如果没有natives字段，包含所有classifiers（向后兼容）如果后面兼容更低的也要进行过滤
-        return classifiers.values.compactMap { classifierArtifact in
-            if let existingPath = classifierArtifact.path {
-                return librariesDir.appendingPathComponent(existingPath).path
-            } else {
-                // 分类器没有路径信息时，跳过该分类器
-                Logger.shared.warning("分类器库文件缺少路径信息，跳过: \(library.name)")
-                return nil
-            }
-        }
+    /// 注意：classifiers 库不再添加到 classpath 中，此方法保留用于其他用途
+    private static func getClassifierPaths(library: Library, librariesDir: URL, minecraftVersion: String) -> [String] {
+        // 不再将 classifiers 添加到 classpath 中
+        return []
     }
 
     /// 判断该库是否应该包含在类路径中
-    private static func shouldIncludeLibrary(_ library: Library) -> Bool {
+    private static func shouldIncludeLibrary(_ library: Library, minecraftVersion: String? = nil) -> Bool {
         // 检查基本条件：可下载且包含在类路径中
         guard library.downloadable == true && library.includeInClasspath == true else {
             return false
         }
 
         // 使用统一的库过滤逻辑
-        return LibraryFilter.isLibraryAllowed(library)
+        return LibraryFilter.isLibraryAllowed(library, minecraftVersion: minecraftVersion)
     }
 }
