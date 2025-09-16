@@ -1,15 +1,6 @@
 {
-  "originHash" : "9280a0160be61afe798120c37442e1beb3db15f8b095cf2f650587ad2b42ac7c",
+  "originHash" : "b2c4e82de5822927479219bcaca65922ec291604ece6f12b2da06d97396d8f9d",
   "pins" : [
-    {
-      "identity" : "gzipswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/1024jp/GzipSwift.git",
-      "state" : {
-        "revision" : "7a7f17761c76a932662ab77028a4329f67d645a4",
-        "version" : "5.2.0"
-      }
-    },
     {
       "identity" : "networkimage",
       "kind" : "remoteSourceControl",
@@ -24,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/irisWirisW/NSSkinRender",
       "state" : {
-        "revision" : "f2570a84acb86aec35bc6da277656eeaa6cc9903",
-        "version" : "0.0.1"
+        "branch" : "main",
+        "revision" : "f2570a84acb86aec35bc6da277656eeaa6cc9903"
       }
     },
     {
@@ -40,19 +31,10 @@
     {
       "identity" : "swift-cmark",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swiftlang/swift-cmark",
+      "location" : "https://github.com/swiftlang/swift-cmark.git",
       "state" : {
         "revision" : "b022b08312decdc46585e0b3440d97f6f22ef703",
         "version" : "0.6.0"
-      }
-    },
-    {
-      "identity" : "swift-collections",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-collections.git",
-      "state" : {
-        "revision" : "8c0c0a8b49e080e54e5e328cc552821ff07cd341",
-        "version" : "1.2.1"
       }
     },
     {
@@ -62,15 +44,6 @@
       "state" : {
         "revision" : "5f613358148239d0292c0cef674a3c2314737f9e",
         "version" : "2.4.1"
-      }
-    },
-    {
-      "identity" : "swift-nbt",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/ezfe/swift-nbt.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "20349a3a0a7607352a1d3141160c44a3f0d9ada6"
       }
     },
     {

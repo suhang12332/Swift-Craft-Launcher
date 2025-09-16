@@ -217,39 +217,14 @@ struct GameInfoDetailView: View {
     }
 
     private var settingsButton: some View {
-        Group {
-            if hasSaves {
-                Button {
-                    showAdvancedSettings.toggle()
-                } label: {
-                    Text(
-                        (showAdvancedSettings
-                            ? "common.profile.save" : "common.settings")
-                            .localized()
-                    )
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(Color.accentColor)
-                .controlSize(.large)
-            }
+        Button {
+            showAdvancedSettings.toggle()
+        } label: {
+            Text("common.settings".localized())
         }
-    }
-
-    private var hasSaves: Bool {
-        guard let savesDir = AppPaths.savesDirectory(gameName: game.gameName)
-        else {
-            return false
-        }
-
-        do {
-            let contents = try FileManager.default.contentsOfDirectory(
-                at: savesDir,
-                includingPropertiesForKeys: nil
-            )
-            return !contents.isEmpty
-        } catch {
-            return false
-        }
+        .buttonStyle(.borderedProminent)
+        .tint(Color.accentColor)
+        .controlSize(.large)
     }
 
     private var localResourceList: some View {

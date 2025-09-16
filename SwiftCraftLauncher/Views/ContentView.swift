@@ -73,32 +73,8 @@ struct ContentView: View {
     }
 
     private func localModeView(game: GameVersionInfo) -> some View {
-        Group {
-            if !hasSaves(for: game.gameName) || showAdvancedSettings {
-                // 没有存档时默认显示设置，或者点击了设置按钮时显示设置
-                GameAdvancedSettingsView(game: game)
-            } else {
-                // 有存档且没有点击设置按钮时显示存档信息
-                ProfilesView(gameName: game.gameName)
-            }
-        }
-        .id(gameId)
-    }
-
-    private func hasSaves(for gameName: String) -> Bool {
-        guard let savesDir = AppPaths.savesDirectory(gameName: gameName) else {
-            return false
-        }
-
-        do {
-            let contents = try FileManager.default.contentsOfDirectory(
-                at: savesDir,
-                includingPropertiesForKeys: nil
-            )
-            return !contents.isEmpty
-        } catch {
-            return false
-        }
+        GameAdvancedSettingsView(game: game)
+            .id(gameId)
     }
 
     // MARK: - Resource Content View

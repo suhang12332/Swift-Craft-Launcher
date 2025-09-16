@@ -50,10 +50,6 @@ public struct AcknowledgementsView: View {
             url: "https://github.com/gonzalezreal/swift-markdown-ui"
         ),
         OpenSourceLibrary(
-            name: "swift-nbt",
-            url: "https://github.com/ezfe/swift-nbt"
-        ),
-        OpenSourceLibrary(
             name: "ZIPFoundation",
             url: "https://github.com/weichsel/ZIPFoundation"
         ),
