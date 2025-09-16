@@ -5,29 +5,35 @@ import Foundation
 enum LibraryFilter {
 
     /// 判断库是否被允许（基于平台规则）
-    /// - Parameter library: 要检查的库
+    /// - Parameters:
+    ///   - library: 要检查的库
+    ///   - minecraftVersion: Minecraft 版本号（可选）
     /// - Returns: 是否允许
-    static func isLibraryAllowed(_ library: Library) -> Bool {
+    static func isLibraryAllowed(_ library: Library, minecraftVersion: String? = nil) -> Bool {
         // 检查系统规则（没有规则或空规则默认允许）
         guard let rules = library.rules, !rules.isEmpty else { return true }
-        return MacRuleEvaluator.isAllowed(rules)
+        return MacRuleEvaluator.isAllowed(rules, minecraftVersion: minecraftVersion)
     }
 
     /// 判断库是否应该下载
-    /// - Parameter library: 要检查的库
+    /// - Parameters:
+    ///   - library: 要检查的库
+    ///   - minecraftVersion: Minecraft 版本号（可选）
     /// - Returns: 是否应该下载
-    static func shouldDownloadLibrary(_ library: Library) -> Bool {
+    static func shouldDownloadLibrary(_ library: Library, minecraftVersion: String? = nil) -> Bool {
         guard library.downloadable else { return false }
-        return isLibraryAllowed(library)
+        return isLibraryAllowed(library, minecraftVersion: minecraftVersion)
     }
 
     /// 判断库是否应该包含在classpath中
-    /// - Parameter library: 要检查的库
+    /// - Parameters:
+    ///   - library: 要检查的库
+    ///   - minecraftVersion: Minecraft 版本号（可选）
     /// - Returns: 是否应该包含在classpath中
-    static func shouldIncludeInClasspath(_ library: Library) -> Bool {
+    static func shouldIncludeInClasspath(_ library: Library, minecraftVersion: String? = nil) -> Bool {
         guard library.downloadable == true && library.includeInClasspath == true else {
             return false
         }
-        return isLibraryAllowed(library)
+        return isLibraryAllowed(library, minecraftVersion: minecraftVersion)
     }
 }

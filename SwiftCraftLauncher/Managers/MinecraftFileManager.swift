@@ -6,6 +6,7 @@ private enum Constants {
     static let metaSubdirectories = [
         "versions",
         "libraries",
+        "natives",
         "assets",
         "assets/indexes",
         "assets/objects",
@@ -142,7 +143,7 @@ class MinecraftFileManager {
 
     // MARK: - Private Methods
     private func calculateTotalFiles(_ manifest: MinecraftVersionManifest) -> Int {
-        let applicableLibraries = manifest.libraries.filter { shouldDownloadLibrary($0) }
+        let applicableLibraries = manifest.libraries.filter { shouldDownloadLibrary($0, minecraftVersion: manifest.id) }
 
         // 统计实际会下载的原生库数量（与下载逻辑保持一致）
         let nativeLibraries = applicableLibraries.compactMap { (library: Library) -> Library? in
@@ -150,9 +151,10 @@ class MinecraftFileManager {
             guard let classifiers = library.downloads.classifiers,
                   let natives = library.natives else { return nil }
 
-            // 查找当前平台的原生库分类器
-            let osClassifier = natives.keys.first { isNativeClassifier($0) }
-            guard let classifierKey = osClassifier,
+            // 查找当前平台对应的原生库分类器
+            let osKey = natives.keys.first { isNativeClassifier($0, minecraftVersion: manifest.id) }
+            guard let platformKey = osKey,
+                  let classifierKey = natives[platformKey],
                   classifiers[classifierKey] != nil else { return nil }
 
             return library // 返回会实际下载原生库的库
@@ -162,16 +164,8 @@ class MinecraftFileManager {
     }
 
     /// 检查分类器是否为当前平台的原生库
-    private func isNativeClassifier(_ key: String) -> Bool {
-        #if os(macOS)
-        return key == "osx-arm64" || key == "osx-x86_64" || key == "osx"
-        #elseif os(Linux)
-        return key == "linux"
-        #elseif os(Windows)
-        return key == "windows"
-        #else
-        return false
-        #endif
+    private func isNativeClassifier(_ key: String, minecraftVersion: String? = nil) -> Bool {
+        return MacRuleEvaluator.isPlatformIdentifierSupported(key, minecraftVersion: minecraftVersion)
     }
 
     private func createDirectories(
@@ -264,7 +258,7 @@ class MinecraftFileManager {
 
         Logger.shared.info("开始下载库文件")
         let osxLibraries = manifest.libraries.filter {
-            shouldDownloadLibrary($0)
+            shouldDownloadLibrary($0, minecraftVersion: manifest.id)
         }
 
         // 创建信号量控制并发数量
@@ -280,7 +274,8 @@ class MinecraftFileManager {
 
                     try await self?.downloadLibrary(
                         library,
-                        metaDirectory: AppPaths.metaDirectory
+                        metaDirectory: AppPaths.metaDirectory,
+                        minecraftVersion: manifest.id
                     )
                 }
             }
@@ -291,10 +286,11 @@ class MinecraftFileManager {
 
     private func downloadLibrary(
         _ library: Library,
-        metaDirectory: URL
+        metaDirectory: URL,
+        minecraftVersion: String
     ) async throws {
         // 检查库的规则是否适用于当前系统（包含 downloadable 检查）
-        guard shouldDownloadLibrary(library) else {
+        guard shouldDownloadLibrary(library, minecraftVersion: minecraftVersion) else {
             Logger.shared.debug("跳过不适用于当前系统的库文件: \(library.name)")
             return
         }
@@ -333,7 +329,7 @@ class MinecraftFileManager {
                 destinationURL: destinationURL,
                 expectedSha1: library.downloads.artifact.sha1
             )
-            await handleLibraryDownloadComplete(library: library, metaDirectory: metaDirectory)
+            await handleLibraryDownloadComplete(library: library, metaDirectory: metaDirectory, minecraftVersion: minecraftVersion)
         } catch {
             let globalError = GlobalError.from(error)
             throw GlobalError.download(
@@ -348,20 +344,26 @@ class MinecraftFileManager {
     private func downloadNativeLibrary(
         library: Library,
         classifiers: [String: LibraryArtifact],
-        metaDirectory: URL
+        metaDirectory: URL,
+        minecraftVersion: String
     ) async throws {
-        let osClassifier = library.natives?.keys.first { isNativeClassifier($0) }
+        // 找到当前平台对应的原生库分类器
+        guard let natives = library.natives else { return }
 
-        guard let classifierKey = osClassifier, let nativeArtifact = classifiers[classifierKey] else {
+        let osKey = natives.keys.first { isNativeClassifier($0, minecraftVersion: minecraftVersion) }
+        guard let platformKey = osKey,
+              let classifierKey = natives[platformKey],
+              let nativeArtifact = classifiers[classifierKey] else {
             return
         }
 
-        // 生成目标路径
+        // 生成目标路径 - 原生库下载到 natives 目录
         let destinationURL: URL
         if let existingPath = nativeArtifact.path {
             if existingPath.hasPrefix("/") {
                 destinationURL = URL(fileURLWithPath: existingPath)
             } else {
+                // 原生库下载到 natives 目录，而不是 libraries 目录
                 destinationURL = metaDirectory.appendingPathComponent("natives")
                     .appendingPathComponent(existingPath)
             }
@@ -386,6 +388,7 @@ class MinecraftFileManager {
                 destinationURL: destinationURL,
                 expectedSha1: nativeArtifact.sha1
             )
+
             incrementCompletedFilesCount(
                 fileName: String(format: "file.native".localized(), library.name),
                 type: .core
@@ -715,7 +718,7 @@ extension Library {
 
 extension MinecraftFileManager {
     /// 处理库下载完成后的逻辑
-    private func handleLibraryDownloadComplete(library: Library, metaDirectory: URL) async {
+    private func handleLibraryDownloadComplete(library: Library, metaDirectory: URL, minecraftVersion: String) async {
         incrementCompletedFilesCount(
             fileName: String(format: "file.library".localized(), library.name),
             type: .core
@@ -727,7 +730,8 @@ extension MinecraftFileManager {
                 try await downloadNativeLibrary(
                     library: library,
                     classifiers: classifiers,
-                    metaDirectory: metaDirectory
+                    metaDirectory: metaDirectory,
+                    minecraftVersion: minecraftVersion
                 )
             } catch {
                 Logger.shared.error("下载原生库失败: \(error.localizedDescription)")
@@ -736,8 +740,8 @@ extension MinecraftFileManager {
     }
 
     /// 判断库是否应该下载
-    private func shouldDownloadLibrary(_ library: Library) -> Bool {
-        return LibraryFilter.shouldDownloadLibrary(library)
+    private func shouldDownloadLibrary(_ library: Library, minecraftVersion: String? = nil) -> Bool {
+        return LibraryFilter.shouldDownloadLibrary(library, minecraftVersion: minecraftVersion)
     }
 
     /// 判断库是否允许在 macOS (osx) 下加载（保留向后兼容性）
