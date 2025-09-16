@@ -143,8 +143,19 @@ class MinecraftFileManager {
     // MARK: - Private Methods
     private func calculateTotalFiles(_ manifest: MinecraftVersionManifest) -> Int {
         let applicableLibraries = manifest.libraries.filter { shouldDownloadLibrary($0) }
-        let nativeLibraries = applicableLibraries.compactMap { library in
-            library.downloads.classifiers?.keys.contains { isNativeClassifier($0) }
+
+        // 统计实际会下载的原生库数量（与下载逻辑保持一致）
+        let nativeLibraries = applicableLibraries.compactMap { (library: Library) -> Library? in
+            // 检查是否有原生库分类器且当前平台可用
+            guard let classifiers = library.downloads.classifiers,
+                  let natives = library.natives else { return nil }
+
+            // 查找当前平台的原生库分类器
+            let osClassifier = natives.keys.first { isNativeClassifier($0) }
+            guard let classifierKey = osClassifier,
+                  classifiers[classifierKey] != nil else { return nil }
+
+            return library // 返回会实际下载原生库的库
         }.count
 
         return 1 + applicableLibraries.count + nativeLibraries + 2  // Client JAR + Libraries + Native Libraries + Asset Index + Logging Config
@@ -726,9 +737,7 @@ extension MinecraftFileManager {
 
     /// 判断库是否应该下载
     private func shouldDownloadLibrary(_ library: Library) -> Bool {
-        guard library.downloadable else { return false }
-        guard let rules = library.rules, !rules.isEmpty else { return true }
-        return MacRuleEvaluator.isAllowed(rules)
+        return LibraryFilter.shouldDownloadLibrary(library)
     }
 
     /// 判断库是否允许在 macOS (osx) 下加载（保留向后兼容性）
