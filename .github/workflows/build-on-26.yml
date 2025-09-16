@@ -1,0 +1,344 @@
+name: Build macOS DMG
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['*']
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  CLIENTID: ${{ secrets.CLIENTID }}
+  SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
+
+jobs:
+  build:
+    runs-on: macos-26
+    strategy:
+      matrix:
+        arch: [arm64, x86_64]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26'
+
+      - name: Extract version info
+        id: version
+        run: |
+          MARKETING_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /MARKETING_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
+          
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          else
+            VERSION="${MARKETING_VERSION}"
+          fi
+          
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Replace Info.plist variables
+        run: |
+          # 替换 AppConstants.swift 中的 CLIENTID 变量
+          SAFE_CLIENTID=$(printf '%s' "$CLIENTID" | sed 's/[\/&]/\\&/g')
+          sed -i '' "s/\$(CLIENTID)/$SAFE_CLIENTID/g" "SwiftCraftLauncher/Common/Utils/AppConstants.swift"
+
+          echo "✅ CLIENTID 已替换到 AppConstants.swift"
+
+      - name: Build app for ${{ matrix.arch }}
+        run: |
+          BUILD_DIR="build_${{ matrix.arch }}"
+          ARCHIVE_PATH="$BUILD_DIR/SwiftCraftLauncher.xcarchive"
+          
+          # 设置要排除的架构（排除非目标架构）
+          if [[ "${{ matrix.arch }}" == "arm64" ]]; then
+            EXCLUDED_ARCHS="x86_64"
+          else
+            EXCLUDED_ARCHS="arm64"
+          fi
+          
+          xcodebuild -project SwiftCraftLauncher.xcodeproj \
+            -scheme SwiftCraftLauncher \
+            -configuration Release \
+            -destination "platform=macOS,arch=${{ matrix.arch }}" \
+            -derivedDataPath "$BUILD_DIR" \
+            -archivePath "$ARCHIVE_PATH" \
+            -skipPackagePluginValidation \
+            EXCLUDED_ARCHS="$EXCLUDED_ARCHS" \
+            archive
+
+      - name: Add Sparkle public key to generated Info.plist
+        run: |
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
+          INFO_PLIST_PATH="$APP_PATH/Contents/Info.plist"
+          
+          if [[ ! -f "$INFO_PLIST_PATH" ]]; then
+            echo "❌ 未找到生成的 Info.plist: $INFO_PLIST_PATH"
+            exit 1
+          fi
+          
+          echo "📝 向生成的 Info.plist 添加 Sparkle 公钥..."
+          /usr/libexec/PlistBuddy -c "Add :SUPublicEDKey string $SPARKLE_PUBLIC_KEY" "$INFO_PLIST_PATH" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :SUPublicEDKey $SPARKLE_PUBLIC_KEY" "$INFO_PLIST_PATH"
+          
+          echo "✅ Sparkle 公钥已添加到生成的 Info.plist"
+
+      - name: Verify build output
+        run: |
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
+          
+          if [[ ! -d "$APP_PATH" ]]; then
+            echo "❌ 未找到构建产物: $APP_PATH"
+            exit 1
+          fi
+          echo "✅ 应用构建成功: $APP_PATH"
+          file "$APP_PATH/Contents/MacOS/Swift Craft Launcher"
+
+      - name: Process app with archify
+        run: |
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
+          PROCESSED_DIR="processed_app_${{ matrix.arch }}"
+          
+          echo "🔧 开始使用 archify 处理应用..."
+          echo "原始应用路径: $APP_PATH"
+          echo "目标架构: ${{ matrix.arch }}"
+          echo "输出目录: $PROCESSED_DIR"
+          
+          # Verify app exists
+          if [[ ! -d "$APP_PATH" ]]; then
+            echo "❌ 应用不存在: $APP_PATH"
+            exit 1
+          fi
+          
+          # Create output directory
+          mkdir -p "$PROCESSED_DIR"
+          
+          # Show archify help for debugging
+          echo "📋 archify 帮助信息:"
+          python3 .github/scripts/archify.py --help | head -20
+          
+          # Process app with archify
+          echo "🚀 执行 archify 命令..."
+          python3 .github/scripts/archify.py \
+            -app "$APP_PATH" \
+            -o "$PROCESSED_DIR" \
+            -arch "${{ matrix.arch }}" \
+            --codesign \
+            -l
+          
+          # Check if processing was successful
+          PROCESSED_APP="$PROCESSED_DIR/Swift Craft Launcher.app"
+          if [[ -d "$PROCESSED_APP" ]]; then
+            echo "✅ archify 处理成功"
+            echo "处理后的应用路径: $PROCESSED_APP"
+            
+            # Show file info for comparison
+            echo "原始应用大小:"
+            du -sh "$APP_PATH"
+            echo "处理后应用大小:"
+            du -sh "$PROCESSED_APP"
+            
+            # Replace original app with processed app
+            rm -rf "$APP_PATH"
+            cp -R "$PROCESSED_APP" "$APP_PATH"
+            echo "✅ 已用处理后的应用替换原始应用"
+          else
+            echo "❌ archify 处理失败，使用原始应用"
+            echo "检查输出目录内容:"
+            ls -la "$PROCESSED_DIR" || echo "输出目录不存在"
+          fi
+
+      - name: Install create-dmg
+        run: |
+          # Install create-dmg using Homebrew
+          brew install create-dmg
+          
+          # Verify installation
+          create-dmg --version
+
+      - name: Prepare DMG assets
+        run: |
+          # Create background image directory
+          mkdir -p dmg_background
+          
+          # Copy app icon for volume icon
+          cp "SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" "dmg_background/volume_icon.png"
+          
+          # Copy the existing background image (assuming it's in the project root)
+          if [[ -f "dmg_background@2x.png" ]]; then
+            cp "dmg_background@2x.png" "dmg_background/background@2x.png"
+          elif [[ -f ".github/assets/dmg/dmg_background@2x.png" ]]; then
+            cp ".github/assets/dmg/dmg_background@2x.png" "dmg_background/background@2x.png"
+          else
+            echo "⚠️  未找到背景图片，将使用默认背景"
+            # Fallback: use app icon as background
+            cp "SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" "dmg_background/background@2x.png"
+          fi
+          
+          echo "✅ DMG assets prepared"
+
+      - name: Create DMG
+        run: |
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
+          DMG_DIR="dmg_temp_${{ matrix.arch }}"
+          mkdir -p "$DMG_DIR"
+          cp -R "$APP_PATH" "$DMG_DIR/"
+          
+          DMG_NAME="Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg"
+          
+          # Use create-dmg for professional DMG creation
+          create-dmg \
+            --volname "Swift Craft Launcher" \
+            --volicon "dmg_background/volume_icon.png" \
+            --background "dmg_background/background@2x.png" \
+            --window-pos 200 120 \
+            --window-size 600 430 \
+            --icon-size 64 \
+            --icon "Swift Craft Launcher.app" 150 180 \
+            --app-drop-link 450 180 \
+            --hide-extension "Swift Craft Launcher.app" \
+            --text-size 12 \
+            --no-internet-enable \
+            "$DMG_NAME" \
+            "$DMG_DIR"
+          
+          if [[ -f "$DMG_NAME" ]]; then
+            echo "✅ DMG 创建成功: $DMG_NAME"
+            # Show DMG info
+            hdiutil info "$DMG_NAME" | head -20
+          else
+            echo "❌ DMG 创建失败"
+            exit 1
+          fi
+
+      - name: Upload DMG Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Swift-Craft-Launcher-${{ matrix.arch }}-${{ steps.version.outputs.version }}
+          path: Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg
+          retention-days: 30
+
+      - name: Clean up
+        if: always()
+        run: |
+          rm -rf build_${{ matrix.arch }}
+          rm -rf dmg_temp_${{ matrix.arch }}
+          rm -rf dmg_background
+          rm -f Swift_Craft_Launcher_${{ matrix.arch }}_*.dmg
+          rm -rf processed_app_${{ matrix.arch }}
+
+  # 可选发布任务（只在 tag 推送时执行）
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: macos-15
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+
+      - name: Display downloaded artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find release-artifacts -type f -name "*.dmg"
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.3'
+
+      - name: setup sparkle
+        run: |
+          SPARKLE_VERSION=2.7.1
+          curl -L "https://github.com/sparkle-project/Sparkle/releases/download/$SPARKLE_VERSION/Sparkle-$SPARKLE_VERSION.tar.xz" -o sparkle.tar.xz
+          tar -xf sparkle.tar.xz
+          
+          
+          if [[ -f "bin/generate_appcast" ]]; then
+            echo "✅ generate_appcast binary found in bin/"
+            echo "Binary permissions:"
+            ls -la bin/generate_appcast
+          else
+            echo "❌ generate_appcast binary not found"
+            exit 1
+          fi
+
+      - name: Create private key file
+        run: |
+          echo '${{ secrets.SPARKLE_PRIVATE_KEY }}' > ed25519_priv.pem
+          chmod 600 ed25519_priv.pem
+
+      - name: Generate appcast for arm64
+        run: |
+          # 获取版本信息
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "版本: $VERSION"
+          
+          # 查找arm64 DMG文件
+          echo "查找 arm64 DMG 文件..."
+          ARM64_DMG=$(find . -name "*arm64*.dmg" 2>/dev/null | head -1)
+          
+          if [[ -z "$ARM64_DMG" ]]; then
+            echo "❌ 未找到 arm64 DMG 文件"
+            exit 1
+          fi
+          
+          echo "找到的 arm64 DMG 文件: $ARM64_DMG"
+          
+          # 生成arm64 appcast条目
+          ./bin/generate_appcast \
+            --ed-key-file ed25519_priv.pem \
+            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
+            -o appcast-arm64.xml \
+            "$(dirname $ARM64_DMG)"
+          
+          echo "✅ ARM64 appcast generated successfully"
+
+      - name: Generate appcast for x86_64
+        run: |
+          # 获取版本信息
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "版本: $VERSION"
+          
+          # 查找x86_64 DMG文件
+          echo "查找 x86_64 DMG 文件..."
+          X86_64_DMG=$(find . -name "*x86_64*.dmg" 2>/dev/null | head -1)
+          
+          if [[ -z "$X86_64_DMG" ]]; then
+            echo "❌ 未找到 x86_64 DMG 文件"
+            exit 1
+          fi
+          
+          echo "找到的 x86_64 DMG 文件: $X86_64_DMG"
+          
+          # 生成x86_64 appcast条目
+          ./bin/generate_appcast \
+            --ed-key-file ed25519_priv.pem \
+            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
+            -o appcast-x86_64.xml \
+            "$(dirname $X86_64_DMG)"
+          
+          echo "✅ x86_64 appcast generated successfully"
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release-artifacts/**/*.dmg
+            appcast-arm64.xml
+            appcast-x86_64.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
