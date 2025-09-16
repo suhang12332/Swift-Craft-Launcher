@@ -38,10 +38,6 @@ enum AppPaths {
         profileRootDirectory.appendingPathComponent(gameName)
     }
 
-    static func savesDirectory(gameName: String) -> URL? {
-        profileRootDirectory.appendingPathComponent(gameName).appendingPathComponent("saves", isDirectory: true)
-    }
-
     static func modsDirectory(gameName: String) -> URL {
         profileDirectory(gameName: gameName).appendingPathComponent("mods")
     }
