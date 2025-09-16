@@ -40,7 +40,9 @@ jobs:
           else
             VERSION=${MARKETING_VERSION}
           fi
-          
+          # 删除可能存在的双引号
+          VERSION=${VERSION//\"/}
+          MARKETING_VERSION=${MARKETING_VERSION//\"/}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
 
