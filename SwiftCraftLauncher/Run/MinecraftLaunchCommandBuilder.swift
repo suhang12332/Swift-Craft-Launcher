@@ -227,7 +227,31 @@ enum MinecraftLaunchCommandBuilder {
 
     /// 获取分类器库路径
     private static func getClassifierPaths(library: Library, librariesDir: URL) -> [String] {
-        return library.downloads.classifiers?.values.compactMap { classifierArtifact in
+        guard let classifiers = library.downloads.classifiers else { return [] }
+
+        // 如果有natives字段，只包含当前平台的原生库
+        if let natives = library.natives {
+            #if os(macOS)
+            let platformKey = "osx"
+            #elseif os(Linux)
+            let platformKey = "linux"
+            #elseif os(Windows)
+            let platformKey = "windows"
+            #else
+            let platformKey = ""
+            #endif
+
+            guard let classifierKey = natives[platformKey],
+                  let classifierArtifact = classifiers[classifierKey],
+                  let existingPath = classifierArtifact.path else {
+                return []
+            }
+
+            return [librariesDir.appendingPathComponent(existingPath).path]
+        }
+
+        // 如果没有natives字段，包含所有classifiers（向后兼容）如果后面兼容更低的也要进行过滤
+        return classifiers.values.compactMap { classifierArtifact in
             if let existingPath = classifierArtifact.path {
                 return librariesDir.appendingPathComponent(existingPath).path
             } else {
@@ -235,7 +259,7 @@ enum MinecraftLaunchCommandBuilder {
                 Logger.shared.warning("分类器库文件缺少路径信息，跳过: \(library.name)")
                 return nil
             }
-        } ?? []
+        }
     }
 
     /// 判断该库是否应该包含在类路径中
@@ -245,8 +269,7 @@ enum MinecraftLaunchCommandBuilder {
             return false
         }
 
-        // 检查系统规则（没有规则或空规则默认允许）
-        guard let rules = library.rules, !rules.isEmpty else { return true }
-        return MacRuleEvaluator.isAllowed(rules)
+        // 使用统一的库过滤逻辑
+        return LibraryFilter.isLibraryAllowed(library)
     }
 }
