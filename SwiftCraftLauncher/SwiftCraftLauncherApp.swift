@@ -54,7 +54,7 @@ struct SwiftCraftLauncherApp: App {
                     if isVisible {
                         openWindow(id: "javaDownloadWindow")
                     }
-                }
+                }.glassEffect()
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
