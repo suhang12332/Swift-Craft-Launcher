@@ -58,10 +58,12 @@ struct AddOrDeleteResourceButton: View {
     let query: String
     let type: Bool  // false = local, true = server
     @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @State private var addButtonState: ModrinthDetailCardView.AddButtonState =
         .idle
     @State private var showDeleteAlert = false
     @State private var showNoGameAlert = false
+    @State private var showPlayerAlert = false  // 新增：玩家验证 alert
     @ObservedObject private var gameSettings = GameSettingsManager.shared
     @StateObject private var depVM = DependencySheetViewModel()
     @State private var isDownloadingAllDependencies = false
@@ -231,6 +233,13 @@ struct AddOrDeleteResourceButton: View {
                 dismissButton: .default(Text("common.confirm".localized()))
             )
         }
+        .alert(isPresented: $showPlayerAlert) {
+            Alert(
+                title: Text("sidebar.alert.no_player.title".localized()),
+                message: Text("sidebar.alert.no_player.message".localized()),
+                dismissButton: .default(Text("common.confirm".localized()))
+            )
+        }
     }
 
     // MARK: - UI Components
@@ -357,6 +366,11 @@ struct AddOrDeleteResourceButton: View {
                 if query == "modpack" {
                     if gameRepository.games.isEmpty {
                         showNoGameAlert = false
+                    }
+                    // 检查是否有当前玩家
+                    if playerListViewModel.currentPlayer == nil {
+                        showPlayerAlert = true
+                        return
                     }
                     showModPackDownloadSheet = true
                     return

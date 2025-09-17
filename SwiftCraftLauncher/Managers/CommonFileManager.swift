@@ -202,10 +202,15 @@ class CommonFileManager {
     ///   - onProgressUpdate: 进度更新回调（可选，包含当前处理器索引和总处理器数量）
     /// - Throws: GlobalError 当处理失败时
     private func executeProcessor(_ processor: Processor, librariesDir: URL, gameVersion: String, data: [String: String]? = nil, onProgressUpdate: ((String, Int, Int) -> Void)? = nil) async throws {
+        // 通过gameVersion获取对应的Java版本
+        let versionInfo = try await ModrinthService.fetchVersionInfo(from: gameVersion)
+        let javaPath = JavaManager.shared.findJavaExecutable(version: versionInfo.javaVersion.component)
+
         try await ProcessorExecutor.executeProcessor(
             processor,
             librariesDir: librariesDir,
             gameVersion: gameVersion,
+            javaPath: javaPath,
             data: data
         )
     }
