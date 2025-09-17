@@ -65,7 +65,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 }
                 .sorted { version1, version2 in
                     // 按发布日期排序，最新的在前
-                    version1.datePublished < version2.datePublished
+                    version1.datePublished > version2.datePublished
                 }
         } catch {
             let globalError = GlobalError.from(error)

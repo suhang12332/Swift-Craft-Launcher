@@ -15,6 +15,7 @@ enum ProcessorExecutor {
         _ processor: Processor,
         librariesDir: URL,
         gameVersion: String,
+        javaPath: String,
         data: [String: String]? = nil
     ) async throws {
         // 1. 验证和准备JAR文件
@@ -44,7 +45,7 @@ enum ProcessorExecutor {
         )
 
         // 5. 执行Java命令
-        try await executeJavaCommand(command, workingDir: librariesDir)
+        try await executeJavaCommand(command, javaPath: javaPath, workingDir: librariesDir)
 
         // 6. 处理输出文件
         if let outputs = processor.outputs {
@@ -234,10 +235,11 @@ enum ProcessorExecutor {
 
     private static func executeJavaCommand(
         _ command: [String],
+        javaPath: String,
         workingDir: URL
     ) async throws {
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/java")
+        process.executableURL = URL(fileURLWithPath: javaPath)
         process.arguments = command
         process.currentDirectoryURL = workingDir
 
