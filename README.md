@@ -35,7 +35,7 @@ Swift Craft Launcher 是一款采用 SwiftUI 构建的原生 macOS Minecraft 启
 ### 🧩 基础功能
 - **🔄 多版本 Minecraft 支持** - ARM: 1.13+，Intel: 未测试
 - **🔐 Microsoft 账户认证** - 安全的 OAuth 集成，支持设备代码流程
-- **🧰 模组加载器支持** - Fabric、Quilt、Forge 和 NeoForge，自动安装
+- **🧰 模组加载器支持** - 支持 Fabric、Quilt、Forge 和 NeoForge 自动安装
 - **📦 资源管理** - 一键安装模组、数据包、光影和资源包
 
 ### 💻 用户体验
