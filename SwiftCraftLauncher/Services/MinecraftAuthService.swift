@@ -629,8 +629,7 @@ extension MinecraftAuthService {
             authRefreshToken: refreshedTokens.refreshToken ?? player.authRefreshToken,
             createdAt: player.createdAt,
             lastPlayed: player.lastPlayed,
-            isCurrent: player.isCurrent,
-            gameRecords: player.gameRecords
+            isCurrent: player.isCurrent
         )
 
         return updatedPlayer

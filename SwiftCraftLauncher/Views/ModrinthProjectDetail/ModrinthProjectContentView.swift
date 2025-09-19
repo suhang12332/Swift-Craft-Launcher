@@ -217,16 +217,6 @@ private struct LinksSection: View {
                         url: url
                     )
                 }
-
-                if let donationUrls = project.donationUrls,
-                    !donationUrls.isEmpty {
-                    ForEach(donationUrls, id: \.id) { donation in
-                        ProjectLink(
-                            text: "project.info.links.donate".localized(),
-                            url: donation.url
-                        )
-                    }
-                }
             }
         }
     }

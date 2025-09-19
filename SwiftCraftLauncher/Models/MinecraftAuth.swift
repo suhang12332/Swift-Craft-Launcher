@@ -3,7 +3,6 @@ import Foundation
 // MARK: - Authorization Code Flow Response
 struct AuthorizationCodeResponse {
     let code: String?
-    let state: String?
     let error: String?
     let errorDescription: String?
 
@@ -19,7 +18,6 @@ struct AuthorizationCodeResponse {
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let queryItems = components.queryItems else { return nil }
         self.code = queryItems.first { $0.name == "code" }?.value
-        self.state = queryItems.first { $0.name == "state" }?.value
         self.error = queryItems.first { $0.name == "error" }?.value
         // 解码 error_description
         if let encodedDescription = queryItems.first(where: { $0.name == "error_description" })?.value {
@@ -34,16 +32,10 @@ struct AuthorizationCodeResponse {
 struct TokenResponse: Codable {
     let accessToken: String
     let refreshToken: String?
-    let expiresIn: Int
-    let tokenType: String
-    let scope: String?
 
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case refreshToken = "refresh_token"
-        case expiresIn = "expires_in"
-        case tokenType = "token_type"
-        case scope
     }
 }
 
@@ -116,11 +108,9 @@ struct MinecraftProfileResponse: Codable, Equatable {
 }
 
 struct Skin: Codable, Equatable {
-    let id: String
     let state: String
     let url: String
     let variant: String?
-    let alias: String?
 }
 
 struct Cape: Codable, Equatable {

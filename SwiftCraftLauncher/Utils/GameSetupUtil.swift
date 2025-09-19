@@ -92,8 +92,7 @@ class GameSetupUtil: ObservableObject {
             gameIcon: gameIcon,
             gameVersion: selectedGameVersion,
             assetIndex: "",
-            modLoader: selectedModLoader,
-            isUserAdded: true
+            modLoader: selectedModLoader
         )
 
         Logger.shared.info("开始为游戏下载文件: \(gameInfo.gameName)")
@@ -300,8 +299,7 @@ class GameSetupUtil: ObservableObject {
             gameIcon: gameIcon,
             gameVersion: selectedGameVersion,
             assetIndex: "",
-            modLoader: selectedModLoader,
-            isUserAdded: true
+            modLoader: selectedModLoader
         )
 
         // 根据是否指定了加载器版本来选择不同的方法
