@@ -16,7 +16,6 @@ struct SwiftCraftLauncherApp: App {
     @StateObject private var generalSettingsManager = GeneralSettingsManager
         .shared
     @StateObject private var skinSelectionStore = SkinSelectionStore()
-    @StateObject private var javaDownloadManager = JavaDownloadManager.shared
     @Environment(\.openWindow)
     private var openWindow
 
@@ -50,11 +49,6 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(skinSelectionStore)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
-                .onChange(of: javaDownloadManager.isWindowVisible) { _, isVisible in
-                    if isVisible {
-                        openWindow(id: "javaDownloadWindow")
-                    }
-                }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
@@ -74,26 +68,6 @@ struct SwiftCraftLauncherApp: App {
                         window.collectionBehavior.remove(.fullScreenPrimary)
                     }
                 )
-        }
-        .windowStyle(.titleBar)
-        .windowToolbarStyle(.unified(showsTitle: true))
-        .windowResizability(.contentSize)
-        .conditionalRestorationBehavior()
-
-        // Java下载进度窗口
-        WindowGroup("global_resource.download".localized(), id: "javaDownloadWindow") {
-            JavaDownloadProgressWindow(downloadState: javaDownloadManager.downloadState)
-                .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme)
-                .background(
-                    WindowAccessor { window in
-                        // 移除最小化、最大化按钮，关闭按钮
-                        window.styleMask.remove([.miniaturizable, .resizable])
-                        // 禁用全屏
-                        window.collectionBehavior.remove(.fullScreenPrimary)
-                    }
-                )
-                .frame(width: 400)
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: true))
@@ -153,20 +127,4 @@ struct SwiftCraftLauncherApp: App {
             }
         )
     }
-}
-
-struct WindowAccessor: NSViewRepresentable {
-    var callback: (NSWindow) -> Void
-
-    func makeNSView(context: Context) -> NSView {
-        let view = NSView()
-        DispatchQueue.main.async {
-            if let window = view.window {
-                callback(window)
-            }
-        }
-        return view
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {}
 }

@@ -22,7 +22,9 @@ class JavaDownloadManager: ObservableObject {
             // 重置状态
             downloadState.reset()
             downloadState.startDownload(version: version)
-            isWindowVisible = true
+
+            // 显示下载弹窗
+            showDownloadWindow()
 
             // 设置进度回调
             javaRuntimeService.setProgressCallback { [weak self] fileName, completed, total in
@@ -77,8 +79,23 @@ class JavaDownloadManager: ObservableObject {
         }
     }
 
+    /// 显示下载窗口
+    private func showDownloadWindow() {
+        let config = TemporaryWindowConfig(
+            title: "global_resource.download".localized(),
+            width: 400
+        )
+
+        TemporaryWindowManager.shared.showWindow(
+            content: JavaDownloadProgressWindow(downloadState: downloadState),
+            config: config
+        )
+        isWindowVisible = true
+    }
+
     /// 关闭窗口
     func closeWindow() {
+        TemporaryWindowManager.shared.closeWindow()
         isWindowVisible = false
         downloadState.reset()
         dismissCallback?()
@@ -90,8 +107,6 @@ class JavaDownloadManager: ObservableObject {
         // 这里可以添加清理逻辑，比如删除部分下载的文件
         Logger.shared.info("Cleaning up cancelled Java download for version: \(downloadState.version)")
         // 重置状态并关闭窗口
-        downloadState.reset()
-        isWindowVisible = false
-        dismissCallback?()
+        closeWindow()
     }
 }
