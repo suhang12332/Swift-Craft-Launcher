@@ -49,6 +49,32 @@ enum CurseForgeClassId: Int, CaseIterable {
     }
 }
 
+/// CurseForge ModLoaderType 枚举
+enum CurseForgeModLoaderType: Int, CaseIterable {
+    case forge = 1
+    case fabric = 4
+    case quilt = 5
+    case neoforge = 6
+
+    /// 根据字符串获取对应的枚举值
+    /// - Parameter loaderName: 加载器名称字符串
+    /// - Returns: 对应的枚举值，如果没有匹配则返回 nil
+    static func from(_ loaderName: String) -> Self? {
+        switch loaderName.lowercased() {
+        case "forge":
+            return .forge
+        case "fabric":
+            return .fabric
+        case "quilt":
+            return .quilt
+        case "neoforge":
+            return .neoforge
+        default:
+            return nil
+        }
+    }
+}
+
 struct CurseForgeCategory: Codable {
     let id: Int
     let name: String

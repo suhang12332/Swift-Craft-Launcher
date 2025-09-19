@@ -205,6 +205,27 @@ enum URLConfig {
                     .appendingPathComponent("\(fileId % 1000)")
                     .appendingPathComponent(fileName)
             }
+
+            static func projectFiles(projectId: Int, gameVersion: String? = nil, modLoaderType: Int? = nil) -> URL {
+                let url = mirrorBaseURL.appendingPathComponent("mods/\(projectId)/files")
+
+                var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                var queryItems: [URLQueryItem] = []
+
+                if let gameVersion = gameVersion {
+                    queryItems.append(URLQueryItem(name: "gameVersion", value: gameVersion))
+                }
+
+                if let modLoaderType = modLoaderType {
+                    queryItems.append(URLQueryItem(name: "modLoaderType", value: String(modLoaderType)))
+                }
+
+                if !queryItems.isEmpty {
+                    components?.queryItems = queryItems
+                }
+
+                return components?.url ?? url
+            }
         }
     }
 }
