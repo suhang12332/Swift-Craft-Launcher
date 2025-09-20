@@ -1,4 +1,5 @@
 # Contributing Guide 📘
+  [🇨🇳简体中文](../CONTRIBUTING.md) | 🇬🇧English
 
 Welcome to **SwiftCraftLauncher**! We’re so glad you’re here 🙌. This guide will help you contribute effectively and ensure your work is smoothly integrated.
 
