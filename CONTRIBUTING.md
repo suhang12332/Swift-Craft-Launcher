@@ -1,4 +1,5 @@
 # 贡献指南 📘
+  🇨🇳简体中文 | [🇬🇧English](/doc/CONTRIBUTING_en.md)
 
 #### 欢迎你为 SwiftCraftLauncher 贡献！谢谢你愿意参与 🙌。请先看这份指南，可以让我们协作更顺畅，也能让你的贡献更容易被接纳。
 
