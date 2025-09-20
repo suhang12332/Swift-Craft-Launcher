@@ -1,7 +1,7 @@
 import Foundation
 
 enum CurseForgeToModrinthAdapter {
-    static func convert(_ cf: CurseForgeModFileDetail) -> ModrinthProjectDetail? {
+    static func convert(_ cf: CurseForgeModDetail) -> ModrinthProjectDetail? {
         // 你需要根据 ModrinthProjectDetail 的定义做字段映射
         // 这里只做简单示例，具体字段请根据你的模型调整
 //        return ModrinthProjectDetail(

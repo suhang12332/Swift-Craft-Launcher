@@ -42,6 +42,7 @@ enum ModPackDependencyInstaller {
         async let filesResult = installModPackFiles(
             files: indexInfo.files,
             resourceDir: resourceDir,
+            gameInfo: gameInfo,
             onProgressUpdate: onProgressUpdate
         )
 
@@ -88,11 +89,13 @@ enum ModPackDependencyInstaller {
     /// - Parameters:
     ///   - files: 文件列表
     ///   - resourceDir: 资源目录
+    ///   - gameInfo: 游戏信息
     ///   - onProgressUpdate: 进度更新回调
     /// - Returns: 是否安装成功
     private static func installModPackFiles(
         files: [ModrinthIndexFile],
         resourceDir: URL,
+        gameInfo: GameVersionInfo,
         onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
     ) async -> Bool {
         Logger.shared.info("开始安装整合包文件，共 \(files.count) 个文件")
@@ -117,7 +120,7 @@ enum ModPackDependencyInstaller {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
 
-                    let success = await downloadSingleFile(file: file, resourceDir: resourceDir)
+                    let success = await downloadSingleFile(file: file, resourceDir: resourceDir, gameInfo: gameInfo)
 
                     // 更新进度
                     if success {
@@ -171,8 +174,9 @@ enum ModPackDependencyInstaller {
     /// - Parameters:
     ///   - file: 文件信息
     ///   - resourceDir: 资源目录
+    ///   - gameInfo: 游戏信息（可选，用于兼容性检查）
     /// - Returns: 是否下载成功
-    private static func downloadSingleFile(file: ModrinthIndexFile, resourceDir: URL) async -> Bool {
+    private static func downloadSingleFile(file: ModrinthIndexFile, resourceDir: URL, gameInfo: GameVersionInfo? = nil) async -> Bool {
         // 检查是否是 CurseForge 文件（需要延迟获取详情）
         if file.source == .curseforge,
            let projectId = file.curseForgeProjectId,
@@ -181,7 +185,8 @@ enum ModPackDependencyInstaller {
             return await downloadCurseForgeFile(
                 projectId: projectId,
                 fileId: fileId,
-                resourceDir: resourceDir
+                resourceDir: resourceDir,
+                gameInfo: gameInfo
             )
         } else {
             // Modrinth 文件：使用原有逻辑
@@ -194,22 +199,81 @@ enum ModPackDependencyInstaller {
     ///   - projectId: 项目ID
     ///   - fileId: 文件ID
     ///   - resourceDir: 资源目录
+    ///   - gameInfo: 游戏信息（可选，用于兼容性检查）
     /// - Returns: 是否下载成功
-    private static func downloadCurseForgeFile(projectId: Int, fileId: Int, resourceDir: URL) async -> Bool {
-        do {
-            // 并发获取文件详情
-            guard let fileDetail = await CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId) else {
-                Logger.shared.error("无法获取 CurseForge 文件详情: \(projectId)/\(fileId)")
-                return false
-            }
+    private static func downloadCurseForgeFile(projectId: Int, fileId: Int, resourceDir: URL, gameInfo: GameVersionInfo? = nil) async -> Bool {
+        // 首先尝试获取特定文件详情
+        guard let fileDetail = await CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId) else {
+            Logger.shared.error("无法获取 CurseForge 文件详情: \(projectId)/\(fileId)")
 
+            // 主要策略失败，尝试备用策略：获取项目文件列表并找到最新兼容版本
+            return await downloadCurseForgeFileWithFallback(projectId: projectId, resourceDir: resourceDir, gameInfo: gameInfo)
+        }
+
+        // 尝试下载指定文件
+        if await downloadCurseForgeFileWithDetail(fileDetail: fileDetail, projectId: projectId, resourceDir: resourceDir) {
+            Logger.shared.info("已下载 CurseForge 文件: \(fileDetail.fileName)")
+            return true
+        } else {
+            Logger.shared.warning("下载指定文件失败，尝试备用策略: \(projectId)/\(fileId)")
+            // 下载失败，尝试备用策略
+            return await downloadCurseForgeFileWithFallback(projectId: projectId, resourceDir: resourceDir, gameInfo: gameInfo)
+        }
+    }
+
+    /// 使用备用策略下载 CurseForge 文件（精确匹配游戏版本和加载器）
+    /// - Parameters:
+    ///   - projectId: 项目ID
+    ///   - resourceDir: 资源目录
+    ///   - gameInfo: 游戏信息（可选，用于兼容性检查）
+    /// - Returns: 是否下载成功
+    private static func downloadCurseForgeFileWithFallback(projectId: Int, resourceDir: URL, gameInfo: GameVersionInfo?) async -> Bool {
+        Logger.shared.info("使用备用策略下载 CurseForge 文件: \(projectId)")
+
+        // 必须有游戏信息才能进行精确匹配
+        guard let gameInfo = gameInfo else {
+            Logger.shared.error("缺少游戏信息，无法进行文件过滤: \(projectId)")
+            return false
+        }
+
+        Logger.shared.info("尝试精确匹配：游戏版本 \(gameInfo.gameVersion)，加载器 \(gameInfo.modLoader)")
+
+        // 精确匹配游戏版本和加载器
+        let modLoaderTypeValue = CurseForgeModLoaderType.from(gameInfo.modLoader)?.rawValue
+        guard let filteredFiles = await CurseForgeService.fetchProjectFiles(
+            projectId: projectId,
+            gameVersion: gameInfo.gameVersion,
+            modLoaderType: modLoaderTypeValue
+        ), !filteredFiles.isEmpty else {
+            Logger.shared.error("精确匹配失败，未找到兼容文件: \(projectId), 游戏版本: \(gameInfo.gameVersion), 加载器: \(gameInfo.modLoader)")
+            return false
+        }
+
+        Logger.shared.info("精确匹配成功，获取到 \(filteredFiles.count) 个文件")
+        if let fileToDownload = filteredFiles.first {
+            Logger.shared.info("选择最新文件: \(fileToDownload.fileName), 发布时间: \(fileToDownload.fileDate)")
+            return await downloadCurseForgeFileWithDetail(fileDetail: fileToDownload, projectId: projectId, resourceDir: resourceDir)
+        }
+
+        Logger.shared.error("未找到可下载的文件: \(projectId)")
+        return false
+    }
+
+    /// 使用文件详情下载 CurseForge 文件
+    /// - Parameters:
+    ///   - fileDetail: 文件详情
+    ///   - projectId: 项目ID
+    ///   - resourceDir: 资源目录
+    /// - Returns: 是否下载成功
+    private static func downloadCurseForgeFileWithDetail(fileDetail: CurseForgeModFileDetail, projectId: Int, resourceDir: URL) async -> Bool {
+        do {
             // 确定下载URL
             let downloadUrl: String
             if let directUrl = fileDetail.downloadUrl, !directUrl.isEmpty {
                 downloadUrl = directUrl
             } else {
                 // 使用配置的备用下载地址
-                downloadUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(fileId: fileId, fileName: fileDetail.fileName).absoluteString
+                downloadUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(fileId: fileDetail.id, fileName: fileDetail.fileName).absoluteString
             }
 
             // 根据文件详情确定子目录
@@ -224,16 +288,15 @@ enum ModPackDependencyInstaller {
             )
 
             // 下载文件
-             _ = try await DownloadManager.downloadFile(
+            _ = try await DownloadManager.downloadFile(
                 urlString: downloadUrl,
                 destinationURL: destinationPath,
                 expectedSha1: fileDetail.hash?.value
             )
 
-            Logger.shared.info("已下载 CurseForge 文件: \(fileDetail.fileName)")
             return true
         } catch {
-            Logger.shared.error("下载 CurseForge 文件失败: \(projectId)/\(fileId), 错误: \(error.localizedDescription)")
+            Logger.shared.error("下载 CurseForge 文件详情失败: \(fileDetail.fileName), 错误: \(error.localizedDescription)")
             return false
         }
     }
