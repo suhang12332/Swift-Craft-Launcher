@@ -489,8 +489,7 @@ struct ModPackDownloadSheet: View {
             gameIcon: iconPath ?? "",
             gameVersion: selectedGameVersion,
             assetIndex: "",
-            modLoader: indexInfo.loaderType,
-            isUserAdded: true
+            modLoader: indexInfo.loaderType
         )
 
         let (filesToDownload, requiredDependencies) =

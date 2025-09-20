@@ -39,34 +39,23 @@ public struct ModrinthProjectDetail: Codable, Hashable, Equatable {
     let clientSide: String
     let serverSide: String
     let body: String
-    let status: String
-    let requestedStatus: String?
     let additionalCategories: [String]?
     let issuesUrl: String?
     let sourceUrl: String?
     let wikiUrl: String?
     let discordUrl: String?
-    let donationUrls: [DonationUrl]?
     let projectType: String
     let downloads: Int
     let iconUrl: String?
-    let color: Int?
-    let threadId: String?
-    let monetizationStatus: String?
     let id: String
     let team: String
-    let bodyUrl: String?
-    let moderatorMessage: ModeratorMessage?
     let published: Date
     let updated: Date
-    let approved: Date?
-    let queued: Date?
     let followers: Int
     let license: License?
     let versions: [String]
     let gameVersions: [String]
     let loaders: [String]
-    let gallery: [GalleryImage]?
     var type: String?
     var fileName: String?
 
@@ -78,64 +67,26 @@ public struct ModrinthProjectDetail: Codable, Hashable, Equatable {
         case clientSide = "client_side"
         case serverSide = "server_side"
         case body
-        case status
-        case requestedStatus = "requested_status"
         case additionalCategories = "additional_categories"
         case issuesUrl = "issues_url"
         case sourceUrl = "source_url"
         case wikiUrl = "wiki_url"
         case discordUrl = "discord_url"
-        case donationUrls = "donation_urls"
         case projectType = "project_type"
         case downloads
         case iconUrl = "icon_url"
-        case color
-        case threadId = "thread_id"
-        case monetizationStatus = "monetization_status"
         case id
         case team
-        case bodyUrl = "body_url"
-        case moderatorMessage = "moderator_message"
         case published
         case updated
-        case approved
-        case queued
         case followers
         case license
         case versions
         case gameVersions = "game_versions"
         case loaders
-        case gallery
         case type
         case fileName
     }
-}
-
-struct DonationUrl: Codable, Equatable, Hashable {
-    let id: String
-    let platform: String
-    let url: String
-}
-
-struct ModeratorMessage: Codable, Equatable, Hashable {
-    let message: String
-    let body: String?
-}
-
-struct GalleryImage: Codable, Equatable, Hashable {
-    let url: String
-    let featured: Bool
-    let title: String?
-    let description: String?
-    let created: Date
-    let ordering: Int
-}
-
-// Modrinth 许可证模型
-struct ModrinthLicense: Codable, Equatable, Hashable {
-    let id: String
-    let name: String
-    let url: String?
 }
 
 // Modrinth 搜索结果模型
@@ -353,34 +304,23 @@ extension ModrinthProject {
             clientSide: self.clientSide,
             serverSide: self.serverSide,
             body: "",
-            status: "approved",
-            requestedStatus: nil,
             additionalCategories: self.displayCategories,
             issuesUrl: nil,
             sourceUrl: nil,
             wikiUrl: nil,
             discordUrl: nil,
-            donationUrls: nil,
             projectType: self.projectType,
             downloads: self.downloads,
             iconUrl: self.iconUrl,
-            color: nil,
-            threadId: nil,
-            monetizationStatus: nil,
             id: self.projectId,
             team: self.author,
-            bodyUrl: nil,
-            moderatorMessage: nil,
             published: Date(),
             updated: Date(),
-            approved: Date(),
-            queued: nil,
             followers: self.follows,
             license: License(id: "", name: self.license, url: nil),
             versions: self.versions,
             gameVersions: [],
             loaders: [],
-            gallery: nil,
             type: nil,
             fileName: nil
         )

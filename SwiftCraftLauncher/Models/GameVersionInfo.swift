@@ -37,14 +37,6 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
     /// 模组加载器类型（如 Forge、Fabric 等）
     let modLoader: String
 
-    /// 是否为用户手动添加的版本
-    /// - true: 用户手动添加
-    /// - false: 下载的整合包
-    let isUserAdded: Bool
-
-    /// 创建时间
-    let createdAt: Date
-
     /// 最后游玩时间
     var lastPlayed: Date
 
@@ -82,8 +74,6 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
     ///   - modClassPath: Mod Classpath参数，默认空字符串
     ///   - assetIndex: 资源索引版本
     ///   - modLoader: 模组加载器类型
-    ///   - isUserAdded: 是否用户手动添加
-    ///   - createdAt: 创建时间，默认当前时间
     ///   - lastPlayed: 最后游玩时间，默认当前时间
     ///   - javaPath: Java路径，默认空字符串
     ///   - jvmArguments: JVM参数，默认空字符串
@@ -103,8 +93,6 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
         modClassPath: String = "",
         assetIndex: String,
         modLoader: String,
-        isUserAdded: Bool,
-        createdAt: Date = Date(),
         lastPlayed: Date = Date(),
         javaPath: String = "",
         jvmArguments: String = "",
@@ -125,8 +113,6 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
         self.modClassPath = modClassPath
         self.assetIndex = assetIndex
         self.modLoader = modLoader
-        self.isUserAdded = isUserAdded
-        self.createdAt = createdAt
         self.lastPlayed = lastPlayed
         self.javaPath = javaPath
         self.jvmArguments = jvmArguments

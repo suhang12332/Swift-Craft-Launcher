@@ -190,8 +190,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
             gameIcon: AppConstants.defaultGameIcon,
             gameVersion: indexInfo.gameVersion,
             assetIndex: "",
-            modLoader: indexInfo.loaderType,
-            isUserAdded: true
+            modLoader: indexInfo.loaderType
         )
 
         let (filesToDownload, requiredDependencies) = calculateInstallationCounts(from: indexInfo)

@@ -108,8 +108,7 @@ enum PlayerSkinService {
                 authRefreshToken: player.authRefreshToken,
                 createdAt: player.createdAt,
                 lastPlayed: player.lastPlayed,
-                isCurrent: player.isCurrent,
-                gameRecords: player.gameRecords
+                isCurrent: player.isCurrent
             )
 
             // 使用 dataManager 更新数据
