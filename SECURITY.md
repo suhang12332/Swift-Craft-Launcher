@@ -1,4 +1,5 @@
 # 安全策略 🔒
+*[English](./doc/SECURITY_en.md)*
 
 感谢你关注 **SwiftCraftLauncher** 的安全！  
 本项目虽然主要面向开发与学习，但我们仍然重视安全问题。  
