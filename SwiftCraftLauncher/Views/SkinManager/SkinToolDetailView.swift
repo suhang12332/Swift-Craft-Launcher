@@ -22,6 +22,7 @@ struct SkinToolDetailView: View {
     @State private var playerProfile: MinecraftProfileResponse?
     @State private var isLoading = true
     @State private var hasChanges = false
+    @State private var currentSkinRenderImage: NSImage?
     // 缓存之前的值，避免不必要的计算
     @State private var lastSelectedSkinData: Data?
     @State private var lastCurrentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
@@ -132,20 +133,90 @@ struct SkinToolDetailView: View {
     private var skinUploadSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("skin.upload".localized()).font(.headline)
-            skinDropArea
+
+            skinRenderArea
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Drop skin file here or click to select")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Text("PNG 64×64 or legacy 64×32")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 4)
         }
     }
 
-    private var skinDropArea: some View {
-        Group {
-            if let image = selectedSkinImage {
-                selectedSkinView(image: image)
-            } else {
-                emptyDropArea
+    private var skinRenderArea: some View {
+        let playerModel = convertToPlayerModel(currentModel)
+
+        return ZStack {
+            Group {
+                if let image = selectedSkinImage ?? currentSkinRenderImage {
+                    SkinRenderView(
+                        skinImage: image,
+                        capeImage: nil,
+                        playerModel: playerModel,
+                        rotationDuration: 12.0,
+                        backgroundColor: .clear,
+                        onSkinDropped: { dropped in
+                            handleSkinDroppedImage(dropped)
+                        },
+                        onCapeDropped: { _ in }
+                    )
+                } else if let skinPath = selectedSkinPath {
+                    SkinRenderView(
+                        texturePath: skinPath,
+                        capeTexturePath: selectedCapeLocalPath,
+                        playerModel: playerModel,
+                        rotationDuration: 12.0,
+                        backgroundColor: .clear,
+                        onSkinDropped: { dropped in
+                            handleSkinDroppedImage(dropped)
+                        },
+                        onCapeDropped: { _ in }
+                    )
+                } else {
+                    Color.clear
+                }
             }
+            .frame(height: 220)
+            .background(Color.gray.opacity(0.06))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(style: StrokeStyle(lineWidth: 1, dash: [6]))
+                    .foregroundColor(.gray.opacity(0.35))
+            )
+            .cornerRadius(10)
+            .contentShape(RoundedRectangle(cornerRadius: 10))
         }
-        .onTapGesture { if selectedSkinData == nil { showingFileImporter = true } }
-        .onDrop(of: [UTType.image.identifier], isTargeted: nil) { handleDrop($0) }
+        .onTapGesture { showingFileImporter = true }
+        .onDrop(of: [UTType.image.identifier, UTType.fileURL.identifier], isTargeted: nil) { handleDrop($0) }
+    }
+
+    private func handleSkinDroppedImage(_ image: NSImage) {
+        // Convert NSImage to PNG Data
+        guard let tiff = image.tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: tiff),
+              let data = bitmap.representation(using: .png, properties: [:])
+        else {
+            Logger.shared.error("Failed to convert dropped image to PNG data")
+            return
+        }
+
+        // Validate PNG data
+        guard data.isPNG else {
+            Logger.shared.error("Converted data is not valid PNG format")
+            return
+        }
+
+        selectedSkinData = data
+        selectedSkinImage = image
+        selectedSkinPath = saveTempSkinFile(data: data)?.path
+        updateHasChanges()
+
+        Logger.shared.info("Skin image dropped and processed successfully. Model: \(currentModel.rawValue)")
     }
 
     private func selectedSkinView(image: NSImage) -> some View {
@@ -365,7 +436,23 @@ struct SkinToolDetailView: View {
                 }
                 self.selectedCapeId = currentActiveCapeId
                 self.isLoading = false
+                self.loadCurrentSkinRenderImageIfNeeded()
                 self.updateHasChanges()
+            }
+        }
+    }
+
+    private func loadCurrentSkinRenderImageIfNeeded() {
+        if selectedSkinImage != nil || selectedSkinPath != nil { return }
+        guard let urlString = publicSkinInfo?.skinURL?.httpToHttps(), let url = URL(string: urlString) else { return }
+        Task {
+            do {
+                let (data, response) = try await URLSession.shared.data(from: url)
+                if let http = response as? HTTPURLResponse, http.statusCode != 200 { return }
+                guard !data.isEmpty, let image = NSImage(data: data) else { return }
+                await MainActor.run { self.currentSkinRenderImage = image }
+            } catch {
+                Logger.shared.error("Failed to load current skin image for renderer: \(error)")
             }
         }
     }
@@ -470,13 +557,20 @@ struct SkinToolDetailView: View {
 
     private func handleSkinChanges(player: Player) async -> Bool {
         if let skinData = selectedSkinData {
+            Logger.shared.info("Uploading new skin with model: \(currentModel.rawValue)")
             let result = await PlayerSkinService.uploadSkinAndRefresh(
                 imageData: skinData,
                 model: currentModel,
                 player: player
             )
+            if result {
+                Logger.shared.info("Skin upload successful with model: \(currentModel.rawValue)")
+            } else {
+                Logger.shared.error("Skin upload failed")
+            }
             return result
         } else if let original = originalModel, currentModel != original {
+            Logger.shared.info("Changing skin model from \(original.rawValue) to \(currentModel.rawValue)")
             if let currentSkinInfo = publicSkinInfo, let skinURL = currentSkinInfo.skinURL {
                 let result = await uploadCurrentSkinWithNewModel(skinURL: skinURL, player: player)
                 return result
@@ -488,6 +582,7 @@ struct SkinToolDetailView: View {
             Logger.shared.warning("Cannot set model without skin data. User needs to select a skin first.")
             return false
         }
+        Logger.shared.info("No skin changes needed")
         return true // No skin changes needed
     }
 
