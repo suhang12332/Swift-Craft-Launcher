@@ -12,6 +12,7 @@ public struct DetailToolbarView: ToolbarContent {
     @Binding var versionTotal: Int
     @EnvironmentObject var gameRepository: GameRepository
     @ObservedObject private var gameStatusManager = GameStatusManager.shared
+    @StateObject private var gameActionManager = GameActionManager.shared
     let totalItems: Int
     @Binding var project: ModrinthProjectDetail?
     @Binding var selectProjectId: String?
@@ -126,13 +127,7 @@ public struct DetailToolbarView: ToolbarContent {
                     .applyReplaceTransition()
 
                     Button {
-                        let gameDir = AppPaths.profileDirectory(gameName: game.gameName)
-                        if FileManager.default.fileExists(atPath: gameDir.path) {
-                            NSWorkspace.shared.selectFile(
-                                nil,
-                                inFileViewerRootedAtPath: gameDir.path
-                            )
-                        }
+                        gameActionManager.showInFinder(game: game)
                     } label: {
                         Label("game.path".localized(), systemImage: "folder")
                             .foregroundStyle(.primary)

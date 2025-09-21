@@ -6,6 +6,10 @@ public struct SidebarView: View {
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
+    @State private var showDeleteAlert: Bool = false
+    @State private var gameToDelete: GameVersionInfo?
+    @StateObject private var gameActionManager = GameActionManager.shared
+    @StateObject private var gameStatusManager = GameStatusManager.shared
 
     public init(selectedItem: Binding<SidebarItem>) {
         self._selectedItem = selectedItem
@@ -65,6 +69,30 @@ public struct SidebarView: View {
                         }
                         .tag(game.id)
                     }
+                    .contextMenu {
+                        Button(action: {
+                            toggleGameState(for: game)
+                        }, label: {
+                            let isRunning = isGameRunning(gameId: game.id)
+                            Label(
+                                isRunning ? "stop.fill".localized() : "play.fill".localized(),
+                                systemImage: isRunning ? "stop.fill" : "play.fill"
+                            )
+                        })
+
+                        Button(action: {
+                            showInFinder(game: game)
+                        }, label: {
+                            Label("sidebar.context_menu.show_in_finder".localized(), systemImage: "folder")
+                        })
+
+                        Button(action: {
+                            gameToDelete = game
+                            showDeleteAlert = true
+                        }, label: {
+                            Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
+                        })
+                    }
                 }
             }
         }
@@ -78,6 +106,29 @@ public struct SidebarView: View {
             }
         }
         .listStyle(.sidebar)
+        .confirmationDialog(
+            "delete.title".localized(),
+            isPresented: $showDeleteAlert,
+            titleVisibility: .visible
+        ) {
+            Button("common.delete".localized(), role: .destructive) {
+                if let game = gameToDelete {
+                    gameActionManager.deleteGame(
+                        game: game,
+                        gameRepository: gameRepository,
+                        selectedItem: $selectedItem
+                    )
+                }
+            }
+            .keyboardShortcut(.defaultAction)
+            Button("common.cancel".localized(), role: .cancel) {}
+        } message: {
+            if let game = gameToDelete {
+                Text(
+                    String(format: "delete.game.confirm".localized(), game.gameName)
+                )
+            }
+        }
     }
 
     // 只对游戏名做模糊搜索
@@ -87,5 +138,41 @@ public struct SidebarView: View {
         }
         let lower = searchText.lowercased()
         return gameRepository.games.filter { $0.gameName.lowercased().contains(lower) }
+    }
+
+    // MARK: - Game Actions
+
+    /// 检查游戏是否正在运行
+    private func isGameRunning(gameId: String) -> Bool {
+        return gameStatusManager.isGameRunning(gameId: gameId)
+    }
+
+    /// 启动或停止游戏
+    private func toggleGameState(for game: GameVersionInfo) {
+        Task {
+            let isRunning = isGameRunning(gameId: game.id)
+            if isRunning {
+                // 停止游戏
+                await MinecraftLaunchCommand(
+                    player: playerListViewModel.currentPlayer,
+                    game: game,
+                    gameRepository: gameRepository
+                ).stopGame()
+            } else {
+                // 启动游戏
+                await MinecraftLaunchCommand(
+                    player: playerListViewModel.currentPlayer,
+                    game: game,
+                    gameRepository: gameRepository
+                ).launchGame()
+            }
+        }
+    }
+
+    // MARK: - Context Menu Actions
+
+    /// 在访达中显示游戏目录
+    private func showInFinder(game: GameVersionInfo) {
+        gameActionManager.showInFinder(game: game)
     }
 }
