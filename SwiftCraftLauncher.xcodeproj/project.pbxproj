@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		03A9887C2E75C96E005B7EFA /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 03A9887B2E75C96E005B7EFA /* SkinRenderKit */; };
+		030C47462E7F82E700A209A8 /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 030C47452E7F82E700A209A8 /* SkinRenderKit */; };
 		9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91B2E313A67005A53F1 /* ZIPFoundation */; };
 		9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91E2E313A9C005A53F1 /* MarkdownUI */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
@@ -30,9 +30,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03A9887C2E75C96E005B7EFA /* SkinRenderKit in Frameworks */,
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
 				9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */,
+				030C47462E7F82E700A209A8 /* SkinRenderKit in Frameworks */,
 				90E123456789ABCD0001 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -72,7 +72,7 @@
 				9023D91B2E313A67005A53F1 /* ZIPFoundation */,
 				9023D91E2E313A9C005A53F1 /* MarkdownUI */,
 				90E123456789ABCD0002 /* Sparkle */,
-				03A9887B2E75C96E005B7EFA /* SkinRenderKit */,
+				030C47452E7F82E700A209A8 /* SkinRenderKit */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */;
@@ -109,7 +109,7 @@
 				9023D91D2E313A9C005A53F1 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 				90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
-				03A9887A2E75C96E005B7EFA /* XCRemoteSwiftPackageReference "NSSkinRender" */,
+				030C47442E7F82E700A209A8 /* XCRemoteSwiftPackageReference "NSSkinRender" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -367,20 +367,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		030C47442E7F82E700A209A8 /* XCRemoteSwiftPackageReference "NSSkinRender" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/irisWirisW/NSSkinRender";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.0;
+			};
+		};
 		033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.59.1;
-			};
-		};
-		03A9887A2E75C96E005B7EFA /* XCRemoteSwiftPackageReference "NSSkinRender" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/irisWirisW/NSSkinRender";
-			requirement = {
-				branch = main;
-				kind = branch;
 			};
 		};
 		9023D91A2E313A67005A53F1 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
@@ -410,15 +410,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		030C47452E7F82E700A209A8 /* SkinRenderKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 030C47442E7F82E700A209A8 /* XCRemoteSwiftPackageReference "NSSkinRender" */;
+			productName = SkinRenderKit;
+		};
 		033870FB2E6059610056BDB2 /* SwiftLintBuildToolPlugin */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
 			productName = "plugin:SwiftLintBuildToolPlugin";
-		};
-		03A9887B2E75C96E005B7EFA /* SkinRenderKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 03A9887A2E75C96E005B7EFA /* XCRemoteSwiftPackageReference "NSSkinRender" */;
-			productName = SkinRenderKit;
 		};
 		9023D91B2E313A67005A53F1 /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
