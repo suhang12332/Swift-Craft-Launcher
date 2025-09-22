@@ -258,7 +258,10 @@ enum PlayerSkinService {
             appendString("\r\n")
             body.append(part)
         }
-        appendField(name: "variant", value: model == .slim ? "slim" : "classic")
+        let variantValue = model == .slim ? "SLIM" : "CLASSIC"
+        Logger.shared.info("Uploading skin with variant: \(variantValue), data size: \(imageData.count) bytes")
+
+        appendField(name: "variant", value: variantValue)
         appendFile(
             name: "file",
             filename: "skin.png",
@@ -294,14 +297,17 @@ enum PlayerSkinService {
         }
         switch http.statusCode {
         case 200, 204:
+            Logger.shared.info("Skin upload successful with variant: \(variantValue)")
             return
         case 400:
+            Logger.shared.error("Skin upload failed with 400: Invalid skin file or variant")
             throw GlobalError.validation(
                 chineseMessage: "无效的皮肤文件",
                 i18nKey: "error.validation.skin_invalid_file",
                 level: .popup
             )
         default:
+            Logger.shared.error("Skin upload failed with HTTP \(http.statusCode)")
             try handleHTTPError(http, operation: "皮肤上传")
         }
     }

@@ -38,6 +38,7 @@ struct GameInfoDetailView: View {
     @State private var importErrorMessage: String?
     @StateObject private var cacheManager = CacheManager()
     @State private var error: GlobalError?
+    @StateObject private var gameActionManager = GameActionManager.shared
 
     var body: some View {
         return VStack {
@@ -142,7 +143,6 @@ struct GameInfoDetailView: View {
             }
             Spacer()
             importButton
-            settingsButton
             deleteButton
         }
     }
@@ -214,17 +214,6 @@ struct GameInfoDetailView: View {
             query: query,
             gameName: game.gameName
         ) { scanResources() }
-    }
-
-    private var settingsButton: some View {
-        Button {
-            showAdvancedSettings.toggle()
-        } label: {
-            Text("common.settings".localized())
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(Color.accentColor)
-        .controlSize(.large)
     }
 
     private var localResourceList: some View {
@@ -307,39 +296,10 @@ struct GameInfoDetailView: View {
 
     // MARK: - 删除游戏及其文件夹
     private func deleteGameAndProfile() {
-        Task {
-            do {
-                // 先切换到其他游戏或资源页面，避免删除后页面重新加载
-                await MainActor.run {
-                    if let firstGame = gameRepository.games.first(where: {
-                        $0.id != game.id
-                    }) {
-                        selectedItem = .game(firstGame.id)
-                    } else {
-                        selectedItem = .resource(.mod)
-                    }
-                }
-
-                // 先删除游戏文件夹
-                let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
-                try FileManager.default.removeItem(at: profileDir)
-
-                // 然后删除游戏记录
-                try await gameRepository.deleteGame(id: game.id)
-
-                Logger.shared.info("成功删除游戏: \(game.gameName)")
-            } catch {
-                let globalError = GlobalError.fileSystem(
-                    chineseMessage: "删除游戏失败: \(error.localizedDescription)",
-                    i18nKey: "error.filesystem.game_deletion_failed",
-                    level: .notification
-                )
-                Logger.shared.error("删除游戏失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
-                await MainActor.run {
-                    self.error = globalError
-                }
-            }
-        }
+        gameActionManager.deleteGame(
+            game: game,
+            gameRepository: gameRepository,
+            selectedItem: $selectedItem
+        )
     }
 }
