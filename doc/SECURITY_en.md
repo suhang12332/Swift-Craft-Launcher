@@ -22,7 +22,7 @@ Doing so may expose other users to unnecessary risks.
 
 If you discover a vulnerability, please contact us privately through one of the following methods:
 
-* ✨ Recommended: Join our QQ group and report directly to the group owner
+* ✨ Recommended: Join our QQ group and report directly to the group owner or send email to `swiftcraftlauncher@outlook.com`
 * Use GitHub’s **Security Advisories** feature to submit a report
 * Contact one of the repository contributors
 
