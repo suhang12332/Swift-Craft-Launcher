@@ -52,5 +52,3 @@ To help us resolve the issue quickly, please provide as much of the following as
 
 Security depends on the efforts of every user!
 Thank you for contributing to the security of SwiftCraftLauncher 🙏.
-
-要不要我帮你直接排版成一个标准的 `SECURITY.md` 模板（适合放到 GitHub repo 里）？
