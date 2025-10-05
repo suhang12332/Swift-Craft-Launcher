@@ -75,6 +75,9 @@ brew install --cask swift-craft-launcher
 
 > **⚠️ 注意**: 当前可下载的版本均为测试版本，稳定版本即将发布。
 
+### ❓ 常见问题
+请访问 [FAQ](doc/FAQ.md)
+
 ### 🔨 从源码构建
 1. **📥 克隆仓库**
   ```bash
