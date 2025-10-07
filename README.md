@@ -68,7 +68,7 @@ brew tap suhang12332/swiftcraftlauncher
 brew install --cask swift-craft-launcher
 ```
 
-> **💡 提示**: 我们为 SwiftCraft Launcher 创建了专用的 [Homebrew Tap](https://github.com/suhang12332/homebrew-swiftcraftlauncher)
+> **💡 提示**: 我们为 Swift Craft Launcher 创建了专用的 [Homebrew Tap](https://github.com/suhang12332/homebrew-swiftcraftlauncher)
 
 ### 💾 预编译版本
 从 [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) 下载最新版本。
