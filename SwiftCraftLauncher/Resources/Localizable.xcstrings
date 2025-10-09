@@ -42438,6 +42438,17 @@
         }
       }
     },
+    "Game search" : {
+      "comment" : "[Tip Text] search game",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索游戏"
+          }
+        }
+      }
+    },
     "game.content.last_played" : {
       "extractionState" : "manual",
       "localizations" : {
