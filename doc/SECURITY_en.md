@@ -22,7 +22,7 @@ Doing so may expose other users to unnecessary risks.
 
 If you discover a vulnerability, please contact us privately through one of the following methods:
 
-* ✨ Recommended: Join our QQ group and report directly to the group owner
+* ✨ Recommended: Join our QQ group and report directly to the group owner or send email to `swiftcraftlauncher@outlook.com`
 * Use GitHub’s **Security Advisories** feature to submit a report
 * Contact one of the repository contributors
 
@@ -52,5 +52,3 @@ To help us resolve the issue quickly, please provide as much of the following as
 
 Security depends on the efforts of every user!
 Thank you for contributing to the security of SwiftCraftLauncher 🙏.
-
-要不要我帮你直接排版成一个标准的 `SECURITY.md` 模板（适合放到 GitHub repo 里）？

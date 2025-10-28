@@ -66,7 +66,7 @@ brew tap suhang12332/swiftcraftlauncher
 brew install --cask swift-craft-launcher
 ```
 
-> **💡 Tip**: We created a dedicated [Homebrew Tap](https://github.com/suhang12332/homebrew-swiftcraftlauncher) for SwiftCraft Launcher
+> **💡 Tip**: We created a dedicated [Homebrew Tap](https://github.com/suhang12332/homebrew-swiftcraftlauncher) for Swift Craft Launcher
 
 ### 💾 Pre-built Release
 Download the latest version from [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest).

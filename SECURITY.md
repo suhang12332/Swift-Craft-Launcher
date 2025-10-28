@@ -20,7 +20,7 @@
 这样可能会让其他用户暴露在风险之中。  
 
 如果你发现了漏洞，请通过以下方式私下联系：  
-- ✨最推荐：进入我们的QQ群跟群主反馈
+- ✨最推荐：进入我们的QQ群跟群主反馈 或 使用Swift Craft Launcher官方邮箱：`swiftcraftlauncher@outlook.com`
 - 或使用 GitHub 的 **Security Advisories** 功能提交报告
 - 提交给仓库贡献者
 

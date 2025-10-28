@@ -105,7 +105,7 @@ enum ModPackDependencyInstaller {
         Logger.shared.info("需要下载的文件数量: \(filesToDownload.count)")
 
         // 通知开始下载
-        onProgressUpdate?("开始下载整合包文件", 0, filesToDownload.count, .files)
+        onProgressUpdate?("modpack.progress.files_download_started".localized(), 0, filesToDownload.count, .files)
 
         // 创建信号量控制并发数量
         let semaphore = AsyncSemaphore(value: GeneralSettingsManager.shared.concurrentDownloads)
@@ -150,7 +150,7 @@ enum ModPackDependencyInstaller {
         }
 
         // 通知下载完成
-        onProgressUpdate?("整合包文件下载完成", filesToDownload.count, filesToDownload.count, .files)
+        onProgressUpdate?("modpack.progress.files_download_completed".localized(), filesToDownload.count, filesToDownload.count, .files)
 
         Logger.shared.info("整合包文件安装完成")
         return true
@@ -370,7 +370,7 @@ enum ModPackDependencyInstaller {
         Logger.shared.info("开始安装整合包依赖，共 \(requiredDependencies.count) 个必需依赖")
 
         // 通知开始下载
-        onProgressUpdate?("开始安装整合包依赖", 0, requiredDependencies.count, .dependencies)
+        onProgressUpdate?("modpack.progress.dependencies_installation_started".localized(), 0, requiredDependencies.count, .dependencies)
 
         // 创建信号量控制并发数量
         let semaphore = AsyncSemaphore(value: GeneralSettingsManager.shared.concurrentDownloads)
@@ -389,7 +389,7 @@ enum ModPackDependencyInstaller {
                     if shouldSkipDependency(dep: dep, gameInfo: gameInfo, resourceDir: resourceDir) {
                         // 跳过也更新进度
                         let currentCount = completedCount.increment()
-                        onProgressUpdate?("跳过已安装的依赖", currentCount, requiredDependencies.count, .dependencies)
+                        onProgressUpdate?("modpack.progress.dependency_skipped".localized(), currentCount, requiredDependencies.count, .dependencies)
                         return (index, true) // 跳过视为成功
                     }
 
@@ -425,7 +425,7 @@ enum ModPackDependencyInstaller {
         }
 
         // 通知安装完成
-        onProgressUpdate?("整合包依赖安装完成", requiredDependencies.count, requiredDependencies.count, .dependencies)
+        onProgressUpdate?("modpack.progress.dependencies_installation_completed".localized(), requiredDependencies.count, requiredDependencies.count, .dependencies)
 
         Logger.shared.info("整合包依赖安装完成")
         return true
