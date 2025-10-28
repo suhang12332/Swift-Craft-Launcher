@@ -28,7 +28,7 @@ enum NeoForgeLoaderService {
         }
 
         // 2. 直接下载指定版本的 version.json
-        let (data, response) = try await URLSession.shared.data(from: URLConfig.API.Modrinth.loaderProfile(loader: "neo", version: loaderVersion))
+        let (data, response) = try await NetworkManager.shared.data(from: URL(string: result.url)!)
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(

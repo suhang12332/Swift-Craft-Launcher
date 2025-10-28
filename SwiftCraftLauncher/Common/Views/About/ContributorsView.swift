@@ -261,7 +261,7 @@ public struct ContributorsView: View {
 
     // MARK: - Contributor Avatar
     private func contributorAvatar(_ contributor: GitHubContributor) -> some View {
-        AsyncImage(url: URL(string: contributor.avatarUrl)) { phase in
+        ProxyAsyncImage(url: URL(string: contributor.avatarUrl)) { phase in
             switch phase {
             case .empty:
                 Rectangle()

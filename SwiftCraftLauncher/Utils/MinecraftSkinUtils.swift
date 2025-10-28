@@ -206,7 +206,7 @@ struct MinecraftSkinUtils: View {
         config.requestCachePolicy = .reloadIgnoringLocalCacheData
 
         let session = URLSession(configuration: config)
-        let (data, response) = try await session.data(from: url)
+        let (data, response) = try await NetworkManager.shared.data(from: url)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.download(

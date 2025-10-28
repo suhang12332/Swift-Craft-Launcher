@@ -77,6 +77,7 @@ public struct GameSettingsView: View {
                         systemImage: "externaldrive"
                     )
                 }.foregroundStyle(.secondary)
+                Spacer()
             }
         }
 

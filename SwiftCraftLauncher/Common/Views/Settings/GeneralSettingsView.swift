@@ -15,19 +15,19 @@ public struct GeneralSettingsView: View {
     public init() {}
 
     public var body: some View {
-        Grid(alignment: .trailing) {
+        Grid(alignment: .center, horizontalSpacing: 10, verticalSpacing: 20) {
             GridRow {
-                Text("settings.language.picker".localized()) // 长标题
-                    .gridColumnAlignment(.trailing) // 右对齐
+                Text("settings.language.picker".localized())
+                    .gridColumnAlignment(.trailing)
                 Picker("", selection: $selectedLanguage) {
                     ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
                         Text(name).tag(code)
                     }
                 }
+                .frame(width: 300)
                 .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
                     view.fixedSize()
                 }
-                .gridColumnAlignment(.leading)
                 .labelsHidden()
                 .onChange(of: selectedLanguage) { _, newValue in
                     // 如果是取消操作导致的语言恢复，则不触发重启提示
@@ -41,7 +41,6 @@ public struct GeneralSettingsView: View {
                     titleVisibility: .visible
                 ) {
                     Button("settings.language.restart.confirm".localized(), role: .destructive) {
-                        // 在重启前更新 Sparkle 的语言设置
                         sparkleUpdateService.updateSparkleLanguage(selectedLanguage)
                         LanguageManager.shared.selectedLanguage = selectedLanguage
                         restartAppSafely()
@@ -71,6 +70,9 @@ public struct GeneralSettingsView: View {
                     onChoose: { showDirectoryPicker = true },
                     onReset: {
                         resetWorkingDirectorySafely()
+                    },
+                    onOpen: {
+                        openWorkingDirectoryInFinder()
                     }
                 ).fixedSize()
                     .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
@@ -106,8 +108,7 @@ public struct GeneralSettingsView: View {
                     .foregroundColor(.secondary)
                     .fixedSize()
                 }.frame(width: 200)
-                    .gridColumnAlignment(.leading)
-                    .labelsHidden()
+                .gridColumnAlignment(.leading)
             }
             .padding(.bottom, 20)
 
@@ -214,6 +215,13 @@ public struct GeneralSettingsView: View {
     private func showError(_ message: String) {
         errorMessage = message
         showingErrorAlert = true
+    }
+    
+    /// 在 Finder 中打开工作目录
+    private func openWorkingDirectoryInFinder() {
+        let directoryPath = general.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : general.launcherWorkingDirectory
+        let url = URL(fileURLWithPath: directoryPath)
+        NSWorkspace.shared.open(url)
     }
 }
 

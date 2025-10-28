@@ -152,12 +152,8 @@ enum CommonService {
     ) async throws -> [LoaderVersion] {
         // 首先获取版本清单
         let manifestURL = URLConfig.API.Modrinth.loaderManifest(loader: type)
-        let (manifestData, manifestResponse) = try await URLSession.shared.data(
-            from: manifestURL
-        )
-        guard let httpResponse = manifestResponse as? HTTPURLResponse,
-            httpResponse.statusCode == 200
-        else {
+        let (manifestData, manifestResponse) = try await NetworkManager.shared.data(from: manifestURL)
+        guard let httpResponse = manifestResponse as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 \(type) 版本清单失败: HTTP \(manifestResponse)",
                 i18nKey: "error.download.loader_manifest_failed",

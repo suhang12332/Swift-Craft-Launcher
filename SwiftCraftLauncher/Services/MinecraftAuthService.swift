@@ -233,9 +233,9 @@ class MinecraftAuthService: NSObject, ObservableObject {
                 level: .notification
             )
         }
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
+        
+        let (data, response) = try await NetworkManager.shared.data(for: request)
+        
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: String(format: "minecraft.auth.error.xbox_live_token_failed".localized(), "HTTP \(response)"),
@@ -293,9 +293,9 @@ class MinecraftAuthService: NSObject, ObservableObject {
                 level: .notification
             )
         }
-
-        let (xstsData, xstsResponse) = try await URLSession.shared.data(for: xstsRequest)
-
+        
+        let (xstsData, xstsResponse) = try await NetworkManager.shared.data(for: xstsRequest)
+        
         guard let xstsHttpResponse = xstsResponse as? HTTPURLResponse, xstsHttpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 XSTS 令牌失败: HTTP \(xstsResponse)",
@@ -336,10 +336,10 @@ class MinecraftAuthService: NSObject, ObservableObject {
                 level: .notification
             )
         }
-
-        let (minecraftData, minecraftResponse) = try await URLSession.shared.data(for: minecraftRequest)
-
-        guard let minecraftHttpResponse = minecraftResponse as? HTTPURLResponse else {
+        
+        let (minecraftData, minecraftResponse) = try await NetworkManager.shared.data(for: minecraftRequest)
+        
+        guard let minecraftHttpResponse = minecraftResponse as? HTTPURLResponse, minecraftHttpResponse.statusCode == 200 else {
             throw GlobalError.download(
                 chineseMessage: "获取 Minecraft 访问令牌失败: 无效的 HTTP 响应",
                 i18nKey: "error.download.minecraft_token_invalid_response",
@@ -485,9 +485,9 @@ class MinecraftAuthService: NSObject, ObservableObject {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
 
         request.timeoutInterval = 30.0
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
+        
+        let (data, response) = try await NetworkManager.shared.data(for: request)
+        
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
 
@@ -647,9 +647,9 @@ extension MinecraftAuthService {
 
         let body = "grant_type=refresh_token&client_id=\(clientId)&refresh_token=\(refreshToken)"
         request.httpBody = body.data(using: .utf8)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
+        
+        let (data, response) = try await NetworkManager.shared.data(for: request)
+        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.download(
                 chineseMessage: "刷新访问令牌失败: 无效的 HTTP 响应",

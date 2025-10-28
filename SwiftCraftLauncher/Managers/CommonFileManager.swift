@@ -8,7 +8,6 @@ import Foundation
 
 class CommonFileManager {
     let librariesDir: URL
-    let session: URLSession
     var onProgressUpdate: ((String, Int, Int) -> Void)?
     private let fileManager = FileManager.default
     private let retryCount = 3
