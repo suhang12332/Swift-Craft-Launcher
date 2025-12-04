@@ -17,8 +17,16 @@ public enum ThemeMode: String, CaseIterable {
         case .dark:
             return .dark
         case .system:
-            return NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua])
-                == .darkAqua ? .dark : .light
+            // 在主线程上安全访问系统外观
+            if Thread.isMainThread {
+                // 使用 NSApplication.shared 而不是 NSApp，更安全
+                let appearance = NSApplication.shared.effectiveAppearance
+                let bestMatch = appearance.bestMatch(from: [.aqua, .darkAqua])
+                return bestMatch == .darkAqua ? .dark : .light
+            } else {
+                // 如果不在主线程，返回默认的 light 主题
+                return .light
+            }
         }
     }
 
@@ -124,6 +132,12 @@ class GeneralSettingsManager: ObservableObject {
     /// 获取当前有效的 ColorScheme，用于 @Environment(\.colorScheme) 的替代方案
     /// 当主题模式为 system 时，返回系统当前的主题
     var currentColorScheme: ColorScheme? {
+        // 安全检查：确保 NSApplication 已初始化
+        // 在应用启动早期，可能无法访问 effectiveAppearance
+        guard NSApplication.shared.isRunning else {
+            // 如果应用未运行，返回 nil 让 SwiftUI 使用默认值
+            return themeMode == .system ? nil : themeMode.effectiveColorScheme
+        }
         return themeMode.effectiveColorScheme
     }
 }

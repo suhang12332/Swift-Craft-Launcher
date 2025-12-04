@@ -53973,276 +53973,139 @@
         }
       }
     },
-    "modpack.version" : {
+    "modpack.progress.dependencies_installation_completed" : {
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "إصدار حزمة التعديلات"
+            "value" : "اكتمل تثبيت تبعيات حزمة التعديل"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack Version"
+            "value" : "Modpack afhængigheder installation færdig"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack Version"
+            "value" : "Installation der Modpack-Abhängigkeiten abgeschlossen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack Version"
+            "value" : "Modpack dependencies installation completed"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versión del Modpack"
+            "value" : "Instalación de dependencias del modpack completada"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack Version"
+            "value" : "Modpack-riippuvuuksien asennus valmis"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Version du Modpack"
+            "value" : "Installation des dépendances du modpack terminée"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मॉडपैक संस्करण"
+            "value" : "मॉडपैक निर्भरताओं की स्थापना पूर्ण"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versione Modpack"
+            "value" : "Installazione dipendenze modpack completata"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "モッドパックバージョン"
+            "value" : "モッドパック依存関係のインストール完了"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드팩 버전"
+            "value" : "모드팩 의존성 설치 완료"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack Version"
+            "value" : "Modpack avhengigheter installasjon fullført"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack Versie"
+            "value" : "Modpack afhankelijkheden installatie voltooid"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wersja Modpack"
+            "value" : "Instalacja zależności modpacka zakończona"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versão do Modpack"
+            "value" : "Instalação de dependências do modpack concluída"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Версия модпака"
+            "value" : "Установка зависимостей модпака завершена"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack Version"
+            "value" : "Modpack-beroenden installation slutförd"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เวอร์ชัน Modpack"
+            "value" : "การติดตั้งการพึ่งพามอดแพ็คเสร็จสิ้น"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack Sürümü"
+            "value" : "Modpack bağımlılık kurulumu tamamlandı"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Phiên bản Modpack"
+            "value" : "Cài đặt phụ thuộc modpack hoàn tất"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "整合包版本"
+            "value" : "整合包依赖安装完成"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "整合包版本"
-          }
-        }
-      }
-    },
-    "modpack.progress.files_download_completed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "اكتمل تحميل ملفات حزمة التعديل"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack filer download færdig"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack-Dateien heruntergeladen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack files download completed"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Descarga de archivos del modpack completada"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack-tiedostojen lataus valmis"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Téléchargement des fichiers du modpack terminé"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "मॉडपैक फाइलें डाउनलोड पूर्ण"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download file modpack completato"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "モッドパックファイルのダウンロード完了"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "모드팩 파일 다운로드 완료"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack filer nedlasting fullført"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack bestanden download voltooid"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pobieranie plików modpacka zakończone"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download dos arquivos do modpack concluído"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Загрузка файлов модпака завершена"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack filer nedladdning slutförd"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ดาวน์โหลดไฟล์มอดแพ็คเสร็จสิ้น"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Modpack dosyaları indirme tamamlandı"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tải xuống tệp modpack hoàn tất"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "整合包文件下载完成"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "整合包檔案下載完成"
+            "value" : "整合包依賴安裝完成"
           }
         }
       }
@@ -54521,139 +54384,139 @@
         }
       }
     },
-    "modpack.progress.dependencies_installation_completed" : {
+    "modpack.progress.files_download_completed" : {
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اكتمل تثبيت تبعيات حزمة التعديل"
+            "value" : "اكتمل تحميل ملفات حزمة التعديل"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack afhængigheder installation færdig"
+            "value" : "Modpack filer download færdig"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installation der Modpack-Abhängigkeiten abgeschlossen"
+            "value" : "Modpack-Dateien heruntergeladen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack dependencies installation completed"
+            "value" : "Modpack files download completed"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instalación de dependencias del modpack completada"
+            "value" : "Descarga de archivos del modpack completada"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack-riippuvuuksien asennus valmis"
+            "value" : "Modpack-tiedostojen lataus valmis"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installation des dépendances du modpack terminée"
+            "value" : "Téléchargement des fichiers du modpack terminé"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मॉडपैक निर्भरताओं की स्थापना पूर्ण"
+            "value" : "मॉडपैक फाइलें डाउनलोड पूर्ण"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Installazione dipendenze modpack completata"
+            "value" : "Download file modpack completato"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "モッドパック依存関係のインストール完了"
+            "value" : "モッドパックファイルのダウンロード完了"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드팩 의존성 설치 완료"
+            "value" : "모드팩 파일 다운로드 완료"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack avhengigheter installasjon fullført"
+            "value" : "Modpack filer nedlasting fullført"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack afhankelijkheden installatie voltooid"
+            "value" : "Modpack bestanden download voltooid"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instalacja zależności modpacka zakończona"
+            "value" : "Pobieranie plików modpacka zakończone"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instalação de dependências do modpack concluída"
+            "value" : "Download dos arquivos do modpack concluído"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Установка зависимостей модпака завершена"
+            "value" : "Загрузка файлов модпака завершена"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack-beroenden installation slutförd"
+            "value" : "Modpack filer nedladdning slutförd"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "การติดตั้งการพึ่งพามอดแพ็คเสร็จสิ้น"
+            "value" : "ดาวน์โหลดไฟล์มอดแพ็คเสร็จสิ้น"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack bağımlılık kurulumu tamamlandı"
+            "value" : "Modpack dosyaları indirme tamamlandı"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cài đặt phụ thuộc modpack hoàn tất"
+            "value" : "Tải xuống tệp modpack hoàn tất"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "整合包依赖安装完成"
+            "value" : "整合包文件下载完成"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "整合包依賴安裝完成"
+            "value" : "整合包檔案下載完成"
           }
         }
       }
@@ -54791,6 +54654,143 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "開始下載整合包檔案"
+          }
+        }
+      }
+    },
+    "modpack.version" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إصدار حزمة التعديلات"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack Version"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack Version"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack Version"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versión del Modpack"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack Version"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version du Modpack"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मॉडपैक संस्करण"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versione Modpack"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モッドパックバージョン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모드팩 버전"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack Version"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack Versie"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wersja Modpack"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versão do Modpack"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Версия модпака"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack Version"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เวอร์ชัน Modpack"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack Sürümü"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phiên bản Modpack"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "整合包版本"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "整合包版本"
           }
         }
       }
@@ -72371,133 +72371,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 مرحباً بك في %@ Beta!\n\nهذه نسخة تجريبية من %@. بينما نسعى لتوفير تجربة مستقرة، يرجى ملاحظة المعلومات المهمة التالية:\n\n🔒 أمان البيانات: يرجى عمل نسخ احتياطية منتظمة لحفظات Minecraft وبيانات المشغل\n🐛 تقارير الأخطاء: إذا واجهت أي مشاكل، يرجى الإبلاغ عنها في مستودع GitHub الخاص بنا\n⚠️ ميزات محدودة: الميزات التالية غير متوفرة حالياً:\n  - استيراد بيانات الحفظ من مشغلات أخرى\n  - إعدادات المشغل المتقدمة\n🖥️ التوافق: أجهزة Apple Silicon التي تشغل إصدارات Minecraft أقل من 1.19 غير مدعومة حالياً\n\n🙏 شكراً لك لاختبار %@ ومساعدتنا في التحسين!"
+            "value" : "🎮 مرحباً بك في %@ Beta!\n\nهذه نسخة تجريبية من %@. بينما نسعى لتوفير تجربة مستقرة، يرجى ملاحظة المعلومات المهمة التالية:\n\n🔒 أمان البيانات: يرجى عمل نسخ احتياطية منتظمة لحفظات Minecraft وبيانات المشغل\n🐛 تقارير الأخطاء: إذا واجهت أي مشاكل، يرجى الإبلاغ عنها في مستودع GitHub الخاص بنا\n⚠️ ميزات محدودة: الميزات التالية غير متوفرة حالياً:\n  - استيراد بيانات الحفظ من مشغلات أخرى\n  - إعدادات المشغل المتقدمة\n🖥️ التوافق: أجهزة Apple Silicon التي تشغل إصدارات Minecraft أقل من 1.13 غير مدعومة حالياً\n\n🙏 شكراً لك لاختبار %@ ومساعدتنا في التحسين!"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Velkommen til %@ Beta!\n\nDette er en beta-version af %@. Selvom vi stræber efter at give en stabil oplevelse, skal du bemærke følgende vigtige information:\n\n🔒 Datasikkerhed: Lav regelmæssigt backup af dine Minecraft-gemmer og launcher-data\n🐛 Fejlrapporter: Hvis du støder på problemer, så rapportér dem venligst på vores GitHub-repository\n⚠️ Begrænsede funktioner: Følgende funktioner er i øjeblikket utilgængelige:\n  - Import af gemmedata fra andre launchere\n  - Avancerede launcher-indstillinger\n🖥️ Kompatibilitet: Apple Silicon-enheder, der kører Minecraft-versioner under 1.19, understøttes endnu ikke\n\n🙏 Tak fordi du tester %@ og hjælper os med at forbedre det!"
+            "value" : "🎮 Velkommen til %@ Beta!\n\nDette er en beta-version af %@. Selvom vi stræber efter at give en stabil oplevelse, skal du bemærke følgende vigtige information:\n\n🔒 Datasikkerhed: Lav regelmæssigt backup af dine Minecraft-gemmer og launcher-data\n🐛 Fejlrapporter: Hvis du støder på problemer, så rapportér dem venligst på vores GitHub-repository\n⚠️ Begrænsede funktioner: Følgende funktioner er i øjeblikket utilgængelige:\n  - Import af gemmedata fra andre launchere\n  - Avancerede launcher-indstillinger\n🖥️ Kompatibilitet: Apple Silicon-enheder, der kører Minecraft-versioner under 1.13, understøttes endnu ikke\n\n🙏 Tak fordi du tester %@ og hjælper os med at forbedre det!"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Willkommen bei %@ Beta!\n\nDies ist eine Beta-Version von %@. Während wir uns bemühen, eine stabile Erfahrung zu bieten, beachten Sie bitte die folgenden wichtigen Informationen:\n\n🔒 Datensicherheit: Erstellen Sie regelmäßig Backups Ihrer Minecraft-Spielstände und Launcher-Daten\n🐛 Fehlerberichte: Wenn Sie Probleme feststellen, melden Sie diese bitte in unserem GitHub-Repository\n⚠️ Eingeschränkte Funktionen: Die folgenden Funktionen sind derzeit nicht verfügbar:\n  - Import von Speicherdaten von anderen Launchern\n  - Erweiterte Launcher-Einstellungen\n🖥️ Kompatibilität: Apple Silicon-Geräte mit Minecraft-Versionen unter 1.19 werden noch nicht unterstützt\n\n🙏 Vielen Dank, dass Sie %@ testen und uns bei der Verbesserung helfen!"
+            "value" : "🎮 Willkommen bei %@ Beta!\n\nDies ist eine Beta-Version von %@. Während wir uns bemühen, eine stabile Erfahrung zu bieten, beachten Sie bitte die folgenden wichtigen Informationen:\n\n🔒 Datensicherheit: Erstellen Sie regelmäßig Backups Ihrer Minecraft-Spielstände und Launcher-Daten\n🐛 Fehlerberichte: Wenn Sie Probleme feststellen, melden Sie diese bitte in unserem GitHub-Repository\n⚠️ Eingeschränkte Funktionen: Die folgenden Funktionen sind derzeit nicht verfügbar:\n  - Import von Speicherdaten von anderen Launchern\n  - Erweiterte Launcher-Einstellungen\n🖥️ Kompatibilität: Apple Silicon-Geräte mit Minecraft-Versionen unter 1.13 werden noch nicht unterstützt\n\n🙏 Vielen Dank, dass Sie %@ testen und uns bei der Verbesserung helfen!"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Welcome to %@ Beta!\n\nThis is a beta version of %@. While we strive to provide a stable experience, please note the following important information:\n\n🔒 Data Safety: Please regularly back up your Minecraft saves and launcher data\n🐛 Bug Reports: If you encounter any issues, please report them on our GitHub repository\n⚠️ Limited Features: The following features are currently unavailable:\n  - Save data import from other launchers\n  - Advanced launcher settings\n🖥️ Compatibility: Apple Silicon devices running Minecraft versions below 1.19 are not yet supported\n\n🙏 Thank you for testing %@ and helping us improve!"
+            "value" : "🎮 Welcome to %@ Beta!\n\nThis is a beta version of %@. While we strive to provide a stable experience, please note the following important information:\n\n🔒 Data Safety: Please regularly back up your Minecraft saves and launcher data\n🐛 Bug Reports: If you encounter any issues, please report them on our GitHub repository\n⚠️ Limited Features: The following features are currently unavailable:\n  - Save data import from other launchers\n  - Advanced launcher settings\n🖥️ Compatibility: Apple Silicon devices running Minecraft versions below 1.13 are not yet supported\n\n🙏 Thank you for testing %@ and helping us improve!"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 ¡Bienvenido a %@ Beta!\n\nEsta es una versión beta de %@. Aunque nos esforzamos por brindar una experiencia estable, tenga en cuenta la siguiente información importante:\n\n🔒 Seguridad de datos: Haga copias de seguridad regulares de sus partidas de Minecraft y datos del launcher\n🐛 Informes de errores: Si encuentra algún problema, repórtelo en nuestro repositorio de GitHub\n⚠️ Funciones limitadas: Las siguientes funciones no están disponibles actualmente:\n  - Importación de datos de guardado de otros launchers\n  - Configuraciones avanzadas del launcher\n🖥️ Compatibilidad: Los dispositivos Apple Silicon que ejecutan versiones de Minecraft inferiores a 1.19 aún no son compatibles\n\n🙏 ¡Gracias por probar %@ y ayudarnos a mejorar!"
+            "value" : "🎮 ¡Bienvenido a %@ Beta!\n\nEsta es una versión beta de %@. Aunque nos esforzamos por brindar una experiencia estable, tenga en cuenta la siguiente información importante:\n\n🔒 Seguridad de datos: Haga copias de seguridad regulares de sus partidas de Minecraft y datos del launcher\n🐛 Informes de errores: Si encuentra algún problema, repórtelo en nuestro repositorio de GitHub\n⚠️ Funciones limitadas: Las siguientes funciones no están disponibles actualmente:\n  - Importación de datos de guardado de otros launchers\n  - Configuraciones avanzadas del launcher\n🖥️ Compatibilidad: Los dispositivos Apple Silicon que ejecutan versiones de Minecraft inferiores a 1.13 aún no son compatibles\n\n🙏 ¡Gracias por probar %@ y ayudarnos a mejorar!"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Tervetuloa %@ Betaan!\n\nTämä on %@in beta-versio. Vaikka pyrimme tarjoamaan vakaan kokemuksen, huomioi seuraavat tärkeät tiedot:\n\n🔒 Tietoturva: Varmuuskopioi säännöllisesti Minecraft-tallennuksesi ja launcherin tiedot\n🐛 Virheraportointi: Jos kohtaat ongelmia, raportoi ne GitHub-repositoriossämme\n⚠️ Rajoitetut ominaisuudet: Seuraavat ominaisuudet eivät ole tällä hetkellä käytettävissä:\n  - Tallennustietojen tuonti muista launchereista\n  - Launcherin edistyneet asetukset\n🖥️ Yhteensopivuus: Apple Silicon -laitteet, joissa käytetään Minecraft-versioita alle 1.19, eivät ole vielä tuettuja\n\n🙏 Kiitos %@in testaamisesta ja auttamisesta parantamisessa!"
+            "value" : "🎮 Tervetuloa %@ Betaan!\n\nTämä on %@in beta-versio. Vaikka pyrimme tarjoamaan vakaan kokemuksen, huomioi seuraavat tärkeät tiedot:\n\n🔒 Tietoturva: Varmuuskopioi säännöllisesti Minecraft-tallennuksesi ja launcherin tiedot\n🐛 Virheraportointi: Jos kohtaat ongelmia, raportoi ne GitHub-repositoriossämme\n⚠️ Rajoitetut ominaisuudet: Seuraavat ominaisuudet eivät ole tällä hetkellä käytettävissä:\n  - Tallennustietojen tuonti muista launchereista\n  - Launcherin edistyneet asetukset\n🖥️ Yhteensopivuus: Apple Silicon -laitteet, joissa käytetään Minecraft-versioita alle 1.13, eivät ole vielä tuettuja\n\n🙏 Kiitos %@in testaamisesta ja auttamisesta parantamisessa!"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Bienvenue dans %@ Beta !\n\nCeci est une version bêta de %@. Bien que nous nous efforcions de fournir une expérience stable, veuillez noter les informations importantes suivantes :\n\n🔒 Sécurité des données : Sauvegardez régulièrement vos sauvegardes Minecraft et les données du launcher\n🐛 Rapports de bugs : Si vous rencontrez des problèmes, veuillez les signaler sur notre dépôt GitHub\n⚠️ Fonctionnalités limitées : Les fonctionnalités suivantes sont actuellement indisponibles :\n  - Importation de données de sauvegarde d'autres launchers\n  - Paramètres avancés du launcher\n🖥️ Compatibilité : Les appareils Apple Silicon exécutant des versions de Minecraft inférieures à 1.19 ne sont pas encore pris en charge\n\n🙏 Merci de tester %@ et de nous aider à l'améliorer !"
+            "value" : "🎮 Bienvenue dans %@ Beta !\n\nCeci est une version bêta de %@. Bien que nous nous efforcions de fournir une expérience stable, veuillez noter les informations importantes suivantes :\n\n🔒 Sécurité des données : Sauvegardez régulièrement vos sauvegardes Minecraft et les données du launcher\n🐛 Rapports de bugs : Si vous rencontrez des problèmes, veuillez les signaler sur notre dépôt GitHub\n⚠️ Fonctionnalités limitées : Les fonctionnalités suivantes sont actuellement indisponibles :\n  - Importation de données de sauvegarde d'autres launchers\n  - Paramètres avancés du launcher\n🖥️ Compatibilité : Les appareils Apple Silicon exécutant des versions de Minecraft inférieures à 1.13 ne sont pas encore pris en charge\n\n🙏 Merci de tester %@ et de nous aider à l'améliorer !"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 %@ Beta में आपका स्वागत है!\n\nयह %@ का बीटा संस्करण है। जबकि हम एक स्थिर अनुभव प्रदान करने का प्रयास करते हैं, कृपया निम्नलिखित महत्वपूर्ण जानकारी पर ध्यान दें:\n\n🔒 डेटा सुरक्षा: कृपया नियमित रूप से अपने Minecraft सेव और लॉन्चर डेटा का बैकअप लें\n🐛 बग रिपोर्ट: यदि आपको कोई समस्या आती है, तो कृपया उन्हें हमारे GitHub रिपॉजिटरी पर रिपोर्ट करें\n⚠️ सीमित सुविधाएं: निम्नलिखित सुविधाएं वर्तमान में अनुपलब्ध हैं:\n  - अन्य लॉन्चरों से सेव डेटा आयात\n  - उन्नत लॉन्चर सेटिंग्स\n🖥️ संगतता: Minecraft संस्करण 1.19 से कम चलाने वाले Apple Silicon डिवाइस अभी तक समर्थित नहीं हैं\n\n🙏 %@ का परीक्षण करने और हमें सुधारने में मदद करने के लिए धन्यवाद!"
+            "value" : "🎮 %@ Beta में आपका स्वागत है!\n\nयह %@ का बीटा संस्करण है। जबकि हम एक स्थिर अनुभव प्रदान करने का प्रयास करते हैं, कृपया निम्नलिखित महत्वपूर्ण जानकारी पर ध्यान दें:\n\n🔒 डेटा सुरक्षा: कृपया नियमित रूप से अपने Minecraft सेव और लॉन्चर डेटा का बैकअप लें\n🐛 बग रिपोर्ट: यदि आपको कोई समस्या आती है, तो कृपया उन्हें हमारे GitHub रिपॉजिटरी पर रिपोर्ट करें\n⚠️ सीमित सुविधाएं: निम्नलिखित सुविधाएं वर्तमान में अनुपलब्ध हैं:\n  - अन्य लॉन्चरों से सेव डेटा आयात\n  - उन्नत लॉन्चर सेटिंग्स\n🖥️ संगतता: Minecraft संस्करण 1.13 से कम चलाने वाले Apple Silicon डिवाइस अभी तक समर्थित नहीं हैं\n\n🙏 %@ का परीक्षण करने और हमें सुधारने में मदद करने के लिए धन्यवाद!"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Benvenuto in %@ Beta!\n\nQuesta è una versione beta di %@. Mentre ci sforziamo di fornire un'esperienza stabile, si prega di notare le seguenti informazioni importanti:\n\n🔒 Sicurezza dei dati: Esegui regolarmente il backup dei tuoi salvataggi Minecraft e dei dati del launcher\n🐛 Segnalazione bug: Se riscontri problemi, segnalali nel nostro repository GitHub\n⚠️ Funzionalità limitate: Le seguenti funzionalità sono attualmente non disponibili:\n  - Importazione di dati di salvataggio da altri launcher\n  - Impostazioni avanzate del launcher\n🖥️ Compatibilità: I dispositivi Apple Silicon che eseguono versioni di Minecraft inferiori alla 1.19 non sono ancora supportati\n\n🙏 Grazie per testare %@ e aiutarci a migliorare!"
+            "value" : "🎮 Benvenuto in %@ Beta!\n\nQuesta è una versione beta di %@. Mentre ci sforziamo di fornire un'esperienza stabile, si prega di notare le seguenti informazioni importanti:\n\n🔒 Sicurezza dei dati: Esegui regolarmente il backup dei tuoi salvataggi Minecraft e dei dati del launcher\n🐛 Segnalazione bug: Se riscontri problemi, segnalali nel nostro repository GitHub\n⚠️ Funzionalità limitate: Le seguenti funzionalità sono attualmente non disponibili:\n  - Importazione di dati di salvataggio da altri launcher\n  - Impostazioni avanzate del launcher\n🖥️ Compatibilità: I dispositivi Apple Silicon che eseguono versioni di Minecraft inferiori alla 1.13 non sono ancora supportati\n\n🙏 Grazie per testare %@ e aiutarci a migliorare!"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 %@ Betaへようこそ！\n\nこれは%@のベータ版です。安定した体験を提供するよう努めていますが、以下の重要な情報にご注意ください：\n\n🔒 データ安全性：Minecraftのセーブデータとランチャーデータを定期的にバックアップしてください\n🐛 バグ報告：問題が発生した場合は、GitHubリポジトリで報告してください\n⚠️ 機能制限：以下の機能は現在利用できません：\n  - 他のランチャーからのセーブデータインポート\n  - ランチャーの高度な設定\n🖥️ 互換性：Minecraft 1.19未満のバージョンを実行するApple Siliconデバイスはまだサポートされていません\n\n🙏 %@のテストと改善にご協力いただき、ありがとうございます！"
+            "value" : "🎮 %@ Betaへようこそ！\n\nこれは%@のベータ版です。安定した体験を提供するよう努めていますが、以下の重要な情報にご注意ください：\n\n🔒 データ安全性：Minecraftのセーブデータとランチャーデータを定期的にバックアップしてください\n🐛 バグ報告：問題が発生した場合は、GitHubリポジトリで報告してください\n⚠️ 機能制限：以下の機能は現在利用できません：\n  - 他のランチャーからのセーブデータインポート\n  - ランチャーの高度な設定\n🖥️ 互換性：Minecraft 1.13未満のバージョンを実行するApple Siliconデバイスはまだサポートされていません\n\n🙏 %@のテストと改善にご協力いただき、ありがとうございます！"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 %@ 베타에 오신 것을 환영합니다!\n\n이것은 %@의 베타 버전입니다. 안정적인 경험을 제공하기 위해 노력하고 있지만, 다음 중요한 정보를 참고해 주세요:\n\n🔒 데이터 안전: Minecraft 세이브 파일과 런처 데이터를 정기적으로 백업해 주세요\n🐛 버그 리포트: 문제가 발생하면 GitHub 저장소에서 신고해 주세요\n⚠️ 제한된 기능: 다음 기능들은 현재 사용할 수 없습니다:\n  - 다른 런처에서 세이브 데이터 가져오기\n  - 고급 런처 설정\n🖥️ 호환성: Minecraft 1.19 미만 버전을 실행하는 Apple Silicon 기기는 아직 지원되지 않습니다\n\n🙏 %@를 테스트하고 개선에 도움을 주셔서 감사합니다!"
+            "value" : "🎮 %@ 베타에 오신 것을 환영합니다!\n\n이것은 %@의 베타 버전입니다. 안정적인 경험을 제공하기 위해 노력하고 있지만, 다음 중요한 정보를 참고해 주세요:\n\n🔒 데이터 안전: Minecraft 세이브 파일과 런처 데이터를 정기적으로 백업해 주세요\n🐛 버그 리포트: 문제가 발생하면 GitHub 저장소에서 신고해 주세요\n⚠️ 제한된 기능: 다음 기능들은 현재 사용할 수 없습니다:\n  - 다른 런처에서 세이브 데이터 가져오기\n  - 고급 런처 설정\n🖥️ 호환성: Minecraft 1.13 미만 버전을 실행하는 Apple Silicon 기기는 아직 지원되지 않습니다\n\n🙏 %@를 테스트하고 개선에 도움을 주셔서 감사합니다!"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Velkommen til %@ Beta!\n\nDette er en beta-versjon av %@. Selv om vi streber etter å gi en stabil opplevelse, vær oppmerksom på følgende viktige informasjon:\n\n🔒 Datasikkerhet: Ta regelmessig sikkerhetskopi av dine Minecraft-lagringer og launcher-data\n🐛 Feilrapporter: Hvis du støter på problemer, rapporter dem i vårt GitHub-repository\n⚠️ Begrensede funksjoner: Følgende funksjoner er for øyeblikket utilgjengelige:\n  - Import av lagringsdata fra andre launchere\n  - Avanserte launcher-innstillinger\n🖥️ Kompatibilitet: Apple Silicon-enheter som kjører Minecraft-versjoner under 1.19 støttes ikke ennå\n\n🙏 Takk for at du tester %@ og hjelper oss å forbedre det!"
+            "value" : "🎮 Velkommen til %@ Beta!\n\nDette er en beta-versjon av %@. Selv om vi streber etter å gi en stabil opplevelse, vær oppmerksom på følgende viktige informasjon:\n\n🔒 Datasikkerhet: Ta regelmessig sikkerhetskopi av dine Minecraft-lagringer og launcher-data\n🐛 Feilrapporter: Hvis du støter på problemer, rapporter dem i vårt GitHub-repository\n⚠️ Begrensede funksjoner: Følgende funksjoner er for øyeblikket utilgjengelige:\n  - Import av lagringsdata fra andre launchere\n  - Avanserte launcher-innstillinger\n🖥️ Kompatibilitet: Apple Silicon-enheter som kjører Minecraft-versjoner under 1.13 støttes ikke ennå\n\n🙏 Takk for at du tester %@ og hjelper oss å forbedre det!"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Welkom bij %@ Beta!\n\nDit is een bètaversie van %@. Hoewel we streven naar een stabiele ervaring, let op de volgende belangrijke informatie:\n\n🔒 Gegevensveiligheid: Maak regelmatig back-ups van je Minecraft-saves en launcher-gegevens\n🐛 Bugrapporten: Als je problemen tegenkomt, meld ze dan in onze GitHub-repository\n⚠️ Beperkte functies: De volgende functies zijn momenteel niet beschikbaar:\n  - Save-gegevens importeren van andere launchers\n  - Geavanceerde launcher-instellingen\n🖥️ Compatibiliteit: Apple Silicon-apparaten met Minecraft-versies onder 1.19 worden nog niet ondersteund\n\n🙏 Bedankt voor het testen van %@ en het helpen verbeteren!"
+            "value" : "🎮 Welkom bij %@ Beta!\n\nDit is een bètaversie van %@. Hoewel we streven naar een stabiele ervaring, let op de volgende belangrijke informatie:\n\n🔒 Gegevensveiligheid: Maak regelmatig back-ups van je Minecraft-saves en launcher-gegevens\n🐛 Bugrapporten: Als je problemen tegenkomt, meld ze dan in onze GitHub-repository\n⚠️ Beperkte functies: De volgende functies zijn momenteel niet beschikbaar:\n  - Save-gegevens importeren van andere launchers\n  - Geavanceerde launcher-instellingen\n🖥️ Compatibiliteit: Apple Silicon-apparaten met Minecraft-versies onder 1.13 worden nog niet ondersteund\n\n🙏 Bedankt voor het testen van %@ en het helpen verbeteren!"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Witamy w %@ Beta!\n\nTo jest wersja beta %@. Choć staramy się zapewnić stabilne doświadczenie, zwróć uwagę na następujące ważne informacje:\n\n🔒 Bezpieczeństwo danych: Regularnie twórz kopie zapasowe swoich zapisów Minecraft i danych launchera\n🐛 Zgłaszanie błędów: Jeśli napotkasz jakiekolwiek problemy, zgłoś je w naszym repozytorium GitHub\n⚠️ Ograniczone funkcje: Następujące funkcje są obecnie niedostępne:\n  - Import danych zapisów z innych launcherów\n  - Zaawansowane ustawienia launchera\n🖥️ Kompatybilność: Urządzenia Apple Silicon z wersjami Minecraft poniżej 1.19 nie są jeszcze obsługiwane\n\n🙏 Dziękujemy za testowanie %@ i pomoc w ulepszaniu!"
+            "value" : "🎮 Witamy w %@ Beta!\n\nTo jest wersja beta %@. Choć staramy się zapewnić stabilne doświadczenie, zwróć uwagę na następujące ważne informacje:\n\n🔒 Bezpieczeństwo danych: Regularnie twórz kopie zapasowe swoich zapisów Minecraft i danych launchera\n🐛 Zgłaszanie błędów: Jeśli napotkasz jakiekolwiek problemy, zgłoś je w naszym repozytorium GitHub\n⚠️ Ograniczone funkcje: Następujące funkcje są obecnie niedostępne:\n  - Import danych zapisów z innych launcherów\n  - Zaawansowane ustawienia launchera\n🖥️ Kompatybilność: Urządzenia Apple Silicon z wersjami Minecraft poniżej 1.13 nie są jeszcze obsługiwane\n\n🙏 Dziękujemy za testowanie %@ i pomoc w ulepszaniu!"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Bem-vindo ao %@ Beta!\n\nEsta é uma versão beta do %@. Embora nos esforcemos para fornecer uma experiência estável, observe as seguintes informações importantes:\n\n🔒 Segurança de dados: Faça backup regularmente de seus saves do Minecraft e dados do launcher\n🐛 Relatórios de bugs: Se encontrar problemas, relate-os em nosso repositório GitHub\n⚠️ Recursos limitados: Os seguintes recursos estão atualmente indisponíveis:\n  - Importação de dados de save de outros launchers\n  - Configurações avançadas do launcher\n🖥️ Compatibilidade: Dispositivos Apple Silicon executando versões do Minecraft abaixo de 1.19 ainda não são suportados\n\n🙏 Obrigado por testar o %@ e nos ajudar a melhorar!"
+            "value" : "🎮 Bem-vindo ao %@ Beta!\n\nEsta é uma versão beta do %@. Embora nos esforcemos para fornecer uma experiência estável, observe as seguintes informações importantes:\n\n🔒 Segurança de dados: Faça backup regularmente de seus saves do Minecraft e dados do launcher\n🐛 Relatórios de bugs: Se encontrar problemas, relate-os em nosso repositório GitHub\n⚠️ Recursos limitados: Os seguintes recursos estão atualmente indisponíveis:\n  - Importação de dados de save de outros launchers\n  - Configurações avançadas do launcher\n🖥️ Compatibilidade: Dispositivos Apple Silicon executando versões do Minecraft abaixo de 1.13 ainda não são suportados\n\n🙏 Obrigado por testar o %@ e nos ajudar a melhorar!"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Добро пожаловать в %@ Beta!\n\nЭто бета-версия %@. Хотя мы стремимся обеспечить стабильную работу, обратите внимание на следующую важную информацию:\n\n🔒 Безопасность данных: Регулярно создавайте резервные копии ваших сохранений Minecraft и данных лаунчера\n🐛 Отчеты об ошибках: Если вы столкнулись с проблемами, сообщите о них в нашем GitHub репозитории\n⚠️ Ограниченные функции: Следующие функции в настоящее время недоступны:\n  - Импорт данных сохранений из других лаунчеров\n  - Расширенные настройки лаунчера\n🖥️ Совместимость: Устройства Apple Silicon с версиями Minecraft ниже 1.19 пока не поддерживаются\n\n🙏 Спасибо за тестирование %@ и помощь в улучшении!"
+            "value" : "🎮 Добро пожаловать в %@ Beta!\n\nЭто бета-версия %@. Хотя мы стремимся обеспечить стабильную работу, обратите внимание на следующую важную информацию:\n\n🔒 Безопасность данных: Регулярно создавайте резервные копии ваших сохранений Minecraft и данных лаунчера\n🐛 Отчеты об ошибках: Если вы столкнулись с проблемами, сообщите о них в нашем GitHub репозитории\n⚠️ Ограниченные функции: Следующие функции в настоящее время недоступны:\n  - Импорт данных сохранений из других лаунчеров\n  - Расширенные настройки лаунчера\n🖥️ Совместимость: Устройства Apple Silicon с версиями Minecraft ниже 1.13 пока не поддерживаются\n\n🙏 Спасибо за тестирование %@ и помощь в улучшении!"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Välkommen till %@ Beta!\n\nDetta är en beta-version av %@. Medan vi strävar efter att ge en stabil upplevelse, observera följande viktiga information:\n\n🔒 Datasäkerhet: Säkerhetskopiera regelbundet dina Minecraft-sparfiler och launcher-data\n🐛 Felrapporter: Om du stöter på problem, rapportera dem i vårt GitHub-repository\n⚠️ Begränsade funktioner: Följande funktioner är för närvarande otillgängliga:\n  - Import av spardata från andra launchers\n  - Avancerade launcher-inställningar\n🖥️ Kompatibilitet: Apple Silicon-enheter som kör Minecraft-versioner under 1.19 stöds inte ännu\n\n🙏 Tack för att du testar %@ och hjälper oss förbättra!"
+            "value" : "🎮 Välkommen till %@ Beta!\n\nDetta är en beta-version av %@. Medan vi strävar efter att ge en stabil upplevelse, observera följande viktiga information:\n\n🔒 Datasäkerhet: Säkerhetskopiera regelbundet dina Minecraft-sparfiler och launcher-data\n🐛 Felrapporter: Om du stöter på problem, rapportera dem i vårt GitHub-repository\n⚠️ Begränsade funktioner: Följande funktioner är för närvarande otillgängliga:\n  - Import av spardata från andra launchers\n  - Avancerade launcher-inställningar\n🖥️ Kompatibilitet: Apple Silicon-enheter som kör Minecraft-versioner under 1.13 stöds inte ännu\n\n🙏 Tack för att du testar %@ och hjälper oss förbättra!"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 ยินดีต้อนรับสู่ %@ Beta!\n\nนี่คือเวอร์ชั่น beta ของ %@ แม้ว่าเราจะพยายามให้ประสบการณ์ที่เสถียร แต่โปรดทราบข้อมูลสำคัญต่อไปนี้:\n\n🔒 ความปลอดภัยของข้อมูล: กรุณาสำรองข้อมูล Minecraft saves และข้อมูล launcher อย่างสม่ำเสมо\n🐛 รายงานข้อผิดพลาด: หากพบปัญหา กรุณารายงานใน GitHub repository ของเรา\n⚠️ ฟีเจอร์จำกัด: ฟีเจอร์ต่อไปนี้ยังไม่พร้อมใช้งาน:\n  - การนำเข้าข้อมูล save จาก launcher อื่น\n  - การตั้งค่า launcher ขั้นสูง\n🖥️ ความเข้ากันได้: อุปกรณ์ Apple Silicon ที่รัน Minecraft เวอร์ชั่นต่ำกว่า 1.19 ยังไม่รองรับ\n\n🙏 ขอบคุณสำหรับการทดสอบ %@ และช่วยเราปรับปรุง!"
+            "value" : "🎮 ยินดีต้อนรับสู่ %@ Beta!\n\nนี่คือเวอร์ชั่น beta ของ %@ แม้ว่าเราจะพยายามให้ประสบการณ์ที่เสถียร แต่โปรดทราบข้อมูลสำคัญต่อไปนี้:\n\n🔒 ความปลอดภัยของข้อมูล: กรุณาสำรองข้อมูล Minecraft saves และข้อมูล launcher อย่างสม่ำเสมо\n🐛 รายงานข้อผิดพลาด: หากพบปัญหา กรุณารายงานใน GitHub repository ของเรา\n⚠️ ฟีเจอร์จำกัด: ฟีเจอร์ต่อไปนี้ยังไม่พร้อมใช้งาน:\n  - การนำเข้าข้อมูล save จาก launcher อื่น\n  - การตั้งค่า launcher ขั้นสูง\n🖥️ ความเข้ากันได้: อุปกรณ์ Apple Silicon ที่รัน Minecraft เวอร์ชั่นต่ำกว่า 1.13 ยังไม่รองรับ\n\n🙏 ขอบคุณสำหรับการทดสอบ %@ และช่วยเราปรับปรุง!"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 %@ Beta'ya hoş geldiniz!\n\nBu, %@'ın beta sürümüdür. Kararlı bir deneyim sunmaya çalışsak da, lütfen aşağıdaki önemli bilgileri not edin:\n\n🔒 Veri Güvenliği: Minecraft kayıtlarınızı ve launcher verilerinizi düzenli olarak yedekleyin\n🐛 Hata Raporları: Herhangi bir sorunla karşılaşırsanız, lütfen GitHub repository'mizde bildirin\n⚠️ Sınırlı Özellikler: Aşağıdaki özellikler şu anda kullanılamaz:\n  - Diğer launcher'lardan kayıt verisi içe aktarma\n  - Gelişmiş launcher ayarları\n🖥️ Uyumluluk: Minecraft 1.19'un altındaki sürümleri çalıştıran Apple Silicon cihazları henüz desteklenmiyor\n\n🙏 %@'ı test ettiğiniz ve geliştirmemize yardım ettiğiniz için teşekkürler!"
+            "value" : "🎮 %@ Beta'ya hoş geldiniz!\n\nBu, %@'ın beta sürümüdür. Kararlı bir deneyim sunmaya çalışsak da, lütfen aşağıdaki önemli bilgileri not edin:\n\n🔒 Veri Güvenliği: Minecraft kayıtlarınızı ve launcher verilerinizi düzenli olarak yedekleyin\n🐛 Hata Raporları: Herhangi bir sorunla karşılaşırsanız, lütfen GitHub repository'mizde bildirin\n⚠️ Sınırlı Özellikler: Aşağıdaki özellikler şu anda kullanılamaz:\n  - Diğer launcher'lardan kayıt verisi içe aktarma\n  - Gelişmiş launcher ayarları\n🖥️ Uyumluluk: Minecraft 1.13'un altındaki sürümleri çalıştıran Apple Silicon cihazları henüz desteklenmiyor\n\n🙏 %@'ı test ettiğiniz ve geliştirmemize yardım ettiğiniz için teşekkürler!"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 Chào mừng đến với %@ Beta!\n\nĐây là phiên bản beta của %@. Mặc dù chúng tôi cố gắng cung cấp trải nghiệm ổn định, vui lòng lưu ý những thông tin quan trọng sau:\n\n🔒 An toàn dữ liệu: Vui lòng thường xuyên sao lưu các file save Minecraft và dữ liệu launcher\n🐛 Báo cáo lỗi: Nếu gặp vấn đề, vui lòng báo cáo trên GitHub repository của chúng tôi\n⚠️ Tính năng hạn chế: Các tính năng sau hiện chưa khả dụng:\n  - Nhập dữ liệu save từ launcher khác\n  - Cài đặt launcher nâng cao\n🖥️ Tương thích: Thiết bị Apple Silicon chạy phiên bản Minecraft dưới 1.19 chưa được hỗ trợ\n\n🙏 Cảm ơn bạn đã thử nghiệm %@ và giúp chúng tôi cải thiện!"
+            "value" : "🎮 Chào mừng đến với %@ Beta!\n\nĐây là phiên bản beta của %@. Mặc dù chúng tôi cố gắng cung cấp trải nghiệm ổn định, vui lòng lưu ý những thông tin quan trọng sau:\n\n🔒 An toàn dữ liệu: Vui lòng thường xuyên sao lưu các file save Minecraft và dữ liệu launcher\n🐛 Báo cáo lỗi: Nếu gặp vấn đề, vui lòng báo cáo trên GitHub repository của chúng tôi\n⚠️ Tính năng hạn chế: Các tính năng sau hiện chưa khả dụng:\n  - Nhập dữ liệu save từ launcher khác\n  - Cài đặt launcher nâng cao\n🖥️ Tương thích: Thiết bị Apple Silicon chạy phiên bản Minecraft dưới 1.13 chưa được hỗ trợ\n\n🙏 Cảm ơn bạn đã thử nghiệm %@ và giúp chúng tôi cải thiện!"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 欢迎使用 %@ 测试版！\n\n这是 %@ 的测试版本。虽然我们努力提供稳定的使用体验，但请注意以下重要信息：\n\n🔒 数据安全：请定期备份您的 Minecraft 存档和启动器数据\n🐛 问题反馈：如果您遇到任何问题，请在我们的 GitHub 仓库中反馈\n⚠️ 功能限制：以下功能目前暂不可用：\n  - 从其他启动器导入存档数据\n  - 启动器高级设置\n🖥️ 兼容性：运行 Minecraft 1.19 以下版本的 Apple Silicon 设备暂不支持\n\n🙏 感谢您测试 %@ 并帮助我们改进！"
+            "value" : "🎮 欢迎使用 %@ 测试版！\n\n这是 %@ 的测试版本。虽然我们努力提供稳定的使用体验，但请注意以下重要信息：\n\n🔒 数据安全：请定期备份您的 Minecraft 存档和启动器数据\n🐛 问题反馈：如果您遇到任何问题，请在我们的 GitHub 仓库中反馈\n⚠️ 功能限制：以下功能目前暂不可用：\n  - 从其他启动器导入存档数据\n  - 启动器高级设置\n🖥️ 兼容性：运行 Minecraft 1.13 以下版本的 Apple Silicon 设备暂不支持\n\n🙏 感谢您测试 %@ 并帮助我们改进！"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎮 歡迎使用 %@ 測試版！\n\n這是 %@ 的測試版本。雖然我們努力提供穩定的使用體驗，但請注意以下重要資訊：\n\n🔒 資料安全：請定期備份您的 Minecraft 存檔和啟動器資料\n🐛 問題回饋：如果您遇到任何問題，請在我們的 GitHub 儲存庫中回饋\n⚠️ 功能限制：以下功能目前暫不可用：\n  - 從其他啟動器匯入存檔資料\n  - 啟動器進階設定\n🖥️ 相容性：執行 Minecraft 1.19 以下版本的 Apple Silicon 裝置暫不支援\n\n🙏 感謝您測試 %@ 並幫助我們改進！"
+            "value" : "🎮 歡迎使用 %@ 測試版！\n\n這是 %@ 的測試版本。雖然我們努力提供穩定的使用體驗，但請注意以下重要資訊：\n\n🔒 資料安全：請定期備份您的 Minecraft 存檔和啟動器資料\n🐛 問題回饋：如果您遇到任何問題，請在我們的 GitHub 儲存庫中回饋\n⚠️ 功能限制：以下功能目前暫不可用：\n  - 從其他啟動器匯入存檔資料\n  - 啟動器進階設定\n🖥️ 相容性：執行 Minecraft 1.13 以下版本的 Apple Silicon 裝置暫不支援\n\n🙏 感謝您測試 %@ 並幫助我們改進！"
           }
         }
       }
