@@ -85,15 +85,10 @@ enum URLConfig {
 
             // Appcast 相关
             static func appcastURL(
-                version: String? = nil,
                 architecture: String
             ) -> URL {
                 let appcastFileName = "appcast-\(architecture).xml"
-                if let version = version, !version.isEmpty {
-                    return URLConfig.url("https://github.com/\(repositoryOwner)/\(repositoryName)/releases/download/\(version)/\(appcastFileName)")
-                } else {
-                    return URLConfig.url("https://github.com/\(repositoryOwner)/\(repositoryName)/releases/latest/download/\(appcastFileName)")
-                }
+                return URLConfig.url("https://github.com/\(repositoryOwner)/\(repositoryName)/releases/latest/download/\(appcastFileName)")
             }
 
             // 静态贡献者数据
@@ -225,6 +220,21 @@ enum URLConfig {
                 }
 
                 return components?.url ?? url
+            }
+        }
+
+        // Announcement API
+        enum Announcement {
+            static let baseURL = "https://suhang12332.github.io/Swift-Craft-Launcher-News/api/announcements"
+
+            /// 获取公告URL
+            /// - Parameters:
+            ///   - version: 应用版本号
+            ///   - language: 语言代码，如 "zh-Hans"
+            /// - Returns: 公告URL
+            static func announcement(version: String, language: String) -> URL {
+                let urlString = "\(baseURL)/\(version)/\(language).json"
+                return URLConfig.url(urlString)
             }
         }
     }

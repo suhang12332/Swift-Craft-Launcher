@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Learn about Swift Craft Launcher - a native macOS Minecraft launcher with mod loader support, Microsoft authentication, and intuitive game management">
+    <meta name="keywords" content="swift craft launcher, minecraft launcher, macos, mod loader, fabric, forge, quilt, neoforge">
+    <title>Project Overview - Swift Craft Launcher Help</title>
+    <link rel="stylesheet" href="../css/help.css">
+</head>
+<body>
+    <div class="page-header">
+        <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher/main/SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="Swift Craft Launcher Icon">
+        <h1>Project Overview</h1>
+    </div>
+    
+    <p>Swift Craft Launcher is a native macOS Minecraft launcher built with SwiftUI, offering a smooth and efficient gaming experience. Designed specifically for modern macOS systems, it features comprehensive mod loader support, Microsoft account authentication, and intuitive game management.</p>
+    
+    <h2>Core Features</h2>
+    
+    <h3>Basic Functions</h3>
+    <ul>
+        <li><strong>Multi-version Minecraft Support</strong> - ARM: 1.19+, Intel: Not tested</li>
+        <li><strong>Microsoft Account Authentication</strong> - Secure OAuth integration with device code flow support</li>
+        <li><strong>Mod Loader Support</strong> - Fabric, Quilt, Forge, and NeoForge with automatic installation</li>
+        <li><strong>Resource Management</strong> - One-click installation for mods, datapacks, shaders, and resource packs</li>
+    </ul>
+    
+    <h3>User Experience</h3>
+    <ul>
+        <li><strong>Native macOS Design</strong> - Built with SwiftUI, following Apple Human Interface Guidelines</li>
+        <li><strong>Multilingual Support</strong> - Localized interface with flag indicators</li>
+        <li><strong>Smart Path Management</strong> - Finder-style breadcrumb navigation with automatic truncation for long paths</li>
+        <li><strong>Performance Optimization</strong> - Efficient caching and memory management</li>
+    </ul>
+    
+    <h3>Advanced Configuration</h3>
+    <ul>
+        <li><strong>Java Management</strong> - Independent Java path configuration for each profile, with automatic version detection</li>
+        <li><strong>Memory Allocation</strong> - Visual slider for setting Xms/Xmx parameters <em>(coming soon)</em></li>
+        <li><strong>Custom Launch Arguments</strong> - Custom JVM and game parameters <em>(coming soon)</em></li>
+    </ul>
+    
+    <h2>System Requirements</h2>
+    <ul>
+        <li><strong>macOS</strong>: 14.0 or later</li>
+        <li><strong>Java</strong>: 8 or later (for Minecraft runtime)</li>
+    </ul>
+    
+    <h2>Installation</h2>
+    
+    <h3>Using Homebrew Tap (Recommended)</h3>
+    <pre><code># Method 1: One-click install
+brew install --cask suhang12332/swiftcraftlauncher/swift-craft-launcher
+
+# Method 2: Add Tap then install
+brew tap suhang12332/swiftcraftlauncher
+brew install --cask swift-craft-launcher</code></pre>
+    
+    <p><strong>Tip:</strong> We have created a dedicated <a href="https://github.com/suhang12332/homebrew-swiftcraftlauncher">Homebrew Tap</a> for SwiftCraft Launcher.</p>
+    
+    <h3>Precompiled Releases</h3>
+    <p>Download the latest version from <a href="https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest">GitHub Releases</a>.</p>
+    
+    <p><strong>Note:</strong> All currently available versions are test builds; a stable release is coming soon.</p>
+    
+    <h3>Build from Source</h3>
+    <ol>
+        <li><strong>Clone the repository</strong>
+            <pre><code>git clone https://github.com/suhang12332/Swift-Craft-Launcher.git
+cd Swift-Craft-Launcher</code></pre>
+        </li>
+        <li><strong>Open in Xcode</strong>
+            <pre><code>open SwiftCraftLauncher.xcodeproj</code></pre>
+        </li>
+        <li><strong>Build and Run</strong> using Xcode (⌘R)</li>
+    </ol>
+    
+    <p><strong>Build Requirements:</strong></p>
+    <ul>
+        <li>Xcode 13.0+</li>
+        <li>Swift 5.5+</li>
+    </ul>
+    
+    <h2>Technical Architecture</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Technology</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>UI Framework</strong></td>
+                <td>SwiftUI</td>
+            </tr>
+            <tr>
+                <td><strong>Programming Language</strong></td>
+                <td>Swift</td>
+            </tr>
+            <tr>
+                <td><strong>Reactive Programming</strong></td>
+                <td>Combine</td>
+            </tr>
+            <tr>
+                <td><strong>Target Platform</strong></td>
+                <td>macOS 14.0+</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>Open Source License</h2>
+    <p>This project is licensed under the GNU Affero General Public License v3.0. For details, see the LICENSE file.</p>
+    
+    <h2>Community &amp; Support</h2>
+    <ul>
+        <li><strong>Official QQ Group</strong>: <a href="https://qm.qq.com/cgi-bin/qm/qr?k=1057517524">1057517524</a></li>
+        <li><strong>Issue Reporting</strong>: <a href="https://github.com/suhang12332/Swift-Craft-Launcher/issues">GitHub Issues</a></li>
+        <li><strong>Feature Suggestions</strong>: <a href="https://github.com/suhang12332/Swift-Craft-Launcher/discussions">GitHub Discussions</a></li>
+    </ul>
+    
+    <h2>Contributing</h2>
+    <p>We welcome all forms of contributions! Please see our Contributing Guide for:</p>
+    <ul>
+        <li>Code style and standards</li>
+        <li>Pull Request process</li>
+        <li>Issue reporting guidelines</li>
+    </ul>
+    
+    <h2>Acknowledgements</h2>
+    <p>Special thanks to the following projects for their contributions to this launcher:</p>
+    <ul>
+        <li><a href="https://github.com/Oct4Pie/archify">Archify - Universal Binary Optimization Tool for macOS Applications</a></li>
+    </ul>
+    
+    <p class="back-link"><a href="index.html">← Back to Table of Contents</a></p>
+</body>
+</html>
+
