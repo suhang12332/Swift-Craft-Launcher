@@ -65,7 +65,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     /// 提供 feed URL - 根据系统架构选择对应的 appcast 文件
     func feedURLString(for updater: SPUUpdater) -> String? {
         let architecture = getSystemArchitecture()
-        let appcastURL = URLConfig.API.GitHub.appcastURL(version: nil, architecture: architecture)
+        let appcastURL = URLConfig.API.GitHub.appcastURL(architecture: architecture)
 
         // 拼接git代理地址
         let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)

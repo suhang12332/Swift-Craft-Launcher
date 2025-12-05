@@ -14,15 +14,19 @@ struct StartupInfoSheetView: View {
     @Environment(\.dismiss)
     private var dismiss
 
+    let announcementData: AnnouncementData?
+
     // MARK: - Body
     var body: some View {
         CommonSheetView(
             header: {
                 VStack(spacing: 12) {
                     // 标题
-                    Text("startup.info.title".localized())
-                        .font(.title2)
-                        .fontWeight(.semibold)
+                    if let title = announcementData?.title {
+                        Text(title)
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                    }
                 }
             },
             body: {
@@ -42,18 +46,29 @@ struct StartupInfoSheetView: View {
                         .padding(.bottom, 8)
 
                         // 主要信息内容
-                        Text(
-                            String.localizedStringWithFormat(
-                                "startup.info.message".localized(),
-                                Bundle.main.appName,
-                                Bundle.main.appName,
-                                Bundle.main.appName
+                        if let announcementData = announcementData {
+                            // 显示从API获取的公告内容
+                            Text(
+                                String.localizedStringWithFormat(
+                                    announcementData.content,
+                                    Bundle.main.appName,
+                                    Bundle.main.appName,
+                                    Bundle.main.appName
+                                )
                             )
-                        )
-                        .font(.body)
-                        .multilineTextAlignment(.leading)
-                        .lineSpacing(4)
-                        .fixedSize(horizontal: false, vertical: true)
+                            .font(.body)
+                            .multilineTextAlignment(.leading)
+                            .lineSpacing(4)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                            // 作者信息
+                            if !announcementData.author.isEmpty {
+                                Text(announcementData.author)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .padding(.top, 8)
+                            }
+                        }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 4)  // 为滚动条留出空间
@@ -84,5 +99,5 @@ struct StartupInfoSheetView: View {
 
 // MARK: - Preview
 #Preview {
-    StartupInfoSheetView()
+    StartupInfoSheetView(announcementData: nil)
 }

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="了解 Swift Craft Launcher - 一款支持模组加载器、Microsoft 认证和直观游戏管理的原生 macOS Minecraft 启动器">
+    <meta name="keywords" content="swift craft launcher, minecraft launcher, macos, mod loader, fabric, forge, quilt, neoforge">
+    <title>项目概览 - Swift Craft Launcher 帮助</title>
+    <link rel="stylesheet" href="../css/help.css">
+</head>
+<body>
+    <div class="page-header">
+        <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher/main/SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac512pt2x.png" alt="Swift Craft Launcher 图标">
+        <h1>项目概览</h1>
+    </div>
+    
+    <p>Swift Craft Launcher 是一款使用 SwiftUI 构建的原生 macOS Minecraft 启动器，提供流畅高效的游戏体验。专为现代 macOS 系统设计，具有全面的模组加载器支持、Microsoft 账户认证和直观的游戏管理功能。</p>
+    
+    <h2>核心功能</h2>
+    
+    <h3>基础功能</h3>
+    <ul>
+        <li><strong>多版本 Minecraft 支持</strong> - ARM：1.19+，Intel：未测试</li>
+        <li><strong>Microsoft 账户认证</strong> - 安全的 OAuth 集成，支持设备代码流程</li>
+        <li><strong>模组加载器支持</strong> - Fabric、Quilt、Forge 和 NeoForge，支持自动安装</li>
+        <li><strong>资源管理</strong> - 一键安装模组、数据包、着色器和资源包</li>
+    </ul>
+    
+    <h3>用户体验</h3>
+    <ul>
+        <li><strong>原生 macOS 设计</strong> - 使用 SwiftUI 构建，遵循 Apple 人机界面指南</li>
+        <li><strong>多语言支持</strong> - 本地化界面，带国旗指示器</li>
+        <li><strong>智能路径管理</strong> - Finder 风格的面包屑导航，自动截断长路径</li>
+        <li><strong>性能优化</strong> - 高效的缓存和内存管理</li>
+    </ul>
+    
+    <h3>高级配置</h3>
+    <ul>
+        <li><strong>Java 管理</strong> - 每个配置文件独立的 Java 路径配置，支持自动版本检测</li>
+        <li><strong>内存分配</strong> - 可视化滑块设置 Xms/Xmx 参数 <em>（即将推出）</em></li>
+        <li><strong>自定义启动参数</strong> - 自定义 JVM 和游戏参数 <em>（即将推出）</em></li>
+    </ul>
+    
+    <h2>系统要求</h2>
+    <ul>
+        <li><strong>macOS</strong>：14.0 或更高版本</li>
+        <li><strong>Java</strong>：8 或更高版本（用于 Minecraft 运行时）</li>
+    </ul>
+    
+    <h2>安装</h2>
+    
+    <h3>使用 Homebrew Tap（推荐）</h3>
+    <pre><code># 方法 1：一键安装
+brew install --cask suhang12332/swiftcraftlauncher/swift-craft-launcher
+
+# 方法 2：先添加 Tap 再安装
+brew tap suhang12332/swiftcraftlauncher
+brew install --cask swift-craft-launcher</code></pre>
+    
+    <p><strong>提示：</strong>我们为 SwiftCraft Launcher 创建了专门的 <a href="https://github.com/suhang12332/homebrew-swiftcraftlauncher">Homebrew Tap</a>。</p>
+    
+    <h3>预编译版本</h3>
+    <p>从 <a href="https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest">GitHub Releases</a> 下载最新版本。</p>
+    
+    <p><strong>注意：</strong>所有当前可用版本均为测试版本；稳定版本即将推出。</p>
+    
+    <h3>从源码构建</h3>
+    <ol>
+        <li><strong>克隆仓库</strong>
+            <pre><code>git clone https://github.com/suhang12332/Swift-Craft-Launcher.git
+cd Swift-Craft-Launcher</code></pre>
+        </li>
+        <li><strong>在 Xcode 中打开</strong>
+            <pre><code>open SwiftCraftLauncher.xcodeproj</code></pre>
+        </li>
+        <li><strong>构建并运行</strong> 使用 Xcode (⌘R)</li>
+    </ol>
+    
+    <p><strong>构建要求：</strong></p>
+    <ul>
+        <li>Xcode 13.0+</li>
+        <li>Swift 5.5+</li>
+    </ul>
+    
+    <h2>技术架构</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>组件</th>
+                <th>技术</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>UI 框架</strong></td>
+                <td>SwiftUI</td>
+            </tr>
+            <tr>
+                <td><strong>编程语言</strong></td>
+                <td>Swift</td>
+            </tr>
+            <tr>
+                <td><strong>响应式编程</strong></td>
+                <td>Combine</td>
+            </tr>
+            <tr>
+                <td><strong>目标平台</strong></td>
+                <td>macOS 14.0+</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>开源许可</h2>
+    <p>本项目采用 GNU Affero 通用公共许可证 v3.0 许可。详情请参阅 LICENSE 文件。</p>
+    
+    <h2>社区与支持</h2>
+    <ul>
+        <li><strong>官方 QQ 群</strong>：<a href="https://qm.qq.com/cgi-bin/qm/qr?k=1057517524">1057517524</a></li>
+        <li><strong>问题报告</strong>：<a href="https://github.com/suhang12332/Swift-Craft-Launcher/issues">GitHub Issues</a></li>
+        <li><strong>功能建议</strong>：<a href="https://github.com/suhang12332/Swift-Craft-Launcher/discussions">GitHub Discussions</a></li>
+    </ul>
+    
+    <h2>贡献</h2>
+    <p>我们欢迎各种形式的贡献！请参阅我们的贡献指南了解：</p>
+    <ul>
+        <li>代码风格和标准</li>
+        <li>Pull Request 流程</li>
+        <li>问题报告指南</li>
+    </ul>
+    
+    <h2>致谢</h2>
+    <p>特别感谢以下项目对本启动器的贡献：</p>
+    <ul>
+        <li><a href="https://github.com/Oct4Pie/archify">Archify - macOS 应用程序通用二进制优化工具</a></li>
+    </ul>
+    
+    <p class="back-link"><a href="index.html">← 返回目录</a></p>
+</body>
+</html>
+

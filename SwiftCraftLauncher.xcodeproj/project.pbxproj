@@ -14,12 +14,25 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		90804BA02EE2B65E00D4ACE1 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		90DD1E432EE1678400265135 /* Exceptions for "SwiftCraftLauncher" folder in "SwiftCraftLauncher" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 9023D8302E3139B5005A53F1 /* SwiftCraftLauncher */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				90DD1E432EE1678400265135 /* Exceptions for "SwiftCraftLauncher" folder in "SwiftCraftLauncher" target */,
+			);
 			path = SwiftCraftLauncher;
 			sourceTree = "<group>";
 		};
@@ -44,7 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */,
-				90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */,
+				90804BA02EE2B65E00D4ACE1 /* Swift Craft Launcher.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -75,7 +88,7 @@
 				030C47452E7F82E700A209A8 /* SkinRenderKit */,
 			);
 			productName = SwiftCraftLauncher;
-			productReference = 90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */;
+			productReference = 90804BA02EE2B65E00D4ACE1 /* Swift Craft Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -294,6 +307,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftCraftLauncher/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Swift Craft Launcher";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -326,6 +340,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftCraftLauncher/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Swift Craft Launcher";
 				LD_RUNPATH_SEARCH_PATHS = (
