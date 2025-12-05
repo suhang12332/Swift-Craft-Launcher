@@ -31,22 +31,22 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchVersionInfo(from version: String) async throws -> MinecraftVersionManifest {
         let cacheKey = "version_info_\(version)"
-        
+
         // 检查缓存
         if let cachedVersionInfo: MinecraftVersionManifest = AppCacheManager.shared.get(namespace: "version_info", key: cacheKey, as: MinecraftVersionManifest.self) {
             return cachedVersionInfo
         }
-        
+
         // 从API获取版本信息
         let versionInfo = try await fetchVersionInfoThrowing(from: version)
-        
+
         // 缓存整个版本信息
         AppCacheManager.shared.setSilently(
             namespace: "version_info",
             key: cacheKey,
             value: versionInfo
         )
-        
+
         return versionInfo
     }
 
