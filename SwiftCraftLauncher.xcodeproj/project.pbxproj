@@ -14,25 +14,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		90804BA02EE2B65E00D4ACE1 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		90DD1E432EE1678400265135 /* Exceptions for "SwiftCraftLauncher" folder in "SwiftCraftLauncher" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 9023D8302E3139B5005A53F1 /* SwiftCraftLauncher */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				90DD1E432EE1678400265135 /* Exceptions for "SwiftCraftLauncher" folder in "SwiftCraftLauncher" target */,
-			);
 			path = SwiftCraftLauncher;
 			sourceTree = "<group>";
 		};
