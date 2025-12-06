@@ -9,7 +9,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
+	<string>Swift Craft Launcher</string>
 	<key>CFBundleSignature</key>
 	<string>hbwr</string>
 	<key>CFBundlePackageType</key>
