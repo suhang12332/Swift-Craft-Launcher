@@ -33,7 +33,7 @@ jobs:
       - name: Extract version info
         id: version
         run: |
-          MARKETING_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /MARKETING_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//' | sed 's/^"//' | sed 's/"$//')
+          MARKETING_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /MARKETING_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
           
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
@@ -41,11 +41,7 @@ jobs:
             VERSION="${MARKETING_VERSION}"
           fi
           
-          # 清理版本号中的无效字符（用于 artifact 名称）
-          SAFE_VERSION=$(echo "$VERSION" | sed 's/["<>|*?:\\\/\r\n]//g')
-          
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "safe_version=$SAFE_VERSION" >> $GITHUB_OUTPUT
           echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
 
       - name: Replace Info.plist variables
@@ -95,6 +91,13 @@ jobs:
           
           echo "✅ Sparkle 公钥已添加到生成的 Info.plist"
 
+          echo "📝 向生成的 Info.plist 添加 HelpBook 配置..."
+          /usr/libexec/PlistBuddy -c "Add :CFBundleHelpBookFolder string SwiftCraftLauncher.help" "$INFO_PLIST_PATH" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :CFBundleHelpBookFolder SwiftCraftLauncher.help" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleHelpBookName string com.su.code.SwiftCraftLauncher.help" "$INFO_PLIST_PATH" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :CFBundleHelpBookName com.su.code.SwiftCraftLauncher.help" "$INFO_PLIST_PATH"
+          
+          echo "✅ HelpBook 配置已添加到生成的 Info.plist"
       - name: Verify build output
         run: |
           ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
@@ -192,6 +195,7 @@ jobs:
           echo "✅ DMG assets prepared"
 
       - name: Create DMG
+        id: create_dmg
         run: |
           ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
           APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
@@ -221,6 +225,7 @@ jobs:
             echo "✅ DMG 创建成功: $DMG_NAME"
             # Show DMG info
             hdiutil info "$DMG_NAME" | head -20
+            echo "dmg_name=$DMG_NAME" >> $GITHUB_OUTPUT
           else
             echo "❌ DMG 创建失败"
             exit 1

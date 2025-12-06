@@ -1,0 +1,164 @@
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>專案概覽</title>
+    <meta name="description" content="了解 Swift Craft Launcher - 一款支援模組載入器、Microsoft 認證和直觀遊戲管理的原生 macOS Minecraft 啟動器">
+    <meta name="keywords" content="swift craft launcher, minecraft launcher, macos, mod loader, fabric, forge, quilt, neoforge, homebrew">
+    <meta content="light dark" name="color-scheme">
+    <link media="all" href="../css/app.css" type="text/css" rel="stylesheet">
+</head>
+<body dir="ltr" id="introduce" class="AppleTopic apd-topic dark-mode-enabled" data-istaskopen="true" data-designversion="2">
+    <a name="introduce"></a>
+    <figure class="topicIcon">
+        <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher/main/SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac32pt2x.png" alt="" height="30" width="30">
+    </figure>
+    <h1>專案概覽</h1>
+    <p>Swift Craft Launcher 是一款使用 SwiftUI 構建的原生 macOS Minecraft 啟動器，提供流暢高效的遊戲體驗。專為現代 macOS 系統設計，具有全面的模組載入器支援、Microsoft 帳戶認證和直觀的遊戲管理功能。</p>
+    
+    <div id="core-features" class="Task">
+        <h2 aria-controls="aria-core-features" class="Name">基礎功能</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-core-features">
+            <ul>
+                <li><p><strong>多版本 Minecraft 支援</strong> - ARM：1.13+，Intel：未測試</p></li>
+                <li><p><strong>Microsoft 帳戶認證</strong> - 安全的 OAuth 整合，支援設備代碼流程</p></li>
+                <li><p><strong>模組載入器支援</strong> - Fabric、Quilt、Forge 和 NeoForge，支援自動安裝</p></li>
+                <li><p><strong>資源管理</strong> - 一鍵安裝模組、資料包、著色器和資源包</p></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div id="user-experience" class="Task">
+        <h2 aria-controls="aria-user-experience" class="Name">用戶體驗</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-user-experience">
+            <ul>
+                <li><p><strong>原生 macOS 設計</strong> - 使用 SwiftUI 構建，遵循 Apple 人機介面指南</p></li>
+                <li><p><strong>多語言支援</strong> - 本地化介面，帶國旗指示器</p></li>
+                <li><p><strong>智能路徑管理</strong> - Finder 風格的面包屑導航，自動截斷長路徑</p></li>
+                <li><p><strong>性能優化</strong> - 高效的快取和記憶體管理</p></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div id="advanced-config" class="Task">
+        <h2 aria-controls="aria-advanced-config" class="Name">高級配置</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-advanced-config">
+            <ul>
+                <li><p><strong>Java 管理</strong> - 每個配置檔案獨立的 Java 路徑配置，支援自動版本檢測</p></li>
+                <li><p><strong>記憶體分配</strong> - 可視化滑塊設置 Xms/Xmx 參數</p></li>
+                <li><p><strong>自定義啟動參數</strong> - 自定義 JVM 和遊戲參數 <em>（即將推出）</em></p></li>
+            </ul>
+        </div>
+    </div>
+    <div id="system-requirements" class="Task">
+        <h2 aria-controls="aria-system-requirements" class="Name">系統要求</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-system-requirements">
+            <ul>
+                <li><p><strong>macOS</strong>：14.0 或更高版本</p></li>
+                <li><p><strong>Java</strong>：8 或更高版本（用於 Minecraft 運行時）</p></li>
+            </ul>
+        </div>
+    </div>
+
+ 
+    
+    <h1 class="Name" style="margin-top: 0.8em;">安裝</h1>
+    
+    <div id="install-homebrew" class="Task">
+        
+        <h2 aria-controls="aria-install-homebrew" class="Name">使用 Homebrew Tap（推薦）</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-install-homebrew">
+            <code class="CodeLine">brew install --cask suhang12332/swiftcraftlauncher/swift-craft-launcher</code>
+                <code class="CodeLine">brew tap suhang12332/swiftcraftlauncher</code>
+                <code class="CodeLine">brew install --cask swift-craft-launcher</code>
+                <br>
+            <p class="Tip"><strong>提示：</strong>我們為 SwiftCraft Launcher 創建了專門的 <a href="https://github.com/suhang12332/homebrew-swiftcraftlauncher" class="URL">Homebrew Tap</a>。</p>
+        </div>
+    </div>
+    
+    <div id="install-release" class="Task">
+        <h2 aria-controls="aria-install-release" class="Name">預編譯版本</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-install-release">
+            <p>從 <a href="https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest" class="URL">GitHub Releases</a> 下載最新版本。</p>
+            <div class="Alert">
+                <p class="Note"><em>【註】</em>所有當前可用版本均為測試版本；穩定版本即將推出。</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="install-source" class="Task">
+        <h2 aria-controls="aria-install-source" class="Name">從源碼構建</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-install-source">
+            <ol>
+                <li><p><strong>克隆倉庫</strong></p>
+                    <code class="CodeLine">git clone https://github.com/suhang12332/Swift-Craft-Launcher.git</code>
+                        <code class="CodeLine">cd Swift-Craft-Launcher</code>
+                </li>
+                <li><p><strong>在 Xcode 中打開</strong></p>
+                    <code class="CodeLine">open SwiftCraftLauncher.xcodeproj</code>
+                </li>
+                <li><p><strong>構建並運行</strong> 使用 Xcode (⌘R)</p></li>
+            </ol>
+            <p><strong>構建要求：</strong></p>
+            <ul>
+                <li><p>Xcode 13.0+</p></li>
+                <li><p>Swift 5.5+</p></li>
+            </ul>
+        </div>
+    </div>
+    
+    <h1 class="Name" style="margin-top: 0.8em;">技術架構</h1>
+
+    <div class="table-wrapper">
+        <table data-type="Multicolumn" aria-label="技術架構">
+            <thead>
+                <tr>
+                    <th scope="col"><p class="TableHead">組件</p></th>
+                    <th scope="col"><p class="TableHead">技術</p></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><p class="TableDisplay">UI 框架</p></td>
+                    <td><p>SwiftUI</p></td>
+                </tr>
+                <tr>
+                    <td><p class="TableDisplay">程式語言</p></td>
+                    <td><p>Swift</p></td>
+                </tr>
+                <tr>
+                    <td><p class="TableDisplay">響應式程式設計</p></td>
+                    <td><p>Combine</p></td>
+                </tr>
+                <tr>
+                    <td><p class="TableDisplay">目標平台</p></td>
+                    <td><p>macOS 14.0+</p></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h1 class="Name" style="margin-top: 0.8em;">許可和致謝</h1>
+
+    <div id="info" class="Task">
+        <h2 aria-controls="aria-info" class="Name">開源許可</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-info">
+            <p>本專案採用 GNU Affero 通用公共許可證 v3.0 許可。詳情請參閱 LICENSE 檔案。</p>
+
+            <p><strong>社群與支援</strong></p>
+            <ul>
+                <li><p><strong>官方 QQ 群</strong>：<a href="https://qm.qq.com/cgi-bin/qm/qr?k=1057517524" class="URL">1057517524</a></p></li>
+                <li><p><strong>問題報告</strong>：<a href="https://github.com/suhang12332/Swift-Craft-Launcher/issues" class="URL">GitHub Issues</a></p></li>
+                <li><p><strong>功能建議</strong>：<a href="https://github.com/suhang12332/Swift-Craft-Launcher/discussions" class="URL">GitHub Discussions</a></p></li>
+            </ul>
+            <p><strong>致謝</strong></p>
+            <p>特別感謝以下專案對本啟動器的貢獻：</p>
+            <ul>
+                <li><p><a href="https://github.com/Oct4Pie/archify" class="URL">Archify - macOS 應用程式通用二進位優化工具</a></p></li>
+            </ul>
+        </div>
+    </div>
+    <div class="LinkUniversal">
+        <a href="index.html#index" class="xRef AppleTopic">← 返回目錄</a>
+    </div>
+</body>
+</html>
+

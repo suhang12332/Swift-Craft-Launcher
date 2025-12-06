@@ -1,0 +1,164 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Project Overview</title>
+    <meta name="description" content="Learn about Swift Craft Launcher - a native macOS Minecraft launcher with mod loader support, Microsoft authentication, and intuitive game management">
+    <meta name="keywords" content="swift craft launcher, minecraft launcher, macos, mod loader, fabric, forge, quilt, neoforge, homebrew">
+    <meta content="light dark" name="color-scheme">
+    <link media="all" href="../css/app.css" type="text/css" rel="stylesheet">
+</head>
+<body dir="ltr" id="introduce" class="AppleTopic apd-topic dark-mode-enabled" data-istaskopen="true" data-designversion="2">
+    <a name="introduce"></a>
+    <figure class="topicIcon">
+        <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher/main/SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac32pt2x.png" alt="" height="30" width="30">
+    </figure>
+    <h1>Project Overview</h1>
+    <p>Swift Craft Launcher is a native macOS Minecraft launcher built with SwiftUI, providing a smooth and efficient gaming experience. Designed for modern macOS systems, it features comprehensive mod loader support, Microsoft account authentication, and intuitive game management.</p>
+    
+    <div id="core-features" class="Task">
+        <h2 aria-controls="aria-core-features" class="Name">Core Features</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-core-features">
+            <ul>
+                <li><p><strong>Multi-version Minecraft Support</strong> - ARM: 1.13+, Intel: Untested</p></li>
+                <li><p><strong>Microsoft Account Authentication</strong> - Secure OAuth integration with device code flow support</p></li>
+                <li><p><strong>Mod Loader Support</strong> - Fabric, Quilt, Forge, and NeoForge with automatic installation</p></li>
+                <li><p><strong>Resource Management</strong> - One-click installation of mods, data packs, shaders, and resource packs</p></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div id="user-experience" class="Task">
+        <h2 aria-controls="aria-user-experience" class="Name">User Experience</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-user-experience">
+            <ul>
+                <li><p><strong>Native macOS Design</strong> - Built with SwiftUI, following Apple Human Interface Guidelines</p></li>
+                <li><p><strong>Multi-language Support</strong> - Localized interface with flag indicators</p></li>
+                <li><p><strong>Smart Path Management</strong> - Finder-style breadcrumb navigation with automatic path truncation</p></li>
+                <li><p><strong>Performance Optimization</strong> - Efficient caching and memory management</p></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div id="advanced-config" class="Task">
+        <h2 aria-controls="aria-advanced-config" class="Name">Advanced Configuration</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-advanced-config">
+            <ul>
+                <li><p><strong>Java Management</strong> - Independent Java path configuration for each profile with automatic version detection</p></li>
+                <li><p><strong>Memory Allocation</strong> - Visual slider for setting Xms/Xmx parameters</p></li>
+                <li><p><strong>Custom Launch Arguments</strong> - Custom JVM and game parameters <em>(Coming Soon)</em></p></li>
+            </ul>
+        </div>
+    </div>
+    <div id="system-requirements" class="Task">
+        <h2 aria-controls="aria-system-requirements" class="Name">System Requirements</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-system-requirements">
+            <ul>
+                <li><p><strong>macOS</strong>: 14.0 or later</p></li>
+                <li><p><strong>Java</strong>: 8 or later (for Minecraft runtime)</p></li>
+            </ul>
+        </div>
+    </div>
+
+ 
+    
+    <h1 class="Name" style="margin-top: 0.8em;">Installation</h1>
+    
+    <div id="install-homebrew" class="Task">
+        
+        <h2 aria-controls="aria-install-homebrew" class="Name">Using Homebrew Tap (Recommended)</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-install-homebrew">
+            <code class="CodeLine">brew install --cask suhang12332/swiftcraftlauncher/swift-craft-launcher</code>
+                <code class="CodeLine">brew tap suhang12332/swiftcraftlauncher</code>
+                <code class="CodeLine">brew install --cask swift-craft-launcher</code>
+                <br>
+            <p class="Tip"><strong>Tip:</strong> We've created a dedicated <a href="https://github.com/suhang12332/homebrew-swiftcraftlauncher" class="URL">Homebrew Tap</a> for SwiftCraft Launcher.</p>
+        </div>
+    </div>
+    
+    <div id="install-release" class="Task">
+        <h2 aria-controls="aria-install-release" class="Name">Pre-built Releases</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-install-release">
+            <p>Download the latest version from <a href="https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest" class="URL">GitHub Releases</a>.</p>
+            <div class="Alert">
+                <p class="Note"><em>Note:</em> All currently available versions are beta releases; stable versions are coming soon.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="install-source" class="Task">
+        <h2 aria-controls="aria-install-source" class="Name">Build from Source</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-install-source">
+            <ol>
+                <li><p><strong>Clone the repository</strong></p>
+                    <code class="CodeLine">git clone https://github.com/suhang12332/Swift-Craft-Launcher.git</code>
+                        <code class="CodeLine">cd Swift-Craft-Launcher</code>
+                </li>
+                <li><p><strong>Open in Xcode</strong></p>
+                    <code class="CodeLine">open SwiftCraftLauncher.xcodeproj</code>
+                </li>
+                <li><p><strong>Build and Run</strong> using Xcode (⌘R)</p></li>
+            </ol>
+            <p><strong>Build Requirements:</strong></p>
+            <ul>
+                <li><p>Xcode 13.0+</p></li>
+                <li><p>Swift 5.5+</p></li>
+            </ul>
+        </div>
+    </div>
+    
+    <h1 class="Name" style="margin-top: 0.8em;">Technical Architecture</h1>
+
+    <div class="table-wrapper">
+        <table data-type="Multicolumn" aria-label="Technical Architecture">
+            <thead>
+                <tr>
+                    <th scope="col"><p class="TableHead">Component</p></th>
+                    <th scope="col"><p class="TableHead">Technology</p></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><p class="TableDisplay">UI Framework</p></td>
+                    <td><p>SwiftUI</p></td>
+                </tr>
+                <tr>
+                    <td><p class="TableDisplay">Programming Language</p></td>
+                    <td><p>Swift</p></td>
+                </tr>
+                <tr>
+                    <td><p class="TableDisplay">Reactive Programming</p></td>
+                    <td><p>Combine</p></td>
+                </tr>
+                <tr>
+                    <td><p class="TableDisplay">Target Platform</p></td>
+                    <td><p>macOS 14.0+</p></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <h1 class="Name" style="margin-top: 0.8em;">License and Acknowledgments</h1>
+
+    <div id="info" class="Task">
+        <h2 aria-controls="aria-info" class="Name">Open Source License</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-info">
+            <p>This project is licensed under the GNU Affero General Public License v3.0. See the LICENSE file for details.</p>
+
+            <p><strong>Community and Support</strong></p>
+            <ul>
+                <li><p><strong>Official QQ Group</strong>: <a href="https://qm.qq.com/cgi-bin/qm/qr?k=1057517524" class="URL">1057517524</a></p></li>
+                <li><p><strong>Issue Reports</strong>: <a href="https://github.com/suhang12332/Swift-Craft-Launcher/issues" class="URL">GitHub Issues</a></p></li>
+                <li><p><strong>Feature Suggestions</strong>: <a href="https://github.com/suhang12332/Swift-Craft-Launcher/discussions" class="URL">GitHub Discussions</a></p></li>
+            </ul>
+            <p><strong>Acknowledgments</strong></p>
+            <p>Special thanks to the following projects for their contributions to this launcher:</p>
+            <ul>
+                <li><p><a href="https://github.com/Oct4Pie/archify" class="URL">Archify - macOS Application Universal Binary Optimization Tool</a></p></li>
+            </ul>
+        </div>
+    </div>
+    <div class="LinkUniversal">
+        <a href="index.html#index" class="xRef AppleTopic">← Back to Index</a>
+    </div>
+</body>
+</html>
+

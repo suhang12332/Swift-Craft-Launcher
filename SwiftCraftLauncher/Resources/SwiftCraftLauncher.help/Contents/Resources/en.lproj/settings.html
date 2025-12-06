@@ -1,0 +1,122 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Launcher Settings</title>
+    <meta name="description" content="Configure Swift Craft Launcher settings, including language, appearance, working directory, download settings, and game options">
+    <meta name="keywords" content="settings, configuration, language, appearance, java, memory, download">
+    <meta content="light dark" name="color-scheme">
+    <link media="all" href="../css/app.css" type="text/css" rel="stylesheet">
+</head>
+<body dir="ltr" id="settings" class="AppleTopic apd-topic dark-mode-enabled" data-istaskopen="true" data-designversion="2">
+    <a name="settings"></a>
+    <figure class="topicIcon">
+        <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher/main/SwiftCraftLauncher/Assets.xcassets/AppIcon.appiconset/mac32pt2x.png" alt="" height="30" width="30">
+    </figure>
+    <h1>Launcher Settings</h1>
+    <p style="border-bottom: 1px solid var(--border-color); padding-bottom: 1em;">Swift Craft Launcher provides various configuration options to customize your experience.</p>
+    
+    <h1 class="Name" style="margin-top: 0.8em;">General Settings</h1>
+    
+    <figure>
+        <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-HelpBook/main/settings/4-1_1.png" alt="General settings">
+    </figure>
+    
+    <div id="settings-language" class="Task">
+        <h2 aria-controls="aria-settings-language" class="Name">Language</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-settings-language">
+            <p>You can set the launcher interface language. Changes will take effect after restarting the launcher.</p>
+        </div>
+    </div>
+    
+    <div id="settings-appearance" class="Task">
+        <h2 aria-controls="aria-settings-appearance" class="Name">Appearance</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-settings-appearance">
+            <p>You can set the launcher appearance to light, dark, or follow system. The effects are shown below.</p>
+            <figure>
+                <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-HelpBook/main/settings/4-1-2_1.png" alt="Light appearance">
+            </figure>
+            <figure>
+                <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-HelpBook/main/settings/4-1-2_2.png" alt="Dark appearance">
+            </figure>
+        </div>
+    </div>
+    
+    <div id="settings-workdir" class="Task">
+        <h2 aria-controls="aria-settings-workdir" class="Name">Working Directory</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-settings-workdir">
+            <p>You can set the launcher's working directory. All game files managed by the launcher will be placed in this folder, as shown below.</p>
+            <figure>
+                <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-HelpBook/main/settings/4-1-3_1.png" alt="Working directory settings">
+            </figure>
+            <figure>
+                <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-HelpBook/main/settings/4-1-3_2.png" alt="Working directory effect">
+            </figure>
+            <div class="Alert">
+                <p class="Important"><em>Important:</em> After changing the working directory, games in the original path will no longer appear in the "Game List". It is recommended to transfer or re-download them. It's best to change the working directory when first opening the launcher.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="settings-download" class="Task">
+        <h2 aria-controls="aria-settings-download" class="Name">Download Settings</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-settings-download">
+            <p>The number of parallel downloads largely determines your download speed, but higher concurrency also brings greater performance overhead.</p>
+            <p>If you are not familiar with the meanings of Minecraft Version URL, Modrinth API URL, and Git Proxy URL, please do not modify them. Changing them may cause game resource download failures.</p>
+            <p>If you accidentally change them, restore them to their default values:</p>
+            <ul>
+                <li><p><strong>Minecraft Version URL</strong>: <code class="CodeLine">https://launchermeta.mojang.com/mc/game/version_manifest.json</code></p></li>
+                <li><p><strong>Modrinth API URL</strong>: <code class="CodeLine">https://api.modrinth.com/v2</code></p></li>
+                <li><p><strong>Git Proxy URL</strong>: <code class="CodeLine">https://ghfast.top</code></p></li>
+            </ul>
+        </div>
+    </div>
+    
+    <h1 class="Name" style="margin-top: 0.8em;">Tabs</h1>
+    
+    <div class="Alert">
+        <p class="Note"><em>Note:</em> The data pack feature is under development. Please stay tuned for updates.</p>
+    </div>
+    
+    <h1 class="Name" style="margin-top: 0.8em;">Game Settings</h1>
+    
+    <figure>
+        <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-HelpBook/main/settings/4-3_1.png" alt="Game settings">
+    </figure>
+    
+    <div id="settings-dependency" class="Task">
+        <h2 aria-controls="aria-settings-dependency" class="Name">Automatic Dependency Handling</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-settings-dependency">
+            <p>When this option is enabled, any dependencies required for downloading resources will be automatically downloaded without showing notifications. The following page will not appear.</p>
+            <figure>
+                <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-HelpBook/main/settings/4-3-1_1.png" alt="Dependency popup">
+            </figure>
+        </div>
+    </div>
+    
+    <div id="settings-java" class="Task">
+        <h2 aria-controls="aria-settings-java" class="Name">Java Path</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-settings-java">
+            <p>You can change this option to select different Java versions to launch the game.</p>
+            <p>Below are MC versions and their minimum required Java versions:</p>
+            <ul>
+                <li><p><strong>1.12</strong> - Java 8</p></li>
+                <li><p><strong>1.17</strong> - Java 16</p></li>
+                <li><p><strong>1.18</strong> - Java 17</p></li>
+                <li><p><strong>1.20.5</strong> - Java 21 (64-bit)</p></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div id="settings-memory" class="Task">
+        <h2 aria-controls="aria-settings-memory" class="Name">Global Memory Allocation</h2>
+        <div class="TaskBody" role="region" aria-hidden="false" id="aria-settings-memory">
+            <p>You can control the amount of memory allocated to the game. The minimum value is 512MB. Generally, larger modpacks require more memory.</p>
+        </div>
+    </div>
+    
+    <div class="LinkUniversal">
+        <a href="index.html#index" class="xRef AppleTopic">← Back to Index</a>
+    </div>
+</body>
+</html>
+
