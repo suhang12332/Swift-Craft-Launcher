@@ -91,6 +91,13 @@ jobs:
           
           echo "✅ Sparkle 公钥已添加到生成的 Info.plist"
 
+          echo "📝 向生成的 Info.plist 添加 HelpBook 配置..."
+          /usr/libexec/PlistBuddy -c "Add :CFBundleHelpBookFolder string SwiftCraftLauncher.help" "$INFO_PLIST_PATH" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :CFBundleHelpBookFolder SwiftCraftLauncher.help" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleHelpBookName string com.su.code.SwiftCraftLauncher.help" "$INFO_PLIST_PATH" 2>/dev/null || \
+          /usr/libexec/PlistBuddy -c "Set :CFBundleHelpBookName com.su.code.SwiftCraftLauncher.help" "$INFO_PLIST_PATH"
+          
+          echo "✅ HelpBook 配置已添加到生成的 Info.plist"
       - name: Verify build output
         run: |
           ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
