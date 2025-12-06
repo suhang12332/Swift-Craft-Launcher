@@ -195,6 +195,7 @@ jobs:
           echo "✅ DMG assets prepared"
 
       - name: Create DMG
+        id: create_dmg
         run: |
           ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
           APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
@@ -224,6 +225,7 @@ jobs:
             echo "✅ DMG 创建成功: $DMG_NAME"
             # Show DMG info
             hdiutil info "$DMG_NAME" | head -20
+            echo "dmg_name=$DMG_NAME" >> $GITHUB_OUTPUT
           else
             echo "❌ DMG 创建失败"
             exit 1
@@ -233,7 +235,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Swift-Craft-Launcher-${{ matrix.arch }}-${{ steps.version.outputs.version }}
-          path: Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg
+          path: Swift_Craft_Launcher_${{ matrix.arch }}_*.dmg
           retention-days: 30
 
       - name: Clean up
