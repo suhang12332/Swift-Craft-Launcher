@@ -33,7 +33,7 @@ jobs:
       - name: Extract version info
         id: version
         run: |
-          MARKETING_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /MARKETING_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//')
+          MARKETING_VERSION=$(awk '/\/\* Release \*\/ = {/,/};/ {if ($0 ~ /MARKETING_VERSION/) print $0}' SwiftCraftLauncher.xcodeproj/project.pbxproj | head -1 | sed 's/.*= //' | sed 's/;//' | sed 's/^"//' | sed 's/"$//')
           
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
@@ -41,7 +41,11 @@ jobs:
             VERSION="${MARKETING_VERSION}"
           fi
           
+          # 清理版本号中的无效字符（用于 artifact 名称）
+          SAFE_VERSION=$(echo "$VERSION" | sed 's/["<>|*?:\\\/\r\n]//g')
+          
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "safe_version=$SAFE_VERSION" >> $GITHUB_OUTPUT
           echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
 
       - name: Replace Info.plist variables
@@ -225,7 +229,7 @@ jobs:
       - name: Upload DMG Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Swift-Craft-Launcher-${{ matrix.arch }}-${{ steps.version.outputs.version }}
+          name: Swift-Craft-Launcher-${{ matrix.arch }}-${{ steps.version.outputs.safe_version }}
           path: Swift_Craft_Launcher_${{ matrix.arch }}_${{ steps.version.outputs.version }}.dmg
           retention-days: 30
 
