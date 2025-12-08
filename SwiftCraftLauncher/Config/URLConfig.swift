@@ -97,6 +97,13 @@ enum URLConfig {
                 let urlString = "https://raw.githubusercontent.com/\(repositoryOwner)/Swift-Craft-Launcher-Contributors/refs/heads/main/contributors.json?timestamp=\(timestamp)"
                 return URLConfig.url(urlString)
             }
+
+            // 致谢数据
+            static func acknowledgements() -> URL {
+                let timestamp = Int(Date().timeIntervalSince1970)
+                let urlString = "https://raw.githubusercontent.com/\(repositoryOwner)/Swift-Craft-Launcher-Contributors/refs/heads/main/acknowledgements.json?timestamp=\(timestamp)"
+                return URLConfig.url(urlString)
+            }
         }
 
         // Modrinth API
