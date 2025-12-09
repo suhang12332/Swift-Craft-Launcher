@@ -55608,6 +55608,18 @@
         }
       }
     },
+    "onboarding.get_started" : {
+
+    },
+    "onboarding.next" : {
+
+    },
+    "onboarding.previous" : {
+
+    },
+    "onboarding.skip" : {
+
+    },
     "pagination.current" : {
       "comment" : "Pagination",
       "extractionState" : "manual",
@@ -74275,8 +74287,32 @@
         }
       }
     },
+    "为你推荐" : {
+
+    },
+    "停止游戏" : {
+
+    },
+    "加载失败" : {
+
+    },
+    "开始游戏" : {
+
+    },
     "暂不可用" : {
       "shouldTranslate" : false
+    },
+    "未选择玩家" : {
+
+    },
+    "点击右上角的 + 按钮添加游戏" : {
+
+    },
+    "继续游戏" : {
+
+    },
+    "还没有游戏" : {
+
     }
   },
   "version" : "1.1"
