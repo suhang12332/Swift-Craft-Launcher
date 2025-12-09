@@ -63020,10 +63020,124 @@
       "comment": "Current selected game in main view",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اللعبة المحددة حاليًا:"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuværende valgte spil:"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktuell ausgewähltes Spiel:"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Currently selected game:"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Juego seleccionado actualmente:"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tällä hetkellä valittu peli:"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeu actuellement sélectionné :"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "वर्तमान में चयनित खेल:"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gioco attualmente selezionato:"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在選択中のゲーム："
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 선택된 게임:"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nåværende valgte spill:"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Huidig geselecteerd spel:"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obecnie wybrana gra:"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jogo atualmente selecionado:"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Текущая выбранная игра:"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "För närvarande valt spel:"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เกมที่เลือกอยู่:"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Şu anda seçili oyun:"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trò chơi hiện được chọn:"
           }
         },
         "zh-Hans": {
@@ -63044,10 +63158,124 @@
       "comment": "Moved to settings description",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تم نقل إعدادات اللعبة المتقدمة إلى نافذة الإعدادات. يرجى فتح الإعدادات لتكوين الخيارات المتقدمة لألعابك."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avancerede spilindstillinger er blevet flyttet til Indstillinger-vinduet. Åbn venligst Indstillinger for at konfigurere avancerede indstillinger for dine spil."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die erweiterten Spieleinstellungen wurden in das Einstellungsfenster verschoben. Bitte öffnen Sie die Einstellungen, um erweiterte Optionen für Ihre Spiele zu konfigurieren."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Game advanced settings have been moved to the Settings window. Please open Settings to configure advanced options for your games."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La configuración avanzada del juego se ha movido a la ventana de Configuración. Por favor, abra Configuración para configurar las opciones avanzadas de sus juegos."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pelin lisäasetukset on siirretty Asetukset-ikkunaan. Avaa Asetukset määrittääksesi peliesi lisäasetukset."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les paramètres avancés du jeu ont été déplacés vers la fenêtre Paramètres. Veuillez ouvrir Paramètres pour configurer les options avancées de vos jeux."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "गेम उन्नत सेटिंग्स को सेटिंग्स विंडो में स्थानांतरित कर दिया गया है। कृपया अपने गेम के लिए उन्नत विकल्पों को कॉन्फ़िगर करने के लिए सेटिंग्स खोलें।"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le impostazioni avanzate del gioco sono state spostate nella finestra Impostazioni. Apri Impostazioni per configurare le opzioni avanzate per i tuoi giochi."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲームの詳細設定は設定ウィンドウに移動されました。ゲームの詳細オプションを設定するには、設定を開いてください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "게임 고급 설정이 설정 창으로 이동되었습니다. 게임의 고급 옵션을 구성하려면 설정을 열어주세요."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avanserte spillinnstillinger har blitt flyttet til Innstillinger-vinduet. Vennligst åpne Innstillinger for å konfigurere avanserte alternativer for spillene dine."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geavanceerde spelinstellingen zijn verplaatst naar het Instellingen-venster. Open Instellingen om geavanceerde opties voor uw spellen te configureren."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zaawansowane ustawienia gry zostały przeniesione do okna Ustawienia. Otwórz Ustawienia, aby skonfigurować zaawansowane opcje dla swoich gier."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "As configurações avançadas do jogo foram movidas para a janela Configurações. Abra Configurações para configurar opções avançadas para seus jogos."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Расширенные настройки игры были перенесены в окно Настройки. Пожалуйста, откройте Настройки, чтобы настроить расширенные параметры для ваших игр."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avancerade spelinställningar har flyttats till Inställningar-fönstret. Öppna Inställningar för att konfigurera avancerade alternativ för dina spel."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การตั้งค่าขั้นสูงของเกมได้ถูกย้ายไปที่หน้าต่างการตั้งค่าแล้ว กรุณาเปิดการตั้งค่าเพื่อกำหนดค่าตัวเลือกขั้นสูงสำหรับเกมของคุณ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oyun gelişmiş ayarları Ayarlar penceresine taşındı. Oyunlarınız için gelişmiş seçenekleri yapılandırmak üzere lütfen Ayarlar'ı açın."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cài đặt nâng cao của trò chơi đã được chuyển sang cửa sổ Cài đặt. Vui lòng mở Cài đặt để cấu hình các tùy chọn nâng cao cho trò chơi của bạn."
           }
         },
         "zh-Hans": {
@@ -63068,10 +63296,124 @@
       "comment": "No games available",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا توجد ألعاب متاحة. يرجى إنشاء لعبة أولاً."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen spil tilgængelige. Opret venligst et spil først."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Spiele verfügbar. Bitte erstellen Sie zuerst ein Spiel."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "No games available. Please create a game first."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay juegos disponibles. Por favor, cree un juego primero."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ei pelejä saatavilla. Luo ensin peli."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu disponible. Veuillez d'abord créer un jeu."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "कोई खेल उपलब्ध नहीं है। कृपया पहले एक खेल बनाएं।"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun gioco disponibile. Crea prima un gioco."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "利用可能なゲームがありません。まずゲームを作成してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용 가능한 게임이 없습니다. 먼저 게임을 생성해주세요."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen spill tilgjengelig. Vennligst opprett et spill først."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geen spellen beschikbaar. Maak eerst een spel aan."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brak dostępnych gier. Najpierw utwórz grę."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum jogo disponível. Por favor, crie um jogo primeiro."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет доступных игр. Пожалуйста, сначала создайте игру."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inga spel tillgängliga. Skapa först ett spel."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่มีเกมที่ใช้ได้ กรุณาสร้างเกมก่อน"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kullanılabilir oyun yok. Lütfen önce bir oyun oluşturun."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có trò chơi nào. Vui lòng tạo trò chơi trước."
           }
         },
         "zh-Hans": {
@@ -63092,10 +63434,124 @@
       "comment": "No game selected in main view",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لم يتم تحديد لعبة. يرجى تحديد لعبة في النافذة الرئيسية لعرض إعداداتها المتقدمة."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intet spil valgt. Vælg venligst et spil i hovedvinduet for at se dets avancerede indstillinger."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Spiel ausgewählt. Bitte wählen Sie ein Spiel im Hauptfenster aus, um dessen erweiterte Einstellungen anzuzeigen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "No game selected. Please select a game in the main window to view its advanced settings."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se ha seleccionado ningún juego. Por favor, seleccione un juego en la ventana principal para ver su configuración avanzada."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ei peliä valittu. Valitse peli pääikkunassa nähdäksesi sen lisäasetukset."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun jeu sélectionné. Veuillez sélectionner un jeu dans la fenêtre principale pour afficher ses paramètres avancés."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "कोई खेल चयनित नहीं है। कृपया मुख्य विंडो में एक खेल चुनें ताकि आप उसकी उन्नत सेटिंग्स देख सकें।"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun gioco selezionato. Seleziona un gioco nella finestra principale per visualizzare le sue impostazioni avanzate."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲームが選択されていません。詳細設定を表示するには、メインウィンドウでゲームを選択してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택된 게임이 없습니다. 고급 설정을 보려면 메인 창에서 게임을 선택해주세요."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen spill valgt. Vennligst velg et spill i hovedvinduet for å se dets avanserte innstillinger."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geen spel geselecteerd. Selecteer een spel in het hoofdvenster om de geavanceerde instellingen te bekijken."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie wybrano gry. Wybierz grę w głównym oknie, aby zobaczyć jej zaawansowane ustawienia."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum jogo selecionado. Por favor, selecione um jogo na janela principal para ver suas configurações avançadas."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Игра не выбрана. Пожалуйста, выберите игру в главном окне, чтобы просмотреть её расширенные настройки."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inget spel valt. Vänligen välj ett spel i huvudfönstret för att visa dess avancerade inställningar."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่ได้เลือกเกม กรุณาเลือกเกมในหน้าต่างหลักเพื่อดูการตั้งค่าขั้นสูง"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oyun seçilmedi. Gelişmiş ayarlarını görmek için lütfen ana pencerede bir oyun seçin."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa chọn trò chơi. Vui lòng chọn một trò chơi trong cửa sổ chính để xem cài đặt nâng cao của nó."
           }
         },
         "zh-Hans": {
@@ -63116,10 +63572,124 @@
       "comment": "Open settings button",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "فتح الإعدادات"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Åbn Indstillinger"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen öffnen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Open Settings"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir Configuración"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avaa Asetukset"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir les Paramètres"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "सेटिंग्स खोलें"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri Impostazioni"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定を開く"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설정 열기"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Åpne Innstillinger"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instellingen openen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otwórz Ustawienia"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir Configurações"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Открыть Настройки"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öppna Inställningar"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปิดการตั้งค่า"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ayarları Aç"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mở Cài đặt"
           }
         },
         "zh-Hans": {
@@ -63140,10 +63710,124 @@
       "comment": "Select game description",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يرجى تحديد لعبة من القائمة أدناه لتكوين إعداداتها المتقدمة، أو تحديد لعبة في النافذة الرئيسية لعرض إعداداتها تلقائيًا هنا."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vælg venligst et spil fra listen nedenfor for at konfigurere dets avancerede indstillinger, eller vælg et spil i hovedvinduet for automatisk at vise dets indstillinger her."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bitte wählen Sie ein Spiel aus der Liste unten aus, um dessen erweiterte Einstellungen zu konfigurieren, oder wählen Sie ein Spiel im Hauptfenster aus, um dessen Einstellungen hier automatisch anzuzeigen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Please select a game from the list below to configure its advanced settings, or select a game in the main window to automatically display its settings here."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Por favor, seleccione un juego de la lista a continuación para configurar su configuración avanzada, o seleccione un juego en la ventana principal para mostrar automáticamente su configuración aquí."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valitse alla olevasta listasta peli määrittääksesi sen lisäasetukset, tai valitse peli pääikkunasta, jolloin sen asetukset näytetään automaattisesti täällä."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Veuillez sélectionner un jeu dans la liste ci-dessous pour configurer ses paramètres avancés, ou sélectionner un jeu dans la fenêtre principale pour afficher automatiquement ses paramètres ici."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "कृपया नीचे दी गई सूची से एक खेल चुनें ताकि आप उसकी उन्नत सेटिंग्स कॉन्फ़िगर कर सकें, या मुख्य विंडो में एक खेल चुनें ताकि उसकी सेटिंग्स यहाँ स्वचालित रूप से प्रदर्शित हों।"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleziona un gioco dall'elenco sottostante per configurare le sue impostazioni avanzate, o seleziona un gioco nella finestra principale per visualizzare automaticamente le sue impostazioni qui."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下のリストからゲームを選択して詳細設定を構成するか、メインウィンドウでゲームを選択すると、ここに設定が自動的に表示されます。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "아래 목록에서 게임을 선택하여 고급 설정을 구성하거나, 메인 창에서 게임을 선택하면 여기에 설정이 자동으로 표시됩니다."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vennligst velg et spill fra listen nedenfor for å konfigurere dets avanserte innstillinger, eller velg et spill i hovedvinduet for automatisk å vise dets innstillinger her."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecteer een spel uit de onderstaande lijst om de geavanceerde instellingen te configureren, of selecteer een spel in het hoofdvenster om de instellingen hier automatisch weer te geven."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wybierz grę z poniższej listy, aby skonfigurować jej zaawansowane ustawienia, lub wybierz grę w głównym oknie, aby automatycznie wyświetlić jej ustawienia tutaj."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Por favor, selecione um jogo da lista abaixo para configurar suas configurações avançadas, ou selecione um jogo na janela principal para exibir automaticamente suas configurações aqui."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Пожалуйста, выберите игру из списка ниже, чтобы настроить её расширенные настройки, или выберите игру в главном окне, чтобы автоматически отобразить её настройки здесь."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vänligen välj ett spel från listan nedan för att konfigurera dess avancerade inställningar, eller välj ett spel i huvudfönstret för att automatiskt visa dess inställningar här."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กรุณาเลือกเกมจากรายการด้านล่างเพื่อกำหนดค่าการตั้งค่าขั้นสูง หรือเลือกเกมในหน้าต่างหลักเพื่อแสดงการตั้งค่าอัตโนมัติที่นี่"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lütfen gelişmiş ayarlarını yapılandırmak için aşağıdaki listeden bir oyun seçin veya ayarlarının burada otomatik olarak görüntülenmesi için ana pencerede bir oyun seçin."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vui lòng chọn một trò chơi từ danh sách bên dưới để cấu hình cài đặt nâng cao của nó, hoặc chọn một trò chơi trong cửa sổ chính để tự động hiển thị cài đặt của nó ở đây."
           }
         },
         "zh-Hans": {
@@ -63164,10 +63848,124 @@
       "comment": "Select game picker label",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لعبة"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spil"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spiel"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Game"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Juego"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peli"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeu"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "खेल"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gioco"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲーム"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "게임"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spill"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spel"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gra"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jogo"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Игра"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spel"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เกม"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oyun"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trò chơi"
           }
         },
         "zh-Hans": {
@@ -63188,10 +63986,124 @@
       "comment": "Select game placeholder",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر لعبة..."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vælg et spil..."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spiel auswählen..."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Choose a game..."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige un juego..."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valitse peli..."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir un jeu..."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "एक खेल चुनें..."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli un gioco..."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲームを選択..."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "게임 선택..."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Velg et spill..."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kies een spel..."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wybierz grę..."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolha um jogo..."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите игру..."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Välj ett spel..."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เลือกเกม..."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir oyun seçin..."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn trò chơi..."
           }
         },
         "zh-Hans": {
@@ -63212,10 +64124,124 @@
       "comment": "Select game title",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "اختر لعبة"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vælg et spil"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spiel auswählen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Select a Game"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleccionar un juego"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valitse peli"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sélectionner un jeu"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "एक खेल चुनें"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleziona un gioco"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ゲームを選択"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "게임 선택"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Velg et spill"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecteer een spel"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wybierz grę"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecionar um jogo"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выбрать игру"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Välj ett spel"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เลือกเกม"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bir oyun seçin"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chọn trò chơi"
           }
         },
         "zh-Hans": {
@@ -63236,10 +64262,124 @@
       "comment": "Game Advanced Settings Tab",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متقدم"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avanceret"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erweitert"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Advanced"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avanzado"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lisäasetukset"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avancé"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "उन्नत"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avanzate"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "詳細設定"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "고급 설정"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avansert"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geavanceerd"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zaawansowane"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avançado"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Расширенные"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avancerat"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ขั้นสูง"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gelişmiş"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nâng cao"
           }
         },
         "zh-Hans": {
@@ -73556,26 +74696,139 @@
         }
       }
     },
-    "加载失败": {},
     "settings.game.java.optimization.none": {
       "comment": "JVM Optimization Preset",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "بدون"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine"
+          }
+        },
         "en": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "None"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninguna"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ei mitään"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "कोई नहीं"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuna"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "なし"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "없음"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brak"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhuma"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Нет"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่มี"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yok"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có"
           }
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "无优化"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "無優化"
           }
         }
@@ -73585,21 +74838,135 @@
       "comment": "JVM Optimization Preset",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أساسي"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grundlæggende"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Basis"
+          }
+        },
         "en": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "Basic"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Básico"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perus"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De base"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "मूल"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Base"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "基本"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기본"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grunnleggende"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Basis"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podstawowe"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Básico"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Базовый"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grundläggande"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "พื้นฐาน"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temel"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cơ bản"
           }
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "基础优化"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "基礎優化"
           }
         }
@@ -73609,21 +74976,135 @@
       "comment": "JVM Optimization Preset",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "متوازن"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balanceret"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausgewogen"
+          }
+        },
         "en": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "Balanced"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equilibrado"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tasapainoinen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Équilibré"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "संतुलित"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bilanciato"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バランス"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "균형"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balansert"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gebalanceerd"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zrównoważone"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Equilibrado"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сбалансированный"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balanserad"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สมดุล"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dengeli"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cân bằng"
           }
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "平衡优化"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "平衡優化"
           }
         }
@@ -73633,21 +75114,135 @@
       "comment": "JVM Optimization Preset",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أقصى"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maksimal"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximal"
+          }
+        },
         "en": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "Maximum"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máximo"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maksimi"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximum"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अधिकतम"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Massimo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最大"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최대"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maksimal"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximaal"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maksymalne"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Máximo"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Максимальный"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximal"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "สูงสุด"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maksimum"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tối đa"
           }
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "最大优化"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "最大優化"
           }
         }
@@ -73657,21 +75252,135 @@
       "comment": "JVM Optimization Preset Description",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا توجد تحسينات JVM مفعلة"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen JVM-optimeringer aktiveret"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine JVM-Optimierungen aktiviert"
+          }
+        },
         "en": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "No JVM optimizations enabled"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay optimizaciones JVM habilitadas"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "JVM-optimointeja ei ole käytössä"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune optimisation JVM activée"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "कोई JVM अनुकूलन सक्षम नहीं"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuna ottimizzazione JVM abilitata"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "JVM 最適化は有効になっていません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "JVM 최적화가 활성화되지 않음"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen JVM-optimaliseringer aktivert"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geen JVM-optimalisaties ingeschakeld"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brak optymalizacji JVM włączonych"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhuma otimização JVM habilitada"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Оптимизации JVM не включены"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inga JVM-optimeringar aktiverade"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่มีการเปิดใช้งานการปรับแต่ง JVM"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "JVM optimizasyonları etkin değil"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Không có tối ưu hóa JVM nào được bật"
           }
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "不启用任何 JVM 优化"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "不啟用任何 JVM 優化"
           }
         }
@@ -73681,21 +75390,135 @@
       "comment": "JVM Optimization Preset Description",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحسينات JVM أساسية لتحسين الأداء"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grundlæggende JVM-optimeringer til forbedret ydeevne"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grundlegende JVM-Optimierungen für verbesserte Leistung"
+          }
+        },
         "en": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "Basic JVM optimizations for improved performance"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optimizaciones JVM básicas para mejorar el rendimiento"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Perus JVM-optimointeja parannettuun suorituskykyyn"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optimisations JVM de base pour améliorer les performances"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "बेहतर प्रदर्शन के लिए मूल JVM अनुकूलन"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ottimizzazioni JVM di base per prestazioni migliorate"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "パフォーマンス向上のための基本 JVM 最適化"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "성능 향상을 위한 기본 JVM 최적화"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grunnleggende JVM-optimaliseringer for forbedret ytelse"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Basis JVM-optimalisaties voor verbeterde prestaties"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podstawowe optymalizacje JVM dla lepszej wydajności"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otimizações JVM básicas para melhor desempenho"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Базовые оптимизации JVM для улучшения производительности"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grundläggande JVM-optimeringar för förbättrad prestanda"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การปรับแต่ง JVM พื้นฐานเพื่อปรับปรุงประสิทธิภาพ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geliştirilmiş performans için temel JVM optimizasyonları"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tối ưu hóa JVM cơ bản để cải thiện hiệu suất"
           }
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "基础 JVM 优化，提升性能"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "基礎 JVM 優化，提升效能"
           }
         }
@@ -73705,21 +75528,135 @@
       "comment": "JVM Optimization Preset Description",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تحسينات متوازنة للأداء الجيد والاستقرار (موصى به)"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balancerede optimeringer til god ydeevne og stabilitet (anbefalet)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausgewogene Optimierungen für gute Leistung und Stabilität (empfohlen)"
+          }
+        },
         "en": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "Balanced optimizations for good performance and stability (recommended)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optimizaciones equilibradas para buen rendimiento y estabilidad (recomendado)"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tasapainoiset optimoinnit hyvälle suorituskyvylle ja vakaudelle (suositeltu)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optimisations équilibrées pour de bonnes performances et stabilité (recommandé)"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अच्छे प्रदर्शन और स्थिरता के लिए संतुलित अनुकूलन (अनुशंसित)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ottimizzazioni bilanciate per buone prestazioni e stabilità (consigliato)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "良好なパフォーマンスと安定性のためのバランスの取れた最適化（推奨）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "좋은 성능과 안정성을 위한 균형 잡힌 최적화 (권장)"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balanserte optimaliseringer for god ytelse og stabilitet (anbefalt)"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gebalanceerde optimalisaties voor goede prestaties en stabiliteit (aanbevolen)"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zrównoważone optymalizacje dla dobrej wydajności i stabilności (zalecane)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otimizações equilibradas para bom desempenho e estabilidade (recomendado)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сбалансированные оптимизации для хорошей производительности и стабильности (рекомендуется)"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Balanserade optimeringar för bra prestanda och stabilitet (rekommenderas)"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การปรับแต่งที่สมดุลเพื่อประสิทธิภาพและความเสถียรที่ดี (แนะนำ)"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "İyi performans ve kararlılık için dengeli optimizasyonlar (önerilir)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tối ưu hóa cân bằng cho hiệu suất tốt và ổn định (được khuyến nghị)"
           }
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "平衡优化，兼顾性能和稳定性（推荐）"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "平衡優化，兼顧效能和穩定性（推薦）"
           }
         }
@@ -73729,21 +75666,135 @@
       "comment": "JVM Optimization Preset Description",
       "extractionState": "manual",
       "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أقصى تحسينات بما في ذلك علامات Aikar للحصول على أفضل أداء"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maksimale optimeringer inklusive Aikar-flag for bedste ydeevne"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximale Optimierungen einschließlich Aikar-Flags für beste Leistung"
+          }
+        },
         "en": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "Maximum optimizations including Aikar flags for best performance"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optimizaciones máximas incluyendo flags Aikar para el mejor rendimiento"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maksimaaliset optimoinnit mukaan lukien Aikar-flagit parhaaseen suorituskykyyn"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optimisations maximales incluant les flags Aikar pour les meilleures performances"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "सर्वोत्तम प्रदर्शन के लिए Aikar फ्लैग सहित अधिकतम अनुकूलन"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ottimizzazioni massime inclusi i flag Aikar per le migliori prestazioni"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最高のパフォーマンスのための Aikar フラグを含む最大最適化"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최고 성능을 위한 Aikar 플래그를 포함한 최대 최적화"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maksimale optimaliseringer inkludert Aikar-flagg for best ytelse"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximale optimalisaties inclusief Aikar-vlaggen voor beste prestaties"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maksymalne optymalizacje w tym flagi Aikar dla najlepszej wydajności"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otimizações máximas incluindo flags Aikar para melhor desempenho"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Максимальные оптимизации, включая флаги Aikar для наилучшей производительности"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximala optimeringar inklusive Aikar-flaggor för bästa prestanda"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การปรับแต่งสูงสุดรวมถึง Aikar flags เพื่อประสิทธิภาพที่ดีที่สุด"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En iyi performans için Aikar bayrakları dahil maksimum optimizasyonlar"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tối ưu hóa tối đa bao gồm cờ Aikar để có hiệu suất tốt nhất"
           }
         },
         "zh-Hans": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "最大优化，包括 Aikar 标志，获得最佳性能"
           }
         },
         "zh-Hant": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "最大優化，包括 Aikar 標誌，獲得最佳效能"
           }
         }
