@@ -12,6 +12,7 @@ struct MainView: View {
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var selectedItem: SidebarItem = .resource(.mod)
     @ObservedObject private var general = GeneralSettingsManager.shared
+    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Resource/Project State
@@ -168,6 +169,8 @@ struct MainView: View {
         game?.modLoader.lowercased() == "vanilla" ? self.gameResourcesType.lowercased() != "mod" ? self.gameResourcesType : "datapack" : "mod"
         self.gameId = gameId
         self.selectedProjectId = nil
+        // 更新选中的游戏管理器，供设置页面使用
+        selectedGameManager.setSelectedGame(gameId)
     }
 
     private func handleGameToGameTransition(
@@ -182,10 +185,14 @@ struct MainView: View {
         self.gameResourcesType =
             game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
         self.gameId = newId
+        // 更新选中的游戏管理器，供设置页面使用
+        selectedGameManager.setSelectedGame(newId)
     }
 
     // MARK: - Resource Reset
     private func resetToResourceDefaults() {
+        // 清除选中的游戏，因为切换到资源页面
+        selectedGameManager.clearSelection()
 
         if self.gameType != true {
             self.gameType = true

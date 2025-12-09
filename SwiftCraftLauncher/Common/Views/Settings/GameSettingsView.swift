@@ -15,10 +15,8 @@ public struct GameSettingsView: View {
     }
 
     public var body: some View {
-        Grid(alignment: .trailing) {
-            GridRow {
-                Text("settings.auto_handle_dependencies".localized())
-                    .gridColumnAlignment(.trailing)
+        Form {
+            LabeledContent("settings.auto_handle_dependencies".localized()){
                 HStack {
                     Toggle(
                         "",
@@ -29,13 +27,9 @@ public struct GameSettingsView: View {
                     )
                     .foregroundColor(.secondary)
                 }
-                .gridColumnAlignment(.leading)
-            }
-            .padding(.bottom, 20)
+            }.labeledContentStyle(.custom).padding(.bottom, 10)
 
-            GridRow {
-                Text("settings.default_memory_allocation.label".localized())
-                    .gridColumnAlignment(.trailing)
+            LabeledContent("settings.default_memory_allocation.label".localized()){
                 HStack {
                     MiniRangeSlider(
                         range: $globalMemoryRange,
@@ -61,11 +55,9 @@ public struct GameSettingsView: View {
                     .lineLimit(1)
                     .truncationMode(.tail)
                 }
-                .gridColumnAlignment(.leading)
-            }.padding(.bottom, 20)
-            GridRow {
-                Text("settings.game_resource_info.label".localized())
-                    .gridColumnAlignment(.trailing)
+            }.labeledContentStyle(.custom).padding(.bottom, 10)
+
+            LabeledContent("settings.game_resource_info.label".localized()){
                 HStack {
                     Label(
                         "\(cacheManager.cacheInfo.fileCount)",
@@ -77,13 +69,13 @@ public struct GameSettingsView: View {
                         systemImage: "externaldrive"
                     )
                 }.foregroundStyle(.secondary)
-            }
+            }.labeledContentStyle(.custom).padding(.bottom, 10)
         }
-
         .onAppear {
             calculateCacheInfoSafely()
         }
         .globalErrorHandler()
+        .padding()
     }
 }
 

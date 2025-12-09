@@ -22,6 +22,7 @@ struct GameAdvancedSettingsView: View {
 
     // JVM优化设置
     @State private var selectedGarbageCollector: GarbageCollector = .g1gc
+    @State private var optimizationPreset: OptimizationPreset = .balanced
     @State private var enableOptimizations: Bool = true
     @State private var enableAikarFlags: Bool = false
     @State private var enableClientOptimizations: Bool = true
@@ -41,22 +42,10 @@ struct GameAdvancedSettingsView: View {
     @State private var error: GlobalError?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-
+        Form {
             // 内存设置
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Image(systemName: "memorychip")
-                        .foregroundColor(.blue)
-                        .font(.system(size: 16, weight: .medium))
-                    Text("settings.game.java.memory".localized())
-                        .font(.headline)
-
-                    Spacer()
-                    Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
-                }
-
-                VStack(alignment: .leading, spacing: 12) {
+            LabeledContent("settings.game.java.memory".localized()) {
+                HStack(spacing: 8) {
                     MiniRangeSlider(
                         range: $memoryRange,
                         bounds:
@@ -65,228 +54,129 @@ struct GameAdvancedSettingsView: View {
                                     .maximumMemoryAllocation
                             )
                     )
-                    .frame(height: 20)
+                    .frame(width: 200, height: 20)
                     .onChange(of: memoryRange) { _, _ in
                         // 实时更新内存值
                     }
-
-                    HStack {
-                        Text(
-                            "settings.game.java.memory.recommendation"
-                                .localized()
-                        )
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        Spacer()
-                        Text(
-                            "\(Int(memoryRange.lowerBound)) MB - \(Int(memoryRange.upperBound)) MB"
-                        )
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                    }
-                }
-            }
-
-            // 垃圾回收器设置
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Image(systemName: "trash")
-                        .foregroundColor(.green)
-                        .font(.system(size: 16, weight: .medium))
-                    Text("settings.game.java.garbage_collector".localized())
-                        .font(.headline)
-                    Spacer()
-                    Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
-                }
-
-                VStack(alignment: .leading, spacing: 12) {
-
-                    ForEach(GarbageCollector.allCases, id: \.self) { gc in
-                        HStack {
-                            Button {
-                                selectedGarbageCollector = gc
-                            } label: {
-                                HStack {
-                                    Image(
-                                        systemName: selectedGarbageCollector
-                                            == gc
-                                            ? "checkmark.circle.fill" : "circle"
-                                    )
-                                    .foregroundColor(
-                                        selectedGarbageCollector == gc
-                                            ? .blue : .gray
-                                    )
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(gc.displayName)
-                                            .font(.subheadline)
-                                            .foregroundColor(.primary)
-                                        Text(gc.description)
-                                            .font(.caption)
-                                            .foregroundColor(.secondary)
-                                            .lineLimit(2)
-                                    }
-                                    Spacer()
-                                }
-                            }
-                            .buttonStyle(PlainButtonStyle())
-                        }
-                        .padding(.vertical, 4)
-                    }
-                }
-            }
-
-            // 性能优化设置
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Image(systemName: "speedometer")
-                        .foregroundColor(.orange)
-                        .font(.system(size: 16, weight: .medium))
                     Text(
-                        "settings.game.java.performance_optimization"
-                            .localized()
-                    )
-                    .font(.headline)
-                    Spacer()
-                    Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
-                }
-
-                VStack(alignment: .leading, spacing: 16) {
-                    // 基础优化
-                    VStack(alignment: .leading, spacing: 8) {
-
-                        Toggle(
-                            "settings.game.java.enable_jvm_optimization"
-                                .localized(),
-                            isOn: $enableOptimizations
-                        )
-                        .toggleStyle(SwitchToggleStyle())
-                        .controlSize(.mini)
-                        .font(.subheadline)
-
-                        Toggle(
-                            "settings.game.java.enable_aikar_flags".localized(),
-                            isOn: $enableAikarFlags
-                        )
-                        .toggleStyle(SwitchToggleStyle())
-                        .disabled(!enableOptimizations)
-                        .controlSize(.mini)
-                        .font(
-                            .subheadline
-                        )
-                        Toggle(
-                            "settings.game.java.enable_client_optimization"
-                                .localized(),
-                            isOn: $enableClientOptimizations
-                        )
-                        .toggleStyle(SwitchToggleStyle())
-                        .controlSize(.mini)
-                        .font(.subheadline)
-                        .disabled(!enableOptimizations)
-
-                        Toggle(
-                            "settings.game.java.enable_memory_optimization"
-                                .localized(),
-                            isOn: $enableMemoryOptimizations
-                        )
-                        .toggleStyle(SwitchToggleStyle())
-                        .controlSize(.mini)
-                        .font(.subheadline)
-                        .disabled(!enableOptimizations)
-
-                        Toggle(
-                            "settings.game.java.enable_thread_optimization"
-                                .localized(),
-                            isOn: $enableThreadOptimizations
-                        )
-                        .toggleStyle(SwitchToggleStyle())
-                        .controlSize(.mini)
-                        .font(.subheadline)
-                        .disabled(!enableOptimizations)
-                    }
-                }
-            }
-
-            // 自定义JVM参数
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Image(systemName: "slider.horizontal.3")
-                        .foregroundColor(.purple)
-                        .font(.system(size: 16, weight: .medium))
-                    Text("settings.game.java.custom_parameters".localized())
-                        .font(.headline)
-                    Spacer()
-                    Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
-                }
-
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(
-                        "settings.game.java.jvm_args".localized() + " (每行一个参数):"
+                        "\(Int(memoryRange.lowerBound)) MB - \(Int(memoryRange.upperBound)) MB"
                     )
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                }
+            }
+            .labeledContentStyle(.custom)
+            .padding(.bottom, 10)
 
+            // 垃圾回收器设置
+            LabeledContent("settings.game.java.garbage_collector".localized()) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Picker("", selection: $selectedGarbageCollector) {
+                        ForEach(GarbageCollector.allCases, id: \.self) { gc in
+                            Text(gc.displayName).tag(gc)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .fixedSize()
+                    .labelsHidden()
+                    Text(selectedGarbageCollector.description)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+
+            // 性能优化设置
+            LabeledContent("settings.game.java.performance_optimization".localized()) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Picker("", selection: $optimizationPreset) {
+                        ForEach(OptimizationPreset.allCases, id: \.self) { preset in
+                            Text(preset.displayName).tag(preset)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                    .fixedSize()
+                    .labelsHidden()
+                    .onChange(of: optimizationPreset) { _, newValue in
+                        applyOptimizationPreset(newValue)
+                    }
+                    Text(optimizationPreset.description)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+//
+            // 自定义JVM参数
+            LabeledContent("settings.game.java.custom_parameters".localized()) {
+                VStack(alignment: .leading, spacing: 8) {
                     TextField(
                         "example: -XX:+UseG1GC",
                         text: $customJvmArguments,
                         axis: .vertical
                     )
+                    .labelsHidden()
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .lineLimit(3...6)
-
+                    .frame(width: 200)
                     Text(
                         "settings.game.java.custom_parameters.note".localized()
                     )
                     .font(.caption)
-                    .foregroundColor(.orange)
+                    .foregroundColor(.red)
                 }
             }
-
-            // 环境变量设置
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Image(systemName: "gearshape.2")
-                        .foregroundColor(.teal)
-                        .font(.system(size: 16, weight: .medium))
-                    Text("settings.game.java.environment_variables".localized())
-                        .font(.headline)
-                    Spacer()
-                    Text("暂不可用").foregroundColor(.secondary).font(.subheadline)
-                }
-
-                VStack(alignment: .leading, spacing: 12) {
+            .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+//
+//            // 环境变量设置
+            LabeledContent("settings.game.java.environment_variables".localized()) {
+                VStack(alignment: .leading, spacing: 8) {
                     TextField(
-                        "example: JAVA_OPTS=-Dfile.encoding=UTF-8",
+                        "",
                         text: $environmentVariables,
                         axis: .vertical
                     )
+                    .labelsHidden()
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .lineLimit(2...4)
+                    .frame(width: 200)
+                    Text(
+                        "example: JAVA_OPTS=-Dfile.encoding=UTF-8".localized()
+                    )
+                    .font(.caption)
+                    .foregroundColor(.red)
                 }
             }
+            .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+            .padding(.bottom, 10)
 
-            // 操作按钮
-            HStack(spacing: 12) {
-                Button("common.reset".localized()) {
-                    showResetAlert = true
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.regular)
-
-                Spacer()
-
-                Button("common.save".localized()) {
-                    saveSettings()
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.regular)
-            }
+//            // 操作按钮
+//            HStack(spacing: 12) {
+//                Button("common.reset".localized()) {
+//                    showResetAlert = true
+//                }
+//                .buttonStyle(.bordered)
+//                .controlSize(.regular)
+//
+//                Spacer()
+//
+//                Button("common.save".localized()) {
+//                    saveSettings()
+//                }
+//                .buttonStyle(.borderedProminent)
+//                .controlSize(.regular)
+//            }
+//            .padding(.top, 10)
         }
-
         .onAppear {
             loadCurrentSettings()
         }
+        .globalErrorHandler()
+//        .padding()
         .alert(
             "settings.game.save.success".localized(),
             isPresented: $showSaveAlert
@@ -363,6 +253,55 @@ struct GameAdvancedSettingsView: View {
         enableNetworkOptimizations = args.contains(
             "-Djava.net.preferIPv4Stack=true"
         )
+        
+        // 根据解析的设置更新优化预设
+        updateOptimizationPreset()
+    }
+    
+    private func applyOptimizationPreset(_ preset: OptimizationPreset) {
+        switch preset {
+        case .none:
+            enableOptimizations = false
+            enableAikarFlags = false
+            enableClientOptimizations = false
+            enableMemoryOptimizations = false
+            enableThreadOptimizations = false
+            enableNetworkOptimizations = false
+        case .basic:
+            enableOptimizations = true
+            enableAikarFlags = false
+            enableClientOptimizations = true
+            enableMemoryOptimizations = true
+            enableThreadOptimizations = true
+            enableNetworkOptimizations = false
+        case .balanced:
+            enableOptimizations = true
+            enableAikarFlags = false
+            enableClientOptimizations = true
+            enableMemoryOptimizations = true
+            enableThreadOptimizations = true
+            enableNetworkOptimizations = false
+        case .maximum:
+            enableOptimizations = true
+            enableAikarFlags = true
+            enableClientOptimizations = true
+            enableMemoryOptimizations = true
+            enableThreadOptimizations = true
+            enableNetworkOptimizations = true
+        }
+    }
+    
+    private func updateOptimizationPreset() {
+        // 根据当前设置自动检测预设
+        if !enableOptimizations {
+            optimizationPreset = .none
+        } else if enableAikarFlags && enableNetworkOptimizations {
+            optimizationPreset = .maximum
+        } else if enableClientOptimizations && enableMemoryOptimizations && enableThreadOptimizations {
+            optimizationPreset = .balanced
+        } else {
+            optimizationPreset = .basic
+        }
     }
 
     private func generateJvmArguments() -> String {
@@ -388,25 +327,35 @@ struct GameAdvancedSettingsView: View {
 
         // Aikar优化参数
         if enableAikarFlags {
-            arguments.append(contentsOf: [
+            let aikarFlags1 = [
                 "-XX:+ParallelRefProcEnabled",
                 "-XX:MaxGCPauseMillis=200",
                 "-XX:+UnlockExperimentalVMOptions",
                 "-XX:+DisableExplicitGC",
                 "-XX:+AlwaysPreTouch",
+            ]
+            let aikarFlags2 = [
                 "-XX:G1NewSizePercent=30",
                 "-XX:G1MaxNewSizePercent=40",
                 "-XX:G1HeapRegionSize=8M",
                 "-XX:G1ReservePercent=20",
                 "-XX:G1HeapWastePercent=5",
+            ]
+            let aikarFlags3 = [
                 "-XX:G1MixedGCCountTarget=4",
                 "-XX:InitiatingHeapOccupancyPercent=15",
                 "-XX:G1MixedGCLiveThresholdPercent=90",
                 "-XX:G1RSetUpdatingPauseTimePercent=5",
                 "-XX:SurvivorRatio=32",
+            ]
+            let aikarFlags4 = [
                 "-XX:+PerfDisableSharedMem",
                 "-XX:MaxTenuringThreshold=1",
-            ])
+            ]
+            arguments.append(contentsOf: aikarFlags1)
+            arguments.append(contentsOf: aikarFlags2)
+            arguments.append(contentsOf: aikarFlags3)
+            arguments.append(contentsOf: aikarFlags4)
         }
 
         // 客户端优化
@@ -515,6 +464,7 @@ struct GameAdvancedSettingsView: View {
                 GameSettingsManager.shared.globalXms
             )...Double(GameSettingsManager.shared.globalXmx)
         selectedGarbageCollector = .g1gc
+        optimizationPreset = .balanced
         enableOptimizations = true
         enableAikarFlags = false
         enableClientOptimizations = true
@@ -566,3 +516,31 @@ enum GarbageCollector: String, CaseIterable {
         }
     }
 }
+
+// MARK: - Optimization Preset Enum
+
+enum OptimizationPreset: String, CaseIterable {
+    case none = "none"
+    case basic = "basic"
+    case balanced = "balanced"
+    case maximum = "maximum"
+    
+    var displayName: String {
+        switch self {
+        case .none: return "settings.game.java.optimization.none".localized()
+        case .basic: return "settings.game.java.optimization.basic".localized()
+        case .balanced: return "settings.game.java.optimization.balanced".localized()
+        case .maximum: return "settings.game.java.optimization.maximum".localized()
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .none: return "settings.game.java.optimization.none.desc".localized()
+        case .basic: return "settings.game.java.optimization.basic.desc".localized()
+        case .balanced: return "settings.game.java.optimization.balanced.desc".localized()
+        case .maximum: return "settings.game.java.optimization.maximum.desc".localized()
+        }
+    }
+}
+

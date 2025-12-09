@@ -39,8 +39,7 @@ struct ContentView: View {
             }
         }
         .onChange(of: selectedItem) { _, _ in
-            // 切换游戏时重置高级设置状态
-            showAdvancedSettings = false
+            // 切换游戏时重置状态
         }
     }
 
@@ -73,8 +72,7 @@ struct ContentView: View {
     }
 
     private func localModeView(game: GameVersionInfo) -> some View {
-        GameAdvancedSettingsView(game: game)
-            .id(gameId)
+
     }
 
     // MARK: - Resource Content View
