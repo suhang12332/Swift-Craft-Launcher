@@ -14,19 +14,17 @@ public struct SettingsView: View {
                 .tabItem {
                     Label("settings.general.tab".localized(), systemImage: "gearshape")
                 }
-//            PlayerSettingsView()
-//                .tabItem {
-//                    Label("settings.player.tab".localized(), systemImage: "person.crop.circle")
-//                }
             GameSettingsView()
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
-            GameAdvancedSettingsTabView()
+            GameAdvancedSettingsView()
                 .tabItem {
-                    Label("settings.game.advanced.tab".localized(), systemImage: "slider.horizontal.3")
+                    Label("settings.game.advanced.tab".localized(), systemImage: "gearshape.2")
                 }
         }
+        .padding()
+        .frame(maxWidth: .infinity)
     }
 }
 

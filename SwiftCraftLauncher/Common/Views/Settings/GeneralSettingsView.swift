@@ -55,6 +55,7 @@ public struct GeneralSettingsView: View {
 
             LabeledContent("settings.theme.picker".localized()) {
                 ThemeSelectorView(selectedTheme: $generalSettings.themeMode)
+                    .fixedSize()
             }.labeledContentStyle(.custom)
 
             LabeledContent("settings.launcher_working_directory".localized()) {
@@ -70,7 +71,7 @@ public struct GeneralSettingsView: View {
                     .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
                         handleDirectoryImport(result)
                     }
-            }.labeledContentStyle(.custom(alignment: .firstTextBaseline))
+            }.labeledContentStyle(.custom)
 
             LabeledContent("settings.concurrent_downloads.label".localized()) {
                 HStack {
@@ -124,7 +125,6 @@ public struct GeneralSettingsView: View {
             Text(errorMessage)
         }
         .globalErrorHandler()
-        .padding()
     }
 
     // MARK: - Private Methods

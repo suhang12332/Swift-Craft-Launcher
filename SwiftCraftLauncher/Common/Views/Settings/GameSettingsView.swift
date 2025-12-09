@@ -75,7 +75,6 @@ public struct GameSettingsView: View {
             calculateCacheInfoSafely()
         }
         .globalErrorHandler()
-        .padding()
     }
 }
 
