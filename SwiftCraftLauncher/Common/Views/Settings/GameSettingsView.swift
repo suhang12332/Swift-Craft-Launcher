@@ -15,27 +15,21 @@ public struct GameSettingsView: View {
     }
 
     public var body: some View {
-        Grid(alignment: .trailing) {
-            GridRow {
-                Text("settings.auto_handle_dependencies".localized())
-                    .gridColumnAlignment(.trailing)
+        Form {
+            LabeledContent("settings.auto_handle_dependencies".localized()) {
                 HStack {
                     Toggle(
                         "",
                         isOn: $gameSettings.autoDownloadDependencies
                     ).labelsHidden()
                     Text("settings.dependencies.description".localized()).font(
-                        .footnote
+                        .callout
                     )
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
                 }
-                .gridColumnAlignment(.leading)
-            }
-            .padding(.bottom, 20)
+            }.labeledContentStyle(.custom).padding(.bottom, 10)
 
-            GridRow {
-                Text("settings.default_memory_allocation.label".localized())
-                    .gridColumnAlignment(.trailing)
+            LabeledContent {
                 HStack {
                     MiniRangeSlider(
                         range: $globalMemoryRange,
@@ -54,32 +48,35 @@ public struct GameSettingsView: View {
                             )...Double(gameSettings.globalXmx)
                     }
                     Text(
-                        "\(Int(globalMemoryRange.lowerBound)) MB - \(Int(globalMemoryRange.upperBound)) MB"
+                        "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB"
                     )
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
                     .lineLimit(1)
                     .truncationMode(.tail)
+                    InfoIconWithPopover(
+                        text: "settings.default_memory_allocation.description".localized()
+                    )
                 }
-                .gridColumnAlignment(.leading)
-            }.padding(.bottom, 20)
-            GridRow {
-                Text("settings.game_resource_info.label".localized())
-                    .gridColumnAlignment(.trailing)
+            } label: {
+                Text("settings.default_memory_allocation.label".localized())
+            }
+            .labeledContentStyle(.custom).padding(.bottom, 10)
+
+            LabeledContent("settings.game_resource_info.label".localized()) {
                 HStack {
                     Label(
                         "\(cacheManager.cacheInfo.fileCount)",
                         systemImage: "text.document"
-                    )
+                    ).font(.callout)
                     Divider().frame(height: 16)
                     Label(
                         cacheManager.cacheInfo.formattedSize,
                         systemImage: "externaldrive"
-                    )
-                }.foregroundStyle(.secondary)
-            }
+                    ).font(.callout)
+                }.foregroundStyle(.primary)
+            }.labeledContentStyle(.custom).padding(.bottom, 10)
         }
-
         .onAppear {
             calculateCacheInfoSafely()
         }

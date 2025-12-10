@@ -23,7 +23,6 @@ struct ContentView: View {
     @Binding var selectedLoaders: [String]
     @Binding var gameType: Bool
     @Binding var gameId: String?
-    @Binding var showAdvancedSettings: Bool
 
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
@@ -39,8 +38,7 @@ struct ContentView: View {
             }
         }
         .onChange(of: selectedItem) { _, _ in
-            // 切换游戏时重置高级设置状态
-            showAdvancedSettings = false
+            // 切换游戏时重置状态
         }
     }
 
@@ -73,8 +71,7 @@ struct ContentView: View {
     }
 
     private func localModeView(game: GameVersionInfo) -> some View {
-        GameAdvancedSettingsView(game: game)
-            .id(gameId)
+        EmptyView()
     }
 
     // MARK: - Resource Content View

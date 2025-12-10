@@ -10,6 +10,10 @@ public struct SidebarView: View {
     @State private var gameToDelete: GameVersionInfo?
     @StateObject private var gameActionManager = GameActionManager.shared
     @StateObject private var gameStatusManager = GameStatusManager.shared
+    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+
+    @Environment(\.openSettings)
+    private var openSettings
 
     public init(selectedItem: Binding<SidebarItem>) {
         self._selectedItem = selectedItem
@@ -84,6 +88,15 @@ public struct SidebarView: View {
                             showInFinder(game: game)
                         }, label: {
                             Label("sidebar.context_menu.show_in_finder".localized(), systemImage: "folder")
+                        })
+
+                        Button(action: {
+                            // 设置当前游戏并标记应该打开高级设置
+                            selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
+                            // 打开设置窗口
+                            openSettings()
+                        }, label: {
+                            Label("settings.game.advanced.tab".localized(), systemImage: "gearshape")
                         })
 
                         Button(action: {
