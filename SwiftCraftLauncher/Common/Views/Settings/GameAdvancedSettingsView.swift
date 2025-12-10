@@ -6,45 +6,51 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct GameAdvancedSettingsView: View {
-    let game: GameVersionInfo
     @EnvironmentObject var gameRepository: GameRepository
-    @Environment(\.dismiss)
-    private var dismiss
-
-    // 内存设置
-    @State private var memoryRange: ClosedRange<Double> =
-        Double(
-            GameSettingsManager.shared.globalXms
-        )...Double(GameSettingsManager.shared.globalXmx)
-
-    // JVM优化设置
+    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    
+    @State private var memoryRange: ClosedRange<Double> = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
     @State private var selectedGarbageCollector: GarbageCollector = .g1gc
     @State private var optimizationPreset: OptimizationPreset = .balanced
     @State private var enableOptimizations: Bool = true
     @State private var enableAikarFlags: Bool = false
-    @State private var enableClientOptimizations: Bool = true
     @State private var enableMemoryOptimizations: Bool = true
     @State private var enableThreadOptimizations: Bool = true
     @State private var enableNetworkOptimizations: Bool = false
-
-    // 自定义JVM参数
     @State private var customJvmArguments: String = ""
-
-    // 环境变量设置
     @State private var environmentVariables: String = ""
-
-    // UI状态
-    @State private var showSaveAlert = false
     @State private var showResetAlert = false
     @State private var error: GlobalError?
+    @State private var isLoadingSettings = false
+    @State private var saveTask: Task<Void, Never>?
+    
+    private var currentGame: GameVersionInfo? {
+        guard let gameId = selectedGameManager.selectedGameId else { return nil }
+        return gameRepository.getGame(by: gameId)
+    }
+    
+    /// 是否使用自定义JVM参数（与垃圾回收器和性能优化互斥）
+    private var isUsingCustomArguments: Bool {
+        !customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+    
+    /// 根据当前选择的垃圾回收器获取可用的优化预设
+    /// 最大优化仅在 G1GC 时可用
+    private var availableOptimizationPresets: [OptimizationPreset] {
+        if selectedGarbageCollector == .g1gc {
+            // G1GC 支持所有优化预设，包括最大优化
+            return OptimizationPreset.allCases
+        } else {
+            // 非 G1GC 不支持最大优化（因为 Aikar Flags 仅适用于 G1GC）
+            return OptimizationPreset.allCases.filter { $0 != .maximum }
+        }
+    }
 
     var body: some View {
         Form {
 
-            // 垃圾回收器设置
             LabeledContent("settings.game.java.garbage_collector".localized()) {
                 HStack {
                     Picker("", selection: $selectedGarbageCollector) {
@@ -53,152 +59,101 @@ struct GameAdvancedSettingsView: View {
                         }
                     }
                     .labelsHidden()
-                    .if(
-                        ProcessInfo.processInfo.operatingSystemVersion
-                            .majorVersion < 26
-                    ) { view in
-                        view.fixedSize()
+                    .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { $0.fixedSize() }
+                    .disabled(isUsingCustomArguments)  // 使用自定义参数时禁用
+                    .onChange(of: selectedGarbageCollector) { _, _ in 
+                        if !isUsingCustomArguments {
+                            autoSave()
+                        }
                     }
-                    InfoIconWithPopover(
-                        text: selectedGarbageCollector.description
-                    )
+                    InfoIconWithPopover(text: selectedGarbageCollector.description)
                 }
             }
             .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+            .opacity(isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
 
-            // 性能优化设置
-            LabeledContent(
-                "settings.game.java.performance_optimization".localized()
-            ) {
+            LabeledContent("settings.game.java.performance_optimization".localized()) {
                 HStack {
                     Picker("", selection: $optimizationPreset) {
-                        ForEach(OptimizationPreset.allCases, id: \.self) {
-                            preset in
+                        // 最大优化仅在 G1GC 时可用
+                        ForEach(availableOptimizationPresets, id: \.self) { preset in
                             Text(preset.displayName).tag(preset)
                         }
                     }
                     .labelsHidden()
-                    .if(
-                        ProcessInfo.processInfo.operatingSystemVersion
-                            .majorVersion < 26
-                    ) { view in
-                        view.fixedSize()
-                    }
+                    .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { $0.fixedSize() }
+                    .disabled(isUsingCustomArguments)  // 使用自定义参数时禁用
                     .onChange(of: optimizationPreset) { _, newValue in
-                        applyOptimizationPreset(newValue)
+                        if !isUsingCustomArguments {
+                            applyOptimizationPreset(newValue)
+                            autoSave()
+                        }
                     }
-
-                    InfoIconWithPopover(
-                        text: optimizationPreset.description
-                    )
+                    .onChange(of: selectedGarbageCollector) { _, _ in
+                        // 当垃圾回收器改变时，如果当前是最大优化但不是 G1GC，则切换到平衡优化
+                        if optimizationPreset == .maximum && selectedGarbageCollector != .g1gc {
+                            optimizationPreset = .balanced
+                            applyOptimizationPreset(.balanced)
+                            autoSave()
+                        }
+                    }
+                    InfoIconWithPopover(text: optimizationPreset.description)
                 }
-
             }
             .labeledContentStyle(.custom(alignment: .firstTextBaseline))
-            // 内存设置
+            .opacity(isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
+            
             LabeledContent("settings.game.java.memory".localized()) {
                 HStack(spacing: 8) {
-                    Text(
-                        "\(Int(memoryRange.lowerBound)) MB"
-                    )
-                    .font(.subheadline)
-                    .foregroundColor(.primary)
+                    Text("\(Int(memoryRange.lowerBound)) MB")
+                        .font(.subheadline)
                     MiniRangeSlider(
                         range: $memoryRange,
-                        bounds:
-                            512...Double(
-                                GameSettingsManager.shared
-                                    .maximumMemoryAllocation
-                            )
+                        bounds: 512...Double(GameSettingsManager.shared.maximumMemoryAllocation)
                     )
                     .frame(width: 200, height: 20)
-                    .onChange(of: memoryRange) { _, _ in
-                        // 实时更新内存值
-                    }
-                    Text(
-                        "\(Int(memoryRange.upperBound)) MB"
-                    )
-                    .font(.subheadline)
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
+                    .onChange(of: memoryRange) { _, _ in autoSave() }
+                    Text("\(Int(memoryRange.upperBound)) MB")
+                        .font(.subheadline)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
                 }
             }
             .labeledContentStyle(.custom)
-            // 自定义JVM参数
+            
             LabeledContent("settings.game.java.custom_parameters".localized()) {
                 HStack {
-                    TextField(
-                        "",
-                        text: $customJvmArguments,
-                    )
-                    .focusable(false)
-                    .labelsHidden()
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .lineLimit(2...4)
-                    .frame(width: 200)
-
-                    InfoIconWithPopover(
-                        text: "settings.game.java.custom_parameters.note"
-                            .localized()
-                    )
+                    TextField("", text: $customJvmArguments)
+                        .focusable(false)
+                        .labelsHidden()
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .lineLimit(2...4)
+                        .frame(width: 200)
+                        .onChange(of: customJvmArguments) { _, _ in autoSave() }
+                    InfoIconWithPopover(text: "settings.game.java.custom_parameters.note".localized())
                 }
             }
             .labeledContentStyle(.custom(alignment: .firstTextBaseline))
-            //
-            //            // 环境变量设置
+            
             LabeledContent {
                 HStack {
-                    TextField(
-                        "",
-                        text: $environmentVariables,
-                        axis: .vertical
-                    )
-                    .focusable(false)
-                    .labelsHidden()
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .lineLimit(2...4)
-                    .frame(width: 200)
-
-                    InfoIconWithPopover(
-                        text: "example: JAVA_OPTS=-Dfile.encoding=UTF-8"
-                            .localized()
-                    )
+                    TextField("", text: $environmentVariables, axis: .vertical)
+                        .focusable(false)
+                        .labelsHidden()
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .lineLimit(2...4)
+                        .frame(width: 200)
+                        .onChange(of: environmentVariables) { _, _ in autoSave() }
+                    InfoIconWithPopover(text: "example: JAVA_OPTS=-Dfile.encoding=UTF-8".localized())
                 }
-
             } label: {
                 Text("settings.game.java.environment_variables".localized())
             }
             .labeledContentStyle(.custom)
-
-            // 操作按钮
-            //            HStack(spacing: 12) {
-            //                Button("common.reset".localized()) {
-            //                    showResetAlert = true
-            //                }
-            //                .buttonStyle(.bordered)
-            //                .controlSize(.regular)
-            //
-            //                Spacer()
-            //
-            //                Button("common.save".localized()) {
-            //                    saveSettings()
-            //                }
-            //                .buttonStyle(.borderedProminent)
-            //                .controlSize(.regular)
-            //            }
-            //            .padding(.top, 10)
         }
-        .onAppear {
-            loadCurrentSettings()
-        }
+        .onAppear { loadCurrentSettings() }
+        .onChange(of: selectedGameManager.selectedGameId) { _, _ in loadCurrentSettings() }
         .globalErrorHandler()
-        .alert(
-            "settings.game.save.success".localized(),
-            isPresented: $showSaveAlert
-        ) {
-            Button("common.ok".localized()) {}
-        }
         .alert(
             "settings.game.reset.confirm".localized(),
             isPresented: $showResetAlert
@@ -225,53 +180,71 @@ struct GameAdvancedSettingsView: View {
     // MARK: - Private Methods
 
     private func loadCurrentSettings() {
-        // 如果游戏没有自定义内存设置（xms或xmx为0），则显示全局设置
-        let xms =
-            game.xms == 0 ? GameSettingsManager.shared.globalXms : game.xms
-        let xmx =
-            game.xmx == 0 ? GameSettingsManager.shared.globalXmx : game.xmx
-
+        guard let game = currentGame else { return }
+        isLoadingSettings = true
+        defer { isLoadingSettings = false }
+        
+        let xms = game.xms == 0 ? GameSettingsManager.shared.globalXms : game.xms
+        let xmx = game.xmx == 0 ? GameSettingsManager.shared.globalXmx : game.xmx
         memoryRange = Double(xms)...Double(xmx)
-        customJvmArguments = game.jvmArguments
         environmentVariables = game.environmentVariables
-
-        // 解析现有的JVM参数来设置UI状态
-        parseExistingJvmArguments(game.jvmArguments)
+        
+        let jvmArgs = game.jvmArguments.trimmingCharacters(in: .whitespacesAndNewlines)
+        if jvmArgs.isEmpty {
+            customJvmArguments = ""
+            selectedGarbageCollector = .g1gc
+            optimizationPreset = .balanced
+            applyOptimizationPreset(.balanced)
+        } else {
+            customJvmArguments = parseExistingJvmArguments(jvmArgs) ? "" : jvmArgs
+        }
     }
 
-    private func parseExistingJvmArguments(_ arguments: String) {
-        let args = arguments.components(separatedBy: .whitespacesAndNewlines)
-            .filter { !$0.isEmpty }
-
-        // 检测垃圾回收器
-        if args.contains("-XX:+UseG1GC") {
+    private func parseExistingJvmArguments(_ arguments: String) -> Bool {
+        let args = arguments.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
+        
+        let gcMap: [(String, GarbageCollector)] = [
+            ("-XX:+UseG1GC", .g1gc),
+            ("-XX:+UseZGC", .zgc),
+            ("-XX:+UseShenandoahGC", .shenandoah),
+            ("-XX:+UseParallelGC", .parallel),
+            ("-XX:+UseSerialGC", .serial)
+        ]
+        
+        guard let (_, gc) = gcMap.first(where: { args.contains($0.0) }) else {
             selectedGarbageCollector = .g1gc
-        } else if args.contains("-XX:+UseZGC") {
-            selectedGarbageCollector = .zgc
-        } else if args.contains("-XX:+UseShenandoahGC") {
-            selectedGarbageCollector = .shenandoah
-        } else if args.contains("-XX:+UseParallelGC") {
-            selectedGarbageCollector = .parallel
-        } else if args.contains("-XX:+UseSerialGC") {
-            selectedGarbageCollector = .serial
+            optimizationPreset = .balanced
+            applyOptimizationPreset(.balanced)
+            return false
         }
-
-        // 检测优化设置
-        enableOptimizations = !args.contains("-XX:-OptimizeStringConcat")
-        enableAikarFlags =
-            args.contains("-XX:+UseG1GC")
-            && args.contains("-XX:+ParallelRefProcEnabled")
-        enableClientOptimizations = args.contains("-XX:+UseCompressedOops")
-        enableMemoryOptimizations = args.contains(
-            "-XX:+UseCompressedClassPointers"
-        )
-        enableThreadOptimizations = args.contains("-XX:+UseThreadPriorities")
-        enableNetworkOptimizations = args.contains(
-            "-Djava.net.preferIPv4Stack=true"
-        )
-
-        // 根据解析的设置更新优化预设
+        
+        selectedGarbageCollector = gc
+        
+        // 解析优化选项
+        enableOptimizations = args.contains("-XX:+OptimizeStringConcat") || 
+                             args.contains("-XX:+OmitStackTraceInFastThrow")
+        enableMemoryOptimizations = args.contains("-XX:+UseCompressedOops") ||
+                                   args.contains("-XX:+UseCompressedClassPointers")
+        enableThreadOptimizations = args.contains("-XX:+OmitStackTraceInFastThrow")
+        
+        if selectedGarbageCollector == .g1gc {
+            enableAikarFlags = args.contains("-XX:+ParallelRefProcEnabled") &&
+                              args.contains("-XX:MaxGCPauseMillis=200") &&
+                              args.contains("-XX:+AlwaysPreTouch")
+        } else {
+            enableAikarFlags = false
+        }
+        
+        enableNetworkOptimizations = args.contains("-Djava.net.preferIPv4Stack=true")
         updateOptimizationPreset()
+        
+        // 确保最大优化仅在 G1GC 时可用
+        if optimizationPreset == .maximum && selectedGarbageCollector != .g1gc {
+            optimizationPreset = .balanced
+            applyOptimizationPreset(.balanced)
+        }
+        
+        return true
     }
 
     private func applyOptimizationPreset(_ preset: OptimizationPreset) {
@@ -279,28 +252,20 @@ struct GameAdvancedSettingsView: View {
         case .none:
             enableOptimizations = false
             enableAikarFlags = false
-            enableClientOptimizations = false
             enableMemoryOptimizations = false
             enableThreadOptimizations = false
             enableNetworkOptimizations = false
-        case .basic:
+            
+        case .basic, .balanced:
             enableOptimizations = true
             enableAikarFlags = false
-            enableClientOptimizations = true
             enableMemoryOptimizations = true
             enableThreadOptimizations = true
             enableNetworkOptimizations = false
-        case .balanced:
-            enableOptimizations = true
-            enableAikarFlags = false
-            enableClientOptimizations = true
-            enableMemoryOptimizations = true
-            enableThreadOptimizations = true
-            enableNetworkOptimizations = false
+            
         case .maximum:
             enableOptimizations = true
             enableAikarFlags = true
-            enableClientOptimizations = true
             enableMemoryOptimizations = true
             enableThreadOptimizations = true
             enableNetworkOptimizations = true
@@ -308,14 +273,11 @@ struct GameAdvancedSettingsView: View {
     }
 
     private func updateOptimizationPreset() {
-        // 根据当前设置自动检测预设
         if !enableOptimizations {
             optimizationPreset = .none
         } else if enableAikarFlags && enableNetworkOptimizations {
             optimizationPreset = .maximum
-        } else if enableClientOptimizations && enableMemoryOptimizations
-            && enableThreadOptimizations
-        {
+        } else if enableMemoryOptimizations && enableThreadOptimizations {
             optimizationPreset = .balanced
         } else {
             optimizationPreset = .basic
@@ -323,176 +285,110 @@ struct GameAdvancedSettingsView: View {
     }
 
     private func generateJvmArguments() -> String {
-        // 如果用户输入了自定义参数，优先使用自定义参数
-        if !customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines)
-            .isEmpty
-        {
+        let trimmed = customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmed.isEmpty {
             return customJvmArguments
         }
-
+        
         var arguments: [String] = []
-
-        // 垃圾回收器参数
         arguments.append(contentsOf: selectedGarbageCollector.arguments)
-
-        // 基础优化
+        
+        if selectedGarbageCollector == .g1gc {
+            arguments.append(contentsOf: [
+                "-XX:+ParallelRefProcEnabled",
+                "-XX:MaxGCPauseMillis=200"
+            ])
+            
+            if enableAikarFlags {
+                arguments.append(contentsOf: [
+                    "-XX:+UnlockExperimentalVMOptions",
+                    "-XX:+DisableExplicitGC",
+                    "-XX:+AlwaysPreTouch",
+                    "-XX:G1NewSizePercent=30",
+                    "-XX:G1MaxNewSizePercent=40",
+                    "-XX:G1HeapRegionSize=8M",
+                    "-XX:G1ReservePercent=20",
+                    "-XX:G1HeapWastePercent=5",
+                    "-XX:G1MixedGCCountTarget=4",
+                    "-XX:InitiatingHeapOccupancyPercent=15",
+                    "-XX:G1MixedGCLiveThresholdPercent=90",
+                    "-XX:G1RSetUpdatingPauseTimePercent=5",
+                    "-XX:SurvivorRatio=32",
+                    "-XX:MaxTenuringThreshold=1"
+                ])
+            }
+        }
+        
         if enableOptimizations {
             arguments.append(contentsOf: [
                 "-XX:+OptimizeStringConcat",
-                "-XX:+UseCompressedOops",
-                "-XX:+UseCompressedClassPointers",
-                "-XX:+UseThreadPriorities",
+                "-XX:+OmitStackTraceInFastThrow"
             ])
         }
-
-        // Aikar优化参数
-        if enableAikarFlags {
-            let aikarFlags1 = [
-                "-XX:+ParallelRefProcEnabled",
-                "-XX:MaxGCPauseMillis=200",
-                "-XX:+UnlockExperimentalVMOptions",
-                "-XX:+DisableExplicitGC",
-                "-XX:+AlwaysPreTouch",
-            ]
-            let aikarFlags2 = [
-                "-XX:G1NewSizePercent=30",
-                "-XX:G1MaxNewSizePercent=40",
-                "-XX:G1HeapRegionSize=8M",
-                "-XX:G1ReservePercent=20",
-                "-XX:G1HeapWastePercent=5",
-            ]
-            let aikarFlags3 = [
-                "-XX:G1MixedGCCountTarget=4",
-                "-XX:InitiatingHeapOccupancyPercent=15",
-                "-XX:G1MixedGCLiveThresholdPercent=90",
-                "-XX:G1RSetUpdatingPauseTimePercent=5",
-                "-XX:SurvivorRatio=32",
-            ]
-            let aikarFlags4 = [
-                "-XX:+PerfDisableSharedMem",
-                "-XX:MaxTenuringThreshold=1",
-            ]
-            arguments.append(contentsOf: aikarFlags1)
-            arguments.append(contentsOf: aikarFlags2)
-            arguments.append(contentsOf: aikarFlags3)
-            arguments.append(contentsOf: aikarFlags4)
-        }
-
-        // 客户端优化
-        if enableClientOptimizations {
-            arguments.append(contentsOf: [
-                "-XX:+UseCompressedOops",
-                "-XX:+UseCompressedClassPointers",
-                "-XX:+UseThreadPriorities",
-                "-XX:+OmitStackTraceInFastThrow",
-            ])
-        }
-
-        // 内存优化
+        
         if enableMemoryOptimizations {
-            arguments.append(contentsOf: [
-                "-XX:+UseCompressedClassPointers",
-                "-XX:+UseCompressedOops",
-                "-XX:+AlwaysPreTouch",
-            ])
+            arguments.append("-XX:+UseCompressedOops")
         }
-
-        // 线程优化
-        if enableThreadOptimizations {
-            arguments.append(contentsOf: [
-                "-XX:+UseThreadPriorities",
-                "-XX:+OmitStackTraceInFastThrow",
-            ])
-        }
-
-        // 网络优化
+        
         if enableNetworkOptimizations {
-            arguments.append(contentsOf: [
-                "-Djava.net.preferIPv4Stack=true",
-                "-Djava.net.preferIPv4Addresses=true",
-            ])
+            arguments.append("-Djava.net.preferIPv4Stack=true")
         }
-
+        
         return arguments.joined(separator: " ")
     }
 
-    private func saveSettings() {
-        Task {
+    private func autoSave() {
+        // 如果正在加载设置，不触发自动保存
+        guard !isLoadingSettings, currentGame != nil else { return }
+        
+        // 取消之前的保存任务
+        saveTask?.cancel()
+        
+        // 使用防抖机制，延迟 0.5 秒后保存
+        saveTask = Task {
+            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 秒
+            
+            guard !Task.isCancelled else { return }
+            
             do {
-                // 验证设置
+                guard let game = currentGame else { return }
                 let xms = Int(memoryRange.lowerBound)
                 let xmx = Int(memoryRange.upperBound)
-
-                guard xms > 0 && xmx > 0 else {
-                    throw GlobalError.validation(
-                        chineseMessage: "内存设置无效",
-                        i18nKey: "error.validation.invalid_memory_settings",
-                        level: .notification
-                    )
-                }
-
-                guard xms <= xmx else {
-                    throw GlobalError.validation(
-                        chineseMessage: "XMS不能大于XMX",
-                        i18nKey: "error.validation.xms_greater_than_xmx",
-                        level: .notification
-                    )
-                }
-
-                // 生成JVM参数
-                let jvmArgs = generateJvmArguments()
-
-                // 更新游戏设置
+                
+                guard xms > 0 && xmx > 0 else { return }
+                guard xms <= xmx else { return }
+                
                 var updatedGame = game
                 updatedGame.xms = xms
                 updatedGame.xmx = xmx
-                updatedGame.jvmArguments = jvmArgs
+                updatedGame.jvmArguments = generateJvmArguments()
                 updatedGame.environmentVariables = environmentVariables
-
-                // 保存到游戏仓库
+                
                 try await gameRepository.updateGame(updatedGame)
-
-                await MainActor.run {
-                    showSaveAlert = true
-                }
-
-                Logger.shared.info("成功保存游戏设置: \(game.gameName)")
+                Logger.shared.debug("自动保存游戏设置: \(game.gameName)")
             } catch {
-                let globalError: GlobalError
-                if let gameError = error as? GlobalError {
-                    globalError = gameError
-                } else {
-                    globalError = GlobalError.unknown(
-                        chineseMessage: "保存设置失败: \(error.localizedDescription)",
-                        i18nKey: "error.unknown.settings_save_failed",
-                        level: .notification
-                    )
-                }
-
-                Logger.shared.error("保存游戏设置失败: \(globalError.chineseMessage)")
-                await MainActor.run {
-                    self.error = globalError
-                }
+                let globalError = error as? GlobalError ?? GlobalError.unknown(
+                    chineseMessage: "保存设置失败: \(error.localizedDescription)",
+                    i18nKey: "error.unknown.settings_save_failed",
+                    level: .notification
+                )
+                Logger.shared.error("自动保存游戏设置失败: \(globalError.chineseMessage)")
+                await MainActor.run { self.error = globalError }
             }
         }
     }
 
     private func resetToDefaults() {
-        // 重置为全局默认设置
-        memoryRange =
-            Double(
-                GameSettingsManager.shared.globalXms
-            )...Double(GameSettingsManager.shared.globalXmx)
+        isLoadingSettings = true
+        defer { isLoadingSettings = false }
+        
+        memoryRange = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
         selectedGarbageCollector = .g1gc
         optimizationPreset = .balanced
-        enableOptimizations = true
-        enableAikarFlags = false
-        enableClientOptimizations = true
-        enableMemoryOptimizations = true
-        enableThreadOptimizations = true
-        enableNetworkOptimizations = false
+        applyOptimizationPreset(.balanced)
         customJvmArguments = ""
         environmentVariables = ""
+        autoSave()
     }
 }
 

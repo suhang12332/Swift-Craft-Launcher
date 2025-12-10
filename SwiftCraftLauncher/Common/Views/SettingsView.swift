@@ -20,9 +20,8 @@ public struct SettingsView: View {
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
-            if let gameId = selectedGameManager.selectedGameId,
-               let game = gameRepository.getGame(by: gameId) {
-                GameAdvancedSettingsView(game: game)
+            if selectedGameManager.selectedGameId != nil {
+                GameAdvancedSettingsView()
                     .tabItem {
                         Label("settings.game.advanced.tab".localized(), systemImage: "gearshape.2")
                     }

@@ -11,6 +11,16 @@ enum ModrinthDependencyDownloader {
         actuallyDownloaded: inout [ModrinthProjectDetail],
         visited: inout Set<String>
     ) async {
+        // 检查 query 是否是有效的资源类型
+        let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
+        let queryLowercased = query.lowercased()
+        
+        // 如果 query 是 modpack 或无效的资源类型，直接返回
+        if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
+            Logger.shared.error("不支持下载此类型的资源: \(query)")
+            return
+        }
+        
         do {
             let resourceDir = AppPaths.resourceDirectory(
                 for: query,

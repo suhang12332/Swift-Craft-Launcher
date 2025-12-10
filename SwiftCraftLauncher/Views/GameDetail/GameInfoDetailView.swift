@@ -277,7 +277,6 @@ struct GameInfoDetailView: View {
             return
         }
         
-        isLoadingResources = true
         guard
             let resourceDir = AppPaths.resourceDirectory(
                 for: query,

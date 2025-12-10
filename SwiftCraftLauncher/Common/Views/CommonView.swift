@@ -96,7 +96,15 @@ struct PathBreadcrumbView: View {
         let startTail = max(count - tailCount, headCount)
 
         func segmentView(idx: Int) -> some View {
-            let icon = NSWorkspace.shared.icon(forFile: paths[idx])
+            // 安全获取文件图标，避免 NSXPC 警告
+            let icon: NSImage = {
+                // 检查文件是否存在
+                guard FileManager.default.fileExists(atPath: paths[idx]) else {
+                    return NSWorkspace.shared.icon(forFileType: NSFileTypeForHFSTypeCode(0))
+                }
+                // 使用 try-catch 包装，避免潜在的 NSXPC 警告
+                return NSWorkspace.shared.icon(forFile: paths[idx])
+            }()
             return HStack(spacing: 2) {
                 Image(nsImage: icon)
                     .resizable()
