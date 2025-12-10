@@ -118,10 +118,13 @@ jobs:
           
           echo "📚 开始生成 helpindex..."
           
+          # 切换到 Contents 目录执行命令
+          cd "$HELP_PATH/Contents"
+          
           # 生成标准 helpindex (LSM index)
-          HELPINDEX_PATH="$HELP_PATH/Contents/SwiftCraftLauncher.helpindex"
+          HELPINDEX_PATH="SwiftCraftLauncher.helpindex"
           echo "生成标准索引 (LSM): $HELPINDEX_PATH"
-          hiutil -I lsm -Caf -vv "$HELPINDEX_PATH" "$HELP_PATH/Contents/Resources"
+          hiutil -I lsm -Caf "$HELPINDEX_PATH" -vv .
           
           if [[ -f "$HELPINDEX_PATH" ]]; then
             echo "✅ 标准 helpindex 生成成功"
@@ -132,9 +135,9 @@ jobs:
           fi
           
           # 生成 Core Spotlight helpindex
-          CSHELPINDEX_PATH="$HELP_PATH/Contents/SwiftCraftLauncher.cshelpindex"
+          CSHELPINDEX_PATH="SwiftCraftLauncher.cshelpindex"
           echo "生成 Core Spotlight 索引: $CSHELPINDEX_PATH"
-          hiutil -I corespotlight -Caf -vv "$CSHELPINDEX_PATH" "$HELP_PATH/Contents/Resources"
+          hiutil -I corespotlight -Caf "$CSHELPINDEX_PATH" -vv .
           
           if [[ -f "$CSHELPINDEX_PATH" ]]; then
             echo "✅ Core Spotlight helpindex 生成成功"
