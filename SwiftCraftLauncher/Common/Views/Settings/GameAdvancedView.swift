@@ -43,6 +43,58 @@ struct GameAdvancedView: View {
 
     var body: some View {
         Form {
+
+            // 垃圾回收器设置
+            LabeledContent("settings.game.java.garbage_collector".localized()) {
+                HStack {
+                    Picker("", selection: $selectedGarbageCollector) {
+                        ForEach(GarbageCollector.allCases, id: \.self) { gc in
+                            Text(gc.displayName).tag(gc)
+                        }
+                    }
+                    .labelsHidden()
+                    .if(
+                        ProcessInfo.processInfo.operatingSystemVersion
+                            .majorVersion < 26
+                    ) { view in
+                        view.fixedSize()
+                    }
+                    InfoIconWithPopover(
+                        text: selectedGarbageCollector.description
+                    )
+                }
+            }
+            .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+
+            // 性能优化设置
+            LabeledContent(
+                "settings.game.java.performance_optimization".localized()
+            ) {
+                HStack {
+                    Picker("", selection: $optimizationPreset) {
+                        ForEach(OptimizationPreset.allCases, id: \.self) {
+                            preset in
+                            Text(preset.displayName).tag(preset)
+                        }
+                    }
+                    .labelsHidden()
+                    .if(
+                        ProcessInfo.processInfo.operatingSystemVersion
+                            .majorVersion < 26
+                    ) { view in
+                        view.fixedSize()
+                    }
+                    .onChange(of: optimizationPreset) { _, newValue in
+                        applyOptimizationPreset(newValue)
+                    }
+
+                    InfoIconWithPopover(
+                        text: optimizationPreset.description
+                    )
+                }
+
+            }
+            .labeledContentStyle(.custom(alignment: .firstTextBaseline))
             // 内存设置
             LabeledContent("settings.game.java.memory".localized()) {
                 HStack(spacing: 8) {
@@ -73,112 +125,69 @@ struct GameAdvancedView: View {
                 }
             }
             .labeledContentStyle(.custom)
-            .padding(.bottom, 10)
-
-            // 垃圾回收器设置
-            LabeledContent("settings.game.java.garbage_collector".localized()) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Picker("", selection: $selectedGarbageCollector) {
-                        ForEach(GarbageCollector.allCases, id: \.self) { gc in
-                            Text(gc.displayName).tag(gc)
-                        }
-                    }
-                    .labelsHidden()
-                    .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
-                        view.fixedSize()
-                    }
-                    Text(selectedGarbageCollector.description)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .labeledContentStyle(.custom(alignment: .firstTextBaseline))
-
-            // 性能优化设置
-             LabeledContent("settings.game.java.performance_optimization".localized()) {
-                 VStack(alignment: .leading, spacing: 6) {
-                     Picker("", selection: $optimizationPreset) {
-                         ForEach(OptimizationPreset.allCases, id: \.self) { preset in
-                             Text(preset.displayName).tag(preset)
-                         }
-                     }
-                     .labelsHidden()
-                     .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
-                         view.fixedSize()
-                     }
-                     .onChange(of: optimizationPreset) { _, newValue in
-                         applyOptimizationPreset(newValue)
-                     }
-                     Text(optimizationPreset.description)
-                         .font(.caption)
-                         .foregroundColor(.secondary)
-                 }
-                 .frame(maxWidth: .infinity, alignment: .leading)
-             }
-             .labeledContentStyle(.custom(alignment: .firstTextBaseline))
-
             // 自定义JVM参数
-             LabeledContent("settings.game.java.custom_parameters".localized()) {
-                 VStack(alignment: .leading, spacing: 6) {
-                     TextField(
-                         "",
-                         text: $customJvmArguments,
-                     ).focusable(false)
-                         .labelsHidden()
-                         .textFieldStyle(RoundedBorderTextFieldStyle())
-                         .lineLimit(2...4)
-                         .frame(width: 200)
-                     Text(
-                         "settings.game.java.custom_parameters.note".localized()
-                     )
-                     .font(.caption)
-                     .foregroundColor(.red)
-                 }
-                 .frame(maxWidth: .infinity, alignment: .leading)
-             }
-             .labeledContentStyle(.custom(alignment: .firstTextBaseline))
-//
-//            // 环境变量设置
-            LabeledContent("settings.game.java.environment_variables".localized()) {
-                VStack(alignment: .leading,spacing: 6) {
+            LabeledContent("settings.game.java.custom_parameters".localized()) {
+                HStack {
                     TextField(
                         "",
-                        text: $environmentVariables,
-                        axis: .vertical
-                    ).focusable(false)
+                        text: $customJvmArguments,
+                    )
+                    .focusable(false)
                     .labelsHidden()
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .lineLimit(2...4)
                     .frame(width: 200)
-                    Text(
-                        "example: JAVA_OPTS=-Dfile.encoding=UTF-8".localized()
+
+                    InfoIconWithPopover(
+                        text: "settings.game.java.custom_parameters.note"
+                            .localized()
                     )
-                    .font(.caption)
-                    .foregroundColor(.secondary)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .labeledContentStyle(.custom(alignment: .firstTextBaseline))
-            .padding(.bottom, 10)
+            //
+            //            // 环境变量设置
+            LabeledContent {
+                HStack {
+                    TextField(
+                        "",
+                        text: $environmentVariables,
+                        axis: .vertical
+                    )
+                    .focusable(false)
+                    .labelsHidden()
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .lineLimit(2...4)
+                    .frame(width: 200)
+
+                    InfoIconWithPopover(
+                        text: "example: JAVA_OPTS=-Dfile.encoding=UTF-8"
+                            .localized()
+                    )
+                }
+
+            } label: {
+                Text("settings.game.java.environment_variables".localized())
+            }
+            .labeledContentStyle(.custom)
 
             // 操作按钮
-//            HStack(spacing: 12) {
-//                Button("common.reset".localized()) {
-//                    showResetAlert = true
-//                }
-//                .buttonStyle(.bordered)
-//                .controlSize(.regular)
-//
-//                Spacer()
-//
-//                Button("common.save".localized()) {
-//                    saveSettings()
-//                }
-//                .buttonStyle(.borderedProminent)
-//                .controlSize(.regular)
-//            }
-//            .padding(.top, 10)
+            //            HStack(spacing: 12) {
+            //                Button("common.reset".localized()) {
+            //                    showResetAlert = true
+            //                }
+            //                .buttonStyle(.bordered)
+            //                .controlSize(.regular)
+            //
+            //                Spacer()
+            //
+            //                Button("common.save".localized()) {
+            //                    saveSettings()
+            //                }
+            //                .buttonStyle(.borderedProminent)
+            //                .controlSize(.regular)
+            //            }
+            //            .padding(.top, 10)
         }
         .onAppear {
             loadCurrentSettings()
@@ -260,11 +269,11 @@ struct GameAdvancedView: View {
         enableNetworkOptimizations = args.contains(
             "-Djava.net.preferIPv4Stack=true"
         )
-        
+
         // 根据解析的设置更新优化预设
         updateOptimizationPreset()
     }
-    
+
     private func applyOptimizationPreset(_ preset: OptimizationPreset) {
         switch preset {
         case .none:
@@ -297,14 +306,16 @@ struct GameAdvancedView: View {
             enableNetworkOptimizations = true
         }
     }
-    
+
     private func updateOptimizationPreset() {
         // 根据当前设置自动检测预设
         if !enableOptimizations {
             optimizationPreset = .none
         } else if enableAikarFlags && enableNetworkOptimizations {
             optimizationPreset = .maximum
-        } else if enableClientOptimizations && enableMemoryOptimizations && enableThreadOptimizations {
+        } else if enableClientOptimizations && enableMemoryOptimizations
+            && enableThreadOptimizations
+        {
             optimizationPreset = .balanced
         } else {
             optimizationPreset = .basic
@@ -313,7 +324,9 @@ struct GameAdvancedView: View {
 
     private func generateJvmArguments() -> String {
         // 如果用户输入了自定义参数，优先使用自定义参数
-        if !customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+        if !customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines)
+            .isEmpty
+        {
             return customJvmArguments
         }
 
@@ -531,23 +544,28 @@ enum OptimizationPreset: String, CaseIterable {
     case basic = "basic"
     case balanced = "balanced"
     case maximum = "maximum"
-    
+
     var displayName: String {
         switch self {
         case .none: return "settings.game.java.optimization.none".localized()
         case .basic: return "settings.game.java.optimization.basic".localized()
-        case .balanced: return "settings.game.java.optimization.balanced".localized()
-        case .maximum: return "settings.game.java.optimization.maximum".localized()
+        case .balanced:
+            return "settings.game.java.optimization.balanced".localized()
+        case .maximum:
+            return "settings.game.java.optimization.maximum".localized()
         }
     }
-    
+
     var description: String {
         switch self {
-        case .none: return "settings.game.java.optimization.none.desc".localized()
-        case .basic: return "settings.game.java.optimization.basic.desc".localized()
-        case .balanced: return "settings.game.java.optimization.balanced.desc".localized()
-        case .maximum: return "settings.game.java.optimization.maximum.desc".localized()
+        case .none:
+            return "settings.game.java.optimization.none.desc".localized()
+        case .basic:
+            return "settings.game.java.optimization.basic.desc".localized()
+        case .balanced:
+            return "settings.game.java.optimization.balanced.desc".localized()
+        case .maximum:
+            return "settings.game.java.optimization.maximum.desc".localized()
         }
     }
 }
-
