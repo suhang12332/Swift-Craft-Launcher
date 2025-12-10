@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 public struct GeneralSettingsView: View {
     @ObservedObject private var generalSettings = GeneralSettingsManager.shared
     @EnvironmentObject private var gameRepository: GameRepository
@@ -104,7 +103,6 @@ public struct GeneralSettingsView: View {
                 TextField("", text: $generalSettings.minecraftVersionManifestURL).focusable(false)
                     .fixedSize()
                     .labelsHidden()
-
             }.labeledContentStyle(.custom)
 
             LabeledContent("settings.modrinth_api_url.label".localized()) {

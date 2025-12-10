@@ -100,7 +100,11 @@ struct PathBreadcrumbView: View {
             let icon: NSImage = {
                 // 检查文件是否存在
                 guard FileManager.default.fileExists(atPath: paths[idx]) else {
-                    return NSWorkspace.shared.icon(forFileType: NSFileTypeForHFSTypeCode(0))
+                    if #available(macOS 12.0, *) {
+                        return NSWorkspace.shared.icon(for: .folder)
+                    } else {
+                        return NSWorkspace.shared.icon(forFileType: NSFileTypeForHFSTypeCode(0))
+                    }
                 }
                 // 使用 try-catch 包装，避免潜在的 NSXPC 警告
                 return NSWorkspace.shared.icon(forFile: paths[idx])
@@ -200,11 +204,11 @@ struct InfoIconWithPopover<Content: View>: View {
     let iconSize: CGFloat
     /// 延迟显示时间（秒）
     let delay: Double
-    
+
     @State private var isHovering = false
     @State private var showPopover = false
     @State private var hoverTask: Task<Void, Never>?
-    
+
     init(
         iconSize: CGFloat = 14,
         delay: Double = 0.5,
@@ -214,7 +218,7 @@ struct InfoIconWithPopover<Content: View>: View {
         self.delay = delay
         self.content = content()
     }
-    
+
     var body: some View {
         Button {
             // 点击时也显示 popover
@@ -229,7 +233,7 @@ struct InfoIconWithPopover<Content: View>: View {
             isHovering = hovering
             // 取消之前的任务
             hoverTask?.cancel()
-            
+
             if hovering {
                 // 延迟显示 popover，避免鼠标快速移动时频繁显示
                 hoverTask = Task {
@@ -247,7 +251,7 @@ struct InfoIconWithPopover<Content: View>: View {
         .popover(isPresented: $showPopover, arrowEdge: .trailing) {
             content
                 .padding()
-                .frame(maxWidth: 400,maxHeight: .infinity)
+                .frame(maxWidth: 400, maxHeight: .infinity)
                 .fixedSize(horizontal: true, vertical: true)
         }
         .onDisappear {

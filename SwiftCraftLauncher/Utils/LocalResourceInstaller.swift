@@ -115,11 +115,11 @@ extension LocalResourceInstaller {
                     switch result {
                     case .success(let urls):
                         guard let fileURL = urls.first else { return }
-                        
+
                         // 检查 query 是否是有效的资源类型
                         let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
                         let queryLowercased = query.lowercased()
-                        
+
                         // 如果 query 是 modpack 或无效的资源类型，显示错误
                         if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
                             errorHandler.handle(GlobalError.configuration(
@@ -129,7 +129,7 @@ extension LocalResourceInstaller {
                             ))
                             return
                         }
-                        
+
                         let gameRootOpt = AppPaths.resourceDirectory(for: query, gameName: gameName)
                         guard let gameRoot = gameRootOpt else {
                             errorHandler.handle(GlobalError.fileSystem(
@@ -161,7 +161,6 @@ extension LocalResourceInstaller {
                         } catch {
                             errorHandler.handle(error)
                         }
-
                     case .failure(let error):
                         errorHandler.handle(GlobalError.fileSystem(
                             chineseMessage: "文件选择失败：\(error.localizedDescription)",

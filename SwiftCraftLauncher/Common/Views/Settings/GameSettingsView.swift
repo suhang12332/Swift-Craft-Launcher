@@ -16,7 +16,7 @@ public struct GameSettingsView: View {
 
     public var body: some View {
         Form {
-            LabeledContent("settings.auto_handle_dependencies".localized()){
+            LabeledContent("settings.auto_handle_dependencies".localized()) {
                 HStack {
                     Toggle(
                         "",
@@ -70,7 +70,7 @@ public struct GameSettingsView: View {
             }
             .labeledContentStyle(.custom).padding(.bottom, 10)
 
-            LabeledContent("settings.game_resource_info.label".localized()){
+            LabeledContent("settings.game_resource_info.label".localized()) {
                 HStack {
                     Label(
                         "\(cacheManager.cacheInfo.fileCount)",

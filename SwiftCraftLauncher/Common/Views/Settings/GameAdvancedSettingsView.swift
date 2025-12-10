@@ -10,7 +10,7 @@ import SwiftUI
 struct GameAdvancedSettingsView: View {
     @EnvironmentObject var gameRepository: GameRepository
     @ObservedObject private var selectedGameManager = SelectedGameManager.shared
-    
+
     @State private var memoryRange: ClosedRange<Double> = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
     @State private var selectedGarbageCollector: GarbageCollector = .g1gc
     @State private var optimizationPreset: OptimizationPreset = .balanced
@@ -25,17 +25,17 @@ struct GameAdvancedSettingsView: View {
     @State private var error: GlobalError?
     @State private var isLoadingSettings = false
     @State private var saveTask: Task<Void, Never>?
-    
+
     private var currentGame: GameVersionInfo? {
         guard let gameId = selectedGameManager.selectedGameId else { return nil }
         return gameRepository.getGame(by: gameId)
     }
-    
+
     /// 是否使用自定义JVM参数（与垃圾回收器和性能优化互斥）
     private var isUsingCustomArguments: Bool {
         !customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
-    
+
     /// 根据当前选择的垃圾回收器获取可用的优化预设
     /// 最大优化仅在 G1GC 时可用
     private var availableOptimizationPresets: [OptimizationPreset] {
@@ -61,7 +61,7 @@ struct GameAdvancedSettingsView: View {
                     .labelsHidden()
                     .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { $0.fixedSize() }
                     .disabled(isUsingCustomArguments)  // 使用自定义参数时禁用
-                    .onChange(of: selectedGarbageCollector) { _, _ in 
+                    .onChange(of: selectedGarbageCollector) { _, _ in
                         if !isUsingCustomArguments {
                             autoSave()
                         }
@@ -102,7 +102,7 @@ struct GameAdvancedSettingsView: View {
             }
             .labeledContentStyle(.custom(alignment: .firstTextBaseline))
             .opacity(isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
-            
+
             LabeledContent("settings.game.java.memory".localized()) {
                 HStack(spacing: 8) {
                     Text("\(Int(memoryRange.lowerBound)) MB")
@@ -120,7 +120,7 @@ struct GameAdvancedSettingsView: View {
                 }
             }
             .labeledContentStyle(.custom)
-            
+
             LabeledContent("settings.game.java.custom_parameters".localized()) {
                 HStack {
                     TextField("", text: $customJvmArguments)
@@ -134,7 +134,7 @@ struct GameAdvancedSettingsView: View {
                 }
             }
             .labeledContentStyle(.custom(alignment: .firstTextBaseline))
-            
+
             LabeledContent {
                 HStack {
                     TextField("", text: $environmentVariables, axis: .vertical)
@@ -183,12 +183,12 @@ struct GameAdvancedSettingsView: View {
         guard let game = currentGame else { return }
         isLoadingSettings = true
         defer { isLoadingSettings = false }
-        
+
         let xms = game.xms == 0 ? GameSettingsManager.shared.globalXms : game.xms
         let xmx = game.xmx == 0 ? GameSettingsManager.shared.globalXmx : game.xmx
         memoryRange = Double(xms)...Double(xmx)
         environmentVariables = game.environmentVariables
-        
+
         let jvmArgs = game.jvmArguments.trimmingCharacters(in: .whitespacesAndNewlines)
         if jvmArgs.isEmpty {
             customJvmArguments = ""
@@ -202,31 +202,30 @@ struct GameAdvancedSettingsView: View {
 
     private func parseExistingJvmArguments(_ arguments: String) -> Bool {
         let args = arguments.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }
-        
+
         let gcMap: [(String, GarbageCollector)] = [
             ("-XX:+UseG1GC", .g1gc),
             ("-XX:+UseZGC", .zgc),
             ("-XX:+UseShenandoahGC", .shenandoah),
             ("-XX:+UseParallelGC", .parallel),
-            ("-XX:+UseSerialGC", .serial)
+            ("-XX:+UseSerialGC", .serial),
         ]
-        
+
         guard let (_, gc) = gcMap.first(where: { args.contains($0.0) }) else {
             selectedGarbageCollector = .g1gc
             optimizationPreset = .balanced
             applyOptimizationPreset(.balanced)
             return false
         }
-        
+
         selectedGarbageCollector = gc
-        
         // 解析优化选项
-        enableOptimizations = args.contains("-XX:+OptimizeStringConcat") || 
+        enableOptimizations = args.contains("-XX:+OptimizeStringConcat") ||
                              args.contains("-XX:+OmitStackTraceInFastThrow")
         enableMemoryOptimizations = args.contains("-XX:+UseCompressedOops") ||
                                    args.contains("-XX:+UseCompressedClassPointers")
         enableThreadOptimizations = args.contains("-XX:+OmitStackTraceInFastThrow")
-        
+
         if selectedGarbageCollector == .g1gc {
             enableAikarFlags = args.contains("-XX:+ParallelRefProcEnabled") &&
                               args.contains("-XX:MaxGCPauseMillis=200") &&
@@ -234,35 +233,34 @@ struct GameAdvancedSettingsView: View {
         } else {
             enableAikarFlags = false
         }
-        
+
         enableNetworkOptimizations = args.contains("-Djava.net.preferIPv4Stack=true")
         updateOptimizationPreset()
-        
+
         // 确保最大优化仅在 G1GC 时可用
         if optimizationPreset == .maximum && selectedGarbageCollector != .g1gc {
             optimizationPreset = .balanced
             applyOptimizationPreset(.balanced)
         }
-        
         return true
     }
 
     private func applyOptimizationPreset(_ preset: OptimizationPreset) {
         switch preset {
-        case .none:
+        case .disabled:
             enableOptimizations = false
             enableAikarFlags = false
             enableMemoryOptimizations = false
             enableThreadOptimizations = false
             enableNetworkOptimizations = false
-            
+
         case .basic, .balanced:
             enableOptimizations = true
             enableAikarFlags = false
             enableMemoryOptimizations = true
             enableThreadOptimizations = true
             enableNetworkOptimizations = false
-            
+
         case .maximum:
             enableOptimizations = true
             enableAikarFlags = true
@@ -274,7 +272,7 @@ struct GameAdvancedSettingsView: View {
 
     private func updateOptimizationPreset() {
         if !enableOptimizations {
-            optimizationPreset = .none
+            optimizationPreset = .disabled
         } else if enableAikarFlags && enableNetworkOptimizations {
             optimizationPreset = .maximum
         } else if enableMemoryOptimizations && enableThreadOptimizations {
@@ -289,16 +287,16 @@ struct GameAdvancedSettingsView: View {
         if !trimmed.isEmpty {
             return customJvmArguments
         }
-        
+
         var arguments: [String] = []
         arguments.append(contentsOf: selectedGarbageCollector.arguments)
-        
+
         if selectedGarbageCollector == .g1gc {
             arguments.append(contentsOf: [
                 "-XX:+ParallelRefProcEnabled",
-                "-XX:MaxGCPauseMillis=200"
+                "-XX:MaxGCPauseMillis=200",
             ])
-            
+
             if enableAikarFlags {
                 arguments.append(contentsOf: [
                     "-XX:+UnlockExperimentalVMOptions",
@@ -314,56 +312,56 @@ struct GameAdvancedSettingsView: View {
                     "-XX:G1MixedGCLiveThresholdPercent=90",
                     "-XX:G1RSetUpdatingPauseTimePercent=5",
                     "-XX:SurvivorRatio=32",
-                    "-XX:MaxTenuringThreshold=1"
+                    "-XX:MaxTenuringThreshold=1",
                 ])
             }
         }
-        
+
         if enableOptimizations {
             arguments.append(contentsOf: [
                 "-XX:+OptimizeStringConcat",
-                "-XX:+OmitStackTraceInFastThrow"
+                "-XX:+OmitStackTraceInFastThrow",
             ])
         }
-        
+
         if enableMemoryOptimizations {
             arguments.append("-XX:+UseCompressedOops")
         }
-        
+
         if enableNetworkOptimizations {
             arguments.append("-Djava.net.preferIPv4Stack=true")
         }
-        
+
         return arguments.joined(separator: " ")
     }
 
     private func autoSave() {
         // 如果正在加载设置，不触发自动保存
         guard !isLoadingSettings, currentGame != nil else { return }
-        
+
         // 取消之前的保存任务
         saveTask?.cancel()
-        
+
         // 使用防抖机制，延迟 0.5 秒后保存
         saveTask = Task {
             try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 秒
-            
+
             guard !Task.isCancelled else { return }
-            
+
             do {
                 guard let game = currentGame else { return }
                 let xms = Int(memoryRange.lowerBound)
                 let xmx = Int(memoryRange.upperBound)
-                
+
                 guard xms > 0 && xmx > 0 else { return }
                 guard xms <= xmx else { return }
-                
+
                 var updatedGame = game
                 updatedGame.xms = xms
                 updatedGame.xmx = xmx
                 updatedGame.jvmArguments = generateJvmArguments()
                 updatedGame.environmentVariables = environmentVariables
-                
+
                 try await gameRepository.updateGame(updatedGame)
                 Logger.shared.debug("自动保存游戏设置: \(game.gameName)")
             } catch {
@@ -381,7 +379,7 @@ struct GameAdvancedSettingsView: View {
     private func resetToDefaults() {
         isLoadingSettings = true
         defer { isLoadingSettings = false }
-        
+
         memoryRange = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
         selectedGarbageCollector = .g1gc
         optimizationPreset = .balanced
@@ -436,14 +434,14 @@ enum GarbageCollector: String, CaseIterable {
 // MARK: - Optimization Preset Enum
 
 enum OptimizationPreset: String, CaseIterable {
-    case none = "none"
+    case disabled = "disabled"
     case basic = "basic"
     case balanced = "balanced"
     case maximum = "maximum"
 
     var displayName: String {
         switch self {
-        case .none: return "settings.game.java.optimization.none".localized()
+        case .disabled: return "settings.game.java.optimization.none".localized()
         case .basic: return "settings.game.java.optimization.basic".localized()
         case .balanced:
             return "settings.game.java.optimization.balanced".localized()
@@ -454,7 +452,7 @@ enum OptimizationPreset: String, CaseIterable {
 
     var description: String {
         switch self {
-        case .none:
+        case .disabled:
             return "settings.game.java.optimization.none.desc".localized()
         case .basic:
             return "settings.game.java.optimization.basic.desc".localized()

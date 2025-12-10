@@ -139,7 +139,7 @@ struct MinecraftLaunchCommand {
         process.executableURL = URL(fileURLWithPath: javaExecutable)
         process.arguments = command
         process.currentDirectoryURL = gameWorkingDirectory
-        
+
         // 设置环境变量（高级设置）
         if !game.environmentVariables.isEmpty {
             var env = ProcessInfo.processInfo.environment

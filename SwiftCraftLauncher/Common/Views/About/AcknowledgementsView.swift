@@ -266,7 +266,7 @@ private struct DescriptionTextWithPopover: View {
             isHovering = hovering
             // 取消之前的任务
             hoverTask?.cancel()
-            
+
             if hovering {
                 // 延迟显示 popover，避免鼠标快速移动时频繁显示
                 hoverTask = Task {

@@ -28,7 +28,7 @@ struct GameFormView: View {
         case modPack
         case gameIcon
     }
-    
+
     // MARK: - State
     @State private var isDownloading = false
     @State private var isFormValid = false

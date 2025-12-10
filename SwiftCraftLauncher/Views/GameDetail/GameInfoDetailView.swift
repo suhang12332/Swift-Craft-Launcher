@@ -269,14 +269,14 @@ struct GameInfoDetailView: View {
 
     private func scanResources() {
         guard !isLoadingResources else { return }
-        
+
         // Modpacks don't have a local directory to scan, skip scanning
         if query.lowercased() == "modpack" {
             scannedResources = []
             isLoadingResources = false
             return
         }
-        
+
         guard
             let resourceDir = AppPaths.resourceDirectory(
                 for: query,

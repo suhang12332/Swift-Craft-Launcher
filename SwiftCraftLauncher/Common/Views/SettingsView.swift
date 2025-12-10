@@ -63,6 +63,7 @@ struct CustomLabeledContentStyle: LabeledContentStyle {
 // 使用扩展避免破坏布局
 extension LabeledContentStyle where Self == CustomLabeledContentStyle {
     static var custom: Self { .init() }
+
     static func custom(alignment: VerticalAlignment) -> Self {
         .init(alignment: alignment)
     }
