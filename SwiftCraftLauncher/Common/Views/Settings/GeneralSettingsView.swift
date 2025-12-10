@@ -15,20 +15,17 @@ public struct GeneralSettingsView: View {
     public init() {}
 
     public var body: some View {
-        Grid(alignment: .trailing) {
-            GridRow {
-                Text("settings.language.picker".localized()) // 长标题
-                    .gridColumnAlignment(.trailing) // 右对齐
+        Form {
+            LabeledContent("settings.language.picker".localized()) {
                 Picker("", selection: $selectedLanguage) {
                     ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
                         Text(name).tag(code)
                     }
                 }
+                .labelsHidden()
                 .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
                     view.fixedSize()
                 }
-                .gridColumnAlignment(.leading)
-                .labelsHidden()
                 .onChange(of: selectedLanguage) { _, newValue in
                     // 如果是取消操作导致的语言恢复，则不触发重启提示
                     if newValue != LanguageManager.shared.selectedLanguage {
@@ -53,17 +50,14 @@ public struct GeneralSettingsView: View {
                 } message: {
                     Text("settings.language.restart.message".localized())
                 }
-            }.padding(.bottom, 20)
+            }.labeledContentStyle(.custom)
 
-            GridRow {
-                Text("settings.theme.picker".localized()) // 长标题
-                    .gridColumnAlignment(.trailing) // 右对齐
+            LabeledContent("settings.theme.picker".localized()) {
                 ThemeSelectorView(selectedTheme: $generalSettings.themeMode)
-                    .gridColumnAlignment(.leading)
-            }.padding(.bottom, 20)
+                    .fixedSize()
+            }.labeledContentStyle(.custom)
 
-            GridRow {
-                Text("settings.launcher_working_directory".localized()).gridColumnAlignment(.trailing)
+            LabeledContent("settings.launcher_working_directory".localized()) {
                 DirectorySettingRow(
                     title: "settings.launcher_working_directory".localized(),
                     path: generalSettings.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : generalSettings.launcherWorkingDirectory,
@@ -76,11 +70,9 @@ public struct GeneralSettingsView: View {
                     .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
                         handleDirectoryImport(result)
                     }
-            }
-            .padding(.bottom, 20)
+            }.labeledContentStyle(.custom(alignment: .firstTextBaseline))
 
-            GridRow {
-                Text("settings.concurrent_downloads.label".localized()).gridColumnAlignment(.trailing) // 右对齐
+            LabeledContent("settings.concurrent_downloads.label".localized()) {
                 HStack {
                     Slider(
                         value: Binding(
@@ -93,10 +85,7 @@ public struct GeneralSettingsView: View {
                                 )
                             }
                         ),
-                        in: 1...20
-                        //                        label: { EmptyView() },
-                        //                        minimumValueLabel: { EmptyView() },
-                        //                        maximumValueLabel: { EmptyView() }
+                        in: 1...64
                     ).controlSize(.mini)
                         .animation(.easeOut(duration: 0.5), value: generalSettings.concurrentDownloads)
                     // 当前内存值显示（右对齐，固定宽度）
@@ -108,24 +97,25 @@ public struct GeneralSettingsView: View {
                 }.frame(width: 200)
                     .gridColumnAlignment(.leading)
                     .labelsHidden()
-            }
-            .padding(.bottom, 20)
+            }.labeledContentStyle(.custom)
 
-            GridRow {
-                Text("settings.minecraft_versions_url.label".localized()).gridColumnAlignment(.trailing)
+            LabeledContent("settings.minecraft_versions_url.label".localized()) {
                 TextField("", text: $generalSettings.minecraftVersionManifestURL).focusable(false)
                     .fixedSize()
-            }
-            GridRow {
-                Text("settings.modrinth_api_url.label".localized()).gridColumnAlignment(.trailing)
+                    .labelsHidden()
+            }.labeledContentStyle(.custom)
+
+            LabeledContent("settings.modrinth_api_url.label".localized()) {
                 TextField("", text: $generalSettings.modrinthAPIBaseURL).focusable(false)
                     .fixedSize()
-            }
-            GridRow {
-                Text("settings.git_proxy_url.label".localized()).gridColumnAlignment(.trailing)
+                    .labelsHidden()
+            }.labeledContentStyle(.custom)
+
+            LabeledContent("settings.git_proxy_url.label".localized()) {
                 TextField("", text: $generalSettings.gitProxyURL).focusable(false)
                     .fixedSize()
-            }
+                    .labelsHidden()
+            }.labeledContentStyle(.custom)
         }
         .alert("common.error".localized(), isPresented: $showingErrorAlert) {
             Button("common.ok".localized()) { }
@@ -293,13 +283,9 @@ struct ThemeOptionView: View {
     let onTap: () -> Void
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 12) {
             // 主题图标
             ZStack {
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(isSelected ? Color.accentColor.opacity(0.1) : Color.clear)
-                    .frame(width: 60, height: 40)
-
                 RoundedRectangle(cornerRadius: 6)
                     .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: isSelected ? 3 : 0)
                     .frame(width: 61, height: 41)

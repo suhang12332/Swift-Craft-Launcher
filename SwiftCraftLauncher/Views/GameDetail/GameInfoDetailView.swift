@@ -27,7 +27,6 @@ struct GameInfoDetailView: View {
     @Binding var selectedProjectId: String?
     @Binding var selectedLoaders: [String]
     @Binding var gameType: Bool  // false = local, true = server
-    @Binding var showAdvancedSettings: Bool
     @EnvironmentObject var gameRepository: GameRepository
     @State private var searchTextForResource = ""
     @State private var showDeleteAlert = false
@@ -39,6 +38,10 @@ struct GameInfoDetailView: View {
     @StateObject private var cacheManager = CacheManager()
     @State private var error: GlobalError?
     @StateObject private var gameActionManager = GameActionManager.shared
+    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+
+    @Environment(\.openSettings)
+    private var openSettings
 
     var body: some View {
         return VStack {
@@ -142,6 +145,7 @@ struct GameInfoDetailView: View {
                 }
             }
             Spacer()
+            settingsButton
             importButton
             deleteButton
         }
@@ -209,6 +213,21 @@ struct GameInfoDetailView: View {
         }
     }
 
+    private var settingsButton: some View {
+        Button {
+            // 设置当前游戏并标记应该打开高级设置
+            selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
+            // 打开设置窗口
+            openSettings()
+        } label: {
+            Text("settings.game.advanced.tab".localized())
+                .font(.subheadline)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(Color.accentColor)
+        .controlSize(.large)
+    }
+
     private var importButton: some View {
         LocalResourceInstaller.ImportButton(
             query: query,
@@ -269,7 +288,14 @@ struct GameInfoDetailView: View {
 
     private func scanResources() {
         guard !isLoadingResources else { return }
-        isLoadingResources = true
+
+        // Modpacks don't have a local directory to scan, skip scanning
+        if query.lowercased() == "modpack" {
+            scannedResources = []
+            isLoadingResources = false
+            return
+        }
+
         guard
             let resourceDir = AppPaths.resourceDirectory(
                 for: query,
