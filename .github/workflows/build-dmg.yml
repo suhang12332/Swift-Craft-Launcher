@@ -104,6 +104,48 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :CFBundleHelpBookName com.su.code.SwiftCraftLauncher.help" "$INFO_PLIST_PATH"
           
           echo "✅ HelpBook 配置已添加到生成的 Info.plist"
+      
+      - name: Generate helpindex
+        run: |
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
+          HELP_PATH="$APP_PATH/Contents/Resources/SwiftCraftLauncher.help"
+          
+          if [[ ! -d "$HELP_PATH" ]]; then
+            echo "❌ 未找到帮助文件夹: $HELP_PATH"
+            exit 1
+          fi
+          
+          echo "📚 开始生成 helpindex..."
+          
+          # 生成标准 helpindex (LSM index)
+          HELPINDEX_PATH="$HELP_PATH/Contents/SwiftCraftLauncher.helpindex"
+          echo "生成标准索引 (LSM): $HELPINDEX_PATH"
+          hiutil -I lsm -Caf -vv "$HELPINDEX_PATH" "$HELP_PATH/Contents/Resources"
+          
+          if [[ -f "$HELPINDEX_PATH" ]]; then
+            echo "✅ 标准 helpindex 生成成功"
+            ls -lh "$HELPINDEX_PATH"
+          else
+            echo "❌ 标准 helpindex 生成失败"
+            exit 1
+          fi
+          
+          # 生成 Core Spotlight helpindex
+          CSHELPINDEX_PATH="$HELP_PATH/Contents/SwiftCraftLauncher.cshelpindex"
+          echo "生成 Core Spotlight 索引: $CSHELPINDEX_PATH"
+          hiutil -I corespotlight -Caf -vv "$CSHELPINDEX_PATH" "$HELP_PATH/Contents/Resources"
+          
+          if [[ -f "$CSHELPINDEX_PATH" ]]; then
+            echo "✅ Core Spotlight helpindex 生成成功"
+            ls -lh "$CSHELPINDEX_PATH"
+          else
+            echo "❌ Core Spotlight helpindex 生成失败"
+            exit 1
+          fi
+          
+          echo "✅ 所有 helpindex 文件生成完成"
+      
       - name: Verify build output
         run: |
           ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
