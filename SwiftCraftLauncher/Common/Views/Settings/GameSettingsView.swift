@@ -29,7 +29,7 @@ public struct GameSettingsView: View {
                 }
             }.labeledContentStyle(.custom).padding(.bottom, 10)
 
-            LabeledContent("settings.default_memory_allocation.label".localized()) {
+            LabeledContent {
                 HStack {
                     Text(
                         "\(Int(globalMemoryRange.lowerBound)) MB"
@@ -61,8 +61,14 @@ public struct GameSettingsView: View {
                     .foregroundColor(.primary)
                     .lineLimit(1)
                     .truncationMode(.tail)
+                    InfoIconWithPopover(
+                        text: "settings.default_memory_allocation.description".localized()
+                    )
                 }
-            }.labeledContentStyle(.custom).padding(.bottom, 10)
+            } label: {
+                Text("settings.default_memory_allocation.label".localized())
+            }
+            .labeledContentStyle(.custom).padding(.bottom, 10)
 
             LabeledContent("settings.game_resource_info.label".localized()){
                 HStack {
