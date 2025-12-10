@@ -5,6 +5,8 @@ import Foundation
 /// 用于显示应用程序的设置选项
 public struct SettingsView: View {
     @ObservedObject private var general = GeneralSettingsManager.shared
+    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @EnvironmentObject private var gameRepository: GameRepository
 
     public init() {}
 
@@ -18,10 +20,13 @@ public struct SettingsView: View {
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
-            GameAdvancedSettingsView()
-                .tabItem {
-                    Label("settings.game.advanced.tab".localized(), systemImage: "gearshape.2")
-                }
+            if let gameId = selectedGameManager.selectedGameId,
+               let game = gameRepository.getGame(by: gameId) {
+                GameAdvancedSettingsView(game: game)
+                    .tabItem {
+                        Label("settings.game.advanced.tab".localized(), systemImage: "gearshape.2")
+                    }
+            }
         }
         .padding()
         .frame(maxWidth: .infinity)
