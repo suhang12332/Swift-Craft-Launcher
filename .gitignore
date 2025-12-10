@@ -143,6 +143,10 @@ DerivedData/
 *.bak
 *.backup
 
+# Auto-generated help index files
+*.helpindex
+*.cshelpindex
+
 # Private keys and certificates
 *.pem
 *.p12

@@ -125,6 +125,28 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		90ABCDEF2E7F999900123456 /* Generate Help Index */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Help Index";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -x\n\nHELP_BUNDLE_NAME=\"SwiftCraftLauncher.help\"\nINDEX_NAME=\"SwiftCraftLauncher\"\nHELP_BUNDLE_PATH=\"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/${HELP_BUNDLE_NAME}\"\nHELP_RESOURCES_PATH=\"${HELP_BUNDLE_PATH}/Contents/Resources\"\n\necho \"帮助包路径: $HELP_BUNDLE_PATH\"\necho \"资源目录: $HELP_RESOURCES_PATH\"\n\nif [ ! -d \"$HELP_RESOURCES_PATH\" ]; then\n    echo \"⚠️  警告: 帮助包资源目录不存在: $HELP_RESOURCES_PATH\"\n    exit 0\nfi\n\n# 切换到资源目录，使用相对路径（适合 GitHub Actions）\ncd \"$HELP_RESOURCES_PATH\" || exit 1\n\n# 遍历所有 .lproj 结尾的目录并处理\nfor LANGUAGE_DIR in *.lproj; do\n    # 检查是否是目录（避免匹配到文件）\n    if [ ! -d \"$LANGUAGE_DIR\" ]; then\n        continue\n    fi\n    \n    LANGUAGE=\"$LANGUAGE_DIR\"\n    echo \"🔍 处理语言: $LANGUAGE\"\n    \n    # 进入语言目录\n    cd \"$LANGUAGE_DIR\" || continue\n    \n    # 生成 cshelpindex (Core Spotlight 索引)\n    hiutil -I corespotlight -Caf \"${INDEX_NAME}.cshelpindex\" -vv .\n    \n    # 生成 helpindex (LSM 索引)\n    hiutil -I lsm -Caf \"${INDEX_NAME}.helpindex\" -vv .\n    \n    # 验证生成的索引文件\n    if [ -f \"${INDEX_NAME}.cshelpindex\" ]; then\n        hiutil -I corespotlight -Tvf \"${INDEX_NAME}.cshelpindex\"\n    fi\n    \n    # 返回资源目录\n    cd \"$HELP_RESOURCES_PATH\" || exit 1\n    echo \"✅ $LANGUAGE 索引文件生成完成\"\ndone\n\necho \"✅ 帮助文档索引文件生成完成\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		9023D82D2E3139B5005A53F1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
