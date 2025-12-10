@@ -54,6 +54,7 @@ struct DirectorySettingRow: View {
                     PathBreadcrumbView(path: path)
                 }
                 .buttonStyle(.plain)
+                .foregroundStyle(.primary)
                 .onHover { hovering in
                     if hovering {
                         NSCursor.pointingHand.push()
@@ -113,7 +114,7 @@ struct PathBreadcrumbView: View {
                     Image(systemName: "chevron.right")
                         .font(.caption)
                         .bold()
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                         .padding(.horizontal, 6)
                 }
                 segmentView(idx: idx)
@@ -124,12 +125,12 @@ struct PathBreadcrumbView: View {
                     Image(systemName: "chevron.right")
                         .font(.caption)
                         .bold()
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                         .padding(.horizontal, 6)
                 }
                 Text("…")
                     .font(.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
             }
             // 结尾
             ForEach(startTail..<count, id: \.self) { idx in
@@ -137,7 +138,7 @@ struct PathBreadcrumbView: View {
                     Image(systemName: "chevron.right")
                         .font(.caption)
                         .bold()
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.primary)
                         .padding(.horizontal, 6)
                 }
                 if idx == count - 1 {
