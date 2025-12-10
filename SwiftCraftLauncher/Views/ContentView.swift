@@ -23,7 +23,6 @@ struct ContentView: View {
     @Binding var selectedLoaders: [String]
     @Binding var gameType: Bool
     @Binding var gameId: String?
-    @Binding var showAdvancedSettings: Bool
 
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel

@@ -27,7 +27,6 @@ struct GameInfoDetailView: View {
     @Binding var selectedProjectId: String?
     @Binding var selectedLoaders: [String]
     @Binding var gameType: Bool  // false = local, true = server
-    @Binding var showAdvancedSettings: Bool
     @EnvironmentObject var gameRepository: GameRepository
     @State private var searchTextForResource = ""
     @State private var showDeleteAlert = false

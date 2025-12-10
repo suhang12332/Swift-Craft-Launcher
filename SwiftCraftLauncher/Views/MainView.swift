@@ -38,7 +38,6 @@ struct MainView: View {
     @State private var gameId: String?
 
     @State private var showingInspector: Bool = false
-    @State private var showAdvancedSettings = false
 
     // MARK: - Body
     var body: some View {
@@ -61,8 +60,7 @@ struct MainView: View {
                 gameResourcesType: $gameResourcesType,
                 selectedLoaders: $selectedLoaders,
                 gameType: $gameType,
-                gameId: $gameId,
-                showAdvancedSettings: $showAdvancedSettings
+                gameId: $gameId
             )
             .toolbar { ContentToolbarView() }.navigationSplitViewColumnWidth(
                 min: 235,
@@ -88,8 +86,7 @@ struct MainView: View {
                 versionCurrentPage: $versionCurrentPage,
                 versionTotal: $versionTotal,
                 gameType: $gameType,
-                selectedLoader: $selectedLoaders,
-                showAdvancedSettings: $showAdvancedSettings
+                selectedLoader: $selectedLoaders
             )
             .toolbar {
                 DetailToolbarView(
