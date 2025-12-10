@@ -71,7 +71,7 @@ public struct GeneralSettingsView: View {
                     .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
                         handleDirectoryImport(result)
                     }
-            }.labeledContentStyle(.custom)
+            }.labeledContentStyle(.custom(alignment: .firstTextBaseline))
 
             LabeledContent("settings.concurrent_downloads.label".localized()) {
                 HStack {

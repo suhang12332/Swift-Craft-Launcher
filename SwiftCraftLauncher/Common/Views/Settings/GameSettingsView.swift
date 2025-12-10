@@ -23,14 +23,21 @@ public struct GameSettingsView: View {
                         isOn: $gameSettings.autoDownloadDependencies
                     ).labelsHidden()
                     Text("settings.dependencies.description".localized()).font(
-                        .footnote
+                        .callout
                     )
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
                 }
             }.labeledContentStyle(.custom).padding(.bottom, 10)
 
-            LabeledContent("settings.default_memory_allocation.label".localized()){
+            LabeledContent("settings.default_memory_allocation.label".localized()) {
                 HStack {
+                    Text(
+                        "\(Int(globalMemoryRange.lowerBound)) MB"
+                    )
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
                     MiniRangeSlider(
                         range: $globalMemoryRange,
                         bounds:
@@ -48,10 +55,10 @@ public struct GameSettingsView: View {
                             )...Double(gameSettings.globalXmx)
                     }
                     Text(
-                        "\(Int(globalMemoryRange.lowerBound)) MB - \(Int(globalMemoryRange.upperBound)) MB"
+                        "\(Int(globalMemoryRange.upperBound)) MB"
                     )
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.primary)
                     .lineLimit(1)
                     .truncationMode(.tail)
                 }
@@ -62,13 +69,13 @@ public struct GameSettingsView: View {
                     Label(
                         "\(cacheManager.cacheInfo.fileCount)",
                         systemImage: "text.document"
-                    )
+                    ).font(.callout)
                     Divider().frame(height: 16)
                     Label(
                         cacheManager.cacheInfo.formattedSize,
                         systemImage: "externaldrive"
-                    )
-                }.foregroundStyle(.secondary)
+                    ).font(.callout)
+                }.foregroundStyle(.primary)
             }.labeledContentStyle(.custom).padding(.bottom, 10)
         }
         .onAppear {
