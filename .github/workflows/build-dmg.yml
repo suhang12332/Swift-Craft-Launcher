@@ -121,6 +121,17 @@ jobs:
           # 遍历每个语言文件夹生成索引
           RESOURCES_PATH="$HELP_PATH/Contents/Resources"
           
+          # 列出所有找到的语言文件夹
+          echo "🔍 查找语言文件夹..."
+          LANG_COUNT=0
+          for LANG_DIR in "$RESOURCES_PATH"/*.lproj; do
+            if [[ -d "$LANG_DIR" ]]; then
+              LANG_COUNT=$((LANG_COUNT + 1))
+              echo "  找到: $(basename "$LANG_DIR")"
+            fi
+          done
+          echo "  共找到 $LANG_COUNT 个语言文件夹"
+          
           for LANG_DIR in "$RESOURCES_PATH"/*.lproj; do
             if [[ ! -d "$LANG_DIR" ]]; then
               continue
