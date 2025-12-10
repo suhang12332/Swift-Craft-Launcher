@@ -15,6 +15,13 @@ class SelectedGameManager: ObservableObject {
         }
     }
 
+    /// 是否应该打开高级设置标签
+    @Published var shouldOpenAdvancedSettings: Bool = false {
+        didSet {
+            objectWillChange.send()
+        }
+    }
+
     private init() {
         // 私有初始化，确保单例模式
     }
@@ -28,5 +35,13 @@ class SelectedGameManager: ObservableObject {
     /// 清除选中的游戏
     func clearSelection() {
         selectedGameId = nil
+        shouldOpenAdvancedSettings = false
+    }
+
+    /// 设置选中的游戏并标记应该打开高级设置
+    /// - Parameter gameId: 游戏ID
+    func setSelectedGameAndOpenAdvancedSettings(_ gameId: String?) {
+        selectedGameId = gameId
+        shouldOpenAdvancedSettings = true
     }
 }

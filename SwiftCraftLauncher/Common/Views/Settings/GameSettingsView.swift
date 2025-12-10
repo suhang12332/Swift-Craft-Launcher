@@ -31,13 +31,6 @@ public struct GameSettingsView: View {
 
             LabeledContent {
                 HStack {
-                    Text(
-                        "\(Int(globalMemoryRange.lowerBound)) MB"
-                    )
-                    .font(.subheadline)
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
                     MiniRangeSlider(
                         range: $globalMemoryRange,
                         bounds:
@@ -55,7 +48,7 @@ public struct GameSettingsView: View {
                             )...Double(gameSettings.globalXmx)
                     }
                     Text(
-                        "\(Int(globalMemoryRange.upperBound)) MB"
+                        "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB"
                     )
                     .font(.subheadline)
                     .foregroundColor(.primary)

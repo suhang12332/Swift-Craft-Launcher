@@ -105,15 +105,13 @@ struct GameAdvancedSettingsView: View {
 
             LabeledContent("settings.game.java.memory".localized()) {
                 HStack(spacing: 8) {
-                    Text("\(Int(memoryRange.lowerBound)) MB")
-                        .font(.subheadline)
                     MiniRangeSlider(
                         range: $memoryRange,
                         bounds: 512...Double(GameSettingsManager.shared.maximumMemoryAllocation)
                     )
                     .frame(width: 200, height: 20)
                     .onChange(of: memoryRange) { _, _ in autoSave() }
-                    Text("\(Int(memoryRange.upperBound)) MB")
+                    Text("\(Int(memoryRange.lowerBound)) MB-\(Int(memoryRange.upperBound)) MB")
                         .font(.subheadline)
                         .lineLimit(1)
                         .truncationMode(.tail)

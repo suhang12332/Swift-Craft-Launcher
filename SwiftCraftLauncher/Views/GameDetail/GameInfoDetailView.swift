@@ -38,6 +38,10 @@ struct GameInfoDetailView: View {
     @StateObject private var cacheManager = CacheManager()
     @State private var error: GlobalError?
     @StateObject private var gameActionManager = GameActionManager.shared
+    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+
+    @Environment(\.openSettings)
+    private var openSettings
 
     var body: some View {
         return VStack {
@@ -141,6 +145,7 @@ struct GameInfoDetailView: View {
                 }
             }
             Spacer()
+            settingsButton
             importButton
             deleteButton
         }
@@ -206,6 +211,21 @@ struct GameInfoDetailView: View {
                 String(format: "delete.game.confirm".localized(), game.gameName)
             )
         }
+    }
+
+    private var settingsButton: some View {
+        Button {
+            // 设置当前游戏并标记应该打开高级设置
+            selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
+            // 打开设置窗口
+            openSettings()
+        } label: {
+            Text("settings.game.advanced.tab".localized())
+                .font(.subheadline)
+        }
+        .buttonStyle(.borderedProminent)
+        .tint(Color.accentColor)
+        .controlSize(.large)
     }
 
     private var importButton: some View {

@@ -1,34 +1,63 @@
 import SwiftUI
 import Foundation
 
+/// 设置标签页枚举
+enum SettingsTab: Int {
+    case general = 0
+    case game = 1
+    case advanced = 2
+}
+
 /// 通用设置视图
 /// 用于显示应用程序的设置选项
 public struct SettingsView: View {
     @ObservedObject private var general = GeneralSettingsManager.shared
     @ObservedObject private var selectedGameManager = SelectedGameManager.shared
     @EnvironmentObject private var gameRepository: GameRepository
+    @State private var selectedTab: SettingsTab = .general
 
     public init() {}
 
     public var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             GeneralSettingsView()
                 .tabItem {
                     Label("settings.general.tab".localized(), systemImage: "gearshape")
                 }
+                .tag(SettingsTab.general)
             GameSettingsView()
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
+                .tag(SettingsTab.game)
             if selectedGameManager.selectedGameId != nil {
                 GameAdvancedSettingsView()
                     .tabItem {
                         Label("settings.game.advanced.tab".localized(), systemImage: "gearshape.2")
                     }
+                    .tag(SettingsTab.advanced)
             }
         }
         .padding()
         .frame(maxWidth: .infinity)
+        .onChange(of: selectedGameManager.shouldOpenAdvancedSettings) { _, shouldOpen in
+            // 当标志被设置时（窗口已打开的情况），切换到高级设置标签
+            if shouldOpen {
+                checkAndOpenAdvancedSettings()
+            }
+        }
+        .onAppear {
+            // 当设置窗口首次打开时，如果标志已经被设置，则切换到高级设置标签
+            // 这种情况发生在窗口未打开时点击设置按钮
+            checkAndOpenAdvancedSettings()
+        }
+    }
+
+    private func checkAndOpenAdvancedSettings() {
+        if selectedGameManager.shouldOpenAdvancedSettings && selectedGameManager.selectedGameId != nil {
+            selectedTab = .advanced
+            selectedGameManager.shouldOpenAdvancedSettings = false
+        }
     }
 }
 
