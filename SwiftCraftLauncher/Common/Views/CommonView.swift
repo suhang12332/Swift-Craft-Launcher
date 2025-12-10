@@ -182,3 +182,89 @@ extension Scene {
         }
     }
 }
+
+// MARK: - 通用信息图标组件（带 Popover）
+/// 一个通用的问号标记组件，鼠标悬浮时显示详细说明
+struct InfoIconWithPopover<Content: View>: View {
+    /// Popover 中显示的内容
+    let content: Content
+    /// 图标大小
+    let iconSize: CGFloat
+    /// 延迟显示时间（秒）
+    let delay: Double
+    
+    @State private var isHovering = false
+    @State private var showPopover = false
+    @State private var hoverTask: Task<Void, Never>?
+    
+    init(
+        iconSize: CGFloat = 14,
+        delay: Double = 0.5,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.iconSize = iconSize
+        self.delay = delay
+        self.content = content()
+    }
+    
+    var body: some View {
+        Button {
+            // 点击时也显示 popover
+            showPopover.toggle()
+        } label: {
+            Image(systemName: "questionmark.circle")
+                .font(.system(size: iconSize))
+                .foregroundColor(.secondary)
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering in
+            isHovering = hovering
+            // 取消之前的任务
+            hoverTask?.cancel()
+            
+            if hovering {
+                // 延迟显示 popover，避免鼠标快速移动时频繁显示
+                hoverTask = Task {
+                    try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+                    if !Task.isCancelled && isHovering {
+                        await MainActor.run {
+                            showPopover = true
+                        }
+                    }
+                }
+            } else {
+                showPopover = false
+            }
+        }
+        .popover(isPresented: $showPopover, arrowEdge: .trailing) {
+            content
+                .padding()
+                .frame(maxWidth: 400,maxHeight: .infinity)
+                .fixedSize(horizontal: true, vertical: true)
+        }
+        .onDisappear {
+            hoverTask?.cancel()
+            showPopover = false
+        }
+    }
+}
+
+// MARK: - 便捷初始化方法（使用字符串）
+extension InfoIconWithPopover {
+    /// 使用字符串文本创建 InfoIconWithPopover 的便捷初始化方法
+    init(
+        text: String,
+        iconSize: CGFloat = 14,
+        delay: Double = 0.5
+    ) where Content == AnyView {
+        self.init(iconSize: iconSize, delay: delay) {
+            AnyView(
+                Text(text)
+                    .font(.system(size: 12))
+                    .foregroundColor(.primary)
+                    .lineLimit(nil)
+                    .multilineTextAlignment(.leading)
+            )
+        }
+    }
+}
