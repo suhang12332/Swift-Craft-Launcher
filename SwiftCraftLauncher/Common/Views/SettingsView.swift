@@ -39,10 +39,13 @@ struct CustomLabeledContentStyle: LabeledContentStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack(alignment: alignment) {
             // 使用系统的标签布局
-            configuration.label
-                .layoutPriority(1)  // 保持标签优先级
-                .multilineTextAlignment(.trailing)
-                .frame(minWidth: 320, alignment: .trailing)  // 容器右对齐
+            HStack(spacing: 0) {
+                configuration.label
+                Text(":")
+            }
+            .layoutPriority(1)  // 保持标签优先级
+            .multilineTextAlignment(.trailing)
+            .frame(minWidth: 320, alignment: .trailing)  // 容器右对齐
             // 右侧内容
             configuration.content
                 .foregroundColor(.secondary)
