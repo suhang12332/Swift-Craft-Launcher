@@ -132,6 +132,9 @@ jobs:
           done
           echo "  共找到 $LANG_COUNT 个语言文件夹"
           
+          # 保存原始工作目录
+          ORIGINAL_DIR=$(pwd)
+          
           for LANG_DIR in "$RESOURCES_PATH"/*.lproj; do
             if [[ ! -d "$LANG_DIR" ]]; then
               continue
@@ -141,7 +144,10 @@ jobs:
             echo "📝 处理语言文件夹: $LANG_NAME"
             
             # 切换到语言文件夹目录
-            cd "$LANG_DIR"
+            cd "$LANG_DIR" || {
+              echo "  ❌ 无法切换到目录: $LANG_DIR"
+              exit 1
+            }
             
             # 生成标准 helpindex (LSM index)
             HELPINDEX_PATH="SwiftCraftLauncher.helpindex"
@@ -153,6 +159,7 @@ jobs:
               ls -lh "$HELPINDEX_PATH"
             else
               echo "  ❌ 标准 helpindex 生成失败"
+              cd "$ORIGINAL_DIR"
               exit 1
             fi
             
@@ -166,10 +173,14 @@ jobs:
               ls -lh "$CSHELPINDEX_PATH"
             else
               echo "  ❌ Core Spotlight helpindex 生成失败"
+              cd "$ORIGINAL_DIR"
               exit 1
             fi
             
             echo "  ✅ $LANG_NAME 语言文件夹的 helpindex 生成完成"
+            
+            # 恢复原始工作目录，以便下次循环能正确找到其他语言文件夹
+            cd "$ORIGINAL_DIR"
           done
           
           echo "✅ 所有语言文件夹的 helpindex 文件生成完成"
