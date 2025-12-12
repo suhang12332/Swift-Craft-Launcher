@@ -26,6 +26,8 @@ struct GameCreationView: View {
     // Bindings from parent
     private let triggerConfirm: Binding<Bool>
     private let triggerCancel: Binding<Bool>
+    private let onRequestImagePicker: () -> Void
+    private let onSetImagePickerHandler: (@escaping (Result<[URL], Error>) -> Void) -> Void
 
     // MARK: - Initializer
     init(
@@ -34,10 +36,14 @@ struct GameCreationView: View {
         triggerConfirm: Binding<Bool>,
         triggerCancel: Binding<Bool>,
         onCancel: @escaping () -> Void,
-        onConfirm: @escaping () -> Void
+        onConfirm: @escaping () -> Void,
+        onRequestImagePicker: @escaping () -> Void,
+        onSetImagePickerHandler: @escaping (@escaping (Result<[URL], Error>) -> Void) -> Void
     ) {
         self.triggerConfirm = triggerConfirm
         self.triggerCancel = triggerCancel
+        self.onRequestImagePicker = onRequestImagePicker
+        self.onSetImagePickerHandler = onSetImagePickerHandler
         let configuration = GameFormConfiguration(
             isDownloading: isDownloading,
             isFormValid: isFormValid,
@@ -52,15 +58,9 @@ struct GameCreationView: View {
     // MARK: - Body
     var body: some View {
         formContentView
-        .fileImporter(
-            isPresented: $viewModel.showImagePicker,
-            allowedContentTypes: [.png, .jpeg, .gif],
-            allowsMultipleSelection: false
-        ) { result in
-            viewModel.handleImagePickerResult(result)
-        }
         .onAppear {
             viewModel.setup(gameRepository: gameRepository, playerListViewModel: playerListViewModel)
+            onSetImagePickerHandler(viewModel.handleImagePickerResult)
         }
         .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
         .onChange(of: viewModel.selectedLoaderVersion) { _, _ in
@@ -106,10 +106,10 @@ struct GameCreationView: View {
                 .font(.subheadline)
                 .foregroundColor(.primary)
 
-            iconContainer
+                iconContainer
                 .onTapGesture {
                     if !viewModel.gameSetupService.downloadState.isDownloading {
-                        viewModel.showImagePicker = true
+                        onRequestImagePicker()
                     }
                 }
                 .onDrop(of: [UTType.image.identifier], isTargeted: nil) { providers in

@@ -98,11 +98,21 @@ struct MinecraftLaunchCommand {
         let xms = game.xms > 0 ? game.xms : settings.globalXms
         let xmx = game.xmx > 0 ? game.xmx : settings.globalXmx
 
-        return command.map { arg in
+        var replacedCommand = command.map { arg in
             return arg
                 .replacingOccurrences(of: "${xms}", with: "\(xms)")
                 .replacingOccurrences(of: "${xmx}", with: "\(xmx)")
         }
+
+        // 在运行时拼接高级设置的JVM参数
+        // 逻辑：如果有自定义JVM参数则直接使用，否则使用垃圾回收器+性能优化参数
+        if !game.jvmArguments.isEmpty {
+            // 将自定义JVM参数插入到命令数组的开头（java命令之后）
+            let advancedArgs = game.jvmArguments.components(separatedBy: " ").filter { !$0.isEmpty }
+            replacedCommand.insert(contentsOf: advancedArgs, at: 0)
+        }
+
+        return replacedCommand
     }
 
     /// 启动游戏进程
@@ -129,6 +139,20 @@ struct MinecraftLaunchCommand {
         process.executableURL = URL(fileURLWithPath: javaExecutable)
         process.arguments = command
         process.currentDirectoryURL = gameWorkingDirectory
+
+        // 设置环境变量（高级设置）
+        if !game.environmentVariables.isEmpty {
+            var env = ProcessInfo.processInfo.environment
+            let envLines = game.environmentVariables.components(separatedBy: "\n")
+            for line in envLines {
+                if let equalIndex = line.firstIndex(of: "=") {
+                    let key = String(line[..<equalIndex])
+                    let value = String(line[line.index(after: equalIndex)...])
+                    env[key] = value
+                }
+            }
+            process.environment = env
+        }
 
         // 设置进程终止处理器（在启动前设置）
         let gameId = game.id

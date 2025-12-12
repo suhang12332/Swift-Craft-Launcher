@@ -104,6 +104,144 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :CFBundleHelpBookName com.su.code.SwiftCraftLauncher.help" "$INFO_PLIST_PATH"
           
           echo "✅ HelpBook 配置已添加到生成的 Info.plist"
+      
+      - name: Fetch help documentation
+        run: |
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
+          HELP_TARGET_PATH="$APP_PATH/Contents/Resources/SwiftCraftLauncher.help"
+          
+          echo "📚 开始拉取帮助文档..."
+          
+          # 创建临时目录用于克隆帮助文档仓库
+          TEMP_DIR=$(mktemp -d)
+          echo "临时目录: $TEMP_DIR"
+          
+          # 克隆帮助文档仓库
+          echo "正在克隆帮助文档仓库..."
+          git clone --depth 1 https://github.com/suhang12332/Swift-Craft-Launcher-Assets.git "$TEMP_DIR/assets"
+          
+          # 检查帮助文档目录是否存在
+          HELP_SOURCE_PATH="$TEMP_DIR/assets/help/SwiftCraftLauncher.help"
+          if [[ ! -d "$HELP_SOURCE_PATH" ]]; then
+            echo "❌ 未找到帮助文档目录: $HELP_SOURCE_PATH"
+            exit 1
+          fi
+          
+          echo "✅ 帮助文档仓库克隆成功"
+          echo "源路径: $HELP_SOURCE_PATH"
+          echo "目标路径: $HELP_TARGET_PATH"
+          
+          # 确保目标目录的父目录存在
+          mkdir -p "$(dirname "$HELP_TARGET_PATH")"
+          
+          # 如果目标目录已存在，先删除
+          if [[ -d "$HELP_TARGET_PATH" ]]; then
+            echo "⚠️  目标目录已存在，正在删除..."
+            rm -rf "$HELP_TARGET_PATH"
+          fi
+          
+          # 复制帮助文档到应用包
+          echo "正在复制帮助文档..."
+          cp -R "$HELP_SOURCE_PATH" "$HELP_TARGET_PATH"
+          
+          # 验证复制是否成功
+          if [[ -d "$HELP_TARGET_PATH" ]]; then
+            echo "✅ 帮助文档复制成功"
+            echo "帮助文档结构:"
+            ls -la "$HELP_TARGET_PATH" || true
+            if [[ -d "$HELP_TARGET_PATH/Contents" ]]; then
+              ls -la "$HELP_TARGET_PATH/Contents" || true
+            fi
+          else
+            echo "❌ 帮助文档复制失败"
+            exit 1
+          fi
+          
+          # 清理临时目录
+          rm -rf "$TEMP_DIR"
+          echo "✅ 临时目录已清理"
+      
+      - name: Generate helpindex
+        run: |
+          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
+          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
+          HELP_PATH="$APP_PATH/Contents/Resources/SwiftCraftLauncher.help"
+          
+          if [[ ! -d "$HELP_PATH" ]]; then
+            echo "❌ 未找到帮助文件夹: $HELP_PATH"
+            exit 1
+          fi
+          
+          echo "📚 开始生成 helpindex..."
+          
+          # 遍历每个语言文件夹生成索引
+          RESOURCES_PATH="$HELP_PATH/Contents/Resources"
+          
+          # 列出所有找到的语言文件夹
+          echo "🔍 查找语言文件夹..."
+          LANG_COUNT=0
+          for LANG_DIR in "$RESOURCES_PATH"/*.lproj; do
+            if [[ -d "$LANG_DIR" ]]; then
+              LANG_COUNT=$((LANG_COUNT + 1))
+              echo "  找到: $(basename "$LANG_DIR")"
+            fi
+          done
+          echo "  共找到 $LANG_COUNT 个语言文件夹"
+          
+          # 保存原始工作目录
+          ORIGINAL_DIR=$(pwd)
+          
+          for LANG_DIR in "$RESOURCES_PATH"/*.lproj; do
+            if [[ ! -d "$LANG_DIR" ]]; then
+              continue
+            fi
+            
+            LANG_NAME=$(basename "$LANG_DIR")
+            echo "📝 处理语言文件夹: $LANG_NAME"
+            
+            # 切换到语言文件夹目录
+            cd "$LANG_DIR" || {
+              echo "  ❌ 无法切换到目录: $LANG_DIR"
+              exit 1
+            }
+            
+            # 生成标准 helpindex (LSM index)
+            HELPINDEX_PATH="SwiftCraftLauncher.helpindex"
+            echo "  生成标准索引 (LSM): $HELPINDEX_PATH"
+            hiutil -I lsm -Caf "$HELPINDEX_PATH" -vv .
+            
+            if [[ -f "$HELPINDEX_PATH" ]]; then
+              echo "  ✅ 标准 helpindex 生成成功"
+              ls -lh "$HELPINDEX_PATH"
+            else
+              echo "  ❌ 标准 helpindex 生成失败"
+              cd "$ORIGINAL_DIR"
+              exit 1
+            fi
+            
+            # 生成 Core Spotlight helpindex
+            CSHELPINDEX_PATH="SwiftCraftLauncher.cshelpindex"
+            echo "  生成 Core Spotlight 索引: $CSHELPINDEX_PATH"
+            hiutil -I corespotlight -Caf "$CSHELPINDEX_PATH" -vv .
+            
+            if [[ -f "$CSHELPINDEX_PATH" ]]; then
+              echo "  ✅ Core Spotlight helpindex 生成成功"
+              ls -lh "$CSHELPINDEX_PATH"
+            else
+              echo "  ❌ Core Spotlight helpindex 生成失败"
+              cd "$ORIGINAL_DIR"
+              exit 1
+            fi
+            
+            echo "  ✅ $LANG_NAME 语言文件夹的 helpindex 生成完成"
+            
+            # 恢复原始工作目录，以便下次循环能正确找到其他语言文件夹
+            cd "$ORIGINAL_DIR"
+          done
+          
+          echo "✅ 所有语言文件夹的 helpindex 文件生成完成"
+      
       - name: Verify build output
         run: |
           ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"

@@ -61,6 +61,7 @@ enum URLConfig {
         enum GitHub {
             static let baseURL = URLConfig.url("https://api.github.com")
             static let repositoryOwner = "suhang12332"
+            static let assetsRepositoryName = "Swift-Craft-Launcher-Assets"
             static let repositoryName = "Swift-Craft-Launcher"
 
             // 私有方法：构建仓库基础路径
@@ -94,7 +95,14 @@ enum URLConfig {
             // 静态贡献者数据
             static func staticContributors() -> URL {
                 let timestamp = Int(Date().timeIntervalSince1970)
-                let urlString = "https://raw.githubusercontent.com/\(repositoryOwner)/Swift-Craft-Launcher-Contributors/refs/heads/main/contributors.json?timestamp=\(timestamp)"
+                let urlString = "https://raw.githubusercontent.com/\(repositoryOwner)/\(assetsRepositoryName)/refs/heads/main/contributors/contributors.json?timestamp=\(timestamp)"
+                return URLConfig.url(urlString)
+            }
+
+            // 致谢数据
+            static func acknowledgements() -> URL {
+                let timestamp = Int(Date().timeIntervalSince1970)
+                let urlString = "https://raw.githubusercontent.com/\(repositoryOwner)/\(assetsRepositoryName)/refs/heads/main/contributors/acknowledgements.json?timestamp=\(timestamp)"
                 return URLConfig.url(urlString)
             }
         }

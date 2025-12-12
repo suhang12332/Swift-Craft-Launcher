@@ -14,7 +14,6 @@ class GameCreationViewModel: BaseGameFormViewModel {
     // MARK: - Published Properties
     @Published var gameIcon = AppConstants.defaultGameIcon
     @Published var iconImage: Image?
-    @Published var showImagePicker = false
     @Published var selectedGameVersion = ""
     @Published var versionTime = ""
     @Published var selectedModLoader = "vanilla"
@@ -327,9 +326,5 @@ class GameCreationViewModel: BaseGameFormViewModel {
 
     var pendingIconURLForDisplay: URL? {
         pendingIconURL
-    }
-
-    var hasImagePicker: Bool {
-        showImagePicker
     }
 }

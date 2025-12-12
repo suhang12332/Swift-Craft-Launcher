@@ -262,6 +262,22 @@ struct AddOrDeleteResourceButton: View {
 
     // 新增：根据当前 project 查找 fileURL（示例实现，需根据实际逻辑补全）
     private func deleteFile() {
+        // 检查 query 是否是有效的资源类型
+        let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
+        let queryLowercased = query.lowercased()
+
+        // 如果 query 是 modpack 或无效的资源类型，显示错误
+        if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
+            let globalError = GlobalError.configuration(
+                chineseMessage: "无法删除文件：不支持删除此类型的资源",
+                i18nKey: "error.configuration.delete_file_failed",
+                level: .notification
+            )
+            Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return
+        }
+
         guard let gameInfo = gameInfo,
             let resourceDir = AppPaths.resourceDirectory(
                 for: query,
@@ -400,6 +416,17 @@ struct AddOrDeleteResourceButton: View {
             addButtonState = .installed
             return
         }
+
+        // 检查 query 是否是有效的资源类型
+        let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
+        let queryLowercased = query.lowercased()
+
+        // 如果 query 是 modpack 或无效的资源类型，设置为 idle
+        if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
+            addButtonState = .idle
+            return
+        }
+
         if let gameInfo = gameInfo,
             let resourceDir = AppPaths.resourceDirectory(
                 for: query,

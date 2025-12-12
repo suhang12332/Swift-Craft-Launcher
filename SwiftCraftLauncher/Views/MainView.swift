@@ -12,6 +12,7 @@ struct MainView: View {
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var selectedItem: SidebarItem = .resource(.mod)
     @ObservedObject private var general = GeneralSettingsManager.shared
+    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Resource/Project State
@@ -37,7 +38,6 @@ struct MainView: View {
     @State private var gameId: String?
 
     @State private var showingInspector: Bool = false
-    @State private var showAdvancedSettings = false
 
     // MARK: - Body
     var body: some View {
@@ -60,8 +60,7 @@ struct MainView: View {
                 gameResourcesType: $gameResourcesType,
                 selectedLoaders: $selectedLoaders,
                 gameType: $gameType,
-                gameId: $gameId,
-                showAdvancedSettings: $showAdvancedSettings
+                gameId: $gameId
             )
             .toolbar { ContentToolbarView() }.navigationSplitViewColumnWidth(
                 min: 235,
@@ -87,8 +86,7 @@ struct MainView: View {
                 versionCurrentPage: $versionCurrentPage,
                 versionTotal: $versionTotal,
                 gameType: $gameType,
-                selectedLoader: $selectedLoaders,
-                showAdvancedSettings: $showAdvancedSettings
+                selectedLoader: $selectedLoaders
             )
             .toolbar {
                 DetailToolbarView(
@@ -168,6 +166,8 @@ struct MainView: View {
         game?.modLoader.lowercased() == "vanilla" ? self.gameResourcesType.lowercased() != "mod" ? self.gameResourcesType : "datapack" : "mod"
         self.gameId = gameId
         self.selectedProjectId = nil
+        // 更新选中的游戏管理器，供设置页面使用
+        selectedGameManager.setSelectedGame(gameId)
     }
 
     private func handleGameToGameTransition(
@@ -182,10 +182,14 @@ struct MainView: View {
         self.gameResourcesType =
             game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
         self.gameId = newId
+        // 更新选中的游戏管理器，供设置页面使用
+        selectedGameManager.setSelectedGame(newId)
     }
 
     // MARK: - Resource Reset
     private func resetToResourceDefaults() {
+        // 清除选中的游戏，因为切换到资源页面
+        selectedGameManager.clearSelection()
 
         if self.gameType != true {
             self.gameType = true

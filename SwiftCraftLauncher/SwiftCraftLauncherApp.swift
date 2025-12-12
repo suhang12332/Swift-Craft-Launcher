@@ -50,7 +50,7 @@ struct SwiftCraftLauncherApp: App {
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
         }
-        .windowStyle(.titleBar)
+        .windowStyle(.hiddenTitleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)

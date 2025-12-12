@@ -14,6 +14,5 @@ public struct PlayerSettingsView: View {
             // .frame(maxWidth: 500)
             Spacer()
         }
-        .padding()
     }
 }

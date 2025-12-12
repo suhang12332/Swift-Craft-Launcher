@@ -23,14 +23,22 @@ struct GameFormView: View {
     @Environment(\.dismiss)
     private var dismiss
 
+    // MARK: - File Picker Type
+    enum FilePickerType {
+        case modPack
+        case gameIcon
+    }
+
     // MARK: - State
     @State private var isDownloading = false
     @State private var isFormValid = false
     @State private var triggerConfirm = false
     @State private var triggerCancel = false
-    @State private var showModPackFilePicker = false
+    @State private var showFilePicker = false
+    @State private var filePickerType: FilePickerType = .modPack
     @State private var mode: GameFormMode = .creation
     @State private var isModPackParsed = false
+    @State private var imagePickerHandler: ((Result<[URL], Error>) -> Void)?
 
     // MARK: - Body
     var body: some View {
@@ -47,7 +55,14 @@ struct GameFormView: View {
                             triggerConfirm: $triggerConfirm,
                             triggerCancel: $triggerCancel,
                             onCancel: { dismiss() },
-                            onConfirm: { dismiss() }
+                            onConfirm: { dismiss() },
+                            onRequestImagePicker: {
+                                filePickerType = .gameIcon
+                                showFilePicker = true
+                            },
+                            onSetImagePickerHandler: { handler in
+                                imagePickerHandler = handler
+                            }
                         )
                     case let .modPackImport(file, shouldProcess):
                         ModPackImportView(
@@ -75,15 +90,27 @@ struct GameFormView: View {
             footer: { footerView }
         )
         .fileImporter(
-            isPresented: $showModPackFilePicker,
-            allowedContentTypes: [
-                UTType(filenameExtension: "mrpack") ?? UTType.data,
-                .zip,
-                UTType(filenameExtension: "zip") ?? UTType.zip,
-            ],
+            isPresented: $showFilePicker,
+            allowedContentTypes: {
+                switch filePickerType {
+                case .modPack:
+                    return [
+                        UTType(filenameExtension: "mrpack") ?? UTType.data,
+                        .zip,
+                        UTType(filenameExtension: "zip") ?? UTType.zip,
+                    ]
+                case .gameIcon:
+                    return [.png, .jpeg, .gif]
+                }
+            }(),
             allowsMultipleSelection: false
         ) { result in
-            handleModPackFileSelection(result)
+            switch filePickerType {
+            case .modPack:
+                handleModPackFileSelection(result)
+            case .gameIcon:
+                imagePickerHandler?(result)
+            }
         }
     }
 
@@ -101,7 +128,8 @@ struct GameFormView: View {
 
                     Button(
                         action: {
-                            showModPackFilePicker = true
+                            filePickerType = .modPack
+                            showFilePicker = true
                         },
                         label: {
                             Label(buttonText, systemImage: buttonImage)
