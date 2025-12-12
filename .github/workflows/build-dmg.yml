@@ -104,7 +104,7 @@ jobs:
           /usr/libexec/PlistBuddy -c "Set :CFBundleHelpBookName com.su.code.SwiftCraftLauncher.help" "$INFO_PLIST_PATH"
           
           echo "✅ HelpBook 配置已添加到生成的 Info.plist"
-      
+
       - name: Fetch help documentation
         run: |
           ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
@@ -161,7 +161,7 @@ jobs:
           # 清理临时目录
           rm -rf "$TEMP_DIR"
           echo "✅ 临时目录已清理"
-      
+
       - name: Generate helpindex
         run: |
           ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
@@ -196,21 +196,21 @@ jobs:
             if [[ ! -d "$LANG_DIR" ]]; then
               continue
             fi
-            
+          
             LANG_NAME=$(basename "$LANG_DIR")
             echo "📝 处理语言文件夹: $LANG_NAME"
-            
+          
             # 切换到语言文件夹目录
             cd "$LANG_DIR" || {
               echo "  ❌ 无法切换到目录: $LANG_DIR"
               exit 1
             }
-            
+          
             # 生成标准 helpindex (LSM index)
             HELPINDEX_PATH="SwiftCraftLauncher.helpindex"
             echo "  生成标准索引 (LSM): $HELPINDEX_PATH"
             hiutil -I lsm -Caf "$HELPINDEX_PATH" -vv .
-            
+          
             if [[ -f "$HELPINDEX_PATH" ]]; then
               echo "  ✅ 标准 helpindex 生成成功"
               ls -lh "$HELPINDEX_PATH"
@@ -219,12 +219,12 @@ jobs:
               cd "$ORIGINAL_DIR"
               exit 1
             fi
-            
+          
             # 生成 Core Spotlight helpindex
             CSHELPINDEX_PATH="SwiftCraftLauncher.cshelpindex"
             echo "  生成 Core Spotlight 索引: $CSHELPINDEX_PATH"
             hiutil -I corespotlight -Caf "$CSHELPINDEX_PATH" -vv .
-            
+          
             if [[ -f "$CSHELPINDEX_PATH" ]]; then
               echo "  ✅ Core Spotlight helpindex 生成成功"
               ls -lh "$CSHELPINDEX_PATH"
@@ -233,15 +233,15 @@ jobs:
               cd "$ORIGINAL_DIR"
               exit 1
             fi
-            
+          
             echo "  ✅ $LANG_NAME 语言文件夹的 helpindex 生成完成"
-            
+          
             # 恢复原始工作目录，以便下次循环能正确找到其他语言文件夹
             cd "$ORIGINAL_DIR"
           done
           
           echo "✅ 所有语言文件夹的 helpindex 文件生成完成"
-      
+
       - name: Verify build output
         run: |
           ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
@@ -391,41 +391,13 @@ jobs:
           rm -f Swift-Craft-Launcher-${{ matrix.arch }}-*.dmg
           rm -rf processed_app_${{ matrix.arch }}
 
-  # 可选发布任务（只在 main 分支的 tag 推送时执行）
+  # 可选发布任务（只在 tag 推送时执行）
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
     runs-on: macos-15
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Verify tag is from main branch
-        run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          echo "检查标签 $TAG_NAME 是否指向 main 分支..."
-          
-          # 获取标签指向的提交
-          TAG_COMMIT=$(git rev-list -n 1 "$TAG_NAME")
-          if [[ -z "$TAG_COMMIT" ]]; then
-            echo "❌ 无法找到标签 $TAG_NAME 指向的提交"
-            exit 1
-          fi
-          
-          # 检查该提交是否在 main 分支上
-          if git branch -r --contains "$TAG_COMMIT" | grep -q "origin/main"; then
-            echo "✅ 标签 $TAG_NAME 指向 main 分支"
-          else
-            echo "❌ 标签 $TAG_NAME 不指向 main 分支，取消发布"
-            echo "标签指向的提交: $TAG_COMMIT"
-            echo "包含该提交的分支:"
-            git branch -r --contains "$TAG_COMMIT" || true
-            exit 1
-          fi
-
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
