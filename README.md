@@ -7,7 +7,7 @@
   
   [![Swift Craft Launcher](https://img.shields.io/badge/Swift%20Craft%20Launcher-SCL-orange.svg?logo=swift)](https://github.com/suhang12332/Swift-Craft-Launcher)
   [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg?logo=swift)](https://swift.org/)
-  
+
   [![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-1057517524-blue.svg?logo=tencentqq)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
   [![Discord](https://img.shields.io/badge/Discord-bule.svg?logo=discord)](https://discord.com/invite/db7BEh6k)
 
@@ -48,8 +48,8 @@ Swift Craft Launcher 是一款采用 SwiftUI 构建的原生 macOS Minecraft 启
 
 ### ⚙️ 高级配置
 - **☕ Java 管理** - 每个配置文件独立的 Java 路径配置，版本自动检测
-- **🧠 内存分配** - 可视化范围滑块设置 Xms/Xmx 参数 *(即将推出)*
-- **🔧 自定义启动参数** - JVM 和游戏参数自定义 *(即将推出)*
+- **🧠 内存分配** - 可视化范围滑块设置 Xms/Xmx 参数
+- **🔧 自定义启动参数** - JVM 和游戏参数自定义
 
 ## 📋 系统要求
 
