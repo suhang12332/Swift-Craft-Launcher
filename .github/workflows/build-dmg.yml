@@ -391,13 +391,41 @@ jobs:
           rm -f Swift-Craft-Launcher-${{ matrix.arch }}-*.dmg
           rm -rf processed_app_${{ matrix.arch }}
 
-  # 可选发布任务（只在 tag 推送时执行）
+  # 可选发布任务（只在 main 分支的 tag 推送时执行）
   release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
     runs-on: macos-15
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify tag is from main branch
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          echo "检查标签 $TAG_NAME 是否指向 main 分支..."
+          
+          # 获取标签指向的提交
+          TAG_COMMIT=$(git rev-list -n 1 "$TAG_NAME")
+          if [[ -z "$TAG_COMMIT" ]]; then
+            echo "❌ 无法找到标签 $TAG_NAME 指向的提交"
+            exit 1
+          fi
+          
+          # 检查该提交是否在 main 分支上
+          if git branch -r --contains "$TAG_COMMIT" | grep -q "origin/main"; then
+            echo "✅ 标签 $TAG_NAME 指向 main 分支"
+          else
+            echo "❌ 标签 $TAG_NAME 不指向 main 分支，取消发布"
+            echo "标签指向的提交: $TAG_COMMIT"
+            echo "包含该提交的分支:"
+            git branch -r --contains "$TAG_COMMIT" || true
+            exit 1
+          fi
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
