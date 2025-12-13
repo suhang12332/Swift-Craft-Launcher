@@ -29,7 +29,6 @@ struct GameInfoDetailView: View {
     @Binding var gameType: Bool  // false = local, true = server
     @EnvironmentObject var gameRepository: GameRepository
     @State private var searchTextForResource = ""
-    @State private var showDeleteAlert = false
     @Binding var selectedItem: SidebarItem
     @State private var scannedResources: [ModrinthProjectDetail] = []
     @State private var isLoadingResources = false
@@ -37,11 +36,6 @@ struct GameInfoDetailView: View {
     @State private var importErrorMessage: String?
     @StateObject private var cacheManager = CacheManager()
     @State private var error: GlobalError?
-    @StateObject private var gameActionManager = GameActionManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
-
-    @Environment(\.openSettings)
-    private var openSettings
 
     var body: some View {
         return VStack {
@@ -104,6 +98,9 @@ struct GameInfoDetailView: View {
                     Text(game.gameName)
                         .font(.title)
                         .bold()
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .frame(maxWidth: 300, alignment: .leading)
                     HStack {
                         Label(
                             "\(cacheManager.cacheInfo.fileCount)",
@@ -145,9 +142,7 @@ struct GameInfoDetailView: View {
                 }
             }
             Spacer()
-            settingsButton
             importButton
-            deleteButton
         }
     }
 
@@ -184,48 +179,6 @@ struct GameInfoDetailView: View {
                     .cornerRadius(12)
             }
         }
-    }
-
-    private var deleteButton: some View {
-        Button {
-            showDeleteAlert = true
-        } label: {
-            //            Image(systemName: "trash.fill")
-            Text("common.delete".localized()).font(.subheadline)
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(Color.accentColor)
-        .controlSize(.large)
-        .confirmationDialog(
-            "delete.title".localized(),
-            isPresented: $showDeleteAlert,
-            titleVisibility: .visible
-        ) {
-            Button("common.delete".localized(), role: .destructive) {
-                deleteGameAndProfile()
-            }
-            .keyboardShortcut(.defaultAction)
-            Button("common.cancel".localized(), role: .cancel) {}
-        } message: {
-            Text(
-                String(format: "delete.game.confirm".localized(), game.gameName)
-            )
-        }
-    }
-
-    private var settingsButton: some View {
-        Button {
-            // 设置当前游戏并标记应该打开高级设置
-            selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
-            // 打开设置窗口
-            openSettings()
-        } label: {
-            Text("settings.game.advanced.tab".localized())
-                .font(.subheadline)
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(Color.accentColor)
-        .controlSize(.large)
     }
 
     private var importButton: some View {
@@ -318,14 +271,5 @@ struct GameInfoDetailView: View {
             scannedResources = details
             isLoadingResources = false
         }
-    }
-
-    // MARK: - 删除游戏及其文件夹
-    private func deleteGameAndProfile() {
-        gameActionManager.deleteGame(
-            game: game,
-            gameRepository: gameRepository,
-            selectedItem: $selectedItem
-        )
     }
 }

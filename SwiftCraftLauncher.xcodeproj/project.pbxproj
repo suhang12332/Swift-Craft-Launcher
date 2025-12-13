@@ -13,6 +13,10 @@
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXFileReference section */
+		90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -40,6 +44,7 @@
 			isa = PBXGroup;
 			children = (
 				9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */,
+				90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -70,6 +75,7 @@
 				030C47452E7F82E700A209A8 /* SkinRenderKit */,
 			);
 			productName = SwiftCraftLauncher;
+			productReference = 90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
