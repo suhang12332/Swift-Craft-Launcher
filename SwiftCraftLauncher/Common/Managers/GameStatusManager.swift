@@ -42,8 +42,11 @@ class GameStatusManager: ObservableObject {
     /// - Parameter gameId: 游戏ID
     func refreshGameStatus(gameId: String) {
         let actuallyRunning = GameProcessManager.shared.isGameRunning(gameId: gameId)
-        gameRunningStates[gameId] = actuallyRunning
-        Logger.shared.debug("强制刷新游戏状态: \(gameId) -> \(actuallyRunning ? "运行中" : "已停止")")
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.gameRunningStates[gameId] = actuallyRunning
+            Logger.shared.debug("强制刷新游戏状态: \(gameId) -> \(actuallyRunning ? "运行中" : "已停止")")
+        }
     }
 
     /// 设置游戏运行状态
@@ -51,20 +54,26 @@ class GameStatusManager: ObservableObject {
     ///   - gameId: 游戏ID
     ///   - isRunning: 是否正在运行
     func setGameRunning(gameId: String, isRunning: Bool) {
-        // 检查状态是否真的发生了变化，避免重复日志
-        let currentState = gameRunningStates[gameId]
-        if currentState != isRunning {
-            gameRunningStates[gameId] = isRunning
-            Logger.shared.debug("游戏状态更新: \(gameId) -> \(isRunning ? "运行中" : "已停止")")
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            // 检查状态是否真的发生了变化，避免重复日志
+            let currentState = self.gameRunningStates[gameId]
+            if currentState != isRunning {
+                self.gameRunningStates[gameId] = isRunning
+                Logger.shared.debug("游戏状态更新: \(gameId) -> \(isRunning ? "运行中" : "已停止")")
+            }
         }
     }
 
     /// 清理已停止的游戏状态
     func cleanupStoppedGames() {
         let processManager = GameProcessManager.shared
-
-        gameRunningStates = gameRunningStates.filter { gameId, _ in
-            processManager.isGameRunning(gameId: gameId)
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.gameRunningStates = self.gameRunningStates.filter { gameId, _ in
+                processManager.isGameRunning(gameId: gameId)
+            }
         }
     }
 
