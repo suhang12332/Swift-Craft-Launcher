@@ -202,7 +202,16 @@ enum GlobalError: Error, LocalizedError, Identifiable {
 
     /// 本地化描述（兼容性）
     var localizedDescription: String {
-        return errorDescription ?? chineseMessage
+        // 如果chineseMessage不包含未格式化的占位符，说明已经格式化过，优先使用它
+        if !chineseMessage.contains("%@") {
+            return chineseMessage
+        }
+        // 否则使用errorDescription（如果它也不包含占位符）
+        if let errorDesc = errorDescription, !errorDesc.contains("%@") {
+            return errorDesc
+        }
+        // 如果都包含占位符，返回chineseMessage（至少是中文消息）
+        return chineseMessage
     }
 
     /// 获取通知标题（使用国际化key）

@@ -1,6 +1,5 @@
 import Foundation
 import Sparkle
-import AppKit
 
 /// Sparkle 更新服务
 class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {

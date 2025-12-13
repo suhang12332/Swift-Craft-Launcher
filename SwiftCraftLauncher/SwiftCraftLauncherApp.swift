@@ -99,6 +99,12 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
             }
+            CommandGroup(after: .appInfo) {
+                Button("settings.ai.open_chat".localized()) {
+                    AIChatManager.shared.openChatWindow()
+                }
+                .keyboardShortcut("i", modifiers: [.command, .shift])
+            }
         }
 
         Settings {
@@ -115,6 +121,12 @@ struct SwiftCraftLauncherApp: App {
         // 右上角的状态栏(可以显示图标的)
         MenuBarExtra(
             content: {
+                Button("settings.ai.open_chat".localized()) {
+                    AIChatManager.shared.openChatWindow()
+                }
+                
+                Divider()
+                
                 Button("menu.statusbar.placeholder".localized()) {
                 }
             },
