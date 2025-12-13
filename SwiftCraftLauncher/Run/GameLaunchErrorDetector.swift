@@ -8,21 +8,21 @@ enum ErrorRule: String, CaseIterable {
     case graphicsDriver = "Couldn't set pixel format|org\\.lwjgl\\.LWJGLException"
     case macosFailedToFindServicePort = "java\\.lang\\.IllegalStateException: GLFW error before init: \\[0x10008\\]Cocoa: Failed to find service port for display"
     case resolutionTooHigh = "Maybe try a (lower resolution|lowerresolution) (resourcepack|texturepack)\\?"
-    
+
     // 内存相关错误
     case outOfMemory = "java\\.lang\\.OutOfMemoryError|The system is out of physical RAM or swap space|Out of Memory Error|Error occurred during initialization of VM.*Too small maximum heap"
     case memoryExceeded = "There is insufficient memory for the Java Runtime Environment to continue"
-    
+
     // 文件相关错误
     case fileChanged = "java\\.lang\\.SecurityException: SHA1 digest error for .*|signer information does not match signer information of other classes in the same package"
     case fileAlreadyExists = "java\\.nio\\.file\\.FileAlreadyExistsException: .*"
     case unsatisfiedLinkError = "java\\.lang\\.UnsatisfiedLinkError: Failed to locate library: .*"
-    
+
     // 类加载错误
     case noSuchMethodError = "java\\.lang\\.NoSuchMethodError: .*"
     case noClassDefFoundError = "java\\.lang\\.NoClassDefFoundError: .*"
     case illegalAccessError = "java\\.lang\\.IllegalAccessError: tried to access class .* from class .*"
-    
+
     // Mod 相关错误
     case duplicatedMod = "Found a duplicate mod .* at .*"
     case modResolution = "ModResolutionException: .*"
@@ -42,12 +42,12 @@ enum ErrorRule: String, CaseIterable {
     case tooManyModsExceedIdLimit = "maximum id range exceeded"
     case optifineRepeatInstallation = "ResolutionException: Module optifine reads another module named optifine"
     case shadersMod = "java\\.lang\\.RuntimeException: Shaders Mod detected\\. Please remove it, OptiFine has built-in support for shaders\\."
-    
+
     // Forge 相关错误
     case incompleteForgeInstallation = "java\\.io\\.UncheckedIOException: java\\.io\\.IOException: Invalid paths argument, contained no existing paths: .*forge-.*-client\\.jar|Failed to find Minecraft resource version .* at .*forge-.*-client\\.jar|Cannot find launch target fmlclient"
     case forgeRepeatInstallation = "MultipleArgumentsForOptionException: Found multiple arguments for option .*?, but you asked for only one"
     case modlauncher8 = "java\\.lang\\.NoSuchMethodError: 'void sun\\.security\\.util\\.ManifestEntryVerifier\\.<init>\\(java\\.util\\.jar\\.Manifest\\)'"
-    
+
     // 其他错误
     case debugCrash = "Manually triggered debug crash"
     case config = "Failed loading config file .*? of type .*? for modid .*"
@@ -57,11 +57,11 @@ enum ErrorRule: String, CaseIterable {
     case installMixinBootstrap = "java\\.lang\\.ClassNotFoundException: org\\.spongepowered\\.asm\\.launch\\.MixinTweaker"
     case modName = "Invalid module name: '' is not a Java identifier"
     case nightConfigFixes = "com\\.electronwill\\.nightconfig\\.core\\.io\\.ParsingException: Not enough data available"
-    
+
     var pattern: String {
         return self.rawValue
     }
-    
+
     var description: String {
         switch self {
         case .glOperationFailure: return "OpenGL 操作失败"
@@ -114,19 +114,19 @@ enum ErrorRule: String, CaseIterable {
 /// 用于检测游戏启动过程中的错误输出（即使进程没有崩溃）
 class GameLaunchErrorDetector {
     static let shared = GameLaunchErrorDetector()
-    
+
     /// 存储每个游戏的错误检测器，key 为游戏 ID
     private var detectors: [String: LaunchErrorMonitor] = [:]
-    
+
     /// 存储已停止监控的游戏错误状态，key 为游戏 ID
     /// 用于在监控停止后仍能查询错误状态
     private var stoppedDetectorErrors: [String: Bool] = [:]
-    
+
     /// 监控持续时间（秒），启动后这段时间内监控错误（10分钟）
     private let monitoringDuration: TimeInterval = 600.0
-    
+
     private init() {}
-    
+
     /// 开始监控游戏启动错误
     /// - Parameters:
     ///   - gameId: 游戏 ID
@@ -134,33 +134,33 @@ class GameLaunchErrorDetector {
     func startMonitoring(gameId: String, process: Process) {
         // 如果已经有监控器在运行，先停止它
         stopMonitoring(gameId: gameId)
-        
+
         // 创建新的监控器
         let monitor = LaunchErrorMonitor(gameId: gameId, process: process, duration: monitoringDuration)
         detectors[gameId] = monitor
-        
+
         // 开始监控
         monitor.start()
-        
+
         Logger.shared.info("开始监控游戏启动错误: \(gameId)")
     }
-    
+
     /// 停止监控游戏启动错误
     /// - Parameter gameId: 游戏 ID
     func stopMonitoring(gameId: String) {
         guard let monitor = detectors[gameId] else {
             return
         }
-        
+
         // 在停止监控前保存错误状态，以便后续查询
         let hasErrors = monitor.hasDetectedErrors
         stoppedDetectorErrors[gameId] = hasErrors
-        
+
         monitor.stop()
         detectors.removeValue(forKey: gameId)
         Logger.shared.debug("停止监控游戏启动错误: \(gameId)，已检测到错误: \(hasErrors)")
     }
-    
+
     /// 检查是否检测到了启动错误
     /// - Parameter gameId: 游戏 ID
     /// - Returns: 是否检测到了错误
@@ -172,7 +172,7 @@ class GameLaunchErrorDetector {
         // 如果监控器已停止，检查保存的错误状态
         return stoppedDetectorErrors[gameId] ?? false
     }
-    
+
     /// 触发日志收集（在检测到错误时立即调用）
     /// - Parameter gameId: 游戏 ID
     func triggerLogCollection(gameId: String) {
@@ -180,14 +180,14 @@ class GameLaunchErrorDetector {
             await GameProcessManager.shared.collectLogsForGameImmediately(gameId: gameId)
         }
     }
-    
+
     /// 清理所有监控器
     func cleanup() {
         for (gameId, _) in detectors {
             stopMonitoring(gameId: gameId)
         }
     }
-    
+
     /// 清理已停止监控的游戏错误状态（在进程完全清理后调用）
     /// - Parameter gameId: 游戏 ID
     func cleanupErrorState(gameId: String) {
@@ -200,7 +200,7 @@ private class LaunchErrorMonitor {
     let gameId: String
     let process: Process
     let duration: TimeInterval
-    
+
     private var outputPipe: Pipe?
     private var errorPipe: Pipe?
     private var outputHandle: FileHandle?
@@ -211,39 +211,39 @@ private class LaunchErrorMonitor {
     private var detectedRules: Set<ErrorRule> = []
     private var isMonitoring = false
     private var hasTriggeredLogCollection = false
-    
+
     var hasDetectedErrors: Bool {
         return !detectedErrors.isEmpty
     }
-    
+
     init(gameId: String, process: Process, duration: TimeInterval) {
         self.gameId = gameId
         self.process = process
         self.duration = duration
     }
-    
+
     func start() {
         guard !isMonitoring else { return }
-        
+
         isMonitoring = true
         startTime = Date()
         hasTriggeredLogCollection = false
-        
+
         // 创建管道来捕获输出
         outputPipe = Pipe()
         errorPipe = Pipe()
-        
+
         // 设置进程的输出管道
         process.standardOutput = outputPipe
         process.standardError = errorPipe
-        
+
         // 获取文件句柄
         outputHandle = outputPipe?.fileHandleForReading
         errorHandle = errorPipe?.fileHandleForReading
-        
+
         // 设置读取处理器
         setupOutputHandlers()
-        
+
         // 设置定时器，在指定时间后停止监控（在主线程上）
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -251,72 +251,72 @@ private class LaunchErrorMonitor {
                 self?.stopMonitoring()
             }
         }
-        
+
         Logger.shared.debug("启动错误监控器已启动: \(gameId)，监控时长: \(duration)秒")
     }
-    
+
     func stop() {
         guard isMonitoring else { return }
-        
+
         isMonitoring = false
-        
+
         // 停止定时器
         monitoringTimer?.invalidate()
         monitoringTimer = nil
-        
+
         // 清理文件句柄
         outputHandle?.readabilityHandler = nil
         errorHandle?.readabilityHandler = nil
-        
+
         // 关闭管道
         outputHandle?.closeFile()
         errorHandle?.closeFile()
-        
+
         outputHandle = nil
         errorHandle = nil
         outputPipe = nil
         errorPipe = nil
-        
+
         Logger.shared.debug("启动错误监控器已停止: \(gameId)")
     }
-    
+
     private func setupOutputHandlers() {
         // 统一的输出处理函数
         let processOutput: (FileHandle) -> Void = { [weak self] handle in
             guard let self = self, self.isMonitoring else { return }
-            
+
             let data = handle.availableData
             guard !data.isEmpty, let output = String(data: data, encoding: .utf8) else { return }
-            
+
             DispatchQueue.global(qos: .utility).async {
                 self.processOutput(output)
             }
         }
-        
+
         outputHandle?.readabilityHandler = processOutput
         errorHandle?.readabilityHandler = processOutput
     }
-    
+
     private func processOutput(_ output: String) {
         // 累积所有输出用于完整匹配
         let lines = output.components(separatedBy: .newlines)
-        
+
         for line in lines {
             let trimmedLine = line.trimmingCharacters(in: .whitespacesAndNewlines)
             guard !trimmedLine.isEmpty else { continue }
-            
+
             // 只使用规则匹配
             if let matchedRule = matchErrorRule(in: trimmedLine) {
                 // 避免重复报告相同的规则
                 guard !detectedRules.contains(matchedRule) else { continue }
-                
+
                 detectedRules.insert(matchedRule)
                 detectedErrors.append(trimmedLine)
                 reportError(trimmedLine, rule: matchedRule)
             }
         }
     }
-    
+
     /// 使用规则匹配错误
     private func matchErrorRule(in line: String) -> ErrorRule? {
         for rule in ErrorRule.allCases {
@@ -333,35 +333,35 @@ private class LaunchErrorMonitor {
         }
         return nil
     }
-    
+
     /// 报告检测到的错误
     private func reportError(_ errorLine: String, rule: ErrorRule) {
         let elapsedTime = startTime.map { Date().timeIntervalSince($0) } ?? 0
-        
+
         Logger.shared.warning("检测到游戏启动错误 [\(gameId)] (启动后 \(String(format: "%.1f", elapsedTime))秒) [\(rule.description)]: \(errorLine)")
-        
+
         // 使用占位符格式，以便支持国际化
         let chineseMessageTemplate = "游戏启动错误: %@ - %@"
         let formattedChineseMessage = String(format: chineseMessageTemplate, rule.description, errorLine)
-        
+
         let launchError = GlobalError.gameLaunch(
             chineseMessage: formattedChineseMessage,
             i18nKey: "error.game_launch.startup_error_detected",
             level: .silent
         )
         GlobalErrorHandler.shared.handle(launchError)
-        
+
         // 第一次检测到错误时，立即触发日志收集（避免重复触发）
         if !hasTriggeredLogCollection {
             hasTriggeredLogCollection = true
             GameLaunchErrorDetector.shared.triggerLogCollection(gameId: gameId)
         }
     }
-    
+
     /// 停止监控（内部方法，由定时器调用）
     private func stopMonitoring() {
         stop()
-        
+
         if !detectedErrors.isEmpty {
             Logger.shared.warning("游戏启动错误监控结束 [\(gameId)]，共检测到 \(detectedErrors.count) 个错误")
         } else {
@@ -369,4 +369,3 @@ private class LaunchErrorMonitor {
         }
     }
 }
-

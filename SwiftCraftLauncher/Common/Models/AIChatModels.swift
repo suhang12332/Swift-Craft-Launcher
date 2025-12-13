@@ -19,7 +19,7 @@ enum MessageRole: String, Codable {
 enum MessageAttachmentType: Identifiable, Equatable {
     case image(URL)
     case file(URL, String) // URL 和文件名
-    
+
     var id: String {
         switch self {
         case .image(let url):
@@ -37,7 +37,7 @@ struct ChatMessage: Identifiable, Equatable {
     var content: String
     let timestamp: Date
     let attachments: [MessageAttachmentType]
-    
+
     init(
         id: UUID = UUID(),
         role: MessageRole,
@@ -58,17 +58,17 @@ struct ChatMessage: Identifiable, Equatable {
 class ChatState: ObservableObject {
     @Published var messages: [ChatMessage] = []
     @Published var isSending = false
-    
+
     func addMessage(_ message: ChatMessage) {
         messages.append(message)
     }
-    
+
     func updateLastMessage(_ content: String) {
         if let lastIndex = messages.indices.last {
             messages[lastIndex].content = content
         }
     }
-    
+
     func clear() {
         messages.removeAll()
         isSending = false
@@ -90,4 +90,3 @@ extension ChatMessage {
         }
     }
 }
-

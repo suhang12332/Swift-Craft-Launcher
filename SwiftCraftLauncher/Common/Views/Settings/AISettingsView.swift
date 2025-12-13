@@ -47,14 +47,14 @@ public struct AISettingsView: View {
                 }
                 Button(action: {
                     showApiKey.toggle()
-                }) {
+                }, label: {
                     Image(systemName: showApiKey ? "eye.slash" : "eye")
-                }
+                })
                 .buttonStyle(.plain)
                 .applyReplaceTransition()
             }
             .labeledContentStyle(.custom)
-            
+
             // Ollama 地址设置（仅在选择 Ollama 时显示）
             if aiSettings.selectedProvider == .ollama {
                 LabeledContent("settings.ai.ollama.url.label".localized()) {
@@ -67,7 +67,6 @@ public struct AISettingsView: View {
                 }
                 .labeledContentStyle(.custom)
             }
-
         }
         .globalErrorHandler()
     }

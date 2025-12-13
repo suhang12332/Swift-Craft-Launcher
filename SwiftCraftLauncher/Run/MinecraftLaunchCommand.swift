@@ -152,7 +152,7 @@ struct MinecraftLaunchCommand {
 
         // 存储进程到管理器（会自动设置终止处理器和崩溃检测）
         GameProcessManager.shared.storeProcess(gameId: game.id, process: process)
-        
+
         // 在进程启动前开始监控启动错误（需要在启动前设置管道）
         GameLaunchErrorDetector.shared.startMonitoring(gameId: game.id, process: process)
 
@@ -168,7 +168,7 @@ struct MinecraftLaunchCommand {
 
             // 启动失败时停止错误监控
             GameLaunchErrorDetector.shared.stopMonitoring(gameId: game.id)
-            
+
             // 启动失败时清理进程并重置状态
             _ = GameProcessManager.shared.stopProcess(for: game.id)
             _ = await MainActor.run {

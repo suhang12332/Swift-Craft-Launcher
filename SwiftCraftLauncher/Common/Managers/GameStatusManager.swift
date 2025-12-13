@@ -68,7 +68,7 @@ class GameStatusManager: ObservableObject {
     /// 清理已停止的游戏状态
     func cleanupStoppedGames() {
         let processManager = GameProcessManager.shared
-        
+
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.gameRunningStates = self.gameRunningStates.filter { gameId, _ in

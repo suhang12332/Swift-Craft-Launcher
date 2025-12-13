@@ -124,9 +124,9 @@ struct SwiftCraftLauncherApp: App {
                 Button("settings.ai.open_chat".localized()) {
                     AIChatManager.shared.openChatWindow()
                 }
-                
+
                 Divider()
-                
+
                 Button("menu.statusbar.placeholder".localized()) {
                 }
             },
