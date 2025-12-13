@@ -21,11 +21,6 @@ class AIChatManager: ObservableObject {
         self.urlSession = URLSession(configuration: configuration)
     }
     
-    /// 更新服务（保留接口兼容性）
-    func updateService() {
-        // 原生实现不需要预先初始化服务
-    }
-    
     // MARK: - 发送消息
     
     /// 发送消息

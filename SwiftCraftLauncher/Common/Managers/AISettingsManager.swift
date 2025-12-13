@@ -97,10 +97,6 @@ class AISettingsManager: ObservableObject {
     var selectedProvider: AIProvider = .openai {
         didSet {
             objectWillChange.send()
-            // 当提供商更改时，更新服务
-            Task { @MainActor in
-                AIChatManager.shared.updateService()
-            }
         }
     }
     
@@ -108,10 +104,6 @@ class AISettingsManager: ObservableObject {
     var apiKey: String = "" {
         didSet {
             objectWillChange.send()
-            // 当 API Key 更改时，更新服务
-            Task { @MainActor in
-                AIChatManager.shared.updateService()
-            }
         }
     }
     
@@ -119,12 +111,6 @@ class AISettingsManager: ObservableObject {
     var ollamaBaseURL: String = "http://localhost:11434" {
         didSet {
             objectWillChange.send()
-            // 当 Ollama 地址更改时，如果当前提供商是 Ollama，更新服务
-            if selectedProvider == .ollama {
-                Task { @MainActor in
-                    AIChatManager.shared.updateService()
-                }
-            }
         }
     }
     

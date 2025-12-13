@@ -71,31 +71,3 @@ enum PlayerUtils {
         return (Int(ii) % names.count + names.count) % names.count
     }
 }
-
-// MARK: - Legacy Support (向后兼容)
-
-/// 玩家相关错误类型（已废弃，请使用 GlobalError.player）
-@available(*, deprecated, message: "请使用 GlobalError.player 替代")
-enum PlayerError: LocalizedError {
-    case invalidUsername
-    case encodingError
-    case uuidGenerationFailed
-    case custom(String)
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidUsername:
-            return "error.invalid_username".localized()
-        case .encodingError:
-            return "error.encoding".localized()
-        case .uuidGenerationFailed:
-            return "error.uuid_generation".localized()
-        case .custom(let message):
-            return message
-        }
-    }
-
-    init(localizedDescription: String) {
-        self = .custom(localizedDescription)
-    }
-}

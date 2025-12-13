@@ -26,7 +26,7 @@ public struct AISettingsView: View {
                     view.fixedSize()
                 }
                 .onChange(of: aiSettings.selectedProvider) { _, _ in
-                    AIChatManager.shared.updateService()
+                    // 提供商更改时无需额外操作
                 }
             }
             .labeledContentStyle(.custom)
@@ -43,7 +43,7 @@ public struct AISettingsView: View {
                 }
 
                 .onChange(of: aiSettings.apiKey) { _, _ in
-                    AIChatManager.shared.updateService()
+                    // API Key 更改时无需额外操作
                 }
                 Button(action: {
                     showApiKey.toggle()
@@ -62,7 +62,7 @@ public struct AISettingsView: View {
                         .textFieldStyle(.roundedBorder)
                         .labelsHidden()
                         .onChange(of: aiSettings.ollamaBaseURL) { _, _ in
-                            AIChatManager.shared.updateService()
+                            // Ollama 地址更改时无需额外操作
                         }
                 }
                 .labeledContentStyle(.custom)
