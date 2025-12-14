@@ -7,15 +7,17 @@
 
 import SwiftUI
 import UniformTypeIdentifiers
+import AppKit
 
 /// AI 对话窗口视图
 struct AIChatWindowView: View {
     @ObservedObject var chatState: ChatState
     @StateObject private var playerListViewModel = PlayerListViewModel()
+    @StateObject private var gameRepository = GameRepository()
     @State private var inputText = ""
     @State private var pendingAttachments: [MessageAttachmentType] = []
     @FocusState private var isInputFocused: Bool
-    @State private var isFilePickerPresented = false
+    @State private var selectedGameId: String?
 
     // MARK: - Constants
     private enum Constants {
@@ -97,19 +99,27 @@ struct AIChatWindowView: View {
         }
 
         .frame(minWidth: 500, minHeight: 600)
-        .fileImporter(
-            isPresented: $isFilePickerPresented,
-            allowedContentTypes: [.text, .pdf, .json, .plainText, .log],
-            allowsMultipleSelection: true
-        ) { result in
-            handleFileSelection(result)
-        }
         .onAppear {
             isInputFocused = true
+            // 默认选择第一个游戏
+            if selectedGameId == nil && !gameRepository.games.isEmpty {
+                selectedGameId = gameRepository.games.first?.id
+            }
+        }
+        .onChange(of: gameRepository.games) { _, newGames in
+            // 当游戏列表加载完成且未选择游戏时，自动选择第一个游戏
+            if selectedGameId == nil && !newGames.isEmpty {
+                selectedGameId = newGames.first?.id
+            }
         }
     }
 
     // MARK: - Computed Properties
+
+    private var selectedGame: GameVersionInfo? {
+        guard let selectedGameId = selectedGameId else { return nil }
+        return gameRepository.games.first { $0.id == selectedGameId }
+    }
 
     private var canSend: Bool {
         !chatState.isSending && (!inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !pendingAttachments.isEmpty)
@@ -142,11 +152,10 @@ struct AIChatWindowView: View {
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundStyle(.primary)
-
-                Text("ai.chat.welcome.description".localized())
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
             }
+            Text("ai.chat.welcome.description".localized())
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
         .padding()
@@ -184,40 +193,87 @@ struct AIChatWindowView: View {
     }
 
     private var inputAreaView: some View {
-        HStack(spacing: Constants.messageSpacing) {
-            Button(action: { isFilePickerPresented = true }, label: {
-                Image(systemName: "paperclip")
-                    .font(.system(size: Constants.inputFontSize))
-                    .foregroundStyle(.secondary)
-            })
-            .buttonStyle(.plain)
-            .disabled(chatState.isSending)
-
-            TextField("ai.chat.input.placeholder".localized(), text: $inputText, axis: .vertical)
-                .textFieldStyle(.plain)
-                .focused($isInputFocused)
-                .lineLimit(1...6)
-                .onSubmit {
-                    if canSend {
-                        sendMessage()
+        VStack(spacing: 0) {
+            // 游戏选择器
+            HStack(spacing: Constants.messageSpacing) {
+                // 只有当游戏列表不为空时才显示 Picker
+                if !gameRepository.games.isEmpty {
+                    Menu {
+                        ForEach(gameRepository.games) { game in
+                            Button(action: {
+                                selectedGameId = game.id
+                            }, label: {
+                                Text(game.gameName)
+                            })
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            if let selectedGame = selectedGame {
+                                Text(selectedGame.gameName)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                            }
+                        }
                     }
+                    .menuStyle(.borderlessButton)
+                    .frame(maxWidth: 50)
                 }
+                Button(action: { openFilePicker() }, label: {
+                    Image(systemName: "paperclip")
+                        .font(.system(size: Constants.inputFontSize))
+                        .foregroundStyle(.secondary)
+                })
+                .buttonStyle(.plain)
                 .disabled(chatState.isSending)
 
-            Button(action: { sendMessage() }, label: {
-                Image(systemName: "arrow.up.circle")
-                    .font(.system(size: Constants.inputFontSize))
-                    .foregroundStyle(canSend ? .blue : .secondary)
-            })
-            .buttonStyle(.plain)
-            .disabled(!canSend)
+                TextField("ai.chat.input.placeholder".localized(), text: $inputText, axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .focused($isInputFocused)
+                    .lineLimit(1...6)
+                    .onSubmit {
+                        if canSend {
+                            sendMessage()
+                        }
+                    }
+                    .disabled(chatState.isSending)
+
+                Button(action: { sendMessage() }, label: {
+                    Image(systemName: "arrow.up.circle")
+                        .font(.system(size: Constants.inputFontSize))
+                        .foregroundStyle(canSend ? .blue : .secondary)
+                })
+                .buttonStyle(.plain)
+                .disabled(!canSend)
+            }
+            .padding(.horizontal, Constants.inputHorizontalPadding)
+            .padding(.vertical, Constants.inputVerticalPadding)
+            .background(Color(NSColor.textBackgroundColor))
         }
-        .padding(.horizontal, Constants.inputHorizontalPadding)
-        .padding(.vertical, Constants.inputVerticalPadding)
-        .background(Color(NSColor.textBackgroundColor))
     }
 
     // MARK: - Methods
+
+    private func openFilePicker() {
+        guard let selectedGame = selectedGame else { return }
+
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = true
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowedContentTypes = [.text, .pdf, .json, .plainText, .log]
+
+        // 设置初始目录为游戏目录
+        let gameDirectory = AppPaths.profileDirectory(gameName: selectedGame.gameName)
+        panel.directoryURL = gameDirectory
+
+        panel.begin { response in
+            if response == .OK {
+                let urls = panel.urls
+                handleFileSelection(.success(urls))
+            }
+        }
+    }
 
     private func handleFileSelection(_ result: Result<[URL], Error>) {
         guard case .success(let urls) = result else { return }
@@ -509,5 +565,5 @@ struct AttachmentView: View {
 //    ))
 
     return AIChatWindowView(chatState: chatState)
-        .frame(width: 600, height: 500)
+        .frame(width: 400, height: 300)
 }

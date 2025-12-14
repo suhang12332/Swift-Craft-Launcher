@@ -176,6 +176,12 @@ class GameLaunchErrorDetector {
     /// 触发日志收集（在检测到错误时立即调用）
     /// - Parameter gameId: 游戏 ID
     func triggerLogCollection(gameId: String) {
+        // 检查是否启用了 AI 分析崩溃功能
+        guard GameSettingsManager.shared.enableAICrashAnalysis else {
+            Logger.shared.debug("AI 分析崩溃功能未启用，跳过日志收集")
+            return
+        }
+
         Task { @MainActor in
             await GameProcessManager.shared.collectLogsForGameImmediately(gameId: gameId)
         }

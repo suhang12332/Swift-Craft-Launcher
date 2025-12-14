@@ -65,8 +65,8 @@ class AIChatManager: ObservableObject {
                 try await sendOpenAIMessage(messages: allMessages, chatState: chatState)
             case .ollama:
                 try await sendOllamaMessage(messages: allMessages, chatState: chatState)
-            case .gemini:
-                try await sendGeminiMessage(messages: allMessages, chatState: chatState)
+//            case .gemini:
+//                try await sendGeminiMessage(messages: allMessages, chatState: chatState)
             }
         } catch {
             Logger.shared.error("发送消息失败: \(error.localizedDescription)")
@@ -348,7 +348,7 @@ class AIChatManager: ObservableObject {
     private func sendGeminiMessage(messages: [ChatMessage], chatState: ChatState) async throws {
         let model = settings.selectedProvider.defaultModel
         // Gemini API 需要将 key 作为查询参数
-        let apiURL = "\(settings.selectedProvider.baseURL)/v1beta/models/\(model):streamGenerateContent?key=\(settings.apiKey.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? settings.apiKey)"
+        let apiURL = "\(settings.selectedProvider.baseURL)/v1/models/\(model):streamGenerateContent?key=\(settings.apiKey.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? settings.apiKey)"
 
         guard let url = URL(string: apiURL) else {
             throw GlobalError.network(

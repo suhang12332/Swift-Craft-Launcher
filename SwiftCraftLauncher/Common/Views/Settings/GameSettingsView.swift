@@ -29,6 +29,19 @@ public struct GameSettingsView: View {
                 }
             }.labeledContentStyle(.custom).padding(.bottom, 10)
 
+            LabeledContent("settings.ai_crash_analysis".localized()) {
+                HStack {
+                    Toggle(
+                        "",
+                        isOn: $gameSettings.enableAICrashAnalysis
+                    ).labelsHidden()
+                    Text("settings.ai_crash_analysis.description".localized()).font(
+                        .callout
+                    )
+                    .foregroundColor(.primary)
+                }
+            }.labeledContentStyle(.custom).padding(.bottom, 10)
+
             LabeledContent {
                 HStack {
                     MiniRangeSlider(

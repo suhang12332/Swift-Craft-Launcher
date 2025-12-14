@@ -13,7 +13,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
     case openai = "openai"
     case ollama = "ollama"
     case deepseek = "deepseek"  // 使用 OpenAI 格式
-    case gemini = "gemini"
+//    case gemini = "gemini"
 
     var id: String { rawValue }
 
@@ -25,8 +25,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return "Ollama"
         case .deepseek:
             return "DeepSeek"
-        case .gemini:
-            return "Google Gemini"
+//        case .gemini:
+//            return "Google Gemini"
         }
     }
 
@@ -38,8 +38,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return "http://localhost:11434"
         case .deepseek:
             return "https://api.deepseek.com"
-        case .gemini:
-            return "https://generativelanguage.googleapis.com"
+//        case .gemini:
+//            return "https://generativelanguage.googleapis.com"
         }
     }
 
@@ -50,8 +50,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return .openAI
         case .ollama:
             return .ollama
-        case .gemini:
-            return .gemini
+//        case .gemini:
+//            return .gemini
         }
     }
 
@@ -64,8 +64,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return "llama3"
         case .deepseek:
             return "deepseek-chat"
-        case .gemini:
-            return "gemini-1.5-flash"
+//        case .gemini:
+//            return "gemini-1.5-pro"
         }
     }
 
@@ -76,8 +76,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return "/v1/chat/completions"
         case .ollama:
             return "/api/chat"
-        case .gemini:
-            return "/v1beta/models/\(defaultModel):streamGenerateContent"
+//        case .gemini:
+//            return "/v1/models/\(defaultModel):streamGenerateContent"
         }
     }
 }
@@ -86,7 +86,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
 enum APIFormat {
     case openAI  // OpenAI 和 DeepSeek
     case ollama
-    case gemini
+//    case gemini
 }
 
 /// AI 设置管理器
