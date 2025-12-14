@@ -14,10 +14,15 @@ struct AIChatWindowView: View {
     @ObservedObject var chatState: ChatState
     @StateObject private var playerListViewModel = PlayerListViewModel()
     @StateObject private var gameRepository = GameRepository()
+    @ObservedObject private var aiSettings = AISettingsManager.shared
     @State private var inputText = ""
     @State private var pendingAttachments: [MessageAttachmentType] = []
     @FocusState private var isInputFocused: Bool
     @State private var selectedGameId: String?
+    
+    // 缓存头像视图，避免每次消息更新时重新加载
+    @State private var cachedAIAvatar: AnyView?
+    @State private var cachedUserAvatar: AnyView?
 
     // MARK: - Constants
     private enum Constants {
@@ -105,6 +110,8 @@ struct AIChatWindowView: View {
             if selectedGameId == nil && !gameRepository.games.isEmpty {
                 selectedGameId = gameRepository.games.first?.id
             }
+            // 初始化头像缓存
+            initializeAvatarCache()
         }
         .onChange(of: gameRepository.games) { _, newGames in
             // 当游戏列表加载完成且未选择游戏时，自动选择第一个游戏
@@ -112,6 +119,18 @@ struct AIChatWindowView: View {
                 selectedGameId = newGames.first?.id
             }
         }
+        .onChange(of: playerListViewModel.currentPlayer) { _, _ in
+            // 当当前玩家变化时，更新用户头像缓存
+            updateUserAvatarCache()
+        }
+        .onChange(of: aiSettings.aiAvatarURL) { _, _ in
+            // 当 AI 头像 URL 变化时，更新 AI 头像缓存
+            updateAIAvatarCache()
+        }
+//        .onDisappear {
+//            // 窗口关闭时清理头像缓存
+//            clearAvatarCache()
+//        }
     }
 
     // MARK: - Computed Properties
@@ -167,7 +186,10 @@ struct AIChatWindowView: View {
             if !(chatState.isSending && message.role == .assistant && message.content.isEmpty) {
                 MessageBubble(
                     message: message,
-                    currentPlayer: playerListViewModel.currentPlayer
+                    currentPlayer: playerListViewModel.currentPlayer,
+                    cachedAIAvatar: cachedAIAvatar,
+                    cachedUserAvatar: cachedUserAvatar,
+                    aiAvatarURL: aiSettings.aiAvatarURL
                 )
                 .id(message.id)
             }
@@ -176,7 +198,12 @@ struct AIChatWindowView: View {
 
     private var loadingIndicatorView: some View {
         HStack(alignment: .firstTextBaseline, spacing: Constants.messageSpacing) {
-            AIAvatarView(size: Constants.avatarSize)
+            // 使用缓存的头像视图
+            if let cachedAvatar = cachedAIAvatar {
+                cachedAvatar
+            } else {
+                AIAvatarView(size: Constants.avatarSize, url: aiSettings.aiAvatarURL)
+            }
 
             HStack(spacing: 6) {
                 ProgressView()
@@ -253,6 +280,47 @@ struct AIChatWindowView: View {
     }
 
     // MARK: - Methods
+    
+    /// 初始化头像缓存
+    private func initializeAvatarCache() {
+        // 初始化 AI 头像（使用设置中的 URL）
+        updateAIAvatarCache()
+        
+        // 初始化用户头像
+        updateUserAvatarCache()
+    }
+    
+    /// 更新 AI 头像缓存
+    private func updateAIAvatarCache() {
+        cachedAIAvatar = AnyView(
+            AIAvatarView(size: Constants.avatarSize, url: aiSettings.aiAvatarURL)
+        )
+    }
+    
+    /// 更新用户头像缓存
+    private func updateUserAvatarCache() {
+        if let player = playerListViewModel.currentPlayer {
+            cachedUserAvatar = AnyView(
+                MinecraftSkinUtils(
+                    type: player.isOnlineAccount ? .url : .asset,
+                    src: player.avatarName,
+                    size: Constants.avatarSize
+                )
+            )
+        } else {
+            cachedUserAvatar = AnyView(
+                Image(systemName: "person.fill")
+                    .font(.system(size: Constants.avatarSize))
+                    .foregroundStyle(.secondary)
+            )
+        }
+    }
+    
+    /// 清理头像缓存
+    private func clearAvatarCache() {
+        cachedAIAvatar = nil
+        cachedUserAvatar = nil
+    }
 
     private func openFilePicker() {
         guard let selectedGame = selectedGame else { return }
@@ -321,11 +389,17 @@ struct AIChatWindowView: View {
 
 private struct AIAvatarView: View {
     let size: CGFloat
+    let url: String
+
+    init(size: CGFloat, url: String = "https://mcskins.top/assets/snippets/download/skin.php?n=7050") {
+        self.size = size
+        self.url = url
+    }
 
     var body: some View {
         MinecraftSkinUtils(
-            type: .asset,
-            src: "steve",
+            type: .url,
+            src: url,
             size: size
         )
     }
@@ -335,6 +409,9 @@ private struct AIAvatarView: View {
 struct MessageBubble: View {
     let message: ChatMessage
     let currentPlayer: Player?
+    let cachedAIAvatar: AnyView?
+    let cachedUserAvatar: AnyView?
+    let aiAvatarURL: String
 
     private enum Constants {
         static let avatarSize: CGFloat = 32
@@ -375,7 +452,12 @@ struct MessageBubble: View {
     // MARK: - AI Message View
 
     @ViewBuilder private var aiMessageView: some View {
-        AIAvatarView(size: Constants.avatarSize)
+        // 使用缓存的 AI 头像，避免每次重新加载
+        if let cachedAvatar = cachedAIAvatar {
+            cachedAvatar
+        } else {
+            AIAvatarView(size: Constants.avatarSize, url: aiAvatarURL)
+        }
         messageContentView(alignment: .leading, isUser: false)
         Spacer(minLength: Constants.spacerMinLength)
     }
@@ -425,7 +507,10 @@ struct MessageBubble: View {
     // MARK: - Avatar Views
 
     @ViewBuilder private var userAvatarView: some View {
-        if let player = currentPlayer {
+        // 使用缓存的用户头像，避免每次重新加载
+        if let cachedAvatar = cachedUserAvatar {
+            cachedAvatar
+        } else if let player = currentPlayer {
             MinecraftSkinUtils(
                 type: player.isOnlineAccount ? .url : .asset,
                 src: player.avatarName,

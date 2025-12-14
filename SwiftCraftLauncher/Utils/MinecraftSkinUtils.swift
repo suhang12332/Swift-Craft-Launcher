@@ -35,6 +35,10 @@ struct MinecraftSkinUtils: View {
     @State private var isLoading: Bool = false
     @State private var loadTask: Task<Void, Never>?
 
+    // 静态缓存，基于 type 和 src 的组合键来缓存已加载的图像
+    private static var imageCache: [String: CIImage] = [:]
+    private static let cacheQueue = DispatchQueue(label: "MinecraftSkinUtils.cache", attributes: .concurrent)
+
     private static let ciContext: CIContext = {
         // Create CIContext with CPU-based rendering to avoid Metal shader cache conflicts
         // This is more appropriate for simple image cropping operations and prevents
@@ -46,6 +50,32 @@ struct MinecraftSkinUtils: View {
         ]
         return CIContext(options: options)
     }()
+    
+    // 生成缓存键
+    private var cacheKey: String {
+        let typeString: String
+        switch type {
+        case .url:
+            typeString = "url"
+        case .asset:
+            typeString = "asset"
+        }
+        return "\(typeString):\(src)"
+    }
+    
+    // 获取缓存的图像
+    private static func getCachedImage(for key: String) -> CIImage? {
+        return cacheQueue.sync {
+            return imageCache[key]
+        }
+    }
+    
+    // 设置缓存的图像
+    private static func setCachedImage(_ image: CIImage, for key: String) {
+        cacheQueue.async(flags: .barrier) {
+            imageCache[key] = image
+        }
+    }
 
     init(type: SkinType, src: String, size: CGFloat = 64) {
         self.type = type
@@ -70,7 +100,27 @@ struct MinecraftSkinUtils: View {
             }
         }
         .frame(width: size, height: size)
-        .onAppear { loadSkinData() }
+        .onAppear {
+            // 先检查缓存
+            if let cachedImage = Self.getCachedImage(for: cacheKey) {
+                self.image = cachedImage
+                self.isLoading = false
+            } else {
+                loadSkinData()
+            }
+        }
+        .onChange(of: src) { oldValue, newValue in
+            // 当 src 改变时，检查新缓存键（cacheKey 会根据新的 src 自动计算）
+            if let cachedImage = Self.getCachedImage(for: cacheKey) {
+                self.image = cachedImage
+                self.isLoading = false
+                self.error = nil
+            } else {
+                self.image = nil
+                self.error = nil
+                loadSkinData()
+            }
+        }
         .onDisappear {
             // 取消正在进行的任务，避免内存泄漏
             loadTask?.cancel()
@@ -137,6 +187,9 @@ struct MinecraftSkinUtils: View {
                 }
 
                 try Task.checkCancellation()
+
+                // 缓存图像
+                Self.setCachedImage(ciImage, for: cacheKey)
 
                 await MainActor.run {
                     self.image = ciImage

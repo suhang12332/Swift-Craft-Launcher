@@ -67,6 +67,27 @@ public struct AISettingsView: View {
                 }
                 .labeledContentStyle(.custom)
             }
+
+            // AI 头像设置
+            LabeledContent("settings.ai.avatar.label".localized()) {
+                VStack(alignment: .leading,spacing: 12) {
+                    // 头像预览
+                    MinecraftSkinUtils(
+                        type: .url,
+                        src: aiSettings.aiAvatarURL,
+                        size: 42
+                    )
+                    // URL 输入框
+                    HStack {
+                        TextField("settings.ai.avatar.placeholder".localized(), text: $aiSettings.aiAvatarURL)
+                            .textFieldStyle(.roundedBorder)
+                            .labelsHidden()
+                            .fixedSize()
+                        InfoIconWithPopover(text: "settings.ai.avatar.description".localized())
+                    }
+                }
+            }
+            .labeledContentStyle(.custom(alignment: .lastTextBaseline))
         }
         .globalErrorHandler()
     }

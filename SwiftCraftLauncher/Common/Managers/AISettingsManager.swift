@@ -114,6 +114,13 @@ class AISettingsManager: ObservableObject {
         }
     }
 
+    @AppStorage("aiAvatarURL")
+    var aiAvatarURL: String = "https://mcskins.top/assets/snippets/download/skin.php?n=7050" {
+        didSet {
+            objectWillChange.send()
+        }
+    }
+
     /// 获取当前提供商的 API URL（不包括 Gemini，因为 Gemini 需要特殊处理）
     func getAPIURL() -> String {
         if selectedProvider == .ollama {
