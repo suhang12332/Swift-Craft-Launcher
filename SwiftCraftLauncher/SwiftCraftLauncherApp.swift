@@ -99,7 +99,7 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
             }
-            CommandGroup(after: .appInfo) {
+            CommandGroup(after: .help) {
                 Button("settings.ai.open_chat".localized()) {
                     AIChatManager.shared.openChatWindow()
                 }
