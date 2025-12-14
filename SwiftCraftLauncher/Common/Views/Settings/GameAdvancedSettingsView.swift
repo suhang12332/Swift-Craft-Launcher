@@ -59,7 +59,7 @@ struct GameAdvancedSettingsView: View {
                         }
                     }
                     .labelsHidden()
-                    .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { $0.fixedSize() }
+                    .fixedSize()
                     .disabled(isUsingCustomArguments)  // 使用自定义参数时禁用
                     .onChange(of: selectedGarbageCollector) { _, _ in
                         if !isUsingCustomArguments {
@@ -81,7 +81,7 @@ struct GameAdvancedSettingsView: View {
                         }
                     }
                     .labelsHidden()
-                    .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { $0.fixedSize() }
+                    .fixedSize()
                     .disabled(isUsingCustomArguments)  // 使用自定义参数时禁用
                     .onChange(of: optimizationPreset) { _, newValue in
                         if !isUsingCustomArguments {

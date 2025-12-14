@@ -23,9 +23,7 @@ public struct GeneralSettingsView: View {
                     }
                 }
                 .labelsHidden()
-                .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
-                    view.fixedSize()
-                }
+                .fixedSize()
                 .onChange(of: selectedLanguage) { _, newValue in
                     // 如果是取消操作导致的语言恢复，则不触发重启提示
                     if newValue != LanguageManager.shared.selectedLanguage {
