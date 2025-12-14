@@ -6,6 +6,7 @@ enum SettingsTab: Int {
     case general = 0
     case game = 1
     case advanced = 2
+    case ai = 3
 }
 
 /// 通用设置视图
@@ -37,6 +38,11 @@ public struct SettingsView: View {
                     }
                     .tag(SettingsTab.advanced)
             }
+            AISettingsView()
+                .tabItem {
+                    Label("settings.ai.tab".localized(), systemImage: "brain")
+                }
+                .tag(SettingsTab.ai)
         }
         .padding()
         .frame(maxWidth: .infinity)

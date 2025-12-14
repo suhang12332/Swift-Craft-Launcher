@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		030C47462E7F82E700A209A8 /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 030C47452E7F82E700A209A8 /* SkinRenderKit */; };
 		9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91B2E313A67005A53F1 /* ZIPFoundation */; };
-		9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91E2E313A9C005A53F1 /* MarkdownUI */; };
+		906099592EED2CE400C7DCA5 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 906099582EED2CE400C7DCA5 /* MarkdownUI */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
 
@@ -31,9 +31,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
-				9023D91F2E313A9C005A53F1 /* MarkdownUI in Frameworks */,
 				030C47462E7F82E700A209A8 /* SkinRenderKit in Frameworks */,
 				90E123456789ABCD0001 /* Sparkle in Frameworks */,
+				906099592EED2CE400C7DCA5 /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,9 +70,9 @@
 			name = SwiftCraftLauncher;
 			packageProductDependencies = (
 				9023D91B2E313A67005A53F1 /* ZIPFoundation */,
-				9023D91E2E313A9C005A53F1 /* MarkdownUI */,
 				90E123456789ABCD0002 /* Sparkle */,
 				030C47452E7F82E700A209A8 /* SkinRenderKit */,
+				906099582EED2CE400C7DCA5 /* MarkdownUI */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */;
@@ -106,10 +106,10 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				9023D91A2E313A67005A53F1 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
-				9023D91D2E313A9C005A53F1 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 				90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 				030C47442E7F82E700A209A8 /* XCRemoteSwiftPackageReference "NSSkinRender" */,
+				906099572EED2CE400C7DCA5 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -391,7 +391,7 @@
 				minimumVersion = 0.9.19;
 			};
 		};
-		9023D91D2E313A9C005A53F1 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
+		906099572EED2CE400C7DCA5 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui.git";
 			requirement = {
@@ -425,9 +425,9 @@
 			package = 9023D91A2E313A67005A53F1 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
 		};
-		9023D91E2E313A9C005A53F1 /* MarkdownUI */ = {
+		906099582EED2CE400C7DCA5 /* MarkdownUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 9023D91D2E313A9C005A53F1 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			package = 906099572EED2CE400C7DCA5 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
 			productName = MarkdownUI;
 		};
 		90E123456789ABCD0002 /* Sparkle */ = {
