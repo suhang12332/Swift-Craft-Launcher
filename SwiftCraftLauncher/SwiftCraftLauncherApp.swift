@@ -88,6 +88,9 @@ struct SwiftCraftLauncherApp: App {
                 .keyboardShortcut("l", modifiers: [.command, .shift])
             }
             CommandGroup(after: .help) {
+                Divider()
+            }
+            CommandGroup(after: .help) {
                 Button("about.contributors".localized()) {
                     openWindow(id: "aboutWindow", value: false)
                 }
@@ -98,6 +101,9 @@ struct SwiftCraftLauncherApp: App {
                     openWindow(id: "aboutWindow", value: true)
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
+            }
+            CommandGroup(after: .help) {
+                Divider()
             }
             CommandGroup(after: .help) {
                 Button("settings.ai.open_chat".localized()) {
