@@ -98,9 +98,10 @@ struct GameInfoDetailView: View {
                     Text(game.gameName)
                         .font(.title)
                         .bold()
-                        .lineLimit(1)
                         .truncationMode(.tail)
-                        .frame(maxWidth: 300, alignment: .leading)
+                        .lineLimit(1)
+                        .frame(minWidth: 0, maxWidth: 200)
+                        .fixedSize(horizontal: true, vertical: false) // 注意这个顺序
                     HStack {
                         Label(
                             "\(cacheManager.cacheInfo.fileCount)",
