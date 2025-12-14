@@ -99,7 +99,7 @@ struct AIChatWindowView: View {
         .frame(minWidth: 500, minHeight: 600)
         .fileImporter(
             isPresented: $isFilePickerPresented,
-            allowedContentTypes: [.image, .data, .text, .pdf, .json, .plainText],
+            allowedContentTypes: [.text, .pdf, .json, .plainText, .log],
             allowsMultipleSelection: true
         ) { result in
             handleFileSelection(result)
@@ -226,11 +226,13 @@ struct AIChatWindowView: View {
             guard url.startAccessingSecurityScopedResource() else { continue }
             defer { url.stopAccessingSecurityScopedResource() }
 
-            // 判断文件类型并添加到附件列表
+            // 过滤掉图片类型，只允许非图片文件
             let isImage = UTType(filenameExtension: url.pathExtension)?.conforms(to: .image) ?? false
-            let attachment: MessageAttachmentType = isImage
-                ? .image(url)
-                : .file(url, url.lastPathComponent)
+            if isImage {
+                continue
+            }
+            // 只添加非图片文件
+            let attachment: MessageAttachmentType = .file(url, url.lastPathComponent)
             pendingAttachments.append(attachment)
         }
     }
@@ -397,23 +399,9 @@ struct AttachmentPreview: View {
     var body: some View {
         HStack(spacing: Constants.spacing) {
             switch attachment {
-            case let .image(url):
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    case .failure, .empty:
-                        Image(systemName: "photo")
-                            .foregroundStyle(.secondary)
-                    @unknown default:
-                        Image(systemName: "photo")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .frame(width: Constants.previewSize, height: Constants.previewSize)
-                .clipShape(RoundedRectangle(cornerRadius: Constants.cornerRadius))
+            case .image:
+                // 图片类型已移除，不应该出现
+                EmptyView()
             case let .file(_, fileName):
                 Image(systemName: "doc.fill")
                     .font(.system(size: 16))
@@ -458,13 +446,9 @@ struct AttachmentView: View {
 
     var body: some View {
         switch attachment {
-        case let .image(url):
-            fileItemView(
-                iconName: "doc.fill",
-                fileName: url.lastPathComponent,
-                fileExtension: url.pathExtension.uppercased().isEmpty ? "IMAGE" : url.pathExtension.uppercased(),
-                url: url
-            )
+        case .image:
+            // 图片类型已移除，不应该出现
+            EmptyView()
         case let .file(url, fileName):
             fileItemView(
                 iconName: "doc.fill",
