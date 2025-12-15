@@ -65,13 +65,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     func feedURLString(for updater: SPUUpdater) -> String? {
         let architecture = getSystemArchitecture()
         let appcastURL = URLConfig.API.GitHub.appcastURL(architecture: architecture)
-
-        // 拼接git代理地址
-        let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !proxy.isEmpty && appcastURL.absoluteString.hasPrefix("https://github.com/") {
-            return proxy + "/" + appcastURL.absoluteString
-        }
-
         return appcastURL.absoluteString
     }
 
@@ -175,22 +168,11 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
 // 拦截下载请求，按需为 GitHub 资源地址加上代理前缀
 extension SparkleUpdateService {
     func updater(_ updater: SPUUpdater, willDownloadUpdate item: SUAppcastItem, with request: NSMutableURLRequest) {
-        let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !proxy.isEmpty else { return }
         guard let originalURL = request.url else { return }
-
-        let original = originalURL.absoluteString
-
-        // 仅对 GitHub 相关域名做代理
-        let isGitHubAsset = original.hasPrefix("https://github.com/")
-        guard isGitHubAsset else { return }
-
-        // 避免重复加前缀
-        if original.hasPrefix(proxy + "/") { return }
-
-        let proxiedString = proxy.hasSuffix("/") ? proxy + original : proxy + "/" + original
-        if let proxiedURL = URL(string: proxiedString) {
-            Logger.shared.info("更新下载链接已重写：\(original) -> \(proxiedString)")
+        
+        let proxiedURL = URLConfig.applyGitProxyIfNeeded(originalURL)
+        if proxiedURL != originalURL {
+            Logger.shared.info("更新下载链接已重写：\(originalURL.absoluteString) -> \(proxiedURL.absoluteString)")
             request.url = proxiedURL
         }
     }

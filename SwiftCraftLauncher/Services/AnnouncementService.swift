@@ -12,7 +12,7 @@ class AnnouncementService {
     ///   - language: 语言代码
     /// - Returns: 公告数据，如果不存在或失败则返回nil
     func fetchAnnouncement(version: String, language: String) async -> AnnouncementData? {
-        let url = URLConfig.API.Announcement.announcement(version: version, language: language)
+        let url = URLConfig.API.GitHub.announcement(version: version, language: language)
 
         do {
             var request = URLRequest(url: url)

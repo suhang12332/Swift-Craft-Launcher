@@ -95,13 +95,12 @@ enum DownloadManager {
     ) async throws -> URL {
         Logger.shared.info("下载文件 \(urlString) -> \(destinationURL.path)")
 
-        var finalURLString = urlString
-        if urlString.hasPrefix("https://github.com/") {
-            let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !proxy.isEmpty {
-                finalURLString = proxy + "/" + urlString
-            }
-        }
+        // 仅对 GitHub 相关域名应用代理
+        let isGitHubURL = urlString.hasPrefix("https://api.github.com/") ||
+                         urlString.hasPrefix("https://github.com/") ||
+                         urlString.hasPrefix("https://raw.githubusercontent.com/")
+        
+        let finalURLString = isGitHubURL ? URLConfig.applyGitProxyIfNeeded(urlString) : urlString
 
         guard let url = URL(string: finalURLString) else {
             throw GlobalError.validation(
