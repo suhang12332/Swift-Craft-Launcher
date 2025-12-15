@@ -19,7 +19,7 @@ struct AIChatWindowView: View {
     @State private var pendingAttachments: [MessageAttachmentType] = []
     @FocusState private var isInputFocused: Bool
     @State private var selectedGameId: String?
-    
+
     // 缓存头像视图，避免每次消息更新时重新加载
     @State private var cachedAIAvatar: AnyView?
     @State private var cachedUserAvatar: AnyView?
@@ -280,23 +280,22 @@ struct AIChatWindowView: View {
     }
 
     // MARK: - Methods
-    
     /// 初始化头像缓存
     private func initializeAvatarCache() {
         // 初始化 AI 头像（使用设置中的 URL）
         updateAIAvatarCache()
-        
+
         // 初始化用户头像
         updateUserAvatarCache()
     }
-    
+
     /// 更新 AI 头像缓存
     private func updateAIAvatarCache() {
         cachedAIAvatar = AnyView(
             AIAvatarView(size: Constants.avatarSize, url: aiSettings.aiAvatarURL)
         )
     }
-    
+
     /// 更新用户头像缓存
     private func updateUserAvatarCache() {
         if let player = playerListViewModel.currentPlayer {
@@ -315,7 +314,7 @@ struct AIChatWindowView: View {
             )
         }
     }
-    
+
     /// 清理头像缓存
     private func clearAvatarCache() {
         cachedAIAvatar = nil

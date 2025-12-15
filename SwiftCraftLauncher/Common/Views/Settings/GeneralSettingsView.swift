@@ -98,7 +98,9 @@ public struct GeneralSettingsView: View {
             }.labeledContentStyle(.custom)
 
             LabeledContent("settings.minecraft_versions_url.label".localized()) {
-                TextField("", text: $generalSettings.minecraftVersionManifestURL).focusable(false)
+                TextField("", text: $generalSettings.minecraftVersionManifestURL)
+                    .frame(maxWidth: 300)
+                    .focusable(false)
                     .fixedSize()
                     .labelsHidden()
                     .textFieldStyle(.roundedBorder)
@@ -106,6 +108,7 @@ public struct GeneralSettingsView: View {
 
             LabeledContent("settings.modrinth_api_url.label".localized()) {
                 TextField("", text: $generalSettings.modrinthAPIBaseURL).focusable(false)
+                    .frame(maxWidth: 300)
                     .fixedSize()
                     .labelsHidden()
                     .textFieldStyle(.roundedBorder)
@@ -113,6 +116,7 @@ public struct GeneralSettingsView: View {
 
             LabeledContent("settings.git_proxy_url.label".localized()) {
                 TextField("", text: $generalSettings.gitProxyURL).focusable(false)
+                    .frame(maxWidth: 300)
                     .fixedSize()
                     .labelsHidden()
                     .textFieldStyle(.roundedBorder)

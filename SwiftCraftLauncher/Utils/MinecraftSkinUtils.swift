@@ -50,7 +50,7 @@ struct MinecraftSkinUtils: View {
         ]
         return CIContext(options: options)
     }()
-    
+
     // 生成缓存键
     private var cacheKey: String {
         let typeString: String
@@ -62,14 +62,14 @@ struct MinecraftSkinUtils: View {
         }
         return "\(typeString):\(src)"
     }
-    
+
     // 获取缓存的图像
     private static func getCachedImage(for key: String) -> CIImage? {
         return cacheQueue.sync {
             return imageCache[key]
         }
     }
-    
+
     // 设置缓存的图像
     private static func setCachedImage(_ image: CIImage, for key: String) {
         cacheQueue.async(flags: .barrier) {
@@ -109,7 +109,7 @@ struct MinecraftSkinUtils: View {
                 loadSkinData()
             }
         }
-        .onChange(of: src) { oldValue, newValue in
+        .onChange(of: src) { _, _ in
             // 当 src 改变时，检查新缓存键（cacheKey 会根据新的 src 自动计算）
             if let cachedImage = Self.getCachedImage(for: cacheKey) {
                 self.image = cachedImage
