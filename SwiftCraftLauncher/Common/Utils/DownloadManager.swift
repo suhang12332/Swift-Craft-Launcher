@@ -96,10 +96,9 @@ enum DownloadManager {
         Logger.shared.info("下载文件 \(urlString) -> \(destinationURL.path)")
 
         // 仅对 GitHub 相关域名应用代理
-        let isGitHubURL = urlString.hasPrefix("https://api.github.com/") ||
-                         urlString.hasPrefix("https://github.com/") ||
+        let isGitHubURL = urlString.hasPrefix("https://github.com/") ||
                          urlString.hasPrefix("https://raw.githubusercontent.com/")
-        
+
         let finalURLString = isGitHubURL ? URLConfig.applyGitProxyIfNeeded(urlString) : urlString
 
         guard let url = URL(string: finalURLString) else {

@@ -4,6 +4,7 @@ public struct AcknowledgementsView: View {
     @State private var libraries: [OpenSourceLibrary] = []
     @State private var isLoading = true
     @State private var loadFailed = false
+    private let gitHubService = GitHubService.shared
 
     public init() {}
 
@@ -176,41 +177,22 @@ public struct AcknowledgementsView: View {
         // 重置状态
         isLoading = true
         loadFailed = false
-
-        // 从URLConfig获取致谢数据URL（带时间戳避免缓存）
-        let url = URLConfig.API.GitHub.acknowledgements()
-
         Task {
             do {
-                var request = URLRequest(url: url)
-                request.setValue("application/json", forHTTPHeaderField: "Accept")
-                request.timeoutInterval = 10.0
-
-                let (data, response) = try await URLSession.shared.data(for: request)
-
-                // 检查HTTP响应状态
-                if let httpResponse = response as? HTTPURLResponse {
-                    guard httpResponse.statusCode == 200 else {
-                        Logger.shared.error("HTTP error:", httpResponse.statusCode)
-                        await MainActor.run {
-                            loadFailed = true
-                            isLoading = false
-                        }
-                        return
-                    }
-                }
-
-                let decoder = JSONDecoder()
-                let decodedLibraries = try decoder.decode([OpenSourceLibrary].self, from: data)
+                let decodedLibraries: [OpenSourceLibrary] = try await gitHubService.fetchAcknowledgements()
 
                 await MainActor.run {
                     libraries = decodedLibraries
                     isLoading = false
                     loadFailed = false
-                    Logger.shared.info("Successfully loaded", libraries.count, "libraries from URL")
+                    Logger.shared.info(
+                        "Successfully loaded",
+                        libraries.count,
+                        "libraries from GitHubService"
+                    )
                 }
             } catch {
-                Logger.shared.error("Failed to load libraries from URL:", error)
+                Logger.shared.error("Failed to load libraries from GitHubService:", error)
                 await MainActor.run {
                     loadFailed = true
                     isLoading = false

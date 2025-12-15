@@ -145,13 +145,23 @@ public struct ContentToolbarView: ToolbarContent {
             ? LanguageManager.getDefaultLanguage()
             : LanguageManager.shared.selectedLanguage
 
-        let data = await AnnouncementService.shared.fetchAnnouncement(version: version, language: language)
+        do {
+            let data = try await GitHubService.shared.fetchAnnouncement(
+                version: version,
+                language: language
+            )
 
-        await MainActor.run {
-            if let data = data {
-                self.hasAnnouncement = true
-                self.announcementData = data
-            } else {
+            await MainActor.run {
+                if let data = data {
+                    self.hasAnnouncement = true
+                    self.announcementData = data
+                } else {
+                    self.hasAnnouncement = false
+                    self.announcementData = nil
+                }
+            }
+        } catch {
+            await MainActor.run {
                 self.hasAnnouncement = false
                 self.announcementData = nil
             }

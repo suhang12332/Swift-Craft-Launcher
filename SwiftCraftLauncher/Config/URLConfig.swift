@@ -16,20 +16,19 @@ enum URLConfig {
     static func applyGitProxyIfNeeded(_ url: URL) -> URL {
         let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !proxy.isEmpty else { return url }
-        
+
         let urlString = url.absoluteString
-        // 仅对 GitHub 相关域名应用代理
-        let isGitHubURL = urlString.hasPrefix("https://api.github.com/") ||
-                         urlString.hasPrefix("https://github.com/") ||
+        // 仅对 GitHub 相关域名应用代理（排除 api.github.com）
+        let isGitHubURL = urlString.hasPrefix("https://github.com/") ||
                          urlString.hasPrefix("https://raw.githubusercontent.com/")
-        
+
         guard isGitHubURL else { return url }
-        
+
         // 避免重复加前缀
         if urlString.hasPrefix(proxy + "/") { return url }
-        
+
         let proxiedString = proxy.hasSuffix("/") ? proxy + urlString : proxy + "/" + urlString
-        return URLConfig.url(proxiedString)
+        return Self.url(proxiedString)
     }
 
     // 公共方法：为 GitHub URL 字符串应用代理（如果需要）
@@ -313,6 +312,5 @@ enum URLConfig {
                 return components?.url ?? url
             }
         }
-
     }
 }

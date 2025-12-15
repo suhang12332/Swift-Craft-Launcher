@@ -1,14 +1,25 @@
 import Foundation
 
 /// 公告响应模型
-struct AnnouncementResponse: Codable {
-    let success: Bool
-    let data: AnnouncementData?
+public struct AnnouncementResponse: Codable {
+    public let success: Bool
+    public let data: AnnouncementData?
+
+    public init(success: Bool, data: AnnouncementData?) {
+        self.success = success
+        self.data = data
+    }
 }
 
 /// 公告数据模型
-struct AnnouncementData: Codable {
-    let title: String
-    let content: String
-    let author: String
+public struct AnnouncementData: Codable {
+    public let title: String
+    public let content: String
+    public let author: String
+
+    public init(title: String, content: String, author: String) {
+        self.title = title
+        self.content = content
+        self.author = author
+    }
 }
