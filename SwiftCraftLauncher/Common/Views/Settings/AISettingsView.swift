@@ -25,33 +25,31 @@ public struct AISettingsView: View {
                 ) { view in
                     view.fixedSize()
                 }
-                .onChange(of: aiSettings.selectedProvider) { _, _ in
-                    // 提供商更改时无需额外操作
-                }
             }
             .labeledContentStyle(.custom)
 
             LabeledContent("settings.ai.api_key.label".localized()) {
-                Group {
-                    if showApiKey {
-                        TextField("".localized(), text: $aiSettings.apiKey)
-                            .textFieldStyle(.roundedBorder).labelsHidden()
-                    } else {
-                        SecureField("".localized(), text: $aiSettings.apiKey)
-                            .textFieldStyle(.roundedBorder).labelsHidden()
+                HStack {
+                    Group {
+                        if showApiKey {
+                            TextField("".localized(), text: $aiSettings.apiKey)
+                                .textFieldStyle(.roundedBorder).labelsHidden()
+                        } else {
+                            SecureField("".localized(), text: $aiSettings.apiKey)
+                                .textFieldStyle(.roundedBorder).labelsHidden()
+                        }
                     }
+                    .frame(width: 300)
+                    .focusable(false)
+                    Button(action: {
+                        showApiKey.toggle()
+                    }, label: {
+                        Image(systemName: showApiKey ? "eye.slash" : "eye")
+                    })
+                    .buttonStyle(.plain)
+                    .applyReplaceTransition()
+                    InfoIconWithPopover(text: "settings.ai.api_key.description".localized())
                 }
-
-                .onChange(of: aiSettings.apiKey) { _, _ in
-                    // API Key 更改时无需额外操作
-                }
-                Button(action: {
-                    showApiKey.toggle()
-                }, label: {
-                    Image(systemName: showApiKey ? "eye.slash" : "eye")
-                })
-                .buttonStyle(.plain)
-                .applyReplaceTransition()
             }
             .labeledContentStyle(.custom)
 
@@ -61,16 +59,16 @@ public struct AISettingsView: View {
                     TextField("http://localhost:11434", text: $aiSettings.ollamaBaseURL)
                         .textFieldStyle(.roundedBorder)
                         .labelsHidden()
-                        .onChange(of: aiSettings.ollamaBaseURL) { _, _ in
-                            // Ollama 地址更改时无需额外操作
-                        }
+                        .frame(maxWidth: 300)
+                        .fixedSize()
+                        .focusable(false)
                 }
                 .labeledContentStyle(.custom)
             }
 
             // AI 头像设置
             LabeledContent("settings.ai.avatar.label".localized()) {
-                VStack(alignment: .leading,spacing: 12) {
+                VStack(alignment: .leading, spacing: 12) {
                     // 头像预览
                     MinecraftSkinUtils(
                         type: .url,
@@ -82,7 +80,9 @@ public struct AISettingsView: View {
                         TextField("settings.ai.avatar.placeholder".localized(), text: $aiSettings.aiAvatarURL)
                             .textFieldStyle(.roundedBorder)
                             .labelsHidden()
+                            .frame(maxWidth: 300)
                             .fixedSize()
+                            .focusable(false)
                         InfoIconWithPopover(text: "settings.ai.avatar.description".localized())
                     }
                 }

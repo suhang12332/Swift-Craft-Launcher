@@ -58612,6 +58612,144 @@
         }
       }
     },
+    "settings.ai.api_key.description" : {
+      "comment" : "AI Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يتم تخزين مفتاح API محليًا فقط ولن يتم مشاركته"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API-nøglen gemmes kun lokalt og deles ikke"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der API-Schlüssel wird nur lokal gespeichert und nicht geteilt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API key is stored locally only and will not be shared"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La clave API se almacena solo localmente y no se compartirá"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API-avain tallennetaan vain paikallisesti eikä jaeta"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La clé API est stockée uniquement localement et ne sera pas partagée"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API कुंजी केवल स्थानीय रूप से संग्रहीत की जाती है और साझा नहीं की जाएगी"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La chiave API viene memorizzata solo localmente e non verrà condivisa"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APIキーはローカルのみに保存され、共有されません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API 키는 로컬에만 저장되며 공유되지 않습니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API-nøkkelen lagres bare lokalt og deles ikke"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API-sleutel wordt alleen lokaal opgeslagen en wordt niet gedeeld"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klucz API jest przechowywany tylko lokalnie i nie będzie udostępniany"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A chave API é armazenada apenas localmente e não será compartilhada"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API-ключ хранится только локально и не будет передаваться"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API-nyckeln lagras endast lokalt och delas inte"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "คีย์ API ถูกเก็บไว้ในเครื่องเท่านั้นและจะไม่ถูกแชร์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API anahtarı yalnızca yerel olarak saklanır ve paylaşılmaz"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Khóa API chỉ được lưu trữ cục bộ và sẽ không được chia sẻ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API 密钥仅在本地存储，不会被共享"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API 密鑰僅在本地存儲，不會被共享"
+          }
+        }
+      }
+    },
     "settings.ai.avatar.description" : {
       "comment" : "AI Settings",
       "extractionState" : "manual",
