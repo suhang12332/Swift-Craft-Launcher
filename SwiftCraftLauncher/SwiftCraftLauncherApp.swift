@@ -1,8 +1,28 @@
-//  MLauncherApp.swift
-//  MLauncher
+5//  SwiftCraftLauncherApp.swift
+//  Swift Craft Launcher
 //
 //  Created by su on 2025/5/30.
 //
+//  Swift Craft Launcher - A modern macOS Minecraft launcher
+//
+//  Copyright (C) 2025 Swift Craft Launcher Contributors
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Affero General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Affero General Public License for more details.
+//
+//  You should have received a copy of the GNU Affero General Public License
+//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+//
+//  ADDITIONAL TERMS:
+//  This program includes additional terms for source attribution and name usage.
+//  See doc/ADDITIONAL_TERMS.md in the project root for details.
 
 import SwiftUI
 

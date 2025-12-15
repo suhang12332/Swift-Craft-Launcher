@@ -111,6 +111,11 @@ brew install --cask swift-craft-launcher
 
 本项目采用 GNU Affero General Public License v3.0 开源协议。详细信息请查看 [LICENSE](LICENSE) 文件。
 
+**附加条款**：本项目包含附加条款，要求声明来源并禁止使用相同软件名称。详细信息请查看：
+- [简体中文](doc/ADDITIONAL_TERMS.md)
+- [繁體中文](doc/ADDITIONAL_TERMS_zh-TW.md)
+- [English](doc/ADDITIONAL_TERMS_en.md)
+
 ## 🤝 社区与支持
 
 - **👥 官方 QQ 群**: [1057517524](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
