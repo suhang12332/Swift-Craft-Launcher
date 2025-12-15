@@ -31,7 +31,7 @@ struct MinecraftAuthView: View {
     private var notAuthenticatedView: some View {
         VStack(spacing: 16) {
             Image(systemName: "person.crop.circle.badge.plus")
-                .font(.system(size: 60))
+                .font(.system(size: 46))
                 .symbolRenderingMode(.multicolor)
                 .symbolVariant(.none)
                 .foregroundColor(.secondary)

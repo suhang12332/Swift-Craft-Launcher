@@ -19,7 +19,9 @@ struct AddPlayerSheetView: View {
 
     @Environment(\.openURL)
     private var openURL
-    @State private var selectedAuthType: AccountAuthType = .offline
+    @State private var selectedAuthType: AccountAuthType = .premium
+    @FocusState private var isTextFieldFocused: Bool
+    @State private var showErrorPopover: Bool = false
 
     var body: some View {
         CommonSheetView(
@@ -112,7 +114,7 @@ struct AddPlayerSheetView: View {
     private var playerInfoSection: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("addplayer.info.title".localized())
-                .font(.headline)
+                .font(.headline) .padding(.bottom, 4)
             Text("addplayer.info.line1".localized())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -131,47 +133,58 @@ struct AddPlayerSheetView: View {
     // 输入区
     private var playerNameInputSection: some View {
         VStack(alignment: .leading) {
-            HStack {
-                Text("addplayer.name.label".localized())
-                    .font(.headline.bold())
-                Spacer()
-                if !isPlayerNameValid {
-                    Text(playerNameError)
-                        .font(.subheadline)
-                        .foregroundColor(.red)
-                }
-            }
+            Text("addplayer.name.label".localized())
+                .font(.headline.bold())
             TextField(
                 "addplayer.name.placeholder".localized(),
                 text: $playerName
             )
             .textFieldStyle(.roundedBorder)
+            .focused($isTextFieldFocused)
+            .focusEffectDisabled()
+            .overlay(
+                RoundedRectangle(cornerRadius: 5)
+                    .stroke(borderColor, lineWidth: 2)
+            )
+            .popover(isPresented: $showErrorPopover, arrowEdge: .trailing) {
+                if let errorMessage = playerNameError {
+                    Text(errorMessage)
+                        .padding()
+                        .presentationCompactAdaptation(.popover)
+                }
+            }
             .onChange(of: playerName) { _, newValue in
                 checkPlayerName(newValue)
             }
         }
     }
 
-    // 校验错误提示
-    private var playerNameError: String {
-        let trimmedName = playerName.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        )
-        if trimmedName.isEmpty {
-            return "addplayer.name.error.empty".localized()
+    // 根据输入状态和焦点状态决定边框颜色
+    private var borderColor: Color {
+        if isTextFieldFocused {
+            return .blue
+        } else {
+            return .clear
         }
+    }
+
+    // 获取错误信息（仅在不合法时，不包括空字符串）
+    private var playerNameError: String? {
+        let trimmedName = playerName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else { return nil }
         if playerListViewModel.playerExists(name: trimmedName) {
             return "addplayer.name.error.duplicate".localized()
         }
-        // 长度和字符集校验可根据需要扩展
-        return "addplayer.name.error.invalid".localized()
+        // 可以根据需要添加其他校验规则
+        return nil
     }
 
     private func checkPlayerName(_ name: String) {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        isPlayerNameValid =
-            !trimmedName.isEmpty
-            && !playerListViewModel.playerExists(name: trimmedName)
+        // 基于 playerNameError 和是否为空来设置状态，避免重复检查
+        let hasError = playerNameError != nil
+        isPlayerNameValid = !trimmedName.isEmpty && !hasError
+        showErrorPopover = hasError
     }
 }
 
