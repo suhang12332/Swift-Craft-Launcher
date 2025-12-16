@@ -177,7 +177,6 @@ class MinecraftFileManager {
                     withIntermediateDirectories: true
                 )
             } catch {
-                let directoryPath = directory.path
                 throw GlobalError.fileSystem(
                     chineseMessage: "创建目录失败",
                     i18nKey: "error.filesystem.directory_creation_failed",
@@ -502,7 +501,7 @@ class MinecraftFileManager {
                 destinationURL: destinationURL,
                 expectedSha1: sha1
             )
-            
+
             incrementCompletedFilesCount(
                 fileName: fileNameForNotification
                     ?? destinationURL.lastPathComponent,

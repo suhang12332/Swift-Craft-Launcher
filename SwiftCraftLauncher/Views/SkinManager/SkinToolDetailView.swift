@@ -672,7 +672,8 @@ extension SkinToolDetailView {
         if let current = selectedCapeImageURL, current == urlString, selectedCapeLocalPath != nil {
             return
         }
-        guard let url = URL(string: urlString.httpToHttps()) else {
+        // 验证 URL 格式（但不保留 URL 对象，节省内存）
+        guard URL(string: urlString.httpToHttps()) != nil else {
             Logger.shared.error("Invalid cape URL: \(urlString)")
             return
         }

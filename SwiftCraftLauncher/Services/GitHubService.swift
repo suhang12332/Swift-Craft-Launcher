@@ -52,7 +52,7 @@ public class GitHubService: ObservableObject {
     /// 获取仓库 LICENSE 文本内容
     public func fetchLicenseText() async throws -> String {
         let url = URLConfig.API.GitHub.license()
-        
+
         // 使用统一的 API 客户端
         let data = try await APIClient.get(url: url)
 

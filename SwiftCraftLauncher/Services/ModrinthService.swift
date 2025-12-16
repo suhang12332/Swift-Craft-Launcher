@@ -194,7 +194,7 @@ enum ModrinthService {
         }
         // 使用统一的 API 客户端
         let data = try await APIClient.get(url: url)
-        
+
         let decoder = JSONDecoder()
         decoder.configureForModrinth()
         let result = try decoder.decode(ModrinthResult.self, from: data)
@@ -290,10 +290,10 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectDetailsThrowing(id: String) async throws -> ModrinthProjectDetail {
         let url = URLConfig.API.Modrinth.project(id: id)
-        
+
         // 使用统一的 API 客户端
         let data = try await APIClient.get(url: url)
-        
+
         let decoder = JSONDecoder()
         decoder.configureForModrinth()
         let detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
@@ -320,10 +320,10 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionsThrowing(id: String) async throws -> [ModrinthProjectDetailVersion] {
         let url = URLConfig.API.Modrinth.version(id: id)
-        
+
         // 使用统一的 API 客户端
         let data = try await APIClient.get(url: url)
-        
+
         let decoder = JSONDecoder()
         decoder.configureForModrinth()
         return try decoder.decode([ModrinthProjectDetailVersion].self, from: data)
@@ -495,10 +495,10 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionThrowing(id: String) async throws -> ModrinthProjectDetailVersion {
         let url = URLConfig.API.Modrinth.versionId(versionId: id)
-        
+
         // 使用统一的 API 客户端
         let data = try await APIClient.get(url: url)
-        
+
         let decoder = JSONDecoder()
         decoder.configureForModrinth()
         return try decoder.decode(ModrinthProjectDetailVersion.self, from: data)

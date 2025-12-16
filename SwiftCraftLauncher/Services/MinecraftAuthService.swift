@@ -173,7 +173,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
 
         let bodyString = bodyParameters.map { "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")" }.joined(separator: "&")
         let bodyData = bodyString.data(using: .utf8)
-        
+
         // 使用统一的 API 客户端
         let headers = ["Content-Type": "application/x-www-form-urlencoded"]
         let data = try await APIClient.post(url: url, body: bodyData, headers: headers)
@@ -324,9 +324,9 @@ class MinecraftAuthService: NSObject, ObservableObject {
         minecraftRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         minecraftRequest.timeoutInterval = 30.0
         minecraftRequest.httpBody = minecraftBodyData
-        
+
         let (minecraftData, minecraftHttpResponse) = try await APIClient.performRequestWithResponse(request: minecraftRequest)
-        
+
         guard minecraftHttpResponse.statusCode == 200 else {
             let statusCode = minecraftHttpResponse.statusCode
             Logger.shared.error("Minecraft 认证失败: HTTP \(statusCode)")
@@ -387,7 +387,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.timeoutInterval = 30.0
-        
+
         // 使用统一的 API 客户端（需要处理非 200 状态码）
         let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
 
@@ -593,13 +593,13 @@ extension MinecraftAuthService {
         let url = URLConfig.API.Authentication.token
         let body = "grant_type=refresh_token&client_id=\(clientId)&refresh_token=\(refreshToken)"
         let bodyData = body.data(using: .utf8)
-        
+
         // 使用统一的 API 客户端（需要处理非 200 状态码）
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
         request.httpBody = bodyData
-        
+
         let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
 
         // 检查OAuth错误

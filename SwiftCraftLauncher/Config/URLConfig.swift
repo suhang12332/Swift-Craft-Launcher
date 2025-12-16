@@ -9,6 +9,10 @@ enum URLConfig {
         return url
     }
 
+    // 常量字符串，避免重复创建
+    private static let githubHost = "github.com"
+    private static let rawGithubHost = "raw.githubusercontent.com"
+
     // 公共方法：为 GitHub URL 应用代理（如果需要）
     /// 为 GitHub 相关的 URL 应用 gitProxyURL 代理
     /// - Parameter url: 原始 URL
@@ -17,14 +21,15 @@ enum URLConfig {
         let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !proxy.isEmpty else { return url }
 
-        let urlString = url.absoluteString
-        // 仅对 GitHub 相关域名应用代理（排除 api.github.com）
-        let isGitHubURL = urlString.hasPrefix("https://github.com/") ||
-                         urlString.hasPrefix("https://raw.githubusercontent.com/")
+        // 优化：直接使用 URL 的 host 属性，避免转换为 String
+        guard let host = url.host else { return url }
 
+        // 仅对 GitHub 相关域名应用代理（排除 api.github.com）
+        let isGitHubURL = host == githubHost || host == rawGithubHost
         guard isGitHubURL else { return url }
 
-        // 避免重复加前缀
+        // 优化：使用 URL 的 absoluteString 检查是否已有代理前缀
+        let urlString = url.absoluteString
         if urlString.hasPrefix("\(proxy)/") { return url }
 
         // 使用字符串插值而非字符串拼接
@@ -36,9 +41,12 @@ enum URLConfig {
     /// 为 GitHub 相关的 URL 字符串应用 gitProxyURL 代理
     /// - Parameter urlString: 原始 URL 字符串
     /// - Returns: 应用代理后的 URL 字符串（如果需要）
+    /// 优化：使用 autoreleasepool 及时释放临时 URL 对象
     static func applyGitProxyIfNeeded(_ urlString: String) -> String {
-        guard let url = URL(string: urlString) else { return urlString }
-        return applyGitProxyIfNeeded(url).absoluteString
+        return autoreleasepool {
+            guard let url = URL(string: urlString) else { return urlString }
+            return applyGitProxyIfNeeded(url).absoluteString
+        }
     }
 
     // API 端点

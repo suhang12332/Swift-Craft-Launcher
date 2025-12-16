@@ -32,9 +32,12 @@ extension URL {
 }
 extension String {
     /// 将字符串中的 HTTP URL 转换为 HTTPS URL
+    /// 优化：使用 autoreleasepool 及时释放临时 URL 对象
     func httpToHttps() -> String {
-        guard let url = URL(string: self) else { return self }
-        return url.forceHTTPS()?.absoluteString ?? self
+        return autoreleasepool {
+            guard let url = URL(string: self) else { return self }
+            return url.forceHTTPS()?.absoluteString ?? self
+        }
     }
 }
 

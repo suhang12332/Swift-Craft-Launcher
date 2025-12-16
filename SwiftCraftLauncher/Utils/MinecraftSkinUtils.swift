@@ -441,11 +441,11 @@ struct MinecraftSkinUtils: View {
         }
 
         // 使用统一的 API 客户端（需要处理非 200 状态码）
-        var request = URLRequest(url: url)
+        let request = URLRequest(url: url)
         let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
-        
+
         switch httpResponse.statusCode {
-        case 200: 
+        case 200:
             return data
         case 404:
             throw GlobalError.resource(

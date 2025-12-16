@@ -103,7 +103,7 @@ enum CurseForgeService {
         // 使用统一的 API 客户端
         let headers = ["Accept": "application/json"]
         let data = try await APIClient.get(url: url, headers: headers)
-        
+
         // 解析响应
         let result = try JSONDecoder().decode(CurseForgeFileResponse.self, from: data)
         return result.data
@@ -125,7 +125,7 @@ enum CurseForgeService {
         // 使用统一的 API 客户端
         let headers = ["Accept": "application/json"]
         let data = try await APIClient.get(url: url, headers: headers)
-        
+
         // 解析响应
         let result = try JSONDecoder().decode(CurseForgeModDetailResponse.self, from: data)
         return result.data
@@ -147,7 +147,7 @@ enum CurseForgeService {
         // 使用统一的 API 客户端
         let headers = ["Accept": "application/json"]
         let data = try await APIClient.get(url: url, headers: headers)
-        
+
         // 解析响应
         let result = try JSONDecoder().decode(CurseForgeFilesResult.self, from: data)
         return result.data

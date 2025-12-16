@@ -21,9 +21,9 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
     // 整合包安装进度状态
     @Published var modPackInstallState = ModPackInstallState()
-    
+
     // MARK: - Memory Management
-    
+
     /// 清理不再需要的索引数据以释放内存
     /// 在 ModPack 安装完成后调用
     func clearParsedIndexInfo() {
@@ -437,12 +437,12 @@ struct ModrinthIndexFileHashes: Codable {
     let sha512: String?
     /// 其他哈希类型（不常用，延迟存储）
     let other: [String: String]?
-    
+
     /// 从字典创建（用于 JSON 解码）
     init(from dict: [String: String]) {
         self.sha1 = dict["sha1"]
         self.sha512 = dict["sha512"]
-        
+
         // 只存储非标准哈希
         var otherDict: [String: String] = [:]
         for (key, value) in dict {
@@ -452,19 +452,19 @@ struct ModrinthIndexFileHashes: Codable {
         }
         self.other = otherDict.isEmpty ? nil : otherDict
     }
-    
+
     /// 自定义解码，从 JSON 字典解码
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let dict = try container.decode([String: String].self)
         self.init(from: dict)
     }
-    
+
     /// 编码为字典格式（用于 JSON 编码）
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         var dict: [String: String] = [:]
-        
+
         if let sha1 = sha1 {
             dict["sha1"] = sha1
         }
@@ -472,12 +472,12 @@ struct ModrinthIndexFileHashes: Codable {
             dict["sha512"] = sha512
         }
         if let other = other {
-            dict.merge(other) { (_, new) in new }
+            dict.merge(other) { _, new in new }
         }
-        
+
         try container.encode(dict)
     }
-    
+
     /// 字典访问兼容性（向后兼容）
     subscript(key: String) -> String? {
         switch key {
@@ -530,7 +530,7 @@ struct ModrinthIndexFile: Codable {
         self.curseForgeProjectId = curseForgeProjectId
         self.curseForgeFileId = curseForgeFileId
     }
-    
+
     // 兼容旧版本字典格式的初始化器
     init(
         path: String,
