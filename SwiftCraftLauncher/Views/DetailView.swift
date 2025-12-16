@@ -69,10 +69,7 @@ struct DetailView: View {
     private func resourceDetailView(type: ResourceType) -> some View {
         if selectedProjectId != nil {
             ModrinthProjectDetailView(
-                selectedTab: $selectTab,
-                projectDetail: loadedProjectDetail,
-                currentPage: $versionCurrentPage,
-                versionTotal: $versionTotal
+                projectDetail: loadedProjectDetail
             )
         } else {
             ModrinthDetailView(

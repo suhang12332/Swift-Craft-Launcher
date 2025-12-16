@@ -15,6 +15,10 @@ public struct SidebarView: View {
     // 延迟过滤：只存储游戏ID列表，按需获取完整信息
     @State private var filteredGameIds: [String] = []
     @State private var cachedSearchText: String = ""
+    
+    // 缓存游戏字典，避免每次计算 displayedGames 时都创建
+    @State private var gamesDictionary: [String: GameVersionInfo] = [:]
+    @State private var lastGamesCount: Int = 0
 
     // 延迟加载配置
     private static let initialLoadCount = 20  // 初始加载的游戏数量（减少初始加载）
@@ -76,7 +80,8 @@ public struct SidebarView: View {
                             Button(action: {
                                 toggleGameState(for: game)
                             }, label: {
-                                let isRunning = isGameRunning(gameId: game.id)
+                                // 使用缓存的游戏状态，避免每次渲染都检查进程
+                                let isRunning = gameStatusManager.allGameStates[game.id] ?? false
                                 Label(
                                     isRunning ? "stop.fill".localized() : "play.fill".localized(),
                                     systemImage: isRunning ? "stop.fill" : "play.fill"
@@ -115,7 +120,8 @@ public struct SidebarView: View {
         .onChange(of: searchText) { _, _ in
             updateFilteredGames()
         }
-        .onChange(of: gameRepository.games) { _, _ in
+        .onChange(of: gameRepository.games.count) { _, _ in
+            // 只监听数量变化，而不是整个数组，减少不必要的更新
             updateFilteredGames()
         }
         .onAppear {
@@ -158,17 +164,23 @@ public struct SidebarView: View {
     private var displayedGames: [GameVersionInfo] {
         // 只处理需要显示的游戏ID
         let displayedIds = Array(filteredGameIds.prefix(displayedGameCount))
-        // 按需查找游戏对象，避免处理所有游戏
-        let gamesDict = Dictionary(uniqueKeysWithValues: gameRepository.games.map { ($0.id, $0) })
-        return displayedIds.compactMap { gamesDict[$0] }
+        // 使用缓存的字典，避免每次计算都创建新字典
+        return displayedIds.compactMap { gamesDictionary[$0] }
     }
 
     // 更新过滤后的游戏列表（只存储ID，延迟加载完整数据）
     private func updateFilteredGames() {
         let trimmedSearch = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let currentGamesCount = gameRepository.games.count
+
+        // 更新游戏字典缓存（只在游戏列表变化时更新）
+        if currentGamesCount != lastGamesCount {
+            gamesDictionary = Dictionary(uniqueKeysWithValues: gameRepository.games.map { ($0.id, $0) })
+            lastGamesCount = currentGamesCount
+        }
 
         // 如果搜索文本没有变化，且游戏列表没有变化，则不需要重新计算
-        if trimmedSearch == cachedSearchText && gameRepository.games.count == filteredGameIds.count {
+        if trimmedSearch == cachedSearchText && currentGamesCount == filteredGameIds.count {
             return
         }
 

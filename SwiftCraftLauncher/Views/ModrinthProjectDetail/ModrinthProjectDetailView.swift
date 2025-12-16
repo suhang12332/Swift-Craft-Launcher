@@ -18,10 +18,7 @@ private enum Constants {
 
 // MARK: - ModrinthProjectDetailView
 struct ModrinthProjectDetailView: View {
-    @Binding var selectedTab: Int
     let projectDetail: ModrinthProjectDetail?
-    @Binding var currentPage: Int
-    @Binding var versionTotal: Int
 
     var body: some View {
         if let project = projectDetail {
@@ -108,18 +105,7 @@ struct ModrinthProjectDetailView: View {
     // MARK: - Project Content
     private func projectContent(_ project: ModrinthProjectDetail) -> some View {
         VStack(alignment: .leading, spacing: Constants.spacing) {
-            switch selectedTab {
-            case 0:
-                descriptionView(project)
-            case 1:
-                ModrinthProjectDetailVersionView(
-                    currentPage: $currentPage,
-                    versionTotal: $versionTotal,
-                    projectId: project.id
-                )
-            default:
-                EmptyView()
-            }
+            descriptionView(project)
         }
         .padding(.horizontal, Constants.padding)
         .padding(.bottom, Constants.spacing)

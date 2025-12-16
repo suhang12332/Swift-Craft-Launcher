@@ -138,9 +138,6 @@ public struct DetailToolbarView: ToolbarContent {
                 if selectProjectId != nil {
                     ModrinthProjectDetailToolbarView(
                         projectDetail: project,
-                        selectedTab: $selectedTab,
-                        versionCurrentPage: $versionCurrentPage,
-                        versionTotal: $versionTotal,
                         gameId: gameId
                     ) {
                         if let id = gameId {

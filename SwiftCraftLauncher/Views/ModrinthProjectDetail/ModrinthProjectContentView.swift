@@ -241,8 +241,17 @@ private struct ProjectLink: View {
     }
 }
 
-private struct DetailsSection: View {
+private struct DetailsSection: View, Equatable {
     let project: ModrinthProjectDetail
+    
+    // 缓存日期格式化结果，避免每次渲染都重新计算
+    private var publishedDateString: String {
+        project.published.formatted(.relative(presentation: .named))
+    }
+    
+    private var updatedDateString: String {
+        project.updated.formatted(.relative(presentation: .named))
+    }
 
     var body: some View {
         SectionView(title: "project.info.details".localized()) {
@@ -256,18 +265,22 @@ private struct DetailsSection: View {
 
                 DetailRow(
                     label: "project.info.details.published".localized(),
-                    value: project.published.formatted(
-                        .relative(presentation: .named)
-                    )
+                    value: publishedDateString
                 )
                 DetailRow(
                     label: "project.info.details.updated".localized(),
-                    value: project.updated.formatted(
-                        .relative(presentation: .named)
-                    )
+                    value: updatedDateString
                 )
             }
         }
+    }
+    
+    // 实现 Equatable，避免不必要的重新渲染
+    static func == (lhs: DetailsSection, rhs: DetailsSection) -> Bool {
+        lhs.project.id == rhs.project.id &&
+        lhs.project.license?.id == rhs.project.license?.id &&
+        lhs.project.published == rhs.project.published &&
+        lhs.project.updated == rhs.project.updated
     }
 }
 
@@ -349,7 +362,7 @@ struct ModrinthProjectContentView: View {
 // MARK: - Helper Views
 private struct SectionView<Content: View>: View {
     let title: String
-    let content: () -> Content
+    @ViewBuilder let content: () -> Content
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -362,18 +375,27 @@ private struct SectionView<Content: View>: View {
     }
 }
 
-private struct DetailRow: View {
+private struct DetailRow: View, Equatable {
     let label: String
     let value: String
 
     var body: some View {
-        HStack {
+        HStack(alignment: .firstTextBaseline) {
             Text(label)
                 .font(.callout.bold())
-            Spacer()
+                .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 8)
             Text(value)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+                .multilineTextAlignment(.trailing)
+                .fixedSize(horizontal: false, vertical: true)
         }
+        .frame(minHeight: 20) // 设置最小高度，减少布局计算
+    }
+    
+    // 实现 Equatable，避免不必要的重新渲染
+    static func == (lhs: DetailRow, rhs: DetailRow) -> Bool {
+        lhs.label == rhs.label && lhs.value == rhs.value
     }
 }
