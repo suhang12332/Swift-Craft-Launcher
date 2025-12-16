@@ -169,7 +169,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
 extension SparkleUpdateService {
     func updater(_ updater: SPUUpdater, willDownloadUpdate item: SUAppcastItem, with request: NSMutableURLRequest) {
         guard let originalURL = request.url else { return }
-        
+
         let proxiedURL = URLConfig.applyGitProxyIfNeeded(originalURL)
         if proxiedURL != originalURL {
             Logger.shared.info("更新下载链接已重写：\(originalURL.absoluteString) -> \(proxiedURL.absoluteString)")
