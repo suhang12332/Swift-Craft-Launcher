@@ -509,15 +509,8 @@ class JavaRuntimeService {
         var request = URLRequest(url: url)
         request.httpMethod = "HEAD"
 
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "无法获取文件大小 - 响应类型错误",
-                i18nKey: "error.network.cannot_get_file_size",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端（HEAD 请求需要返回响应头）
+        let (_, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
 
         guard httpResponse.statusCode == 200 else {
             throw GlobalError.network(

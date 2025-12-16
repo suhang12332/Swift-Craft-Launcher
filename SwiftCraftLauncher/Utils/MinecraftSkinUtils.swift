@@ -440,19 +440,13 @@ struct MinecraftSkinUtils: View {
             )
         }
 
-        // 使用共享的 URLSession，避免每次请求都创建新的 session
-        let (data, response) = try await Self.sharedURLSession.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.download(
-                chineseMessage: "皮肤下载失败: 无效的HTTP响应",
-                i18nKey: "error.download.skin_download_failed",
-                level: .silent
-            )
-        }
-
+        // 使用统一的 API 客户端（需要处理非 200 状态码）
+        var request = URLRequest(url: url)
+        let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
+        
         switch httpResponse.statusCode {
-        case 200: return data
+        case 200: 
+            return data
         case 404:
             throw GlobalError.resource(
                 chineseMessage: "皮肤资源未找到: \(src)",
