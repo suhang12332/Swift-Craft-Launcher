@@ -120,11 +120,18 @@ enum MinecraftLaunchCommandBuilder {
     }
 
     private static func substituteVariables(_ arg: String, with map: [String: String]) -> String {
-        var result = arg
+        // 使用 NSMutableString 避免在循环中创建大量临时字符串
+        let result = NSMutableString(string: arg)
         for (key, value) in map {
-            result = result.replacingOccurrences(of: "${\(key)}", with: value)
+            let placeholder = "${\(key)}"
+            result.replaceOccurrences(
+                of: placeholder,
+                with: value,
+                options: [],
+                range: NSRange(location: 0, length: result.length)
+            )
         }
-        return result
+        return result as String
     }
 
     private static func buildClasspath(_ libraries: [Library], librariesDir: URL, clientJarPath: String, modClassPath: String, minecraftVersion: String) -> String {

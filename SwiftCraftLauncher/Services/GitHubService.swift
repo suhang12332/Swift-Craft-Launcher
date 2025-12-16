@@ -80,9 +80,23 @@ public class GitHubService: ObservableObject {
         let content = (json?["content"] as? String) ?? ""
 
         // 清理 base64 字符串中的换行符和空格
-        let cleanedContent = content
-            .replacingOccurrences(of: "\n", with: "")
-            .replacingOccurrences(of: " ", with: "")
+        // 使用 NSMutableString 避免链式调用创建多个临时字符串
+        let cleanedContent = {
+            let mutableContent = NSMutableString(string: content)
+            mutableContent.replaceOccurrences(
+                of: "\n",
+                with: "",
+                options: [],
+                range: NSRange(location: 0, length: mutableContent.length)
+            )
+            mutableContent.replaceOccurrences(
+                of: " ",
+                with: "",
+                options: [],
+                range: NSRange(location: 0, length: mutableContent.length)
+            )
+            return mutableContent as String
+        }()
 
         guard let decodedData = Data(base64Encoded: cleanedContent),
               let text = String(data: decodedData, encoding: .utf8) else {
