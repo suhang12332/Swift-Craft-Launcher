@@ -153,7 +153,8 @@ private struct PlatformSupportSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("platform.support".localized() + ":")
+            // 使用字符串插值而非字符串拼接
+            Text("\("platform.support".localized()):")
                 .font(.headline)
             HStack(spacing: 8) {
                 PlatformSupportItem(

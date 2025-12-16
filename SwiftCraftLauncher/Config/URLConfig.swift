@@ -25,9 +25,10 @@ enum URLConfig {
         guard isGitHubURL else { return url }
 
         // 避免重复加前缀
-        if urlString.hasPrefix(proxy + "/") { return url }
+        if urlString.hasPrefix("\(proxy)/") { return url }
 
-        let proxiedString = proxy.hasSuffix("/") ? proxy + urlString : proxy + "/" + urlString
+        // 使用字符串插值而非字符串拼接
+        let proxiedString = proxy.hasSuffix("/") ? "\(proxy)\(urlString)" : "\(proxy)/\(urlString)"
         return Self.url(proxiedString)
     }
 

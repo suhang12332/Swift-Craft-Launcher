@@ -225,8 +225,9 @@ class GameCreationViewModel: BaseGameFormViewModel {
 
             do {
                 let data = try Data(contentsOf: url)
+                // 使用字符串插值而非字符串拼接
                 let tempURL = FileManager.default.temporaryDirectory
-                    .appendingPathComponent(UUID().uuidString + ".png")
+                    .appendingPathComponent("\(UUID().uuidString).png")
                 try data.write(to: tempURL)
                 pendingIconURL = tempURL
                 pendingIconData = data
@@ -267,8 +268,9 @@ class GameCreationViewModel: BaseGameFormViewModel {
 
                 if let data = data {
                     DispatchQueue.main.async {
-                        let tempURL = FileManager.default.temporaryDirectory
-                            .appendingPathComponent(UUID().uuidString + ".png")
+                        // 使用字符串插值而非字符串拼接
+                    let tempURL = FileManager.default.temporaryDirectory
+                            .appendingPathComponent("\(UUID().uuidString).png")
                         do {
                             try data.write(to: tempURL)
                             self.pendingIconURL = tempURL

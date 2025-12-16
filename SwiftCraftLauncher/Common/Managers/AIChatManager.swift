@@ -486,8 +486,9 @@ class AIChatManager: ObservableObject {
         guard let fileContent = await loadFileAsText(url: url) else { return nil }
 
         let maxLength = 5000
+        // 使用字符串插值而非字符串拼接
         let truncatedContent = fileContent.count > maxLength
-            ? String(fileContent.prefix(maxLength)) + "\n... " + "ai.file.content_truncated".localized()
+            ? "\(String(fileContent.prefix(maxLength)))\n... \("ai.file.content_truncated".localized())"
             : fileContent
 
         return String(format: "ai.file.content".localized(), fileName, truncatedContent)

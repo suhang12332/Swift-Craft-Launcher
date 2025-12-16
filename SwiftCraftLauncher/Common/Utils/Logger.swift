@@ -326,8 +326,8 @@ class Logger {
         case let data as Data:
             return String(data: data, encoding: .utf8) ?? "<Data>"
         case let array as [Any]:
-            return "[" + array.map { stringify($0) }.joined(separator: ", ")
-            + "]"
+            // 使用字符串插值而非字符串拼接
+            return "[\(array.map { stringify($0) }.joined(separator: ", "))]"
         case let dict as [String: Any]:
             return dict.map { "\($0): \(stringify($1))" }.joined(
                 separator: ", "

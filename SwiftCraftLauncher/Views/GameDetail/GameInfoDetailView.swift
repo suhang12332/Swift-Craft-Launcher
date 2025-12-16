@@ -139,7 +139,7 @@ struct GameInfoDetailView: View {
                     Label(
                         game.modVersion.isEmpty
                             ? game.modLoader
-                            : game.modLoader + "-" + game.modVersion,
+                            : "\(game.modLoader)-\(game.modVersion)",
                         systemImage: "puzzlepiece.extension.fill"
                     )
                     .font(.subheadline)

@@ -230,7 +230,8 @@ enum PlayerSkinService {
     ) async throws {
         try validateAccessToken(player)
 
-        let boundary = "Boundary-" + UUID().uuidString
+        // 使用字符串插值而非字符串拼接
+        let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         func appendField(name: String, value: String) {
             if let fieldData =
