@@ -243,12 +243,12 @@ private struct ProjectLink: View {
 
 private struct DetailsSection: View, Equatable {
     let project: ModrinthProjectDetail
-    
+
     // 缓存日期格式化结果，避免每次渲染都重新计算
     private var publishedDateString: String {
         project.published.formatted(.relative(presentation: .named))
     }
-    
+
     private var updatedDateString: String {
         project.updated.formatted(.relative(presentation: .named))
     }
@@ -274,9 +274,9 @@ private struct DetailsSection: View, Equatable {
             }
         }
     }
-    
+
     // 实现 Equatable，避免不必要的重新渲染
-    static func == (lhs: DetailsSection, rhs: DetailsSection) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.project.id == rhs.project.id &&
         lhs.project.license?.id == rhs.project.license?.id &&
         lhs.project.published == rhs.project.published &&
@@ -393,9 +393,9 @@ private struct DetailRow: View, Equatable {
         }
         .frame(minHeight: 20) // 设置最小高度，减少布局计算
     }
-    
+
     // 实现 Equatable，避免不必要的重新渲染
-    static func == (lhs: DetailRow, rhs: DetailRow) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.label == rhs.label && lhs.value == rhs.value
     }
 }
