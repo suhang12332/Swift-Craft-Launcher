@@ -12,8 +12,8 @@ enum SettingsTab: Int {
 /// 通用设置视图
 /// 用于显示应用程序的设置选项
 public struct SettingsView: View {
-    @ObservedObject private var general = GeneralSettingsManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @StateObject private var general = GeneralSettingsManager.shared
+    @StateObject private var selectedGameManager = SelectedGameManager.shared
     @EnvironmentObject private var gameRepository: GameRepository
     @State private var selectedTab: SettingsTab = .general
 

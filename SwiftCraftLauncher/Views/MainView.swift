@@ -11,8 +11,8 @@ struct MainView: View {
     // MARK: - State & Environment
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var selectedItem: SidebarItem = .resource(.mod)
-    @ObservedObject private var general = GeneralSettingsManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @StateObject private var general = GeneralSettingsManager.shared
+    @StateObject private var selectedGameManager = SelectedGameManager.shared
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Resource/Project State

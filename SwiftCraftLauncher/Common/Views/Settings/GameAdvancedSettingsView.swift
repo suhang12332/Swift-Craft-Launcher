@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GameAdvancedSettingsView: View {
     @EnvironmentObject var gameRepository: GameRepository
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @StateObject private var selectedGameManager = SelectedGameManager.shared
 
     @State private var memoryRange: ClosedRange<Double> = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
     @State private var selectedGarbageCollector: GarbageCollector = .g1gc

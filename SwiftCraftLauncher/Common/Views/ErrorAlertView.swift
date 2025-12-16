@@ -2,7 +2,7 @@ import SwiftUI
 
 /// 错误弹窗修饰符
 struct ErrorAlertModifier: ViewModifier {
-    @ObservedObject private var errorHandler = GlobalErrorHandler.shared
+    @StateObject private var errorHandler = GlobalErrorHandler.shared
 
     func body(content: Content) -> some View {
         content

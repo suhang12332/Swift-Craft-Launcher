@@ -379,7 +379,7 @@ class GlobalErrorHandler: ObservableObject {
 
 /// 错误处理视图修饰符（已废弃，使用 errorAlert() 替代）
 struct GlobalErrorHandlerModifier: ViewModifier {
-    @ObservedObject private var errorHandler = GlobalErrorHandler.shared
+    @StateObject private var errorHandler = GlobalErrorHandler.shared
 
     func body(content: Content) -> some View {
         content

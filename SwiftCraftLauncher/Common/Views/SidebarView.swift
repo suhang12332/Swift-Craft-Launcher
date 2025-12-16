@@ -10,7 +10,7 @@ public struct SidebarView: View {
     @State private var gameToDelete: GameVersionInfo?
     @StateObject private var gameActionManager = GameActionManager.shared
     @StateObject private var gameStatusManager = GameStatusManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @StateObject private var selectedGameManager = SelectedGameManager.shared
 
     @Environment(\.openSettings)
     private var openSettings

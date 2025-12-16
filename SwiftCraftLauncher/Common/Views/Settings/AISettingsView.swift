@@ -8,7 +8,7 @@
 import SwiftUI
 
 public struct AISettingsView: View {
-    @ObservedObject private var aiSettings = AISettingsManager.shared
+    @StateObject private var aiSettings = AISettingsManager.shared
     @State private var showApiKey = false
     public var body: some View {
         Form {

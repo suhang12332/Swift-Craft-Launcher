@@ -86,7 +86,7 @@ extension LocalResourceInstaller {
         let onResourceChanged: () -> Void
 
         @State private var showImporter = false
-        @ObservedObject private var errorHandler = GlobalErrorHandler.shared
+        @StateObject private var errorHandler = GlobalErrorHandler.shared
 
         var body: some View {
             VStack(spacing: 8) {

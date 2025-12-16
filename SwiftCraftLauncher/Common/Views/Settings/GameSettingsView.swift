@@ -4,7 +4,7 @@ import SwiftUI
 public struct GameSettingsView: View {
     @StateObject private var cacheManager = CacheManager()
 
-    @ObservedObject private var gameSettings = GameSettingsManager.shared
+    @StateObject private var gameSettings = GameSettingsManager.shared
 
     // 内存区间
     @State private var globalMemoryRange: ClosedRange<Double> = 512...4096

@@ -14,7 +14,7 @@ struct AIChatWindowView: View {
     @ObservedObject var chatState: ChatState
     @StateObject private var playerListViewModel = PlayerListViewModel()
     @StateObject private var gameRepository = GameRepository()
-    @ObservedObject private var aiSettings = AISettingsManager.shared
+    @StateObject private var aiSettings = AISettingsManager.shared
     @State private var inputText = ""
     @State private var pendingAttachments: [MessageAttachmentType] = []
     @FocusState private var isInputFocused: Bool

@@ -64,7 +64,7 @@ struct AddOrDeleteResourceButton: View {
     @State private var showDeleteAlert = false
     @State private var showNoGameAlert = false
     @State private var showPlayerAlert = false  // 新增：玩家验证 alert
-    @ObservedObject private var gameSettings = GameSettingsManager.shared
+    @StateObject private var gameSettings = GameSettingsManager.shared
     @StateObject private var depVM = DependencySheetViewModel()
     @State private var isDownloadingAllDependencies = false
     @State private var isDownloadingMainResourceOnly = false

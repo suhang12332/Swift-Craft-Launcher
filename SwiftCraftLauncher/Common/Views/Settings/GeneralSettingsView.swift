@@ -1,7 +1,7 @@
 import SwiftUI
 
 public struct GeneralSettingsView: View {
-    @ObservedObject private var generalSettings = GeneralSettingsManager.shared
+    @StateObject private var generalSettings = GeneralSettingsManager.shared
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var sparkleUpdateService: SparkleUpdateService
     @State private var showDirectoryPicker = false

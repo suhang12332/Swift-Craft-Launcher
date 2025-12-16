@@ -136,7 +136,7 @@ struct PlayerListView: View {
 
 private struct PlayerSelectorLabel: View {
     let selectedPlayer: Player?
-    @ObservedObject private var statusManager = PlayerStatusManager.shared
+    @StateObject private var statusManager = PlayerStatusManager.shared
 
     var body: some View {
         if let selectedPlayer = selectedPlayer {
@@ -170,7 +170,7 @@ private struct PlayerListItemView: View {
     @Binding var playerToDelete: Player?
     @Binding var showDeleteAlert: Bool
     @Binding var showingPlayerListPopover: Bool
-    @ObservedObject private var statusManager = PlayerStatusManager.shared
+    @StateObject private var statusManager = PlayerStatusManager.shared
 
     var body: some View {
         HStack {
