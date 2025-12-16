@@ -99,6 +99,11 @@ struct ModrinthDetailView: View {
                 Text(error.chineseMessage)
             }
         }
+        .onDisappear {
+            // 清理搜索定时器，避免内存泄漏
+            searchTimer?.invalidate()
+            searchTimer = nil
+        }
     }
 
     // MARK: - Private Methods

@@ -130,10 +130,10 @@ struct AIChatWindowView: View {
                 updateAIAvatarCache()
             }
         }
-//        .onDisappear {
-//            // 窗口关闭时清理头像缓存
-//            clearAvatarCache()
-//        }
+        .onDisappear {
+            // 窗口关闭时清理头像缓存
+            clearAvatarCache()
+        }
     }
 
     // MARK: - Computed Properties

@@ -59,6 +59,12 @@ struct ModPackImportView: View {
                 viewModel.updateParentState()
             }
         }
+        .onDisappear {
+            // 视图消失时，如果正在下载，取消下载任务以避免资源泄漏
+            if viewModel.isDownloading {
+                viewModel.cancelDownloadIfNeeded()
+            }
+        }
     }
 
     // MARK: - View Components

@@ -82,6 +82,12 @@ struct GameInfoDetailView: View {
         .onAppear {
             cacheManager.calculateGameCacheInfo(game.gameName)
         }
+        .onDisappear {
+            // 清理视图状态，避免内存泄漏
+            // 注意：ModScanner 的扫描任务无法直接取消，但重置状态可以避免不必要的更新
+            isLoadingResources = false
+            error = nil
+        }
         .alert(
             "error.notification.validation.title".localized(),
             isPresented: .constant(error != nil)
