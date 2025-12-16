@@ -11,7 +11,8 @@ public class GitHubService: ObservableObject {
     /// 获取仓库贡献者列表
     public func fetchContributors(perPage: Int = 50) async throws -> [GitHubContributor] {
         let url = URLConfig.API.GitHub.contributors(perPage: perPage)
-        let (data, _) = try await URLSession.shared.data(from: url)
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: url)
         return try JSONDecoder().decode([GitHubContributor].self, from: data)
     }
 
@@ -20,14 +21,8 @@ public class GitHubService: ObservableObject {
     /// 获取静态贡献者原始数据（JSON）
     private func fetchStaticContributorsData() async throws -> Data {
         let url = URLConfig.API.GitHub.staticContributors()
-        let (data, response) = try await URLSession.shared.data(from: url)
-
-        if let httpResponse = response as? HTTPURLResponse,
-           httpResponse.statusCode != 200 {
-            throw GitHubServiceError.httpError(statusCode: httpResponse.statusCode)
-        }
-
-        return data
+        // 使用统一的 API 客户端
+        return try await APIClient.get(url: url)
     }
 
     /// 获取静态贡献者解码后的数据
@@ -41,18 +36,9 @@ public class GitHubService: ObservableObject {
     /// 获取开源致谢原始数据（JSON）
     private func fetchAcknowledgementsData() async throws -> Data {
         let url = URLConfig.API.GitHub.acknowledgements()
-        var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.timeoutInterval = 10.0
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        if let httpResponse = response as? HTTPURLResponse,
-           httpResponse.statusCode != 200 {
-            throw GitHubServiceError.httpError(statusCode: httpResponse.statusCode)
-        }
-
-        return data
+        // 使用统一的 API 客户端
+        let headers = ["Accept": "application/json"]
+        return try await APIClient.get(url: url, headers: headers)
     }
 
     /// 获取开源致谢解码后的数据
@@ -66,14 +52,9 @@ public class GitHubService: ObservableObject {
     /// 获取仓库 LICENSE 文本内容
     public func fetchLicenseText() async throws -> String {
         let url = URLConfig.API.GitHub.license()
-
-        let (data, response) = try await URLSession.shared.data(from: url)
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw GitHubServiceError.httpError(
-                statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1
-            )
-        }
+        
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: url)
 
         // 解析 GitHub API 响应并直接进行 base64 解码
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
@@ -122,20 +103,9 @@ public class GitHubService: ObservableObject {
             language: language
         )
 
-        var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-        request.timeoutInterval = 10.0
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard
-            let httpResponse = response as? HTTPURLResponse,
-            httpResponse.statusCode == 200
-        else {
-            throw GitHubServiceError.httpError(
-                statusCode: (response as? HTTPURLResponse)?.statusCode ?? -1
-            )
-        }
+        // 使用统一的 API 客户端
+        let headers = ["Accept": "application/json"]
+        let data = try await APIClient.get(url: url, headers: headers)
 
         let announcementResponse = try JSONDecoder().decode(
             AnnouncementResponse.self,

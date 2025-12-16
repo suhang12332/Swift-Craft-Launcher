@@ -28,7 +28,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     /// 在 ModPack 安装完成后调用
     func clearParsedIndexInfo() {
         lastParsedIndexInfo = nil
-        Logger.shared.debug("已清理 ModPack 索引数据以释放内存")
     }
 
     private var allModPackVersions: [ModrinthProjectDetailVersion] = []
@@ -91,57 +90,26 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         projectDetail: ModrinthProjectDetail
     ) async -> URL? {
         do {
-            // 验证下载链接
-            guard let url = URL(string: file.url) else {
-                handleDownloadError(
-                    "无效的下载链接: \(file.url)",
-                    "error.validation.invalid_download_url"
-                )
-                return nil
-            }
-
             // 创建临时目录
             let tempDir = try createTempDirectory(for: "modpack_download")
             let savePath = tempDir.appendingPathComponent(file.filename)
 
-            // 下载文件
-            let (tempFileURL, response) = try await URLSession.shared.download(
-                from: url
-            )
-            defer { try? FileManager.default.removeItem(at: tempFileURL) }
-
-            // 验证响应
-            guard let httpResponse = response as? HTTPURLResponse,
-                httpResponse.statusCode == 200
-            else {
+            // 使用 DownloadManager 下载文件（已包含 SHA1 校验和临时文件清理）
+            do {
+                _ = try await DownloadManager.downloadFile(
+                    urlString: file.url,
+                    destinationURL: savePath,
+                    expectedSha1: file.hashes.sha1
+                )
+                return savePath
+            } catch {
+                let globalError = GlobalError.from(error)
                 handleDownloadError(
-                    "下载失败，HTTP状态码: \((response as? HTTPURLResponse)?.statusCode ?? 0)",
-                    "error.network.download_failed"
+                    globalError.chineseMessage,
+                    globalError.i18nKey
                 )
                 return nil
             }
-
-            // 验证文件大小
-            if !validateFileSize(
-                tempFileURL: tempFileURL,
-                httpResponse: httpResponse
-            ) {
-                return nil
-            }
-
-            // 验证文件完整性
-            if !validateFileIntegrity(
-                tempFileURL: tempFileURL,
-                expectedSha1: file.hashes.sha1
-            ) {
-                return nil
-            }
-
-            // 移动到临时目录
-            try FileManager.default.moveItem(at: tempFileURL, to: savePath)
-
-            Logger.shared.info("整合包下载成功: \(file.filename) -> \(savePath.path)")
-            return savePath
         } catch {
             let globalError = GlobalError.from(error)
             GlobalErrorHandler.shared.handle(globalError)
@@ -155,10 +123,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     ) async -> String? {
         do {
             // 验证图标URL
-            guard let iconUrl = projectDetail.iconUrl,
-                let url = URL(string: iconUrl)
-            else {
-                Logger.shared.warning("项目没有图标URL或URL无效: \(projectDetail.title)")
+            guard let iconUrl = projectDetail.iconUrl else {
                 return nil
             }
 
@@ -175,50 +140,24 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             let iconFileName = "default_game_icon.png"
             let iconPath = gameDirectory.appendingPathComponent(iconFileName)
 
-            // 下载图标文件
-            let (tempFileURL, response) = try await URLSession.shared.download(
-                from: url
-            )
-            defer { try? FileManager.default.removeItem(at: tempFileURL) }
-
-            // 验证响应
-            guard let httpResponse = response as? HTTPURLResponse,
-                httpResponse.statusCode == 200
-            else {
+            // 使用 DownloadManager 下载图标文件（已包含错误处理和临时文件清理）
+            do {
+                _ = try await DownloadManager.downloadFile(
+                    urlString: iconUrl,
+                    destinationURL: iconPath,
+                    expectedSha1: nil
+                )
+                return iconFileName
+            } catch {
                 handleDownloadError(
-                    "下载游戏图标失败，HTTP状态码: \((response as? HTTPURLResponse)?.statusCode ?? 0)",
+                    "下载游戏图标失败",
                     "error.network.icon_download_failed"
                 )
                 return nil
             }
-
-            // 验证文件大小
-            let fileAttributes = try FileManager.default.attributesOfItem(
-                atPath: tempFileURL.path
-            )
-            let actualSize = fileAttributes[.size] as? Int64 ?? 0
-
-            guard actualSize > 0 else {
-                handleDownloadError("下载的游戏图标文件为空", "error.resource.icon_empty")
-                return nil
-            }
-
-            // 如果目标文件已存在，先删除
-            if FileManager.default.fileExists(atPath: iconPath.path) {
-                try FileManager.default.removeItem(at: iconPath)
-            }
-
-            // 直接移动到游戏目录（保存为 PNG）
-            try FileManager.default.moveItem(at: tempFileURL, to: iconPath)
-
-            Logger.shared.info(
-                "游戏图标下载成功: \(projectDetail.title) -> \(iconPath.path)"
-            )
-            return iconFileName
         } catch {
-            Logger.shared.error("下载游戏图标详细错误: \(error)")
             handleDownloadError(
-                "下载游戏图标失败: \(error.localizedDescription)",
+                "下载游戏图标失败",
                 "error.network.icon_download_failed"
             )
             return nil
@@ -228,8 +167,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     func extractModPack(modPackPath: URL) async -> URL? {
         do {
             let fileExtension = modPackPath.pathExtension.lowercased()
-
-            Logger.shared.info("开始解压整合包: \(modPackPath.lastPathComponent)")
 
             // 检查文件格式
             guard fileExtension == "zip" || fileExtension == "mrpack" else {
@@ -241,10 +178,11 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             }
 
             // 检查源文件是否存在
-            guard FileManager.default.fileExists(atPath: modPackPath.path)
+            let modPackPathString = modPackPath.path
+            guard FileManager.default.fileExists(atPath: modPackPathString)
             else {
                 handleDownloadError(
-                    "整合包文件不存在: \(modPackPath.path)",
+                    "整合包文件不存在: \(modPackPathString)",
                     "error.filesystem.file_not_found"
                 )
                 return nil
@@ -252,10 +190,9 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
             // 获取源文件大小
             let sourceAttributes = try FileManager.default.attributesOfItem(
-                atPath: modPackPath.path
+                atPath: modPackPathString
             )
             let sourceSize = sourceAttributes[.size] as? Int64 ?? 0
-            Logger.shared.info("整合包文件大小: \(sourceSize) 字节")
 
             guard sourceSize > 0 else {
                 handleDownloadError("整合包文件为空", "error.resource.modpack_empty")
@@ -265,36 +202,12 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             // 创建临时解压目录
             let tempDir = try createTempDirectory(for: "modpack_extraction")
 
-            Logger.shared.info("创建临时解压目录: \(tempDir.path)")
-
             // 使用 ZIPFoundation 解压文件
             try FileManager.default.unzipItem(at: modPackPath, to: tempDir)
 
-            // 验证解压结果
-            let contents = try FileManager.default.contentsOfDirectory(
-                at: tempDir,
-                includingPropertiesForKeys: nil
-            )
-            Logger.shared.info(
-                "解压完成，目录内容: \(contents.map { $0.lastPathComponent })"
-            )
-
-            // 检查是否包含 modrinth.index.json
-            let indexPath = tempDir.appendingPathComponent(
-                "modrinth.index.json"
-            )
-            if FileManager.default.fileExists(atPath: indexPath.path) {
-                Logger.shared.info("找到 modrinth.index.json 文件")
-            } else {
-                Logger.shared.warning("解压后未找到 modrinth.index.json 文件")
-            }
-
-            Logger.shared.info(
-                "整合包解压成功: \(modPackPath.lastPathComponent) -> \(tempDir.path)"
-            )
+            // 仅保留关键日志
             return tempDir
         } catch {
-            Logger.shared.error("解压整合包详细错误: \(error)")
             handleDownloadError(
                 "解压整合包失败: \(error.localizedDescription)",
                 "error.filesystem.extraction_failed"
@@ -329,19 +242,16 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 "modrinth.index.json"
             )
 
-            Logger.shared.info("尝试解析 modrinth.index.json: \(indexPath.path)")
-
-            guard FileManager.default.fileExists(atPath: indexPath.path) else {
-                Logger.shared.info("未找到 modrinth.index.json，可能是 CurseForge 格式")
+            let indexPathString = indexPath.path
+            guard FileManager.default.fileExists(atPath: indexPathString) else {
                 return nil
             }
 
             // 获取文件大小
             let fileAttributes = try FileManager.default.attributesOfItem(
-                atPath: indexPath.path
+                atPath: indexPathString
             )
             let fileSize = fileAttributes[.size] as? Int64 ?? 0
-            Logger.shared.info("modrinth.index.json 文件大小: \(fileSize) 字节")
 
             guard fileSize > 0 else {
                 handleDownloadError(
@@ -352,9 +262,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             }
 
             let indexData = try Data(contentsOf: indexPath)
-            Logger.shared.info(
-                "成功读取 modrinth.index.json 数据，大小: \(indexData.count) 字节"
-            )
 
             // 尝试解析 JSON
             let modPackIndex = try JSONDecoder().decode(
@@ -380,19 +287,14 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             )
 
             lastParsedIndexInfo = indexInfo
-            Logger.shared.info(
-                "解析 modrinth.index.json 成功: \(modPackIndex.name) v\(modPackIndex.versionId)"
-            )
 
+            // 仅保留关键日志
             return indexInfo
         } catch {
-            Logger.shared.error("解析 modrinth.index.json 详细错误: \(error)")
-
-            // 如果是 JSON 解析错误，尝试显示部分内容
-            if let jsonError = error as? DecodingError {
-                Logger.shared.error("JSON 解析错误: \(jsonError)")
+            // 仅记录错误日志
+            if error is DecodingError {
+                Logger.shared.error("解析 modrinth.index.json 失败: JSON 格式错误")
             }
-
             return nil
         }
     }

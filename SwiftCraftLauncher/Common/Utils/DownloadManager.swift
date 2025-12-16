@@ -36,7 +36,7 @@ enum DownloadManager {
     static func downloadResource(for game: GameVersionInfo, urlString: String, resourceType: String, expectedSha1: String? = nil) async throws -> URL {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
-                chineseMessage: "无效的下载地址: \(urlString)",
+                chineseMessage: "无效的下载地址",
                 i18nKey: "error.validation.invalid_download_url",
                 level: .notification
             )
@@ -44,7 +44,7 @@ enum DownloadManager {
 
         guard let type = ResourceType(from: resourceType) else {
             throw GlobalError.resource(
-                chineseMessage: "未知的资源类型: \(resourceType)",
+                chineseMessage: "未知的资源类型",
                 i18nKey: "error.resource.unknown_type",
                 level: .notification
             )
@@ -71,7 +71,7 @@ enum DownloadManager {
 
         guard let resourceDirUnwrapped = resourceDir else {
             throw GlobalError.resource(
-                chineseMessage: "无法获取资源目录: \(type.folderName) for game: \(game.gameName)",
+                chineseMessage: "无法获取资源目录",
                 i18nKey: "error.resource.directory_not_found",
                 level: .notification
             )
@@ -93,17 +93,18 @@ enum DownloadManager {
         destinationURL: URL,
         expectedSha1: String? = nil
     ) async throws -> URL {
-        Logger.shared.info("下载文件 \(urlString) -> \(destinationURL.path)")
+        // 仅对 GitHub 相关域名应用代理（避免重复字符串操作）
+        let finalURLString: String
+        if urlString.hasPrefix("https://github.com/") || urlString.hasPrefix("https://raw.githubusercontent.com/") {
+            finalURLString = URLConfig.applyGitProxyIfNeeded(urlString)
+        } else {
+            finalURLString = urlString
+        }
 
-        // 仅对 GitHub 相关域名应用代理
-        let isGitHubURL = urlString.hasPrefix("https://github.com/") ||
-                         urlString.hasPrefix("https://raw.githubusercontent.com/")
-
-        let finalURLString = isGitHubURL ? URLConfig.applyGitProxyIfNeeded(urlString) : urlString
-
+        // 创建 URL 对象（只创建一次）
         guard let url = URL(string: finalURLString) else {
             throw GlobalError.validation(
-                chineseMessage: "无效的下载地址: \(urlString)",
+                chineseMessage: "无效的下载地址",
                 i18nKey: "error.validation.invalid_download_url",
                 level: .notification
             )
@@ -115,7 +116,7 @@ enum DownloadManager {
             try fileManager.createDirectory(at: destinationURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "创建目标目录失败: \(error.localizedDescription)",
+                chineseMessage: "创建目标目录失败",
                 i18nKey: "error.filesystem.download_directory_creation_failed",
                 level: .notification
             )
@@ -125,21 +126,21 @@ enum DownloadManager {
         let shouldCheckSha1 = (expectedSha1?.isEmpty == false)
 
         // 如果文件已存在
-        if fileManager.fileExists(atPath: destinationURL.path) {
+        let destinationPath = destinationURL.path
+        if fileManager.fileExists(atPath: destinationPath) {
             if shouldCheckSha1, let expectedSha1 = expectedSha1 {
                 // 有 SHA1 时进行校验
                 do {
                     let actualSha1 = try calculateFileSHA1(at: destinationURL)
                     if actualSha1 == expectedSha1 {
-                        Logger.shared.info("文件已存在且 SHA1 校验通过，跳过下载: \(destinationURL.path)")
+                        // 仅保留关键日志
                         return destinationURL
                     }
                 } catch {
-                    Logger.shared.warning("SHA1 校验失败，将重新下载: \(error.localizedDescription)")
+                    // 仅记录错误，不记录警告
                 }
             } else {
                 // 没有 SHA1 时直接跳过
-                Logger.shared.info("文件已存在且无需 SHA1 校验，跳过下载: \(destinationURL.path)")
                 return destinationURL
             }
         }
@@ -147,9 +148,16 @@ enum DownloadManager {
         // 下载文件到临时位置
         do {
             let (tempFileURL, response) = try await URLSession.shared.download(from: url)
-            defer { try? fileManager.removeItem(at: tempFileURL) }
+            defer { 
+                // 确保临时文件被清理
+                try? fileManager.removeItem(at: tempFileURL)
+            }
 
-            guard let httpResponse = response as? HTTPURLResponse else {
+            // 提取响应信息后立即释放 response 对象
+            let statusCode: Int
+            if let httpResponse = response as? HTTPURLResponse {
+                statusCode = httpResponse.statusCode
+            } else {
                 throw GlobalError.download(
                     chineseMessage: "无效的 HTTP 响应",
                     i18nKey: "error.download.invalid_http_response",
@@ -157,9 +165,9 @@ enum DownloadManager {
                 )
             }
 
-            guard httpResponse.statusCode == 200 else {
+            guard statusCode == 200 else {
                 throw GlobalError.download(
-                    chineseMessage: "HTTP 请求失败，状态码: \(httpResponse.statusCode)",
+                    chineseMessage: "HTTP 请求失败",
                     i18nKey: "error.download.http_status_error",
                     level: .notification
                 )
@@ -171,7 +179,7 @@ enum DownloadManager {
                     let actualSha1 = try calculateFileSHA1(at: tempFileURL)
                     if actualSha1 != expectedSha1 {
                         throw GlobalError.validation(
-                            chineseMessage: "SHA1 校验失败，期望: \(expectedSha1)，实际: \(actualSha1)",
+                            chineseMessage: "SHA1 校验失败",
                             i18nKey: "error.validation.sha1_check_failed",
                             level: .notification
                         )
@@ -181,7 +189,7 @@ enum DownloadManager {
                         throw error
                     } else {
                         throw GlobalError.validation(
-                            chineseMessage: "SHA1 校验失败: \(error.localizedDescription)",
+                            chineseMessage: "SHA1 校验失败",
                             i18nKey: "error.validation.sha1_check_error",
                             level: .notification
                         )
@@ -202,15 +210,15 @@ enum DownloadManager {
             // 转换错误为 GlobalError
             if let globalError = error as? GlobalError {
                 throw globalError
-            } else if let urlError = error as? URLError {
+            } else if error is URLError {
                 throw GlobalError.download(
-                    chineseMessage: "网络请求失败: \(urlError.localizedDescription)",
+                    chineseMessage: "网络请求失败",
                     i18nKey: "error.download.network_request_failed",
                     level: .notification
                 )
             } else {
                 throw GlobalError.download(
-                    chineseMessage: "下载失败: \(error.localizedDescription)",
+                    chineseMessage: "下载失败",
                     i18nKey: "error.download.general_failure",
                     level: .notification
                 )

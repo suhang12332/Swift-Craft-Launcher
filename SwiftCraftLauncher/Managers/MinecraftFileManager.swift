@@ -62,16 +62,14 @@ class MinecraftFileManager {
 
         // 检查游戏文件夹是否存在
         guard fileManager.fileExists(atPath: profileDirectory.path) else {
-            Logger.shared.debug("游戏文件夹不存在，无需清理: \(profileDirectory.path)")
             return
         }
 
         do {
             try fileManager.removeItem(at: profileDirectory)
-            Logger.shared.info("成功清理游戏文件夹: \(profileDirectory.path)")
         } catch {
             throw GlobalError.fileSystem(
-                chineseMessage: "清理游戏文件夹失败: \(profileDirectory.path), 错误: \(error.localizedDescription)",
+                chineseMessage: "清理游戏文件夹失败",
                 i18nKey: "error.filesystem.game_deletion_failed",
                 level: .notification
             )
@@ -112,13 +110,6 @@ class MinecraftFileManager {
         manifest: MinecraftVersionManifest,
         gameName: String
     ) async throws {
-        Logger.shared.info(
-            String(
-                format: "log.minecraft.download.start".localized(),
-                manifest.id
-            )
-        )
-
         try createDirectories(manifestId: manifest.id, gameName: gameName)
 
         // Use bounded task groups to limit concurrency
@@ -132,13 +123,6 @@ class MinecraftFileManager {
 
             try await group.waitForAll()
         }
-
-        Logger.shared.info(
-            String(
-                format: "log.minecraft.download.complete".localized(),
-                manifest.id
-            )
-        )
     }
 
     // MARK: - Private Methods
@@ -192,11 +176,10 @@ class MinecraftFileManager {
                     at: directory,
                     withIntermediateDirectories: true
                 )
-                Logger.shared.debug("创建目录：\(directory.path)")
             } catch {
+                let directoryPath = directory.path
                 throw GlobalError.fileSystem(
-                    chineseMessage:
-                        "创建目录失败: \(directory.path), 错误: \(error.localizedDescription)",
+                    chineseMessage: "创建目录失败",
                     i18nKey: "error.filesystem.directory_creation_failed",
                     level: .notification
                 )
@@ -239,24 +222,26 @@ class MinecraftFileManager {
                 expectedSha1: manifest.downloads.client.sha1
             )
             incrementCompletedFilesCount(
-                fileName: "file.client.jar".localized(),
+                fileName: "client.jar",
                 type: .core
             )
         } catch {
-            let globalError = GlobalError.from(error)
-            throw GlobalError.download(
-                chineseMessage: "下载客户端 JAR 文件失败: \(globalError.chineseMessage)",
-                i18nKey: "error.download.client_jar_failed",
-                level: .notification
-            )
+            // 避免在错误处理中创建大量临时字符串
+            if let globalError = error as? GlobalError {
+                throw globalError
+            } else {
+                throw GlobalError.download(
+                    chineseMessage: "下载客户端 JAR 文件失败",
+                    i18nKey: "error.download.client_jar_failed",
+                    level: .notification
+                )
+            }
         }
     }
 
     private func downloadLibraries(
         manifest: MinecraftVersionManifest
     ) async throws {
-
-        Logger.shared.info("开始下载库文件")
         let osxLibraries = manifest.libraries.filter {
             shouldDownloadLibrary($0, minecraftVersion: manifest.id)
         }
@@ -266,6 +251,10 @@ class MinecraftFileManager {
             value: GeneralSettingsManager.shared.concurrentDownloads
         )
 
+        // 预先获取 metaDirectory，避免在循环中重复访问
+        let metaDirectory = AppPaths.metaDirectory
+        let minecraftVersion = manifest.id
+
         try await withThrowingTaskGroup(of: Void.self) { group in
             for library in osxLibraries {
                 group.addTask { [weak self] in
@@ -274,14 +263,13 @@ class MinecraftFileManager {
 
                     try await self?.downloadLibrary(
                         library,
-                        metaDirectory: AppPaths.metaDirectory,
-                        minecraftVersion: manifest.id
+                        metaDirectory: metaDirectory,
+                        minecraftVersion: minecraftVersion
                     )
                 }
             }
             try await group.waitForAll()
         }
-        Logger.shared.info("完成下载库文件")
     }
 
     private func downloadLibrary(
@@ -291,7 +279,6 @@ class MinecraftFileManager {
     ) async throws {
         // 检查库的规则是否适用于当前系统（包含 downloadable 检查）
         guard shouldDownloadLibrary(library, minecraftVersion: minecraftVersion) else {
-            Logger.shared.debug("跳过不适用于当前系统的库文件: \(library.name)")
             return
         }
 
@@ -311,33 +298,37 @@ class MinecraftFileManager {
             // 使用 Maven 坐标生成完整路径
             let fullPath = CommonService.convertMavenCoordinateToPath(library.name)
             destinationURL = URL(fileURLWithPath: fullPath)
-            Logger.shared.debug("库文件 \(library.name) 缺少路径信息，使用 Maven 坐标生成路径: \(fullPath)")
         }
 
         guard let artifactURL = library.downloads.artifact.url else {
             throw GlobalError.download(
-                chineseMessage: "库文件 \(library.name) 缺少下载 URL",
+                chineseMessage: "库文件缺少下载 URL",
                 i18nKey: "error.download.missing_library_url",
                 level: .notification
             )
         }
 
         do {
-            // DownloadManager.downloadFile 已经包含了文件存在性和校验逻辑
+            // 预先获取 URL 字符串，避免重复访问
+            let urlString = artifactURL.absoluteString
+            // DownloadManager.downloadFile 已经包含了文件存在性、校验逻辑和 autoreleasepool
             _ = try await DownloadManager.downloadFile(
-                urlString: artifactURL.absoluteString,
+                urlString: urlString,
                 destinationURL: destinationURL,
                 expectedSha1: library.downloads.artifact.sha1
             )
             await handleLibraryDownloadComplete(library: library, metaDirectory: metaDirectory, minecraftVersion: minecraftVersion)
         } catch {
-            let globalError = GlobalError.from(error)
-            throw GlobalError.download(
-                chineseMessage:
-                    "下载库文件失败 \(library.name): \(globalError.chineseMessage)",
-                i18nKey: "error.download.library_failed",
-                level: .notification
-            )
+            // 避免在错误处理中创建大量临时字符串
+            if let globalError = error as? GlobalError {
+                throw globalError
+            } else {
+                throw GlobalError.download(
+                    chineseMessage: "下载库文件失败",
+                    i18nKey: "error.download.library_failed",
+                    level: .notification
+                )
+            }
         }
     }
 
@@ -389,41 +380,32 @@ class MinecraftFileManager {
                 expectedSha1: nativeArtifact.sha1
             )
 
+            // 使用库名称，避免格式化字符串创建临时对象
             incrementCompletedFilesCount(
-                fileName: String(format: "file.native".localized(), library.name),
+                fileName: library.name,
                 type: .core
             )
         } catch {
-            let globalError = GlobalError.from(error)
-            throw GlobalError.download(
-                chineseMessage: "下载原生库文件失败 \(library.name): \(globalError.chineseMessage)",
-                i18nKey: "error.download.native_library_failed",
-                level: .notification
-            )
+            // 避免在错误处理中创建大量临时字符串
+            if let globalError = error as? GlobalError {
+                throw globalError
+            } else {
+                throw GlobalError.download(
+                    chineseMessage: "下载原生库文件失败",
+                    i18nKey: "error.download.native_library_failed",
+                    level: .notification
+                )
+            }
         }
     }
 
     private func downloadAssets(
         manifest: MinecraftVersionManifest
     ) async throws {
-        Logger.shared.info(
-            String(
-                format: "log.minecraft.download.assets.start".localized(),
-                manifest.id
-            )
-        )
-
         let assetIndex = try await downloadAssetIndex(manifest: manifest)
         resourceTotalFiles = assetIndex.objects.count
 
         try await downloadAllAssets(assetIndex: assetIndex)
-
-        Logger.shared.info(
-            String(
-                format: "log.minecraft.download.assets.complete".localized(),
-                manifest.id
-            )
-        )
     }
 
     private func downloadAssetIndex(
@@ -458,12 +440,16 @@ class MinecraftFileManager {
                 objects: assetIndexData.objects
             )
         } catch {
-            let globalError = GlobalError.from(error)
-            throw GlobalError.download(
-                chineseMessage: "下载资源索引失败: \(globalError.chineseMessage)",
-                i18nKey: "error.download.asset_index_failed",
-                level: .notification
-            )
+            // 避免在错误处理中创建大量临时字符串
+            if let globalError = error as? GlobalError {
+                throw globalError
+            } else {
+                throw GlobalError.download(
+                    chineseMessage: "下载资源索引失败",
+                    i18nKey: "error.download.asset_index_failed",
+                    level: .notification
+                )
+            }
         }
     }
 
@@ -485,16 +471,20 @@ class MinecraftFileManager {
                 expectedSha1: loggingFile.sha1
             )
             incrementCompletedFilesCount(
-                fileName: "file.logging.config".localized(),
+                fileName: "logging.config",
                 type: .core
             )
         } catch {
-            let globalError = GlobalError.from(error)
-            throw GlobalError.download(
-                chineseMessage: "下载日志配置文件失败: \(globalError.chineseMessage)",
-                i18nKey: "error.download.logging_config_failed",
-                level: .notification
-            )
+            // 避免在错误处理中创建大量临时字符串
+            if let globalError = error as? GlobalError {
+                throw globalError
+            } else {
+                throw GlobalError.download(
+                    chineseMessage: "下载日志配置文件失败",
+                    i18nKey: "error.download.logging_config_failed",
+                    level: .notification
+                )
+            }
         }
     }
 
@@ -505,74 +495,30 @@ class MinecraftFileManager {
         fileNameForNotification: String? = nil,
         type: DownloadType
     ) async throws {
-        // Create parent directory if needed
+        // 使用 DownloadManager 下载文件（已包含所有优化）
         do {
-            try fileManager.createDirectory(
-                at: destinationURL.deletingLastPathComponent(),
-                withIntermediateDirectories: true
+            _ = try await DownloadManager.downloadFile(
+                urlString: url.absoluteString,
+                destinationURL: destinationURL,
+                expectedSha1: sha1
             )
-        } catch {
-            throw GlobalError.fileSystem(
-                chineseMessage:
-                    "创建目录失败: \(destinationURL.deletingLastPathComponent().path), 错误: \(error.localizedDescription)",
-                i18nKey: "error.filesystem.directory_creation_failed",
-                level: .notification
-            )
-        }
-
-        // Download without retry
-        do {
-            let (tempFileURL, response) = try await session.download(from: url)
-            defer { try? fileManager.removeItem(at: tempFileURL) }
-
-            guard let httpResponse = response as? HTTPURLResponse,
-                httpResponse.statusCode == 200
-            else {
-                throw GlobalError.download(
-                    chineseMessage: "HTTP 响应错误: \(response)",
-                    i18nKey: "error.download.http_response_error",
-                    level: .notification
-                )
-            }
-
-            // Verify SHA1 if needed
-            if let expectedSha1 = sha1 {
-                let downloadedSha1 = try await calculateFileSHA1(
-                    at: tempFileURL
-                )
-                if downloadedSha1 != expectedSha1 {
-                    throw GlobalError.download(
-                        chineseMessage:
-                            "SHA1 校验失败: 期望 \(expectedSha1), 实际 \(downloadedSha1)",
-                        i18nKey: "error.download.sha1_verification_failed",
-                        level: .notification
-                    )
-                }
-            }
-
-            // Move file to final location atomically
-            do {
-                try fileManager.moveItem(at: tempFileURL, to: destinationURL)
-            } catch {
-                throw GlobalError.fileSystem(
-                    chineseMessage: "移动文件失败: \(error.localizedDescription)",
-                    i18nKey: "error.filesystem.file_move_failed",
-                    level: .notification
-                )
-            }
-
+            
             incrementCompletedFilesCount(
                 fileName: fileNameForNotification
                     ?? destinationURL.lastPathComponent,
                 type: type
             )
         } catch {
-            let globalError = GlobalError.from(error)
-            throw GlobalError.download(
-                chineseMessage: "下载文件失败: \(globalError.chineseMessage)",
-                i18nKey: "error.download.file_download_failed",
-                level: .notification
-            )
+            // 避免在错误处理中创建大量临时字符串
+            if let globalError = error as? GlobalError {
+                throw globalError
+            } else {
+                throw GlobalError.download(
+                    chineseMessage: "下载文件失败",
+                    i18nKey: "error.download.file_download_failed",
+                    level: .notification
+                )
+            }
         }
     }
 
@@ -653,29 +599,37 @@ class MinecraftFileManager {
         path: String,
         objectsDirectory: URL
     ) async throws {
+        // 预先计算 hashPrefix，避免重复创建字符串
         let hashPrefix = String(asset.hash.prefix(2))
         let assetDirectory = objectsDirectory.appendingPathComponent(hashPrefix)
         let destinationURL = assetDirectory.appendingPathComponent(asset.hash)
 
         do {
+            // 预先构建 URL 字符串，避免在循环中重复创建
+            let urlString = "https://resources.download.minecraft.net/\(hashPrefix)/\(asset.hash)"
+            // DownloadManager.downloadFile 已经包含了 autoreleasepool
             _ = try await DownloadManager.downloadFile(
-                urlString:
-                    "https://resources.download.minecraft.net/\(String(asset.hash.prefix(2)))/\(asset.hash)",
+                urlString: urlString,
                 destinationURL: destinationURL,
                 expectedSha1: asset.hash
             )
+            // 使用简单的文件名，避免格式化字符串创建临时对象
+            let fileName = path.components(separatedBy: "/").last ?? path
             incrementCompletedFilesCount(
-                fileName: String(format: "file.asset".localized(), path),
+                fileName: fileName,
                 type: .resources
             )
         } catch {
-            let globalError = GlobalError.from(error)
-            throw GlobalError.download(
-                chineseMessage:
-                    "下载资源文件失败 \(path): \(globalError.chineseMessage)",
-                i18nKey: "error.download.asset_file_failed",
-                level: .notification
-            )
+            // 避免在错误处理中创建大量临时字符串
+            if let globalError = error as? GlobalError {
+                throw globalError
+            } else {
+                throw GlobalError.download(
+                    chineseMessage: "下载资源文件失败",
+                    i18nKey: "error.download.asset_file_failed",
+                    level: .notification
+                )
+            }
         }
     }
 }
@@ -719,8 +673,9 @@ extension Library {
 extension MinecraftFileManager {
     /// 处理库下载完成后的逻辑
     private func handleLibraryDownloadComplete(library: Library, metaDirectory: URL, minecraftVersion: String) async {
+        // 使用库名称，避免格式化字符串创建临时对象
         incrementCompletedFilesCount(
-            fileName: String(format: "file.library".localized(), library.name),
+            fileName: library.name,
             type: .core
         )
 
@@ -734,7 +689,7 @@ extension MinecraftFileManager {
                     minecraftVersion: minecraftVersion
                 )
             } catch {
-                Logger.shared.error("下载原生库失败: \(error.localizedDescription)")
+                Logger.shared.error("下载原生库失败")
             }
         }
     }

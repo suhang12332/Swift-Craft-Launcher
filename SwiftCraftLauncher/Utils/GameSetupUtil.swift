@@ -95,8 +95,6 @@ class GameSetupUtil: ObservableObject {
             modLoader: selectedModLoader
         )
 
-        Logger.shared.info("开始为游戏下载文件: \(gameInfo.gameName)")
-
         do {
             // 下载 Mojang manifest
             let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
@@ -141,8 +139,6 @@ class GameSetupUtil: ObservableObject {
                 title: "notification.download.complete.title".localized(),
                 body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader)
             )
-
-            Logger.shared.info("游戏保存成功: \(gameInfo.gameName)")
             onSuccess()
         } catch is CancellationError {
             Logger.shared.info("游戏下载任务已取消")
@@ -203,7 +199,6 @@ class GameSetupUtil: ObservableObject {
     private func setupFileManager(manifest: MinecraftVersionManifest, modLoader: String) async throws -> MinecraftFileManager {
         let nativesDir = AppPaths.nativesDirectory
         try FileManager.default.createDirectory(at: nativesDir, withIntermediateDirectories: true)
-        Logger.shared.info("创建目录：\(nativesDir.path)")
         return MinecraftFileManager()
     }
 

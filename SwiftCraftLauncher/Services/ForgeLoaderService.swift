@@ -28,15 +28,9 @@ enum ForgeLoaderService {
         }
 
         // 2. 直接下载指定版本的 version.json
-        let (data, response) = try await URLSession.shared.data(from: URLConfig.API.Modrinth.loaderProfile(loader: "forge", version: loaderVersion))
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw GlobalError.resource(
-                chineseMessage: "未找到 Forge 加载器版本",
-                i18nKey: "error.resource.no_forge_version",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let url = URLConfig.API.Modrinth.loaderProfile(loader: "forge", version: loaderVersion)
+        let data = try await APIClient.get(url: url)
 
         var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)

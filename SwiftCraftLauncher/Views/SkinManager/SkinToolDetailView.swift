@@ -447,8 +447,8 @@ struct SkinToolDetailView: View {
         guard let urlString = publicSkinInfo?.skinURL?.httpToHttps(), let url = URL(string: urlString) else { return }
         Task {
             do {
-                let (data, response) = try await URLSession.shared.data(from: url)
-                if let http = response as? HTTPURLResponse, http.statusCode != 200 { return }
+                // 使用统一的 API 客户端
+                let data = try await APIClient.get(url: url)
                 guard !data.isEmpty, let image = NSImage(data: data) else { return }
                 await MainActor.run { self.currentSkinRenderImage = image }
             } catch {
@@ -606,7 +606,8 @@ struct SkinToolDetailView: View {
                 Logger.shared.error("Invalid skin URL: \(httpsURL)")
                 return false
             }
-            let (data, _) = try await URLSession.shared.data(from: url)
+            // 使用统一的 API 客户端
+            let data = try await APIClient.get(url: url)
 
             let result = await PlayerSkinService.uploadSkin(
                 imageData: data,
@@ -676,14 +677,13 @@ extension SkinToolDetailView {
             return
         }
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            if let http = response as? HTTPURLResponse, http.statusCode != 200 {
-                Logger.shared.error("Cape download failed: status=\(http.statusCode)")
-                return
-            }
-            if data.isEmpty { return }
+            // 使用 DownloadManager 下载文件（已包含所有优化）
             let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent("cape_\(UUID().uuidString).png")
-            try data.write(to: tempFile)
+            _ = try await DownloadManager.downloadFile(
+                urlString: urlString.httpToHttps(),
+                destinationURL: tempFile,
+                expectedSha1: nil
+            )
             await MainActor.run {
                 if selectedCapeImageURL == urlString {
                     selectedCapeLocalPath = tempFile.path
