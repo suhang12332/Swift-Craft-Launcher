@@ -1,28 +1,9 @@
-5//  SwiftCraftLauncherApp.swift
-//  Swift Craft Launcher
+//
+//  SwiftCraftLauncherApp.swift
+//  SwiftCraftLauncher
 //
 //  Created by su on 2025/5/30.
 //
-//  Swift Craft Launcher - A modern macOS Minecraft launcher
-//
-//  Copyright (C) 2025 Swift Craft Launcher Contributors
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU Affero General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Affero General Public License for more details.
-//
-//  You should have received a copy of the GNU Affero General Public License
-//  along with this program.  If not, see <https://www.gnu.org/licenses/>.
-//
-//  ADDITIONAL TERMS:
-//  This program includes additional terms for source attribution and name usage.
-//  See doc/ADDITIONAL_TERMS.md in the project root for details.
 
 import SwiftUI
 
@@ -43,6 +24,9 @@ struct SwiftCraftLauncherApp: App {
         Task {
             await NotificationManager.requestAuthorizationIfNeeded()
         }
+
+        // 清理临时窗口管理器，防止应用重启时恢复未关闭的临时窗口
+        TemporaryWindowManager.shared.cleanupAllWindows()
 
         // 移除文件菜单
         DispatchQueue.main.async {
@@ -69,30 +53,12 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(skinSelectionStore)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
+                .background(TemporaryWindowOpener())
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
-
-        // 关于窗口（共享的 WindowGroup，通过 value 区分）
-        WindowGroup("", id: "aboutWindow", for: Bool.self) { $showingAcknowledgements in
-            AboutView(showingAcknowledgements: showingAcknowledgements ?? false)
-                .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme)
-                .background(
-                    WindowAccessor { window in
-                        // 移除关闭、最小化、最大化按钮
-                        window.styleMask.remove([.miniaturizable, .resizable])
-                        // 禁用全屏
-                        window.collectionBehavior.remove(.fullScreenPrimary)
-                    }
-                )
-        }
-        .windowStyle(.titleBar)
-        .windowToolbarStyle(.unified(showsTitle: true))
-        .windowResizability(.contentSize)
-        .conditionalRestorationBehavior()
 
         .commands {
             CommandGroup(after: .appInfo) {
@@ -112,15 +78,31 @@ struct SwiftCraftLauncherApp: App {
             }
             CommandGroup(after: .help) {
                 Button("about.contributors".localized()) {
-                    openWindow(id: "aboutWindow", value: false)
+                    TemporaryWindowManager.shared.showWindow(
+                        content: AboutView(showingAcknowledgements: false)
+                            .environmentObject(generalSettingsManager)
+                            .preferredColorScheme(generalSettingsManager.currentColorScheme),
+                        config: .contributors(title: "about.contributors".localized())
+                    )
                 }
                 .keyboardShortcut("c", modifiers: [.command, .shift])
             }
             CommandGroup(after: .help) {
                 Button("about.acknowledgements".localized()) {
-                    openWindow(id: "aboutWindow", value: true)
+                    TemporaryWindowManager.shared.showWindow(
+                        content: AboutView(showingAcknowledgements: true)
+                            .environmentObject(generalSettingsManager)
+                            .preferredColorScheme(generalSettingsManager.currentColorScheme),
+                        config: .acknowledgements(title: "about.acknowledgements".localized())
+                    )
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
+            }
+            CommandGroup(after: .help) {
+                Button("license.view".localized()) {
+                    LicenseManager.shared.showLicense()
+                }
+                .keyboardShortcut("l", modifiers: [.command, .option])
             }
             CommandGroup(after: .help) {
                 Divider()
@@ -143,6 +125,20 @@ struct SwiftCraftLauncherApp: App {
                 .errorAlert()
         }
         .conditionalRestorationBehavior()
+
+        // 临时窗口
+        WindowGroup(id: "temporaryWindow", for: TemporaryWindowID.self) { $windowID in
+            if let windowID = windowID {
+                TemporaryWindowView(windowID: windowID)
+                    .environmentObject(generalSettingsManager)
+                    .preferredColorScheme(generalSettingsManager.currentColorScheme)
+                    .onDisappear {
+                        // 窗口关闭时通知管理器
+                        TemporaryWindowManager.shared.closeWindow(for: windowID.id)
+                    }
+            }
+        }
+        .defaultPosition(.center)
 
         // 右上角的状态栏(可以显示图标的)
         MenuBarExtra(

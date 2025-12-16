@@ -531,12 +531,7 @@ class AIChatManager: ObservableObject {
         let chatState = ChatState()
         TemporaryWindowManager.shared.showWindow(
             content: AIChatWindowView(chatState: chatState),
-            config: TemporaryWindowConfig(
-                title: "ai.assistant.title".localized(),
-                width: 500,
-                height: 600,
-                showCloseButton: true
-            )
+            config: .aiChat(title: "ai.assistant.title".localized())
         )
     }
 }

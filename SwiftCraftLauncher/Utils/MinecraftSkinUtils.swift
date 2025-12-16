@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreImage
+import Foundation
 
 // MARK: - Types and Constants
 
@@ -7,9 +8,23 @@ enum SkinType {
     case url, asset
 }
 
+// MARK: - Cache Wrapper
+
+/// 包装 CIImage 以便在 NSCache 中使用
+private class CIImageWrapper: NSObject {
+    let image: CIImage
+
+    init(_ image: CIImage) {
+        self.image = image
+    }
+}
+
 private enum Constants {
     static let padding: CGFloat = 6
     static let networkTimeout: TimeInterval = 10.0
+
+    // 缓存配置
+    static let maxCacheSize = 50  // 最多缓存50个图像，约800KB-1.6MB内存
 
     // Minecraft skin coordinates (64x64 format)
     static let headStartX: CGFloat = 8
@@ -35,9 +50,13 @@ struct MinecraftSkinUtils: View {
     @State private var isLoading: Bool = false
     @State private var loadTask: Task<Void, Never>?
 
-    // 静态缓存，基于 type 和 src 的组合键来缓存已加载的图像
-    private static var imageCache: [String: CIImage] = [:]
-    private static let cacheQueue = DispatchQueue(label: "MinecraftSkinUtils.cache", attributes: .concurrent)
+    // 使用 NSCache 进行线程安全的图像缓存
+    // NSCache 会在内存压力时自动清理，并支持设置最大对象数量
+    private static let imageCache: NSCache<NSString, CIImageWrapper> = {
+        let cache = NSCache<NSString, CIImageWrapper>()
+        cache.countLimit = Constants.maxCacheSize
+        return cache
+    }()
 
     private static let ciContext: CIContext = {
         // Create CIContext with CPU-based rendering to avoid Metal shader cache conflicts
@@ -65,16 +84,26 @@ struct MinecraftSkinUtils: View {
 
     // 获取缓存的图像
     private static func getCachedImage(for key: String) -> CIImage? {
-        return cacheQueue.sync {
-            return imageCache[key]
-        }
+        let nsKey = key as NSString
+        return imageCache.object(forKey: nsKey)?.image
     }
 
     // 设置缓存的图像
     private static func setCachedImage(_ image: CIImage, for key: String) {
-        cacheQueue.async(flags: .barrier) {
-            imageCache[key] = image
-        }
+        let nsKey = key as NSString
+        let wrapper = CIImageWrapper(image)
+        imageCache.setObject(wrapper, forKey: nsKey)
+    }
+
+    // 清理缓存（用于内存压力时）
+    static func clearCache() {
+        imageCache.removeAllObjects()
+    }
+
+    // 获取当前缓存大小（用于调试）
+    // 注意：NSCache 不提供直接获取对象数量的方法，这里返回 countLimit
+    static func getCacheSize() -> Int {
+        return imageCache.countLimit
     }
 
     init(type: SkinType, src: String, size: CGFloat = 64) {
