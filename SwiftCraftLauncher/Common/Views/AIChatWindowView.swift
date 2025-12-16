@@ -71,20 +71,21 @@ struct AIChatWindowView: View {
                         }
                     }
                     .background(.white)
-                    // 滚动到底部：监听消息ID变化（新消息）和内容长度变化（流式更新）
-                    .onChange(of: chatState.messages.last?.id) { _, newValue in
-                        if newValue != nil {
+                    // 滚动到底部：优化 - 合并多个 onChange 以减少不必要的视图更新
+                    .onChange(of: chatState.messages.count) { _, _ in
+                        // 新消息时滚动
+                        if chatState.messages.last != nil {
                             scrollToBottom(proxy: proxy)
                         }
                     }
                     .onChange(of: chatState.messages.last?.content.count ?? 0) { oldValue, newValue in
-                        // 流式更新时滚动
+                        // 流式更新时滚动（仅在内容增加时）
                         if chatState.isSending && newValue > oldValue && newValue > 0 {
                             scrollToBottom(proxy: proxy)
                         }
                     }
                     .onChange(of: chatState.isSending) { oldValue, newValue in
-                        // 发送完成时滚动
+                        // 发送完成时滚动（仅在状态从 true 变为 false 时）
                         if oldValue && !newValue {
                             scrollToBottom(proxy: proxy)
                         }
@@ -119,13 +120,15 @@ struct AIChatWindowView: View {
                 selectedGameId = newGames.first?.id
             }
         }
-        .onChange(of: playerListViewModel.currentPlayer) { _, _ in
-            // 当当前玩家变化时，更新用户头像缓存
+        .onChange(of: playerListViewModel.currentPlayer?.id) { _, _ in
+            // 当当前玩家变化时，更新用户头像缓存（仅监听 ID 变化，减少不必要的更新）
             updateUserAvatarCache()
         }
-        .onChange(of: aiSettings.aiAvatarURL) { _, _ in
-            // 当 AI 头像 URL 变化时，更新 AI 头像缓存
-            updateAIAvatarCache()
+        .onChange(of: aiSettings.aiAvatarURL) { oldValue, newValue in
+            // 当 AI 头像 URL 变化时，更新 AI 头像缓存（仅在 URL 实际变化时更新）
+            if oldValue != newValue {
+                updateAIAvatarCache()
+            }
         }
 //        .onDisappear {
 //            // 窗口关闭时清理头像缓存

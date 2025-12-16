@@ -16,14 +16,21 @@ extension View {
         triggerCancel: Binding<Bool>
     ) -> some View {
         self
-            .onChange(of: viewModel.gameNameValidator.gameName) { _, _ in
-                viewModel.updateParentState()
+            // 优化：仅在值实际变化时更新，减少不必要的视图更新
+            .onChange(of: viewModel.gameNameValidator.gameName) { oldValue, newValue in
+                if oldValue != newValue {
+                    viewModel.updateParentState()
+                }
             }
-            .onChange(of: viewModel.gameNameValidator.isGameNameDuplicate) { _, _ in
-                viewModel.updateParentState()
+            .onChange(of: viewModel.gameNameValidator.isGameNameDuplicate) { oldValue, newValue in
+                if oldValue != newValue {
+                    viewModel.updateParentState()
+                }
             }
-            .onChange(of: viewModel.gameSetupService.downloadState.isDownloading) { _, _ in
-                viewModel.updateParentState()
+            .onChange(of: viewModel.gameSetupService.downloadState.isDownloading) { oldValue, newValue in
+                if oldValue != newValue {
+                    viewModel.updateParentState()
+                }
             }
             .onChange(of: triggerConfirm.wrappedValue) { _, newValue in
                 if newValue {

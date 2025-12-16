@@ -63,14 +63,23 @@ struct GameCreationView: View {
             onSetImagePickerHandler(viewModel.handleImagePickerResult)
         }
         .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
-        .onChange(of: viewModel.selectedLoaderVersion) { _, _ in
-            viewModel.updateParentState()
+        .onChange(of: viewModel.selectedLoaderVersion) { oldValue, newValue in
+            // 优化：仅在值实际变化时更新
+            if oldValue != newValue {
+                viewModel.updateParentState()
+            }
         }
-        .onChange(of: viewModel.selectedModLoader) { _, newLoader in
-            viewModel.handleModLoaderChange(newLoader)
+        .onChange(of: viewModel.selectedModLoader) { oldValue, newLoader in
+            // 优化：仅在值实际变化时处理
+            if oldValue != newLoader {
+                viewModel.handleModLoaderChange(newLoader)
+            }
         }
-        .onChange(of: viewModel.selectedGameVersion) { _, newVersion in
-            viewModel.handleGameVersionChange(newVersion)
+        .onChange(of: viewModel.selectedGameVersion) { oldValue, newVersion in
+            // 优化：仅在值实际变化时处理
+            if oldValue != newVersion {
+                viewModel.handleGameVersionChange(newVersion)
+            }
         }
     }
 

@@ -38,17 +38,26 @@ struct ModPackImportView: View {
             viewModel.setup(gameRepository: gameRepository)
         }
         .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
-        .onChange(of: viewModel.selectedModPackFile) { _, _ in
-            viewModel.updateParentState()
+        // 优化：使用 Task 批量处理多个状态变化，减少不必要的视图更新
+        .onChange(of: viewModel.selectedModPackFile) { oldValue, newValue in
+            if oldValue != newValue {
+                viewModel.updateParentState()
+            }
         }
-        .onChange(of: viewModel.modPackIndexInfo?.modPackName) { _, _ in
-            viewModel.updateParentState()
+        .onChange(of: viewModel.modPackIndexInfo?.modPackName) { oldValue, newValue in
+            if oldValue != newValue {
+                viewModel.updateParentState()
+            }
         }
-        .onChange(of: viewModel.modPackViewModelForProgress.modPackInstallState.isInstalling) { _, _ in
-            viewModel.updateParentState()
+        .onChange(of: viewModel.modPackViewModelForProgress.modPackInstallState.isInstalling) { oldValue, newValue in
+            if oldValue != newValue {
+                viewModel.updateParentState()
+            }
         }
-        .onChange(of: viewModel.isProcessingModPack) { _, _ in
-            viewModel.updateParentState()
+        .onChange(of: viewModel.isProcessingModPack) { oldValue, newValue in
+            if oldValue != newValue {
+                viewModel.updateParentState()
+            }
         }
     }
 

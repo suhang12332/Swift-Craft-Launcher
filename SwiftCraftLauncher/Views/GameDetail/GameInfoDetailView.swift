@@ -62,15 +62,22 @@ struct GameInfoDetailView: View {
                 localResourceList
             }
         }
-        .onChange(of: game.gameName) {
+        // 优化：合并相关 onChange 以减少不必要的视图更新
+        .onChange(of: game.gameName) { _, _ in
             cacheManager.calculateGameCacheInfo(game.gameName)
             scanResources()
         }
-        .onChange(of: gameType) {
-            scanResources()
+        .onChange(of: gameType) { oldValue, newValue in
+            // 仅在 gameType 实际变化时扫描资源
+            if oldValue != newValue {
+                scanResources()
+            }
         }
-        .onChange(of: query) {
-            scanResources()
+        .onChange(of: query) { oldValue, newValue in
+            // 仅在 query 实际变化时扫描资源
+            if oldValue != newValue {
+                scanResources()
+            }
         }
         .onAppear {
             cacheManager.calculateGameCacheInfo(game.gameName)

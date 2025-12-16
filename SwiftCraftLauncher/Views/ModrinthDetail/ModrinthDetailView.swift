@@ -69,8 +69,11 @@ struct ModrinthDetailView: View {
                 triggerSearch()
             }
         }
-        .onChange(of: viewModel.totalHits) { _, newValue in
-            totalItems = newValue
+        .onChange(of: viewModel.totalHits) { oldValue, newValue in
+            // 优化：仅在值实际变化时更新
+            if oldValue != newValue {
+                totalItems = newValue
+            }
         }
         .searchable(
             text: $searchText,
@@ -78,8 +81,11 @@ struct ModrinthDetailView: View {
             prompt: "search.resources".localized()
         )
         .help("search.resources".localized())
-        .onChange(of: searchText) { _, _ in
-            debounceSearch()
+        .onChange(of: searchText) { oldValue, newValue in
+            // 优化：仅在搜索文本实际变化时触发防抖搜索
+            if oldValue != newValue {
+                debounceSearch()
+            }
         }
         .alert(
             "error.notification.search.title".localized(),

@@ -129,8 +129,9 @@ struct MainView: View {
         .onChange(of: selectedItem) { oldValue, newValue in
             handleSidebarItemChange(from: oldValue, to: newValue)
         }
-        .onChange(of: selectedProjectId) { _, _ in
-            if loadedProjectDetail != nil {
+        .onChange(of: selectedProjectId) { oldValue, newValue in
+            // 优化：仅在 selectedProjectId 实际变化且 loadedProjectDetail 不为 nil 时清空
+            if oldValue != newValue && loadedProjectDetail != nil {
                 loadedProjectDetail = nil
             }
         }
