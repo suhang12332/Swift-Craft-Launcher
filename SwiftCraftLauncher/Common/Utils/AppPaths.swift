@@ -1,12 +1,31 @@
 import Foundation
 
 enum AppPaths {
+    // MARK: - Path Cache
+    /// 路径缓存，避免重复创建相同的 URL 对象
+    private static let pathCache = NSCache<NSString, NSURL>()
+    private static let cacheQueue = DispatchQueue(label: "com.swiftcraftlauncher.apppaths.cache", attributes: .concurrent)
+
+    // MARK: - Cached Path Helper
+    /// 获取缓存的 URL 路径，如果不存在则创建并缓存
+    private static func cachedURL(key: String, factory: () -> URL) -> URL {
+        return cacheQueue.sync {
+            if let cached = pathCache.object(forKey: key as NSString) {
+                return cached as URL
+            }
+            let url = factory()
+            pathCache.setObject(url as NSURL, forKey: key as NSString)
+            return url
+        }
+    }
 
     static var launcherSupportDirectory: URL {
     // guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
     //     return nil
     // }
-        return .applicationSupportDirectory.appendingPathComponent(Bundle.main.appName)
+        return cachedURL(key: "launcherSupportDirectory") {
+            .applicationSupportDirectory.appendingPathComponent(Bundle.main.appName)
+        }
     }
     static var runtimeDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.runtime)
@@ -35,23 +54,33 @@ enum AppPaths {
     }
 
     static func profileDirectory(gameName: String) -> URL {
-        profileRootDirectory.appendingPathComponent(gameName)
+        cachedURL(key: "profileDirectory:\(gameName)") {
+            profileRootDirectory.appendingPathComponent(gameName)
+        }
     }
 
     static func modsDirectory(gameName: String) -> URL {
-        profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.mods)
+        cachedURL(key: "modsDirectory:\(gameName)") {
+            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.mods)
+        }
     }
 
     static func datapacksDirectory(gameName: String) -> URL {
-        profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.datapacks)
+        cachedURL(key: "datapacksDirectory:\(gameName)") {
+            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.datapacks)
+        }
     }
 
     static func shaderpacksDirectory(gameName: String) -> URL {
-        profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.shaderpacks)
+        cachedURL(key: "shaderpacksDirectory:\(gameName)") {
+            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.shaderpacks)
+        }
     }
 
     static func resourcepacksDirectory(gameName: String) -> URL {
-        profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.resourcepacks)
+        cachedURL(key: "resourcepacksDirectory:\(gameName)") {
+            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.resourcepacks)
+        }
     }
 
     static let profileSubdirectories = [

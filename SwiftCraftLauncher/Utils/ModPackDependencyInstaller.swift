@@ -114,6 +114,7 @@ enum ModPackDependencyInstaller {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
 
+                    // 优化：下载文件（内部已使用 autoreleasepool 优化）
                     let success = await downloadSingleFile(file: file, resourceDir: resourceDir, gameInfo: gameInfo)
 
                     // 更新进度
@@ -295,8 +296,12 @@ enum ModPackDependencyInstaller {
         }
 
         do {
-            // 预先计算目标路径，避免重复创建
-            let destinationPath = resourceDir.appendingPathComponent(file.path)
+            // 优化：预先计算目标路径，避免重复创建
+            // 使用 autoreleasepool 包装同步部分，及时释放临时对象
+            let destinationPath = autoreleasepool {
+                resourceDir.appendingPathComponent(file.path)
+            }
+
             // DownloadManager.downloadFile 已经包含了 autoreleasepool
             let downloadedFile = try await DownloadManager.downloadFile(
                 urlString: urlString,
