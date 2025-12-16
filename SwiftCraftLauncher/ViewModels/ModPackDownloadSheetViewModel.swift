@@ -21,6 +21,15 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
     // 整合包安装进度状态
     @Published var modPackInstallState = ModPackInstallState()
+    
+    // MARK: - Memory Management
+    
+    /// 清理不再需要的索引数据以释放内存
+    /// 在 ModPack 安装完成后调用
+    func clearParsedIndexInfo() {
+        lastParsedIndexInfo = nil
+        Logger.shared.debug("已清理 ModPack 索引数据以释放内存")
+    }
 
     private var allModPackVersions: [ModrinthProjectDetailVersion] = []
     private var gameRepository: GameRepository?
@@ -516,9 +525,70 @@ struct ModrinthIndex: Codable {
     }
 }
 
+// MARK: - File Hashes (优化内存使用)
+/// 优化的文件哈希结构，使用结构体替代字典以减少内存占用
+/// 常用哈希（sha1, sha512）作为属性存储，其他哈希存储在可选字典中
+struct ModrinthIndexFileHashes: Codable {
+    /// SHA1 哈希（最常用）
+    let sha1: String?
+    /// SHA512 哈希（次常用）
+    let sha512: String?
+    /// 其他哈希类型（不常用，延迟存储）
+    let other: [String: String]?
+    
+    /// 从字典创建（用于 JSON 解码）
+    init(from dict: [String: String]) {
+        self.sha1 = dict["sha1"]
+        self.sha512 = dict["sha512"]
+        
+        // 只存储非标准哈希
+        var otherDict: [String: String] = [:]
+        for (key, value) in dict {
+            if key != "sha1" && key != "sha512" {
+                otherDict[key] = value
+            }
+        }
+        self.other = otherDict.isEmpty ? nil : otherDict
+    }
+    
+    /// 自定义解码，从 JSON 字典解码
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let dict = try container.decode([String: String].self)
+        self.init(from: dict)
+    }
+    
+    /// 编码为字典格式（用于 JSON 编码）
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        var dict: [String: String] = [:]
+        
+        if let sha1 = sha1 {
+            dict["sha1"] = sha1
+        }
+        if let sha512 = sha512 {
+            dict["sha512"] = sha512
+        }
+        if let other = other {
+            dict.merge(other) { (_, new) in new }
+        }
+        
+        try container.encode(dict)
+    }
+    
+    /// 字典访问兼容性（向后兼容）
+    subscript(key: String) -> String? {
+        switch key {
+        case "sha1": return sha1
+        case "sha512": return sha512
+        default: return other?[key]
+        }
+    }
+}
+
 struct ModrinthIndexFile: Codable {
     let path: String
-    let hashes: [String: String]
+    let hashes: ModrinthIndexFileHashes
     let downloads: [String]
     let fileSize: Int
     let env: ModrinthIndexFileEnv?
@@ -541,7 +611,7 @@ struct ModrinthIndexFile: Codable {
     // 为兼容性提供默认初始化器
     init(
         path: String,
-        hashes: [String: String],
+        hashes: ModrinthIndexFileHashes,
         downloads: [String],
         fileSize: Int,
         env: ModrinthIndexFileEnv? = nil,
@@ -551,6 +621,27 @@ struct ModrinthIndexFile: Codable {
     ) {
         self.path = path
         self.hashes = hashes
+        self.downloads = downloads
+        self.fileSize = fileSize
+        self.env = env
+        self.source = source
+        self.curseForgeProjectId = curseForgeProjectId
+        self.curseForgeFileId = curseForgeFileId
+    }
+    
+    // 兼容旧版本字典格式的初始化器
+    init(
+        path: String,
+        hashes: [String: String],
+        downloads: [String],
+        fileSize: Int,
+        env: ModrinthIndexFileEnv? = nil,
+        source: FileSource? = nil,
+        curseForgeProjectId: Int? = nil,
+        curseForgeFileId: Int? = nil
+    ) {
+        self.path = path
+        self.hashes = ModrinthIndexFileHashes(from: hashes)
         self.downloads = downloads
         self.fileSize = fileSize
         self.env = env

@@ -653,6 +653,8 @@ struct ModPackDownloadSheet: View {
     private func handleInstallationResult(success: Bool, gameName: String) {
         if success {
             Logger.shared.info("整合包依赖安装完成: \(gameName)")
+            // 清理不再需要的索引数据以释放内存
+            viewModel.clearParsedIndexInfo()
             dismiss()
         } else {
             Logger.shared.error("整合包依赖安装失败: \(gameName)")
@@ -668,6 +670,8 @@ struct ModPackDownloadSheet: View {
             GlobalErrorHandler.shared.handle(globalError)
             viewModel.modPackInstallState.reset()
             gameSetupService.downloadState.reset()
+            // 清理不再需要的索引数据以释放内存
+            viewModel.clearParsedIndexInfo()
         }
         isProcessing = false
     }
