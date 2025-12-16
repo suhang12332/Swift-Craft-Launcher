@@ -224,8 +224,8 @@ final class ModrinthSearchViewModel: ObservableObject {
     private func buildEnvironmentFacets(features: [String]) -> (
         clientFacets: [String], serverFacets: [String]
     ) {
-        let hasClient = features.contains("client")
-        let hasServer = features.contains("server")
+        let hasClient = features.contains(AppConstants.EnvironmentTypes.client)
+        let hasServer = features.contains(AppConstants.EnvironmentTypes.server)
 
         var clientFacets: [String] = []
         var serverFacets: [String] = []

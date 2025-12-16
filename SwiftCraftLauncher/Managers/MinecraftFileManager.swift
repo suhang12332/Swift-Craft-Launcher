@@ -4,12 +4,12 @@ import Foundation
 // MARK: - Constants
 private enum Constants {
     static let metaSubdirectories = [
-        "versions",
-        "libraries",
-        "natives",
-        "assets",
-        "assets/indexes",
-        "assets/objects",
+        AppConstants.DirectoryNames.versions,
+        AppConstants.DirectoryNames.libraries,
+        AppConstants.DirectoryNames.natives,
+        AppConstants.DirectoryNames.assets,
+        "\(AppConstants.DirectoryNames.assets)/indexes",
+        "\(AppConstants.DirectoryNames.assets)/objects",
     ]
     static let assetChunkSize = 500
     static let downloadTimeout: TimeInterval = 30
@@ -177,7 +177,7 @@ class MinecraftFileManager {
             Constants.metaSubdirectories.map {
                 AppPaths.metaDirectory.appendingPathComponent($0)
             } + [
-                AppPaths.metaDirectory.appendingPathComponent("versions")
+                AppPaths.metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.versions)
                     .appendingPathComponent(manifestId),
                 profileDirectory,
             ]
@@ -304,7 +304,7 @@ class MinecraftFileManager {
                 destinationURL = URL(fileURLWithPath: existingPath)
             } else {
                 // 如果是相对路径，添加到 libraries 目录
-                destinationURL = metaDirectory.appendingPathComponent("libraries")
+                destinationURL = metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.libraries)
                     .appendingPathComponent(existingPath)
             }
         } else {
@@ -364,12 +364,12 @@ class MinecraftFileManager {
                 destinationURL = URL(fileURLWithPath: existingPath)
             } else {
                 // 原生库下载到 natives 目录，而不是 libraries 目录
-                destinationURL = metaDirectory.appendingPathComponent("natives")
+                destinationURL = metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.natives)
                     .appendingPathComponent(existingPath)
             }
         } else {
             let relativePath = CommonService.mavenCoordinateToRelativePath(library.name) ?? "\(library.name.replacingOccurrences(of: ":", with: "-")).jar"
-            destinationURL = metaDirectory.appendingPathComponent("natives")
+            destinationURL = metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.natives)
                 .appendingPathComponent(relativePath)
         }
 
@@ -472,7 +472,7 @@ class MinecraftFileManager {
     ) async throws {
         let loggingFile = manifest.logging.client.file
         let versionDir = AppPaths.metaDirectory.appendingPathComponent(
-            "versions"
+            AppConstants.DirectoryNames.versions
         )
         .appendingPathComponent(manifest.id)
 

@@ -7,10 +7,10 @@ enum DownloadManager {
 
         var folderName: String {
             switch self {
-            case .mod: return "mods"
-            case .datapack: return "datapacks"
-            case .shader: return "shaderpacks"
-            case .resourcepack: return "resourcepacks"
+            case .mod: return AppConstants.DirectoryNames.mods
+            case .datapack: return AppConstants.DirectoryNames.datapacks
+            case .shader: return AppConstants.DirectoryNames.shaderpacks
+            case .resourcepack: return AppConstants.DirectoryNames.resourcepacks
             }
         }
 
@@ -55,14 +55,14 @@ enum DownloadManager {
             case .mod:
                 return AppPaths.modsDirectory(gameName: game.gameName)
             case .datapack:
-                if url.lastPathComponent.lowercased().hasSuffix(".jar") {
+                if url.lastPathComponent.lowercased().hasSuffix(".\(AppConstants.FileExtensions.jar)") {
                     return AppPaths.modsDirectory(gameName: game.gameName)
                 }
                 return AppPaths.datapacksDirectory(gameName: game.gameName)
             case .shader:
                 return AppPaths.shaderpacksDirectory(gameName: game.gameName)
             case .resourcepack:
-                if url.lastPathComponent.lowercased().hasSuffix(".jar") {
+                if url.lastPathComponent.lowercased().hasSuffix(".\(AppConstants.FileExtensions.jar)") {
                     return AppPaths.modsDirectory(gameName: game.gameName)
                 }
                 return AppPaths.resourcepacksDirectory(gameName: game.gameName)

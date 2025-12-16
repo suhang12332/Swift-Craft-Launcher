@@ -225,8 +225,8 @@ struct CategoryContentView: View {
 
     private var environmentItems: [FilterItem] {
         [
-            FilterItem(id: "client", name: "environment.client".localized()),
-            FilterItem(id: "server", name: "environment.server".localized()),
+            FilterItem(id: AppConstants.EnvironmentTypes.client, name: "environment.client".localized()),
+            FilterItem(id: AppConstants.EnvironmentTypes.server, name: "environment.server".localized()),
         ]
     }
 }

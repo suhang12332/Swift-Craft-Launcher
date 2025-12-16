@@ -9,9 +9,9 @@ enum LocalResourceInstaller {
 
         var directoryName: String {
             switch self {
-            case .mod: return "mods"
-            case .datapack: return "datapacks"
-            case .resourcepack: return "resourcepacks"
+            case .mod: return AppConstants.DirectoryNames.mods
+            case .datapack: return AppConstants.DirectoryNames.datapacks
+            case .resourcepack: return AppConstants.DirectoryNames.resourcepacks
             }
         }
 

@@ -197,11 +197,11 @@ enum ProcessorExecutor {
 
         // 基础占位符替换
         let basicReplacements = [
-            "{SIDE}": "client",
-            "{VERSION}": gameVersion,
-            "{VERSION_NAME}": gameVersion,
-            "{LIBRARY_DIR}": librariesDir.path,
-            "{WORKING_DIR}": librariesDir.path,
+            AppConstants.ProcessorPlaceholders.side: AppConstants.EnvironmentTypes.client,
+            AppConstants.ProcessorPlaceholders.version: gameVersion,
+            AppConstants.ProcessorPlaceholders.versionName: gameVersion,
+            AppConstants.ProcessorPlaceholders.libraryDir: librariesDir.path,
+            AppConstants.ProcessorPlaceholders.workingDir: librariesDir.path,
         ]
 
         for (placeholder, value) in basicReplacements {

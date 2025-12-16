@@ -254,7 +254,7 @@ enum CommonService {
         // 构建文件名
         // 使用字符串插值构建文件名，避免多次字符串拼接
         let classifierSuffix = classifierName.isEmpty ? "" : "-\(classifierName)"
-        let extensionSuffix = classifier.isEmpty ? ".jar" : ".\(classifier)"
+        let extensionSuffix = classifier.isEmpty ? ".\(AppConstants.FileExtensions.jar)" : ".\(classifier)"
         let fileName = "\(artifactId)-\(version)\(classifierSuffix)\(extensionSuffix)"
 
         // 构建相对路径

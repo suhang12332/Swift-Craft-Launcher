@@ -142,7 +142,7 @@ class CommonFileManager {
         // 过滤出client端的processor
         let clientProcessors = processors.filter { processor in
             guard let sides = processor.sides else { return true } // 如果没有指定sides，默认执行
-            return sides.contains("client")
+            return sides.contains(AppConstants.EnvironmentTypes.client)
         }
 
         guard !clientProcessors.isEmpty else {
@@ -156,7 +156,7 @@ class CommonFileManager {
         var processorData: [String: String] = [:]
 
         // 添加基础环境变量
-        processorData["SIDE"] = "client"
+        processorData["SIDE"] = AppConstants.EnvironmentTypes.client
         processorData["MINECRAFT_VERSION"] = gameVersion
         processorData["LIBRARY_DIR"] = librariesDir.path
 
