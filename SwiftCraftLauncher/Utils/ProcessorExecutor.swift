@@ -192,6 +192,11 @@ enum ProcessorExecutor {
         librariesDir: URL,
         data: [String: String]?
     ) -> String {
+        // 快速检查：如果字符串不包含任何占位符，直接返回
+        guard arg.contains("{") else {
+            return arg
+        }
+
         // 使用 NSMutableString 避免在循环中创建大量临时字符串
         let processedArg = NSMutableString(string: arg)
 
@@ -204,7 +209,8 @@ enum ProcessorExecutor {
             AppConstants.ProcessorPlaceholders.workingDir: librariesDir.path,
         ]
 
-        for (placeholder, value) in basicReplacements {
+        for (placeholder, value) in basicReplacements where processedArg.range(of: placeholder).location != NSNotFound {
+            // 先检查是否包含占位符，避免不必要的替换操作
             processedArg.replaceOccurrences(
                 of: placeholder,
                 with: value,

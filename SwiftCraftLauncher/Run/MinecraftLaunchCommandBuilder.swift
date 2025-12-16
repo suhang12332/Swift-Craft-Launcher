@@ -120,16 +120,24 @@ enum MinecraftLaunchCommandBuilder {
     }
 
     private static func substituteVariables(_ arg: String, with map: [String: String]) -> String {
+        // 快速检查：如果字符串不包含任何占位符，直接返回
+        guard arg.contains("${") else {
+            return arg
+        }
+
         // 使用 NSMutableString 避免在循环中创建大量临时字符串
         let result = NSMutableString(string: arg)
         for (key, value) in map {
             let placeholder = "${\(key)}"
-            result.replaceOccurrences(
-                of: placeholder,
-                with: value,
-                options: [],
-                range: NSRange(location: 0, length: result.length)
-            )
+            // 先检查是否包含占位符，避免不必要的替换操作
+            if result.range(of: placeholder).location != NSNotFound {
+                result.replaceOccurrences(
+                    of: placeholder,
+                    with: value,
+                    options: [],
+                    range: NSRange(location: 0, length: result.length)
+                )
+            }
         }
         return result as String
     }

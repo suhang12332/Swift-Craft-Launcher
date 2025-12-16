@@ -261,30 +261,35 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 return nil
             }
 
-            let indexData = try Data(contentsOf: indexPath)
+            // 使用局部作用域确保中间变量尽早释放
+            let indexInfo: ModrinthIndexInfo = try {
+                let indexData = try Data(contentsOf: indexPath)
 
-            // 尝试解析 JSON
-            let modPackIndex = try JSONDecoder().decode(
-                ModrinthIndex.self,
-                from: indexData
-            )
+                // 尝试解析 JSON
+                let modPackIndex = try JSONDecoder().decode(
+                    ModrinthIndex.self,
+                    from: indexData
+                )
 
-            // 确定加载器类型和版本
-            let loaderInfo = determineLoaderInfo(
-                from: modPackIndex.dependencies
-            )
+                // 确定加载器类型和版本
+                let loaderInfo = determineLoaderInfo(
+                    from: modPackIndex.dependencies
+                )
 
-            // 创建解析结果
-            let indexInfo = ModrinthIndexInfo(
-                gameVersion: modPackIndex.dependencies.minecraft ?? "unknown",
-                loaderType: loaderInfo.type,
-                loaderVersion: loaderInfo.version,
-                modPackName: modPackIndex.name,
-                modPackVersion: modPackIndex.versionId,
-                summary: modPackIndex.summary,
-                files: modPackIndex.files,
-                dependencies: modPackIndex.dependencies.dependencies ?? []
-            )
+                // 创建解析结果
+                let info = ModrinthIndexInfo(
+                    gameVersion: modPackIndex.dependencies.minecraft ?? "unknown",
+                    loaderType: loaderInfo.type,
+                    loaderVersion: loaderInfo.version,
+                    modPackName: modPackIndex.name,
+                    modPackVersion: modPackIndex.versionId,
+                    summary: modPackIndex.summary,
+                    files: modPackIndex.files,
+                    dependencies: modPackIndex.dependencies.dependencies ?? []
+                )
+                // indexData 和 modPackIndex 在此作用域结束后会自动释放
+                return info
+            }()
 
             lastParsedIndexInfo = indexInfo
 
