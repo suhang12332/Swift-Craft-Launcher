@@ -94,13 +94,9 @@ struct MinecraftSkinUtils: View {
     // 缓存统计（用于调试和监控）
     private static var cacheStats = CacheStats()
 
-    // 确保内存压力监听只初始化一次
+    // 确保缓存初始化逻辑只执行一次
     private static var memoryObserverSetup = false
     private static let memoryObserverQueue = DispatchQueue(label: "com.swiftcraftlauncher.skincache.memory")
-    // 保留定时器引用，避免被释放
-    private static var cleanupTimer: Timer?
-    // 保留通知观察者引用，以便后续移除
-    private static var notificationObserver: NSObjectProtocol?
 
     private struct CacheStats {
         var hits: Int = 0
@@ -123,7 +119,7 @@ struct MinecraftSkinUtils: View {
             .name: "MinecraftSkinProcessor",
         ]
         let context = CIContext(options: options)
-        // 初始化内存压力监听（只初始化一次）
+        // 初始化缓存维护任务（确保只初始化一次）
         setupMemoryPressureObserverOnce()
         return context
     }()
@@ -216,51 +212,11 @@ struct MinecraftSkinUtils: View {
         )
     }
 
-    // 初始化内存压力监听（确保只初始化一次）
+    // 初始化缓存维护任务（确保只初始化一次）
     private static func setupMemoryPressureObserverOnce() {
         memoryObserverQueue.sync {
             guard !memoryObserverSetup else { return }
             memoryObserverSetup = true
-
-            // 通过监听应用进入后台时清理部分缓存
-            notificationObserver = NotificationCenter.default.addObserver(
-                forName: NSApplication.willResignActiveNotification,
-                object: nil,
-                queue: .main
-            ) { _ in
-                // 应用失去焦点时，清理部分缓存以释放内存
-                // 保留最近使用的 50% 的缓存（因为现在缓存的是更小的图像）
-                let targetCount = Int(Double(Constants.maxCacheSize) * 0.5)
-                if imageCache.countLimit > targetCount {
-                    // 通过临时降低限制来触发清理
-                    let originalLimit = imageCache.countLimit
-                    imageCache.countLimit = targetCount
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        imageCache.countLimit = originalLimit
-                    }
-                    Logger.shared.debug("🧹 MinecraftSkinUtils: 应用失去焦点，清理部分缓存")
-                }
-            }
-
-            // 定期清理缓存（每 5 分钟清理一次最旧的 20%）
-            // 在主线程上创建定时器，并保留引用
-            DispatchQueue.main.async {
-                let timer = Timer.scheduledTimer(withTimeInterval: 300.0, repeats: true) { _ in
-                    let currentCount = imageCache.countLimit
-                    let targetCount = Int(Double(currentCount) * 0.8)
-                    if targetCount < currentCount {
-                        let originalLimit = imageCache.countLimit
-                        imageCache.countLimit = targetCount
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            imageCache.countLimit = originalLimit
-                        }
-                        Logger.shared.debug("🧹 MinecraftSkinUtils: 定期清理缓存（保留 80%）")
-                    }
-                }
-                // 将定时器添加到 RunLoop 的 common modes，确保在滚动等操作时也能触发
-                RunLoop.current.add(timer, forMode: .common)
-                cleanupTimer = timer
-            }
         }
     }
 
