@@ -16,8 +16,6 @@ struct MainView: View {
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Resource/Project State
-    @State private var currentPage: Int = 1
-    @State private var totalItems: Int = 0
     @State private var sortIndex: String = "relevance"
     @State private var selectedVersions: [String] = []
     @State private var selectedLicenses: [String] = []
@@ -71,8 +69,6 @@ struct MainView: View {
 
             DetailView(
                 selectedItem: $selectedItem,
-                currentPage: $currentPage,
-                totalItems: $totalItems,
                 sortIndex: $sortIndex,
                 gameResourcesType: $gameResourcesType,
                 selectedVersions: $selectedVersions,
@@ -94,10 +90,8 @@ struct MainView: View {
                     sortIndex: $sortIndex,
                     gameResourcesType: $gameResourcesType,
                     gameType: $gameType,
-                    currentPage: $currentPage,
                     versionCurrentPage: $versionCurrentPage,
                     versionTotal: $versionTotal,
-                    totalItems: totalItems,
                     project: $loadedProjectDetail,
                     selectProjectId: $selectedProjectId,
                     selectedTab: $selectedTab,
@@ -183,12 +177,6 @@ struct MainView: View {
             if self.gameResourcesType != resourceType.rawValue {
                 self.gameResourcesType = resourceType.rawValue
             }
-        }
-        if self.currentPage != 1 {
-            self.currentPage = 1
-        }
-        if self.totalItems != 0 {
-            self.totalItems = 0
         }
         if !self.selectedVersions.isEmpty {
             self.selectedVersions.removeAll()

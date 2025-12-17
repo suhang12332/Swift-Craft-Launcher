@@ -4,8 +4,6 @@ import SwiftUI
 struct ModrinthDetailView: View {
     // MARK: - Properties
     let query: String
-    @Binding var currentPage: Int
-    @Binding var totalItems: Int
     @Binding var sortIndex: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
@@ -36,7 +34,6 @@ struct ModrinthDetailView: View {
             selectedResolutions.joined(separator: ","),
             selectedPerformanceImpact.joined(separator: ","),
             selectedLoader.joined(separator: ","),
-            String(currentPage),
             String(gameType),
         ].joined(separator: "|")
     }
@@ -67,12 +64,6 @@ struct ModrinthDetailView: View {
             if newKey != lastSearchKey {
                 lastSearchKey = newKey
                 triggerSearch()
-            }
-        }
-        .onChange(of: viewModel.totalHits) { oldValue, newValue in
-            // 优化：仅在值实际变化时更新
-            if oldValue != newValue {
-                totalItems = newValue
             }
         }
         .searchable(
@@ -118,19 +109,12 @@ struct ModrinthDetailView: View {
         Task { await performSearchWithErrorHandling() }
     }
 
-    private func resetPageAndSearch() {
-        currentPage = 1
-        triggerSearch()
-    }
-
     private func debounceSearch() {
         searchTimer?.invalidate()
         searchTimer = Timer.scheduledTimer(
             withTimeInterval: 0.5,
             repeats: false
         ) { _ in
-            // 搜索时重置页码到第一页
-            currentPage = 1
             Task { await performSearchWithErrorHandling() }
         }
     }
@@ -158,7 +142,6 @@ struct ModrinthDetailView: View {
             selectedResolutions.joined(separator: ","),
             selectedPerformanceImpact.joined(separator: ","),
             selectedLoader.joined(separator: ","),
-            String(currentPage),
             String(gameType),
             searchText,
         ].joined(separator: "|")
@@ -187,7 +170,7 @@ struct ModrinthDetailView: View {
             performanceImpact: selectedPerformanceImpact,
             loaders: selectedLoader,
             sortIndex: sortIndex,
-            page: currentPage
+            page: 1
         )
     }
 

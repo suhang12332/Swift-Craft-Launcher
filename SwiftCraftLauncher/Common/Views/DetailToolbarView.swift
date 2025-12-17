@@ -7,29 +7,17 @@ public struct DetailToolbarView: ToolbarContent {
     @Binding var sortIndex: String
     @Binding var gameResourcesType: String
     @Binding var gameType: Bool  // false = local, true = server
-    @Binding var currentPage: Int
     @Binding var versionCurrentPage: Int
     @Binding var versionTotal: Int
     @EnvironmentObject var gameRepository: GameRepository
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @StateObject private var gameActionManager = GameActionManager.shared
-    let totalItems: Int
     @Binding var project: ModrinthProjectDetail?
     @Binding var selectProjectId: String?
     @Binding var selectedTab: Int
     @Binding var gameId: String?
 
     // MARK: - Computed Properties
-    var totalPages: Int {
-        max(1, Int(ceil(Double(totalItems) / Double(20))))
-    }
-
-    private func handlePageChange(_ increment: Int) {
-        let newPage = currentPage + increment
-        if newPage >= 1 && newPage <= totalPages {
-            currentPage = newPage
-        }
-    }
 
     private var currentGame: GameVersionInfo? {
         if case .game(let gameId) = selectedItem {
@@ -89,7 +77,6 @@ public struct DetailToolbarView: ToolbarContent {
                     resourcesMenu
                     if gameType {
                         sortMenu
-                        paginationControls
                     }
                     Spacer()
                     Button {
@@ -149,7 +136,6 @@ public struct DetailToolbarView: ToolbarContent {
                     }
                 } else {
                     sortMenu
-                    paginationControls
                     Spacer()
                 }
             }
@@ -176,7 +162,6 @@ public struct DetailToolbarView: ToolbarContent {
             ) { sort in
                 Button("menu.sort.\(sort)".localized()) {
                     sortIndex = sort
-                    currentPage = 1
                 }
             }
         } label: {
@@ -189,7 +174,6 @@ public struct DetailToolbarView: ToolbarContent {
             ForEach(resourceTypesForCurrentGame, id: \.self) { sort in
                 Button("resource.content.type.\(sort)".localized()) {
                     gameResourcesType = sort
-                    currentPage = 1
                 }
             }
         } label: {
@@ -200,7 +184,6 @@ public struct DetailToolbarView: ToolbarContent {
     private var resourcesTypeMenu: some View {
         Button {
             gameType.toggle()
-            currentPage = 1
         } label: {
             Label(
                 currentResourceTypeTitle,
@@ -210,43 +193,6 @@ public struct DetailToolbarView: ToolbarContent {
         }
         .help("resource.content.location.help".localized())
         .applyReplaceTransition()
-    }
-
-    private var paginationControls: some View {
-        HStack(spacing: 8) {
-            Button {
-                handlePageChange(-1)
-            } label: {
-                Label(
-                    "pagination.help".localized(),
-                    systemImage: "chevron.left"
-                )
-            }
-            .disabled(currentPage == 1)
-
-            HStack(spacing: 8) {
-                Text(
-                    String(
-                        format: "pagination.current".localized(),
-                        currentPage
-                    )
-                )
-                Divider().frame(height: 16)
-                Text(String(format: "pagination.total".localized(), totalPages))
-            }
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-            Button {
-                handlePageChange(1)
-            } label: {
-                Label(
-                    "pagination.help".localized(),
-                    systemImage: "chevron.right"
-                )
-            }
-            .disabled(currentPage == totalPages)
-        }
-        .help("pagination.help".localized())
     }
 
     private var resourceTypesForCurrentGame: [String] {

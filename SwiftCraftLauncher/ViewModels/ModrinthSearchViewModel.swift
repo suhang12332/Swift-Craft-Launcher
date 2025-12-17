@@ -60,7 +60,6 @@ final class ModrinthSearchViewModel: ObservableObject {
 
     // MARK: - Private Properties
     private var searchTask: Task<Void, Never>?
-    private var currentPage: Int = 1
     private let pageSize: Int = 20
 
     // MARK: - Initialization

@@ -16,8 +16,6 @@ struct GameInfoDetailView: View {
     let game: GameVersionInfo
 
     @Binding var query: String
-    @Binding var currentPage: Int
-    @Binding var totalItems: Int
     @Binding var sortIndex: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
@@ -44,8 +42,6 @@ struct GameInfoDetailView: View {
             if gameType {
                 ModrinthDetailView(
                     query: query,
-                    currentPage: $currentPage,
-                    totalItems: $totalItems,
                     sortIndex: $sortIndex,
                     selectedVersions: $selectedVersions,
                     selectedCategories: $selectedCategories,

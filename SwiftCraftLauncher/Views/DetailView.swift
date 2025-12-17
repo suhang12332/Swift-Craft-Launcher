@@ -10,8 +10,6 @@ import SwiftUI
 struct DetailView: View {
     // MARK: - Properties
     @Binding var selectedItem: SidebarItem
-    @Binding var currentPage: Int
-    @Binding var totalItems: Int
     @Binding var sortIndex: String
     @Binding var gameResourcesType: String
     @Binding var selectedVersions: [String]
@@ -48,8 +46,6 @@ struct DetailView: View {
             GameInfoDetailView(
                 game: gameInfo,
                 query: $gameResourcesType,
-                currentPage: $currentPage,
-                totalItems: $totalItems,
                 sortIndex: $sortIndex,
                 selectedVersions: $selectedVersions,
                 selectedCategories: $selectedCategories,
@@ -74,8 +70,6 @@ struct DetailView: View {
         } else {
             ModrinthDetailView(
                 query: type.rawValue,
-                currentPage: $currentPage,
-                totalItems: $totalItems,
                 sortIndex: $sortIndex,
                 selectedVersions: $selectedVersions,
                 selectedCategories: $selectedCategories,
