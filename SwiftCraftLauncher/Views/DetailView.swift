@@ -31,14 +31,7 @@ struct DetailView: View {
     @ViewBuilder var body: some View {
         switch selectedItem {
         case .game(let gameId):
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    gameDetailView(gameId: gameId)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(.white)
-            }
+            gameDetailView(gameId: gameId).frame(maxWidth: .infinity, alignment: .leading)
         case .resource(let type):
             resourceDetailView(type: type)
                 .frame(maxWidth: .infinity, alignment: .leading)
