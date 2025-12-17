@@ -42,34 +42,18 @@ struct CategorySectionView: View {
         let (_, overflowItems) = computeVisibleAndOverflowItems()
         return HStack {
             headerTitle
+            Spacer()
             if !overflowItems.isEmpty {
                 overflowButton(overflowItems: overflowItems)
             }
-            Spacer()
             clearButton
         }
         .padding(.bottom, CategorySectionConstants.headerBottomPadding)
     }
 
     private var headerTitle: some View {
-        LabeledContent {
-            if !selectedItems.isEmpty {
-                selectionCountBadge
-            }
-        } label: {
-            Text(title.localized())
-                .font(.headline)
-        }
-    }
-
-    private var selectionCountBadge: some View {
-        Text("\(selectedItems.count)")
-            .font(.subheadline)
-            .foregroundColor(.secondary)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .background(Color.secondary.opacity(0.1))
-            .cornerRadius(4)
+        Text(title.localized())
+            .font(.headline)
     }
 
     private func overflowButton(overflowItems: [FilterItem]) -> some View {
@@ -166,6 +150,7 @@ struct CategorySectionView: View {
         .frame(maxHeight: CategorySectionConstants.maxHeight)
         .fixedSize(horizontal: false, vertical: true)
         .padding(.vertical, CategorySectionConstants.verticalPadding)
+        .padding(.bottom, CategorySectionConstants.verticalPadding)
     }
 
     // MARK: - Helper Methods
