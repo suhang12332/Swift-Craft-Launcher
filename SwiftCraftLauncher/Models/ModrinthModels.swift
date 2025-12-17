@@ -54,7 +54,7 @@ public struct ModrinthProjectDetail: Codable, Hashable, Equatable {
     let followers: Int
     let license: License?
     let versions: [String]
-    let gameVersions: [String]
+    var gameVersions: [String]
     let loaders: [String]
     var type: String?
     var fileName: String?

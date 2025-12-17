@@ -296,7 +296,14 @@ enum ModrinthService {
 
         let decoder = JSONDecoder()
         decoder.configureForModrinth()
-        let detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
+        var detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
+
+        // 仅保留纯数字（含点号）的正式版游戏版本，例如 1.20.4
+        let releaseGameVersions = detail.gameVersions.filter {
+            $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil
+        }
+        detail.gameVersions = releaseGameVersions
+
         return detail
     }
 

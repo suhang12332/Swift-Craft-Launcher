@@ -23,6 +23,8 @@ struct ModrinthProjectDetailView: View {
     var body: some View {
         if let project = projectDetail {
             projectDetailView(project)
+        } else {
+            loadingView
         }
     }
 
@@ -114,6 +116,16 @@ struct ModrinthProjectDetailView: View {
     private func descriptionView(_ project: ModrinthProjectDetail) -> some View {
         Markdown(project.body)
         // EmptyView()
+    }
+
+    // MARK: - Loading View
+    private var loadingView: some View {
+        VStack(spacing: Constants.spacing) {
+            ProgressView()
+                .controlSize(.small)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(Constants.padding)
     }
 }
 

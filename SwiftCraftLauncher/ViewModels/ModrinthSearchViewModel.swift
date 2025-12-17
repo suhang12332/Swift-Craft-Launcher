@@ -168,7 +168,11 @@ final class ModrinthSearchViewModel: ObservableObject {
         isLoading = false
         isLoadingMore = false
     }
-
+    @MainActor
+    func beginNewSearch() {
+        isLoading = true
+        results.removeAll()
+    }
     // MARK: - Private Methods
     private func buildFacets(
         projectType: String,

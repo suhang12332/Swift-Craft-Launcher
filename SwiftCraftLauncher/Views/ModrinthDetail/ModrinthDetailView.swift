@@ -105,7 +105,7 @@ struct ModrinthDetailView: View {
             placement: .toolbar,
             prompt: "search.resources".localized()
         )
-        .help("search.resources".localized())
+
         .onChange(of: searchText) { oldValue, newValue in
             // 优化：仅在搜索文本实际变化时触发防抖搜索
             if oldValue != newValue {
@@ -193,7 +193,7 @@ struct ModrinthDetailView: View {
 
         lastSearchParams = params
         if !append {
-            viewModel.clearResults()
+            viewModel.beginNewSearch()
         }
         await viewModel.search(
             query: searchText,
@@ -224,7 +224,7 @@ struct ModrinthDetailView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .listRowSeparator(.hidden)
-            } else if viewModel.results.isEmpty {
+            } else if hasLoaded && viewModel.results.isEmpty {
                 emptyResultView()
                     .frame(maxWidth: .infinity, alignment: .center)
                     .listRowSeparator(.hidden)
@@ -298,11 +298,11 @@ struct ModrinthDetailView: View {
     }
 
     private var loadingMoreIndicator: some View {
-        ZStack {
+        VStack(spacing: 12) {
             ProgressView()
                 .controlSize(.small)
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 44, alignment: .center)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(16)
     }
 }
