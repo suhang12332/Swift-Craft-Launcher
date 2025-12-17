@@ -28,14 +28,20 @@ struct DetailView: View {
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Body
-    var body: some View {
-        List {
-            switch selectedItem {
-            case .game(let gameId):
-                gameDetailView(gameId: gameId)
-            case .resource(let type):
-                resourceDetailView(type: type)
+    @ViewBuilder var body: some View {
+        switch selectedItem {
+        case .game(let gameId):
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    gameDetailView(gameId: gameId)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(.white)
             }
+        case .resource(let type):
+            resourceDetailView(type: type)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -64,9 +70,11 @@ struct DetailView: View {
     @ViewBuilder
     private func resourceDetailView(type: ResourceType) -> some View {
         if selectedProjectId != nil {
-            ModrinthProjectDetailView(
-                projectDetail: loadedProjectDetail
-            )
+            List {
+                ModrinthProjectDetailView(
+                    projectDetail: loadedProjectDetail
+                )
+            }
         } else {
             ModrinthDetailView(
                 query: type.rawValue,

@@ -19,6 +19,7 @@ struct ModrinthDetailView: View {
     @State private var hasLoaded = false
     @State private var searchText: String = ""
     @State private var searchTimer: Timer?
+    @State private var currentPage: Int = 1
     @Binding var gameType: Bool
     @State private var lastSearchKey: String = ""
     @State private var lastSearchParams: String = ""
@@ -38,23 +39,20 @@ struct ModrinthDetailView: View {
         ].joined(separator: "|")
     }
 
+    private var hasMoreResults: Bool {
+        viewModel.results.count < viewModel.totalHits
+    }
+
     // MARK: - Body
     var body: some View {
-        LazyVStack {
-            if let error = error {
-                newErrorView(error)
-            } else if viewModel.isLoading {
-                HStack {
-                    ProgressView()
-                        .controlSize(.small)
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-            } else if viewModel.results.isEmpty {
-                emptyResultView()
-            } else {
-                resultList
+        List {
+            listContent
+            if viewModel.isLoadingMore {
+                loadingMoreIndicator
+                    .listRowSeparator(.hidden)
             }
         }
+        .listStyle(.plain)
         .task {
             if gameType {
                 await initialLoadIfNeeded()
@@ -63,6 +61,7 @@ struct ModrinthDetailView: View {
         .onChange(of: searchKey) { _, newKey in
             if newKey != lastSearchKey {
                 lastSearchKey = newKey
+                resetPagination()
                 triggerSearch()
             }
         }
@@ -75,6 +74,7 @@ struct ModrinthDetailView: View {
         .onChange(of: searchText) { oldValue, newValue in
             // 优化：仅在搜索文本实际变化时触发防抖搜索
             if oldValue != newValue {
+                resetPagination()
                 debounceSearch()
             }
         }
@@ -101,12 +101,15 @@ struct ModrinthDetailView: View {
     private func initialLoadIfNeeded() async {
         if !hasLoaded {
             hasLoaded = true
-            await performSearchWithErrorHandling()
+            resetPagination()
+            await performSearchWithErrorHandling(page: 1, append: false)
         }
     }
 
     private func triggerSearch() {
-        Task { await performSearchWithErrorHandling() }
+        Task {
+            await performSearchWithErrorHandling(page: 1, append: false)
+        }
     }
 
     private func debounceSearch() {
@@ -115,13 +118,18 @@ struct ModrinthDetailView: View {
             withTimeInterval: 0.5,
             repeats: false
         ) { _ in
-            Task { await performSearchWithErrorHandling() }
+            Task {
+                await performSearchWithErrorHandling(page: 1, append: false)
+            }
         }
     }
 
-    private func performSearchWithErrorHandling() async {
+    private func performSearchWithErrorHandling(
+        page: Int,
+        append: Bool
+    ) async {
         do {
-            try await performSearchThrowing()
+            try await performSearchThrowing(page: page, append: append)
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("搜索失败: \(globalError.chineseMessage)")
@@ -132,19 +140,8 @@ struct ModrinthDetailView: View {
         }
     }
 
-    private func performSearchThrowing() async throws {
-        let params = [
-            query,
-            sortIndex,
-            selectedVersions.joined(separator: ","),
-            selectedCategories.joined(separator: ","),
-            selectedFeatures.joined(separator: ","),
-            selectedResolutions.joined(separator: ","),
-            selectedPerformanceImpact.joined(separator: ","),
-            selectedLoader.joined(separator: ","),
-            String(gameType),
-            searchText,
-        ].joined(separator: "|")
+    private func performSearchThrowing(page: Int, append: Bool) async throws {
+        let params = buildSearchParamsKey(page: page)
 
         if params == lastSearchParams {
             // 完全重复，不请求
@@ -160,6 +157,9 @@ struct ModrinthDetailView: View {
         }
 
         lastSearchParams = params
+        if !append {
+            viewModel.clearResults()
+        }
         await viewModel.search(
             query: searchText,
             projectType: query,
@@ -170,32 +170,104 @@ struct ModrinthDetailView: View {
             performanceImpact: selectedPerformanceImpact,
             loaders: selectedLoader,
             sortIndex: sortIndex,
-            page: 1
+            page: page,
+            append: append
         )
     }
 
     // MARK: - Result List
-    private var resultList: some View {
-        ForEach(viewModel.results, id: \.projectId) { mod in
-            ModrinthDetailCardView(
-                project: mod,
-                selectedVersions: selectedVersions,
-                selectedLoaders: selectedLoader,
-                gameInfo: gameInfo,
-                query: query,
-                type: true,
-                selectedItem: $selectedItem
-            )
-            .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
-            .listRowInsets(
-                EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
-            )
-            .onTapGesture {
-                selectedProjectId = mod.projectId
-                if let type = ResourceType(rawValue: query) {
-                    selectedItem = .resource(type)
+    @ViewBuilder private var listContent: some View {
+        Group {
+            if let error = error {
+                newErrorView(error)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowSeparator(.hidden)
+            } else if viewModel.isLoading && viewModel.results.isEmpty {
+                HStack {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .listRowSeparator(.hidden)
+            } else if viewModel.results.isEmpty {
+                emptyResultView()
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowSeparator(.hidden)
+            } else {
+                ForEach(viewModel.results, id: \.projectId) { mod in
+                    ModrinthDetailCardView(
+                        project: mod,
+                        selectedVersions: selectedVersions,
+                        selectedLoaders: selectedLoader,
+                        gameInfo: gameInfo,
+                        query: query,
+                        type: true,
+                        selectedItem: $selectedItem
+                    )
+                    .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
+                    .listRowInsets(
+                        EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
+                    )
+                    .listRowSeparator(.hidden)
+                    .onTapGesture {
+                        selectedProjectId = mod.projectId
+                        if let type = ResourceType(rawValue: query) {
+                            selectedItem = .resource(type)
+                        }
+                    }
+                    .onAppear {
+                        loadNextPageIfNeeded(currentItem: mod)
+                    }
                 }
             }
         }
+    }
+
+    private func loadNextPageIfNeeded(currentItem mod: ModrinthProject) {
+        guard hasMoreResults, !viewModel.isLoading, !viewModel.isLoadingMore else {
+            return
+        }
+        guard
+            let index = viewModel.results.firstIndex(where: { $0.projectId == mod.projectId })
+        else { return }
+
+        let thresholdIndex = max(viewModel.results.count - 5, 0)
+        if index >= thresholdIndex {
+            currentPage += 1
+            let nextPage = currentPage
+            Task {
+                await performSearchWithErrorHandling(page: nextPage, append: true)
+            }
+        }
+    }
+
+    private func resetPagination() {
+        currentPage = 1
+        lastSearchParams = ""
+    }
+
+    private func buildSearchParamsKey(page: Int) -> String {
+        [
+            query,
+            sortIndex,
+            selectedVersions.joined(separator: ","),
+            selectedCategories.joined(separator: ","),
+            selectedFeatures.joined(separator: ","),
+            selectedResolutions.joined(separator: ","),
+            selectedPerformanceImpact.joined(separator: ","),
+            selectedLoader.joined(separator: ","),
+            String(gameType),
+            searchText,
+            "page:\(page)",
+        ].joined(separator: "|")
+    }
+
+    private var loadingMoreIndicator: some View {
+        ZStack {
+            ProgressView()
+                .controlSize(.small)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: 44, alignment: .center)
     }
 }
