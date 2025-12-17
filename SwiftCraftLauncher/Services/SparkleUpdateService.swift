@@ -104,11 +104,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
 
     /// 获取系统架构
     private func getSystemArchitecture() -> String {
-        #if arch(arm64)
-        return "arm64"
-        #else
-        return "x86_64"
-        #endif
+        return Architecture.current.sparkleArch
     }
 
     // MARK: - Public Methods

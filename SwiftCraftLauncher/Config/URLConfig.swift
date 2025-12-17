@@ -88,6 +88,13 @@ enum URLConfig {
             static let javaRuntimeBeta = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu17.60.17-ca-jre17.0.16-macosx_aarch64.zip")
         }
 
+        // Intel平台专用版本的Zulu JDK下载URL
+        enum JavaRuntimeIntel {
+            static let jreLegacy = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu8.88.0.19-ca-jre8.0.462-macosx_x64.zip")
+            static let javaRuntimeAlpha = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu16.32.15-ca-jre16.0.2-macosx_x64.zip")
+            static let javaRuntimeBeta = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu17.60.17-ca-jre17.0.16-macosx_x64.zip")
+        }
+
         // GitHub API
         enum GitHub {
             static let baseURL = URLConfig.url("https://api.github.com")
