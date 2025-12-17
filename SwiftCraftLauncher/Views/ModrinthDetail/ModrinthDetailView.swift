@@ -14,16 +14,47 @@ struct ModrinthDetailView: View {
     @Binding var selectedLoader: [String]
     let gameInfo: GameVersionInfo?
     @Binding var selectedItem: SidebarItem
+    @Binding var gameType: Bool
+    let header: AnyView?
 
     @StateObject private var viewModel = ModrinthSearchViewModel()
     @State private var hasLoaded = false
     @State private var searchText: String = ""
     @State private var searchTimer: Timer?
     @State private var currentPage: Int = 1
-    @Binding var gameType: Bool
     @State private var lastSearchKey: String = ""
     @State private var lastSearchParams: String = ""
     @State private var error: GlobalError?
+
+    init(
+        query: String,
+        sortIndex: Binding<String>,
+        selectedVersions: Binding<[String]>,
+        selectedCategories: Binding<[String]>,
+        selectedFeatures: Binding<[String]>,
+        selectedResolutions: Binding<[String]>,
+        selectedPerformanceImpact: Binding<[String]>,
+        selectedProjectId: Binding<String?>,
+        selectedLoader: Binding<[String]>,
+        gameInfo: GameVersionInfo?,
+        selectedItem: Binding<SidebarItem>,
+        gameType: Binding<Bool>,
+        header: AnyView? = nil
+    ) {
+        self.query = query
+        _sortIndex = sortIndex
+        _selectedVersions = selectedVersions
+        _selectedCategories = selectedCategories
+        _selectedFeatures = selectedFeatures
+        _selectedResolutions = selectedResolutions
+        _selectedPerformanceImpact = selectedPerformanceImpact
+        _selectedProjectId = selectedProjectId
+        _selectedLoader = selectedLoader
+        self.gameInfo = gameInfo
+        _selectedItem = selectedItem
+        _gameType = gameType
+        self.header = header
+    }
 
     private var searchKey: String {
         [
@@ -46,6 +77,10 @@ struct ModrinthDetailView: View {
     // MARK: - Body
     var body: some View {
         List {
+            if let header {
+                header
+                    .listRowSeparator(.hidden)
+            }
             listContent
             if viewModel.isLoadingMore {
                 loadingMoreIndicator
