@@ -56,23 +56,22 @@ struct GameInfoDetailView: View {
                     )
                 )
             } else {
-                List {
-                    GameHeaderListRow(
-                        game: game,
-                        cacheInfo: cacheManager.cacheInfo,
-                        query: query
-                    ) {
-                        triggerLocalRefresh()
-                    }
-                    GameLocalResourceView(
-                        game: game,
-                        query: query,
-                        selectedItem: $selectedItem,
-                        selectedProjectId: $selectedProjectId,
-                        refreshToken: localRefreshToken
-                    )
-                }
-                .listStyle(.plain)
+                GameLocalResourceView(
+                    game: game,
+                    query: query,
+                    header: AnyView(
+                        GameHeaderListRow(
+                            game: game,
+                            cacheInfo: cacheManager.cacheInfo,
+                            query: query
+                        ) {
+                            triggerLocalRefresh()
+                        }
+                    ),
+                    selectedItem: $selectedItem,
+                    selectedProjectId: $selectedProjectId,
+                    refreshToken: localRefreshToken
+                )
             }
         }
         // 优化：合并相关 onChange 以减少不必要的视图更新

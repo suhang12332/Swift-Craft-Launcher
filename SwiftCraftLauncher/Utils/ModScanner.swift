@@ -420,4 +420,97 @@ extension ModScanner {
 
         return results
     }
+
+    // MARK: - 分页扫描
+
+    /// 分页扫描目录，仅对当前页的文件进行解析（静默版本）
+    func scanResourceDirectoryPage(
+        _ dir: URL,
+        page: Int,
+        pageSize: Int,
+        completion: @escaping ([ModrinthProjectDetail], Bool) -> Void
+    ) {
+        Task {
+            do {
+                let (results, hasMore) = try await scanResourceDirectoryPageThrowing(
+                    dir,
+                    page: page,
+                    pageSize: pageSize
+                )
+                completion(results, hasMore)
+            } catch {
+                let globalError = GlobalError.from(error)
+                Logger.shared.error("分页扫描资源目录失败: \(globalError.chineseMessage)")
+                GlobalErrorHandler.shared.handle(globalError)
+                completion([], false)
+            }
+        }
+    }
+
+    /// 分页扫描目录，仅对当前页的文件进行解析（抛出异常版本）
+    func scanResourceDirectoryPageThrowing(
+        _ dir: URL,
+        page: Int,
+        pageSize: Int
+    ) async throws -> ([ModrinthProjectDetail], Bool) {
+        let files: [URL]
+        do {
+            files = try FileManager.default.contentsOfDirectory(
+                at: dir,
+                includingPropertiesForKeys: nil
+            )
+        } catch {
+            throw GlobalError.fileSystem(
+                chineseMessage:
+                    "读取目录失败: \(dir.lastPathComponent), 错误: \(error.localizedDescription)",
+                i18nKey: "error.filesystem.directory_read_failed",
+                level: .silent
+            )
+        }
+
+        let jarFiles = files.filter {
+            ["jar", "zip"].contains($0.pathExtension.lowercased())
+        }
+        if jarFiles.isEmpty {
+            return ([], false)
+        }
+
+        // 计算当前页文件范围
+        let safePage = max(page, 1)
+        let safePageSize = max(pageSize, 1)
+        let startIndex = (safePage - 1) * safePageSize
+        let endIndex = min(startIndex + safePageSize, jarFiles.count)
+
+        if startIndex >= jarFiles.count {
+            return ([], false)
+        }
+
+        let pageFiles = Array(jarFiles[startIndex..<endIndex])
+        let hasMore = endIndex < jarFiles.count
+
+        let semaphore = AsyncSemaphore(value: 4)
+
+        let results = await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
+            for fileURL in pageFiles {
+                group.addTask {
+                    await semaphore.wait()
+                    defer { Task { await semaphore.signal() } }
+
+                    return try? await self.getModrinthProjectDetailThrowing(
+                        for: fileURL
+                    )
+                }
+            }
+
+            var results: [ModrinthProjectDetail] = []
+            for await result in group {
+                if let detail = result {
+                    results.append(detail)
+                }
+            }
+            return results
+        }
+
+        return (results, hasMore)
+    }
 }
