@@ -71,11 +71,7 @@ struct GameHeaderListRow: View {
                     case .empty:
                         ProgressView()
                     case .success(let image):
-                        image
-                            .resizable()
-                            .interpolation(.none)
-                            .frame(width: 80, height: 80)
-                            .cornerRadius(16)
+                        styledIcon(image, size: 80)
                     case .failure:
                         Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
                             .resizable()
@@ -94,6 +90,24 @@ struct GameHeaderListRow: View {
                     .cornerRadius(16)
             }
         }
+    }
+
+    @ViewBuilder
+    private func styledIcon(_ image: Image, size: Int) -> some View {
+        let padding: CGFloat = CGFloat(size) * 0.125 // padding 为 size 的 12.5%（80 时是 10）
+        let innerSize = CGFloat(size) - padding * 2
+        let innerCornerRadius = innerSize * 0.2 // 内层圆角为内层尺寸的 20%
+        let outerCornerRadius = CGFloat(size) * 0.2 // 外层圆角为外层尺寸的 20%
+
+        image
+            .resizable()
+            .interpolation(.none)
+            .scaledToFill()
+            .frame(width: innerSize, height: innerSize)
+            .clipShape(RoundedRectangle(cornerRadius: innerCornerRadius, style: .continuous))
+            .padding(padding)
+            .frame(width: CGFloat(size), height: CGFloat(size))
+            .clipShape(RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous))
     }
 
     private var importButton: some View {
