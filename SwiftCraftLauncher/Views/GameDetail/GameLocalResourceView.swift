@@ -7,6 +7,8 @@ struct GameLocalResourceView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var selectedProjectId: String?
     let refreshToken: UUID
+    let initialScannedResources: [ModrinthProjectDetail] // 从父视图传入的初始 ModrinthProjectDetail 数组
+    let isScanComplete: Bool // 扫描完成标记
 
     @State private var searchTextForResource = ""
     @State private var scannedResources: [ModrinthProjectDetail] = []
@@ -17,19 +19,28 @@ struct GameLocalResourceView: View {
     @State private var isLoadingMore: Bool = false
     @State private var hasLoaded: Bool = false
     @State private var resourceDirectory: URL? // 保存资源目录路径
+    @State private var allFiles: [URL] = []
 
     private static let pageSize: Int = 20
     private var pageSize: Int { Self.pageSize }
 
-    // 根据搜索文本过滤已加载的资源（仅基于标题）
+    // 本地搜索：搜索用 initialScannedResources，分页滚动用 scannedResources
     private var filteredResources: [ModrinthProjectDetail] {
+        // 如果搜索框为空，返回分页加载的资源
         if searchTextForResource.isEmpty {
             return scannedResources
         }
+        
+        // 如果扫描未完成，返回分页加载的资源
+        guard isScanComplete else {
+            return scannedResources
+        }
 
-        let searchLower = searchTextForResource.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-        return scannedResources.filter { detail in
-            // 仅搜索标题
+        // 搜索时从 initialScannedResources 中过滤
+        let searchLower = searchTextForResource.lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        return initialScannedResources.filter { detail in
             detail.title.lowercased().contains(searchLower)
         }
     }
@@ -52,12 +63,14 @@ struct GameLocalResourceView: View {
             placement: .toolbar,
             prompt: "search.resources".localized()
         )
+        .disabled(!isScanComplete) // 扫描完成前禁用搜索框
         .onAppear {
             if !hasLoaded {
                 hasLoaded = true
-                // 页面初始化时，直接加载第一页资源
+                // 页面初始化时，加载第一页资源（无限滚动）
                 initializeResourceDirectory()
                 resetPagination()
+                refreshAllFiles()
                 loadPage(page: 1, append: false)
             }
         }
@@ -67,6 +80,7 @@ struct GameLocalResourceView: View {
         }
         .onChange(of: refreshToken) { _, _ in
             resetPagination()
+            refreshAllFiles()
             loadPage(page: 1, append: false)
         }
         .alert(
@@ -131,7 +145,7 @@ struct GameLocalResourceView: View {
                     }
                 }
                 .onAppear {
-                    loadNextPageIfNeeded(currentItem: mod, totalCount: filteredResources.count)
+                    loadNextPageIfNeeded(currentItem: mod)
                 }
             }
         }
@@ -168,6 +182,7 @@ struct GameLocalResourceView: View {
         isLoadingMore = false
         hasLoaded = false
         resourceDirectory = nil
+        allFiles = []
     }
 
     // MARK: - 资源目录初始化
@@ -192,6 +207,26 @@ struct GameLocalResourceView: View {
         }
     }
 
+    // MARK: - 文件列表
+    private func refreshAllFiles() {
+        // Modpacks don't have a local directory to scan
+        if query.lowercased() == "modpack" {
+            allFiles = []
+            return
+        }
+
+        if resourceDirectory == nil {
+            initializeResourceDirectory()
+        }
+
+        guard let resourceDir = resourceDirectory else {
+            allFiles = []
+            return
+        }
+
+        allFiles = ModScanner.shared.getAllResourceFiles(resourceDir)
+    }
+
     private func loadPage(page: Int, append: Bool) {
         guard !isLoadingResources, !isLoadingMore else { return }
 
@@ -203,18 +238,6 @@ struct GameLocalResourceView: View {
             hasMoreResults = false
             return
         }
-
-        // 确保资源目录已初始化
-        if resourceDirectory == nil {
-            initializeResourceDirectory()
-        }
-
-        guard let resourceDir = resourceDirectory else {
-            return
-        }
-
-        // 获取所有文件 URL（不进行过滤，直接加载所有文件）
-        let allFiles = ModScanner.shared.getAllResourceFiles(resourceDir)
 
         if allFiles.isEmpty {
             scannedResources = []
@@ -245,33 +268,11 @@ struct GameLocalResourceView: View {
                 hasMoreResults = hasMore
                 isLoadingResources = false
                 isLoadingMore = false
-
-                // 如果当前处于搜索状态且匹配结果过少，则自动继续加载更多页
-                if !searchTextForResource.isEmpty && hasMore {
-                    // 直接计算当前过滤结果数量
-                    let searchLower = searchTextForResource.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-                    let filteredCount = scannedResources.filter { detail in
-                        detail.title.lowercased().contains(searchLower)
-                    }.count
-                    // 如果过滤结果少于半页，继续加载
-                    if filteredCount < pageSize / 2 {
-                        Task { @MainActor in
-                            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1秒延迟
-                            guard hasMoreResults, !isLoadingResources, !isLoadingMore else { return }
-                            currentPage += 1
-                            let nextPage = currentPage
-                            loadPage(page: nextPage, append: true)
-                        }
-                    }
-                }
             }
         }
     }
 
-    private func loadNextPageIfNeeded(
-        currentItem mod: ModrinthProject,
-        totalCount: Int
-    ) {
+    private func loadNextPageIfNeeded(currentItem mod: ModrinthProject) {
         guard hasMoreResults, !isLoadingResources, !isLoadingMore else {
             return
         }
@@ -281,20 +282,7 @@ struct GameLocalResourceView: View {
             })
         else { return }
 
-        // 如果正在搜索且过滤结果很少，直接触发加载（不依赖滚动位置）
-        if !searchTextForResource.isEmpty {
-            let filteredList = filteredResources
-            let filteredCount = filteredList.count
-            // 如果过滤结果少于半页，直接加载更多
-            if filteredCount < pageSize / 2 {
-                currentPage += 1
-                let nextPage = currentPage
-                loadPage(page: nextPage, append: true)
-                return
-            }
-        }
-
-        // 保持原有行为：当滚动到已加载列表的末尾附近时加载下一页
+        // 滚动到已加载列表的末尾附近时加载下一页
         let thresholdIndex = max(scannedResources.count - 5, 0)
         if index >= thresholdIndex {
             currentPage += 1
@@ -303,3 +291,4 @@ struct GameLocalResourceView: View {
         }
     }
 }
+

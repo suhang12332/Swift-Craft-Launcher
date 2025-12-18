@@ -14,6 +14,7 @@ struct GameRemoteResourceView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var gameType: Bool
     let header: AnyView?
+    let scannedDetailIds: [String] // 从父视图传入的 detailId 数组
 
     init(
         game: GameVersionInfo,
@@ -28,7 +29,8 @@ struct GameRemoteResourceView: View {
         selectedLoaders: Binding<[String]>,
         selectedItem: Binding<SidebarItem>,
         gameType: Binding<Bool>,
-        header: AnyView? = nil
+        header: AnyView? = nil,
+        scannedDetailIds: [String] = []
     ) {
         self.game = game
         _query = query
@@ -43,6 +45,7 @@ struct GameRemoteResourceView: View {
         _selectedItem = selectedItem
         _gameType = gameType
         self.header = header
+        self.scannedDetailIds = scannedDetailIds
     }
 
     var body: some View {
