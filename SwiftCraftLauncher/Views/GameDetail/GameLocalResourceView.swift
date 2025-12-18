@@ -16,9 +16,23 @@ struct GameLocalResourceView: View {
     @State private var hasMoreResults: Bool = true
     @State private var isLoadingMore: Bool = false
     @State private var hasLoaded: Bool = false
+    @State private var resourceDirectory: URL? // 保存资源目录路径
 
     private static let pageSize: Int = 20
     private var pageSize: Int { Self.pageSize }
+
+    // 根据搜索文本过滤已加载的资源（仅基于标题）
+    private var filteredResources: [ModrinthProjectDetail] {
+        if searchTextForResource.isEmpty {
+            return scannedResources
+        }
+
+        let searchLower = searchTextForResource.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+        return scannedResources.filter { detail in
+            // 仅搜索标题
+            detail.title.lowercased().contains(searchLower)
+        }
+    }
 
     var body: some View {
         List {
@@ -41,16 +55,19 @@ struct GameLocalResourceView: View {
         .onAppear {
             if !hasLoaded {
                 hasLoaded = true
+                // 页面初始化时，直接加载第一页资源
+                initializeResourceDirectory()
                 resetPagination()
                 loadPage(page: 1, append: false)
             }
         }
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
         .onChange(of: refreshToken) { _, _ in
             resetPagination()
             loadPage(page: 1, append: false)
-        }
-        .onChange(of: searchTextForResource) { _, _ in
-            // 仅影响前端过滤，本地资源分页仍按文件顺序
         }
         .alert(
             "error.notification.validation.title".localized(),
@@ -67,15 +84,8 @@ struct GameLocalResourceView: View {
     }
 
     // MARK: - 列表内容
-    @ViewBuilder
-    private var listContent: some View {
-        let filteredResources = scannedResources
-            .filter { res in
-                searchTextForResource.isEmpty
-                    || res.title.localizedCaseInsensitiveContains(
-                        searchTextForResource
-                    )
-            }
+    @ViewBuilder private var listContent: some View {
+        let filteredResources = self.filteredResources
 
         if let error {
             VStack {
@@ -91,12 +101,7 @@ struct GameLocalResourceView: View {
             .frame(maxWidth: .infinity, alignment: .center)
             .listRowSeparator(.hidden)
         } else if hasLoaded && filteredResources.isEmpty {
-            VStack(spacing: 8) {
-                Text("暂无本地资源")
-                    .foregroundColor(.secondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .center)
-            .listRowSeparator(.hidden)
+            EmptyView()
         } else {
             ForEach(
                 filteredResources.map { ModrinthProject.from(detail: $0) },
@@ -110,9 +115,7 @@ struct GameLocalResourceView: View {
                     query: query,
                     type: false,
                     selectedItem: $selectedItem
-                ) {
-                    // 本地资源这里不需要重新扫描，保留空闭包以兼容接口
-                }
+                )
                 .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                 .listRowInsets(
                     EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
@@ -153,6 +156,42 @@ struct GameLocalResourceView: View {
         scannedResources = []
     }
 
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        searchTextForResource = ""
+        scannedResources = []
+        isLoadingResources = false
+        error = nil
+        currentPage = 1
+        hasMoreResults = true
+        isLoadingMore = false
+        hasLoaded = false
+        resourceDirectory = nil
+    }
+
+    // MARK: - 资源目录初始化
+    /// 初始化资源目录路径
+    private func initializeResourceDirectory() {
+        guard resourceDirectory == nil else { return }
+
+        resourceDirectory = AppPaths.resourceDirectory(
+            for: query,
+            gameName: game.gameName
+        )
+
+        if resourceDirectory == nil {
+            let globalError = GlobalError.configuration(
+                chineseMessage: "无法获取资源目录路径",
+                i18nKey: "error.configuration.resource_directory_not_found",
+                level: .notification
+            )
+            Logger.shared.error("初始化资源目录失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            error = globalError
+        }
+    }
+
     private func loadPage(page: Int, append: Bool) {
         guard !isLoadingResources, !isLoadingMore else { return }
 
@@ -165,20 +204,19 @@ struct GameLocalResourceView: View {
             return
         }
 
-        guard
-            let resourceDir = AppPaths.resourceDirectory(
-                for: query,
-                gameName: game.gameName
-            )
-        else {
-            let globalError = GlobalError.configuration(
-                chineseMessage: "无法获取资源目录路径",
-                i18nKey: "error.configuration.resource_directory_not_found",
-                level: .notification
-            )
-            Logger.shared.error("扫描资源失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
-            error = globalError
+        // 确保资源目录已初始化
+        if resourceDirectory == nil {
+            initializeResourceDirectory()
+        }
+
+        guard let resourceDir = resourceDirectory else {
+            return
+        }
+
+        // 获取所有文件 URL（不进行过滤，直接加载所有文件）
+        let allFiles = ModScanner.shared.getAllResourceFiles(resourceDir)
+
+        if allFiles.isEmpty {
             scannedResources = []
             isLoadingResources = false
             isLoadingMore = false
@@ -192,8 +230,9 @@ struct GameLocalResourceView: View {
             isLoadingResources = true
         }
         error = nil
-        ModScanner.shared.scanResourceDirectoryPage(
-            resourceDir,
+
+        ModScanner.shared.scanResourceFilesPage(
+            fileURLs: allFiles,
             page: page,
             pageSize: pageSize
         ) { details, hasMore in
@@ -206,6 +245,25 @@ struct GameLocalResourceView: View {
                 hasMoreResults = hasMore
                 isLoadingResources = false
                 isLoadingMore = false
+
+                // 如果当前处于搜索状态且匹配结果过少，则自动继续加载更多页
+                if !searchTextForResource.isEmpty && hasMore {
+                    // 直接计算当前过滤结果数量
+                    let searchLower = searchTextForResource.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+                    let filteredCount = scannedResources.filter { detail in
+                        detail.title.lowercased().contains(searchLower)
+                    }.count
+                    // 如果过滤结果少于半页，继续加载
+                    if filteredCount < pageSize / 2 {
+                        Task { @MainActor in
+                            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1秒延迟
+                            guard hasMoreResults, !isLoadingResources, !isLoadingMore else { return }
+                            currentPage += 1
+                            let nextPage = currentPage
+                            loadPage(page: nextPage, append: true)
+                        }
+                    }
+                }
             }
         }
     }
@@ -223,6 +281,20 @@ struct GameLocalResourceView: View {
             })
         else { return }
 
+        // 如果正在搜索且过滤结果很少，直接触发加载（不依赖滚动位置）
+        if !searchTextForResource.isEmpty {
+            let filteredList = filteredResources
+            let filteredCount = filteredList.count
+            // 如果过滤结果少于半页，直接加载更多
+            if filteredCount < pageSize / 2 {
+                currentPage += 1
+                let nextPage = currentPage
+                loadPage(page: nextPage, append: true)
+                return
+            }
+        }
+
+        // 保持原有行为：当滚动到已加载列表的末尾附近时加载下一页
         let thresholdIndex = max(scannedResources.count - 5, 0)
         if index >= thresholdIndex {
             currentPage += 1
