@@ -147,12 +147,12 @@ private struct PlayerSelectorLabel: View {
                     .font(.system(size: 13).bold())
                     .lineLimit(1)
 
-                Spacer()
-
-                // 状态指示器（右对齐）
-                Image(systemName: statusManager.getStatusIconName(for: selectedPlayer))
-                    .font(.system(size: 12))
-                    .foregroundColor(statusManager.getStatusColor(for: selectedPlayer))
+//                Spacer()
+//
+//                // 状态指示器（右对齐）
+//                Image(systemName: statusManager.getStatusIconName(for: selectedPlayer))
+//                    .font(.system(size: 12))
+//                    .foregroundColor(statusManager.getStatusColor(for: selectedPlayer))
             }
             .onAppear {
                 statusManager.checkStatus(for: selectedPlayer)
@@ -174,11 +174,11 @@ private struct PlayerListItemView: View {
 
     var body: some View {
         HStack {
-            // 状态指示器（最左边）
-            Image(systemName: statusManager.getStatusIconName(for: player))
-                .font(.system(size: 12))
-                .foregroundColor(statusManager.getStatusColor(for: player))
-                .frame(width: 20)
+//            // 状态指示器（最左边）
+//            Image(systemName: statusManager.getStatusIconName(for: player))
+//                .font(.system(size: 12))
+//                .foregroundColor(statusManager.getStatusColor(for: player))
+//                .frame(width: 20)
 
             Button {
                 playerListViewModel.setCurrentPlayer(byID: player.id)
