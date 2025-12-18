@@ -7,7 +7,7 @@ struct GameLocalResourceView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var selectedProjectId: String?
     let refreshToken: UUID
-    let initialScannedResources: [ModrinthProjectDetail] // 从父视图传入的初始 ModrinthProjectDetail 数组
+    let initialScannedResources: [ScannedResourceInfo] // 从父视图传入的初始扫描资源信息（title、detailId、hash）
     let isScanComplete: Bool // 扫描完成标记
 
     @State private var searchTextForResource = ""
@@ -31,17 +31,21 @@ struct GameLocalResourceView: View {
             return scannedResources
         }
         
-        // 如果扫描未完成，返回分页加载的资源
-        guard isScanComplete else {
-            return scannedResources
-        }
-
-        // 搜索时从 initialScannedResources 中过滤
+        // 搜索时从 initialScannedResources 中过滤，然后根据 hash 查询缓存
         let searchLower = searchTextForResource.lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
         
-        return initialScannedResources.filter { detail in
-            detail.title.lowercased().contains(searchLower)
+        let filteredInfos = initialScannedResources.filter { info in
+            info.title.lowercased().contains(searchLower)
+        }
+        
+        // 使用 hash 查询缓存
+        return filteredInfos.compactMap { info in
+            AppCacheManager.shared.get(
+                namespace: query,
+                key: info.hash,
+                as: ModrinthProjectDetail.self
+            )
         }
     }
 

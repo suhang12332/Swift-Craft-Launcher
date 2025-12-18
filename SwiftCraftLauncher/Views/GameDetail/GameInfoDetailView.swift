@@ -10,6 +10,14 @@ import SwiftUI
 // MARK: - Window Delegate
 // 已移除 NSWindowDelegate 相关代码，纯 SwiftUI 不再需要
 
+// MARK: - Scanned Resource Info
+/// 扫描资源信息：包含 title、detailId 和文件 hash
+struct ScannedResourceInfo {
+    let title: String
+    let detailId: String
+    let hash: String
+}
+
 // MARK: - Views
 struct GameInfoDetailView: View {
     let game: GameVersionInfo
@@ -29,8 +37,8 @@ struct GameInfoDetailView: View {
     @StateObject private var cacheManager = CacheManager()
     @State private var localRefreshToken = UUID()
     
-    // 扫描结果：ModrinthProjectDetail 数组
-    @State private var scannedResources: [ModrinthProjectDetail] = []
+    // 扫描结果：ScannedResourceInfo 数组（包含 title、detailId 和 hash）
+    @State private var scannedResources: [ScannedResourceInfo] = []
     @State private var isScanComplete: Bool = false
 
     var body: some View {
@@ -58,7 +66,7 @@ struct GameInfoDetailView: View {
                             triggerLocalRefresh()
                         }
                     ),
-                    scannedDetailIds: scannedResources.map { $0.id }
+                    scannedDetailIds: scannedResources.map { $0.detailId }
                 )
             } else {
                 GameLocalResourceView(
@@ -181,23 +189,22 @@ struct GameInfoDetailView: View {
                     // 在后台线程执行扫描操作
                     let fileDetails = ModScanner.shared.localModDetails(in: resourceDir)
                     
-                    var details: [ModrinthProjectDetail] = []
+                    var scannedInfos: [ScannedResourceInfo] = []
                     
                     // 处理扫描结果（在后台线程）
                     for (file, hash, detail) in fileDetails {
-                        // 优先使用缓存的 detail，否则从缓存查询
-                        if let cachedDetail = detail {
-                            details.append(cachedDetail)
-                        } else if let cachedDetail = AppCacheManager.shared.get(
-                            namespace: queryValue,
-                            key: hash,
-                            as: ModrinthProjectDetail.self
-                        ) {
-                            details.append(cachedDetail)
-                        }
+                        // 优先使用缓存的 detail，否则使用文件名和 hash
+                        let title = detail?.title ?? file.deletingPathExtension().lastPathComponent
+                        let detailId = detail?.id ?? hash
+                        
+                        scannedInfos.append(ScannedResourceInfo(
+                            title: title,
+                            detailId: detailId,
+                            hash: hash
+                        ))
                     }
                     
-                    return details
+                    return scannedInfos
                 }.value
                 
                 // 回到主线程更新状态
