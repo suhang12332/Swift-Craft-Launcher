@@ -176,53 +176,45 @@ struct GameInfoDetailView: View {
         }
         
         // 立即设置状态为未完成，不阻塞视图渲染
-        isScanComplete = false
-        
+        isScanComplete = true
+
         // 使用 Task 创建异步任务，确保不阻塞视图渲染
         // 所有耗时操作在后台线程执行，只有更新状态时才回到主线程
         // 捕获 query 的值，避免在后台线程访问 @Binding
-        let queryValue = query
-        Task {
-            do {
-                // 使用 Task.detached 在后台线程执行扫描和处理，避免阻塞主线程
-                let resources = await Task.detached(priority: .userInitiated) {
-                    // 在后台线程执行扫描操作
-                    let fileDetails = ModScanner.shared.localModDetails(in: resourceDir)
+//        let queryValue = query
+        // Task {
+        //     do {
+        //         // 使用 Task.detached 在后台线程执行扫描和处理，避免阻塞主线程
+        //         let resources = await Task.detached(priority: .userInitiated) {
+        //             // 使用轻量级扫描方法，只获取 detailId、title 和 hash
+        //             let resourceInfos = ModScanner.shared.lightScanResourceInfo(in: resourceDir)
                     
-                    var scannedInfos: [ScannedResourceInfo] = []
-                    
-                    // 处理扫描结果（在后台线程）
-                    for (file, hash, detail) in fileDetails {
-                        // 优先使用缓存的 detail，否则使用文件名和 hash
-                        let title = detail?.title ?? file.deletingPathExtension().lastPathComponent
-                        let detailId = detail?.id ?? hash
-                        
-                        scannedInfos.append(ScannedResourceInfo(
-                            title: title,
-                            detailId: detailId,
-                            hash: hash
-                        ))
-                    }
-                    
-                    return scannedInfos
-                }.value
+        //             // 转换为 ScannedResourceInfo 数组
+        //             return resourceInfos.map { info in
+        //                 ScannedResourceInfo(
+        //                     title: info.title,
+        //                     detailId: info.detailId,
+        //                     hash: info.hash
+        //                 )
+        //             }
+        //         }.value
                 
-                // 回到主线程更新状态
-                await MainActor.run {
-                    scannedResources = resources
-                    isScanComplete = true
-                }
-            } catch {
-                let globalError = GlobalError.from(error)
-                Logger.shared.error("扫描所有资源失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+        //         // 回到主线程更新状态
+        //         await MainActor.run {
+        //             scannedResources = resources
+        //             isScanComplete = true
+        //         }
+        //     } catch {
+        //         let globalError = GlobalError.from(error)
+        //         Logger.shared.error("扫描所有资源失败: \(globalError.chineseMessage)")
+        //         GlobalErrorHandler.shared.handle(globalError)
                 
-                // 回到主线程更新状态
-                await MainActor.run {
-                    scannedResources = []
-                    isScanComplete = true
-                }
-            }
-        }
+        //         // 回到主线程更新状态
+        //         await MainActor.run {
+        //             scannedResources = []
+        //             isScanComplete = true
+        //         }
+        //     }
+        // }
     }
 }

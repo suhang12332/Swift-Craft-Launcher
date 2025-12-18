@@ -19,34 +19,15 @@ struct GameLocalResourceView: View {
     @State private var isLoadingMore: Bool = false
     @State private var hasLoaded: Bool = false
     @State private var resourceDirectory: URL? // 保存资源目录路径
-    @State private var allFiles: [URL] = []
+    @State private var allFiles: [URL] = [] // 所有文件列表
+    @State private var searchTimer: Timer? // 搜索防抖定时器
 
     private static let pageSize: Int = 20
     private var pageSize: Int { Self.pageSize }
-
-    // 本地搜索：搜索用 initialScannedResources，分页滚动用 scannedResources
-    private var filteredResources: [ModrinthProjectDetail] {
-        // 如果搜索框为空，返回分页加载的资源
-        if searchTextForResource.isEmpty {
-            return scannedResources
-        }
-        
-        // 搜索时从 initialScannedResources 中过滤，然后根据 hash 查询缓存
-        let searchLower = searchTextForResource.lowercased()
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        let filteredInfos = initialScannedResources.filter { info in
-            info.title.lowercased().contains(searchLower)
-        }
-        
-        // 使用 hash 查询缓存
-        return filteredInfos.compactMap { info in
-            AppCacheManager.shared.get(
-                namespace: query,
-                key: info.hash,
-                as: ModrinthProjectDetail.self
-            )
-        }
+    
+    // 当前显示的资源列表（无限滚动）
+    private var displayedResources: [ModrinthProjectDetail] {
+        scannedResources
     }
 
     var body: some View {
@@ -87,6 +68,13 @@ struct GameLocalResourceView: View {
             refreshAllFiles()
             loadPage(page: 1, append: false)
         }
+        .onChange(of: searchTextForResource) { oldValue, newValue in
+            // 搜索文本变化时，重置分页并触发防抖搜索
+            if oldValue != newValue {
+                resetPagination()
+                debounceSearch()
+            }
+        }
         .alert(
             "error.notification.validation.title".localized(),
             isPresented: .constant(error != nil)
@@ -103,8 +91,6 @@ struct GameLocalResourceView: View {
 
     // MARK: - 列表内容
     @ViewBuilder private var listContent: some View {
-        let filteredResources = self.filteredResources
-
         if let error {
             VStack {
                 Text(error.chineseMessage)
@@ -118,11 +104,11 @@ struct GameLocalResourceView: View {
             }
             .frame(maxWidth: .infinity, alignment: .center)
             .listRowSeparator(.hidden)
-        } else if hasLoaded && filteredResources.isEmpty {
+        } else if hasLoaded && displayedResources.isEmpty {
             EmptyView()
         } else {
             ForEach(
-                filteredResources.map { ModrinthProject.from(detail: $0) },
+                displayedResources.map { ModrinthProject.from(detail: $0) },
                 id: \.projectId
             ) { mod in
                 ModrinthDetailCardView(
@@ -177,6 +163,9 @@ struct GameLocalResourceView: View {
     // MARK: - 清除数据
     /// 清除页面所有数据
     private func clearAllData() {
+        // 清理搜索定时器
+        searchTimer?.invalidate()
+        searchTimer = nil
         searchTextForResource = ""
         scannedResources = []
         isLoadingResources = false
@@ -187,6 +176,36 @@ struct GameLocalResourceView: View {
         hasLoaded = false
         resourceDirectory = nil
         allFiles = []
+    }
+    
+    // MARK: - 搜索相关
+    /// 防抖搜索
+    private func debounceSearch() {
+        searchTimer?.invalidate()
+        let searchText = searchTextForResource
+        searchTimer = Timer.scheduledTimer(
+            withTimeInterval: 0.5,
+            repeats: false
+        ) { _ in
+            // 检查搜索文本是否已变化（避免过期的搜索）
+            if self.searchTextForResource == searchText {
+                self.loadPage(page: 1, append: false)
+            }
+        }
+    }
+    
+    /// 根据 title 过滤资源详情
+    private func filterResourcesByTitle(_ details: [ModrinthProjectDetail]) -> [ModrinthProjectDetail] {
+        let searchLower = searchTextForResource.lowercased()
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if searchLower.isEmpty {
+            return details
+        }
+        
+        return details.filter { detail in
+            detail.title.lowercased().contains(searchLower)
+        }
     }
 
     // MARK: - 资源目录初始化
@@ -258,20 +277,41 @@ struct GameLocalResourceView: View {
         }
         error = nil
 
+        let isSearching = !searchTextForResource.isEmpty
+        
+        // 始终使用 allFiles 进行分页扫描，然后在结果中根据 title 过滤
         ModScanner.shared.scanResourceFilesPage(
             fileURLs: allFiles,
             page: page,
             pageSize: pageSize
-        ) { details, hasMore in
+        ) { [self] details, hasMore in
             DispatchQueue.main.async {
+                // 根据 title 过滤结果
+                let filteredDetails = self.filterResourcesByTitle(details)
+                
                 if append {
-                    scannedResources.append(contentsOf: details)
+                    // 追加模式：只添加匹配的结果
+                    scannedResources.append(contentsOf: filteredDetails)
                 } else {
-                    scannedResources = details
+                    // 替换模式：直接使用过滤后的结果
+                    scannedResources = filteredDetails
                 }
-                hasMoreResults = hasMore
-                isLoadingResources = false
-                isLoadingMore = false
+                
+                // 搜索模式下：如果还有更多页，直接自动加载下一页，直到查完所有文件
+                if isSearching && hasMore {
+                    // 先重置加载状态，然后继续加载下一页
+                    isLoadingResources = false
+                    isLoadingMore = false
+                    let nextPage = page + 1
+                    self.currentPage = nextPage
+                    // 直接继续加载下一页，不判断过滤结果
+                    self.loadPage(page: nextPage, append: true)
+                } else {
+                    // 非搜索模式或已查完所有文件
+                    hasMoreResults = hasMore
+                    isLoadingResources = false
+                    isLoadingMore = false
+                }
             }
         }
     }
