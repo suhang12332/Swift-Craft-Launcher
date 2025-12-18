@@ -126,9 +126,8 @@ struct ModrinthDetailView: View {
             }
         }
         .onDisappear {
-            // 清理搜索定时器，避免内存泄漏
-            searchTimer?.invalidate()
-            searchTimer = nil
+            // 页面关闭后清除所有数据
+            clearAllData()
         }
     }
 
@@ -279,6 +278,23 @@ struct ModrinthDetailView: View {
     private func resetPagination() {
         currentPage = 1
         lastSearchParams = ""
+    }
+
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 清理搜索定时器，避免内存泄漏
+        searchTimer?.invalidate()
+        searchTimer = nil
+        // 清理 ViewModel 数据
+        viewModel.clearResults()
+        // 清理状态数据
+        searchText = ""
+        currentPage = 1
+        lastSearchKey = ""
+        lastSearchParams = ""
+        error = nil
+        hasLoaded = false
     }
 
     private func buildSearchParamsKey(page: Int) -> String {

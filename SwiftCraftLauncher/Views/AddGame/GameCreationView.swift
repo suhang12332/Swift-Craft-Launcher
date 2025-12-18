@@ -81,6 +81,21 @@ struct GameCreationView: View {
                 viewModel.handleGameVersionChange(newVersion)
             }
         }
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
+    }
+
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 如果正在下载，取消下载任务
+        if viewModel.isDownloading {
+            viewModel.handleCancel()
+        }
+        // ViewModel 的数据会在下次打开时重新初始化，这里主要清理临时文件
+        // 注意：不要重置 ViewModel 的状态，因为可能正在使用中
     }
 
     // MARK: - View Components

@@ -96,9 +96,22 @@ struct GameInfoDetailView: View {
         .onAppear {
             cacheManager.calculateGameCacheInfo(game.gameName)
         }
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
     }
 
     private func triggerLocalRefresh() {
+        localRefreshToken = UUID()
+    }
+
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 重置缓存信息为默认值
+        cacheManager.cacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
+        // 重置刷新令牌
         localRefreshToken = UUID()
     }
 }

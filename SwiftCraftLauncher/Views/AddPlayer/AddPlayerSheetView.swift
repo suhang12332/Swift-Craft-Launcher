@@ -108,6 +108,28 @@ struct AddPlayerSheetView: View {
                 }
             }
         )
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
+    }
+
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 清理玩家名称
+        playerName = ""
+        isPlayerNameValid = false
+        // 清理认证状态
+        authenticatedProfile = nil
+        isPremium = false
+        // 重置认证服务状态
+        authService.isLoading = false
+        // 重置焦点状态
+        isTextFieldFocused = false
+        showErrorPopover = false
+        // 重置认证类型
+        selectedAuthType = .premium
     }
 
     // 说明区

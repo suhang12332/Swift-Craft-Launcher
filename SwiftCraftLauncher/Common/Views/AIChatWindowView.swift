@@ -131,8 +131,8 @@ struct AIChatWindowView: View {
             }
         }
         .onDisappear {
-            // 窗口关闭时清理头像缓存
-            clearAvatarCache()
+            // 页面关闭后清除所有数据
+            clearAllData()
         }
     }
 
@@ -322,6 +322,19 @@ struct AIChatWindowView: View {
     private func clearAvatarCache() {
         cachedAIAvatar = nil
         cachedUserAvatar = nil
+    }
+
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 清理头像缓存
+        clearAvatarCache()
+        // 清理输入文本和附件
+        inputText = ""
+        pendingAttachments.removeAll()
+        // 重置焦点状态
+        isInputFocused = false
+        // 清理选中的游戏
+        selectedGameId = nil
     }
 
     private func openFilePicker() {

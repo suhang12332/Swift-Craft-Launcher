@@ -43,6 +43,29 @@ struct ModPackDownloadSheet: View {
                 await viewModel.loadProjectDetails(projectId: projectId)
             }
         }
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
+    }
+
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 如果正在下载，取消下载任务
+        if isDownloading {
+            downloadTask?.cancel()
+            downloadTask = nil
+            isProcessing = false
+            viewModel.modPackInstallState.reset()
+            gameSetupService.downloadState.reset()
+        }
+
+        // 清理选中的版本
+        selectedGameVersion = ""
+        selectedModPackVersion = nil
+        // 清理 ViewModel 数据
+        viewModel.clearParsedIndexInfo()
     }
 
     // MARK: - View Components

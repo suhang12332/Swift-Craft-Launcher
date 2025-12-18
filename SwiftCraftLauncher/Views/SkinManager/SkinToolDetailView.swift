@@ -45,6 +45,10 @@ struct SkinToolDetailView: View {
         .onAppear {
             loadData()
         }
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
     }
 
     private var headerView: some View {
@@ -702,6 +706,33 @@ extension SkinToolDetailView {
         case .slim:
             return .alex
         }
+    }
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 清理选中的皮肤数据
+        selectedSkinData = nil
+        selectedSkinImage = nil
+        selectedSkinPath = nil
+        showingSkinPreview = false
+        // 清理斗篷数据
+        selectedCapeId = nil
+        selectedCapeImageURL = nil
+        selectedCapeLocalPath = nil
+        // 清理加载的数据
+        publicSkinInfo = nil
+        playerProfile = nil
+        currentSkinRenderImage = nil
+        // 重置状态
+        currentModel = .classic
+        isLoading = true
+        hasChanges = false
+        operationInProgress = false
+        // 清理缓存的值
+        lastSelectedSkinData = nil
+        lastCurrentModel = .classic
+        lastSelectedCapeId = nil
+        lastCurrentActiveCapeId = nil
     }
 }
 
