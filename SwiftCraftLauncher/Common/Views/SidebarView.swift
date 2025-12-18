@@ -6,6 +6,7 @@ public struct SidebarView: View {
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
+    @State private var searchDebounceTask: Task<Void, Never>?
     @State private var showDeleteAlert: Bool = false
     @State private var gameToDelete: GameVersionInfo?
     @StateObject private var gameActionManager = GameActionManager.shared
@@ -22,8 +23,12 @@ public struct SidebarView: View {
     private static let loadMoreThreshold = 10  // 距离底部多少项时开始加载更多
     @State private var displayedGameCount: Int = Self.initialLoadCount
 
+    // 缓存的显示游戏列表，避免重复计算
+    @State private var displayedGames: [GameVersionInfo] = []
+
     // 预加载状态
     @State private var hasPreloadedIcons: Bool = false
+    @State private var preloadTask: Task<Void, Never>?
 
     @Environment(\.openSettings)
     private var openSettings
@@ -73,14 +78,36 @@ public struct SidebarView: View {
             }
         }
         .onChange(of: searchText) { _, _ in
-            updateFilteredGames()
+            // 取消上一次尚未执行的搜索任务
+            searchDebounceTask?.cancel()
+
+            // 启动新的 debounce 任务（150ms）
+            searchDebounceTask = Task {
+                try? await Task.sleep(nanoseconds: 150_000_000)
+                guard !Task.isCancelled else { return }
+                await MainActor.run {
+                    updateFilteredGames()
+                }
+            }
         }
-        .onChange(of: gameRepository.games.count) { _, _ in
-            updateFilteredGames()
+        // 只监听实际需要的变化
+        .onChange(of: gameRepository.games) { old, new in
+            // 只有当游戏列表本身变化时才重新过滤
+            // 使用 Set 比较而不是数组比较，性能更好
+            let oldIds = Set(old.map(\.id))
+            let newIds = Set(new.map(\.id))
+            if oldIds != newIds {
+                updateFilteredGames()
+            }
         }
         .onAppear {
             updateFilteredGames()
             preloadGameIcons()
+        }
+        .onDisappear {
+            // 取消预加载任务，避免资源浪费
+            preloadTask?.cancel()
+            preloadTask = nil
         }
     }
 
@@ -103,10 +130,11 @@ public struct SidebarView: View {
 
     /// 游戏部分（可滚动）
     private var gamesSection: some View {
-        GeometryReader { geometry in
+        GeometryReader { _ in
             List(selection: $selectedItem) {
                 Section(header: Text("sidebar.games.title".localized())) {
-                    ForEach(displayedGames) { game in
+                    ForEach(displayedGames.indices, id: \.self) { index in
+                        let game = displayedGames[index]
                         NavigationLink(value: SidebarItem.game(game.id)) {
                             HStack(spacing: 6) {
                                 // 使用优化的 GameIconView 组件，避免重复的文件系统 I/O
@@ -120,46 +148,23 @@ public struct SidebarView: View {
                             }
                         }
                         .onAppear {
-                            checkAndLoadMoreIfNeeded(for: game)
+                            // 仅在接近底部的 item 触发分页判断，避免每行都参与
+                            if index >= displayedGameCount - Self.loadMoreThreshold {
+                                checkAndLoadMoreIfNeeded(at: index)
+                            }
                         }
-                        .contextMenu {
-                            Button(action: {
-                                toggleGameState(for: game)
-                            }, label: {
-                                let isRunning = isGameRunning(gameId: game.id)
-                                Label(
-                                    isRunning ? "stop.fill".localized() : "play.fill".localized(),
-                                    systemImage: isRunning ? "stop.fill" : "play.fill"
-                                )
-                            })
-
-                            Button(action: {
-                                showInFinder(game: game)
-                            }, label: {
-                                Label("sidebar.context_menu.show_in_finder".localized(), systemImage: "folder")
-                            })
-
-                            Button(action: {
-                                // 设置当前游戏并标记应该打开高级设置
-                                selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
-                                // 打开设置窗口
-                                openSettings()
-                            }, label: {
-                                Label("settings.game.advanced.tab".localized(), systemImage: "gearshape")
-                            })
-
-                            Button(action: {
-                                gameToDelete = game
-                                showDeleteAlert = true
-                            }, label: {
-                                Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
-                            })
-                        }
+                        .modifier(
+                            ConditionalContextMenu(
+                                isEnabled: selectedItem == .game(game.id)
+                            ) {
+                                gameContextMenu(for: game)
+                            }
+                        )
                     }
                 }
             }
             .listStyle(.sidebar)
-            .frame(height: geometry.size.height)
+            .frame(maxHeight: .infinity)
         }
     }
 
@@ -192,26 +197,32 @@ public struct SidebarView: View {
 
         // 重置分页加载计数（搜索或列表变化时）
         displayedGameCount = Self.initialLoadCount
+        updateDisplayedGames()
     }
 
     // MARK: - Pagination
 
-    /// 当前显示的游戏列表（分页加载）
-    private var displayedGames: [GameVersionInfo] {
+    /// 更新显示的游戏列表（分页加载）
+    /// 避免在计算属性中重复创建数组
+    private func updateDisplayedGames() {
         let count = min(displayedGameCount, cachedFilteredGames.count)
-        return Array(cachedFilteredGames.prefix(count))
+        displayedGames = Array(cachedFilteredGames.prefix(count))
     }
 
     /// 检查是否需要加载更多游戏
     /// 当滚动到接近列表底部时自动加载更多
-    private func checkAndLoadMoreIfNeeded(for game: GameVersionInfo) {
-        guard let index = cachedFilteredGames.firstIndex(where: { $0.id == game.id }) else { return }
-
-        // 如果当前游戏距离列表末尾少于阈值，加载更多
+    private func checkAndLoadMoreIfNeeded(at index: Int) {
         let remainingCount = cachedFilteredGames.count - index - 1
-        if remainingCount <= Self.loadMoreThreshold && displayedGameCount < cachedFilteredGames.count {
+
+        if remainingCount <= Self.loadMoreThreshold &&
+           displayedGameCount < cachedFilteredGames.count {
+
             Task { @MainActor in
-                displayedGameCount = min(displayedGameCount + Self.initialLoadCount, cachedFilteredGames.count)
+                displayedGameCount = min(
+                    displayedGameCount + Self.initialLoadCount,
+                    cachedFilteredGames.count
+                )
+                updateDisplayedGames()
             }
         }
     }
@@ -225,13 +236,20 @@ public struct SidebarView: View {
         guard !hasPreloadedIcons else { return }
         hasPreloadedIcons = true
 
-        Task {
+        // 取消之前的预加载任务（如果存在）
+        preloadTask?.cancel()
+
+        preloadTask = Task {
             let iconCache = GameIconCache.shared
             // 预加载前 10 个游戏的图标信息（在后台线程执行）
+            // 使用当前缓存的过滤结果，避免捕获过时的数据
             let gamesToPreload = Array(cachedFilteredGames.prefix(10))
 
             await Task.detached(priority: .utility) {
                 for game in gamesToPreload {
+                    // 检查任务是否已取消
+                    guard !Task.isCancelled else { break }
+
                     // 预加载 URL（使用缓存）
                     _ = iconCache.iconURL(gameName: game.gameName, iconName: game.gameIcon)
                     // 预加载文件存在性检查（异步，不阻塞）
@@ -275,5 +293,55 @@ public struct SidebarView: View {
     /// 在访达中显示游戏目录
     private func showInFinder(game: GameVersionInfo) {
         gameActionManager.showInFinder(game: game)
+    }
+
+    @ViewBuilder
+    private func gameContextMenu(for game: GameVersionInfo) -> some View {
+        Button {
+            toggleGameState(for: game)
+        } label: {
+            let isRunning = isGameRunning(gameId: game.id)
+            Label(
+                isRunning ? "stop.fill".localized() : "play.fill".localized(),
+                systemImage: isRunning ? "stop.fill" : "play.fill"
+            )
+        }
+
+        Button {
+            showInFinder(game: game)
+        } label: {
+            Label("sidebar.context_menu.show_in_finder".localized(), systemImage: "folder")
+        }
+
+        Button {
+            selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
+            openSettings()
+        } label: {
+            Label("settings.game.advanced.tab".localized(), systemImage: "gearshape")
+        }
+
+        Button {
+            gameToDelete = game
+            showDeleteAlert = true
+        } label: {
+            Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
+        }
+    }
+
+    // MARK: - Conditional Context Menu (macOS Performance)
+
+    private struct ConditionalContextMenu<MenuContent: View>: ViewModifier {
+        let isEnabled: Bool
+        let menuContent: () -> MenuContent
+
+        func body(content: Content) -> some View {
+            if isEnabled {
+                content.contextMenu {
+                    menuContent()
+                }
+            } else {
+                content
+            }
+        }
     }
 }
