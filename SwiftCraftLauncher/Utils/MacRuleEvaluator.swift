@@ -34,11 +34,7 @@ enum MacRuleEvaluator {
     /// 获取当前 Java 架构
     static func getCurrentJavaArch() -> String {
         #if os(macOS)
-        #if arch(arm64)
-        return "aarch64"
-        #else
-        return "x86_64"
-        #endif
+        return Architecture.current.javaArch
         #else
         return "x86_64"
         #endif
@@ -65,18 +61,7 @@ enum MacRuleEvaluator {
         #if os(macOS)
         let isLowVersion = minecraftVersion.map { Self.isLowVersion($0) } ?? false
 
-        #if arch(arm64)
-        if isLowVersion {
-            // 低版本：ARM64 系统只支持 osx-arm64
-            return ["osx-arm64", "macos-arm64"]
-        } else {
-            // 高版本：ARM64 系统优先支持 osx-arm64，回退到 osx
-            return ["osx-arm64", "macos-arm64", "osx", "macos"]
-        }
-        #else
-        // x86_64 系统只支持 osx
-        return ["osx", "macos"]
-        #endif
+        return Architecture.current.macOSIdentifiers(isLowVersion: isLowVersion)
         #elseif os(Linux)
         return ["linux"]
         #elseif os(Windows)
