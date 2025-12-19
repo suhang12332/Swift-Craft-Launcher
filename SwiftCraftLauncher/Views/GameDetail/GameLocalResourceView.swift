@@ -7,8 +7,6 @@ struct GameLocalResourceView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var selectedProjectId: String?
     let refreshToken: UUID
-    let initialScannedResources: [ScannedResourceInfo] // 从父视图传入的初始扫描资源信息（title、detailId、hash）
-    let isScanComplete: Bool // 扫描完成标记
 
     @State private var searchTextForResource = ""
     @State private var scannedResources: [ModrinthProjectDetail] = []
@@ -48,7 +46,6 @@ struct GameLocalResourceView: View {
             placement: .toolbar,
             prompt: "search.resources".localized()
         )
-        .disabled(!isScanComplete) // 扫描完成前禁用搜索框
         .onAppear {
             if !hasLoaded {
                 hasLoaded = true
@@ -118,7 +115,8 @@ struct GameLocalResourceView: View {
                     gameInfo: game,
                     query: query,
                     type: false,
-                    selectedItem: $selectedItem
+                    selectedItem: $selectedItem,
+                    scannedDetailIds: []
                 )
                 .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                 .listRowInsets(

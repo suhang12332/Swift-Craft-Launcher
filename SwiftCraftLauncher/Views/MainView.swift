@@ -34,6 +34,7 @@ struct MainView: View {
     @State private var gameResourcesType = "mod"
     @State private var gameType = true  // false = local, true = server
     @State private var gameId: String?
+    @State private var isScanComplete = false  // 扫描完成状态，用于控制工具栏按钮
 
     @State private var showingInspector: Bool = false
 
@@ -82,7 +83,8 @@ struct MainView: View {
                 versionCurrentPage: $versionCurrentPage,
                 versionTotal: $versionTotal,
                 gameType: $gameType,
-                selectedLoader: $selectedLoaders
+                selectedLoader: $selectedLoaders,
+                isScanComplete: $isScanComplete
             )
             .toolbar {
                 DetailToolbarView(
@@ -95,7 +97,8 @@ struct MainView: View {
                     project: $loadedProjectDetail,
                     selectProjectId: $selectedProjectId,
                     selectedTab: $selectedTab,
-                    gameId: $gameId
+                    gameId: $gameId,
+                    isScanComplete: $isScanComplete
                 )
             }
         }
@@ -141,6 +144,8 @@ struct MainView: View {
         game?.modLoader.lowercased() == "vanilla" ? self.gameResourcesType.lowercased() != "mod" ? self.gameResourcesType : "datapack" : "mod"
         self.gameId = gameId
         self.selectedProjectId = nil
+        // 重置扫描状态
+        self.isScanComplete = false
         // 更新选中的游戏管理器，供设置页面使用
         selectedGameManager.setSelectedGame(gameId)
     }
@@ -157,6 +162,8 @@ struct MainView: View {
         self.gameResourcesType =
             game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
         self.gameId = newId
+        // 重置扫描状态
+        self.isScanComplete = false
         // 更新选中的游戏管理器，供设置页面使用
         selectedGameManager.setSelectedGame(newId)
     }
@@ -169,6 +176,8 @@ struct MainView: View {
         if self.gameType != true {
             self.gameType = true
         }
+        // 重置扫描状态（资源页面不需要扫描，设为 true）
+        self.isScanComplete = true
 
         if self.sortIndex != "relevance" {
             self.sortIndex = "relevance"

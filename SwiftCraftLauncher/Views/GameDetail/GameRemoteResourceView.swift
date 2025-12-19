@@ -62,7 +62,8 @@ struct GameRemoteResourceView: View {
             gameInfo: game,
             selectedItem: $selectedItem,
             gameType: $gameType,
-            header: header
+            header: header,
+            scannedDetailIds: scannedDetailIds
         )
     }
 }

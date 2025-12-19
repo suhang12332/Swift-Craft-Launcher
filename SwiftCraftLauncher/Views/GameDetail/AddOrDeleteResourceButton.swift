@@ -57,6 +57,7 @@ struct AddOrDeleteResourceButton: View {
     let gameInfo: GameVersionInfo?
     let query: String
     let type: Bool  // false = local, true = server
+    let scannedDetailIds: [String] // 已扫描资源的 detailId 数组，用于过滤
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @State private var addButtonState: ModrinthDetailCardView.AddButtonState =
@@ -85,7 +86,8 @@ struct AddOrDeleteResourceButton: View {
         type: Bool,
         selectedItem: Binding<SidebarItem>,
         onResourceChanged: (() -> Void)? = nil,
-        forceInstalled: Bool = false
+        forceInstalled: Bool = false,
+        scannedDetailIds: [String] = []
     ) {
         self.project = project
         self.selectedVersions = selectedVersions
@@ -96,6 +98,7 @@ struct AddOrDeleteResourceButton: View {
         self._selectedItem = selectedItem
         self.onResourceChanged = onResourceChanged
         self.forceInstalled = forceInstalled
+        self.scannedDetailIds = scannedDetailIds
     }
 
     var body: some View {
@@ -413,6 +416,13 @@ struct AddOrDeleteResourceButton: View {
 
     private func updateButtonState() {
         if type == false {
+            addButtonState = .installed
+            return
+        }
+
+        // 首先检查 scannedDetailIds 是否包含当前项目的 projectId
+        // 如果包含，说明该资源已在扫描列表中，标记为已安装
+        if scannedDetailIds.contains(project.projectId) {
             addButtonState = .installed
             return
         }

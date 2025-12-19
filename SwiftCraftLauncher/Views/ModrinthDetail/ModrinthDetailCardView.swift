@@ -11,6 +11,7 @@ struct ModrinthDetailCardView: View {
     let type: Bool  // false = local, true = server
     @Binding var selectedItem: SidebarItem
     var onResourceChanged: (() -> Void)?
+    let scannedDetailIds: [String] // 已扫描资源的 detailId 数组
     @State private var addButtonState: AddButtonState = .idle
     @State private var showDeleteAlert = false
     @EnvironmentObject private var gameRepository: GameRepository
@@ -157,7 +158,8 @@ struct ModrinthDetailCardView: View {
                 query: query,
                 type: type,
                 selectedItem: $selectedItem,
-                onResourceChanged: onResourceChanged
+                onResourceChanged: onResourceChanged,
+                scannedDetailIds: scannedDetailIds
             )
             .environmentObject(gameRepository)
         }

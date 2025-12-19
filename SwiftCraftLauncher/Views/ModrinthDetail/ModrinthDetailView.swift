@@ -16,6 +16,7 @@ struct ModrinthDetailView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var gameType: Bool
     let header: AnyView?
+    let scannedDetailIds: [String] // 已扫描资源的 detailId 数组
 
     @StateObject private var viewModel = ModrinthSearchViewModel()
     @State private var hasLoaded = false
@@ -39,7 +40,8 @@ struct ModrinthDetailView: View {
         gameInfo: GameVersionInfo?,
         selectedItem: Binding<SidebarItem>,
         gameType: Binding<Bool>,
-        header: AnyView? = nil
+        header: AnyView? = nil,
+        scannedDetailIds: [String] = []
     ) {
         self.query = query
         _sortIndex = sortIndex
@@ -54,6 +56,7 @@ struct ModrinthDetailView: View {
         _selectedItem = selectedItem
         _gameType = gameType
         self.header = header
+        self.scannedDetailIds = scannedDetailIds
     }
 
     private var searchKey: String {
@@ -236,7 +239,8 @@ struct ModrinthDetailView: View {
                         gameInfo: gameInfo,
                         query: query,
                         type: true,
-                        selectedItem: $selectedItem
+                        selectedItem: $selectedItem,
+                        scannedDetailIds: scannedDetailIds
                     )
                     .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                     .listRowInsets(
