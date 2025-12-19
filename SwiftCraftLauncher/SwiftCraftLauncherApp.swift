@@ -1,3 +1,4 @@
+//
 //  SwiftCraftLauncherApp.swift
 //  Swift Craft Launcher
 //
@@ -5,7 +6,6 @@
 //
 //  Swift Craft Launcher - A modern macOS Minecraft launcher
 //
-//  Copyright (C) 2025 Swift Craft Launcher Contributors
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU Affero General Public License as published by

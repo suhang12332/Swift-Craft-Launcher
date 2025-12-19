@@ -219,7 +219,7 @@ struct GameLocalResourceView: View {
                 return detail.projectType.lowercased() == queryLower
             }
         }
-        
+
         // 然后根据搜索文本过滤
         let searchLower = searchTextForResource.lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
