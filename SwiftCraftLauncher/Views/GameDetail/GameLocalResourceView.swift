@@ -22,7 +22,7 @@ struct GameLocalResourceView: View {
 
     private static let pageSize: Int = 20
     private var pageSize: Int { Self.pageSize }
-    
+
     // 当前显示的资源列表（无限滚动）
     private var displayedResources: [ModrinthProjectDetail] {
         scannedResources
@@ -177,7 +177,7 @@ struct GameLocalResourceView: View {
         resourceDirectory = nil
         allFiles = []
     }
-    
+
     // MARK: - 搜索相关
     /// 防抖搜索
     private func debounceSearch() {
@@ -193,16 +193,16 @@ struct GameLocalResourceView: View {
             }
         }
     }
-    
+
     /// 根据 title 过滤资源详情
     private func filterResourcesByTitle(_ details: [ModrinthProjectDetail]) -> [ModrinthProjectDetail] {
         let searchLower = searchTextForResource.lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         if searchLower.isEmpty {
             return details
         }
-        
+
         return details.filter { detail in
             detail.title.lowercased().contains(searchLower)
         }
@@ -290,7 +290,7 @@ struct GameLocalResourceView: View {
         error = nil
 
         let isSearching = !searchTextForResource.isEmpty
-        
+
         // 始终使用 allFiles 进行分页扫描，然后在结果中根据 title 过滤
         ModScanner.shared.scanResourceFilesPage(
             fileURLs: allFiles,
@@ -300,7 +300,7 @@ struct GameLocalResourceView: View {
             DispatchQueue.main.async {
                 // 根据 title 过滤结果
                 let filteredDetails = self.filterResourcesByTitle(details)
-                
+
                 if append {
                     // 追加模式：只添加匹配的结果
                     scannedResources.append(contentsOf: filteredDetails)
@@ -308,7 +308,7 @@ struct GameLocalResourceView: View {
                     // 替换模式：直接使用过滤后的结果
                     scannedResources = filteredDetails
                 }
-                
+
                 // 搜索模式下：如果还有更多页，直接自动加载下一页，直到查完所有文件
                 if isSearching && hasMore {
                     // 先重置加载状态，然后继续加载下一页
@@ -347,4 +347,3 @@ struct GameLocalResourceView: View {
         }
     }
 }
-

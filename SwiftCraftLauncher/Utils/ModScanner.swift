@@ -258,7 +258,7 @@ extension ModScanner {
             return nil
         }
     }
-    
+
     /// 轻量级扫描：仅获取 detailId、title 和 hash（静默版本）
     /// 不创建 fallback detail，只从缓存读取
     public func lightScanResourceInfo(in dir: URL) -> [(
@@ -273,7 +273,7 @@ extension ModScanner {
             return []
         }
     }
-    
+
     /// 轻量级扫描：仅获取 detailId、title 和 hash（抛出异常版本）
     /// 不创建 fallback detail，只从缓存读取
     public func lightScanResourceInfoThrowing(in dir: URL) throws -> [(
@@ -305,27 +305,27 @@ extension ModScanner {
         let jarFiles = files.filter {
             ["jar", "zip"].contains($0.pathExtension.lowercased())
         }
-        
+
         return jarFiles.compactMap { fileURL in
             guard let hash = ModScanner.sha1Hash(of: fileURL) else {
                 return nil
             }
-            
+
             // 只从缓存读取，不创建 fallback
             let detail = AppCacheManager.shared.get(
                 namespace: "mod",
                 key: hash,
                 as: ModrinthProjectDetail.self
             )
-            
+
             // 优先使用缓存的 detail，否则使用文件名和 hash
             let title = detail?.title ?? fileURL.deletingPathExtension().lastPathComponent
             let detailId = detail?.id ?? hash
-            
+
             return (title: title, detailId: detailId, hash: hash)
         }
     }
-    
+
     /// 异步扫描：仅获取所有 detailId（静默版本）
     /// 在后台线程执行，只从缓存读取，不创建 fallback
     public func scanAllDetailIds(
@@ -344,7 +344,7 @@ extension ModScanner {
             }
         }
     }
-    
+
     /// 异步扫描：仅获取所有 detailId（抛出异常版本）
     /// 在后台线程执行，只从缓存读取，不创建 fallback
     /// 返回 Set 以提高查找性能（O(1)）
@@ -378,32 +378,32 @@ extension ModScanner {
             let jarFiles = files.filter {
                 ["jar", "zip"].contains($0.pathExtension.lowercased())
             }
-            
+
             // 使用 TaskGroup 并发计算 hash 和读取缓存
             let semaphore = AsyncSemaphore(value: 4)
-            
+
             return await withTaskGroup(of: String?.self) { group in
                 for fileURL in jarFiles {
                     group.addTask {
                         await semaphore.wait()
                         defer { Task { await semaphore.signal() } }
-                        
+
                         guard let hash = ModScanner.sha1Hash(of: fileURL) else {
                             return nil
                         }
-                        
+
                         // 只从缓存读取，不创建 fallback
                         let detail = AppCacheManager.shared.get(
                             namespace: "mod",
                             key: hash,
                             as: ModrinthProjectDetail.self
                         )
-                        
+
                         // 优先使用缓存的 detailId，否则使用 hash
                         return detail?.id ?? hash
                     }
                 }
-                
+
                 var detailIds: Set<String> = []
                 for await detailId in group {
                     if let detailId = detailId {

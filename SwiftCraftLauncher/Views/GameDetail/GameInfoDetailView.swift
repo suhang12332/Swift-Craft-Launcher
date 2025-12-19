@@ -108,13 +108,13 @@ struct GameInfoDetailView: View {
         resetScanState()
         scanAllResources()
     }
-    
+
     private func triggerLocalRefresh() {
         // 仅在本地视图时更新刷新令牌
         guard !gameType else { return }
         localRefreshToken = UUID()
     }
-    
+
     // MARK: - 更新 Header
     /// 更新 header 视图，但不重建整个 GameRemoteResourceView
     private func updateHeaders() {
@@ -151,27 +151,27 @@ struct GameInfoDetailView: View {
         scannedResources = []
         isScanComplete = false
     }
-    
+
     // MARK: - 重置扫描状态
     /// 重置扫描状态，准备重新扫描
     private func resetScanState() {
         scannedResources = []
         isScanComplete = false
     }
-    
+
     // MARK: - 扫描所有资源
     /// 异步扫描所有资源，收集 detailId（不阻塞视图渲染）
     private func scanAllResources() {
         // 如果已经完成扫描，不重复扫描
         guard !isScanComplete else { return }
-        
+
         // Modpacks don't have a local directory to scan
         if query.lowercased() == "modpack" {
             scannedResources = []
             isScanComplete = true
             return
         }
-        
+
         guard let resourceDir = AppPaths.resourceDirectory(
             for: query,
             gameName: game.gameName
@@ -180,7 +180,7 @@ struct GameInfoDetailView: View {
             isScanComplete = true
             return
         }
-        
+
         // 检查目录是否存在且可访问
         guard FileManager.default.fileExists(atPath: resourceDir.path) else {
             // 目录不存在，直接标记为完成
@@ -188,7 +188,7 @@ struct GameInfoDetailView: View {
             isScanComplete = true
             return
         }
-        
+
         // 立即设置状态为扫描中，不阻塞视图渲染
         isScanComplete = false
 
@@ -198,7 +198,7 @@ struct GameInfoDetailView: View {
             do {
                 // 调用新的异步接口，只获取 detailId（直接返回 Set）
                 let detailIds = try await ModScanner.shared.scanAllDetailIdsThrowing(in: resourceDir)
-                
+
                 // 回到主线程更新状态
                 await MainActor.run {
                     scannedResources = detailIds
@@ -208,7 +208,7 @@ struct GameInfoDetailView: View {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("扫描所有资源失败: \(globalError.chineseMessage)")
                 GlobalErrorHandler.shared.handle(globalError)
-                
+
                 // 回到主线程更新状态
                 await MainActor.run {
                     scannedResources = []
