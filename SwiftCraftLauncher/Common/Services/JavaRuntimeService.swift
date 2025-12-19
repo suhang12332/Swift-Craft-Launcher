@@ -30,6 +30,23 @@ class JavaRuntimeService {
         "java-runtime-alpha": URLConfig.API.JavaRuntimeARM.javaRuntimeAlpha,
         "java-runtime-beta": URLConfig.API.JavaRuntimeARM.javaRuntimeBeta,
     ]
+
+    /// Intel平台专用版本的Zulu JDK配置
+    private static let intelJavaVersions: [String: URL] = [
+        "jre-legacy": URLConfig.API.JavaRuntimeIntel.jreLegacy,
+        "java-runtime-alpha": URLConfig.API.JavaRuntimeIntel.javaRuntimeAlpha,
+        "java-runtime-beta": URLConfig.API.JavaRuntimeIntel.javaRuntimeBeta,
+    ]
+
+    /// 获取当前架构对应的特供运行时URL
+    private func specialJavaRuntimeURL(for version: String) -> URL? {
+        switch Architecture.current {
+        case .arm64:
+            return Self.armJavaVersions[version]
+        case .x86_64:
+            return Self.intelJavaVersions[version]
+        }
+    }
     /// 解析Java运行时API并获取gamecore平台支持的版本名称
     func getGamecoreSupportedVersions() async throws -> [String] {
         let json = try await fetchJavaRuntimeAPI()
@@ -92,9 +109,9 @@ class JavaRuntimeService {
     }
     /// 下载指定版本的Java运行时
     func downloadJavaRuntime(for version: String) async throws {
-        // 检查是否为ARM平台专用版本（Zulu JDK）
-        if let armVersionURL = Self.armJavaVersions[version] {
-            try await downloadArmJavaRuntime(version: version, url: armVersionURL)
+        // 检查是否为当前架构的特供版本（Zulu JDK）
+        if let bundledVersionURL = specialJavaRuntimeURL(for: version) {
+            try await downloadBundledJavaRuntime(version: version, url: bundledVersionURL)
             return
         }
 
@@ -260,11 +277,7 @@ class JavaRuntimeService {
     }
     /// 获取当前macOS平台标识
     private func getCurrentMacPlatform() -> String {
-        #if arch(arm64)
-        return "mac-os-arm64"
-        #else
-        return "mac-os"
-        #endif
+        return Architecture.current.macPlatformId
     }
 
     /// 为文件设置执行权限
@@ -283,11 +296,11 @@ class JavaRuntimeService {
         try fileManager.setAttributes([.posixPermissions: currentPermissions], ofItemAtPath: filePath.path)
     }
 
-    /// 下载ARM平台特殊版本的Java运行时（从Zulu JDK）
+    /// 下载当前架构的特供Java运行时（从Zulu JDK）
     /// - Parameters:
     ///   - version: 版本名称
     ///   - url: 下载URL
-    private func downloadArmJavaRuntime(version: String, url: URL) async throws {
+    private func downloadBundledJavaRuntime(version: String, url: URL) async throws {
         // 创建目标目录
         let targetDirectory = AppPaths.runtimeDirectory.appendingPathComponent(version)
         try FileManager.default.createDirectory(at: targetDirectory, withIntermediateDirectories: true)
@@ -303,7 +316,7 @@ class JavaRuntimeService {
         )
 
         // 解压zip文件
-        try await extractAndProcessArmJavaRuntime(
+        try await extractAndProcessBundledJavaRuntime(
             zipPath: tempZipPath,
             targetDirectory: targetDirectory
         )
@@ -312,11 +325,11 @@ class JavaRuntimeService {
         await progressActor.callProgressUpdate("Java运行时 \(version) 安装完成", 1, 1)
     }
 
-    /// 解压并处理ARM Java运行时zip文件
+    /// 解压并处理特供Java运行时zip文件
     /// - Parameters:
     ///   - zipPath: zip文件路径
     ///   - targetDirectory: 目标目录
-    private func extractAndProcessArmJavaRuntime(zipPath: URL, targetDirectory: URL) async throws {
+    private func extractAndProcessBundledJavaRuntime(zipPath: URL, targetDirectory: URL) async throws {
         let fileManager = FileManager.default
 
         // 最终的jre.bundle路径
@@ -509,15 +522,8 @@ class JavaRuntimeService {
         var request = URLRequest(url: url)
         request.httpMethod = "HEAD"
 
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "无法获取文件大小 - 响应类型错误",
-                i18nKey: "error.network.cannot_get_file_size",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端（HEAD 请求需要返回响应头）
+        let (_, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
 
         guard httpResponse.statusCode == 200 else {
             throw GlobalError.network(

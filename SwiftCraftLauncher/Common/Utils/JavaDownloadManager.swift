@@ -81,14 +81,9 @@ class JavaDownloadManager: ObservableObject {
 
     /// 显示下载窗口
     private func showDownloadWindow() {
-        let config = TemporaryWindowConfig(
-            title: "global_resource.download".localized(),
-            width: 400
-        )
-
         TemporaryWindowManager.shared.showWindow(
             content: JavaDownloadProgressWindow(downloadState: downloadState),
-            config: config
+            config: .javaDownload(title: "global_resource.download".localized())
         )
         isWindowVisible = true
     }

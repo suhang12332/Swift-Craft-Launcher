@@ -327,6 +327,8 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     private func handleModPackInstallationResult(success: Bool, gameName: String) {
         if success {
             Logger.shared.info("本地整合包导入完成: \(gameName)")
+            // 清理不再需要的索引数据以释放内存
+            modPackViewModel.clearParsedIndexInfo()
             configuration.actions.onCancel() // Use cancel to dismiss
         } else {
             Logger.shared.error("本地整合包导入失败: \(gameName)")
@@ -342,6 +344,8 @@ class ModPackImportViewModel: BaseGameFormViewModel {
             GlobalErrorHandler.shared.handle(globalError)
             modPackViewModel.modPackInstallState.reset()
             gameSetupService.downloadState.reset()
+            // 清理不再需要的索引数据以释放内存
+            modPackViewModel.clearParsedIndexInfo()
         }
         isProcessingModPack = false
     }

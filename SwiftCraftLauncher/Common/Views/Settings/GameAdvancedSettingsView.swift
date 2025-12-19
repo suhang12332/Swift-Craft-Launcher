@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GameAdvancedSettingsView: View {
     @EnvironmentObject var gameRepository: GameRepository
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @StateObject private var selectedGameManager = SelectedGameManager.shared
 
     @State private var memoryRange: ClosedRange<Double> = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
     @State private var selectedGarbageCollector: GarbageCollector = .g1gc
@@ -59,7 +59,7 @@ struct GameAdvancedSettingsView: View {
                         }
                     }
                     .labelsHidden()
-                    .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { $0.fixedSize() }
+                    .fixedSize()
                     .disabled(isUsingCustomArguments)  // 使用自定义参数时禁用
                     .onChange(of: selectedGarbageCollector) { _, _ in
                         if !isUsingCustomArguments {
@@ -81,7 +81,7 @@ struct GameAdvancedSettingsView: View {
                         }
                     }
                     .labelsHidden()
-                    .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { $0.fixedSize() }
+                    .fixedSize()
                     .disabled(isUsingCustomArguments)  // 使用自定义参数时禁用
                     .onChange(of: optimizationPreset) { _, newValue in
                         if !isUsingCustomArguments {
@@ -104,7 +104,7 @@ struct GameAdvancedSettingsView: View {
             .opacity(isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
 
             LabeledContent("settings.game.java.memory".localized()) {
-                HStack(spacing: 8) {
+                HStack {
                     MiniRangeSlider(
                         range: $memoryRange,
                         bounds: 512...Double(GameSettingsManager.shared.maximumMemoryAllocation)
@@ -124,7 +124,7 @@ struct GameAdvancedSettingsView: View {
                     TextField("", text: $customJvmArguments)
                         .focusable(false)
                         .labelsHidden()
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .textFieldStyle(.roundedBorder)
                         .lineLimit(2...4)
                         .frame(width: 200)
                         .onChange(of: customJvmArguments) { _, _ in autoSave() }
@@ -138,7 +138,7 @@ struct GameAdvancedSettingsView: View {
                     TextField("", text: $environmentVariables, axis: .vertical)
                         .focusable(false)
                         .labelsHidden()
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .textFieldStyle(.roundedBorder)
                         .lineLimit(2...4)
                         .frame(width: 200)
                         .onChange(of: environmentVariables) { _, _ in autoSave() }

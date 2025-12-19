@@ -37,9 +37,6 @@ struct ContentView: View {
                 resourceContentView(type: type)
             }
         }
-        .onChange(of: selectedItem) { _, _ in
-            // 切换游戏时重置状态
-        }
     }
 
     // MARK: - Game Content View

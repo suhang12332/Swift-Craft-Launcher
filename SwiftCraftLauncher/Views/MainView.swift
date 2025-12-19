@@ -11,13 +11,11 @@ struct MainView: View {
     // MARK: - State & Environment
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var selectedItem: SidebarItem = .resource(.mod)
-    @ObservedObject private var general = GeneralSettingsManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @StateObject private var general = GeneralSettingsManager.shared
+    @StateObject private var selectedGameManager = SelectedGameManager.shared
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Resource/Project State
-    @State private var currentPage: Int = 1
-    @State private var totalItems: Int = 0
     @State private var sortIndex: String = "relevance"
     @State private var selectedVersions: [String] = []
     @State private var selectedLicenses: [String] = []
@@ -36,6 +34,7 @@ struct MainView: View {
     @State private var gameResourcesType = "mod"
     @State private var gameType = true  // false = local, true = server
     @State private var gameId: String?
+    @State private var isScanComplete = false  // 扫描完成状态，用于控制工具栏按钮
 
     @State private var showingInspector: Bool = false
 
@@ -71,8 +70,6 @@ struct MainView: View {
 
             DetailView(
                 selectedItem: $selectedItem,
-                currentPage: $currentPage,
-                totalItems: $totalItems,
                 sortIndex: $sortIndex,
                 gameResourcesType: $gameResourcesType,
                 selectedVersions: $selectedVersions,
@@ -86,7 +83,8 @@ struct MainView: View {
                 versionCurrentPage: $versionCurrentPage,
                 versionTotal: $versionTotal,
                 gameType: $gameType,
-                selectedLoader: $selectedLoaders
+                selectedLoader: $selectedLoaders,
+                isScanComplete: $isScanComplete
             )
             .toolbar {
                 DetailToolbarView(
@@ -94,43 +92,23 @@ struct MainView: View {
                     sortIndex: $sortIndex,
                     gameResourcesType: $gameResourcesType,
                     gameType: $gameType,
-                    currentPage: $currentPage,
                     versionCurrentPage: $versionCurrentPage,
                     versionTotal: $versionTotal,
-                    totalItems: totalItems,
                     project: $loadedProjectDetail,
                     selectProjectId: $selectedProjectId,
                     selectedTab: $selectedTab,
-                    gameId: $gameId
+                    gameId: $gameId,
+                    isScanComplete: $isScanComplete
                 )
             }
         }
-        //        .inspector(isPresented: $showingInspector) {
-        //            ContentView(
-        //                selectedItem: selectedItem,
-        //                selectedVersions: $selectedVersions,
-        //                selectedLicenses: $selectedLicenses,
-        //                selectedCategories: $selectedCategories,
-        //                selectedFeatures: $selectedFeatures,
-        //                selectedResolutions: $selectedResolutions,
-        //                selectedPerformanceImpact: $selectedPerformanceImpact,
-        //                selectProjectId: $selectedProjectId,
-        //                loadedProjectDetail: $loadedProjectDetail,
-        //                gameResourcesType: $gameResourcesType,
-        //                selectedLoaders: $selectedLoaders,
-        //                gameType: $gameType,
-        //                gameId: $gameId
-        //            )
-        //            .toolbar {InspectorToolbar(showingInspector: $showingInspector)}.navigationSplitViewColumnWidth(min: 235, ideal: 240, max: .infinity)
-        ////            ContentView().toolbar {InspectorToolbar(showingInspector: $showingInspector)}
-        //        }
-
         .frame(minWidth: 900, minHeight: 500)
         .onChange(of: selectedItem) { oldValue, newValue in
             handleSidebarItemChange(from: oldValue, to: newValue)
         }
-        .onChange(of: selectedProjectId) { _, _ in
-            if loadedProjectDetail != nil {
+        .onChange(of: selectedProjectId) { oldValue, newValue in
+            // 优化：仅在 selectedProjectId 实际变化且 loadedProjectDetail 不为 nil 时清空
+            if oldValue != newValue && loadedProjectDetail != nil {
                 loadedProjectDetail = nil
             }
         }
@@ -156,16 +134,35 @@ struct MainView: View {
     // MARK: - Transition Helpers
     private func handleResourceToGameTransition(gameId: String) {
         // 不要强制设置 gameType，保持用户之前的选择
-        // 只有在 gameType 未初始化时才设置为 false
-        if self.gameType == true && self.gameId == nil {
+        // 只有在 gameType 为服务器且之前没选过游戏时才设置为本地资源
+        if gameType == true && self.gameId == nil {
             // 如果是从资源页面切换到游戏页面，且之前没有选择游戏，则设置为本地资源
-            self.gameType = false
+            gameType = false
         }
+
         let game = gameRepository.getGame(by: gameId)
-        self.gameResourcesType =
-        game?.modLoader.lowercased() == "vanilla" ? self.gameResourcesType.lowercased() != "mod" ? self.gameResourcesType : "datapack" : "mod"
+
+        if let loader = game?.modLoader.lowercased() {
+            if loader == "vanilla" {
+                // 对于 vanilla，如果当前资源类型是 mod，则切换为 datapack，否则保持用户原来的选择
+                if gameResourcesType.lowercased() == "mod" {
+                    gameResourcesType = "datapack"
+                }
+            } else {
+                // 非 vanilla 一律使用 mod
+                gameResourcesType = "mod"
+            }
+        }
+
         self.gameId = gameId
         self.selectedProjectId = nil
+        // 重置扫描状态
+        if self.gameId == nil {
+            self.isScanComplete = false
+        }
+        if self.gameId != nil {
+            self.isScanComplete = true
+        }
         // 更新选中的游戏管理器，供设置页面使用
         selectedGameManager.setSelectedGame(gameId)
     }
@@ -174,14 +171,17 @@ struct MainView: View {
         from oldId: String,
         to newId: String
     ) {
-        if self.gameType != false {
-                self.gameType = false
-        }
-        // 保持用户之前选择的 gameType，不要强制修改
+        // 切换游戏时，强制使用本地模式
+        gameType = false
+
         let game = gameRepository.getGame(by: newId)
-        self.gameResourcesType =
-            game?.modLoader.lowercased() == "vanilla" ? "datapack" : "mod"
+        if let loader = game?.modLoader.lowercased() {
+            gameResourcesType = (loader == "vanilla") ? "datapack" : "mod"
+        }
+
         self.gameId = newId
+        // 重置扫描状态
+        self.isScanComplete = false
         // 更新选中的游戏管理器，供设置页面使用
         selectedGameManager.setSelectedGame(newId)
     }
@@ -191,55 +191,32 @@ struct MainView: View {
         // 清除选中的游戏，因为切换到资源页面
         selectedGameManager.clearSelection()
 
-        if self.gameType != true {
-            self.gameType = true
-        }
+        // 重置扫描状态（资源页面不需要扫描，设为 true）
+        isScanComplete = true
 
-        if self.sortIndex != "relevance" {
-            self.sortIndex = "relevance"
-        }
+        // 排序方式回到默认值
+        sortIndex = "relevance"
+
+        // 保证资源类型与当前侧边栏选择一致
         if case .resource(let resourceType) = selectedItem {
-            if self.gameResourcesType != resourceType.rawValue {
-                self.gameResourcesType = resourceType.rawValue
-            }
-        }
-        if self.currentPage != 1 {
-            self.currentPage = 1
-        }
-        if self.totalItems != 0 {
-            self.totalItems = 0
-        }
-        if !self.selectedVersions.isEmpty {
-            self.selectedVersions.removeAll()
-        }
-        if !self.selectedLicenses.isEmpty {
-            self.selectedLicenses.removeAll()
-        }
-        if !self.selectedCategories.isEmpty {
-            self.selectedCategories.removeAll()
-        }
-        if !self.selectedFeatures.isEmpty {
-            self.selectedFeatures.removeAll()
-        }
-        if !self.selectedResolutions.isEmpty {
-            self.selectedResolutions.removeAll()
-        }
-        if !self.selectedPerformanceImpact.isEmpty {
-            self.selectedPerformanceImpact.removeAll()
-        }
-        if !self.selectedLoaders.isEmpty {
-            self.selectedLoaders.removeAll()
+            gameResourcesType = resourceType.rawValue
         }
 
-        if self.selectedTab != 0 {
-            self.selectedTab = 0
-        }
-        if self.versionCurrentPage != 1 {
-            self.versionCurrentPage = 1
-        }
-        if self.versionTotal != 0 {
-            self.versionTotal = 0
-        }
+        // 清空所有筛选条件
+        selectedVersions.removeAll()
+        selectedLicenses.removeAll()
+        selectedCategories.removeAll()
+        selectedFeatures.removeAll()
+        selectedResolutions.removeAll()
+        selectedPerformanceImpact.removeAll()
+        selectedLoaders.removeAll()
+
+        // 重置分页和 Tab
+        selectedTab = 0
+        versionCurrentPage = 1
+        versionTotal = 0
+
+        // 清理 project/game 关联状态，防止产生不一致
         if gameId == nil && self.selectedProjectId != nil {
             self.selectedProjectId = nil
         }

@@ -45,6 +45,10 @@ struct SkinToolDetailView: View {
         .onAppear {
             loadData()
         }
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
     }
 
     private var headerView: some View {
@@ -447,8 +451,8 @@ struct SkinToolDetailView: View {
         guard let urlString = publicSkinInfo?.skinURL?.httpToHttps(), let url = URL(string: urlString) else { return }
         Task {
             do {
-                let (data, response) = try await URLSession.shared.data(from: url)
-                if let http = response as? HTTPURLResponse, http.statusCode != 200 { return }
+                // 使用统一的 API 客户端
+                let data = try await APIClient.get(url: url)
                 guard !data.isEmpty, let image = NSImage(data: data) else { return }
                 await MainActor.run { self.currentSkinRenderImage = image }
             } catch {
@@ -606,7 +610,8 @@ struct SkinToolDetailView: View {
                 Logger.shared.error("Invalid skin URL: \(httpsURL)")
                 return false
             }
-            let (data, _) = try await URLSession.shared.data(from: url)
+            // 使用统一的 API 客户端
+            let data = try await APIClient.get(url: url)
 
             let result = await PlayerSkinService.uploadSkin(
                 imageData: data,
@@ -671,19 +676,19 @@ extension SkinToolDetailView {
         if let current = selectedCapeImageURL, current == urlString, selectedCapeLocalPath != nil {
             return
         }
-        guard let url = URL(string: urlString.httpToHttps()) else {
+        // 验证 URL 格式（但不保留 URL 对象，节省内存）
+        guard URL(string: urlString.httpToHttps()) != nil else {
             Logger.shared.error("Invalid cape URL: \(urlString)")
             return
         }
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            if let http = response as? HTTPURLResponse, http.statusCode != 200 {
-                Logger.shared.error("Cape download failed: status=\(http.statusCode)")
-                return
-            }
-            if data.isEmpty { return }
+            // 使用 DownloadManager 下载文件（已包含所有优化）
             let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent("cape_\(UUID().uuidString).png")
-            try data.write(to: tempFile)
+            _ = try await DownloadManager.downloadFile(
+                urlString: urlString.httpToHttps(),
+                destinationURL: tempFile,
+                expectedSha1: nil
+            )
             await MainActor.run {
                 if selectedCapeImageURL == urlString {
                     selectedCapeLocalPath = tempFile.path
@@ -701,6 +706,33 @@ extension SkinToolDetailView {
         case .slim:
             return .alex
         }
+    }
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 清理选中的皮肤数据
+        selectedSkinData = nil
+        selectedSkinImage = nil
+        selectedSkinPath = nil
+        showingSkinPreview = false
+        // 清理斗篷数据
+        selectedCapeId = nil
+        selectedCapeImageURL = nil
+        selectedCapeLocalPath = nil
+        // 清理加载的数据
+        publicSkinInfo = nil
+        playerProfile = nil
+        currentSkinRenderImage = nil
+        // 重置状态
+        currentModel = .classic
+        isLoading = true
+        hasChanges = false
+        operationInProgress = false
+        // 清理缓存的值
+        lastSelectedSkinData = nil
+        lastCurrentModel = .classic
+        lastSelectedCapeId = nil
+        lastCurrentActiveCapeId = nil
     }
 }
 

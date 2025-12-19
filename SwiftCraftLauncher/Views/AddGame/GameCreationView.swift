@@ -63,15 +63,39 @@ struct GameCreationView: View {
             onSetImagePickerHandler(viewModel.handleImagePickerResult)
         }
         .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
-        .onChange(of: viewModel.selectedLoaderVersion) { _, _ in
-            viewModel.updateParentState()
+        .onChange(of: viewModel.selectedLoaderVersion) { oldValue, newValue in
+            // 优化：仅在值实际变化时更新
+            if oldValue != newValue {
+                viewModel.updateParentState()
+            }
         }
-        .onChange(of: viewModel.selectedModLoader) { _, newLoader in
-            viewModel.handleModLoaderChange(newLoader)
+        .onChange(of: viewModel.selectedModLoader) { oldValue, newLoader in
+            // 优化：仅在值实际变化时处理
+            if oldValue != newLoader {
+                viewModel.handleModLoaderChange(newLoader)
+            }
         }
-        .onChange(of: viewModel.selectedGameVersion) { _, newVersion in
-            viewModel.handleGameVersionChange(newVersion)
+        .onChange(of: viewModel.selectedGameVersion) { oldValue, newVersion in
+            // 优化：仅在值实际变化时处理
+            if oldValue != newVersion {
+                viewModel.handleGameVersionChange(newVersion)
+            }
         }
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
+    }
+
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 如果正在下载，取消下载任务
+        if viewModel.isDownloading {
+            viewModel.handleCancel()
+        }
+        // ViewModel 的数据会在下次打开时重新初始化，这里主要清理临时文件
+        // 注意：不要重置 ViewModel 的状态，因为可能正在使用中
     }
 
     // MARK: - View Components

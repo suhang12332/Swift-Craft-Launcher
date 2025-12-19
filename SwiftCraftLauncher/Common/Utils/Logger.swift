@@ -210,7 +210,14 @@ class Logger {
         line: Int
     ) {
         let fileName = (file as NSString).lastPathComponent
-        let message = items.map { Self.stringify($0) }.joined(separator: " ")
+        // 优化：使用 NSMutableString 减少临时对象创建
+        let message = NSMutableString()
+        for (index, item) in items.enumerated() {
+            if index > 0 {
+                message.append(" ")
+            }
+            message.append(Self.stringify(item))
+        }
         let logMessage = "\(prefix) [\(fileName):\(line)] \(function): \(message)"
 
         // 输出到控制台。 本地调试可以开启
@@ -326,17 +333,58 @@ class Logger {
         case let data as Data:
             return String(data: data, encoding: .utf8) ?? "<Data>"
         case let array as [Any]:
-            return "[" + array.map { stringify($0) }.joined(separator: ", ")
-            + "]"
+            // 优化：使用 NSMutableString 减少临时对象创建
+            // 限制数组长度，避免处理超大数组时创建过多对象
+            let maxElements = 100
+            let result = NSMutableString()
+            result.append("[")
+
+            for (index, element) in array.prefix(maxElements).enumerated() {
+                if index > 0 {
+                    result.append(", ")
+                }
+                result.append(stringify(element))
+            }
+
+            if array.count > maxElements {
+                result.append(", ... (\(array.count - maxElements) more)]")
+            } else {
+                result.append("]")
+            }
+            return result as String
         case let dict as [String: Any]:
-            return dict.map { "\($0): \(stringify($1))" }.joined(
-                separator: ", "
-            )
+            // 优化：使用 NSMutableString 减少临时对象创建
+            // 限制字典大小，避免处理超大字典时创建过多对象
+            let maxEntries = 50
+            let result = NSMutableString()
+            result.append("{")
+            var count = 0
+
+            for (key, value) in dict {
+                if count >= maxEntries {
+                    result.append(", ... (\(dict.count - maxEntries) more)")
+                    break
+                }
+                if count > 0 {
+                    result.append(", ")
+                }
+                result.append("\(key): ")
+                result.append(stringify(value))
+                count += 1
+            }
+            result.append("}")
+            return result as String
         case let codable as Encodable:
+            // 优化：限制 JSON 编码大小，避免创建过大的字符串
             let encoder = JSONEncoder()
-            encoder.outputFormatting = .prettyPrinted
+            encoder.outputFormatting = [] // 不使用 prettyPrinted 以减少字符串大小
             if let data = try? encoder.encode(AnyEncodable(codable)),
                let json = String(data: data, encoding: .utf8) {
+                // 限制 JSON 字符串长度
+                let maxLength = 1000
+                if json.count > maxLength {
+                    return String(json.prefix(maxLength)) + "... (truncated)"
+                }
                 return json
             }
             return "\(codable)"

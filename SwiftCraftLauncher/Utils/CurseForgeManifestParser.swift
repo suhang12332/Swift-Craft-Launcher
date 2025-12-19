@@ -194,7 +194,7 @@ enum CurseForgeManifestParser {
 
             modrinthFiles.append(ModrinthIndexFile(
                 path: placeholderPath,
-                hashes: [:], // CurseForge 不提供哈希
+                hashes: ModrinthIndexFileHashes(from: [:]), // CurseForge 不提供哈希
                 downloads: [], // 下载URL将在下载时获取
                 fileSize: 0, // 文件大小将在下载时获取
                 env: nil, // 默认环境

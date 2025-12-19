@@ -4,7 +4,7 @@ import SwiftUI
 public struct GameSettingsView: View {
     @StateObject private var cacheManager = CacheManager()
 
-    @ObservedObject private var gameSettings = GameSettingsManager.shared
+    @StateObject private var gameSettings = GameSettingsManager.shared
 
     // 内存区间
     @State private var globalMemoryRange: ClosedRange<Double> = 512...4096
@@ -23,6 +23,19 @@ public struct GameSettingsView: View {
                         isOn: $gameSettings.autoDownloadDependencies
                     ).labelsHidden()
                     Text("settings.dependencies.description".localized()).font(
+                        .callout
+                    )
+                    .foregroundColor(.primary)
+                }
+            }.labeledContentStyle(.custom).padding(.bottom, 10)
+
+            LabeledContent("settings.ai_crash_analysis".localized()) {
+                HStack {
+                    Toggle(
+                        "",
+                        isOn: $gameSettings.enableAICrashAnalysis
+                    ).labelsHidden()
+                    Text("settings.ai_crash_analysis.description".localized()).font(
                         .callout
                     )
                     .foregroundColor(.primary)

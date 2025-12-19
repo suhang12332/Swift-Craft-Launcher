@@ -57,6 +57,7 @@ struct AddOrDeleteResourceButton: View {
     let gameInfo: GameVersionInfo?
     let query: String
     let type: Bool  // false = local, true = server
+    let scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找（O(1)）
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @State private var addButtonState: ModrinthDetailCardView.AddButtonState =
@@ -64,7 +65,7 @@ struct AddOrDeleteResourceButton: View {
     @State private var showDeleteAlert = false
     @State private var showNoGameAlert = false
     @State private var showPlayerAlert = false  // 新增：玩家验证 alert
-    @ObservedObject private var gameSettings = GameSettingsManager.shared
+    @StateObject private var gameSettings = GameSettingsManager.shared
     @StateObject private var depVM = DependencySheetViewModel()
     @State private var isDownloadingAllDependencies = false
     @State private var isDownloadingMainResourceOnly = false
@@ -85,7 +86,8 @@ struct AddOrDeleteResourceButton: View {
         type: Bool,
         selectedItem: Binding<SidebarItem>,
         onResourceChanged: (() -> Void)? = nil,
-        forceInstalled: Bool = false
+        forceInstalled: Bool = false,
+        scannedDetailIds: Set<String> = []
     ) {
         self.project = project
         self.selectedVersions = selectedVersions
@@ -96,9 +98,11 @@ struct AddOrDeleteResourceButton: View {
         self._selectedItem = selectedItem
         self.onResourceChanged = onResourceChanged
         self.forceInstalled = forceInstalled
+        self.scannedDetailIds = scannedDetailIds
     }
 
     var body: some View {
+
         VStack {
             Button(action: handleButtonAction) {
                 buttonLabel
@@ -417,6 +421,14 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
+        // 只检查 scannedDetailIds 是否包含当前项目的 projectId
+        // 如果包含，说明该资源已在扫描列表中，标记为已安装
+        // 移除同步扫描以提高性能，避免卡顿
+        if scannedDetailIds.contains(project.projectId) {
+            addButtonState = .installed
+            return
+        }
+
         // 检查 query 是否是有效的资源类型
         let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
         let queryLowercased = query.lowercased()
@@ -425,20 +437,6 @@ struct AddOrDeleteResourceButton: View {
         if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
             addButtonState = .idle
             return
-        }
-
-        if let gameInfo = gameInfo,
-            let resourceDir = AppPaths.resourceDirectory(
-                for: query,
-                gameName: gameInfo.gameName
-            ) {
-            if ModScanner.shared.isModInstalledSync(
-                projectId: project.projectId,
-                in: resourceDir
-            ) {
-                addButtonState = .installed
-                return
-            }
         }
         addButtonState = .idle
     }

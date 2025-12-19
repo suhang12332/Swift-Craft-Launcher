@@ -55,12 +55,12 @@ final class ModrinthSearchViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published private(set) var results: [ModrinthProject] = []
     @Published private(set) var isLoading: Bool = false
+    @Published private(set) var isLoadingMore: Bool = false
     @Published private(set) var error: GlobalError?
     @Published private(set) var totalHits: Int = 0
 
     // MARK: - Private Properties
     private var searchTask: Task<Void, Never>?
-    private var currentPage: Int = 1
     private let pageSize: Int = 20
 
     // MARK: - Initialization
@@ -82,14 +82,19 @@ final class ModrinthSearchViewModel: ObservableObject {
         performanceImpact: [String],
         loaders: [String],
         sortIndex: String,
-        page: Int = 1
+        page: Int = 1,
+        append: Bool = false
     ) async {
         // Cancel any existing search task
         searchTask?.cancel()
 
         searchTask = Task {
             do {
-                isLoading = true
+                if append {
+                    isLoadingMore = true
+                } else {
+                    isLoading = true
+                }
                 error = nil
 
                 // 检查任务是否被取消
@@ -122,14 +127,22 @@ final class ModrinthSearchViewModel: ObservableObject {
                 try Task.checkCancellation()
 
                 if !Task.isCancelled {
-                    results = result.hits
+                    if append {
+                        results.append(contentsOf: result.hits)
+                    } else {
+                        results = result.hits
+                    }
                     totalHits = result.totalHits
                 }
 
                 try Task.checkCancellation()
 
                 if !Task.isCancelled {
-                    isLoading = false
+                    if append {
+                        isLoadingMore = false
+                    } else {
+                        isLoading = false
+                    }
                 }
             } catch is CancellationError {
                 // 任务被取消，不需要处理
@@ -139,6 +152,7 @@ final class ModrinthSearchViewModel: ObservableObject {
                 if !Task.isCancelled {
                     self.error = globalError
                     self.isLoading = false
+                    self.isLoadingMore = false
                 }
                 Logger.shared.error("搜索失败: \(globalError.chineseMessage)")
                 GlobalErrorHandler.shared.handle(globalError)
@@ -152,8 +166,13 @@ final class ModrinthSearchViewModel: ObservableObject {
         totalHits = 0
         error = nil
         isLoading = false
+        isLoadingMore = false
     }
-
+    @MainActor
+    func beginNewSearch() {
+        isLoading = true
+        results.removeAll()
+    }
     // MARK: - Private Methods
     private func buildFacets(
         projectType: String,
@@ -224,8 +243,8 @@ final class ModrinthSearchViewModel: ObservableObject {
     private func buildEnvironmentFacets(features: [String]) -> (
         clientFacets: [String], serverFacets: [String]
     ) {
-        let hasClient = features.contains("client")
-        let hasServer = features.contains("server")
+        let hasClient = features.contains(AppConstants.EnvironmentTypes.client)
+        let hasServer = features.contains(AppConstants.EnvironmentTypes.server)
 
         var clientFacets: [String] = []
         var serverFacets: [String] = []

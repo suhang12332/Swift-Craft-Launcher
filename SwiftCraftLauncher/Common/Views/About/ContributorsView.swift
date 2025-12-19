@@ -5,6 +5,7 @@ public struct ContributorsView: View {
     @State private var staticContributors: [StaticContributor] = []
     @State private var staticContributorsLoaded = false
     @State private var staticContributorsLoadFailed = false
+    private let gitHubService = GitHubService.shared
 
     public init() {}
 
@@ -261,7 +262,7 @@ public struct ContributorsView: View {
 
     // MARK: - Contributor Avatar
     private func contributorAvatar(_ contributor: GitHubContributor) -> some View {
-        AsyncImage(url: URL(string: contributor.avatarUrl)) { phase in
+        AsyncImage(url: URL(string: contributor.avatarUrl.httpToHttps())) { phase in
             switch phase {
             case .empty:
                 Rectangle()
@@ -426,27 +427,9 @@ public struct ContributorsView: View {
         // 重置状态
         staticContributorsLoaded = false
         staticContributorsLoadFailed = false
-
-        // 从URLConfig获取贡献者数据URL（带时间戳避免缓存）
-        let url = URLConfig.API.GitHub.staticContributors()
-
         Task {
             do {
-                let (data, response) = try await URLSession.shared.data(from: url)
-
-                // 检查HTTP响应状态
-                if let httpResponse = response as? HTTPURLResponse {
-                    guard httpResponse.statusCode == 200 else {
-                        Logger.shared.error("HTTP error:", httpResponse.statusCode)
-                        await MainActor.run {
-                            staticContributorsLoadFailed = true
-                        }
-                        return
-                    }
-                }
-
-                let decoder = JSONDecoder()
-                let contributorsData = try decoder.decode(ContributorsData.self, from: data)
+                let contributorsData: ContributorsData = try await gitHubService.fetchStaticContributors()
 
                 await MainActor.run {
                     staticContributors = contributorsData.contributors.map { contributorData in
@@ -454,15 +437,21 @@ public struct ContributorsView: View {
                             name: contributorData.name,
                             url: contributorData.url,
                             avatar: contributorData.avatar,
-                            contributions: contributorData.contributions.compactMap { Contribution(rawValue: "contributor.contribution.\($0)") }
+                            contributions: contributorData.contributions.compactMap {
+                                Contribution(rawValue: "contributor.contribution.\($0)")
+                            }
                         )
                     }
                     staticContributorsLoaded = true
                     staticContributorsLoadFailed = false
-                    Logger.shared.info("Successfully loaded", staticContributors.count, "contributors from URL")
+                    Logger.shared.info(
+                        "Successfully loaded",
+                        staticContributors.count,
+                        "contributors from GitHubService"
+                    )
                 }
             } catch {
-                Logger.shared.error("Failed to load contributors from URL:", error)
+                Logger.shared.error("Failed to load contributors from GitHubService:", error)
                 await MainActor.run {
                     staticContributorsLoadFailed = true
                 }

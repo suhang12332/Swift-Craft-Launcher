@@ -9,6 +9,46 @@ enum URLConfig {
         return url
     }
 
+    // 常量字符串，避免重复创建
+    private static let githubHost = "github.com"
+    private static let rawGithubHost = "raw.githubusercontent.com"
+
+    // 公共方法：为 GitHub URL 应用代理（如果需要）
+    /// 为 GitHub 相关的 URL 应用 gitProxyURL 代理
+    /// - Parameter url: 原始 URL
+    /// - Returns: 应用代理后的 URL（如果需要）
+    static func applyGitProxyIfNeeded(_ url: URL) -> URL {
+        let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !proxy.isEmpty else { return url }
+
+        // 优化：直接使用 URL 的 host 属性，避免转换为 String
+        guard let host = url.host else { return url }
+
+        // 仅对 GitHub 相关域名应用代理（排除 api.github.com）
+        let isGitHubURL = host == githubHost || host == rawGithubHost
+        guard isGitHubURL else { return url }
+
+        // 优化：使用 URL 的 absoluteString 检查是否已有代理前缀
+        let urlString = url.absoluteString
+        if urlString.hasPrefix("\(proxy)/") { return url }
+
+        // 使用字符串插值而非字符串拼接
+        let proxiedString = proxy.hasSuffix("/") ? "\(proxy)\(urlString)" : "\(proxy)/\(urlString)"
+        return Self.url(proxiedString)
+    }
+
+    // 公共方法：为 GitHub URL 字符串应用代理（如果需要）
+    /// 为 GitHub 相关的 URL 字符串应用 gitProxyURL 代理
+    /// - Parameter urlString: 原始 URL 字符串
+    /// - Returns: 应用代理后的 URL 字符串（如果需要）
+    /// 优化：使用 autoreleasepool 及时释放临时 URL 对象
+    static func applyGitProxyIfNeeded(_ urlString: String) -> String {
+        return autoreleasepool {
+            guard let url = URL(string: urlString) else { return urlString }
+            return applyGitProxyIfNeeded(url).absoluteString
+        }
+    }
+
     // API 端点
     enum API {
         // Authentication API
@@ -57,12 +97,22 @@ enum URLConfig {
             static let javaRuntimeBeta = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu17.60.17-ca-jre17.0.16-macosx_aarch64.zip")
         }
 
+        // Intel平台专用版本的Zulu JDK下载URL
+        enum JavaRuntimeIntel {
+            static let jreLegacy = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu8.88.0.19-ca-jre8.0.462-macosx_x64.zip")
+            static let javaRuntimeAlpha = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu16.32.15-ca-jre16.0.2-macosx_x64.zip")
+            static let javaRuntimeBeta = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu17.60.17-ca-jre17.0.16-macosx_x64.zip")
+        }
+
         // GitHub API
         enum GitHub {
             static let baseURL = URLConfig.url("https://api.github.com")
             static let repositoryOwner = "suhang12332"
             static let assetsRepositoryName = "Swift-Craft-Launcher-Assets"
             static let repositoryName = "Swift-Craft-Launcher"
+            /// 公告基础地址：
+            /// 例如：https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-Assets/refs/heads/main/news/api/announcements/0.3.1-beta/ar.json
+            static let announcementBaseURL = URLConfig.url("https://raw.githubusercontent.com/\(repositoryOwner)/\(assetsRepositoryName)/refs/heads/main/news/api/announcements")
 
             // 私有方法：构建仓库基础路径
             private static var repositoryBaseURL: URL {
@@ -73,15 +123,18 @@ enum URLConfig {
             }
 
             static func latestRelease() -> URL {
-                repositoryBaseURL.appendingPathComponent("releases/latest")
+                URLConfig.applyGitProxyIfNeeded(
+                    repositoryBaseURL.appendingPathComponent("releases/latest")
+                )
             }
 
             static func contributors(perPage: Int = 50) -> URL {
-                repositoryBaseURL
+                let url = repositoryBaseURL
                     .appendingPathComponent("contributors")
                     .appending(queryItems: [
                         URLQueryItem(name: "per_page", value: "\(perPage)")
                     ])
+                return URLConfig.applyGitProxyIfNeeded(url)
             }
 
             // Appcast 相关
@@ -89,21 +142,76 @@ enum URLConfig {
                 architecture: String
             ) -> URL {
                 let appcastFileName = "appcast-\(architecture).xml"
-                return URLConfig.url("https://github.com/\(repositoryOwner)/\(repositoryName)/releases/latest/download/\(appcastFileName)")
+                let url = URLConfig.url("https://github.com")
+                    .appendingPathComponent(repositoryOwner)
+                    .appendingPathComponent(repositoryName)
+                    .appendingPathComponent("releases")
+                    .appendingPathComponent("latest")
+                    .appendingPathComponent("download")
+                    .appendingPathComponent(appcastFileName)
+                return URLConfig.applyGitProxyIfNeeded(url)
             }
 
             // 静态贡献者数据
             static func staticContributors() -> URL {
                 let timestamp = Int(Date().timeIntervalSince1970)
-                let urlString = "https://raw.githubusercontent.com/\(repositoryOwner)/\(assetsRepositoryName)/refs/heads/main/contributors/contributors.json?timestamp=\(timestamp)"
-                return URLConfig.url(urlString)
+                let url = URLConfig.url("https://raw.githubusercontent.com")
+                    .appendingPathComponent(repositoryOwner)
+                    .appendingPathComponent(assetsRepositoryName)
+                    .appendingPathComponent("refs")
+                    .appendingPathComponent("heads")
+                    .appendingPathComponent("main")
+                    .appendingPathComponent("contributors")
+                    .appendingPathComponent("contributors.json")
+                    .appending(queryItems: [
+                        URLQueryItem(name: "timestamp", value: "\(timestamp)")
+                    ])
+                return URLConfig.applyGitProxyIfNeeded(url)
             }
 
             // 致谢数据
             static func acknowledgements() -> URL {
                 let timestamp = Int(Date().timeIntervalSince1970)
-                let urlString = "https://raw.githubusercontent.com/\(repositoryOwner)/\(assetsRepositoryName)/refs/heads/main/contributors/acknowledgements.json?timestamp=\(timestamp)"
-                return URLConfig.url(urlString)
+                let url = URLConfig.url("https://raw.githubusercontent.com")
+                    .appendingPathComponent(repositoryOwner)
+                    .appendingPathComponent(assetsRepositoryName)
+                    .appendingPathComponent("refs")
+                    .appendingPathComponent("heads")
+                    .appendingPathComponent("main")
+                    .appendingPathComponent("contributors")
+                    .appendingPathComponent("acknowledgements.json")
+                    .appending(queryItems: [
+                        URLQueryItem(name: "timestamp", value: "\(timestamp)")
+                    ])
+                return URLConfig.applyGitProxyIfNeeded(url)
+            }
+
+            // LICENSE 文件
+            static func license(ref: String = "main") -> URL {
+                let url = repositoryBaseURL
+                    .appendingPathComponent("contents")
+                    .appendingPathComponent("LICENSE")
+                    .appending(queryItems: [
+                        URLQueryItem(name: "ref", value: ref)
+                    ])
+                return URLConfig.applyGitProxyIfNeeded(url)
+            }
+
+            // Announcement API
+            /// 获取公告URL
+            /// - Parameters:
+            ///   - version: 应用版本号
+            ///   - language: 语言代码，如 "zh-Hans"
+            /// - Returns: 公告URL（带时间戳，避免缓存）
+            static func announcement(version: String, language: String) -> URL {
+                let timestamp = Int(Date().timeIntervalSince1970)
+                let url = announcementBaseURL
+                    .appendingPathComponent(version)
+                    .appendingPathComponent("\(language).json")
+                    .appending(queryItems: [
+                        URLQueryItem(name: "timestamp", value: "\(timestamp)")
+                    ])
+                return URLConfig.applyGitProxyIfNeeded(url)
             }
         }
 
@@ -173,16 +281,6 @@ enum URLConfig {
             static let loader = URLConfig.url("https://meta.fabricmc.net/v2/versions/loader")
         }
 
-        // Forge API
-        enum Forge {
-            static let gitReleasesBase = URLConfig.url("https://github.com/\(URLConfig.API.GitHub.repositoryOwner)/forge-client/releases/download/")
-        }
-
-        // NeoForge API
-        enum NeoForge {
-            static let gitReleasesBase = URLConfig.url("https://github.com/\(URLConfig.API.GitHub.repositoryOwner)/neoforge-client/releases/download/")
-        }
-
         // Quilt API
         enum Quilt {
             static let loaderBase = URLConfig.url("https://meta.quiltmc.org/v3/versions/loader/")
@@ -228,21 +326,6 @@ enum URLConfig {
                 }
 
                 return components?.url ?? url
-            }
-        }
-
-        // Announcement API
-        enum Announcement {
-            static let baseURL = "https://suhang12332.github.io/Swift-Craft-Launcher-News/api/announcements"
-
-            /// 获取公告URL
-            /// - Parameters:
-            ///   - version: 应用版本号
-            ///   - language: 语言代码，如 "zh-Hans"
-            /// - Returns: 公告URL
-            static func announcement(version: String, language: String) -> URL {
-                let urlString = "\(baseURL)/\(version)/\(language).json"
-                return URLConfig.url(urlString)
             }
         }
     }

@@ -259,6 +259,161 @@ extension ModScanner {
         }
     }
 
+    /// 轻量级扫描：仅获取 detailId、title 和 hash（静默版本）
+    /// 不创建 fallback detail，只从缓存读取
+    public func lightScanResourceInfo(in dir: URL) -> [(
+        title: String, detailId: String, hash: String
+    )] {
+        do {
+            return try lightScanResourceInfoThrowing(in: dir)
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("轻量级扫描资源失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return []
+        }
+    }
+
+    /// 轻量级扫描：仅获取 detailId、title 和 hash（抛出异常版本）
+    /// 不创建 fallback detail，只从缓存读取
+    public func lightScanResourceInfoThrowing(in dir: URL) throws -> [(
+        title: String, detailId: String, hash: String
+    )] {
+        guard FileManager.default.fileExists(atPath: dir.path) else {
+            throw GlobalError.resource(
+                chineseMessage: "目录不存在: \(dir.lastPathComponent)",
+                i18nKey: "error.resource.directory_not_found",
+                level: .silent
+            )
+        }
+
+        let files: [URL]
+        do {
+            files = try FileManager.default.contentsOfDirectory(
+                at: dir,
+                includingPropertiesForKeys: nil
+            )
+        } catch {
+            throw GlobalError.fileSystem(
+                chineseMessage:
+                    "读取目录失败: \(dir.lastPathComponent), 错误: \(error.localizedDescription)",
+                i18nKey: "error.filesystem.directory_read_failed",
+                level: .silent
+            )
+        }
+
+        let jarFiles = files.filter {
+            ["jar", "zip"].contains($0.pathExtension.lowercased())
+        }
+
+        return jarFiles.compactMap { fileURL in
+            guard let hash = ModScanner.sha1Hash(of: fileURL) else {
+                return nil
+            }
+
+            // 只从缓存读取，不创建 fallback
+            let detail = AppCacheManager.shared.get(
+                namespace: "mod",
+                key: hash,
+                as: ModrinthProjectDetail.self
+            )
+
+            // 优先使用缓存的 detail，否则使用文件名和 hash
+            let title = detail?.title ?? fileURL.deletingPathExtension().lastPathComponent
+            let detailId = detail?.id ?? hash
+
+            return (title: title, detailId: detailId, hash: hash)
+        }
+    }
+
+    /// 异步扫描：仅获取所有 detailId（静默版本）
+    /// 在后台线程执行，只从缓存读取，不创建 fallback
+    public func scanAllDetailIds(
+        in dir: URL,
+        completion: @escaping (Set<String>) -> Void
+    ) {
+        Task {
+            do {
+                let detailIds = try await scanAllDetailIdsThrowing(in: dir)
+                completion(detailIds)
+            } catch {
+                let globalError = GlobalError.from(error)
+                Logger.shared.error("扫描所有 detailId 失败: \(globalError.chineseMessage)")
+                GlobalErrorHandler.shared.handle(globalError)
+                completion(Set<String>())
+            }
+        }
+    }
+
+    /// 异步扫描：仅获取所有 detailId（抛出异常版本）
+    /// 在后台线程执行，只从缓存读取，不创建 fallback
+    /// 返回 Set 以提高查找性能（O(1)）
+    public func scanAllDetailIdsThrowing(in dir: URL) async throws -> Set<String> {
+        // 在后台线程执行文件系统操作
+        return try await Task.detached(priority: .userInitiated) {
+            guard FileManager.default.fileExists(atPath: dir.path) else {
+                throw GlobalError.resource(
+                    chineseMessage: "目录不存在: \(dir.lastPathComponent)",
+                    i18nKey: "error.resource.directory_not_found",
+                    level: .silent
+                )
+            }
+
+            let files: [URL]
+            do {
+                files = try FileManager.default.contentsOfDirectory(
+                    at: dir,
+                    includingPropertiesForKeys: nil
+                )
+            } catch {
+                throw GlobalError.fileSystem(
+                    chineseMessage:
+                        "读取目录失败: \(dir.lastPathComponent), 错误: \(error.localizedDescription)",
+                    i18nKey: "error.filesystem.directory_read_failed",
+                    level: .silent
+                )
+            }
+
+            let jarFiles = files.filter {
+                ["jar", "zip"].contains($0.pathExtension.lowercased())
+            }
+
+            // 使用 TaskGroup 并发计算 hash 和读取缓存
+            let semaphore = AsyncSemaphore(value: 4)
+
+            return await withTaskGroup(of: String?.self) { group in
+                for fileURL in jarFiles {
+                    group.addTask {
+                        await semaphore.wait()
+                        defer { Task { await semaphore.signal() } }
+
+                        guard let hash = ModScanner.sha1Hash(of: fileURL) else {
+                            return nil
+                        }
+
+                        // 只从缓存读取，不创建 fallback
+                        let detail = AppCacheManager.shared.get(
+                            namespace: "mod",
+                            key: hash,
+                            as: ModrinthProjectDetail.self
+                        )
+
+                        // 优先使用缓存的 detailId，否则使用 hash
+                        return detail?.id ?? hash
+                    }
+                }
+
+                var detailIds: Set<String> = []
+                for await detailId in group {
+                    if let detailId = detailId {
+                        detailIds.insert(detailId)
+                    }
+                }
+                return detailIds
+            }
+        }.value
+    }
+
     /// 同步：仅查缓存
     func isModInstalledSync(projectId: String, in modsDir: URL) -> Bool {
         do {
@@ -419,5 +574,205 @@ extension ModScanner {
         }
 
         return results
+    }
+
+    // MARK: - 分页扫描
+
+    /// 获取目录下所有 jar/zip 文件列表（不解析详情，快速）
+    func getAllResourceFiles(_ dir: URL) -> [URL] {
+        do {
+            return try getAllResourceFilesThrowing(dir)
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("获取资源文件列表失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return []
+        }
+    }
+
+    /// 获取目录下所有 jar/zip 文件列表（抛出异常版本）
+    func getAllResourceFilesThrowing(_ dir: URL) throws -> [URL] {
+        let files: [URL]
+        do {
+            files = try FileManager.default.contentsOfDirectory(
+                at: dir,
+                includingPropertiesForKeys: nil
+            )
+        } catch {
+            throw GlobalError.fileSystem(
+                chineseMessage:
+                    "读取目录失败: \(dir.lastPathComponent), 错误: \(error.localizedDescription)",
+                i18nKey: "error.filesystem.directory_read_failed",
+                level: .silent
+            )
+        }
+
+        return files.filter {
+            ["jar", "zip"].contains($0.pathExtension.lowercased())
+        }
+    }
+
+    /// 分页扫描目录，仅对当前页的文件进行解析（静默版本）
+    func scanResourceDirectoryPage(
+        _ dir: URL,
+        page: Int,
+        pageSize: Int,
+        completion: @escaping ([ModrinthProjectDetail], Bool) -> Void
+    ) {
+        Task {
+            do {
+                let (results, hasMore) = try await scanResourceDirectoryPageThrowing(
+                    dir,
+                    page: page,
+                    pageSize: pageSize
+                )
+                completion(results, hasMore)
+            } catch {
+                let globalError = GlobalError.from(error)
+                Logger.shared.error("分页扫描资源目录失败: \(globalError.chineseMessage)")
+                GlobalErrorHandler.shared.handle(globalError)
+                completion([], false)
+            }
+        }
+    }
+
+    /// 基于文件列表分页扫描，仅对当前页的文件进行解析（静默版本）
+    func scanResourceFilesPage(
+        fileURLs: [URL],
+        page: Int,
+        pageSize: Int,
+        completion: @escaping ([ModrinthProjectDetail], Bool) -> Void
+    ) {
+        Task {
+            do {
+                let (results, hasMore) = try await scanResourceFilesPageThrowing(
+                    fileURLs: fileURLs,
+                    page: page,
+                    pageSize: pageSize
+                )
+                completion(results, hasMore)
+            } catch {
+                let globalError = GlobalError.from(error)
+                Logger.shared.error("分页扫描资源文件失败: \(globalError.chineseMessage)")
+                GlobalErrorHandler.shared.handle(globalError)
+                completion([], false)
+            }
+        }
+    }
+
+    /// 基于文件列表分页扫描，仅对当前页的文件进行解析（抛出异常版本）
+    func scanResourceFilesPageThrowing(
+        fileURLs: [URL],
+        page: Int,
+        pageSize: Int
+    ) async throws -> ([ModrinthProjectDetail], Bool) {
+        if fileURLs.isEmpty {
+            return ([], false)
+        }
+
+        // 计算当前页文件范围
+        let safePage = max(page, 1)
+        let safePageSize = max(pageSize, 1)
+        let startIndex = (safePage - 1) * safePageSize
+        let endIndex = min(startIndex + safePageSize, fileURLs.count)
+
+        if startIndex >= fileURLs.count {
+            return ([], false)
+        }
+
+        let pageFiles = Array(fileURLs[startIndex..<endIndex])
+        let hasMore = endIndex < fileURLs.count
+
+        let semaphore = AsyncSemaphore(value: 4)
+
+        let results = await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
+            for fileURL in pageFiles {
+                group.addTask {
+                    await semaphore.wait()
+                    defer { Task { await semaphore.signal() } }
+
+                    return try? await self.getModrinthProjectDetailThrowing(
+                        for: fileURL
+                    )
+                }
+            }
+
+            var results: [ModrinthProjectDetail] = []
+            for await result in group {
+                if let detail = result {
+                    results.append(detail)
+                }
+            }
+            return results
+        }
+
+        return (results, hasMore)
+    }
+
+    /// 分页扫描目录，仅对当前页的文件进行解析（抛出异常版本）
+    func scanResourceDirectoryPageThrowing(
+        _ dir: URL,
+        page: Int,
+        pageSize: Int
+    ) async throws -> ([ModrinthProjectDetail], Bool) {
+        let files: [URL]
+        do {
+            files = try FileManager.default.contentsOfDirectory(
+                at: dir,
+                includingPropertiesForKeys: nil
+            )
+        } catch {
+            throw GlobalError.fileSystem(
+                chineseMessage:
+                    "读取目录失败: \(dir.lastPathComponent), 错误: \(error.localizedDescription)",
+                i18nKey: "error.filesystem.directory_read_failed",
+                level: .silent
+            )
+        }
+
+        let jarFiles = files.filter {
+            ["jar", "zip"].contains($0.pathExtension.lowercased())
+        }
+        if jarFiles.isEmpty {
+            return ([], false)
+        }
+
+        // 计算当前页文件范围
+        let safePage = max(page, 1)
+        let safePageSize = max(pageSize, 1)
+        let startIndex = (safePage - 1) * safePageSize
+        let endIndex = min(startIndex + safePageSize, jarFiles.count)
+
+        if startIndex >= jarFiles.count {
+            return ([], false)
+        }
+
+        let pageFiles = Array(jarFiles[startIndex..<endIndex])
+        let hasMore = endIndex < jarFiles.count
+
+        let semaphore = AsyncSemaphore(value: 4)
+
+        let results = await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
+            for fileURL in pageFiles {
+                group.addTask {
+                    await semaphore.wait()
+                    defer { Task { await semaphore.signal() } }
+
+                    return try? await self.getModrinthProjectDetailThrowing(
+                        for: fileURL
+                    )
+                }
+            }
+
+            var results: [ModrinthProjectDetail] = []
+            for await result in group {
+                if let detail = result {
+                    results.append(detail)
+                }
+            }
+            return results
+        }
+
+        return (results, hasMore)
     }
 }

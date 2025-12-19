@@ -659,3 +659,37 @@ specific requirements.
 if any, to sign a "copyright disclaimer" for the program, if necessary.
 For more information on this, and how to apply and follow the GNU AGPL, see
 <https://www.gnu.org/licenses/>.
+
+-------------------------------------------------------------------------------
+
+                    ADDITIONAL TERMS - SOURCE ATTRIBUTION
+
+  This program is distributed under the GNU Affero General Public License
+v3.0 with the following additional terms (pursuant to Section 7 of the
+AGPL-3.0):
+
+  ADDITIONAL TERMS FOR SOURCE ATTRIBUTION:
+
+  When using, modifying, or distributing this software or derivative works
+based on this software, you must:
+
+  1. Not misrepresent or conceal the original source of this software.
+
+  2. If you create a modified version, you must clearly mark it as such
+     and prominently indicate:
+     - That the software is based on Swift Craft Launcher
+     - The original project source (https://github.com/suhang12332/Swift-Craft-Launcher)
+     - The modifications you have made (if applicable)
+
+  3. When distributing this software or modified versions, you must:
+     - Retain the original copyright notices
+     - Retain this additional terms file
+     - Provide a link to the original project in user-visible locations
+       (such as About page, Settings page, or startup interface)
+
+  For the complete text of these additional terms, please see the file
+doc/ADDITIONAL_TERMS.md in the root directory of this distribution.
+
+  These additional terms supplement but do not replace the terms of the
+GNU Affero General Public License v3.0. In case of conflict between these
+additional terms and the AGPL-3.0, the AGPL-3.0 shall prevail.

@@ -28,15 +28,9 @@ enum NeoForgeLoaderService {
         }
 
         // 2. 直接下载指定版本的 version.json
-        let (data, response) = try await URLSession.shared.data(from: URLConfig.API.Modrinth.loaderProfile(loader: "neo", version: loaderVersion))
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw GlobalError.download(
-                chineseMessage: "获取 NeoForge profile 失败: HTTP \(response)",
-                i18nKey: "error.download.neoforge_profile_fetch_failed",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let url = URLConfig.API.Modrinth.loaderProfile(loader: "neo", version: loaderVersion)
+        let data = try await APIClient.get(url: url)
 
         var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)

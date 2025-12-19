@@ -152,18 +152,8 @@ enum CommonService {
     ) async throws -> [LoaderVersion] {
         // 首先获取版本清单
         let manifestURL = URLConfig.API.Modrinth.loaderManifest(loader: type)
-        let (manifestData, manifestResponse) = try await URLSession.shared.data(
-            from: manifestURL
-        )
-        guard let httpResponse = manifestResponse as? HTTPURLResponse,
-            httpResponse.statusCode == 200
-        else {
-            throw GlobalError.download(
-                chineseMessage: "获取 \(type) 版本清单失败: HTTP \(manifestResponse)",
-                i18nKey: "error.download.loader_manifest_failed",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let manifestData = try await APIClient.get(url: manifestURL)
 
         // 解析版本清单
         do {
@@ -252,21 +242,10 @@ enum CommonService {
         }
 
         // 构建文件名
-        var fileName = "\(artifactId)-\(version)"
-
-        // 如果有classifier名称，添加到文件名中
-        if !classifierName.isEmpty {
-            fileName += "-\(classifierName)"
-        }
-
-        // 根据classifier添加相应的文件扩展名
-        if !classifier.isEmpty {
-            // 对于包含@符号的坐标，@后面的部分直接作为文件扩展名
-            fileName += ".\(classifier)"
-        } else {
-            // 没有classifier时，默认添加.jar扩展名
-            fileName += ".jar"
-        }
+        // 使用字符串插值构建文件名，避免多次字符串拼接
+        let classifierSuffix = classifierName.isEmpty ? "" : "-\(classifierName)"
+        let extensionSuffix = classifier.isEmpty ? ".\(AppConstants.FileExtensions.jar)" : ".\(classifier)"
+        let fileName = "\(artifactId)-\(version)\(classifierSuffix)\(extensionSuffix)"
 
         // 构建相对路径
         let groupPath = groupId.replacingOccurrences(of: ".", with: "/")

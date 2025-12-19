@@ -109,6 +109,11 @@ Please visit [FAQ](../doc/FAQ.md)
 
 This project is licensed under the GNU Affero General Public License v3.0. See [LICENSE](../LICENSE) for details.
 
+**Additional Terms**: This project includes additional terms requiring source attribution and prohibiting the use of the same software name. See:
+- [简体中文](ADDITIONAL_TERMS.md)
+- [繁體中文](ADDITIONAL_TERMS_zh-TW.md)
+- [English](ADDITIONAL_TERMS_en.md)
+
 ## 🤝 Community & Support
 
 - **👥 Official QQ Group**: [1057517524](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)

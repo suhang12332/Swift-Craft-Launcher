@@ -4,8 +4,6 @@ import SwiftUI
 struct ModrinthDetailView: View {
     // MARK: - Properties
     let query: String
-    @Binding var currentPage: Int
-    @Binding var totalItems: Int
     @Binding var sortIndex: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
@@ -16,15 +14,50 @@ struct ModrinthDetailView: View {
     @Binding var selectedLoader: [String]
     let gameInfo: GameVersionInfo?
     @Binding var selectedItem: SidebarItem
+    @Binding var gameType: Bool
+    let header: AnyView?
+    @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找
 
     @StateObject private var viewModel = ModrinthSearchViewModel()
     @State private var hasLoaded = false
     @State private var searchText: String = ""
     @State private var searchTimer: Timer?
-    @Binding var gameType: Bool
+    @State private var currentPage: Int = 1
     @State private var lastSearchKey: String = ""
     @State private var lastSearchParams: String = ""
     @State private var error: GlobalError?
+
+    init(
+        query: String,
+        sortIndex: Binding<String>,
+        selectedVersions: Binding<[String]>,
+        selectedCategories: Binding<[String]>,
+        selectedFeatures: Binding<[String]>,
+        selectedResolutions: Binding<[String]>,
+        selectedPerformanceImpact: Binding<[String]>,
+        selectedProjectId: Binding<String?>,
+        selectedLoader: Binding<[String]>,
+        gameInfo: GameVersionInfo?,
+        selectedItem: Binding<SidebarItem>,
+        gameType: Binding<Bool>,
+        header: AnyView? = nil,
+        scannedDetailIds: Binding<Set<String>> = .constant([])
+    ) {
+        self.query = query
+        _sortIndex = sortIndex
+        _selectedVersions = selectedVersions
+        _selectedCategories = selectedCategories
+        _selectedFeatures = selectedFeatures
+        _selectedResolutions = selectedResolutions
+        _selectedPerformanceImpact = selectedPerformanceImpact
+        _selectedProjectId = selectedProjectId
+        _selectedLoader = selectedLoader
+        self.gameInfo = gameInfo
+        _selectedItem = selectedItem
+        _gameType = gameType
+        self.header = header
+        _scannedDetailIds = scannedDetailIds
+    }
 
     private var searchKey: String {
         [
@@ -36,28 +69,28 @@ struct ModrinthDetailView: View {
             selectedResolutions.joined(separator: ","),
             selectedPerformanceImpact.joined(separator: ","),
             selectedLoader.joined(separator: ","),
-            String(currentPage),
             String(gameType),
         ].joined(separator: "|")
     }
 
+    private var hasMoreResults: Bool {
+        viewModel.results.count < viewModel.totalHits
+    }
+
     // MARK: - Body
     var body: some View {
-        LazyVStack {
-            if let error = error {
-                newErrorView(error)
-            } else if viewModel.isLoading {
-                HStack {
-                    ProgressView()
-                        .controlSize(.small)
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-            } else if viewModel.results.isEmpty {
-                emptyResultView()
-            } else {
-                resultList
+        List {
+            if let header {
+                header
+                    .listRowSeparator(.hidden)
+            }
+            listContent
+            if viewModel.isLoadingMore {
+                loadingMoreIndicator
+                    .listRowSeparator(.hidden)
             }
         }
+        .listStyle(.plain)
         .task {
             if gameType {
                 await initialLoadIfNeeded()
@@ -66,20 +99,22 @@ struct ModrinthDetailView: View {
         .onChange(of: searchKey) { _, newKey in
             if newKey != lastSearchKey {
                 lastSearchKey = newKey
+                resetPagination()
                 triggerSearch()
             }
-        }
-        .onChange(of: viewModel.totalHits) { _, newValue in
-            totalItems = newValue
         }
         .searchable(
             text: $searchText,
             placement: .toolbar,
             prompt: "search.resources".localized()
         )
-        .help("search.resources".localized())
-        .onChange(of: searchText) { _, _ in
-            debounceSearch()
+
+        .onChange(of: searchText) { oldValue, newValue in
+            // 优化：仅在搜索文本实际变化时触发防抖搜索
+            if oldValue != newValue {
+                resetPagination()
+                debounceSearch()
+            }
         }
         .alert(
             "error.notification.search.title".localized(),
@@ -93,23 +128,25 @@ struct ModrinthDetailView: View {
                 Text(error.chineseMessage)
             }
         }
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
     }
 
     // MARK: - Private Methods
     private func initialLoadIfNeeded() async {
         if !hasLoaded {
             hasLoaded = true
-            await performSearchWithErrorHandling()
+            resetPagination()
+            await performSearchWithErrorHandling(page: 1, append: false)
         }
     }
 
     private func triggerSearch() {
-        Task { await performSearchWithErrorHandling() }
-    }
-
-    private func resetPageAndSearch() {
-        currentPage = 1
-        triggerSearch()
+        Task {
+            await performSearchWithErrorHandling(page: 1, append: false)
+        }
     }
 
     private func debounceSearch() {
@@ -118,15 +155,18 @@ struct ModrinthDetailView: View {
             withTimeInterval: 0.5,
             repeats: false
         ) { _ in
-            // 搜索时重置页码到第一页
-            currentPage = 1
-            Task { await performSearchWithErrorHandling() }
+            Task {
+                await performSearchWithErrorHandling(page: 1, append: false)
+            }
         }
     }
 
-    private func performSearchWithErrorHandling() async {
+    private func performSearchWithErrorHandling(
+        page: Int,
+        append: Bool
+    ) async {
         do {
-            try await performSearchThrowing()
+            try await performSearchThrowing(page: page, append: append)
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("搜索失败: \(globalError.chineseMessage)")
@@ -137,20 +177,8 @@ struct ModrinthDetailView: View {
         }
     }
 
-    private func performSearchThrowing() async throws {
-        let params = [
-            query,
-            sortIndex,
-            selectedVersions.joined(separator: ","),
-            selectedCategories.joined(separator: ","),
-            selectedFeatures.joined(separator: ","),
-            selectedResolutions.joined(separator: ","),
-            selectedPerformanceImpact.joined(separator: ","),
-            selectedLoader.joined(separator: ","),
-            String(currentPage),
-            String(gameType),
-            searchText,
-        ].joined(separator: "|")
+    private func performSearchThrowing(page: Int, append: Bool) async throws {
+        let params = buildSearchParamsKey(page: page)
 
         if params == lastSearchParams {
             // 完全重复，不请求
@@ -166,6 +194,9 @@ struct ModrinthDetailView: View {
         }
 
         lastSearchParams = params
+        if !append {
+            viewModel.beginNewSearch()
+        }
         await viewModel.search(
             query: searchText,
             projectType: query,
@@ -176,32 +207,122 @@ struct ModrinthDetailView: View {
             performanceImpact: selectedPerformanceImpact,
             loaders: selectedLoader,
             sortIndex: sortIndex,
-            page: currentPage
+            page: page,
+            append: append
         )
     }
 
     // MARK: - Result List
-    private var resultList: some View {
-        ForEach(viewModel.results, id: \.projectId) { mod in
-            ModrinthDetailCardView(
-                project: mod,
-                selectedVersions: selectedVersions,
-                selectedLoaders: selectedLoader,
-                gameInfo: gameInfo,
-                query: query,
-                type: true,
-                selectedItem: $selectedItem
-            )
-            .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
-            .listRowInsets(
-                EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
-            )
-            .onTapGesture {
-                selectedProjectId = mod.projectId
-                if let type = ResourceType(rawValue: query) {
-                    selectedItem = .resource(type)
+    @ViewBuilder private var listContent: some View {
+        Group {
+            if let error = error {
+                newErrorView(error)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowSeparator(.hidden)
+            } else if viewModel.isLoading && viewModel.results.isEmpty {
+                HStack {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .listRowSeparator(.hidden)
+            } else if hasLoaded && viewModel.results.isEmpty {
+                emptyResultView()
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .listRowSeparator(.hidden)
+            } else {
+                ForEach(viewModel.results, id: \.projectId) { mod in
+                    ModrinthDetailCardView(
+                        project: mod,
+                        selectedVersions: selectedVersions,
+                        selectedLoaders: selectedLoader,
+                        gameInfo: gameInfo,
+                        query: query,
+                        type: true,
+                        selectedItem: $selectedItem,
+                        scannedDetailIds: scannedDetailIds
+                    )
+                    .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
+                    .listRowInsets(
+                        EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
+                    )
+                    .listRowSeparator(.hidden)
+                    .onTapGesture {
+                        selectedProjectId = mod.projectId
+                        if let type = ResourceType(rawValue: query) {
+                            selectedItem = .resource(type)
+                        }
+                    }
+                    .onAppear {
+                        loadNextPageIfNeeded(currentItem: mod)
+                    }
                 }
             }
         }
+    }
+
+    private func loadNextPageIfNeeded(currentItem mod: ModrinthProject) {
+        guard hasMoreResults, !viewModel.isLoading, !viewModel.isLoadingMore else {
+            return
+        }
+        guard
+            let index = viewModel.results.firstIndex(where: { $0.projectId == mod.projectId })
+        else { return }
+
+        let thresholdIndex = max(viewModel.results.count - 5, 0)
+        if index >= thresholdIndex {
+            currentPage += 1
+            let nextPage = currentPage
+            Task {
+                await performSearchWithErrorHandling(page: nextPage, append: true)
+            }
+        }
+    }
+
+    private func resetPagination() {
+        currentPage = 1
+        lastSearchParams = ""
+    }
+
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 清理搜索定时器，避免内存泄漏
+        searchTimer?.invalidate()
+        searchTimer = nil
+        // 清理 ViewModel 数据
+        viewModel.clearResults()
+        // 清理状态数据
+        searchText = ""
+        currentPage = 1
+        lastSearchKey = ""
+        lastSearchParams = ""
+        error = nil
+        hasLoaded = false
+    }
+
+    private func buildSearchParamsKey(page: Int) -> String {
+        [
+            query,
+            sortIndex,
+            selectedVersions.joined(separator: ","),
+            selectedCategories.joined(separator: ","),
+            selectedFeatures.joined(separator: ","),
+            selectedResolutions.joined(separator: ","),
+            selectedPerformanceImpact.joined(separator: ","),
+            selectedLoader.joined(separator: ","),
+            String(gameType),
+            searchText,
+            "page:\(page)",
+        ].joined(separator: "|")
+    }
+
+    private var loadingMoreIndicator: some View {
+        VStack(spacing: 12) {
+            ProgressView()
+                .controlSize(.small)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(16)
     }
 }

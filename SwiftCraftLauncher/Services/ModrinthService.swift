@@ -82,15 +82,8 @@ enum ModrinthService {
     static func fetchVersionInfoThrowing(from version: String) async throws -> MinecraftVersionManifest {
         let url = URLConfig.API.Modrinth.versionInfo(version: version)
 
-        let (data, response) = try await URLSession.shared.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw GlobalError.download(
-                chineseMessage: "获取版本 \(version) 信息失败: HTTP \(response)",
-                i18nKey: "error.download.version_info_failed",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: url)
 
         do {
             let decoder = JSONDecoder()
@@ -98,11 +91,15 @@ enum ModrinthService {
             let versionInfo = try decoder.decode(MinecraftVersionManifest.self, from: data)
             return versionInfo
         } catch {
-            throw GlobalError.validation(
-                chineseMessage: "解析版本 \(version) 信息失败: \(error.localizedDescription)",
-                i18nKey: "error.validation.version_info_parse_failed",
-                level: .notification
-            )
+            if error is GlobalError {
+                throw error
+            } else {
+                throw GlobalError.validation(
+                    chineseMessage: "解析版本信息失败",
+                    i18nKey: "error.validation.version_info_parse_failed",
+                    level: .notification
+                )
+            }
         }
     }
 
@@ -195,23 +192,13 @@ enum ModrinthService {
                 level: .notification
             )
         }
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw GlobalError.download(
-                    chineseMessage: "搜索项目失败: HTTP \(response)",
-                    i18nKey: "error.download.modrinth_search_failed",
-                    level: .notification
-                )
-            }
-            let decoder = JSONDecoder()
-            decoder.configureForModrinth()
-            let result = try decoder.decode(ModrinthResult.self, from: data)
-            return result
-        } catch {
-            let globalError = GlobalError.from(error)
-            throw globalError
-        }
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: url)
+
+        let decoder = JSONDecoder()
+        decoder.configureForModrinth()
+        let result = try decoder.decode(ModrinthResult.self, from: data)
+        return result
     }
 
     /// 获取加载器列表（静默版本）
@@ -231,23 +218,10 @@ enum ModrinthService {
     /// - Returns: 加载器列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchLoadersThrowing() async throws -> [Loader] {
-        do {
-            let (data, response) = try await URLSession.shared.data(
-                from: URLConfig.API.Modrinth.loaderTag
-            )
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw GlobalError.download(
-                    chineseMessage: "获取加载器列表失败: HTTP \(response)",
-                    i18nKey: "error.download.modrinth_loaders_failed",
-                    level: .notification
-                )
-            }
-            let result = try JSONDecoder().decode([Loader].self, from: data)
-            return result
-        } catch {
-            let globalError = GlobalError.from(error)
-            throw globalError
-        }
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: URLConfig.API.Modrinth.loaderTag)
+        let result = try JSONDecoder().decode([Loader].self, from: data)
+        return result
     }
 
     /// 获取分类列表（静默版本）
@@ -267,23 +241,10 @@ enum ModrinthService {
     /// - Returns: 分类列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchCategoriesThrowing() async throws -> [Category] {
-        do {
-            let (data, response) = try await URLSession.shared.data(
-                from: URLConfig.API.Modrinth.categoryTag
-            )
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw GlobalError.download(
-                    chineseMessage: "获取分类列表失败: HTTP \(response)",
-                    i18nKey: "error.download.modrinth_categories_failed",
-                    level: .notification
-                )
-            }
-            let result = try JSONDecoder().decode([Category].self, from: data)
-            return result
-        } catch {
-            let globalError = GlobalError.from(error)
-            throw globalError
-        }
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: URLConfig.API.Modrinth.categoryTag)
+        let result = try JSONDecoder().decode([Category].self, from: data)
+        return result
     }
 
     /// 获取游戏版本列表（静默版本）
@@ -303,23 +264,10 @@ enum ModrinthService {
     /// - Returns: 游戏版本列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchGameVersionsThrowing() async throws -> [GameVersion] {
-        do {
-            let (data, response) = try await URLSession.shared.data(
-                from: URLConfig.API.Modrinth.gameVersionTag
-            )
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw GlobalError.download(
-                    chineseMessage: "获取游戏版本列表失败: HTTP \(response)",
-                    i18nKey: "error.download.modrinth_game_versions_failed",
-                    level: .notification
-                )
-            }
-            let result = try JSONDecoder().decode([GameVersion].self, from: data)
-            return result.filter { $0.version_type == "release" }
-        } catch {
-            let globalError = GlobalError.from(error)
-            throw globalError
-        }
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: URLConfig.API.Modrinth.gameVersionTag)
+        let result = try JSONDecoder().decode([GameVersion].self, from: data)
+        return result.filter { $0.version_type == "release" }
     }
 
     /// 获取项目详情（静默版本）
@@ -342,24 +290,21 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectDetailsThrowing(id: String) async throws -> ModrinthProjectDetail {
         let url = URLConfig.API.Modrinth.project(id: id)
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw GlobalError.download(
-                    chineseMessage: "获取项目详情失败 (ID: \(id)): HTTP \(response)",
-                    i18nKey: "error.download.modrinth_project_details_failed",
-                    level: .notification
-                )
-            }
 
-            let decoder = JSONDecoder()
-            decoder.configureForModrinth()
-            let detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
-            return detail
-        } catch {
-            let globalError = GlobalError.from(error)
-            throw globalError
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: url)
+
+        let decoder = JSONDecoder()
+        decoder.configureForModrinth()
+        var detail = try decoder.decode(ModrinthProjectDetail.self, from: data)
+
+        // 仅保留纯数字（含点号）的正式版游戏版本，例如 1.20.4
+        let releaseGameVersions = detail.gameVersions.filter {
+            $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil
         }
+        detail.gameVersions = releaseGameVersions
+
+        return detail
     }
 
     /// 获取项目版本列表（静默版本）
@@ -382,23 +327,13 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionsThrowing(id: String) async throws -> [ModrinthProjectDetailVersion] {
         let url = URLConfig.API.Modrinth.version(id: id)
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw GlobalError.download(
-                    chineseMessage: "获取项目版本列表失败 (ID: \(id)): HTTP \(response)",
-                    i18nKey: "error.download.modrinth_project_versions_failed",
-                    level: .notification
-                )
-            }
 
-            let decoder = JSONDecoder()
-            decoder.configureForModrinth()
-            return try decoder.decode([ModrinthProjectDetailVersion].self, from: data)
-        } catch {
-            let globalError = GlobalError.from(error)
-            throw globalError
-        }
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: url)
+
+        let decoder = JSONDecoder()
+        decoder.configureForModrinth()
+        return try decoder.decode([ModrinthProjectDetailVersion].self, from: data)
     }
 
     /// 获取项目版本列表（过滤版本）
@@ -567,23 +502,13 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionThrowing(id: String) async throws -> ModrinthProjectDetailVersion {
         let url = URLConfig.API.Modrinth.versionId(versionId: id)
-        do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw GlobalError.download(
-                    chineseMessage: "获取项目版本失败 (ID: \(id)): HTTP \(response)",
-                    i18nKey: "error.download.modrinth_project_version_failed",
-                    level: .notification
-                )
-            }
 
-            let decoder = JSONDecoder()
-            decoder.configureForModrinth()
-            return try decoder.decode(ModrinthProjectDetailVersion.self, from: data)
-        } catch {
-            let globalError = GlobalError.from(error)
-            throw globalError
-        }
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: url)
+
+        let decoder = JSONDecoder()
+        decoder.configureForModrinth()
+        return try decoder.decode(ModrinthProjectDetailVersion.self, from: data)
     }
 
     // 过滤出 primary == true 的文件

@@ -11,24 +11,14 @@ private enum Constants {
 // MARK: - ProjectDetailHeaderView
 struct ModrinthProjectDetailToolbarView: View {
     let projectDetail: ModrinthProjectDetail?
-    @Binding var selectedTab: Int
-    @Binding var versionCurrentPage: Int
-    @Binding var versionTotal: Int
     let gameId: String?
     var onBack: () -> Void
 
     var body: some View {
         backButton
-
-        if selectedTab == 1 {
-            Spacer()
-            versionPaginationControls
-        }
         Spacer()
         //        projectIconAndTitle
         //        Spacer()
-
-        tabPicker
     }
 
     //    // MARK: - UI Components
@@ -81,80 +71,11 @@ struct ModrinthProjectDetailToolbarView: View {
     //    }
     //
 
-    private var versionPaginationControls: some View {
-        HStack(spacing: Constants.spacing) {
-            Button {
-                versionCurrentPage -= 1
-            } label: {
-                Label(
-                    "pagination.help".localized(),
-                    systemImage: "chevron.left"
-                )
-            }
-            .disabled(versionCurrentPage <= 1)
-
-            HStack(spacing: Constants.spacing) {
-                Text(
-                    String(
-                        format: "pagination.current".localized(),
-                        versionCurrentPage
-                    )
-                )
-                Divider().frame(height: 16)
-                Text(
-                    String(
-                        format: "pagination.total".localized(),
-                        versionTotalPages
-                    )
-                )
-            }
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
-
-            Button {
-                versionCurrentPage += 1
-            } label: {
-                Label(
-                    "pagination.help".localized(),
-                    systemImage: "chevron.right"
-                )
-            }
-            .disabled(versionCurrentPage == versionTotalPages)
-        }.help("pagination.help".localized())
-    }
-
     private var backButton: some View {
         Button(action: onBack) {
             Label("return".localized(), systemImage: "arrow.backward").help(
                 "return".localized()
             )
         }
-    }
-
-    private var tabPicker: some View {
-        Picker("view.mode.title".localized(), selection: $selectedTab) {
-            Label("view.mode.details".localized(), systemImage: "doc.text")
-                .tag(0)
-            if gameId == nil {
-                Label(
-                    "view.mode.downloads".localized(),
-                    systemImage: "arrow.down.circle"
-                )
-                .tag(1)
-                Label(
-                    "view.mode.downloads".localized(),
-                    systemImage: "rectangle.2.swap"
-                )
-                .tag(2)
-            }
-        }
-        .help("view.mode.title".localized())
-        .pickerStyle(.segmented)
-        .background(.clear)
-    }
-
-    // MARK: - Computed Properties
-    private var versionTotalPages: Int {
-        max(1, Int(ceil(Double(versionTotal) / Double(Constants.pageSize))))
     }
 }

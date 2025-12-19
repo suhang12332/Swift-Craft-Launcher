@@ -54,19 +54,27 @@ class JavaManager {
         }
     }
 
-    /// 检查Java是否存在，如果不存在则使用进度窗口下载
+    /// 检查Java是否存在，如果不存在则使用进度窗口下载，并返回Java路径
     /// - Parameter version: Java版本
-    func ensureJavaExists(version: String) async {
-        // 检查Java是否已存在
-        let javaPath = findJavaExecutable(version: version)
-        if !javaPath.isEmpty {
+    /// - Returns: Java可执行文件路径（可能为空字符串，表示失败）
+    func ensureJavaExists(version: String) async -> String {
+        // 优先使用已经存在并且可运行的 Java
+        let existingPath = findJavaExecutable(version: version)
+        if !existingPath.isEmpty {
             Logger.shared.info("Java版本 \(version) 已存在")
-            return
+            return existingPath
         }
 
         // 如果不存在，则使用进度窗口下载Java运行时
         Logger.shared.info("Java版本 \(version) 不存在，开始下载...")
         await JavaDownloadManager.shared.downloadJavaRuntime(version: version)
         Logger.shared.info("Java版本 \(version) 下载完成")
+
+        // 下载完成后再次尝试获取 Java 路径
+        let newPath = findJavaExecutable(version: version)
+        if newPath.isEmpty {
+            Logger.shared.error("Java版本 \(version) 下载完成后仍无法找到可用的Java可执行文件")
+        }
+        return newPath
     }
 }

@@ -15,9 +15,55 @@ enum AppConstants {
     static let minecraftScope = "XboxLive.signin offline_access"
     static let callbackURLScheme = "swift-craft-launcher"
     // 缓存资源类型
-    static let cacheResourceTypes = ["libraries", "natives", "assets", "versions"]
+    static let cacheResourceTypes = [DirectoryNames.libraries, DirectoryNames.natives, DirectoryNames.assets, DirectoryNames.versions]
 
     static let logTag = Bundle.main.identifier + ".logger"
+
+    // MARK: - Directory Names
+    /// Minecraft 目录名称常量
+    enum DirectoryNames {
+        static let mods = "mods"
+        static let libraries = "libraries"
+        static let natives = "natives"
+        static let assets = "assets"
+        static let versions = "versions"
+        static let shaderpacks = "shaderpacks"
+        static let resourcepacks = "resourcepacks"
+        static let datapacks = "datapacks"
+        static let crashReports = "crash-reports"
+        static let logs = "logs"
+        static let profiles = "profiles"
+        static let runtime = "runtime"
+        static let meta = "meta"
+        static let cache = "cache"
+    }
+
+    // MARK: - File Extensions
+    /// 文件扩展名常量（不包含点号）
+    enum FileExtensions {
+        static let jar = "jar"
+        static let png = "png"
+        static let zip = "zip"
+        static let json = "json"
+        static let log = "log"
+    }
+
+    // MARK: - Environment Types
+    /// 环境类型常量
+    enum EnvironmentTypes {
+        static let client = "client"
+        static let server = "server"
+    }
+
+    // MARK: - Processor Placeholders
+    /// Processor 占位符常量
+    enum ProcessorPlaceholders {
+        static let side = "{SIDE}"
+        static let version = "{VERSION}"
+        static let versionName = "{VERSION_NAME}"
+        static let libraryDir = "{LIBRARY_DIR}"
+        static let workingDir = "{WORKING_DIR}"
+    }
 }
 
 // MARK: - Bundle Extension

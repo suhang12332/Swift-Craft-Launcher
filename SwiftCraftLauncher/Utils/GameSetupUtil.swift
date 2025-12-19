@@ -95,13 +95,14 @@ class GameSetupUtil: ObservableObject {
             modLoader: selectedModLoader
         )
 
-        Logger.shared.info("开始为游戏下载文件: \(gameInfo.gameName)")
-
         do {
             // 下载 Mojang manifest
             let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
 
-            await JavaManager.shared.ensureJavaExists(version: downloadedManifest.javaVersion.component)
+            // 确保并获取 Java 路径，避免后续再次重复校验
+            let javaPath = await JavaManager.shared.ensureJavaExists(
+                version: downloadedManifest.javaVersion.component
+            )
 
             // 设置文件管理器
             let fileManager = try await setupFileManager(manifest: downloadedManifest, modLoader: gameInfo.modLoader)
@@ -132,7 +133,8 @@ class GameSetupUtil: ObservableObject {
                 neoForgeResult: selectedModLoader.lowercased() == "neoforge" ? modLoaderResult : nil,
                 quiltResult: selectedModLoader.lowercased() == "quilt" ? modLoaderResult : nil
             )
-            gameInfo.javaPath = JavaManager.shared.findJavaExecutable(version: downloadedManifest.javaVersion.component)
+            // 使用 ensureJavaExists 返回的结果，避免再次触发 Java 校验
+            gameInfo.javaPath = javaPath
             // 保存游戏配置
             gameRepository.addGameSilently(gameInfo)
 
@@ -141,8 +143,6 @@ class GameSetupUtil: ObservableObject {
                 title: "notification.download.complete.title".localized(),
                 body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader)
             )
-
-            Logger.shared.info("游戏保存成功: \(gameInfo.gameName)")
             onSuccess()
         } catch is CancellationError {
             Logger.shared.info("游戏下载任务已取消")
@@ -203,7 +203,6 @@ class GameSetupUtil: ObservableObject {
     private func setupFileManager(manifest: MinecraftVersionManifest, modLoader: String) async throws -> MinecraftFileManager {
         let nativesDir = AppPaths.nativesDirectory
         try FileManager.default.createDirectory(at: nativesDir, withIntermediateDirectories: true)
-        Logger.shared.info("创建目录：\(nativesDir.path)")
         return MinecraftFileManager()
     }
 
@@ -398,10 +397,28 @@ class GameSetupUtil: ObservableObject {
                     updatedGameInfo.gameArguments = gameArgs
 
                     let jvmArgs = neoForgeLoader.arguments.jvm ?? []
-                    updatedGameInfo.modJvm = jvmArgs.map { arg in
-                        arg.replacingOccurrences(of: "${version_name}", with: selectedGameVersion)
-                            .replacingOccurrences(of: "${classpath_separator}", with: ":")
-                            .replacingOccurrences(of: "${library_directory}", with: AppPaths.librariesDirectory.path)
+                    // 使用 NSMutableString 避免链式调用创建多个临时字符串
+                    updatedGameInfo.modJvm = jvmArgs.map { arg -> String in
+                        let mutableArg = NSMutableString(string: arg)
+                        mutableArg.replaceOccurrences(
+                            of: "${version_name}",
+                            with: selectedGameVersion,
+                            options: [],
+                            range: NSRange(location: 0, length: mutableArg.length)
+                        )
+                        mutableArg.replaceOccurrences(
+                            of: "${classpath_separator}",
+                            with: ":",
+                            options: [],
+                            range: NSRange(location: 0, length: mutableArg.length)
+                        )
+                        mutableArg.replaceOccurrences(
+                            of: "${library_directory}",
+                            with: AppPaths.librariesDirectory.path,
+                            options: [],
+                            range: NSRange(location: 0, length: mutableArg.length)
+                        )
+                        return mutableArg as String
                     }
                 }
             }

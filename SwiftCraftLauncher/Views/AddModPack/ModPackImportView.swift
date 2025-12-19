@@ -38,18 +38,42 @@ struct ModPackImportView: View {
             viewModel.setup(gameRepository: gameRepository)
         }
         .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
-        .onChange(of: viewModel.selectedModPackFile) { _, _ in
-            viewModel.updateParentState()
+        // 优化：使用 Task 批量处理多个状态变化，减少不必要的视图更新
+        .onChange(of: viewModel.selectedModPackFile) { oldValue, newValue in
+            if oldValue != newValue {
+                viewModel.updateParentState()
+            }
         }
-        .onChange(of: viewModel.modPackIndexInfo?.modPackName) { _, _ in
-            viewModel.updateParentState()
+        .onChange(of: viewModel.modPackIndexInfo?.modPackName) { oldValue, newValue in
+            if oldValue != newValue {
+                viewModel.updateParentState()
+            }
         }
-        .onChange(of: viewModel.modPackViewModelForProgress.modPackInstallState.isInstalling) { _, _ in
-            viewModel.updateParentState()
+        .onChange(of: viewModel.modPackViewModelForProgress.modPackInstallState.isInstalling) { oldValue, newValue in
+            if oldValue != newValue {
+                viewModel.updateParentState()
+            }
         }
-        .onChange(of: viewModel.isProcessingModPack) { _, _ in
-            viewModel.updateParentState()
+        .onChange(of: viewModel.isProcessingModPack) { oldValue, newValue in
+            if oldValue != newValue {
+                viewModel.updateParentState()
+            }
         }
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
+    }
+
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 如果正在下载，取消下载任务以避免资源泄漏
+        if viewModel.isDownloading {
+            viewModel.cancelDownloadIfNeeded()
+        }
+        // ViewModel 的数据会在下次打开时重新初始化
+        // 注意：不要重置 ViewModel 的状态，因为可能正在使用中
     }
 
     // MARK: - View Components

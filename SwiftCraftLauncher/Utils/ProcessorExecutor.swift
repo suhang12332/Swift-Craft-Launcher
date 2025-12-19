@@ -192,21 +192,30 @@ enum ProcessorExecutor {
         librariesDir: URL,
         data: [String: String]?
     ) -> String {
-        var processedArg = arg
+        // 快速检查：如果字符串不包含任何占位符，直接返回
+        guard arg.contains("{") else {
+            return arg
+        }
+
+        // 使用 NSMutableString 避免在循环中创建大量临时字符串
+        let processedArg = NSMutableString(string: arg)
 
         // 基础占位符替换
         let basicReplacements = [
-            "{SIDE}": "client",
-            "{VERSION}": gameVersion,
-            "{VERSION_NAME}": gameVersion,
-            "{LIBRARY_DIR}": librariesDir.path,
-            "{WORKING_DIR}": librariesDir.path,
+            AppConstants.ProcessorPlaceholders.side: AppConstants.EnvironmentTypes.client,
+            AppConstants.ProcessorPlaceholders.version: gameVersion,
+            AppConstants.ProcessorPlaceholders.versionName: gameVersion,
+            AppConstants.ProcessorPlaceholders.libraryDir: librariesDir.path,
+            AppConstants.ProcessorPlaceholders.workingDir: librariesDir.path,
         ]
 
-        for (placeholder, value) in basicReplacements {
-            processedArg = processedArg.replacingOccurrences(
+        for (placeholder, value) in basicReplacements where processedArg.range(of: placeholder).location != NSNotFound {
+            // 先检查是否包含占位符，避免不必要的替换操作
+            processedArg.replaceOccurrences(
                 of: placeholder,
-                with: value
+                with: value,
+                options: [],
+                range: NSRange(location: 0, length: processedArg.length)
             )
         }
 
@@ -214,7 +223,8 @@ enum ProcessorExecutor {
         if let data = data {
             for (key, value) in data {
                 let placeholder = "{\(key)}"
-                if processedArg.contains(placeholder) {
+                // 先检查是否包含占位符，避免不必要的处理
+                if processedArg.range(of: placeholder).location != NSNotFound {
                     let replacementValue =
                         value.contains(":") && !value.hasPrefix("/")
                     ? (
@@ -222,15 +232,17 @@ enum ProcessorExecutor {
                             librariesDir.appendingPathComponent($0).path
                         } ?? value) : value
 
-                    processedArg = processedArg.replacingOccurrences(
+                    processedArg.replaceOccurrences(
                         of: placeholder,
-                        with: replacementValue
+                        with: replacementValue,
+                        options: [],
+                        range: NSRange(location: 0, length: processedArg.length)
                     )
                 }
             }
         }
 
-        return processedArg
+        return processedArg as String
     }
 
     private static func executeJavaCommand(

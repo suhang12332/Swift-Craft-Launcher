@@ -2,6 +2,22 @@ import Foundation
 import UserNotifications
 import os
 
+// MARK: - Notification Center Delegate
+
+/// 负责处理 UNUserNotificationCenter 的回调
+final class NotificationCenterDelegate: NSObject, UNUserNotificationCenterDelegate {
+
+    /// App 在前台时收到通知，决定如何展示
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        // 允许在前台显示横幅 / 列表，并播放声音与更新徽标
+        completionHandler([.banner, .list, .sound, .badge])
+    }
+}
+
 enum NotificationManager {
 
     /// 发送通知

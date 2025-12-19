@@ -230,7 +230,8 @@ enum PlayerSkinService {
     ) async throws {
         try validateAccessToken(player)
 
-        let boundary = "Boundary-" + UUID().uuidString
+        // 使用字符串插值而非字符串拼接
+        let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         func appendField(name: String, value: String) {
             if let fieldData =
@@ -287,14 +288,8 @@ enum PlayerSkinService {
         request.httpBody = body
         request.timeoutInterval = 30
 
-        let (_, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "皮肤上传失败: 响应无效",
-                i18nKey: "error.network.skin_upload_invalid_response",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端（需要处理非 200 状态码）
+        let (_, http) = try await APIClient.performRequestWithResponse(request: request)
         switch http.statusCode {
         case 200, 204:
             Logger.shared.info("Skin upload successful with variant: \(variantValue)")
@@ -398,14 +393,8 @@ enum PlayerSkinService {
         )
         request.timeoutInterval = 30
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "获取个人资料失败: 响应无效",
-                i18nKey: "error.network.profile_invalid_response",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端（需要处理非 200 状态码）
+        let (data, http) = try await APIClient.performRequestWithResponse(request: request)
         switch http.statusCode {
         case 200:
             break
@@ -463,14 +452,8 @@ enum PlayerSkinService {
         request.httpBody = jsonData
         request.timeoutInterval = 30
 
-        let (_, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "显示斗篷失败: 响应无效",
-                i18nKey: "error.network.cape_show_invalid_response",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端（需要处理非 200 状态码）
+        let (_, http) = try await APIClient.performRequestWithResponse(request: request)
         switch http.statusCode {
         case 200, 204:
             return
@@ -536,14 +519,8 @@ enum PlayerSkinService {
         )
         request.timeoutInterval = 30
 
-        let (_, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "隐藏斗篷失败: 响应无效",
-                i18nKey: "error.network.cape_hide_invalid_response",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端（需要处理非 200 状态码）
+        let (_, http) = try await APIClient.performRequestWithResponse(request: request)
         switch http.statusCode {
         case 200, 204:
             return
@@ -573,14 +550,8 @@ enum PlayerSkinService {
             "Bearer \(player.authAccessToken)",
             forHTTPHeaderField: "Authorization"
         )
-        let (_, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "重置皮肤失败: 响应无效",
-                i18nKey: "error.network.skin_reset_invalid_response",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端（需要处理非 200 状态码）
+        let (_, http) = try await APIClient.performRequestWithResponse(request: request)
         switch http.statusCode {
         case 200, 204:
             return

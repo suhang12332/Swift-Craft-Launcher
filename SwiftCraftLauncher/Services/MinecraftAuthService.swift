@@ -172,17 +172,11 @@ class MinecraftAuthService: NSObject, ObservableObject {
         ]
 
         let bodyString = bodyParameters.map { "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")" }.joined(separator: "&")
-        request.httpBody = bodyString.data(using: .utf8)
+        let bodyData = bodyString.data(using: .utf8)
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw GlobalError.authentication(
-                chineseMessage: String(format: "minecraft.auth.error.access_token_failed".localized(), "HTTP \(response)"),
-                i18nKey: "error.authentication.token_exchange_failed",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let headers = ["Content-Type": "application/x-www-form-urlencoded"]
+        let data = try await APIClient.post(url: url, body: bodyData, headers: headers)
 
         do {
             return try JSONDecoder().decode(TokenResponse.self, from: data)
@@ -224,8 +218,9 @@ class MinecraftAuthService: NSObject, ObservableObject {
             "TokenType": "JWT",
         ]
 
+        let bodyData: Data
         do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+            bodyData = try JSONSerialization.data(withJSONObject: body)
         } catch {
             throw GlobalError.validation(
                 chineseMessage: "序列化 Xbox Live 认证请求失败: \(error.localizedDescription)",
@@ -234,15 +229,9 @@ class MinecraftAuthService: NSObject, ObservableObject {
             )
         }
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw GlobalError.download(
-                chineseMessage: String(format: "minecraft.auth.error.xbox_live_token_failed".localized(), "HTTP \(response)"),
-                i18nKey: "error.download.xbox_live_token_failed",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let headers = ["Content-Type": "application/json"]
+        let data = try await APIClient.post(url: url, body: bodyData, headers: headers)
 
         do {
             return try JSONDecoder().decode(XboxLiveTokenResponse.self, from: data)
@@ -284,8 +273,9 @@ class MinecraftAuthService: NSObject, ObservableObject {
             "TokenType": "JWT",
         ]
 
+        let xstsBodyData: Data
         do {
-            xstsRequest.httpBody = try JSONSerialization.data(withJSONObject: xstsBody)
+            xstsBodyData = try JSONSerialization.data(withJSONObject: xstsBody)
         } catch {
             throw GlobalError.validation(
                 chineseMessage: "序列化 XSTS 认证请求失败: \(error.localizedDescription)",
@@ -294,15 +284,9 @@ class MinecraftAuthService: NSObject, ObservableObject {
             )
         }
 
-        let (xstsData, xstsResponse) = try await URLSession.shared.data(for: xstsRequest)
-
-        guard let xstsHttpResponse = xstsResponse as? HTTPURLResponse, xstsHttpResponse.statusCode == 200 else {
-            throw GlobalError.download(
-                chineseMessage: "获取 XSTS 令牌失败: HTTP \(xstsResponse)",
-                i18nKey: "error.download.xsts_token_failed",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let xstsHeaders = ["Content-Type": "application/json"]
+        let xstsData = try await APIClient.post(url: xstsUrl, body: xstsBodyData, headers: xstsHeaders)
 
         let xstsTokenResponse: XboxLiveTokenResponse
         do {
@@ -318,17 +302,14 @@ class MinecraftAuthService: NSObject, ObservableObject {
         // 获取Minecraft访问令牌
         Logger.shared.debug("开始获取 Minecraft 访问令牌")
         let minecraftUrl = URLConfig.API.Authentication.minecraftLogin
-        var minecraftRequest = URLRequest(url: minecraftUrl)
-        minecraftRequest.httpMethod = "POST"
-        minecraftRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        minecraftRequest.timeoutInterval = 30.0
 
         let minecraftBody: [String: Any] = [
             "identityToken": "XBL3.0 x=\(uhs);\(xstsTokenResponse.token)"
         ]
 
+        let minecraftBodyData: Data
         do {
-            minecraftRequest.httpBody = try JSONSerialization.data(withJSONObject: minecraftBody)
+            minecraftBodyData = try JSONSerialization.data(withJSONObject: minecraftBody)
         } catch {
             throw GlobalError.validation(
                 chineseMessage: "序列化 Minecraft 认证请求失败: \(error.localizedDescription)",
@@ -337,15 +318,14 @@ class MinecraftAuthService: NSObject, ObservableObject {
             )
         }
 
-        let (minecraftData, minecraftResponse) = try await URLSession.shared.data(for: minecraftRequest)
+        // 使用统一的 API 客户端（需要处理非 200 状态码）
+        var minecraftRequest = URLRequest(url: minecraftUrl)
+        minecraftRequest.httpMethod = "POST"
+        minecraftRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        minecraftRequest.timeoutInterval = 30.0
+        minecraftRequest.httpBody = minecraftBodyData
 
-        guard let minecraftHttpResponse = minecraftResponse as? HTTPURLResponse else {
-            throw GlobalError.download(
-                chineseMessage: "获取 Minecraft 访问令牌失败: 无效的 HTTP 响应",
-                i18nKey: "error.download.minecraft_token_invalid_response",
-                level: .notification
-            )
-        }
+        let (minecraftData, minecraftHttpResponse) = try await APIClient.performRequestWithResponse(request: minecraftRequest)
 
         guard minecraftHttpResponse.statusCode == 200 else {
             let statusCode = minecraftHttpResponse.statusCode
@@ -408,15 +388,8 @@ class MinecraftAuthService: NSObject, ObservableObject {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.timeoutInterval = 30.0
 
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.download(
-                chineseMessage: "检查游戏拥有情况失败: 无效的 HTTP 响应",
-                i18nKey: "error.download.entitlements_invalid_response",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端（需要处理非 200 状态码）
+        let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
 
         guard httpResponse.statusCode == 200 else {
             let statusCode = httpResponse.statusCode
@@ -481,32 +454,9 @@ class MinecraftAuthService: NSObject, ObservableObject {
     // MARK: - 获取Minecraft用户资料
     private func getMinecraftProfileThrowing(accessToken: String, authXuid: String, refreshToken: String = "") async throws -> MinecraftProfileResponse {
         let url = URLConfig.API.Authentication.minecraftProfile
-        var request = URLRequest(url: url)
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-
-        request.timeoutInterval = 30.0
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-
-            // 检查是否是账户相关的问题
-            if statusCode == 404 {
-                // 由于我们已经在之前检查了游戏拥有情况，404错误通常表示账户配置问题
-                throw GlobalError.validation(
-                    chineseMessage: "无法获取 Minecraft 账户信息，可能是账户配置问题或服务暂时不可用",
-                    i18nKey: "error.validation.minecraft_profile_not_found",
-                    level: .notification
-                )
-            }
-
-            throw GlobalError.download(
-                chineseMessage: "获取 Minecraft 用户资料失败: HTTP \(statusCode)",
-                i18nKey: "error.download.minecraft_profile_failed",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let headers = ["Authorization": "Bearer \(accessToken)"]
+        let data = try await APIClient.get(url: url, headers: headers)
 
         do {
             let profile = try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
@@ -641,22 +591,16 @@ extension MinecraftAuthService {
     /// - Throws: GlobalError 当刷新失败时
     private func refreshTokenThrowing(refreshToken: String) async throws -> TokenResponse {
         let url = URLConfig.API.Authentication.token
+        let body = "grant_type=refresh_token&client_id=\(clientId)&refresh_token=\(refreshToken)"
+        let bodyData = body.data(using: .utf8)
+
+        // 使用统一的 API 客户端（需要处理非 200 状态码）
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        request.httpBody = bodyData
 
-        let body = "grant_type=refresh_token&client_id=\(clientId)&refresh_token=\(refreshToken)"
-        request.httpBody = body.data(using: .utf8)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.download(
-                chineseMessage: "刷新访问令牌失败: 无效的 HTTP 响应",
-                i18nKey: "error.download.refresh_token_request_failed",
-                level: .notification
-            )
-        }
+        let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
 
         // 检查OAuth错误
         if let errorResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any],

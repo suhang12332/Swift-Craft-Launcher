@@ -6,13 +6,14 @@ enum SettingsTab: Int {
     case general = 0
     case game = 1
     case advanced = 2
+    case ai = 3
 }
 
 /// 通用设置视图
 /// 用于显示应用程序的设置选项
 public struct SettingsView: View {
-    @ObservedObject private var general = GeneralSettingsManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @StateObject private var general = GeneralSettingsManager.shared
+    @StateObject private var selectedGameManager = SelectedGameManager.shared
     @EnvironmentObject private var gameRepository: GameRepository
     @State private var selectedTab: SettingsTab = .general
 
@@ -37,6 +38,11 @@ public struct SettingsView: View {
                     }
                     .tag(SettingsTab.advanced)
             }
+            AISettingsView()
+                .tabItem {
+                    Label("settings.ai.tab".localized(), systemImage: "brain")
+                }
+                .tag(SettingsTab.ai)
         }
         .padding()
         .frame(maxWidth: .infinity)

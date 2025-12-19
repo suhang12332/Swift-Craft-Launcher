@@ -17,12 +17,8 @@ struct MinecraftLaunchCommand {
 
     /// 停止游戏
     func stopGame() async {
-        let success = GameProcessManager.shared.stopProcess(for: game.id)
-        if success {
-            _ = await MainActor.run {
-                GameStatusManager.shared.setGameRunning(gameId: game.id, isRunning: false)
-            }
-        }
+        // 停止进程，terminationHandler 会自动处理错误监控停止和状态更新
+        _ = GameProcessManager.shared.stopProcess(for: game.id)
     }
 
     /// 启动游戏（抛出异常版本）
@@ -80,12 +76,34 @@ struct MinecraftLaunchCommand {
             return replaceGameParameters(command: command)
         }
 
-        let authReplacedCommand = command.map { arg in
-            return arg
-                .replacingOccurrences(of: "${auth_player_name}", with: player.name)
-                .replacingOccurrences(of: "${auth_uuid}", with: player.id)
-                .replacingOccurrences(of: "${auth_access_token}", with: player.authAccessToken)
-                .replacingOccurrences(of: "${auth_xuid}", with: player.authXuid)
+        // 使用 NSMutableString 避免链式调用创建多个临时字符串
+        let authReplacedCommand = command.map { arg -> String in
+            let mutableArg = NSMutableString(string: arg)
+            mutableArg.replaceOccurrences(
+                of: "${auth_player_name}",
+                with: player.name,
+                options: [],
+                range: NSRange(location: 0, length: mutableArg.length)
+            )
+            mutableArg.replaceOccurrences(
+                of: "${auth_uuid}",
+                with: player.id,
+                options: [],
+                range: NSRange(location: 0, length: mutableArg.length)
+            )
+            mutableArg.replaceOccurrences(
+                of: "${auth_access_token}",
+                with: player.authAccessToken,
+                options: [],
+                range: NSRange(location: 0, length: mutableArg.length)
+            )
+            mutableArg.replaceOccurrences(
+                of: "${auth_xuid}",
+                with: player.authXuid,
+                options: [],
+                range: NSRange(location: 0, length: mutableArg.length)
+            )
+            return mutableArg as String
         }
 
         return replaceGameParameters(command: authReplacedCommand)
@@ -98,10 +116,24 @@ struct MinecraftLaunchCommand {
         let xms = game.xms > 0 ? game.xms : settings.globalXms
         let xmx = game.xmx > 0 ? game.xmx : settings.globalXmx
 
-        var replacedCommand = command.map { arg in
-            return arg
-                .replacingOccurrences(of: "${xms}", with: "\(xms)")
-                .replacingOccurrences(of: "${xmx}", with: "\(xmx)")
+        // 使用 NSMutableString 避免链式调用创建多个临时字符串
+        var replacedCommand = command.map { arg -> String in
+            let mutableArg = NSMutableString(string: arg)
+            let xmsString = "\(xms)"
+            let xmxString = "\(xmx)"
+            mutableArg.replaceOccurrences(
+                of: "${xms}",
+                with: xmsString,
+                options: [],
+                range: NSRange(location: 0, length: mutableArg.length)
+            )
+            mutableArg.replaceOccurrences(
+                of: "${xmx}",
+                with: xmxString,
+                options: [],
+                range: NSRange(location: 0, length: mutableArg.length)
+            )
+            return mutableArg as String
         }
 
         // 在运行时拼接高级设置的JVM参数
@@ -154,19 +186,11 @@ struct MinecraftLaunchCommand {
             process.environment = env
         }
 
-        // 设置进程终止处理器（在启动前设置）
-        let gameId = game.id
-        process.terminationHandler = { _ in
-            Task { @MainActor in
-                // 先更新状态，再清理进程
-                GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
-                // 清理进程管理器中的进程（只清理当前游戏）
-                GameProcessManager.shared.cleanupSpecificProcess(gameId: gameId)
-            }
-        }
-
-        // 存储进程到管理器
+        // 存储进程到管理器（会自动设置终止处理器和崩溃检测）
         GameProcessManager.shared.storeProcess(gameId: game.id, process: process)
+
+        // 在进程启动前开始监控启动错误（需要在启动前设置管道）
+        GameLaunchErrorDetector.shared.startMonitoring(gameId: game.id, process: process)
 
         do {
             try process.run()
@@ -177,6 +201,9 @@ struct MinecraftLaunchCommand {
             }
         } catch {
             Logger.shared.error("启动进程失败: \(error.localizedDescription)")
+
+            // 启动失败时停止错误监控
+            GameLaunchErrorDetector.shared.stopMonitoring(gameId: game.id)
 
             // 启动失败时清理进程并重置状态
             _ = GameProcessManager.shared.stopProcess(for: game.id)

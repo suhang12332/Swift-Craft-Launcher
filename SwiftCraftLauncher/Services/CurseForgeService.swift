@@ -100,30 +100,9 @@ enum CurseForgeService {
             )
         }
 
-        // 创建请求
-        var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        // 发送请求
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        // 检查响应
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "无效的 HTTP 响应",
-                i18nKey: "error.download.invalid_http_response",
-                level: .notification
-            )
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            Logger.shared.error("镜像 API 请求失败，状态码: \(httpResponse.statusCode)")
-            throw GlobalError.network(
-                chineseMessage: "API 请求失败，状态码: \(httpResponse.statusCode)",
-                i18nKey: "error.network.url",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let headers = ["Accept": "application/json"]
+        let data = try await APIClient.get(url: url, headers: headers)
 
         // 解析响应
         let result = try JSONDecoder().decode(CurseForgeFileResponse.self, from: data)
@@ -143,30 +122,9 @@ enum CurseForgeService {
             )
         }
 
-        // 创建请求
-        var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        // 发送请求
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        // 检查响应
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "无效的 HTTP 响应",
-                i18nKey: "error.download.invalid_http_response",
-                level: .notification
-            )
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            Logger.shared.error("镜像 API 请求失败，状态码: \(httpResponse.statusCode)")
-            throw GlobalError.network(
-                chineseMessage: "API 请求失败，状态码: \(httpResponse.statusCode)",
-                i18nKey: "error.network.url",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let headers = ["Accept": "application/json"]
+        let data = try await APIClient.get(url: url, headers: headers)
 
         // 解析响应
         let result = try JSONDecoder().decode(CurseForgeModDetailResponse.self, from: data)
@@ -186,30 +144,9 @@ enum CurseForgeService {
             )
         }
 
-        // 创建请求
-        var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-        // 发送请求
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        // 检查响应
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "无效的 HTTP 响应",
-                i18nKey: "error.download.invalid_http_response",
-                level: .notification
-            )
-        }
-
-        guard httpResponse.statusCode == 200 else {
-            Logger.shared.error("镜像 API 请求失败，状态码: \(httpResponse.statusCode)")
-            throw GlobalError.network(
-                chineseMessage: "API 请求失败，状态码: \(httpResponse.statusCode)",
-                i18nKey: "error.network.url",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let headers = ["Accept": "application/json"]
+        let data = try await APIClient.get(url: url, headers: headers)
 
         // 解析响应
         let result = try JSONDecoder().decode(CurseForgeFilesResult.self, from: data)

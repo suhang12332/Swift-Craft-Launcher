@@ -11,6 +11,7 @@ struct ModrinthDetailCardView: View {
     let type: Bool  // false = local, true = server
     @Binding var selectedItem: SidebarItem
     var onResourceChanged: (() -> Void)?
+    let scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找
     @State private var addButtonState: AddButtonState = .idle
     @State private var showDeleteAlert = false
     @EnvironmentObject private var gameRepository: GameRepository
@@ -157,9 +158,13 @@ struct ModrinthDetailCardView: View {
                 query: query,
                 type: type,
                 selectedItem: $selectedItem,
-                onResourceChanged: onResourceChanged
+                onResourceChanged: onResourceChanged,
+                scannedDetailIds: scannedDetailIds
             )
             .environmentObject(gameRepository)
+            // 当 scannedDetailIds 更新时，通过 id 强制重新创建按钮以更新状态
+            // 使用 count 和是否包含 projectId 作为 id，确保扫描结果更新时按钮状态同步更新
+            .id("button-\(project.projectId)-\(scannedDetailIds.count)-\(scannedDetailIds.contains(project.projectId))")
         }
     }
 

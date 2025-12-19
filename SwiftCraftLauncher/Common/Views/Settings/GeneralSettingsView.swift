@@ -1,7 +1,7 @@
 import SwiftUI
 
 public struct GeneralSettingsView: View {
-    @ObservedObject private var generalSettings = GeneralSettingsManager.shared
+    @StateObject private var generalSettings = GeneralSettingsManager.shared
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var sparkleUpdateService: SparkleUpdateService
     @State private var showDirectoryPicker = false
@@ -23,9 +23,7 @@ public struct GeneralSettingsView: View {
                     }
                 }
                 .labelsHidden()
-                .if(ProcessInfo.processInfo.operatingSystemVersion.majorVersion < 26) { view in
-                    view.fixedSize()
-                }
+                .fixedSize()
                 .onChange(of: selectedLanguage) { _, newValue in
                     // 如果是取消操作导致的语言恢复，则不触发重启提示
                     if newValue != LanguageManager.shared.selectedLanguage {
@@ -100,21 +98,28 @@ public struct GeneralSettingsView: View {
             }.labeledContentStyle(.custom)
 
             LabeledContent("settings.minecraft_versions_url.label".localized()) {
-                TextField("", text: $generalSettings.minecraftVersionManifestURL).focusable(false)
+                TextField("", text: $generalSettings.minecraftVersionManifestURL)
+                    .frame(maxWidth: 300)
+                    .focusable(false)
                     .fixedSize()
                     .labelsHidden()
+                    .textFieldStyle(.roundedBorder)
             }.labeledContentStyle(.custom)
 
             LabeledContent("settings.modrinth_api_url.label".localized()) {
                 TextField("", text: $generalSettings.modrinthAPIBaseURL).focusable(false)
+                    .frame(maxWidth: 300)
                     .fixedSize()
                     .labelsHidden()
+                    .textFieldStyle(.roundedBorder)
             }.labeledContentStyle(.custom)
 
             LabeledContent("settings.git_proxy_url.label".localized()) {
                 TextField("", text: $generalSettings.gitProxyURL).focusable(false)
+                    .frame(maxWidth: 300)
                     .fixedSize()
                     .labelsHidden()
+                    .textFieldStyle(.roundedBorder)
             }.labeledContentStyle(.custom)
         }
         .alert("common.error".localized(), isPresented: $showingErrorAlert) {

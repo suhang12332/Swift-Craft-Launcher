@@ -25,13 +25,27 @@ struct MinecraftAuthView: View {
             }
         }
         .padding()
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
+        }
+    }
+
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 重置认证服务状态（如果未完成认证）
+        if case .notAuthenticated = authService.authState {
+            authService.isLoading = false
+        }
+        // 注意：如果已经认证成功，不清除状态，因为可能需要使用认证信息
     }
 
     // MARK: - 未认证状态
     private var notAuthenticatedView: some View {
         VStack(spacing: 16) {
             Image(systemName: "person.crop.circle.badge.plus")
-                .font(.system(size: 60))
+                .font(.system(size: 46))
                 .symbolRenderingMode(.multicolor)
                 .symbolVariant(.none)
                 .foregroundColor(.secondary)

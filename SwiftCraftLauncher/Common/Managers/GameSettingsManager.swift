@@ -25,6 +25,11 @@ class GameSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    @AppStorage("enableAICrashAnalysis")
+    var enableAICrashAnalysis: Bool = false {
+        didSet { objectWillChange.send() }
+    }
+
     /// 计算系统最大可用内存分配（基于物理内存的70%）
     var maximumMemoryAllocation: Int {
         let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory

@@ -24,7 +24,7 @@ struct CurseForgeModDetail: Codable {
 
     /// 获取目录名称
     var directoryName: String {
-        return contentType?.directoryName ?? "mods"
+        return contentType?.directoryName ?? AppConstants.DirectoryNames.mods
     }
 }
 
@@ -38,13 +38,13 @@ enum CurseForgeClassId: Int, CaseIterable {
     var directoryName: String {
         switch self {
         case .mods:
-            return "mods"
+            return AppConstants.DirectoryNames.mods
         case .resourcePacks:
-            return "resourcepacks"
+            return AppConstants.DirectoryNames.resourcepacks
         case .shaders:
-            return "shaderpacks"
+            return AppConstants.DirectoryNames.shaderpacks
         case .datapacks:
-            return "datapacks"
+            return AppConstants.DirectoryNames.datapacks
         }
     }
 }

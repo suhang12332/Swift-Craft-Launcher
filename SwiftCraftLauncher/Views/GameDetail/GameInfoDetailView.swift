@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
 
 // MARK: - Window Delegate
 // 已移除 NSWindowDelegate 相关代码，纯 SwiftUI 不再需要
@@ -16,8 +15,6 @@ struct GameInfoDetailView: View {
     let game: GameVersionInfo
 
     @Binding var query: String
-    @Binding var currentPage: Int
-    @Binding var totalItems: Int
     @Binding var sortIndex: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
@@ -26,32 +23,26 @@ struct GameInfoDetailView: View {
     @Binding var selectedPerformanceImpact: [String]
     @Binding var selectedProjectId: String?
     @Binding var selectedLoaders: [String]
-    @Binding var gameType: Bool  // false = local, true = server
+    @Binding var gameType: Bool  // false = local,   = server
     @EnvironmentObject var gameRepository: GameRepository
-    @State private var searchTextForResource = ""
-    @State private var showDeleteAlert = false
     @Binding var selectedItem: SidebarItem
-    @State private var scannedResources: [ModrinthProjectDetail] = []
-    @State private var isLoadingResources = false
-    @State private var showImporter = false
-    @State private var importErrorMessage: String?
     @StateObject private var cacheManager = CacheManager()
-    @State private var error: GlobalError?
-    @StateObject private var gameActionManager = GameActionManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @State private var localRefreshToken = UUID()
 
-    @Environment(\.openSettings)
-    private var openSettings
+    // 扫描结果：detailId Set，用于快速查找（O(1)）
+    @State private var scannedResources: Set<String> = []
+    @Binding var isScanComplete: Bool  // 扫描完成状态，用于控制工具栏按钮
+
+    // 使用稳定的 header，避免因 cacheInfo 更新导致重建
+    @State private var remoteHeader: AnyView?
+    @State private var localHeader: AnyView?
 
     var body: some View {
-        return VStack {
-            headerView
-            Divider().padding(.top, 4)
+        return Group {
             if gameType {
-                ModrinthDetailView(
-                    query: query,
-                    currentPage: $currentPage,
-                    totalItems: $totalItems,
+                GameRemoteResourceView(
+                    game: game,
+                    query: $query,
                     sortIndex: $sortIndex,
                     selectedVersions: $selectedVersions,
                     selectedCategories: $selectedCategories,
@@ -59,273 +50,171 @@ struct GameInfoDetailView: View {
                     selectedResolutions: $selectedResolutions,
                     selectedPerformanceImpact: $selectedPerformanceImpact,
                     selectedProjectId: $selectedProjectId,
-                    selectedLoader: $selectedLoaders,
-                    gameInfo: game,
+                    selectedLoaders: $selectedLoaders,
                     selectedItem: $selectedItem,
-                    gameType: $gameType
+                    gameType: $gameType,
+                    header: remoteHeader,
+                    scannedDetailIds: $scannedResources
                 )
             } else {
-                localResourceList
+                GameLocalResourceView(
+                    game: game,
+                    query: query,
+                    header: localHeader,
+                    selectedItem: $selectedItem,
+                    selectedProjectId: $selectedProjectId,
+                    refreshToken: localRefreshToken
+                )
             }
         }
-        .onChange(of: game.gameName) {
-            cacheManager.calculateGameCacheInfo(game.gameName)
-            scanResources()
+        // 刷新逻辑：
+        // 1. 游戏名变化时刷新
+        // 2. gameType 变化且游戏名不变时刷新
+        .onChange(of: game.gameName) { _, _ in
+            // 游戏名变化时刷新
+            performRefresh()
         }
-        .onChange(of: gameType) {
-            scanResources()
-        }
-        .onChange(of: query) {
-            scanResources()
+        .onChange(of: gameType) { oldValue, newValue in
+            // 仅从资源视图切换到游戏视图时刷新
+            if oldValue == true && newValue == false {
+                performRefresh()
+            }
         }
         .onAppear {
+            // 初始化 header
+            updateHeaders()
             cacheManager.calculateGameCacheInfo(game.gameName)
         }
-        .alert(
-            "error.notification.validation.title".localized(),
-            isPresented: .constant(error != nil)
-        ) {
-            Button("common.close".localized()) {
-                error = nil
-            }
-        } message: {
-            if let error = error {
-                Text(error.chineseMessage)
-            }
+        .onChange(of: cacheManager.cacheInfo) { _, _ in
+            // 当 cacheInfo 更新时，更新 header（但不重建整个视图）
+            updateHeaders()
+        }
+        .onDisappear {
+            // 页面关闭后清除所有数据
+            clearAllData()
         }
     }
 
-    // MARK: - Header
-    private var headerView: some View {
-        HStack(spacing: 12) {
-            gameIcon
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(game.gameName)
-                        .font(.title)
-                        .bold()
-                    HStack {
-                        Label(
-                            "\(cacheManager.cacheInfo.fileCount)",
-                            systemImage: "text.document"
-                        )
-                        Divider().frame(height: 16)
-                        Label(
-                            cacheManager.cacheInfo.formattedSize,
-                            systemImage: "externaldrive"
-                        )
-                    }.foregroundStyle(.secondary).font(.headline).padding(
-                        .leading,
-                        6
-                    )
-                }
+    // MARK: - 刷新逻辑
+    /// 执行刷新操作（游戏名变化或 gameType 变化且游戏名不变时调用）
+    private func performRefresh() {
+        updateHeaders()
+        cacheManager.calculateGameCacheInfo(game.gameName)
+        // 仅在本地视图时刷新本地资源
+        if !gameType {
+            triggerLocalRefresh()
+        }
+        // 重新扫描资源
+        resetScanState()
+        scanAllResources()
+    }
 
-                HStack(spacing: 8) {
-                    Label(game.gameVersion, systemImage: "gamecontroller.fill")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    Divider().frame(height: 14)
-                    Label(
-                        game.modVersion.isEmpty
-                            ? game.modLoader
-                            : game.modLoader + "-" + game.modVersion,
-                        systemImage: "puzzlepiece.extension.fill"
-                    )
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    Divider().frame(height: 14)
-                    Label(
-                        game.lastPlayed.formatted(
-                            .relative(presentation: .named)
-                        ),
-                        systemImage: "clock.fill"
-                    )
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                }
+    private func triggerLocalRefresh() {
+        // 仅在本地视图时更新刷新令牌
+        guard !gameType else { return }
+        localRefreshToken = UUID()
+    }
+
+    // MARK: - 更新 Header
+    /// 更新 header 视图，但不重建整个 GameRemoteResourceView
+    private func updateHeaders() {
+        remoteHeader = AnyView(
+            GameHeaderListRow(
+                game: game,
+                cacheInfo: cacheManager.cacheInfo,
+                query: query
+            ) {
+                triggerLocalRefresh()
             }
-            Spacer()
-            settingsButton
-            importButton
-            deleteButton
-        }
-    }
-
-    private var gameIcon: some View {
-        Group {
-            let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
-            let iconURL = profileDir.appendingPathComponent(game.gameIcon)
-            if FileManager.default.fileExists(atPath: iconURL.path) {
-                AsyncImage(url: iconURL) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .interpolation(.none)
-                            .frame(width: 64, height: 64)
-                            .cornerRadius(12)
-                    case .failure:
-                        Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-                            .resizable()
-                            .interpolation(.none)
-                            .frame(width: 64, height: 64)
-                            .cornerRadius(12)
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
-            } else {
-                Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-                    .resizable()
-                    .interpolation(.none)
-                    .frame(width: 64, height: 64)
-                    .cornerRadius(12)
-            }
-        }
-    }
-
-    private var deleteButton: some View {
-        Button {
-            showDeleteAlert = true
-        } label: {
-            //            Image(systemName: "trash.fill")
-            Text("common.delete".localized()).font(.subheadline)
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(Color.accentColor)
-        .controlSize(.large)
-        .confirmationDialog(
-            "delete.title".localized(),
-            isPresented: $showDeleteAlert,
-            titleVisibility: .visible
-        ) {
-            Button("common.delete".localized(), role: .destructive) {
-                deleteGameAndProfile()
-            }
-            .keyboardShortcut(.defaultAction)
-            Button("common.cancel".localized(), role: .cancel) {}
-        } message: {
-            Text(
-                String(format: "delete.game.confirm".localized(), game.gameName)
-            )
-        }
-    }
-
-    private var settingsButton: some View {
-        Button {
-            // 设置当前游戏并标记应该打开高级设置
-            selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
-            // 打开设置窗口
-            openSettings()
-        } label: {
-            Text("settings.game.advanced.tab".localized())
-                .font(.subheadline)
-        }
-        .buttonStyle(.borderedProminent)
-        .tint(Color.accentColor)
-        .controlSize(.large)
-    }
-
-    private var importButton: some View {
-        LocalResourceInstaller.ImportButton(
-            query: query,
-            gameName: game.gameName
-        ) { scanResources() }
-    }
-
-    private var localResourceList: some View {
-        VStack {
-            if isLoadingResources {
-                ProgressView()
-                    .padding()
-            } else {
-                let filteredResources = scannedResources.filter { res in
-                    (searchTextForResource.isEmpty
-                        || res.title.localizedCaseInsensitiveContains(
-                            searchTextForResource
-                        ))
-                }
-                .map { ModrinthProject.from(detail: $0) }
-
-                ForEach(filteredResources, id: \.projectId) { mod in
-                    // todo mod的作者需要修改或者不显示
-                    ModrinthDetailCardView(
-                        project: mod,
-                        selectedVersions: [game.gameVersion],
-                        selectedLoaders: [game.modLoader],
-                        gameInfo: game,
-                        query: query,
-                        type: gameType,
-                        selectedItem: $selectedItem
-                    ) {
-                        scanResources()
-                    }
-                    .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
-                    .listRowInsets(
-                        EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
-                    )
-                    .onTapGesture {
-                        // 本地资源不跳转详情页面
-                        if mod.author != "local" {
-                            selectedProjectId = mod.projectId
-                            if let type = ResourceType(rawValue: query) {
-                                selectedItem = .resource(type)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        .searchable(
-            text: $searchTextForResource,
-            placement: .toolbar,
-            prompt: "search.resources".localized()
         )
-        .help("search.resources".localized())
+        localHeader = AnyView(
+            GameHeaderListRow(
+                game: game,
+                cacheInfo: cacheManager.cacheInfo,
+                query: query
+            ) {
+                triggerLocalRefresh()
+            }
+        )
     }
 
-    private func scanResources() {
-        guard !isLoadingResources else { return }
+    // MARK: - 清除数据
+    /// 清除页面所有数据
+    private func clearAllData() {
+        // 重置缓存信息为默认值
+        cacheManager.cacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
+        // 仅在本地视图时重置刷新令牌
+        if !gameType {
+            localRefreshToken = UUID()
+        }
+        // 重置扫描结果
+        scannedResources = []
+        isScanComplete = false
+    }
 
-        // Modpacks don't have a local directory to scan, skip scanning
+    // MARK: - 重置扫描状态
+    /// 重置扫描状态，准备重新扫描
+    private func resetScanState() {
+        scannedResources = []
+        isScanComplete = false
+    }
+
+    // MARK: - 扫描所有资源
+    /// 异步扫描所有资源，收集 detailId（不阻塞视图渲染）
+    private func scanAllResources() {
+        // 如果已经完成扫描，不重复扫描
+        guard !isScanComplete else { return }
+
+        // Modpacks don't have a local directory to scan
         if query.lowercased() == "modpack" {
             scannedResources = []
-            isLoadingResources = false
+            isScanComplete = true
             return
         }
 
-        guard
-            let resourceDir = AppPaths.resourceDirectory(
-                for: query,
-                gameName: game.gameName
-            )
-        else {
-            let globalError = GlobalError.configuration(
-                chineseMessage: "无法获取资源目录路径",
-                i18nKey: "error.configuration.resource_directory_not_found",
-                level: .notification
-            )
-            Logger.shared.error("扫描资源失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
-            error = globalError
+        guard let resourceDir = AppPaths.resourceDirectory(
+            for: query,
+            gameName: game.gameName
+        ) else {
             scannedResources = []
-            isLoadingResources = false
+            isScanComplete = true
             return
         }
-        ModScanner.shared.scanResourceDirectory(resourceDir) { details in
-            scannedResources = details
-            isLoadingResources = false
-        }
-    }
 
-    // MARK: - 删除游戏及其文件夹
-    private func deleteGameAndProfile() {
-        gameActionManager.deleteGame(
-            game: game,
-            gameRepository: gameRepository,
-            selectedItem: $selectedItem
-        )
+        // 检查目录是否存在且可访问
+        guard FileManager.default.fileExists(atPath: resourceDir.path) else {
+            // 目录不存在，直接标记为完成
+            scannedResources = []
+            isScanComplete = true
+            return
+        }
+
+        // 立即设置状态为扫描中，不阻塞视图渲染
+        isScanComplete = false
+
+        // 使用 Task 创建异步任务，确保不阻塞视图渲染
+        // 所有耗时操作在后台线程执行，只有更新状态时才回到主线程
+        Task {
+            do {
+                // 调用新的异步接口，只获取 detailId（直接返回 Set）
+                let detailIds = try await ModScanner.shared.scanAllDetailIdsThrowing(in: resourceDir)
+
+                // 回到主线程更新状态
+                await MainActor.run {
+                    scannedResources = detailIds
+                    isScanComplete = true
+                }
+            } catch {
+                let globalError = GlobalError.from(error)
+                Logger.shared.error("扫描所有资源失败: \(globalError.chineseMessage)")
+                GlobalErrorHandler.shared.handle(globalError)
+
+                // 回到主线程更新状态
+                await MainActor.run {
+                    scannedResources = []
+                    isScanComplete = true
+                }
+            }
+        }
     }
 }

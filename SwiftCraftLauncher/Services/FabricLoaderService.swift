@@ -22,15 +22,8 @@ enum FabricLoaderService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchAllLoaderVersionsThrowing(for minecraftVersion: String) async throws -> [FabricLoader] {
         let url = URLConfig.API.Fabric.loader.appendingPathComponent(minecraftVersion)
-        let (data, response) = try await URLSession.shared.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw GlobalError.download(
-                chineseMessage: "获取 Fabric 加载器版本失败: HTTP \(response)",
-                i18nKey: "error.download.fabric_loader_fetch_failed",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let data = try await APIClient.get(url: url)
 
         var result: [FabricLoader] = []
         do {
@@ -68,15 +61,9 @@ enum FabricLoaderService {
         }
 
         // 2. 直接下载指定版本的 version.json
-        let (data, response) = try await URLSession.shared.data(from: URLConfig.API.Modrinth.loaderProfile(loader: "fabric", version: loaderVersion))
-
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw GlobalError.download(
-                chineseMessage: "获取 Fabric \(loaderVersion) 版本信息失败",
-                i18nKey: "error.download.fabric_loader_fetch_failed",
-                level: .notification
-            )
-        }
+        // 使用统一的 API 客户端
+        let url = URLConfig.API.Modrinth.loaderProfile(loader: "fabric", version: loaderVersion)
+        let data = try await APIClient.get(url: url)
 
         var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         result.version = loaderVersion

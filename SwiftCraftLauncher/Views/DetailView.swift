@@ -10,8 +10,6 @@ import SwiftUI
 struct DetailView: View {
     // MARK: - Properties
     @Binding var selectedItem: SidebarItem
-    @Binding var currentPage: Int
-    @Binding var totalItems: Int
     @Binding var sortIndex: String
     @Binding var gameResourcesType: String
     @Binding var selectedVersions: [String]
@@ -26,18 +24,18 @@ struct DetailView: View {
     @Binding var versionTotal: Int
     @Binding var gameType: Bool
     @Binding var selectedLoader: [String]
+    @Binding var isScanComplete: Bool  // 扫描完成状态，用于控制工具栏按钮
 
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Body
-    var body: some View {
-        List {
-            switch selectedItem {
-            case .game(let gameId):
-                gameDetailView(gameId: gameId)
-            case .resource(let type):
-                resourceDetailView(type: type)
-            }
+    @ViewBuilder var body: some View {
+        switch selectedItem {
+        case .game(let gameId):
+            gameDetailView(gameId: gameId).frame(maxWidth: .infinity, alignment: .leading)
+        case .resource(let type):
+            resourceDetailView(type: type)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -48,8 +46,6 @@ struct DetailView: View {
             GameInfoDetailView(
                 game: gameInfo,
                 query: $gameResourcesType,
-                currentPage: $currentPage,
-                totalItems: $totalItems,
                 sortIndex: $sortIndex,
                 selectedVersions: $selectedVersions,
                 selectedCategories: $selectedCategories,
@@ -59,7 +55,8 @@ struct DetailView: View {
                 selectedProjectId: $selectedProjectId,
                 selectedLoaders: $selectedLoader,
                 gameType: $gameType,
-                selectedItem: $selectedItem
+                selectedItem: $selectedItem,
+                isScanComplete: $isScanComplete
             )
         }
     }
@@ -68,17 +65,14 @@ struct DetailView: View {
     @ViewBuilder
     private func resourceDetailView(type: ResourceType) -> some View {
         if selectedProjectId != nil {
-            ModrinthProjectDetailView(
-                selectedTab: $selectTab,
-                projectDetail: loadedProjectDetail,
-                currentPage: $versionCurrentPage,
-                versionTotal: $versionTotal
-            )
+            List {
+                ModrinthProjectDetailView(
+                    projectDetail: loadedProjectDetail
+                )
+            }
         } else {
             ModrinthDetailView(
                 query: type.rawValue,
-                currentPage: $currentPage,
-                totalItems: $totalItems,
                 sortIndex: $sortIndex,
                 selectedVersions: $selectedVersions,
                 selectedCategories: $selectedCategories,

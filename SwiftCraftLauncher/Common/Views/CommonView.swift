@@ -83,7 +83,9 @@ struct PathBreadcrumbView: View {
             var result: [String] = []
             var current = path.hasPrefix("/") ? "/" : ""
             for comp in components {
-                current += (current == "/" ? "" : "/") + comp
+                // 使用字符串插值而非字符串拼接
+                let separator = current == "/" ? "" : "/"
+                current = "\(current)\(separator)\(comp)"
                 result.append(current)
             }
             return result

@@ -33,8 +33,6 @@ enum ModPackDependencyInstaller {
         extractedPath: URL? = nil,
         onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)? = nil
     ) async -> Bool {
-        Logger.shared.info("开始安装整合包依赖: \(indexInfo.modPackName)")
-
         // 获取资源目录
         let resourceDir = AppPaths.profileDirectory(gameName: gameInfo.gameName)
 
@@ -79,7 +77,6 @@ enum ModPackDependencyInstaller {
             }
         }
 
-        Logger.shared.info("整合包依赖安装完成")
         return true
     }
 
@@ -98,11 +95,8 @@ enum ModPackDependencyInstaller {
         gameInfo: GameVersionInfo,
         onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
     ) async -> Bool {
-        Logger.shared.info("开始安装整合包文件，共 \(files.count) 个文件")
-
         // 过滤出需要下载的文件
         let filesToDownload = filterDownloadableFiles(files)
-        Logger.shared.info("需要下载的文件数量: \(filesToDownload.count)")
 
         // 通知开始下载
         onProgressUpdate?("modpack.progress.files_download_started".localized(), 0, filesToDownload.count, .files)
@@ -120,6 +114,7 @@ enum ModPackDependencyInstaller {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
 
+                    // 优化：下载文件（内部已使用 autoreleasepool 优化）
                     let success = await downloadSingleFile(file: file, resourceDir: resourceDir, gameInfo: gameInfo)
 
                     // 更新进度
@@ -152,7 +147,6 @@ enum ModPackDependencyInstaller {
         // 通知下载完成
         onProgressUpdate?("modpack.progress.files_download_completed".localized(), filesToDownload.count, filesToDownload.count, .files)
 
-        Logger.shared.info("整合包文件安装完成")
         return true
     }
 
@@ -163,7 +157,6 @@ enum ModPackDependencyInstaller {
         return files.filter { file in
             // 只检查 client 字段，忽略 server
             if let env = file.env, let client = env.client, client.lowercased() == "unsupported" {
-                Logger.shared.info("跳过不支持的文件: \(file.path)")
                 return false
             }
             return true
@@ -204,18 +197,14 @@ enum ModPackDependencyInstaller {
     private static func downloadCurseForgeFile(projectId: Int, fileId: Int, resourceDir: URL, gameInfo: GameVersionInfo? = nil) async -> Bool {
         // 首先尝试获取特定文件详情
         guard let fileDetail = await CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId) else {
-            Logger.shared.error("无法获取 CurseForge 文件详情: \(projectId)/\(fileId)")
-
             // 主要策略失败，尝试备用策略：获取项目文件列表并找到最新兼容版本
             return await downloadCurseForgeFileWithFallback(projectId: projectId, resourceDir: resourceDir, gameInfo: gameInfo)
         }
 
         // 尝试下载指定文件
         if await downloadCurseForgeFileWithDetail(fileDetail: fileDetail, projectId: projectId, resourceDir: resourceDir) {
-            Logger.shared.info("已下载 CurseForge 文件: \(fileDetail.fileName)")
             return true
         } else {
-            Logger.shared.warning("下载指定文件失败，尝试备用策略: \(projectId)/\(fileId)")
             // 下载失败，尝试备用策略
             return await downloadCurseForgeFileWithFallback(projectId: projectId, resourceDir: resourceDir, gameInfo: gameInfo)
         }
@@ -228,15 +217,11 @@ enum ModPackDependencyInstaller {
     ///   - gameInfo: 游戏信息（可选，用于兼容性检查）
     /// - Returns: 是否下载成功
     private static func downloadCurseForgeFileWithFallback(projectId: Int, resourceDir: URL, gameInfo: GameVersionInfo?) async -> Bool {
-        Logger.shared.info("使用备用策略下载 CurseForge 文件: \(projectId)")
-
         // 必须有游戏信息才能进行精确匹配
         guard let gameInfo = gameInfo else {
             Logger.shared.error("缺少游戏信息，无法进行文件过滤: \(projectId)")
             return false
         }
-
-        Logger.shared.info("尝试精确匹配：游戏版本 \(gameInfo.gameVersion)，加载器 \(gameInfo.modLoader)")
 
         // 精确匹配游戏版本和加载器
         let modLoaderTypeValue = CurseForgeModLoaderType.from(gameInfo.modLoader)?.rawValue
@@ -245,13 +230,11 @@ enum ModPackDependencyInstaller {
             gameVersion: gameInfo.gameVersion,
             modLoaderType: modLoaderTypeValue
         ), !filteredFiles.isEmpty else {
-            Logger.shared.error("精确匹配失败，未找到兼容文件: \(projectId), 游戏版本: \(gameInfo.gameVersion), 加载器: \(gameInfo.modLoader)")
+            Logger.shared.error("精确匹配失败，未找到兼容文件: \(projectId)")
             return false
         }
 
-        Logger.shared.info("精确匹配成功，获取到 \(filteredFiles.count) 个文件")
         if let fileToDownload = filteredFiles.first {
-            Logger.shared.info("选择最新文件: \(fileToDownload.fileName), 发布时间: \(fileToDownload.fileDate)")
             return await downloadCurseForgeFileWithDetail(fileDetail: fileToDownload, projectId: projectId, resourceDir: resourceDir)
         }
 
@@ -296,7 +279,7 @@ enum ModPackDependencyInstaller {
 
             return true
         } catch {
-            Logger.shared.error("下载 CurseForge 文件详情失败: \(fileDetail.fileName), 错误: \(error.localizedDescription)")
+            Logger.shared.error("下载 CurseForge 文件失败: \(fileDetail.fileName)")
             return false
         }
     }
@@ -313,9 +296,16 @@ enum ModPackDependencyInstaller {
         }
 
         do {
+            // 优化：预先计算目标路径，避免重复创建
+            // 使用 autoreleasepool 包装同步部分，及时释放临时对象
+            let destinationPath = autoreleasepool {
+                resourceDir.appendingPathComponent(file.path)
+            }
+
+            // DownloadManager.downloadFile 已经包含了 autoreleasepool
             let downloadedFile = try await DownloadManager.downloadFile(
                 urlString: urlString,
-                destinationURL: resourceDir.appendingPathComponent(file.path),
+                destinationURL: destinationPath,
                 expectedSha1: file.hashes["sha1"]
             )
 
@@ -332,19 +322,15 @@ enum ModPackDependencyInstaller {
 
                             // 存入缓存
                             ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
-                            Logger.shared.info("已缓存 Modrinth 文件详情: \(file.path)")
-                        } else {
-                            Logger.shared.warning("无法获取 Modrinth 文件详情: \(file.path)")
                         }
                         continuation.resume()
                     }
                 }
             }
 
-            Logger.shared.info("已下载文件: \(file.path)")
             return true
         } catch {
-            Logger.shared.error("下载文件失败: \(file.path), 错误: \(error.localizedDescription)")
+            Logger.shared.error("下载文件失败: \(file.path)")
             return false
         }
     }
@@ -366,8 +352,6 @@ enum ModPackDependencyInstaller {
     ) async -> Bool {
         // 过滤出必需的依赖
         let requiredDependencies = dependencies.filter { $0.dependencyType == "required" }
-
-        Logger.shared.info("开始安装整合包依赖，共 \(requiredDependencies.count) 个必需依赖")
 
         // 通知开始下载
         onProgressUpdate?("modpack.progress.dependencies_installation_started".localized(), 0, requiredDependencies.count, .dependencies)
@@ -427,7 +411,6 @@ enum ModPackDependencyInstaller {
         // 通知安装完成
         onProgressUpdate?("modpack.progress.dependencies_installation_completed".localized(), requiredDependencies.count, requiredDependencies.count, .dependencies)
 
-        Logger.shared.info("整合包依赖安装完成")
         return true
     }
 
@@ -444,14 +427,12 @@ enum ModPackDependencyInstaller {
     ) -> Bool {
         // 跳过 Fabric API 在 Quilt 上的安装
         if dep.projectId == "P7dR8mSH" && gameInfo.modLoader.lowercased() == "quilt" {
-            Logger.shared.info("跳过 Fabric API 在 Quilt 上的安装")
             return true
         }
 
         // 检查是否已安装
         if let projectId = dep.projectId,
            ModScanner.shared.isModInstalledSync(projectId: projectId, in: resourceDir) {
-            Logger.shared.info("依赖已安装，跳过: \(projectId)")
             return true
         }
 
@@ -495,12 +476,9 @@ enum ModPackDependencyInstaller {
             if let found = foundPath {
                 overridesPath = found
             } else {
-                Logger.shared.info("overrides 文件夹不存在，跳过处理")
                 return true
             }
         }
-
-        Logger.shared.info("开始处理 overrides 文件夹: \(overridesPath.path)")
 
         do {
             // 获取 overrides 文件夹中的所有内容
@@ -510,8 +488,6 @@ enum ModPackDependencyInstaller {
                 options: [.skipsHiddenFiles]
             )
 
-            Logger.shared.info("overrides 文件夹包含 \(contents.count) 个项目")
-
             // 逐个处理文件/文件夹（不显示进度）
             for item in contents {
                 let itemName = item.lastPathComponent
@@ -520,7 +496,6 @@ enum ModPackDependencyInstaller {
                 try await processOverrideItem(item: item, destinationPath: destinationPath, itemName: itemName)
             }
 
-            Logger.shared.info("overrides 文件夹处理完成")
             return true
         } catch {
             Logger.shared.error("处理 overrides 文件夹失败: \(error.localizedDescription)")
@@ -545,20 +520,15 @@ enum ModPackDependencyInstaller {
             if isSourceDirectory && isDestinationDirectory {
                 // 如果都是目录，递归合并
                 try await mergeDirectories(source: item, destination: destinationPath)
-                Logger.shared.info("已合并目录: \(itemName)")
             } else if !isSourceDirectory && !isDestinationDirectory {
                 // 如果都是文件，覆盖
                 try FileManager.default.removeItem(at: destinationPath)
                 try FileManager.default.moveItem(at: item, to: destinationPath)
-                Logger.shared.info("已覆盖文件: \(itemName)")
-            } else {
-                // 类型不匹配，跳过
-                Logger.shared.warning("跳过类型不匹配的项目: \(itemName)")
             }
+            // 类型不匹配的情况跳过
         } else {
             // 目标路径不存在，直接移动
             try FileManager.default.moveItem(at: item, to: destinationPath)
-            Logger.shared.info("已移动: \(itemName)")
         }
     }
 
@@ -673,7 +643,7 @@ enum ModPackDependencyInstaller {
                 resourceDir: resourceDir
             )
         } catch {
-            Logger.shared.error("获取版本详情失败: \(error.localizedDescription)")
+            Logger.shared.error("获取版本详情失败")
             return false
         }
     }
@@ -717,7 +687,7 @@ enum ModPackDependencyInstaller {
                 resourceDir: resourceDir
             )
         } catch {
-            Logger.shared.error("获取项目详情失败: \(error.localizedDescription)")
+            Logger.shared.error("获取项目详情失败")
             return false
         }
     }
@@ -759,10 +729,9 @@ enum ModPackDependencyInstaller {
                 ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
             }
 
-            Logger.shared.info("依赖下载成功: \(version.name)")
             return true
         } catch {
-            Logger.shared.error("下载依赖失败: \(error.localizedDescription)")
+            Logger.shared.error("下载依赖失败")
             return false
         }
     }

@@ -83,7 +83,8 @@ enum JWTDecoder {
         let remainder = padded.count % 4
         if remainder > 0 {
             let paddingNeeded = 4 - remainder
-            padded += String(repeating: "=", count: paddingNeeded)
+            // 使用字符串插值而非字符串拼接
+            padded = "\(padded)\(String(repeating: "=", count: paddingNeeded))"
         }
 
         return padded
