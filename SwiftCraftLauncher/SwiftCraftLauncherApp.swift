@@ -35,18 +35,6 @@ struct SwiftCraftLauncherApp: App {
 
         // 清理临时窗口管理器，防止应用重启时恢复未关闭的临时窗口
         TemporaryWindowManager.shared.cleanupAllWindows()
-
-        // 移除文件菜单
-        DispatchQueue.main.async {
-            if let mainMenu = NSApplication.shared.mainMenu {
-                // 查找文件菜单
-                if let fileMenuIndex = mainMenu.items.firstIndex(where: {
-                    $0.title == "File" || $0.title == "文件"
-                }) {
-                    mainMenu.removeItem(at: fileMenuIndex)
-                }
-            }
-        }
     }
 
     // MARK: - Body
@@ -69,6 +57,7 @@ struct SwiftCraftLauncherApp: App {
         .windowResizability(.contentMinSize)
 
         .commands {
+
             CommandGroup(after: .appInfo) {
                 Button("menu.check.updates".localized()) {
                     sparkleUpdateService.checkForUpdatesWithUI()
@@ -121,6 +110,8 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
             }
+            CommandGroup(replacing: .newItem) { }
+            CommandGroup(replacing: .saveItem) { }
         }
 
         Settings {
