@@ -80,27 +80,10 @@ struct GameInfoDetailView: View {
                 performRefresh()
             }
         }
-        .onChange(of: [query,game.gameName]) { oldValue, newValue in
-            // query 变化且游戏名不变时刷新
-            if (oldValue[0] != newValue[0]) && (oldValue[1] != newValue[1]) {
-                updateHeaders()
-                // 仅在本地视图时刷新本地资源
-                if !gameType {
-                    triggerLocalRefresh()
-                }
-                // 重新扫描资源
-                resetScanState()
-                scanAllResources()
-            }
-        }
         .onAppear {
             // 初始化 header
             updateHeaders()
             cacheManager.calculateGameCacheInfo(game.gameName)
-            // 页面进入时异步扫描所有资源
-//            if !isScanComplete {
-//                scanAllResources()
-//            }
         }
         .onChange(of: cacheManager.cacheInfo) { _, _ in
             // 当 cacheInfo 更新时，更新 header（但不重建整个视图）
@@ -124,7 +107,6 @@ struct GameInfoDetailView: View {
         // 重新扫描资源
         resetScanState()
         scanAllResources()
-        // 更新 previousGameName
     }
     
     private func triggerLocalRefresh() {
