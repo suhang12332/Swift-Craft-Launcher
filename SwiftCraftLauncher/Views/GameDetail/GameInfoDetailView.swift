@@ -28,11 +28,11 @@ struct GameInfoDetailView: View {
     @Binding var selectedItem: SidebarItem
     @StateObject private var cacheManager = CacheManager()
     @State private var localRefreshToken = UUID()
-    
+
     // 扫描结果：detailId Set，用于快速查找（O(1)）
     @State private var scannedResources: Set<String> = []
     @Binding var isScanComplete: Bool  // 扫描完成状态，用于控制工具栏按钮
-    
+
     // 使用稳定的 header，避免因 cacheInfo 更新导致重建
     @State private var remoteHeader: AnyView?
     @State private var localHeader: AnyView?
@@ -70,7 +70,7 @@ struct GameInfoDetailView: View {
         // 刷新逻辑：
         // 1. 游戏名变化时刷新
         // 2. gameType 变化且游戏名不变时刷新
-        .onChange(of: game.gameName) { oldValue, newValue in
+        .onChange(of: game.gameName) { _, _ in
             // 游戏名变化时刷新
             performRefresh()
         }
