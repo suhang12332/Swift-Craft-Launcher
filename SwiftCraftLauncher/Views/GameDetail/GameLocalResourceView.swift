@@ -116,7 +116,7 @@ struct GameLocalResourceView: View {
                     query: query,
                     type: false,
                     selectedItem: $selectedItem,
-                    scannedDetailIds: []
+                    scannedDetailIds: Set<String>()
                 )
                 .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                 .listRowInsets(

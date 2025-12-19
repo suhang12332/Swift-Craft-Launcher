@@ -14,7 +14,7 @@ struct GameRemoteResourceView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var gameType: Bool
     let header: AnyView?
-    let scannedDetailIds: [String] // 从父视图传入的 detailId 数组
+    @Binding var scannedDetailIds: Set<String> // 从父视图传入的 detailId Set，用于快速查找
 
     init(
         game: GameVersionInfo,
@@ -30,7 +30,7 @@ struct GameRemoteResourceView: View {
         selectedItem: Binding<SidebarItem>,
         gameType: Binding<Bool>,
         header: AnyView? = nil,
-        scannedDetailIds: [String] = []
+        scannedDetailIds: Binding<Set<String>> = .constant([])
     ) {
         self.game = game
         _query = query
@@ -45,7 +45,7 @@ struct GameRemoteResourceView: View {
         _selectedItem = selectedItem
         _gameType = gameType
         self.header = header
-        self.scannedDetailIds = scannedDetailIds
+        _scannedDetailIds = scannedDetailIds
     }
 
     var body: some View {
@@ -63,7 +63,7 @@ struct GameRemoteResourceView: View {
             selectedItem: $selectedItem,
             gameType: $gameType,
             header: header,
-            scannedDetailIds: scannedDetailIds
+            scannedDetailIds: $scannedDetailIds
         )
     }
 }

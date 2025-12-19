@@ -57,7 +57,7 @@ struct AddOrDeleteResourceButton: View {
     let gameInfo: GameVersionInfo?
     let query: String
     let type: Bool  // false = local, true = server
-    let scannedDetailIds: [String] // 已扫描资源的 detailId 数组，用于过滤
+    let scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找（O(1)）
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @State private var addButtonState: ModrinthDetailCardView.AddButtonState =
@@ -87,7 +87,7 @@ struct AddOrDeleteResourceButton: View {
         selectedItem: Binding<SidebarItem>,
         onResourceChanged: (() -> Void)? = nil,
         forceInstalled: Bool = false,
-        scannedDetailIds: [String] = []
+        scannedDetailIds: Set<String> = []
     ) {
         self.project = project
         self.selectedVersions = selectedVersions
@@ -102,6 +102,7 @@ struct AddOrDeleteResourceButton: View {
     }
 
     var body: some View {
+
         VStack {
             Button(action: handleButtonAction) {
                 buttonLabel
@@ -420,8 +421,9 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        // 首先检查 scannedDetailIds 是否包含当前项目的 projectId
+        // 只检查 scannedDetailIds 是否包含当前项目的 projectId
         // 如果包含，说明该资源已在扫描列表中，标记为已安装
+        // 移除同步扫描以提高性能，避免卡顿
         if scannedDetailIds.contains(project.projectId) {
             addButtonState = .installed
             return
@@ -435,20 +437,6 @@ struct AddOrDeleteResourceButton: View {
         if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
             addButtonState = .idle
             return
-        }
-
-        if let gameInfo = gameInfo,
-            let resourceDir = AppPaths.resourceDirectory(
-                for: query,
-                gameName: gameInfo.gameName
-            ) {
-            if ModScanner.shared.isModInstalledSync(
-                projectId: project.projectId,
-                in: resourceDir
-            ) {
-                addButtonState = .installed
-                return
-            }
         }
         addButtonState = .idle
     }

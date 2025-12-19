@@ -1,7 +1,7 @@
 import Foundation
 
 // 缓存信息结构
-struct CacheInfo {
+struct CacheInfo: Equatable {
     let fileCount: Int
     let totalSize: Int64 // 字节
     let formattedSize: String

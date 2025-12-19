@@ -29,9 +29,13 @@ struct GameInfoDetailView: View {
     @StateObject private var cacheManager = CacheManager()
     @State private var localRefreshToken = UUID()
     
-    // 扫描结果：detailId 数组
-    @State private var scannedResources: [String] = []
+    // 扫描结果：detailId Set，用于快速查找（O(1)）
+    @State private var scannedResources: Set<String> = []
     @Binding var isScanComplete: Bool  // 扫描完成状态，用于控制工具栏按钮
+    
+    // 使用稳定的 header，避免因 cacheInfo 更新导致重建
+    @State private var remoteHeader: AnyView?
+    @State private var localHeader: AnyView?
 
     var body: some View {
         return Group {
@@ -49,30 +53,14 @@ struct GameInfoDetailView: View {
                     selectedLoaders: $selectedLoaders,
                     selectedItem: $selectedItem,
                     gameType: $gameType,
-                    header: AnyView(
-                        GameHeaderListRow(
-                            game: game,
-                            cacheInfo: cacheManager.cacheInfo,
-                            query: query
-                        ) {
-                            triggerLocalRefresh()
-                        }
-                    ),
-                    scannedDetailIds: scannedResources
+                    header: remoteHeader,
+                    scannedDetailIds: $scannedResources
                 )
             } else {
                 GameLocalResourceView(
                     game: game,
                     query: query,
-                    header: AnyView(
-                        GameHeaderListRow(
-                            game: game,
-                            cacheInfo: cacheManager.cacheInfo,
-                            query: query
-                        ) {
-                            triggerLocalRefresh()
-                        }
-                    ),
+                    header: localHeader,
                     selectedItem: $selectedItem,
                     selectedProjectId: $selectedProjectId,
                     refreshToken: localRefreshToken
@@ -81,6 +69,7 @@ struct GameInfoDetailView: View {
         }
         // 优化：合并相关 onChange 以减少不必要的视图更新
         .onChange(of: game.gameName) { _, _ in
+            updateHeaders()
             cacheManager.calculateGameCacheInfo(game.gameName)
             // 仅在本地视图时刷新本地资源
             if !gameType {
@@ -105,6 +94,7 @@ struct GameInfoDetailView: View {
         .onChange(of: query) { oldValue, newValue in
             // 仅在 query 实际变化时扫描资源
             if oldValue != newValue {
+                updateHeaders()
                 // 仅在本地视图时刷新本地资源
                 if !gameType {
                     triggerLocalRefresh()
@@ -115,11 +105,17 @@ struct GameInfoDetailView: View {
             }
         }
         .onAppear {
+            // 初始化 header
+            updateHeaders()
             cacheManager.calculateGameCacheInfo(game.gameName)
             // 页面进入时异步扫描所有资源
             if !isScanComplete {
                 scanAllResources()
             }
+        }
+        .onChange(of: cacheManager.cacheInfo) { _, _ in
+            // 当 cacheInfo 更新时，更新 header（但不重建整个视图）
+            updateHeaders()
         }
         .onDisappear {
             // 页面关闭后清除所有数据
@@ -131,6 +127,29 @@ struct GameInfoDetailView: View {
         // 仅在本地视图时更新刷新令牌
         guard !gameType else { return }
         localRefreshToken = UUID()
+    }
+    
+    // MARK: - 更新 Header
+    /// 更新 header 视图，但不重建整个 GameRemoteResourceView
+    private func updateHeaders() {
+        remoteHeader = AnyView(
+            GameHeaderListRow(
+                game: game,
+                cacheInfo: cacheManager.cacheInfo,
+                query: query
+            ) {
+                triggerLocalRefresh()
+            }
+        )
+        localHeader = AnyView(
+            GameHeaderListRow(
+                game: game,
+                cacheInfo: cacheManager.cacheInfo,
+                query: query
+            ) {
+                triggerLocalRefresh()
+            }
+        )
     }
 
     // MARK: - 清除数据
@@ -183,7 +202,7 @@ struct GameInfoDetailView: View {
         // 所有耗时操作在后台线程执行，只有更新状态时才回到主线程
         Task {
             do {
-                // 调用新的异步接口，只获取 detailId
+                // 调用新的异步接口，只获取 detailId（直接返回 Set）
                 let detailIds = try await ModScanner.shared.scanAllDetailIdsThrowing(in: resourceDir)
                 
                 // 回到主线程更新状态

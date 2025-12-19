@@ -330,7 +330,7 @@ extension ModScanner {
     /// 在后台线程执行，只从缓存读取，不创建 fallback
     public func scanAllDetailIds(
         in dir: URL,
-        completion: @escaping ([String]) -> Void
+        completion: @escaping (Set<String>) -> Void
     ) {
         Task {
             do {
@@ -340,14 +340,15 @@ extension ModScanner {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("扫描所有 detailId 失败: \(globalError.chineseMessage)")
                 GlobalErrorHandler.shared.handle(globalError)
-                completion([])
+                completion(Set<String>())
             }
         }
     }
     
     /// 异步扫描：仅获取所有 detailId（抛出异常版本）
     /// 在后台线程执行，只从缓存读取，不创建 fallback
-    public func scanAllDetailIdsThrowing(in dir: URL) async throws -> [String] {
+    /// 返回 Set 以提高查找性能（O(1)）
+    public func scanAllDetailIdsThrowing(in dir: URL) async throws -> Set<String> {
         // 在后台线程执行文件系统操作
         return try await Task.detached(priority: .userInitiated) {
             guard FileManager.default.fileExists(atPath: dir.path) else {
@@ -402,10 +403,10 @@ extension ModScanner {
                     }
                 }
                 
-                var detailIds: [String] = []
+                var detailIds: Set<String> = []
                 for await detailId in group {
                     if let detailId = detailId {
-                        detailIds.append(detailId)
+                        detailIds.insert(detailId)
                     }
                 }
                 return detailIds
