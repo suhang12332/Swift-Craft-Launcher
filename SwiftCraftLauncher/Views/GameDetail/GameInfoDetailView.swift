@@ -23,7 +23,7 @@ struct GameInfoDetailView: View {
     @Binding var selectedPerformanceImpact: [String]
     @Binding var selectedProjectId: String?
     @Binding var selectedLoaders: [String]
-    @Binding var gameType: Bool  // false = local, true = server
+    @Binding var gameType: Bool  // false = local,   = server
     @EnvironmentObject var gameRepository: GameRepository
     @Binding var selectedItem: SidebarItem
     @StateObject private var cacheManager = CacheManager()
@@ -82,13 +82,13 @@ struct GameInfoDetailView: View {
         .onChange(of: gameType) { oldValue, newValue in
             // 仅在 gameType 实际变化时扫描资源
             if oldValue != newValue {
-                // 切换到本地视图时刷新本地资源
+                // 切换到本地视图时刷新本地资源并扫描
                 if !newValue {
                     triggerLocalRefresh()
+                    // 仅在切换到本地视图时扫描资源
+                    resetScanState()
+                    scanAllResources()
                 }
-                // 重新扫描资源
-                resetScanState()
-                scanAllResources()
             }
         }
         .onChange(of: query) { oldValue, newValue in
