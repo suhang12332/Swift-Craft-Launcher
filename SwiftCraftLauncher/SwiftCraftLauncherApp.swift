@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UserNotifications
 
 @main
 struct SwiftCraftLauncherApp: App {
@@ -17,10 +18,17 @@ struct SwiftCraftLauncherApp: App {
     @StateObject private var generalSettingsManager = GeneralSettingsManager
         .shared
     @StateObject private var skinSelectionStore = SkinSelectionStore()
+
+    // MARK: - Notification Delegate
+    private let notificationCenterDelegate = NotificationCenterDelegate()
+
     @Environment(\.openWindow)
     private var openWindow
 
     init() {
+        // 设置通知中心代理，确保前台时也能展示 Banner
+        UNUserNotificationCenter.current().delegate = notificationCenterDelegate
+
         Task {
             await NotificationManager.requestAuthorizationIfNeeded()
         }
