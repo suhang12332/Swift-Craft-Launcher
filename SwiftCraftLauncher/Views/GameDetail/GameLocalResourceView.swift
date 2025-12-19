@@ -67,6 +67,15 @@ struct GameLocalResourceView: View {
             refreshAllFiles()
             loadPage(page: 1, append: false)
         }
+        .onChange(of: query) { oldValue, newValue in
+            // 当资源类型（query）改变时，重新初始化资源目录并刷新文件列表
+            if oldValue != newValue {
+                resourceDirectory = nil
+                resetPagination()
+                refreshAllFiles()
+                loadPage(page: 1, append: false)
+            }
+        }
         .onChange(of: searchTextForResource) { oldValue, newValue in
             // 搜索文本变化时，重置分页并触发防抖搜索
             if oldValue != newValue {
@@ -194,16 +203,32 @@ struct GameLocalResourceView: View {
         }
     }
 
-    /// 根据 title 过滤资源详情
+    /// 根据 title 和 projectType 过滤资源详情
     private func filterResourcesByTitle(_ details: [ModrinthProjectDetail]) -> [ModrinthProjectDetail] {
+        // 首先根据 query 筛选资源类型
+        let queryLower = query.lowercased()
+        let filteredByType = details.filter { detail in
+            // 对于本地资源（team == "local"），目录本身已经根据 query 筛选了，
+            // 所以不需要再根据 projectType 筛选（因为 fallback detail 的 projectType 总是 "mod"）
+            if detail.team == "local" {
+                // 本地资源：目录已经筛选，直接显示
+                return true
+            } else {
+                // 从 API 获取的资源：根据 projectType 筛选
+                // 确保只显示与 query 匹配的资源类型
+                return detail.projectType.lowercased() == queryLower
+            }
+        }
+        
+        // 然后根据搜索文本过滤
         let searchLower = searchTextForResource.lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
         if searchLower.isEmpty {
-            return details
+            return filteredByType
         }
 
-        return details.filter { detail in
+        return filteredByType.filter { detail in
             detail.title.lowercased().contains(searchLower)
         }
     }
