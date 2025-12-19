@@ -292,7 +292,9 @@ struct ModrinthProjectContentView: View {
 
     var body: some View {
         VStack {
-            if let error = error {
+            if isLoading && projectDetail == nil && error == nil {
+                loadingView
+            } else if let error = error {
                 newErrorView(error)
             } else if let project = projectDetail {
                 CompatibilitySection(project: project)
@@ -326,6 +328,16 @@ struct ModrinthProjectContentView: View {
         await MainActor.run {
             isLoading = false
         }
+    }
+
+    // MARK: - Loading View
+    private var loadingView: some View {
+        VStack(spacing: 8) {
+            ProgressView()
+                .controlSize(.small)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        .padding(Constants.padding)
     }
 
     private func loadProjectDetailsThrowing() async throws {
