@@ -67,33 +67,22 @@ struct GameInfoDetailView: View {
                 )
             }
         }
-        // 优化：合并相关 onChange 以减少不必要的视图更新
-        .onChange(of: game.gameName) { _, _ in
-            updateHeaders()
-            cacheManager.calculateGameCacheInfo(game.gameName)
-            // 仅在本地视图时刷新本地资源
-            if !gameType {
-                triggerLocalRefresh()
-            }
-            // 重新扫描资源
-            resetScanState()
-            scanAllResources()
+        // 刷新逻辑：
+        // 1. 游戏名变化时刷新
+        // 2. gameType 变化且游戏名不变时刷新
+        .onChange(of: game.gameName) { oldValue, newValue in
+            // 游戏名变化时刷新
+            performRefresh()
         }
         .onChange(of: gameType) { oldValue, newValue in
-            // 仅在 gameType 实际变化时扫描资源
-            if oldValue != newValue {
-                // 切换到本地视图时刷新本地资源并扫描
-                if !newValue {
-                    triggerLocalRefresh()
-                    // 仅在切换到本地视图时扫描资源
-                    resetScanState()
-                    scanAllResources()
-                }
+            // 仅从资源视图切换到游戏视图时刷新
+            if oldValue == true && newValue == false {
+                performRefresh()
             }
         }
-        .onChange(of: query) { oldValue, newValue in
-            // 仅在 query 实际变化时扫描资源
-            if oldValue != newValue {
+        .onChange(of: [query,game.gameName]) { oldValue, newValue in
+            // query 变化且游戏名不变时刷新
+            if (oldValue[0] != newValue[0]) && (oldValue[1] != newValue[1]) {
                 updateHeaders()
                 // 仅在本地视图时刷新本地资源
                 if !gameType {
@@ -109,9 +98,9 @@ struct GameInfoDetailView: View {
             updateHeaders()
             cacheManager.calculateGameCacheInfo(game.gameName)
             // 页面进入时异步扫描所有资源
-            if !isScanComplete {
-                scanAllResources()
-            }
+//            if !isScanComplete {
+//                scanAllResources()
+//            }
         }
         .onChange(of: cacheManager.cacheInfo) { _, _ in
             // 当 cacheInfo 更新时，更新 header（但不重建整个视图）
@@ -123,6 +112,21 @@ struct GameInfoDetailView: View {
         }
     }
 
+    // MARK: - 刷新逻辑
+    /// 执行刷新操作（游戏名变化或 gameType 变化且游戏名不变时调用）
+    private func performRefresh() {
+        updateHeaders()
+        cacheManager.calculateGameCacheInfo(game.gameName)
+        // 仅在本地视图时刷新本地资源
+        if !gameType {
+            triggerLocalRefresh()
+        }
+        // 重新扫描资源
+        resetScanState()
+        scanAllResources()
+        // 更新 previousGameName
+    }
+    
     private func triggerLocalRefresh() {
         // 仅在本地视图时更新刷新令牌
         guard !gameType else { return }
@@ -190,6 +194,14 @@ struct GameInfoDetailView: View {
             for: query,
             gameName: game.gameName
         ) else {
+            scannedResources = []
+            isScanComplete = true
+            return
+        }
+        
+        // 检查目录是否存在且可访问
+        guard FileManager.default.fileExists(atPath: resourceDir.path) else {
+            // 目录不存在，直接标记为完成
             scannedResources = []
             isScanComplete = true
             return

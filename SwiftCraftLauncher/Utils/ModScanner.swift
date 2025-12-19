@@ -350,6 +350,7 @@ extension ModScanner {
     /// 返回 Set 以提高查找性能（O(1)）
     public func scanAllDetailIdsThrowing(in dir: URL) async throws -> Set<String> {
         // 在后台线程执行文件系统操作
+        Logger.shared.info("扫描")
         return try await Task.detached(priority: .userInitiated) {
             guard FileManager.default.fileExists(atPath: dir.path) else {
                 throw GlobalError.resource(

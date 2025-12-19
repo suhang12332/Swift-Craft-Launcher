@@ -61,6 +61,8 @@ struct GameLocalResourceView: View {
             clearAllData()
         }
         .onChange(of: refreshToken) { _, _ in
+            // 重置资源目录，确保切换游戏时使用新游戏的目录
+            resourceDirectory = nil
             resetPagination()
             refreshAllFiles()
             loadPage(page: 1, append: false)
@@ -209,7 +211,19 @@ struct GameLocalResourceView: View {
     // MARK: - 资源目录初始化
     /// 初始化资源目录路径
     private func initializeResourceDirectory() {
-        guard resourceDirectory == nil else { return }
+        // 如果 resourceDirectory 已存在，检查是否匹配当前游戏
+        if let existingDir = resourceDirectory {
+            let expectedDir = AppPaths.resourceDirectory(
+                for: query,
+                gameName: game.gameName
+            )
+            // 如果目录不匹配，需要重新初始化
+            if existingDir != expectedDir {
+                resourceDirectory = nil
+            } else {
+                return
+            }
+        }
 
         resourceDirectory = AppPaths.resourceDirectory(
             for: query,
