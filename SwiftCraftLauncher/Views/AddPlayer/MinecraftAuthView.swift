@@ -65,7 +65,7 @@ struct MinecraftAuthView: View {
         VStack(spacing: 16) {
             // 浏览器图标
             Image(systemName: "person.crop.circle.badge.clock")
-                .font(.system(size: 60))
+                .font(.system(size: 46))
                 .foregroundColor(.secondary)
 
             Text("minecraft.auth.waiting_browser".localized())
