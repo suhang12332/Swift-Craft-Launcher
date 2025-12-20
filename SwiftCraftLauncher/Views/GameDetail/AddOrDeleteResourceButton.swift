@@ -181,17 +181,6 @@ struct AddOrDeleteResourceButton: View {
                                 }
                         }
                     },
-                    onRetry: { dep in
-                        Task {
-                            await GameResourceHandler.retryDownloadDependency(
-                                dep: dep,
-                                gameInfo: gameInfo,
-                                depVM: depVM,
-                                query: query,
-                                gameRepository: gameRepository
-                            )
-                        }
-                    },
                     onDownloadMainOnly: {
                         isDownloadingMainResourceOnly = true
                         await GameResourceHandler.downloadSingleResource(

@@ -65,23 +65,9 @@ struct GameHeaderListRow: View {
         Group {
             let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
             let iconURL = profileDir.appendingPathComponent(game.gameIcon)
-            if FileManager.default.fileExists(atPath: iconURL.path) {
-                AsyncImage(url: iconURL) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                    case .success(let image):
-                        styledIcon(image, size: 80)
-                    case .failure:
-                        Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-                            .resizable()
-                            .interpolation(.none)
-                            .frame(width: 80, height: 80)
-                            .cornerRadius(16)
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
+            if FileManager.default.fileExists(atPath: iconURL.path),
+               let nsImage = NSImage(contentsOf: iconURL) {
+                styledIcon(Image(nsImage: nsImage), size: 80)
             } else {
                 Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
                     .resizable()
