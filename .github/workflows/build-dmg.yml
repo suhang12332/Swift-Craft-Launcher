@@ -14,7 +14,7 @@ env:
 
 jobs:
   build:
-    runs-on: macos-15
+    runs-on: macos-26
     strategy:
       matrix:
         arch: [arm64, x86_64]
@@ -28,7 +28,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.3'
+          xcode-version: latest-stable
 
       - name: Extract version info
         id: version
