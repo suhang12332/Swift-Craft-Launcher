@@ -592,6 +592,12 @@ extension ModScanner {
 
     /// 获取目录下所有 jar/zip 文件列表（抛出异常版本）
     func getAllResourceFilesThrowing(_ dir: URL) throws -> [URL] {
+        // 检查目录是否存在
+        guard FileManager.default.fileExists(atPath: dir.path) else {
+            // 目录不存在，返回空数组（不抛出异常，因为这是正常情况）
+            return []
+        }
+
         let files: [URL]
         do {
             files = try FileManager.default.contentsOfDirectory(
