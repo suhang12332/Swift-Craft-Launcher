@@ -24,7 +24,6 @@ struct DetailView: View {
     @Binding var versionTotal: Int
     @Binding var gameType: Bool
     @Binding var selectedLoader: [String]
-    @Binding var isScanComplete: Bool  // 扫描完成状态，用于控制工具栏按钮
 
     @EnvironmentObject var gameRepository: GameRepository
 
@@ -55,8 +54,7 @@ struct DetailView: View {
                 selectedProjectId: $selectedProjectId,
                 selectedLoaders: $selectedLoader,
                 gameType: $gameType,
-                selectedItem: $selectedItem,
-                isScanComplete: $isScanComplete
+                selectedItem: $selectedItem
             )
         }
     }

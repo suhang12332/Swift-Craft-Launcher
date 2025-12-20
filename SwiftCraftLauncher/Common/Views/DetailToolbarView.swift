@@ -16,7 +16,6 @@ public struct DetailToolbarView: ToolbarContent {
     @Binding var selectProjectId: String?
     @Binding var selectedTab: Int
     @Binding var gameId: String?
-    @Binding var isScanComplete: Bool  // 扫描完成状态，用于控制切换按钮
 
     // MARK: - Computed Properties
 
@@ -75,9 +74,7 @@ public struct DetailToolbarView: ToolbarContent {
                     //                        Spacer()
                     //                    }
                     resourcesTypeMenu
-                    if isScanComplete {
-                        resourcesMenu
-                    }
+                    resourcesMenu
                     if gameType {
                         sortMenu
                     }
@@ -188,22 +185,13 @@ public struct DetailToolbarView: ToolbarContent {
         Button {
             gameType.toggle()
         } label: {
-            if !isScanComplete {
-                // 扫描中显示 loading
-                HStack(spacing: 4) {
-                    ProgressView()
-                        .controlSize(.small)
-                }
-            } else {
-                Label(
-                    currentResourceTypeTitle,
-                    systemImage: gameType
-                        ? "tray.and.arrow.down" : "icloud.and.arrow.down"
-                ).foregroundStyle(.primary)
-            }
+            Label(
+                currentResourceTypeTitle,
+                systemImage: gameType
+                    ? "tray.and.arrow.down" : "icloud.and.arrow.down"
+            ).foregroundStyle(.primary)
         }
         .help("resource.content.location.help".localized())
-        .disabled(!isScanComplete)  // 扫描未完成时禁用切换按钮
         .applyReplaceTransition()
     }
 

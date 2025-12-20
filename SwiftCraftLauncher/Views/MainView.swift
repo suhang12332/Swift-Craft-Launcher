@@ -34,7 +34,6 @@ struct MainView: View {
     @State private var gameResourcesType = "mod"
     @State private var gameType = true  // false = local, true = server
     @State private var gameId: String?
-    @State private var isScanComplete = false  // 扫描完成状态，用于控制工具栏按钮
 
     @State private var showingInspector: Bool = false
 
@@ -83,8 +82,7 @@ struct MainView: View {
                 versionCurrentPage: $versionCurrentPage,
                 versionTotal: $versionTotal,
                 gameType: $gameType,
-                selectedLoader: $selectedLoaders,
-                isScanComplete: $isScanComplete
+                selectedLoader: $selectedLoaders
             )
             .toolbar {
                 DetailToolbarView(
@@ -97,8 +95,7 @@ struct MainView: View {
                     project: $loadedProjectDetail,
                     selectProjectId: $selectedProjectId,
                     selectedTab: $selectedTab,
-                    gameId: $gameId,
-                    isScanComplete: $isScanComplete
+                    gameId: $gameId
                 )
             }
         }
@@ -167,13 +164,6 @@ struct MainView: View {
 
         self.gameId = gameId
         self.selectedProjectId = nil
-        // 重置扫描状态
-        if self.gameId == nil {
-            self.isScanComplete = false
-        }
-        if self.gameId != nil {
-            self.isScanComplete = true
-        }
         // 更新选中的游戏管理器，供设置页面使用
         selectedGameManager.setSelectedGame(gameId)
     }
@@ -191,8 +181,6 @@ struct MainView: View {
         }
 
         self.gameId = newId
-        // 重置扫描状态
-        self.isScanComplete = false
         // 更新选中的游戏管理器，供设置页面使用
         selectedGameManager.setSelectedGame(newId)
     }
@@ -201,9 +189,6 @@ struct MainView: View {
     private func resetToResourceDefaults() {
         // 清除选中的游戏，因为切换到资源页面
         selectedGameManager.clearSelection()
-
-        // 重置扫描状态（资源页面不需要扫描，设为 true）
-        isScanComplete = true
 
         // 资源目录应该始终使用服务器模式（从Modrinth搜索）
         if !gameType && self.selectedProjectId == nil {

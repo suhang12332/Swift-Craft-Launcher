@@ -31,7 +31,6 @@ struct GameInfoDetailView: View {
 
     // 扫描结果：detailId Set，用于快速查找（O(1)）
     @State private var scannedResources: Set<String> = []
-    @Binding var isScanComplete: Bool  // 扫描完成状态，用于控制工具栏按钮
 
     // 使用稳定的 header，避免因 cacheInfo 更新导致重建
     @State private var remoteHeader: AnyView?
@@ -146,26 +145,20 @@ struct GameInfoDetailView: View {
         }
         // 重置扫描结果
         scannedResources = []
-        isScanComplete = false
     }
 
     // MARK: - 重置扫描状态
     /// 重置扫描状态，准备重新扫描
     private func resetScanState() {
         scannedResources = []
-        isScanComplete = false
     }
 
     // MARK: - 扫描所有资源
     /// 异步扫描所有资源，收集 detailId（不阻塞视图渲染）
     private func scanAllResources() {
-        // 如果已经完成扫描，不重复扫描
-        guard !isScanComplete else { return }
-
         // Modpacks don't have a local directory to scan
         if query.lowercased() == "modpack" {
             scannedResources = []
-            isScanComplete = true
             return
         }
 
@@ -174,20 +167,15 @@ struct GameInfoDetailView: View {
             gameName: game.gameName
         ) else {
             scannedResources = []
-            isScanComplete = true
             return
         }
 
         // 检查目录是否存在且可访问
         guard FileManager.default.fileExists(atPath: resourceDir.path) else {
-            // 目录不存在，直接标记为完成
+            // 目录不存在，直接返回
             scannedResources = []
-            isScanComplete = true
             return
         }
-
-        // 立即设置状态为扫描中，不阻塞视图渲染
-        isScanComplete = false
 
         // 使用 Task 创建异步任务，确保不阻塞视图渲染
         // 所有耗时操作在后台线程执行，只有更新状态时才回到主线程
@@ -199,7 +187,6 @@ struct GameInfoDetailView: View {
                 // 回到主线程更新状态
                 await MainActor.run {
                     scannedResources = detailIds
-                    isScanComplete = true
                 }
             } catch {
                 let globalError = GlobalError.from(error)
@@ -209,7 +196,6 @@ struct GameInfoDetailView: View {
                 // 回到主线程更新状态
                 await MainActor.run {
                     scannedResources = []
-                    isScanComplete = true
                 }
             }
         }
