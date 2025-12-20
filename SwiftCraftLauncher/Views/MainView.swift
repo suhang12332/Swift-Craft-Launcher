@@ -116,6 +116,12 @@ struct MainView: View {
             // 当工作目录改变时，切换到mod选择界面
             selectedItem = .resource(.mod)
             gameType = true
+            // 重新扫描所有游戏
+            scanAllGamesModsDirectory()
+        }
+        .onAppear {
+            // 应用启动时扫描所有游戏
+            scanAllGamesModsDirectory()
         }
     }
 
@@ -199,6 +205,11 @@ struct MainView: View {
         // 重置扫描状态（资源页面不需要扫描，设为 true）
         isScanComplete = true
 
+        // 资源目录应该始终使用服务器模式（从Modrinth搜索）
+        if !gameType && self.selectedProjectId == nil {
+            gameType = true
+        }
+
         // 排序方式回到默认值
         sortIndex = "relevance"
 
@@ -233,6 +244,28 @@ struct MainView: View {
             self.gameId = nil
             self.loadedProjectDetail = nil
             self.selectedProjectId = nil
+        }
+    }
+
+    // MARK: - Scanning Methods
+
+    /// 扫描所有游戏的 mods 目录
+    /// 异步执行，不会阻塞 UI
+    private func scanAllGamesModsDirectory() {
+        Task {
+            let games = gameRepository.games
+            Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
+
+            // 并发扫描所有游戏
+            await withTaskGroup(of: Void.self) { group in
+                for game in games {
+                    group.addTask {
+                        await ModScanner.shared.scanGameModsDirectory(game: game)
+                    }
+                }
+            }
+
+            Logger.shared.info("完成所有游戏的 mods 目录扫描")
         }
     }
 }

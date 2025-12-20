@@ -74,11 +74,8 @@ struct GameInfoDetailView: View {
             // 游戏名变化时刷新
             performRefresh()
         }
-        .onChange(of: gameType) { oldValue, newValue in
-            // 仅从资源视图切换到游戏视图时刷新
-            if oldValue == true && newValue == false {
-                performRefresh()
-            }
+        .onChange(of: gameType) { _, _ in
+            performRefresh()
         }
         .onAppear {
             // 初始化 header
