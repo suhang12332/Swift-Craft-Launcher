@@ -55,8 +55,9 @@ struct DependencySheetView: View {
                                             Text(v.name).tag(v.id)
                                         }
                                     }
-                                    // .pickerStyle(.menu)
+                                    .pickerStyle(.menu)
                                     .font(.subheadline)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                             }
                         }
