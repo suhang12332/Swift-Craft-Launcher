@@ -46,8 +46,30 @@ enum GameResourceHandler {
             )
         }
 
+        // 如果是 mod 文件，删除前获取 projectId 以便从缓存中移除
+        var projectId: String?
+        var gameName: String?
+        if isModsDirectory(fileURL.deletingLastPathComponent()) {
+            // 从文件路径提取 gameName
+            gameName = extractGameName(from: fileURL.deletingLastPathComponent())
+            // 尝试从缓存获取 projectId
+            if let hash = ModScanner.sha1Hash(of: fileURL),
+               let detail = AppCacheManager.shared.get(
+                   namespace: "mod",
+                   key: hash,
+                   as: ModrinthProjectDetail.self
+               ) {
+                projectId = detail.id
+            }
+        }
+
         do {
             try FileManager.default.removeItem(at: fileURL)
+
+            // 删除成功后，如果是 mod，从缓存中移除
+            if let projectId = projectId, let gameName = gameName {
+                ModScanner.shared.removeModProjectId(projectId, from: gameName)
+            }
         } catch {
             throw GlobalError.fileSystem(
                 chineseMessage:
@@ -56,6 +78,23 @@ enum GameResourceHandler {
                 level: .notification
             )
         }
+    }
+
+    /// 判断目录是否是 mods 目录
+    /// - Parameter dir: 目录 URL
+    /// - Returns: 是否是 mods 目录
+    private static func isModsDirectory(_ dir: URL) -> Bool {
+        return dir.lastPathComponent.lowercased() == "mods"
+    }
+
+    /// 从 mods 目录路径中提取游戏名称
+    /// - Parameter modsDir: mods 目录 URL
+    /// - Returns: 游戏名称，如果无法提取则返回 nil
+    private static func extractGameName(from modsDir: URL) -> String? {
+        // mods 目录结构：profileRootDirectory/gameName/mods
+        // 所以 gameName 是 mods 目录的父目录名称
+        let parentDir = modsDir.deletingLastPathComponent()
+        return parentDir.lastPathComponent
     }
 
     // MARK: - 下载方法
@@ -457,6 +496,15 @@ enum GameResourceHandler {
             var resourceToAdd = dep
             resourceToAdd.fileName = primaryFile.filename
             resourceToAdd.type = query
+
+            // 如果是 mod，添加到安装缓存
+            if query.lowercased() == "mod" {
+                ModScanner.shared.addModProjectId(
+                    dep.id,
+                    to: gameInfo.gameName
+                )
+            }
+
             depVM.dependencyDownloadStates[dep.id] = .success
         } catch {
             throw GlobalError.download(

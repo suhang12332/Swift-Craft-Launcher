@@ -8,7 +8,6 @@ struct DependencySheetView: View {
     @State private var error: GlobalError?
 
     let onDownloadAll: () async -> Void
-    let onRetry: (ModrinthProjectDetail) async -> Void
     let onDownloadMainOnly: () async -> Void
 
     var body: some View {
@@ -33,7 +32,6 @@ struct DependencySheetView: View {
                                         Text(dep.title)
                                             .font(.headline)
                                         Spacer()
-                                        dependencyDownloadStatusView(dep: dep)
                                     }
                                     Picker(
                                         "dependency.version.picker".localized(),
@@ -171,41 +169,6 @@ struct DependencySheetView: View {
             if let error = error {
                 Text(error.chineseMessage)
             }
-        }
-    }
-
-    @ViewBuilder
-    private func dependencyDownloadStatusView(
-        dep: ModrinthProjectDetail
-    ) -> some View {
-        let state = viewModel.dependencyDownloadStates[dep.id] ?? .idle
-        switch state {
-        case .idle:
-            EmptyView()
-        case .downloading:
-            ProgressView().controlSize(.small)
-        case .success:
-            Label(
-                "dependency.download.success".localized(),
-                systemImage: "checkmark.circle.fill"
-            )
-            .labelStyle(.iconOnly)
-            .foregroundColor(.green)
-        case .failed:
-            Button {
-                Task {
-                    await onRetry(dep)
-                }
-            } label: {
-                Label(
-                    "dependency.download.retry".localized(),
-                    systemImage: "arrow.clockwise.circle.fill"
-                )
-                .labelStyle(.iconOnly)
-                .foregroundColor(.orange)
-            }
-            .buttonStyle(.borderless)
-            .help("dependency.download.retry.help".localized())
         }
     }
 

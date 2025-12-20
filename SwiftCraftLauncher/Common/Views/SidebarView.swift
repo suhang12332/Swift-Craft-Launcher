@@ -3,6 +3,7 @@ import SwiftUI
 /// 通用侧边栏视图组件，用于显示游戏列表和资源列表的导航
 public struct SidebarView: View {
     @Binding var selectedItem: SidebarItem
+    @Binding var gameType: Bool
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
@@ -33,8 +34,9 @@ public struct SidebarView: View {
     @Environment(\.openSettings)
     private var openSettings
 
-    public init(selectedItem: Binding<SidebarItem>) {
+    public init(selectedItem: Binding<SidebarItem>, gameType: Binding<Bool> = .constant(true)) {
         self._selectedItem = selectedItem
+        self._gameType = gameType
     }
 
     public var body: some View {
@@ -64,7 +66,8 @@ public struct SidebarView: View {
                     gameActionManager.deleteGame(
                         game: game,
                         gameRepository: gameRepository,
-                        selectedItem: $selectedItem
+                        selectedItem: $selectedItem,
+                        gameType: $gameType
                     )
                 }
             }

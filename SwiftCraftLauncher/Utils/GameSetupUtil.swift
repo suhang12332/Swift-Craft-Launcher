@@ -136,7 +136,11 @@ class GameSetupUtil: ObservableObject {
             // 使用 ensureJavaExists 返回的结果，避免再次触发 Java 校验
             gameInfo.javaPath = javaPath
             // 保存游戏配置
+
             gameRepository.addGameSilently(gameInfo)
+
+            // 扫描游戏的 mods 目录（同步阻塞）
+            ModScanner.shared.scanGameModsDirectorySync(game: gameInfo)
 
             // 发送通知
             NotificationManager.sendSilently(

@@ -34,7 +34,6 @@ struct MainView: View {
     @State private var gameResourcesType = "mod"
     @State private var gameType = true  // false = local, true = server
     @State private var gameId: String?
-    @State private var isScanComplete = false  // 扫描完成状态，用于控制工具栏按钮
 
     @State private var showingInspector: Bool = false
 
@@ -42,7 +41,7 @@ struct MainView: View {
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             // 侧边栏
-            SidebarView(selectedItem: $selectedItem)
+            SidebarView(selectedItem: $selectedItem, gameType: $gameType)
                 .navigationSplitViewColumnWidth(min: 168, ideal: 168, max: 168)
         } content: {
 
@@ -83,8 +82,7 @@ struct MainView: View {
                 versionCurrentPage: $versionCurrentPage,
                 versionTotal: $versionTotal,
                 gameType: $gameType,
-                selectedLoader: $selectedLoaders,
-                isScanComplete: $isScanComplete
+                selectedLoader: $selectedLoaders
             )
             .toolbar {
                 DetailToolbarView(
@@ -97,8 +95,7 @@ struct MainView: View {
                     project: $loadedProjectDetail,
                     selectProjectId: $selectedProjectId,
                     selectedTab: $selectedTab,
-                    gameId: $gameId,
-                    isScanComplete: $isScanComplete
+                    gameId: $gameId
                 )
             }
         }
@@ -116,6 +113,8 @@ struct MainView: View {
             // 当工作目录改变时，切换到mod选择界面
             selectedItem = .resource(.mod)
             gameType = true
+            // 重新扫描所有游戏
+            scanAllGamesModsDirectory()
         }
     }
 
@@ -161,13 +160,6 @@ struct MainView: View {
 
         self.gameId = gameId
         self.selectedProjectId = nil
-        // 重置扫描状态
-        if self.gameId == nil {
-            self.isScanComplete = false
-        }
-        if self.gameId != nil {
-            self.isScanComplete = true
-        }
         // 更新选中的游戏管理器，供设置页面使用
         selectedGameManager.setSelectedGame(gameId)
     }
@@ -185,8 +177,6 @@ struct MainView: View {
         }
 
         self.gameId = newId
-        // 重置扫描状态
-        self.isScanComplete = false
         // 更新选中的游戏管理器，供设置页面使用
         selectedGameManager.setSelectedGame(newId)
     }
@@ -196,8 +186,10 @@ struct MainView: View {
         // 清除选中的游戏，因为切换到资源页面
         selectedGameManager.clearSelection()
 
-        // 重置扫描状态（资源页面不需要扫描，设为 true）
-        isScanComplete = true
+        // 资源目录应该始终使用服务器模式（从Modrinth搜索）
+        if !gameType && self.selectedProjectId == nil {
+            gameType = true
+        }
 
         // 排序方式回到默认值
         sortIndex = "relevance"
@@ -233,6 +225,28 @@ struct MainView: View {
             self.gameId = nil
             self.loadedProjectDetail = nil
             self.selectedProjectId = nil
+        }
+    }
+
+    // MARK: - Scanning Methods
+
+    /// 扫描所有游戏的 mods 目录
+    /// 异步执行，不会阻塞 UI
+    private func scanAllGamesModsDirectory() {
+        Task {
+            let games = gameRepository.games
+            Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
+
+            // 并发扫描所有游戏
+            await withTaskGroup(of: Void.self) { group in
+                for game in games {
+                    group.addTask {
+                        await ModScanner.shared.scanGameModsDirectory(game: game)
+                    }
+                }
+            }
+
+            Logger.shared.info("完成所有游戏的 mods 目录扫描")
         }
     }
 }

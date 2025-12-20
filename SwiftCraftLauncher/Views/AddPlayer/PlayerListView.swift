@@ -140,8 +140,8 @@ private struct PlayerSelectorLabel: View {
 
     var body: some View {
         if let selectedPlayer = selectedPlayer {
-            HStack(spacing: 6) {
-                PlayerAvatarView(player: selectedPlayer, size: 30)
+            HStack(spacing: 8) {
+                PlayerAvatarView(player: selectedPlayer, size: 34)
                 Text(selectedPlayer.name)
                     .foregroundColor(.primary)
                     .font(.system(size: 13).bold())

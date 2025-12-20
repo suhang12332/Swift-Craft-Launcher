@@ -102,6 +102,13 @@ enum ModrinthDependencyDownloader {
                                     detail: detailWithFile
                                 )
                             }
+                            // 如果是 mod，添加到安装缓存
+                            if query.lowercased() == "mod" {
+                                ModScanner.shared.addModProjectId(
+                                    detailWithFile.id,
+                                    to: gameInfo.gameName
+                                )
+                            }
                             return detailWithFile
                         }
                         return nil
@@ -148,6 +155,13 @@ enum ModrinthDependencyDownloader {
                                 ModScanner.shared.saveToCache(
                                     hash: hash,
                                     detail: mainProjectDetail
+                                )
+                            }
+                            // 如果是 mod，添加到安装缓存
+                            if query.lowercased() == "mod" {
+                                ModScanner.shared.addModProjectId(
+                                    mainProjectDetail.id,
+                                    to: gameInfo.gameName
                                 )
                             }
                             return mainProjectDetail
@@ -334,6 +348,13 @@ enum ModrinthDependencyDownloader {
                                 detail: depCopy
                             )
                         }
+                        // 如果是 mod，添加到安装缓存
+                        if query.lowercased() == "mod" {
+                            ModScanner.shared.addModProjectId(
+                                depCopy.id,
+                                to: gameInfo.gameName
+                            )
+                        }
                     } catch {
                         let globalError = GlobalError.from(error)
                         Logger.shared.error(
@@ -421,6 +442,13 @@ enum ModrinthDependencyDownloader {
                     detail: mainProjectDetail
                 )
             }
+            // 如果是 mod，添加到安装缓存
+            if query.lowercased() == "mod" {
+                ModScanner.shared.addModProjectId(
+                    mainProjectDetail.id,
+                    to: gameInfo.gameName
+                )
+            }
             return true
         } catch {
             let globalError = GlobalError.from(error)
@@ -477,6 +505,13 @@ enum ModrinthDependencyDownloader {
                 ModScanner.shared.saveToCache(
                     hash: hash,
                     detail: mainProjectDetail
+                )
+            }
+            // 如果是 mod，添加到安装缓存
+            if query.lowercased() == "mod" {
+                ModScanner.shared.addModProjectId(
+                    mainProjectDetail.id,
+                    to: gameInfo.gameName
                 )
             }
             return true

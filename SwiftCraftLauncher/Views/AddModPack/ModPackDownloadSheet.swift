@@ -11,6 +11,7 @@ struct ModPackDownloadSheet: View {
     let projectId: String
     let gameInfo: GameVersionInfo?
     let query: String
+    let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
     @EnvironmentObject private var gameRepository: GameRepository
     @Environment(\.dismiss)
     private var dismiss
@@ -24,10 +25,11 @@ struct ModPackDownloadSheet: View {
     @StateObject private var gameNameValidator: GameNameValidator
 
     // MARK: - Initializer
-    init(projectId: String, gameInfo: GameVersionInfo?, query: String) {
+    init(projectId: String, gameInfo: GameVersionInfo?, query: String, preloadedDetail: ModrinthProjectDetail? = nil) {
         self.projectId = projectId
         self.gameInfo = gameInfo
         self.query = query
+        self.preloadedDetail = preloadedDetail
         self._gameNameValidator = StateObject(wrappedValue: GameNameValidator(gameSetupService: GameSetupUtil()))
     }
 
@@ -39,8 +41,11 @@ struct ModPackDownloadSheet: View {
         )
         .onAppear {
             viewModel.setGameRepository(gameRepository)
-            Task {
-                await viewModel.loadProjectDetails(projectId: projectId)
+            // 使用预加载的 detail
+            if let preloaded = preloadedDetail {
+                Task {
+                    await viewModel.setPreloadedDetail(preloaded)
+                }
             }
         }
         .onDisappear {
@@ -81,19 +86,38 @@ struct ModPackDownloadSheet: View {
     private var bodyView: some View {
         VStack(alignment: .leading, spacing: 12) {
             if isProcessing {
-                processingView
-            } else if viewModel.isLoadingProjectDetails {
-                ProgressView().controlSize(.small)
-                    .frame(maxWidth: .infinity, minHeight: 130)
+                ProcessingView()
             } else if let projectDetail = viewModel.projectDetail {
                 ModrinthProjectTitleView(projectDetail: projectDetail)
                     .padding(.bottom, 18)
-                versionSelectionSection
+
+                VersionSelectionView(
+                    selectedGameVersion: $selectedGameVersion,
+                    selectedModPackVersion: $selectedModPackVersion,
+                    availableGameVersions: viewModel.availableGameVersions,
+                    filteredModPackVersions: viewModel.filteredModPackVersions,
+                    isLoadingModPackVersions: viewModel.isLoadingModPackVersions,
+                    isProcessing: isProcessing,
+                    onGameVersionChange: handleGameVersionChange,
+                    onModPackVersionAppear: selectFirstModPackVersion
+                )
+
+                if !selectedGameVersion.isEmpty && selectedModPackVersion != nil {
+                    gameNameInputSection
+                }
 
                 if shouldShowProgress {
-
-                    downloadProgressSection.padding(.top, 18)
+                    DownloadProgressView(
+                        gameSetupService: gameSetupService,
+                        modPackInstallState: viewModel.modPackInstallState,
+                        lastParsedIndexInfo: viewModel.lastParsedIndexInfo
+                    )
+                    .padding(.top, 18)
                 }
+            } else {
+                Text("global_resource.loading_error".localized())
+                    .foregroundColor(.secondary)
+                    .padding()
             }
         }
     }
@@ -123,150 +147,6 @@ struct ModPackDownloadSheet: View {
     }
 
     // MARK: - UI Components
-
-    private var processingView: some View {
-        VStack(spacing: 24) {
-            ProgressView().controlSize(.small)
-
-            Text("modpack.processing.title".localized())
-                .font(.headline)
-                .foregroundColor(.primary)
-
-            Text("modpack.processing.subtitle".localized())
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, minHeight: 130)
-        .padding()
-    }
-
-    private var downloadProgressSection: some View {
-        VStack(spacing: 24) {
-            gameDownloadProgress
-            modLoaderDownloadProgress
-            modPackInstallProgress
-        }
-    }
-
-    private var gameDownloadProgress: some View {
-        Group {
-            progressRow(
-                title: "download.core.title".localized(),
-                state: gameSetupService.downloadState,
-                type: .core
-            )
-            progressRow(
-                title: "download.resources.title".localized(),
-                state: gameSetupService.downloadState,
-                type: .resources
-            )
-        }
-    }
-
-    private var modLoaderDownloadProgress: some View {
-        Group {
-            if let indexInfo = viewModel.lastParsedIndexInfo {
-                let loaderState = getLoaderDownloadState(
-                    for: indexInfo.loaderType
-                )
-                let title = getLoaderTitle(for: indexInfo.loaderType)
-
-                if let state = loaderState {
-                    progressRow(
-                        title: title,
-                        state: state,
-                        type: .core,
-                        version: indexInfo.loaderVersion
-                    )
-                }
-            }
-        }
-    }
-
-    private var modPackInstallProgress: some View {
-        Group {
-            if viewModel.modPackInstallState.isInstalling {
-                progressRow(
-                    title: "modpack.files.title".localized(),
-                    installState: viewModel.modPackInstallState,
-                    type: .files
-                )
-
-                if viewModel.modPackInstallState.dependenciesTotal > 0 {
-                    progressRow(
-                        title: "modpack.dependencies.title".localized(),
-                        installState: viewModel.modPackInstallState,
-                        type: .dependencies
-                    )
-                }
-            }
-        }
-    }
-
-    private var versionSelectionSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            gameVersionPicker
-            if !selectedGameVersion.isEmpty {
-                modPackVersionPicker
-                gameNameInputSection
-            }
-        }
-    }
-
-    private var gameVersionPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("modpack.game.version".localized())
-                .foregroundColor(.primary)
-            Picker(
-                "",
-                selection: $selectedGameVersion
-            ) {
-                Text("modpack.game.version.placeholder".localized()).tag("")
-                ForEach(viewModel.availableGameVersions, id: \.self) { version in
-                    Text(version).tag(version)
-                }
-            }
-            .pickerStyle(MenuPickerStyle())
-            .labelsHidden()
-            .onChange(of: selectedGameVersion) { _, newValue in
-                handleGameVersionChange(newValue)
-            }
-        }
-    }
-
-    private var modPackVersionPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if viewModel.isLoadingModPackVersions {
-                Text("modpack.version".localized())
-                    .foregroundColor(.primary)
-                HStack {
-                    ProgressView()
-                        .controlSize(.small).frame(maxWidth: .infinity)
-                }
-            } else if !selectedGameVersion.isEmpty {
-                Text("modpack.version".localized())
-                    .foregroundColor(.primary)
-                Picker(
-                    "",
-                    selection: $selectedModPackVersion
-                ) {
-                    ForEach(viewModel.filteredModPackVersions, id: \.id) { version in
-                        Text(version.name).tag(
-                            version as ModrinthProjectDetailVersion?
-                        )
-                    }
-                }
-                .labelsHidden()
-                .pickerStyle(MenuPickerStyle())
-                .onAppear {
-                    selectFirstModPackVersion()
-                }
-            }
-        }
-    }
 
     private var gameNameInputSection: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -308,81 +188,6 @@ struct ModPackDownloadSheet: View {
     }
 
     // MARK: - Helper Methods
-
-    private func progressRow(
-        title: String,
-        state: DownloadState,
-        type: ProgressType,
-        version: String? = nil
-    ) -> some View {
-        FormSection {
-            DownloadProgressRow(
-                title: title,
-                progress: type == .core
-                    ? state.coreProgress : state.resourcesProgress,
-                currentFile: type == .core
-                    ? state.currentCoreFile : state.currentResourceFile,
-                completed: type == .core
-                    ? state.coreCompletedFiles : state.resourcesCompletedFiles,
-                total: type == .core
-                    ? state.coreTotalFiles : state.resourcesTotalFiles,
-                version: version
-            )
-        }
-    }
-
-    private func progressRow(
-        title: String,
-        installState: ModPackInstallState,
-        type: InstallProgressType
-    ) -> some View {
-        FormSection {
-            DownloadProgressRow(
-                title: title,
-                progress: type == .files
-                    ? installState.filesProgress
-                    : installState.dependenciesProgress,
-                currentFile: type == .files
-                    ? installState.currentFile : installState.currentDependency,
-                completed: type == .files
-                    ? installState.filesCompleted
-                    : installState.dependenciesCompleted,
-                total: type == .files
-                    ? installState.filesTotal : installState.dependenciesTotal,
-                version: nil
-            )
-        }
-    }
-
-    private func getLoaderDownloadState(
-        for loaderType: String
-    ) -> DownloadState? {
-        switch loaderType.lowercased() {
-        case "fabric", "quilt":
-            return gameSetupService.fabricDownloadState
-        case "forge":
-            return gameSetupService.forgeDownloadState
-        case "neoforge":
-            return gameSetupService.neoForgeDownloadState
-        default:
-            return nil
-        }
-    }
-
-    private func getLoaderTitle(for loaderType: String) -> String {
-        switch loaderType.lowercased() {
-        case "fabric":
-            return "fabric.loader.title".localized()
-        case "quilt":
-            return "quilt.loader.title".localized()
-        case "forge":
-            return "forge.loader.title".localized()
-        case "neoforge":
-            return "neoforge.loader.title".localized()
-        default:
-            return ""
-        }
-    }
 
     private func handleGameVersionChange(_ newValue: String) {
         if !newValue.isEmpty {
@@ -710,14 +515,4 @@ struct ModPackDownloadSheet: View {
             // 不抛出错误，因为这是清理操作，不应该影响主流程
         }
     }
-}
-
-// MARK: - Supporting Types
-
-private enum ProgressType {
-    case core, resources
-}
-
-private enum InstallProgressType {
-    case files, dependencies
 }

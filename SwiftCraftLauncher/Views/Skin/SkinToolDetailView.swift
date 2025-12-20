@@ -64,9 +64,38 @@ struct SkinToolDetailView: View {
                     .frame(maxWidth: .infinity, minHeight: 100)
             } else {
                 VStack(spacing: 24) {
-                    playerSection
-                    skinUploadSection
-                    capeSection
+                    PlayerInfoSectionView(
+                        player: resolvedPlayer,
+                        currentModel: $currentModel
+                    )
+                    .onChange(of: currentModel) { _, _ in
+                        updateHasChanges()
+                    }
+
+                    SkinUploadSectionView(
+                        currentModel: $currentModel,
+                        showingFileImporter: $showingFileImporter,
+                        selectedSkinImage: $selectedSkinImage,
+                        selectedSkinPath: $selectedSkinPath,
+                        currentSkinRenderImage: $currentSkinRenderImage,
+                        selectedCapeLocalPath: $selectedCapeLocalPath,
+                        showingSkinPreview: $showingSkinPreview,
+                        onSkinDropped: handleSkinDroppedImage,
+                        onDrop: handleDrop
+                    )
+
+                    CapeSelectionView(
+                        playerProfile: playerProfile,
+                        selectedCapeId: $selectedCapeId,
+                        selectedCapeImageURL: $selectedCapeImageURL
+                    ) { id, imageURL in
+                        if let imageURL = imageURL, id != nil {
+                            Task { await downloadCapeTextureIfNeeded(from: imageURL) }
+                        } else {
+                            selectedCapeLocalPath = nil
+                        }
+                        updateHasChanges()
+                    }
                 }
             }
         }
@@ -88,115 +117,6 @@ struct SkinToolDetailView: View {
                 }
             }
         }
-    }
-
-    private var playerSection: some View {
-        VStack(spacing: 16) {
-            if let player = resolvedPlayer {
-                VStack(spacing: 12) {
-                    MinecraftSkinUtils(
-                        type: player.isOnlineAccount ? .url : .asset,
-                        src: player.avatarName,
-                        size: 88
-                    )
-                    Text(player.name).font(.title2.bold())
-
-                    HStack(spacing: 4) {
-                        Text("skin.classic".localized())
-                            .font(.caption)
-                            .foregroundColor(currentModel == .classic ? .primary : .secondary)
-
-                        Toggle(isOn: Binding(
-                            get: { currentModel == .slim },
-                            set: {
-                                currentModel = $0 ? .slim : .classic
-                                updateHasChanges()
-                            }
-                        )) {
-                            EmptyView() // 避免 "" 带来的多余空间
-                        }
-                        .labelsHidden()
-                        .toggleStyle(SwitchToggleStyle())
-                        .controlSize(.mini)
-
-                        Text("skin.slim".localized())
-                            .font(.caption)
-                            .foregroundColor(currentModel == .slim ? .primary : .secondary)
-                    }
-                }
-            } else {
-                ContentUnavailableView(
-                    "skin.no_player".localized(),
-                    systemImage: "person",
-                    description: Text("skin.add_player_first".localized())
-                )
-            }
-        }.frame(width: 280)
-    }
-
-    private var skinUploadSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("skin.upload".localized()).font(.headline)
-
-            skinRenderArea
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Drop skin file here or click to select")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Text("PNG 64×64 or legacy 64×32")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
-            .padding(.horizontal, 4)
-        }
-    }
-
-    private var skinRenderArea: some View {
-        let playerModel = convertToPlayerModel(currentModel)
-
-        return ZStack {
-            Group {
-                if let image = selectedSkinImage ?? currentSkinRenderImage {
-                    SkinRenderView(
-                        skinImage: image,
-                        capeImage: nil,
-                        playerModel: playerModel,
-                        rotationDuration: 12.0,
-                        backgroundColor: .clear,
-                        onSkinDropped: { dropped in
-                            handleSkinDroppedImage(dropped)
-                        },
-                        onCapeDropped: { _ in }
-                    )
-                } else if let skinPath = selectedSkinPath {
-                    SkinRenderView(
-                        texturePath: skinPath,
-                        capeTexturePath: selectedCapeLocalPath,
-                        playerModel: playerModel,
-                        rotationDuration: 12.0,
-                        backgroundColor: .clear,
-                        onSkinDropped: { dropped in
-                            handleSkinDroppedImage(dropped)
-                        },
-                        onCapeDropped: { _ in }
-                    )
-                } else {
-                    Color.clear
-                }
-            }
-            .frame(height: 220)
-            .background(Color.gray.opacity(0.06))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(style: StrokeStyle(lineWidth: 1, dash: [6]))
-                    .foregroundColor(.gray.opacity(0.35))
-            )
-            .cornerRadius(10)
-            .contentShape(RoundedRectangle(cornerRadius: 10))
-        }
-        .onTapGesture { showingFileImporter = true }
-        .onDrop(of: [UTType.image.identifier, UTType.fileURL.identifier], isTargeted: nil) { handleDrop($0) }
     }
 
     private func handleSkinDroppedImage(_ image: NSImage) {
@@ -221,159 +141,6 @@ struct SkinToolDetailView: View {
         updateHasChanges()
 
         Logger.shared.info("Skin image dropped and processed successfully. Model: \(currentModel.rawValue)")
-    }
-
-    private func selectedSkinView(image: NSImage) -> some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 12) {
-                Image(nsImage: image)
-                    .resizable()
-                    .interpolation(.none)
-                    .frame(width: 48, height: 48)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(6)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("skin.selected".localized()).font(.callout).fontWeight(.medium)
-                    Text("skin.click_apply".localized()).font(.caption).foregroundColor(.secondary)
-                }
-                Spacer()
-
-                Button("skin.preview_3d".localized()) {
-                    showingSkinPreview = true
-                }
-                .buttonStyle(.plain)
-                .foregroundColor(.accentColor)
-                .font(.caption)
-
-                Button("skin.remove".localized()) { clearSelectedSkin() }
-                    .buttonStyle(.plain).foregroundColor(.secondary).font(.caption)
-            }
-
-            if showingSkinPreview {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("skin.3d_preview".localized())
-                            .font(.headline)
-                        Spacer()
-                        Button("skin.hide_preview".localized()) {
-                            showingSkinPreview = false
-                        }
-                        .buttonStyle(.plain)
-                        .foregroundColor(.secondary)
-                        .font(.caption)
-                    }
-
-                    if let skinPath = selectedSkinPath {
-                        SkinRenderView(
-                            texturePath: skinPath,
-                            capeTexturePath: selectedCapeLocalPath,
-                            playerModel: convertToPlayerModel(currentModel)
-                        )
-                            .frame(height: 200)
-                            .background(Color.black.opacity(0.05))
-                            .cornerRadius(8)
-                    } else {
-                        Text("skin.preview_unavailable".localized())
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .frame(height: 200)
-                            .frame(maxWidth: .infinity)
-                            .background(Color.gray.opacity(0.1))
-                            .cornerRadius(8)
-                    }
-                }
-            }
-        }
-        .padding(12)
-        .background(selectedSkinBackground)
-    }
-
-    private var emptyDropArea: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "square.and.arrow.up")
-                .font(.system(size: 24)).foregroundColor(.secondary)
-            Text("skin.drop_here".localized())
-                .font(.callout).foregroundColor(.secondary).multilineTextAlignment(.center)
-        }
-        .frame(maxWidth: .infinity, minHeight: 80)
-        .background(emptyDropBackground())
-    }
-
-    private var selectedSkinBackground: some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(Color.accentColor.opacity(0.08))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
-            )
-    }
-
-    private var capeSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("skin.cape".localized()).font(.headline)
-
-            if let playerProfile = playerProfile, let capes = playerProfile.capes, !capes.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        capeOption(id: nil, name: "skin.no_cape".localized(), isSystemOption: true)
-                        ForEach(capes, id: \.id) { cape in
-                            capeOption(id: cape.id, name: cape.alias ?? "skin.cape".localized(), imageURL: cape.url)
-                        }
-                    }.padding(4)
-                }
-            } else {
-                Text("skin.no_capes_available".localized())
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-    }
-
-    private func capeOption(id: String?, name: String, imageURL: String? = nil, isSystemOption: Bool = false) -> some View {
-        let isSelected = selectedCapeId == id
-
-        return Button {
-            selectedCapeId = id
-            if let imageURL = imageURL, id != nil {
-                selectedCapeImageURL = imageURL
-                Task { await downloadCapeTextureIfNeeded(from: imageURL) }
-            } else {
-                selectedCapeImageURL = nil
-                selectedCapeLocalPath = nil
-            }
-            updateHasChanges()
-        } label: {
-            VStack(spacing: 6) {
-                capeIconContainer(isSelected: isSelected, imageURL: imageURL, isSystemOption: isSystemOption)
-                Text(name)
-                    .font(.caption)
-                    .lineLimit(1)
-                    .foregroundColor(isSelected ? .accentColor : .primary)
-            }
-        }.buttonStyle(.plain)
-    }
-
-    private func capeIconContainer(isSelected: Bool, imageURL: String?, isSystemOption: Bool) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.gray.opacity(0.1))
-                .frame(width: 50, height: 70)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(
-                            isSelected ? Color.accentColor : Color.gray.opacity(0.3),
-                            lineWidth: isSelected ? 2 : 1
-                        )
-                )
-
-            if let imageURL = imageURL {
-                CapeTextureView(imageURL: imageURL)
-                    .frame(width: 42, height: 62).clipped().cornerRadius(6)
-            } else if isSystemOption {
-                Image(systemName: "xmark").font(.system(size: 16)).foregroundColor(.secondary)
-            }
-        }
     }
 
     private var resolvedPlayer: Player? { playerListViewModel.currentPlayer }
@@ -632,44 +399,6 @@ extension Data {
     }
 }
 
-struct CapeTextureView: View {
-    let imageURL: String
-
-    var body: some View {
-        AsyncImage(url: URL(string: imageURL.httpToHttps())) { phase in
-            switch phase {
-            case .empty:
-                ProgressView().controlSize(.mini)
-            case .success(let image):
-                GeometryReader { geometry in
-                    let containerWidth = geometry.size.width
-                    let containerHeight = geometry.size.height
-                    let capeAspectRatio: CGFloat = 10.0 / 16.0
-                    let containerAspectRatio = containerWidth / containerHeight
-
-                    let scale: CGFloat = containerAspectRatio > capeAspectRatio
-                        ? containerHeight / 16.0
-                        : containerWidth / 10.0
-
-                    let offsetX = (containerWidth - 10.0 * scale) / 2.0 - 1.0 * scale
-                    let offsetY = (containerHeight - 16.0 * scale) / 2.0 - 1.0 * scale
-
-                    return image
-                        .resizable()
-                        .interpolation(.none)
-                        .frame(width: 64.0 * scale, height: 32.0 * scale)
-                        .offset(x: offsetX, y: offsetY)
-                        .clipped()
-                }
-            case .failure:
-                Image(systemName: "photo").font(.system(size: 16)).foregroundColor(.secondary)
-            @unknown default:
-                Image(systemName: "photo").font(.system(size: 16)).foregroundColor(.secondary)
-            }
-        }
-    }
-}
-
 // MARK: - Cape Download Extension
 extension SkinToolDetailView {
     fileprivate func downloadCapeTextureIfNeeded(from urlString: String) async {
@@ -699,14 +428,6 @@ extension SkinToolDetailView {
         }
     }
 
-    private func convertToPlayerModel(_ skinModel: PlayerSkinService.PublicSkinInfo.SkinModel) -> PlayerModel {
-        switch skinModel {
-        case .classic:
-            return .steve
-        case .slim:
-            return .alex
-        }
-    }
     // MARK: - 清除数据
     /// 清除页面所有数据
     private func clearAllData() {
