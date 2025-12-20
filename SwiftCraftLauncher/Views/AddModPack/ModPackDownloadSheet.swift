@@ -11,6 +11,7 @@ struct ModPackDownloadSheet: View {
     let projectId: String
     let gameInfo: GameVersionInfo?
     let query: String
+    let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
     @EnvironmentObject private var gameRepository: GameRepository
     @Environment(\.dismiss)
     private var dismiss
@@ -24,10 +25,11 @@ struct ModPackDownloadSheet: View {
     @StateObject private var gameNameValidator: GameNameValidator
 
     // MARK: - Initializer
-    init(projectId: String, gameInfo: GameVersionInfo?, query: String) {
+    init(projectId: String, gameInfo: GameVersionInfo?, query: String, preloadedDetail: ModrinthProjectDetail? = nil) {
         self.projectId = projectId
         self.gameInfo = gameInfo
         self.query = query
+        self.preloadedDetail = preloadedDetail
         self._gameNameValidator = StateObject(wrappedValue: GameNameValidator(gameSetupService: GameSetupUtil()))
     }
 
@@ -39,8 +41,11 @@ struct ModPackDownloadSheet: View {
         )
         .onAppear {
             viewModel.setGameRepository(gameRepository)
-            Task {
-                await viewModel.loadProjectDetails(projectId: projectId)
+            // 使用预加载的 detail
+            if let preloaded = preloadedDetail {
+                Task {
+                    await viewModel.setPreloadedDetail(preloaded)
+                }
             }
         }
         .onDisappear {
@@ -82,9 +87,6 @@ struct ModPackDownloadSheet: View {
         VStack(alignment: .leading, spacing: 12) {
             if isProcessing {
                 ProcessingView()
-            } else if viewModel.isLoadingProjectDetails {
-                ProgressView().controlSize(.small)
-                    .frame(maxWidth: .infinity, minHeight: 130)
             } else if let projectDetail = viewModel.projectDetail {
                 ModrinthProjectTitleView(projectDetail: projectDetail)
                     .padding(.bottom, 18)
@@ -112,6 +114,10 @@ struct ModPackDownloadSheet: View {
                     )
                     .padding(.top, 18)
                 }
+            } else {
+                Text("global_resource.loading_error".localized())
+                    .foregroundColor(.secondary)
+                    .padding()
             }
         }
     }

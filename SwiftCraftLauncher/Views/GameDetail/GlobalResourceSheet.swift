@@ -5,15 +5,12 @@ struct GlobalResourceSheet: View {
     let project: ModrinthProject
     let resourceType: String
     @Binding var isPresented: Bool
+    let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
     @EnvironmentObject var gameRepository: GameRepository
     @State private var selectedGame: GameVersionInfo?
     @State private var selectedVersion: ModrinthProjectDetailVersion?
     @State private var availableVersions: [ModrinthProjectDetailVersion] = []
-    @State private var projectDetail: ModrinthProjectDetail?
-    @State private var isLoading = true
-    @State private var error: GlobalError?
     @State private var dependencyState = DependencyState()
-    @State private var hasLoadedDetail = false
     @State private var isDownloadingAll = false
     @State private var isDownloadingMainOnly = false
     @State private var mainVersionId = ""
@@ -33,11 +30,7 @@ struct GlobalResourceSheet: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             },
             body: {
-                if isLoading {
-                    ProgressView().controlSize(.small)
-                } else if let error = error {
-                    newErrorView(error)
-                } else if let detail = projectDetail {
+                if let detail = preloadedDetail {
                     let compatibleGames = filterCompatibleGames(
                         detail: detail,
                         gameRepository: gameRepository,
@@ -80,6 +73,10 @@ struct GlobalResourceSheet: View {
                             }
                         }
                     }
+                } else {
+                    Text("global_resource.loading_error".localized())
+                        .foregroundColor(.secondary)
+                        .padding()
                 }
             },
             footer: {
@@ -87,7 +84,7 @@ struct GlobalResourceSheet: View {
                     project: project,
                     resourceType: resourceType,
                     isPresented: $isPresented,
-                    projectDetail: projectDetail,
+                    projectDetail: preloadedDetail,
                     selectedGame: selectedGame,
                     selectedVersion: selectedVersion,
                     dependencyState: dependencyState,
@@ -99,55 +96,6 @@ struct GlobalResourceSheet: View {
                 )
             }
         )
-        .onAppear {
-            if !hasLoadedDetail {
-                hasLoadedDetail = true
-                loadDetail()
-            }
-        }
-    }
-
-    private func loadDetail() {
-        isLoading = true
-        error = nil
-        Task {
-            do {
-                try await loadDetailThrowing()
-            } catch {
-                let globalError = GlobalError.from(error)
-                _ = await MainActor.run {
-                    self.error = globalError
-                    self.isLoading = false
-                }
-            }
-        }
-    }
-
-    private func loadDetailThrowing() async throws {
-        guard !project.projectId.isEmpty else {
-            throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
-                i18nKey: "error.validation.project_id_empty",
-                level: .notification
-            )
-        }
-
-        guard
-            let detail = await ModrinthService.fetchProjectDetails(
-                id: project.projectId
-            )
-        else {
-            throw GlobalError.resource(
-                chineseMessage: "无法获取项目详情",
-                i18nKey: "error.resource.project_details_not_found",
-                level: .notification
-            )
-        }
-
-        _ = await MainActor.run {
-            self.projectDetail = detail
-            self.isLoading = false
-        }
     }
 
     private func loadDependencies(
