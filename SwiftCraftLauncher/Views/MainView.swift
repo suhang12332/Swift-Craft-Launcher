@@ -112,6 +112,11 @@ struct MainView: View {
                 loadedProjectDetail = nil
             }
         }
+        .onChange(of: gameRepository.workingPathChanged) { _, _ in
+            // 当工作目录改变时，切换到mod选择界面
+            selectedItem = .resource(.mod)
+            gameType = true
+        }
     }
 
     // MARK: - Sidebar Item Change Handlers

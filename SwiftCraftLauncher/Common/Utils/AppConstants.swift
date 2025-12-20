@@ -3,7 +3,6 @@ import Foundation
 enum AppConstants {
     static let defaultGameIcon = "default_game_icon.png"
     static let modLoaders = ["vanilla", "fabric", "forge", "neoforge", "quilt"]
-    static let defaultJava = "/usr/bin"
 
     // Minecraft 客户端ID - 构建时会被替换
     // Minecraft/Xbox认证
@@ -63,6 +62,12 @@ enum AppConstants {
         static let versionName = "{VERSION_NAME}"
         static let libraryDir = "{LIBRARY_DIR}"
         static let workingDir = "{WORKING_DIR}"
+    }
+
+    // MARK: - UserDefaults Keys
+    /// UserDefaults 存储键常量
+    enum UserDefaultsKeys {
+        static let savedGames = "savedGames"
     }
 }
 

@@ -147,7 +147,6 @@ public struct GeneralSettingsView: View {
             try FileManager.default.createDirectory(at: supportDir, withIntermediateDirectories: true)
 
             generalSettings.launcherWorkingDirectory = supportDir.path
-            gameRepository.loadGames()
 
             Logger.shared.info("工作目录已重置为: \(supportDir.path)")
         } catch {
@@ -174,7 +173,7 @@ public struct GeneralSettingsView: View {
                     }
 
                     generalSettings.launcherWorkingDirectory = url.path
-                    gameRepository.loadGames()
+                    // 注意：GameRepository 的观察者会自动检测工作路径变化并重新加载游戏，无需手动调用 loadGames()
 
                     Logger.shared.info("工作目录已设置为: \(url.path)")
                 } catch {

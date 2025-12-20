@@ -57,7 +57,7 @@ struct AddOrDeleteResourceButton: View {
     let gameInfo: GameVersionInfo?
     let query: String
     let type: Bool  // false = local, true = server
-    let scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找（O(1)）
+    @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找（O(1)）
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @State private var addButtonState: ModrinthDetailCardView.AddButtonState =
@@ -87,7 +87,7 @@ struct AddOrDeleteResourceButton: View {
         selectedItem: Binding<SidebarItem>,
         onResourceChanged: (() -> Void)? = nil,
         forceInstalled: Bool = false,
-        scannedDetailIds: Set<String> = []
+        scannedDetailIds: Binding<Set<String>> = .constant([])
     ) {
         self.project = project
         self.selectedVersions = selectedVersions
@@ -98,7 +98,7 @@ struct AddOrDeleteResourceButton: View {
         self._selectedItem = selectedItem
         self.onResourceChanged = onResourceChanged
         self.forceInstalled = forceInstalled
-        self.scannedDetailIds = scannedDetailIds
+        self._scannedDetailIds = scannedDetailIds
     }
 
     var body: some View {
@@ -158,9 +158,11 @@ struct AddOrDeleteResourceButton: View {
                                     gameInfo: gameInfo,
                                     depVM: depVM,
                                     query: query,
-                                    gameRepository: gameRepository,
-                                    updateButtonState: updateButtonState
-                                )
+                                    gameRepository: gameRepository
+                                ) {
+                                    addToScannedDetailIds()
+                                    updateButtonState()
+                                }
                         } else {
                             // 首次点击"全部下载"
                             await GameResourceHandler
@@ -169,9 +171,11 @@ struct AddOrDeleteResourceButton: View {
                                     gameInfo: gameInfo,
                                     depVM: depVM,
                                     query: query,
-                                    gameRepository: gameRepository,
-                                    updateButtonState: updateButtonState
-                                )
+                                    gameRepository: gameRepository
+                                ) {
+                                    addToScannedDetailIds()
+                                    updateButtonState()
+                                }
                         }
                     },
                     onRetry: { dep in
@@ -191,9 +195,11 @@ struct AddOrDeleteResourceButton: View {
                             project: project,
                             gameInfo: gameInfo,
                             query: query,
-                            gameRepository: gameRepository,
-                            updateButtonState: updateButtonState
-                        )
+                            gameRepository: gameRepository
+                        ) {
+                            addToScannedDetailIds()
+                            updateButtonState()
+                        }
                         isDownloadingMainResourceOnly = false
                         depVM.showDependenciesSheet = false
                     }
@@ -218,7 +224,6 @@ struct AddOrDeleteResourceButton: View {
                 isPresented: $showModPackDownloadSheet,
                 onDismiss: {
                     addButtonState = .idle
-                    scanResourcesIfAvailable()
                 },
                 content: {
                     ModPackDownloadSheet(
@@ -264,7 +269,7 @@ struct AddOrDeleteResourceButton: View {
         }
     }
 
-    // 新增：根据当前 project 查找 fileURL（示例实现，需根据实际逻辑补全）
+    // 根据文件名删除文件
     private func deleteFile() {
         // 检查 query 是否是有效的资源类型
         let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
@@ -297,23 +302,22 @@ struct AddOrDeleteResourceButton: View {
             GlobalErrorHandler.shared.handle(globalError)
             return
         }
-        let details = ModScanner.shared.localModDetails(in: resourceDir)
-        for (file, _, detail) in details {
-            if let detail = detail, detail.id == project.projectId {
-                GameResourceHandler.performDelete(fileURL: file)
-                scanResourcesIfAvailable()
-                return  // 删除后立即返回
-            }
+
+        // 只使用 fileName 删除
+        guard let fileName = project.fileName else {
+            let globalError = GlobalError.resource(
+                chineseMessage: "无法删除文件：缺少文件名信息",
+                i18nKey: "error.resource.file_name_missing",
+                level: .notification,
+            )
+            Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return
         }
 
-        // 如果没有找到要删除的文件
-        let globalError = GlobalError.resource(
-            chineseMessage: "未找到要删除的文件: \(project.title)",
-            i18nKey: "error.resource.file_not_found_for_deletion",
-            level: .notification
-        )
-        Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
-        GlobalErrorHandler.shared.handle(globalError)
+        let fileURL = resourceDir.appendingPathComponent(fileName)
+        GameResourceHandler.performDelete(fileURL: fileURL)
+        onResourceChanged?()
     }
 
     // MARK: - Actions
@@ -337,9 +341,11 @@ struct AddOrDeleteResourceButton: View {
                                 project: project,
                                 gameInfo: gameInfo,
                                 query: query,
-                                gameRepository: gameRepository,
-                                updateButtonState: updateButtonState
-                            )
+                                gameRepository: gameRepository
+                            ) {
+                                addToScannedDetailIds()
+                                updateButtonState()
+                            }
                         } else {
                             let hasMissingDeps =
                                 await GameResourceHandler
@@ -356,9 +362,11 @@ struct AddOrDeleteResourceButton: View {
                                     project: project,
                                     gameInfo: gameInfo,
                                     query: query,
-                                    gameRepository: gameRepository,
-                                    updateButtonState: updateButtonState
-                                )
+                                    gameRepository: gameRepository
+                                ) {
+                                    addToScannedDetailIds()
+                                    updateButtonState()
+                                }
                             }
                         }
                     } else {
@@ -367,9 +375,11 @@ struct AddOrDeleteResourceButton: View {
                             project: project,
                             gameInfo: gameInfo,
                             query: query,
-                            gameRepository: gameRepository,
-                            updateButtonState: updateButtonState
-                        )
+                            gameRepository: gameRepository
+                        ) {
+                            addToScannedDetailIds()
+                            updateButtonState()
+                        }
                     }
                 }
             case .installed:
@@ -441,8 +451,8 @@ struct AddOrDeleteResourceButton: View {
         addButtonState = .idle
     }
 
-    // 新增：安全调用外部 scanResources（需在父视图注入或传递）
-    private func scanResourcesIfAvailable() {
-        onResourceChanged?()
+    // 新增：在安装完成后更新 scannedDetailIds
+    private func addToScannedDetailIds() {
+        scannedDetailIds.insert(project.projectId)
     }
 }

@@ -78,17 +78,30 @@ class GameCreationViewModel: BaseGameFormViewModel {
         // 如果正在下载时取消，需要删除已创建的游戏文件夹
         let gameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
         if !gameName.isEmpty {
-            do {
-                let profileDir = AppPaths.profileDirectory(gameName: gameName)
+            // 检查游戏是否已经保存到仓库中
+            // 如果已经保存，说明游戏创建成功，不应该删除文件夹
+            let isGameSaved = await MainActor.run {
+                guard let gameRepository = gameRepository else { return false }
+                return gameRepository.games.contains { $0.gameName == gameName }
+            }
 
-                // 检查目录是否存在
-                if FileManager.default.fileExists(atPath: profileDir.path) {
-                    try FileManager.default.removeItem(at: profileDir)
-                    Logger.shared.info("已删除取消创建的游戏文件夹: \(profileDir.path)")
+            if !isGameSaved {
+                // 游戏未保存，说明是取消操作，可以安全删除文件夹
+                do {
+                    let profileDir = AppPaths.profileDirectory(gameName: gameName)
+
+                    // 检查目录是否存在
+                    if FileManager.default.fileExists(atPath: profileDir.path) {
+                        try FileManager.default.removeItem(at: profileDir)
+                        Logger.shared.info("已删除取消创建的游戏文件夹: \(profileDir.path)")
+                    }
+                } catch {
+                    Logger.shared.error("删除游戏文件夹失败: \(error.localizedDescription)")
+                    // 即使删除失败，也不应该阻止关闭窗口
                 }
-            } catch {
-                Logger.shared.error("删除游戏文件夹失败: \(error.localizedDescription)")
-                // 即使删除失败，也不应该阻止关闭窗口
+            } else {
+                // 游戏已保存，不应该删除文件夹
+                Logger.shared.info("游戏已成功保存，跳过删除文件夹: \(gameName)")
             }
         }
 

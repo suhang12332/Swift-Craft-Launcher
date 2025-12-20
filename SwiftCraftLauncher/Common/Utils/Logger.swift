@@ -297,6 +297,12 @@ class Logger {
     }
 
     private func cleanupLogsInDirectory(_ directory: URL, sevenDaysAgo: Date) {
+        // 检查目录是否存在，如果不存在则跳过清理
+        guard FileManager.default.fileExists(atPath: directory.path) else {
+            // 目录不存在是正常情况（首次运行），不需要记录错误
+            return
+        }
+
         do {
             let fileURLs = try FileManager.default.contentsOfDirectory(
                 at: directory,

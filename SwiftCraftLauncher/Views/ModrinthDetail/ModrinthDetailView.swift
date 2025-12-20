@@ -240,7 +240,7 @@ struct ModrinthDetailView: View {
                         query: query,
                         type: true,
                         selectedItem: $selectedItem,
-                        scannedDetailIds: scannedDetailIds
+                        scannedDetailIds: $scannedDetailIds
                     )
                     .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                     .listRowInsets(

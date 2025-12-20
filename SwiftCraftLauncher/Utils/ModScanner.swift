@@ -56,8 +56,11 @@ class ModScanner {
         }
 
         if let detail = detail {
-            saveToCache(hash: hash, detail: detail)
-            return detail
+            // 设置本地文件名
+            var detailWithFileName = detail
+            detailWithFileName.fileName = fileURL.lastPathComponent
+            saveToCache(hash: hash, detail: detailWithFileName)
+            return detailWithFileName
         } else {
             // 尝试本地解析
             let (modid, version) =
@@ -592,6 +595,12 @@ extension ModScanner {
 
     /// 获取目录下所有 jar/zip 文件列表（抛出异常版本）
     func getAllResourceFilesThrowing(_ dir: URL) throws -> [URL] {
+        // 检查目录是否存在
+        guard FileManager.default.fileExists(atPath: dir.path) else {
+            // 目录不存在，返回空数组（不抛出异常，因为这是正常情况）
+            return []
+        }
+
         let files: [URL]
         do {
             files = try FileManager.default.contentsOfDirectory(
