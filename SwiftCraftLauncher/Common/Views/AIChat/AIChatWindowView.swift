@@ -2,12 +2,9 @@
 //  AIChatWindow.swift
 //  SwiftCraftLauncher
 //
-//  Created by AI Assistant
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
-import AppKit
 
 /// AI 对话窗口视图
 struct AIChatWindowView: View {
@@ -15,8 +12,8 @@ struct AIChatWindowView: View {
     @StateObject private var playerListViewModel = PlayerListViewModel()
     @StateObject private var gameRepository = GameRepository()
     @StateObject private var aiSettings = AISettingsManager.shared
+    @StateObject private var attachmentManager = AIChatAttachmentManager()
     @State private var inputText = ""
-    @State private var pendingAttachments: [MessageAttachmentType] = []
     @FocusState private var isInputFocused: Bool
     @State private var selectedGameId: String?
 
@@ -27,83 +24,43 @@ struct AIChatWindowView: View {
     // MARK: - Constants
     private enum Constants {
         static let avatarSize: CGFloat = 32
-        static let messageFontSize: CGFloat = 13
-        static let timestampFontSize: CGFloat = 10
-        static let inputFontSize: CGFloat = 14
-        static let messageCornerRadius: CGFloat = 10
-        static let inputCornerRadius: CGFloat = 12
-        static let messageMaxWidth: CGFloat = 500
-        static let messageSpacing: CGFloat = 16
-        static let messageVerticalPadding: CGFloat = 2
-        static let inputHorizontalPadding: CGFloat = 16
-        static let inputVerticalPadding: CGFloat = 12
-        static let scrollDelay: TimeInterval = 0.1
-        static let scrollAnimationDuration: TimeInterval = 0.3
     }
 
     var body: some View {
         VStack(spacing: 0) {
             // 消息列表
-            GeometryReader { geometry in
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        if chatState.messages.isEmpty {
-                            // 空消息时显示欢迎语，使用固定高度容器实现垂直居中
-                            VStack {
-                                Spacer()
-                                welcomeView
-                                Spacer()
-                            }
-                            .frame(width: geometry.size.width, height: geometry.size.height)
-                        } else {
-                            LazyVStack(alignment: .leading, spacing: 12) {
-                                messageListView
-
-                                // 只有当正在发送且最后一条 AI 消息为空时，才显示"正在思考"
-                                if chatState.isSending,
-                                   let lastMessage = chatState.messages.last,
-                                   lastMessage.role == .assistant,
-                                   lastMessage.content.isEmpty {
-                                    loadingIndicatorView
-                                }
-                            }
-                            .padding()
-                        }
-                    }
-                    .background(.white)
-                    // 滚动到底部：优化 - 合并多个 onChange 以减少不必要的视图更新
-                    .onChange(of: chatState.messages.count) { _, _ in
-                        // 新消息时滚动
-                        if chatState.messages.last != nil {
-                            scrollToBottom(proxy: proxy)
-                        }
-                    }
-                    .onChange(of: chatState.messages.last?.content.count ?? 0) { oldValue, newValue in
-                        // 流式更新时滚动（仅在内容增加时）
-                        if chatState.isSending && newValue > oldValue && newValue > 0 {
-                            scrollToBottom(proxy: proxy)
-                        }
-                    }
-                    .onChange(of: chatState.isSending) { oldValue, newValue in
-                        // 发送完成时滚动（仅在状态从 true 变为 false 时）
-                        if oldValue && !newValue {
-                            scrollToBottom(proxy: proxy)
-                        }
-                    }
-                }
-            }
-            .background(.white)
+            AIChatMessageListView(
+                chatState: chatState,
+                currentPlayer: playerListViewModel.currentPlayer,
+                cachedAIAvatar: cachedAIAvatar,
+                cachedUserAvatar: cachedUserAvatar,
+                aiAvatarURL: aiSettings.aiAvatarURL
+            )
 
             Divider()
 
             // 待发送附件预览
-            if !pendingAttachments.isEmpty {
-                attachmentPreviewSection
+            if !attachmentManager.pendingAttachments.isEmpty {
+                AIChatAttachmentPreviewView(
+                    attachments: attachmentManager.pendingAttachments
+                ) { index in
+                    attachmentManager.removeAttachment(at: index)
+                }
             }
 
-            inputAreaView
+            // 输入区域
+            AIChatInputAreaView(
+                inputText: $inputText,
+                selectedGameId: $selectedGameId,
+                isInputFocused: $isInputFocused,
+                games: gameRepository.games,
+                isSending: chatState.isSending,
+                canSend: canSend,
+                onSend: sendMessage
+            ) {
+                attachmentManager.openFilePicker(selectedGame: selectedGame)
+            }
         }
-
         .frame(minWidth: 500, minHeight: 600)
         .onAppear {
             isInputFocused = true
@@ -144,145 +101,11 @@ struct AIChatWindowView: View {
     }
 
     private var canSend: Bool {
-        !chatState.isSending && (!inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !pendingAttachments.isEmpty)
-    }
-
-    // MARK: - View Components
-
-    private var attachmentPreviewSection: some View {
-        VStack(spacing: 0) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(Array(pendingAttachments.enumerated()), id: \.offset) { index, attachment in
-                        AttachmentPreview(attachment: attachment) {
-                            pendingAttachments.remove(at: index)
-                        }
-                    }
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-            }
-            .background(.white)
-            Divider()
-        }
-    }
-
-    private var welcomeView: some View {
-        VStack(spacing: 16) {
-            if let player = playerListViewModel.currentPlayer {
-                Text(String(format: "ai.chat.welcome.message".localized(), player.name))
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.primary)
-            }
-            Text("ai.chat.welcome.description".localized())
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-    }
-
-    private var messageListView: some View {
-        ForEach(chatState.messages) { message in
-            // 跳过正在发送的空 AI 消息（会显示加载指示器）
-            if !(chatState.isSending && message.role == .assistant && message.content.isEmpty) {
-                MessageBubble(
-                    message: message,
-                    currentPlayer: playerListViewModel.currentPlayer,
-                    cachedAIAvatar: cachedAIAvatar,
-                    cachedUserAvatar: cachedUserAvatar,
-                    aiAvatarURL: aiSettings.aiAvatarURL
-                )
-                .id(message.id)
-            }
-        }
-    }
-
-    private var loadingIndicatorView: some View {
-        HStack(alignment: .firstTextBaseline, spacing: Constants.messageSpacing) {
-            // 使用缓存的头像视图
-            if let cachedAvatar = cachedAIAvatar {
-                cachedAvatar
-            } else {
-                AIAvatarView(size: Constants.avatarSize, url: aiSettings.aiAvatarURL)
-            }
-
-            HStack(spacing: 6) {
-                ProgressView()
-                    .scaleEffect(0.6)
-                    .controlSize(.small)
-                Text("ai.chat.thinking".localized())
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer(minLength: 40)
-        }
-        .padding(.vertical, Constants.messageVerticalPadding)
-    }
-
-    private var inputAreaView: some View {
-        VStack(spacing: 0) {
-            // 游戏选择器
-            HStack(spacing: Constants.messageSpacing) {
-                // 只有当游戏列表不为空时才显示 Picker
-                if !gameRepository.games.isEmpty {
-                    Menu {
-                        ForEach(gameRepository.games) { game in
-                            Button(action: {
-                                selectedGameId = game.id
-                            }, label: {
-                                Text(game.gameName)
-                            })
-                        }
-                    } label: {
-                        HStack(spacing: 4) {
-                            if let selectedGame = selectedGame {
-                                Text(selectedGame.gameName)
-                                    .foregroundStyle(.secondary)
-                                    .lineLimit(1)
-                                    .truncationMode(.tail)
-                            }
-                        }
-                    }
-                    .menuStyle(.borderlessButton)
-                    .frame(maxWidth: 50)
-                }
-                Button(action: { openFilePicker() }, label: {
-                    Image(systemName: "paperclip")
-                        .font(.system(size: Constants.inputFontSize))
-                        .foregroundStyle(.secondary)
-                })
-                .buttonStyle(.plain)
-                .disabled(chatState.isSending)
-
-                TextField("ai.chat.input.placeholder".localized(), text: $inputText, axis: .vertical)
-                    .textFieldStyle(.plain)
-                    .focused($isInputFocused)
-                    .lineLimit(1...6)
-                    .onSubmit {
-                        if canSend {
-                            sendMessage()
-                        }
-                    }
-                    .disabled(chatState.isSending)
-
-                Button(action: { sendMessage() }, label: {
-                    Image(systemName: "arrow.up.circle")
-                        .font(.system(size: Constants.inputFontSize))
-                        .foregroundStyle(canSend ? .blue : .secondary)
-                })
-                .buttonStyle(.plain)
-                .disabled(!canSend)
-            }
-            .padding(.horizontal, Constants.inputHorizontalPadding)
-            .padding(.vertical, Constants.inputVerticalPadding)
-            .background(Color(NSColor.textBackgroundColor))
-        }
+        !chatState.isSending && (!inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !attachmentManager.pendingAttachments.isEmpty)
     }
 
     // MARK: - Methods
+
     /// 初始化头像缓存
     private func initializeAvatarCache() {
         // 初始化 AI 头像（使用设置中的 URL）
@@ -330,79 +153,30 @@ struct AIChatWindowView: View {
         clearAvatarCache()
         // 清理输入文本和附件
         inputText = ""
-        pendingAttachments.removeAll()
+        attachmentManager.clearAll()
         // 重置焦点状态
         isInputFocused = false
         // 清理选中的游戏
         selectedGameId = nil
     }
 
-    private func openFilePicker() {
-        guard let selectedGame = selectedGame else { return }
-
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = true
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.allowedContentTypes = [.text, .pdf, .json, .plainText, .log]
-
-        // 设置初始目录为游戏目录
-        let gameDirectory = AppPaths.profileDirectory(gameName: selectedGame.gameName)
-        panel.directoryURL = gameDirectory
-
-        panel.begin { response in
-            if response == .OK {
-                let urls = panel.urls
-                handleFileSelection(.success(urls))
-            }
-        }
-    }
-
-    private func handleFileSelection(_ result: Result<[URL], Error>) {
-        guard case .success(let urls) = result else { return }
-
-        for url in urls {
-            guard url.startAccessingSecurityScopedResource() else { continue }
-            defer { url.stopAccessingSecurityScopedResource() }
-
-            // 过滤掉图片类型，只允许非图片文件
-            let isImage = UTType(filenameExtension: url.pathExtension)?.conforms(to: .image) ?? false
-            if isImage {
-                continue
-            }
-            // 只添加非图片文件
-            let attachment: MessageAttachmentType = .file(url, url.lastPathComponent)
-            pendingAttachments.append(attachment)
-        }
-    }
-
     private func sendMessage() {
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard canSend else { return }
 
-        let attachments = pendingAttachments
+        let attachments = attachmentManager.pendingAttachments
         inputText = ""
-        pendingAttachments = []
+        attachmentManager.clearAll()
 
         Task {
             await AIChatManager.shared.sendMessage(text, attachments: attachments, chatState: chatState)
-        }
-    }
-
-    private func scrollToBottom(proxy: ScrollViewProxy) {
-        Task { @MainActor in
-            try? await Task.sleep(nanoseconds: UInt64(Constants.scrollDelay * 1_000_000_000))
-            guard let lastMessage = chatState.messages.last else { return }
-            withAnimation(.easeOut(duration: Constants.scrollAnimationDuration)) {
-                proxy.scrollTo(lastMessage.id, anchor: .bottom)
-            }
         }
     }
 }
 
 // MARK: - Helper Views
 
-private struct AIAvatarView: View {
+struct AIAvatarView: View {
     let size: CGFloat
     let url: String
 
