@@ -30,6 +30,9 @@ class GameRepository: ObservableObject {
     /// 上次记录的工作路径，用于检测变化
     private var lastWorkingPath: String = ""
 
+    /// 工作路径改变通知（用于触发UI切换）
+    @Published var workingPathChanged: Bool = false
+
     // MARK: - Initialization
 
     init() {
@@ -57,12 +60,18 @@ class GameRepository: ObservableObject {
                 let newPath = self.currentWorkingPath
                 if newPath != self.lastWorkingPath {
                     self.lastWorkingPath = newPath
+                    // 通知工作路径已改变（用于触发UI切换）
+                    self.workingPathChanged = true
                     // 当工作路径改变时，重新加载当前工作路径的游戏
                     Task { @MainActor in
                         do {
                             try await self.loadGamesThrowing()
+                            // 重置通知标志
+                            self.workingPathChanged = false
                         } catch {
                             GlobalErrorHandler.shared.handle(error)
+                            // 即使出错也要重置标志
+                            self.workingPathChanged = false
                         }
                     }
                 }
