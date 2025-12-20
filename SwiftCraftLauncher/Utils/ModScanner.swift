@@ -56,8 +56,11 @@ class ModScanner {
         }
 
         if let detail = detail {
-            saveToCache(hash: hash, detail: detail)
-            return detail
+            // 设置本地文件名
+            var detailWithFileName = detail
+            detailWithFileName.fileName = fileURL.lastPathComponent
+            saveToCache(hash: hash, detail: detailWithFileName)
+            return detailWithFileName
         } else {
             // 尝试本地解析
             let (modid, version) =

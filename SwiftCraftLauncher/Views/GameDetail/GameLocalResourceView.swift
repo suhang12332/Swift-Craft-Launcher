@@ -127,7 +127,8 @@ struct GameLocalResourceView: View {
                     query: query,
                     type: false,
                     selectedItem: $selectedItem,
-                    scannedDetailIds: Set<String>()
+                    onResourceChanged: refreshResources,
+                    scannedDetailIds: .constant([])
                 )
                 .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                 .listRowInsets(
@@ -370,5 +371,15 @@ struct GameLocalResourceView: View {
             let nextPage = currentPage
             loadPage(page: nextPage, append: true)
         }
+    }
+
+    // MARK: - 刷新资源
+    /// 刷新资源列表（删除资源后调用）
+    private func refreshResources() {
+        // 刷新文件列表
+        refreshAllFiles()
+        // 重置分页并重新加载第一页
+        resetPagination()
+        loadPage(page: 1, append: false)
     }
 }

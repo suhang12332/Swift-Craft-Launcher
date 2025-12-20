@@ -17,6 +17,7 @@ public struct ModrinthProject: Codable {
     let license: String
     let clientSide: String
     let serverSide: String
+    let fileName: String?
 
     enum CodingKeys: String, CodingKey {
         case projectId = "project_id"
@@ -28,6 +29,7 @@ public struct ModrinthProject: Codable {
         case license
         case clientSide = "client_side"
         case serverSide = "server_side"
+        case fileName
     }
 }
 
@@ -290,7 +292,8 @@ extension ModrinthProject {
             iconUrl: detail.iconUrl,
             license: detail.license?.name ?? "",
             clientSide: detail.clientSide,
-            serverSide: detail.serverSide
+            serverSide: detail.serverSide,
+            fileName: detail.fileName
         )
     }
 
@@ -322,7 +325,7 @@ extension ModrinthProject {
             gameVersions: [],
             loaders: [],
             type: nil,
-            fileName: nil
+            fileName: self.fileName
         )
     }
 }
