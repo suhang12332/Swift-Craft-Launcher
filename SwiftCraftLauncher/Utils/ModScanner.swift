@@ -45,7 +45,10 @@ class ModScanner {
             key: hash,
             as: ModrinthProjectDetail.self
         ) {
-            return cached
+            // 更新文件名为当前实际文件名（可能已重命名为 .disabled）
+            var updatedCached = cached
+            updatedCached.fileName = fileURL.lastPathComponent
+            return updatedCached
         }
 
         // 使用 fetchModrinthDetail 通过文件 hash 查询
@@ -279,7 +282,7 @@ extension ModScanner {
         }
 
         return files.filter {
-            ["jar", "zip"].contains($0.pathExtension.lowercased())
+            ["jar", "zip", "disable"].contains($0.pathExtension.lowercased())
         }
     }
 
@@ -295,7 +298,7 @@ extension ModScanner {
                 includingPropertiesForKeys: nil
             )
             return files.filter {
-                ["jar", "zip"].contains($0.pathExtension.lowercased())
+                ["jar", "zip", "disable"].contains($0.pathExtension.lowercased())
             }
         } catch {
             return []
@@ -345,6 +348,9 @@ extension ModScanner {
                     if let detail = detail {
                         saveToCache(hash: hash, detail: detail)
                     }
+                } else {
+                    // 更新文件名为当前实际文件名（可能已重命名为 .disabled）
+                    detail?.fileName = fileURL.lastPathComponent
                 }
 
                 return (file: fileURL, hash: hash, detail: detail)

@@ -110,6 +110,20 @@ struct ModrinthDetailCardView: View {
             Text(project.title)
                 .font(.headline)
                 .lineLimit(1)
+            // 显示停用/启用状态图标（仅本地资源）
+            if !type {
+                if let fileName = project.fileName, fileName.hasSuffix(".disable") {
+                    Image(systemName: "eye.slash.fill")
+                        .font(.subheadline)
+                        .foregroundColor(.orange)
+                        .help("resource.disable".localized())
+                } else {
+                    Image(systemName: "eye.slash.fill")
+                        .font(.subheadline)
+                        .foregroundColor(.green)
+                        .help("resource.enable".localized())
+                }
+            }
             Text("by \(project.author)")
                 .font(.subheadline)
                 .foregroundColor(.secondary)

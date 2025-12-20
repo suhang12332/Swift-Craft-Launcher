@@ -116,10 +116,6 @@ struct MainView: View {
             // 重新扫描所有游戏
             scanAllGamesModsDirectory()
         }
-        .onAppear {
-            // 应用启动时扫描所有游戏
-            scanAllGamesModsDirectory()
-        }
     }
 
     // MARK: - Sidebar Item Change Handlers

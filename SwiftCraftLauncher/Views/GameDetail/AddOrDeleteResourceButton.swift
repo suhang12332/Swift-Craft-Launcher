@@ -74,6 +74,7 @@ struct AddOrDeleteResourceButton: View {
     @State private var preloadedProjectDetail: ModrinthProjectDetail?  // 预加载的项目详情（用于普通资源）
     @State private var preloadedModPackDetail: ModrinthProjectDetail?  // 预加载的整合包项目详情
     @State private var isLoadingProjectDetail = false  // 是否正在加载项目详情
+    @State private var isDisabled: Bool = false  // 资源是否被禁用
     @Binding var selectedItem: SidebarItem
     //    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
     var onResourceChanged: (() -> Void)?
@@ -106,7 +107,19 @@ struct AddOrDeleteResourceButton: View {
 
     var body: some View {
 
-        VStack {
+        HStack(spacing: 8) {
+//            // 禁用/启用按钮（仅本地资源显示）
+//            if type == false {
+//                Button(action: toggleDisableState) {
+//                    Text(isDisabled ? "resource.enable".localized() : "resource.disable".localized())
+//                }
+//                .buttonStyle(.borderedProminent)
+//                .tint(.accentColor)  // 或 .tint(.primary) 但一般用 accentColor 更美观
+//                .font(.caption2)
+//                .controlSize(.small)
+//            }
+
+            // 安装/删除按钮
             Button(action: handleButtonAction) {
                 buttonLabel
             }
@@ -122,6 +135,7 @@ struct AddOrDeleteResourceButton: View {
                 if type == false {
                     // local 区直接显示为已安装
                     addButtonState = .installed
+                    checkDisableState()
                 } else {
                     updateButtonState()
                 }
@@ -515,5 +529,51 @@ struct AddOrDeleteResourceButton: View {
     // 新增：在安装完成后更新 scannedDetailIds
     private func addToScannedDetailIds() {
         scannedDetailIds.insert(project.projectId)
+    }
+
+    private func checkDisableState() {
+        isDisabled = (project.fileName?.hasSuffix(".disable") ?? false)
+    }
+
+    private func toggleDisableState() {
+        guard let gameInfo = gameInfo,
+            let resourceDir = AppPaths.resourceDirectory(
+                for: query,
+                gameName: gameInfo.gameName
+            )
+        else {
+            Logger.shared.error("切换资源启用状态失败：资源目录不存在")
+            return
+        }
+
+        guard let fileName = project.fileName else {
+            Logger.shared.error("切换资源启用状态失败：缺少文件名")
+            return
+        }
+
+        let fileManager = FileManager.default
+        let currentURL = resourceDir.appendingPathComponent(fileName)
+        let targetFileName: String
+
+        if isDisabled {
+            guard fileName.hasSuffix(".disable") else {
+                Logger.shared.error("启用资源失败：文件后缀不包含 .disable")
+                return
+            }
+            targetFileName = String(fileName.dropLast(".disable".count))
+        } else {
+            targetFileName = fileName + ".disable"
+        }
+
+        let targetURL = resourceDir.appendingPathComponent(targetFileName)
+
+        do {
+            try fileManager.moveItem(at: currentURL, to: targetURL)
+            // 根据新的文件名更新状态：如果新文件名以 .disable 结尾，则 isDisabled = true
+            isDisabled = targetFileName.hasSuffix(".disable")
+            onResourceChanged?()
+        } catch {
+            Logger.shared.error("切换资源启用状态失败: \(error.localizedDescription)")
+        }
     }
 }

@@ -54,6 +54,32 @@ struct SwiftCraftLauncherApp: App {
 
         // 清理临时窗口管理器，防止应用重启时恢复未关闭的临时窗口
         TemporaryWindowManager.shared.cleanupAllWindows()
+
+        // 提取 gameRepository 到局部变量，避免在 Task 中捕获 self
+        let repository = gameRepository
+        Task {
+            await Self.scanAllGamesModsDirectory(gameRepository: repository)
+        }
+    }
+
+    // MARK: - Scanning Methods
+
+    /// 扫描所有游戏的 mods 目录
+    /// 异步执行，不会阻塞 UI
+    private static func scanAllGamesModsDirectory(gameRepository: GameRepository) async {
+        let games = gameRepository.games
+        Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
+
+        // 并发扫描所有游戏
+        await withTaskGroup(of: Void.self) { group in
+            for game in games {
+                group.addTask {
+                    await ModScanner.shared.scanGameModsDirectory(game: game)
+                }
+            }
+        }
+
+        Logger.shared.info("完成所有游戏的 mods 目录扫描")
     }
 
     // MARK: - Body
