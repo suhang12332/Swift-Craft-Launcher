@@ -42,7 +42,7 @@ struct MainView: View {
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             // 侧边栏
-            SidebarView(selectedItem: $selectedItem)
+            SidebarView(selectedItem: $selectedItem, gameType: $gameType)
                 .navigationSplitViewColumnWidth(min: 168, ideal: 168, max: 168)
         } content: {
 

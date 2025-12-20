@@ -40,10 +40,12 @@ class GameActionManager: ObservableObject {
     ///   - game: 要删除的游戏版本信息
     ///   - gameRepository: 游戏仓库
     ///   - selectedItem: 当前选中的侧边栏项目（用于删除后切换）
+    ///   - gameType: 游戏类型绑定（用于切换到资源页面时设置为 true）
     func deleteGame(
         game: GameVersionInfo,
         gameRepository: GameRepository,
-        selectedItem: Binding<SidebarItem>? = nil
+        selectedItem: Binding<SidebarItem>? = nil,
+        gameType: Binding<Bool>? = nil
     ) {
         Task {
             do {
@@ -56,6 +58,8 @@ class GameActionManager: ObservableObject {
                             selectedItem.wrappedValue = .game(firstGame.id)
                         } else {
                             selectedItem.wrappedValue = .resource(.mod)
+                            // 切换到资源页面时，将 gameType 设置为 true
+                            gameType?.wrappedValue = true
                         }
                     }
                 }
