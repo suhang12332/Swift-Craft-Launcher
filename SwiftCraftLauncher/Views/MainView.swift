@@ -16,7 +16,6 @@ struct MainView: View {
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Resource/Project State
-    @State private var sortIndex: String = "relevance"
     @State private var selectedVersions: [String] = []
     @State private var selectedLicenses: [String] = []
     @State private var selectedCategories: [String] = []
@@ -69,7 +68,6 @@ struct MainView: View {
 
             DetailView(
                 selectedItem: $selectedItem,
-                sortIndex: $sortIndex,
                 gameResourcesType: $gameResourcesType,
                 selectedVersions: $selectedVersions,
                 selectedCategories: $selectedCategories,
@@ -87,7 +85,6 @@ struct MainView: View {
             .toolbar {
                 DetailToolbarView(
                     selectedItem: $selectedItem,
-                    sortIndex: $sortIndex,
                     gameResourcesType: $gameResourcesType,
                     gameType: $gameType,
                     versionCurrentPage: $versionCurrentPage,
@@ -190,9 +187,6 @@ struct MainView: View {
         if !gameType && self.selectedProjectId == nil {
             gameType = true
         }
-
-        // 排序方式回到默认值
-        sortIndex = "relevance"
 
         // 保证资源类型与当前侧边栏选择一致
         if case .resource(let resourceType) = selectedItem {

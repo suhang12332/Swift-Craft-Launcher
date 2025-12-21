@@ -15,7 +15,6 @@ struct GameInfoDetailView: View {
     let game: GameVersionInfo
 
     @Binding var query: String
-    @Binding var sortIndex: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
     @Binding var selectedFeatures: [String]
@@ -42,7 +41,6 @@ struct GameInfoDetailView: View {
                 GameRemoteResourceView(
                     game: game,
                     query: $query,
-                    sortIndex: $sortIndex,
                     selectedVersions: $selectedVersions,
                     selectedCategories: $selectedCategories,
                     selectedFeatures: $selectedFeatures,

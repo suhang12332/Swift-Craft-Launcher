@@ -81,7 +81,6 @@ final class ModrinthSearchViewModel: ObservableObject {
         resolutions: [String],
         performanceImpact: [String],
         loaders: [String],
-        sortIndex: String,
         page: Int = 1,
         append: Bool = false
     ) async {
@@ -118,7 +117,6 @@ final class ModrinthSearchViewModel: ObservableObject {
 
                 let result = await ModrinthService.searchProjects(
                     facets: facets,
-                    index: sortIndex,
                     offset: offset,
                     limit: pageSize,
                     query: query

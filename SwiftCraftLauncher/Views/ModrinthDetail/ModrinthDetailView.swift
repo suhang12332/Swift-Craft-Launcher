@@ -4,7 +4,6 @@ import SwiftUI
 struct ModrinthDetailView: View {
     // MARK: - Properties
     let query: String
-    @Binding var sortIndex: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
     @Binding var selectedFeatures: [String]
@@ -29,7 +28,6 @@ struct ModrinthDetailView: View {
 
     init(
         query: String,
-        sortIndex: Binding<String>,
         selectedVersions: Binding<[String]>,
         selectedCategories: Binding<[String]>,
         selectedFeatures: Binding<[String]>,
@@ -44,7 +42,6 @@ struct ModrinthDetailView: View {
         scannedDetailIds: Binding<Set<String>> = .constant([])
     ) {
         self.query = query
-        _sortIndex = sortIndex
         _selectedVersions = selectedVersions
         _selectedCategories = selectedCategories
         _selectedFeatures = selectedFeatures
@@ -62,7 +59,6 @@ struct ModrinthDetailView: View {
     private var searchKey: String {
         [
             query,
-            sortIndex,
             selectedVersions.joined(separator: ","),
             selectedCategories.joined(separator: ","),
             selectedFeatures.joined(separator: ","),
@@ -206,7 +202,6 @@ struct ModrinthDetailView: View {
             resolutions: selectedResolutions,
             performanceImpact: selectedPerformanceImpact,
             loaders: selectedLoader,
-            sortIndex: sortIndex,
             page: page,
             append: append
         )
@@ -304,7 +299,6 @@ struct ModrinthDetailView: View {
     private func buildSearchParamsKey(page: Int) -> String {
         [
             query,
-            sortIndex,
             selectedVersions.joined(separator: ","),
             selectedCategories.joined(separator: ","),
             selectedFeatures.joined(separator: ","),

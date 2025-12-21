@@ -106,14 +106,12 @@ enum ModrinthService {
     /// 搜索项目（静默版本）
     /// - Parameters:
     ///   - facets: 搜索条件
-    ///   - index: 索引类型
     ///   - offset: 偏移量
     ///   - limit: 限制数量
     ///   - query: 查询字符串
     /// - Returns: 搜索结果，失败时返回空结果
     static func searchProjects(
         facets: [[String]]? = nil,
-        index: String,
         offset: Int = 0,
         limit: Int,
         query: String?
@@ -121,7 +119,6 @@ enum ModrinthService {
         return await Task {
             try await searchProjectsThrowing(
                 facets: facets,
-                index: index,
                 offset: offset,
                 limit: limit,
                 query: query
@@ -137,7 +134,6 @@ enum ModrinthService {
     /// 搜索项目（抛出异常版本）
     /// - Parameters:
     ///   - facets: 搜索条件
-    ///   - index: 索引类型
     ///   - offset: 偏移量
     ///   - limit: 限制数量
     ///   - query: 查询字符串
@@ -145,7 +141,6 @@ enum ModrinthService {
     /// - Throws: GlobalError 当操作失败时
     static func searchProjectsThrowing(
         facets: [[String]]? = nil,
-        index: String,
         offset: Int = 0,
         limit: Int,
         query: String?
@@ -161,7 +156,6 @@ enum ModrinthService {
             )
         }
         var queryItems = [
-            URLQueryItem(name: "index", value: index),
             URLQueryItem(name: "offset", value: String(offset)),
             URLQueryItem(name: "limit", value: String(min(limit, 100))),
         ]
