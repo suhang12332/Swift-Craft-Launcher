@@ -104,8 +104,8 @@ enum ModrinthDependencyDownloader {
                             }
                             // 如果是 mod，添加到安装缓存
                             if query.lowercased() == "mod" {
-                                ModScanner.shared.addModProjectId(
-                                    detailWithFile.id,
+                                ModScanner.shared.addModSlug(
+                                    detailWithFile.slug,
                                     to: gameInfo.gameName
                                 )
                             }
@@ -159,8 +159,8 @@ enum ModrinthDependencyDownloader {
                             }
                             // 如果是 mod，添加到安装缓存
                             if query.lowercased() == "mod" {
-                                ModScanner.shared.addModProjectId(
-                                    mainProjectDetail.id,
+                                ModScanner.shared.addModSlug(
+                                    mainProjectDetail.slug,
                                     to: gameInfo.gameName
                                 )
                             }
@@ -350,8 +350,8 @@ enum ModrinthDependencyDownloader {
                         }
                         // 如果是 mod，添加到安装缓存
                         if query.lowercased() == "mod" {
-                            ModScanner.shared.addModProjectId(
-                                depCopy.id,
+                            ModScanner.shared.addModSlug(
+                                depCopy.slug,
                                 to: gameInfo.gameName
                             )
                         }
@@ -444,8 +444,8 @@ enum ModrinthDependencyDownloader {
             }
             // 如果是 mod，添加到安装缓存
             if query.lowercased() == "mod" {
-                ModScanner.shared.addModProjectId(
-                    mainProjectDetail.id,
+                ModScanner.shared.addModSlug(
+                    mainProjectDetail.slug,
                     to: gameInfo.gameName
                 )
             }
@@ -509,8 +509,8 @@ enum ModrinthDependencyDownloader {
             }
             // 如果是 mod，添加到安装缓存
             if query.lowercased() == "mod" {
-                ModScanner.shared.addModProjectId(
-                    mainProjectDetail.id,
+                ModScanner.shared.addModSlug(
+                    mainProjectDetail.slug,
                     to: gameInfo.gameName
                 )
             }

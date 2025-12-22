@@ -223,6 +223,8 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
         // 如果不是 Modrinth 格式，尝试解析 CurseForge 格式
         if let modrinthInfo = await CurseForgeManifestParser.parseManifest(extractedPath: extractedPath) {
+            // 设置 lastParsedIndexInfo 以便显示 mod 加载器进度条
+            lastParsedIndexInfo = modrinthInfo
             return modrinthInfo
         }
 

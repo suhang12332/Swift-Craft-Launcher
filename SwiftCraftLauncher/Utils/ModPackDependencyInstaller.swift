@@ -385,7 +385,7 @@ enum ModPackDependencyInstaller {
                     defer { Task { await semaphore.signal() } }
 
                     // 检查是否需要跳过
-                    if shouldSkipDependency(dep: dep, gameInfo: gameInfo, resourceDir: resourceDir) {
+                    if await shouldSkipDependency(dep: dep, gameInfo: gameInfo, resourceDir: resourceDir) {
                         // 跳过也更新进度
                         let currentCount = completedCount.increment()
                         onProgressUpdate?("modpack.progress.dependency_skipped".localized(), currentCount, requiredDependencies.count, .dependencies)
@@ -439,16 +439,20 @@ enum ModPackDependencyInstaller {
         dep: ModrinthIndexProjectDependency,
         gameInfo: GameVersionInfo,
         resourceDir: URL
-    ) -> Bool {
+    ) async -> Bool {
         // 跳过 Fabric API 在 Quilt 上的安装
         if dep.projectId == "P7dR8mSH" && gameInfo.modLoader.lowercased() == "quilt" {
             return true
         }
 
-        // 检查是否已安装
-        if let projectId = dep.projectId,
-           ModScanner.shared.isModInstalledSync(projectId: projectId, in: resourceDir) {
-            return true
+        // 检查是否已安装（使用slug）
+        if let projectId = dep.projectId {
+            // 获取项目详情以得到slug
+            if let detail = await ModrinthService.fetchProjectDetails(id: projectId) {
+                if ModScanner.shared.isModInstalledSync(slug: detail.slug, in: resourceDir) {
+                    return true
+                }
+            }
         }
 
         return false

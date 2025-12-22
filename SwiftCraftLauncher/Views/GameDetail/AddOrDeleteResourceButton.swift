@@ -459,10 +459,10 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        // 只检查 scannedDetailIds 是否包含当前项目的 projectId
+        // 只检查 scannedDetailIds 是否包含当前项目的 slug
         // 如果包含，说明该资源已在扫描列表中，标记为已安装
         // 移除同步扫描以提高性能，避免卡顿
-        if scannedDetailIds.contains(project.projectId) {
+        if scannedDetailIds.contains(project.slug) {
             addButtonState = .installed
             return
         }
@@ -507,9 +507,9 @@ struct AddOrDeleteResourceButton: View {
         }
     }
 
-    // 新增：在安装完成后更新 scannedDetailIds
+    // 新增：在安装完成后更新 scannedDetailIds（使用slug）
     private func addToScannedDetailIds() {
-        scannedDetailIds.insert(project.projectId)
+        scannedDetailIds.insert(project.slug)
     }
 
     private func checkDisableState() {

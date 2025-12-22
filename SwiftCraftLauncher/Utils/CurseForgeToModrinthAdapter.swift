@@ -124,7 +124,7 @@ enum CurseForgeToModrinthAdapter {
         }
         
         // 提取加载器（需要从文件信息中推断，这里简化处理）
-        var loaders: [String] = []
+        let loaders: [String] = []
         // 注意：CurseForge 文件可能不直接包含加载器信息，需要从项目信息中获取
         // 这里暂时返回空数组，实际使用时可能需要额外查询
         

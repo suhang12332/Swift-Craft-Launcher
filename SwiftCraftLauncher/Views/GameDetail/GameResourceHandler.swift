@@ -10,7 +10,7 @@ enum GameResourceHandler {
     ) {
         guard let gameInfo = gameInfo else { return }
         ModScanner.shared.isModInstalled(
-            projectId: project.projectId,
+            slug: project.slug,
             in: AppPaths.modsDirectory(gameName: gameInfo.gameName)
         ) { installed in
             DispatchQueue.main.async {
@@ -46,20 +46,20 @@ enum GameResourceHandler {
             )
         }
 
-        // 如果是 mod 文件，删除前获取 projectId 以便从缓存中移除
-        var projectId: String?
+        // 如果是 mod 文件，删除前获取 slug 以便从缓存中移除
+        var slug: String?
         var gameName: String?
         if isModsDirectory(fileURL.deletingLastPathComponent()) {
             // 从文件路径提取 gameName
             gameName = extractGameName(from: fileURL.deletingLastPathComponent())
-            // 尝试从缓存获取 projectId
+            // 尝试从缓存获取 slug
             if let hash = ModScanner.sha1Hash(of: fileURL),
                let detail = AppCacheManager.shared.get(
                    namespace: "mod",
                    key: hash,
                    as: ModrinthProjectDetail.self
                ) {
-                projectId = detail.id
+                slug = detail.slug
             }
         }
 
@@ -67,8 +67,8 @@ enum GameResourceHandler {
             try FileManager.default.removeItem(at: fileURL)
 
             // 删除成功后，如果是 mod，从缓存中移除
-            if let projectId = projectId, let gameName = gameName {
-                ModScanner.shared.removeModProjectId(projectId, from: gameName)
+            if let slug = slug, let gameName = gameName {
+                ModScanner.shared.removeModSlug(slug, from: gameName)
             }
         } catch {
             throw GlobalError.fileSystem(
@@ -499,8 +499,8 @@ enum GameResourceHandler {
 
             // 如果是 mod，添加到安装缓存
             if query.lowercased() == "mod" {
-                ModScanner.shared.addModProjectId(
-                    dep.id,
+                ModScanner.shared.addModSlug(
+                    dep.slug,
                     to: gameInfo.gameName
                 )
             }

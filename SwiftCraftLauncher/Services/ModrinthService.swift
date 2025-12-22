@@ -468,13 +468,39 @@ enum ModrinthService {
             return ModrinthProjectDependency(projects: [])
         }
 
-        // 2. 收集所有依赖的projectId和versionId
+        // 2. 收集所有依赖的projectId和versionId，并检查是否已安装（使用slug）
         var dependencyProjectIds = Set<String>()
         var dependencyVersionIds: [String: String] = [:] // projectId -> versionId
 
+        // 并发获取所有依赖项目的详情，以便获取slug并检查是否已安装
+        let dependencyDetails = await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
+            for dep in firstVersion.dependencies where dep.dependencyType == "required" {
+                guard let projectId = dep.projectId else { continue }
+                group.addTask {
+                    return await ModrinthService.fetchProjectDetails(id: projectId)
+                }
+            }
+            
+            var results: [ModrinthProjectDetail] = []
+            for await detail in group {
+                if let detail = detail {
+                    results.append(detail)
+                }
+            }
+            return results
+        }
+
+        // 使用slug检查是否已安装，过滤出缺失的依赖
         let missingDependencies = firstVersion.dependencies
             .filter { $0.dependencyType == "required" }
-            .filter { !ModScanner.shared.isModInstalledSync(projectId: $0.projectId ?? "", in: cachePath) }
+            .filter { dep in
+                guard let projectId = dep.projectId,
+                      let detail = dependencyDetails.first(where: { $0.id == projectId }) else {
+                    return true // 如果无法获取详情，认为缺失
+                }
+                // 使用同步方法检查是否已安装
+                return !ModScanner.shared.isModInstalledSync(slug: detail.slug, in: cachePath)
+            }
 
         for dep in missingDependencies {
             if let projectId = dep.projectId {

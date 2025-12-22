@@ -309,11 +309,11 @@ extension ModScanner {
 
     /// 检查 mod 是否已安装（核心逻辑）
     private func checkModInstalledCore(
-        projectId: String,
+        slug: String,
         gameName: String
     ) async -> Bool {
         let cachedMods = await ModInstallationCache.shared.getAllModsInstalled(for: gameName)
-        return cachedMods.contains(projectId)
+        return cachedMods.contains(slug)
     }
 
     /// 获取目录下所有 jar/zip 文件及其 hash、缓存 detail（静默版本）
@@ -380,7 +380,7 @@ extension ModScanner {
         }
     }
 
-    /// 异步扫描：仅获取所有 detailId（抛出异常版本）
+    /// 异步扫描：仅获取所有 slug（抛出异常版本）
     /// 在后台线程执行，只从缓存读取，不创建 fallback
     /// 返回 Set 以提高查找性能（O(1)）
     public func scanAllDetailIdsThrowing(in dir: URL) async throws -> Set<String> {
@@ -420,15 +420,15 @@ extension ModScanner {
                             as: ModrinthProjectDetail.self
                         )
 
-                        // 优先使用缓存的 detailId，否则使用 hash
-                        return detail?.id ?? hash
+                        // 优先使用缓存的 slug，否则使用 hash
+                        return detail?.slug ?? hash
                     }
                 }
 
-                var detailIds: Set<String> = []
-                for await detailId in group {
-                    if let detailId = detailId {
-                        detailIds.insert(detailId)
+                var slugs: Set<String> = []
+                for await slug in group {
+                    if let slug = slug {
+                        slugs.insert(slug)
                     }
                 }
 
@@ -437,12 +437,12 @@ extension ModScanner {
                     if let gameName = self.extractGameName(from: dir) {
                         await ModInstallationCache.shared.setAllModsInstalled(
                             for: gameName,
-                            projectIds: detailIds
+                            slugs: slugs
                         )
                     }
                 }
 
-                return detailIds
+                return slugs
             }
         }.value
     }
@@ -513,10 +513,10 @@ extension ModScanner {
     }
 
     /// 同步：仅查缓存
-    func isModInstalledSync(projectId: String, in modsDir: URL) -> Bool {
+    func isModInstalledSync(slug: String, in modsDir: URL) -> Bool {
         do {
             return try isModInstalledSyncThrowing(
-                projectId: projectId,
+                slug: slug,
                 in: modsDir
             )
         } catch {
@@ -529,7 +529,7 @@ extension ModScanner {
 
     /// 同步：仅查缓存（抛出异常版本）
     func isModInstalledSyncThrowing(
-        projectId: String,
+        slug: String,
         in modsDir: URL
     ) throws -> Bool {
         guard let gameName = extractGameName(from: modsDir) else {
@@ -541,7 +541,7 @@ extension ModScanner {
         var result = false
 
         Task {
-            result = await checkModInstalledCore(projectId: projectId, gameName: gameName)
+            result = await checkModInstalledCore(slug: slug, gameName: gameName)
             semaphore.signal()
         }
 
@@ -551,14 +551,14 @@ extension ModScanner {
 
     /// 异步：仅查缓存（静默版本）
     func isModInstalled(
-        projectId: String,
+        slug: String,
         in modsDir: URL,
         completion: @escaping (Bool) -> Void
     ) {
         Task {
             do {
                 let result = try await isModInstalledThrowing(
-                    projectId: projectId,
+                    slug: slug,
                     in: modsDir
                 )
                 completion(result)
@@ -575,14 +575,14 @@ extension ModScanner {
 
     /// 异步：仅查缓存（抛出异常版本）
     func isModInstalledThrowing(
-        projectId: String,
+        slug: String,
         in modsDir: URL
     ) async throws -> Bool {
         guard let gameName = extractGameName(from: modsDir) else {
             return false
         }
 
-        return await checkModInstalledCore(projectId: projectId, gameName: gameName)
+        return await checkModInstalledCore(slug: slug, gameName: gameName)
     }
 
     /// 扫描目录，返回所有已识别的 ModrinthProjectDetail（静默版本）
@@ -807,75 +807,75 @@ extension ModScanner {
     actor ModInstallationCache {
         static let shared = ModInstallationCache()
 
-        /// 内存缓存：gameName -> Set<projectId>
+        /// 内存缓存：gameName -> Set<slug>
         private var cache: [String: Set<String>] = [:]
 
         private init() {}
 
-        /// 添加 projectId 到缓存
+        /// 添加 slug 到缓存
         /// - Parameters:
-        ///   - projectId: 要添加的 projectId
+        ///   - slug: 要添加的 slug
         ///   - gameName: 游戏名称
-        func addProjectId(_ projectId: String, to gameName: String) {
+        func addSlug(_ slug: String, to gameName: String) {
             if var cached = cache[gameName] {
-                cached.insert(projectId)
+                cached.insert(slug)
                 cache[gameName] = cached
             } else {
                 // 如果缓存不存在，创建一个新的集合
-                cache[gameName] = [projectId]
+                cache[gameName] = [slug]
             }
         }
 
-        /// 从缓存中删除指定的 projectId
+        /// 从缓存中删除指定的 slug
         /// - Parameters:
-        ///   - projectId: 要删除的 projectId
+        ///   - slug: 要删除的 slug
         ///   - gameName: 游戏名称
-        func removeProjectId(_ projectId: String, from gameName: String) {
+        func removeSlug(_ slug: String, from gameName: String) {
             if var cached = cache[gameName] {
-                cached.remove(projectId)
+                cached.remove(slug)
                 cache[gameName] = cached
             }
         }
 
-        /// 查询指定游戏的所有已安装 mod projectId 集合
+        /// 查询指定游戏的所有已安装 mod slug 集合
         /// - Parameter gameName: 游戏名称
-        /// - Returns: 已安装的 mod projectId 集合，如果不存在则返回空集合
+        /// - Returns: 已安装的 mod slug 集合，如果不存在则返回空集合
         func getAllModsInstalled(for gameName: String) -> Set<String> {
             return cache[gameName] ?? Set<String>()
         }
 
-        /// 批量设置指定游戏的所有已安装 mod projectId 集合
+        /// 批量设置指定游戏的所有已安装 mod slug 集合
         /// - Parameters:
         ///   - gameName: 游戏名称
-        ///   - projectIds: 要设置的 projectId 集合
-        func setAllModsInstalled(for gameName: String, projectIds: Set<String>) {
-            cache[gameName] = projectIds
+        ///   - slugs: 要设置的 slug 集合
+        func setAllModsInstalled(for gameName: String, slugs: Set<String>) {
+            cache[gameName] = slugs
         }
     }
 
-    /// 添加 projectId 到缓存
+    /// 添加 slug 到缓存
     /// - Parameters:
-    ///   - projectId: 要添加的 projectId
+    ///   - slug: 要添加的 slug
     ///   - gameName: 游戏名称
-    func addModProjectId(_ projectId: String, to gameName: String) {
+    func addModSlug(_ slug: String, to gameName: String) {
         Task {
-            await ModInstallationCache.shared.addProjectId(projectId, to: gameName)
+            await ModInstallationCache.shared.addSlug(slug, to: gameName)
         }
     }
 
-    /// 从缓存中删除指定的 projectId
+    /// 从缓存中删除指定的 slug
     /// - Parameters:
-    ///   - projectId: 要删除的 projectId
+    ///   - slug: 要删除的 slug
     ///   - gameName: 游戏名称
-    func removeModProjectId(_ projectId: String, from gameName: String) {
+    func removeModSlug(_ slug: String, from gameName: String) {
         Task {
-            await ModInstallationCache.shared.removeProjectId(projectId, from: gameName)
+            await ModInstallationCache.shared.removeSlug(slug, from: gameName)
         }
     }
 
-    /// 查询指定游戏的所有已安装 mod projectId 集合
+    /// 查询指定游戏的所有已安装 mod slug 集合
     /// - Parameter gameName: 游戏名称
-    /// - Returns: 已安装的 mod projectId 集合，如果不存在则返回空集合
+    /// - Returns: 已安装的 mod slug 集合，如果不存在则返回空集合
     func getAllModsInstalled(for gameName: String) async -> Set<String> {
         return await ModInstallationCache.shared.getAllModsInstalled(for: gameName)
     }

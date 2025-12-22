@@ -39,11 +39,11 @@ func filterCompatibleGames(
         return compatibleGames
     }
 
-    // 对于 mod，过滤掉已安装的
+    // 对于 mod，过滤掉已安装的（使用slug）
     return compatibleGames.compactMap { game in
         let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
         if ModScanner.shared.isModInstalledSync(
-            projectId: projectId,
+            slug: detail.slug,
             in: modsDir
         ) {
             return nil
