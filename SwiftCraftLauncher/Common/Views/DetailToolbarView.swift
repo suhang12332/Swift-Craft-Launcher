@@ -11,6 +11,7 @@ public struct DetailToolbarView: ToolbarContent {
     @EnvironmentObject var gameRepository: GameRepository
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @StateObject private var gameActionManager = GameActionManager.shared
+    @StateObject private var gameSettings = GameSettingsManager.shared
     @Binding var project: ModrinthProjectDetail?
     @Binding var selectProjectId: String?
     @Binding var selectedTab: Int
@@ -191,12 +192,14 @@ public struct DetailToolbarView: ToolbarContent {
     private var dataSourceMenu: some View {
         Menu {
             ForEach(DataSource.allCases, id: \.self) { source in
-                Button(source.displayName) {
+                Button(source.localizedName) {
+                    // 只更新当前选择的值，不影响设置
                     dataSource = source
                 }
             }
         } label: {
-            Label(dataSource.displayName, systemImage: "network")
+            // 显示当前选择的值
+            Label(dataSource.localizedName, systemImage: "network")
                 .labelStyle(.titleOnly)
         }
         .help("resource.data_source.help".localized())

@@ -7,21 +7,6 @@
 
 import SwiftUI
 
-/// 数据源枚举
-enum DataSource: String, CaseIterable {
-    case modrinth = "Modrinth"
-    case curseforge = "CurseForge"
-    
-    var displayName: String {
-        switch self {
-        case .modrinth:
-            return "Modrinth"
-        case .curseforge:
-            return "CurseForge"
-        }
-    }
-}
-
 struct MainView: View {
     // MARK: - State & Environment
     @State private var columnVisibility = NavigationSplitViewVisibility.all
@@ -49,7 +34,9 @@ struct MainView: View {
     @State private var gameResourcesType = "mod"
     @State private var gameType = true  // false = local, true = server
     @State private var gameId: String?
-    @State private var dataSource: DataSource = .modrinth  // 数据源：Modrinth 或 CurseForge
+    @StateObject private var gameSettings = GameSettingsManager.shared
+    // 数据源：从设置中读取默认值，但可以临时更改（不影响设置）
+    @State private var dataSource: DataSource = GameSettingsManager.shared.defaultAPISource
 
     @State private var showingInspector: Bool = false
 

@@ -1,6 +1,25 @@
 import Foundation
 import SwiftUI
 
+/// 数据源枚举
+enum DataSource: String, CaseIterable, Codable {
+    case modrinth = "Modrinth"
+    case curseforge = "CurseForge"
+    
+    var displayName: String {
+        switch self {
+        case .modrinth:
+            return "Modrinth"
+        case .curseforge:
+            return "CurseForge"
+        }
+    }
+    
+    var localizedName: String {
+        "settings.default_api_source.\(rawValue.lowercased())".localized()
+    }
+}
+
 class GameSettingsManager: ObservableObject {
     // MARK: - 单例实例
     static let shared = GameSettingsManager()
@@ -27,6 +46,11 @@ class GameSettingsManager: ObservableObject {
 
     @AppStorage("enableAICrashAnalysis")
     var enableAICrashAnalysis: Bool = false {
+        didSet { objectWillChange.send() }
+    }
+
+    @AppStorage("defaultAPISource")
+    var defaultAPISource: DataSource = .modrinth {
         didSet { objectWillChange.send() }
     }
 
