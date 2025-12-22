@@ -65,6 +65,15 @@ struct AddOrDeleteResourceButton: View {
     @State private var showDeleteAlert = false
     @State private var showNoGameAlert = false
     @State private var showPlayerAlert = false  // 新增：玩家验证 alert
+    
+    // Alert 类型枚举，用于管理不同的 alert
+    enum AlertType: Identifiable {
+        case noGame
+        case noPlayer
+        
+        var id: Self { self }
+    }
+    @State private var activeAlert: AlertType? = nil
     @StateObject private var gameSettings = GameSettingsManager.shared
     @StateObject private var depVM = DependencySheetViewModel()
     @State private var isDownloadingAllDependencies = false
@@ -245,19 +254,21 @@ struct AddOrDeleteResourceButton: View {
                 }
             )
         }
-        .alert(isPresented: $showNoGameAlert) {
-            Alert(
-                title: Text("no_local_game.title".localized()),
-                message: Text("no_local_game.message".localized()),
-                dismissButton: .default(Text("common.confirm".localized()))
-            )
-        }
-        .alert(isPresented: $showPlayerAlert) {
-            Alert(
-                title: Text("sidebar.alert.no_player.title".localized()),
-                message: Text("sidebar.alert.no_player.message".localized()),
-                dismissButton: .default(Text("common.confirm".localized()))
-            )
+        .alert(item: $activeAlert) { alertType in
+            switch alertType {
+            case .noGame:
+                return Alert(
+                    title: Text("no_local_game.title".localized()),
+                    message: Text("no_local_game.message".localized()),
+                    dismissButton: .default(Text("common.confirm".localized()))
+                )
+            case .noPlayer:
+                return Alert(
+                    title: Text("sidebar.alert.no_player.title".localized()),
+                    message: Text("sidebar.alert.no_player.message".localized()),
+                    dismissButton: .default(Text("common.confirm".localized()))
+                )
+            }
         }
     }
 
@@ -402,29 +413,35 @@ struct AddOrDeleteResourceButton: View {
         } else if case .resource = selectedItem {
             switch addButtonState {
             case .idle:
-                // 新增：对整合包的特殊处理
-                if query == "modpack" {
-                    if gameRepository.games.isEmpty {
-                        showNoGameAlert = false
-                    }
-                    // 检查是否有当前玩家
-                    if playerListViewModel.currentPlayer == nil {
-                        showPlayerAlert = true
+                // 当 type 是 true (server mode) 时的特殊处理
+                if type {
+                    // 对整合包的特殊处理：只需要判断有没有玩家
+                    if query == "modpack" {
+                        if playerListViewModel.currentPlayer == nil {
+                            activeAlert = .noPlayer
+                            return
+                        }
+                        showModPackDownloadSheet = true
                         return
                     }
-                    showModPackDownloadSheet = true
-                    return
+                    
+                    // 其他资源：需要游戏存在才可以点击
+                    if gameRepository.games.isEmpty {
+                        activeAlert = .noGame
+                        return
+                    }
+                } else {
+                    // type 为 false (local mode) 时的原有逻辑
+                    if query == "modpack" {
+                        showModPackDownloadSheet = true
+                        return
+                    }
                 }
 
                 addButtonState = .loading
                 Task {
-                    if gameRepository.games.isEmpty {
-                        showNoGameAlert = true
-                        addButtonState = .idle
-                    } else {
-                        // 先加载 projectDetail，然后再打开 sheet
-                        await loadProjectDetailBeforeOpeningSheet()
-                    }
+                    // 先加载 projectDetail，然后再打开 sheet
+                    await loadProjectDetailBeforeOpeningSheet()
                 }
             case .installed:
                 if !type {
