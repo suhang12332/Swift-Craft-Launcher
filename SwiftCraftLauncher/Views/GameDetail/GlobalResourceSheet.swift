@@ -73,11 +73,7 @@ struct GlobalResourceSheet: View {
                             }
                         }
                     }
-                } else {
-                    Text("global_resource.loading_error".localized())
-                        .foregroundColor(.secondary)
-                        .padding()
-                }
+                } 
             },
             footer: {
                 GlobalResourceFooter(

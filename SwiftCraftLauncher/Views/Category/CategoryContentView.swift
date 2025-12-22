@@ -20,6 +20,7 @@ struct CategoryContentView: View {
     let type: String
     let gameVersion: String?
     let gameLoader: String?
+    let dataSource: DataSource
 
     // MARK: - Initialization
     init(
@@ -32,7 +33,8 @@ struct CategoryContentView: View {
         selectedVersions: Binding<[String]>,
         selectedLoaders: Binding<[String]>,
         gameVersion: String? = nil,
-        gameLoader: String? = nil
+        gameLoader: String? = nil,
+        dataSource: DataSource
     ) {
         self.project = project
         self.type = type
@@ -44,6 +46,7 @@ struct CategoryContentView: View {
         self._selectedLoaders = selectedLoaders
         self.gameVersion = gameVersion
         self.gameLoader = gameLoader
+        self.dataSource = dataSource
         self._viewModel = StateObject(
             wrappedValue: CategoryContentViewModel(project: project)
         )
@@ -157,7 +160,9 @@ struct CategoryContentView: View {
             case ProjectType.resourcepack:
                 resourcePackSections
             case ProjectType.shader:
-                loaderSection
+                if dataSource == .modrinth {
+                    loaderSection
+                }
                 shaderSections
             default:
                 EmptyView()
@@ -196,23 +201,28 @@ struct CategoryContentView: View {
     }
 
     private var shaderSections: some View {
+
         Group {
-            CategorySectionView(
-                title: "filter.behavior",
-                items: viewModel.features.map {
-                    FilterItem(id: $0.name, name: $0.name)
-                },
-                selectedItems: $selectedFeatures,
-                isLoading: viewModel.isLoading
-            )
-            CategorySectionView(
-                title: "filter.performance",
-                items: viewModel.performanceImpacts.map {
-                    FilterItem(id: $0.name, name: $0.name)
-                },
-                selectedItems: $selectedPerformanceImpacts,
-                isLoading: viewModel.isLoading
-            )
+            // CurseForge 数据源不支持性能要求筛选，在 CF 标签下不显示该部分
+            if dataSource == .modrinth {
+                CategorySectionView(
+                    title: "filter.behavior",
+                    items: viewModel.features.map {
+                        FilterItem(id: $0.name, name: $0.name)
+                    },
+                    selectedItems: $selectedFeatures,
+                    isLoading: viewModel.isLoading
+                )
+                CategorySectionView(
+                    title: "filter.performance",
+                    items: viewModel.performanceImpacts.map {
+                        FilterItem(id: $0.name, name: $0.name)
+                    },
+                    selectedItems: $selectedPerformanceImpacts,
+                    isLoading: viewModel.isLoading
+                )
+
+            }
         }
     }
 

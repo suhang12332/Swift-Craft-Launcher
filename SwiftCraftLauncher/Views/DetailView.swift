@@ -24,6 +24,7 @@ struct DetailView: View {
     @Binding var versionTotal: Int
     @Binding var gameType: Bool
     @Binding var selectedLoader: [String]
+    @Binding var dataSource: DataSource
 
     @EnvironmentObject var gameRepository: GameRepository
 
@@ -81,7 +82,8 @@ struct DetailView: View {
                 selectedLoader: $selectedLoader,
                 gameInfo: nil,
                 selectedItem: $selectedItem,
-                gameType: $gameType
+                gameType: $gameType,
+                dataSource: $dataSource
             )
         }
     }

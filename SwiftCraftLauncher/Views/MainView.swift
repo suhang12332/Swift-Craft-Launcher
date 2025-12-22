@@ -7,6 +7,21 @@
 
 import SwiftUI
 
+/// 数据源枚举
+enum DataSource: String, CaseIterable {
+    case modrinth = "Modrinth"
+    case curseforge = "CurseForge"
+    
+    var displayName: String {
+        switch self {
+        case .modrinth:
+            return "Modrinth"
+        case .curseforge:
+            return "CurseForge"
+        }
+    }
+}
+
 struct MainView: View {
     // MARK: - State & Environment
     @State private var columnVisibility = NavigationSplitViewVisibility.all
@@ -34,6 +49,7 @@ struct MainView: View {
     @State private var gameResourcesType = "mod"
     @State private var gameType = true  // false = local, true = server
     @State private var gameId: String?
+    @State private var dataSource: DataSource = .modrinth  // 数据源：Modrinth 或 CurseForge
 
     @State private var showingInspector: Bool = false
 
@@ -58,7 +74,8 @@ struct MainView: View {
                 gameResourcesType: $gameResourcesType,
                 selectedLoaders: $selectedLoaders,
                 gameType: $gameType,
-                gameId: $gameId
+                gameId: $gameId,
+                dataSource: $dataSource
             )
             .toolbar { ContentToolbarView() }.navigationSplitViewColumnWidth(
                 min: 235,
@@ -82,12 +99,12 @@ struct MainView: View {
                 versionCurrentPage: $versionCurrentPage,
                 versionTotal: $versionTotal,
                 gameType: $gameType,
-                selectedLoader: $selectedLoaders
+                selectedLoader: $selectedLoaders,
+                dataSource: $dataSource
             )
             .toolbar {
                 DetailToolbarView(
                     selectedItem: $selectedItem,
-                    sortIndex: $sortIndex,
                     gameResourcesType: $gameResourcesType,
                     gameType: $gameType,
                     versionCurrentPage: $versionCurrentPage,
@@ -95,7 +112,8 @@ struct MainView: View {
                     project: $loadedProjectDetail,
                     selectProjectId: $selectedProjectId,
                     selectedTab: $selectedTab,
-                    gameId: $gameId
+                    gameId: $gameId,
+                    dataSource: $dataSource
                 )
             }
         }

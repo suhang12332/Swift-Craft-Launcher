@@ -68,6 +68,8 @@ class ModScanner {
             // 尝试本地解析
             let (modid, version) =
                 try ModMetadataParser.parseModMetadataThrowing(fileURL: fileURL)
+            
+            // 如果 CF 查询失败或没有解析到 modid，则回退到本地兜底逻辑
             if let modid = modid, let version = version {
                 // 使用解析到的元数据创建兜底对象
                 let fallbackDetail = createFallbackDetail(

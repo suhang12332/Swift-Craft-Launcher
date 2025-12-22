@@ -66,9 +66,23 @@ final class CategoryContentViewModel: ObservableObject {
         do {
             async let categoriesTask = ModrinthService.fetchCategories()
             async let versionsTask = ModrinthService.fetchGameVersions()
-            async let loadersTask = ModrinthService.fetchLoaders()
+            
+            // 光影（shader）的加载器从 API 获取，其他项目类型使用静态列表
+            let loadersTask: Task<[Loader], Never>
+            if project == ProjectType.shader {
+                // 光影：从 API 获取加载器
+                loadersTask = Task {
+                    await ModrinthService.fetchLoaders()
+                }
+            } else {
+                // 其他项目类型：使用静态加载器列表
+                loadersTask = Task {
+                    Self.getStaticLoaders()
+                }
+            }
+            
             let (categoriesResult, versionsResult, loadersResult) = await (
-                categoriesTask, versionsTask, loadersTask
+                categoriesTask, versionsTask, loadersTask.value
             )
 
             // 验证返回的数据
@@ -98,6 +112,33 @@ final class CategoryContentViewModel: ObservableObject {
         }
 
         isLoading = false
+    }
+    
+    /// 获取静态加载器列表（不调用 API）
+    /// - Returns: 四个主要加载器：fabric、forge、quilt、neoforge
+    private static func getStaticLoaders() -> [Loader] {
+        return [
+            Loader(
+                name: "fabric",
+                icon: "fabric",
+                supported_project_types: ["mod", "modpack"]
+            ),
+            Loader(
+                name: "forge",
+                icon: "forge",
+                supported_project_types: ["mod", "modpack"]
+            ),
+            Loader(
+                name: "quilt",
+                icon: "quilt",
+                supported_project_types: ["mod", "modpack"]
+            ),
+            Loader(
+                name: "neoforge",
+                icon: "neoforge",
+                supported_project_types: ["mod", "modpack"]
+            )
+        ]
     }
 
     private func processFetchedData(

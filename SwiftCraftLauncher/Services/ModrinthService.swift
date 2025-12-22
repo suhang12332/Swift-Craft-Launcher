@@ -113,7 +113,6 @@ enum ModrinthService {
     /// - Returns: 搜索结果，失败时返回空结果
     static func searchProjects(
         facets: [[String]]? = nil,
-        index: String,
         offset: Int = 0,
         limit: Int,
         query: String?
@@ -121,7 +120,7 @@ enum ModrinthService {
         return await Task {
             try await searchProjectsThrowing(
                 facets: facets,
-                index: index,
+                index: "relevance",
                 offset: offset,
                 limit: limit,
                 query: query
@@ -192,12 +191,17 @@ enum ModrinthService {
                 level: .notification
             )
         }
+        
+        // 打印 Modrinth API URL
+        Logger.shared.info("🔵 [Modrinth API] \(url.absoluteString)")
+        
         // 使用统一的 API 客户端
         let data = try await APIClient.get(url: url)
 
         let decoder = JSONDecoder()
         decoder.configureForModrinth()
         let result = try decoder.decode(ModrinthResult.self, from: data)
+        
         return result
     }
 
@@ -271,9 +275,15 @@ enum ModrinthService {
     }
 
     /// 获取项目详情（静默版本）
-    /// - Parameter id: 项目 ID
+    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
     /// - Returns: 项目详情，失败时返回 nil
     static func fetchProjectDetails(id: String) async -> ModrinthProjectDetail? {
+        // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+        if id.hasPrefix("cf-") {
+            return await CurseForgeService.fetchProjectDetailsAsModrinth(id: id)
+        }
+        
+        // 使用 Modrinth 服务
         do {
             return try await fetchProjectDetailsThrowing(id: id)
         } catch {
@@ -285,10 +295,16 @@ enum ModrinthService {
     }
 
     /// 获取项目详情（抛出异常版本）
-    /// - Parameter id: 项目 ID
+    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
     /// - Returns: 项目详情
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectDetailsThrowing(id: String) async throws -> ModrinthProjectDetail {
+        // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+        if id.hasPrefix("cf-") {
+            return try await CurseForgeService.fetchProjectDetailsAsModrinthThrowing(id: id)
+        }
+        
+        // 使用 Modrinth 服务
         let url = URLConfig.API.Modrinth.project(id: id)
 
         // 使用统一的 API 客户端
@@ -308,9 +324,14 @@ enum ModrinthService {
     }
 
     /// 获取项目版本列表（静默版本）
-    /// - Parameter id: 项目 ID
+    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
     /// - Returns: 版本列表，失败时返回空数组
     static func fetchProjectVersions(id: String) async -> [ModrinthProjectDetailVersion] {
+        // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+        if id.hasPrefix("cf-") {
+            return await CurseForgeService.fetchProjectVersionsAsModrinth(id: id)
+        }
+        
         do {
             return try await fetchProjectVersionsThrowing(id: id)
         } catch {
@@ -322,10 +343,15 @@ enum ModrinthService {
     }
 
     /// 获取项目版本列表（抛出异常版本）
-    /// - Parameter id: 项目 ID
+    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
     /// - Returns: 版本列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionsThrowing(id: String) async throws -> [ModrinthProjectDetailVersion] {
+        // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+        if id.hasPrefix("cf-") {
+            return try await CurseForgeService.fetchProjectVersionsAsModrinthThrowing(id: id)
+        }
+        
         let url = URLConfig.API.Modrinth.version(id: id)
 
         // 使用统一的 API 客户端
@@ -338,7 +364,7 @@ enum ModrinthService {
 
     /// 获取项目版本列表（过滤版本）
     /// - Parameters:
-    ///   - id: 项目 ID
+    ///   - id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
     ///   - selectedVersions: 选中的版本
     ///   - selectedLoaders: 选中的加载器
     ///   - type: 项目类型
@@ -350,6 +376,16 @@ enum ModrinthService {
             selectedLoaders: [String],
             type: String
         ) async throws -> [ModrinthProjectDetailVersion] {
+            // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+            if id.hasPrefix("cf-") {
+                return try await CurseForgeService.fetchProjectVersionsFilterAsModrinth(
+                    id: id,
+                    selectedVersions: selectedVersions,
+                    selectedLoaders: selectedLoaders,
+                    type: type
+                )
+            }
+            
             let versions = try await fetchProjectVersionsThrowing(id: id)
             var loaders = selectedLoaders
             if type == "datapack" {

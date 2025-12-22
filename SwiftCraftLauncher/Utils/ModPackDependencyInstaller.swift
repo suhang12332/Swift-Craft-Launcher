@@ -248,7 +248,11 @@ enum ModPackDependencyInstaller {
     ///   - projectId: 项目ID
     ///   - resourceDir: 资源目录
     /// - Returns: 是否下载成功
-    private static func downloadCurseForgeFileWithDetail(fileDetail: CurseForgeModFileDetail, projectId: Int, resourceDir: URL) async -> Bool {
+    private static func downloadCurseForgeFileWithDetail(
+        fileDetail: CurseForgeModFileDetail,
+        projectId: Int,
+        resourceDir: URL
+    ) async -> Bool {
         do {
             // 确定下载URL
             let downloadUrl: String
@@ -271,11 +275,22 @@ enum ModPackDependencyInstaller {
             )
 
             // 下载文件
-            _ = try await DownloadManager.downloadFile(
+            let downloadedFile = try await DownloadManager.downloadFile(
                 urlString: downloadUrl,
                 destinationURL: destinationPath,
                 expectedSha1: fileDetail.hash?.value
             )
+
+            // 写入 Modrinth 风格缓存（使用已有的 CF→Modrinth 转换接口）
+            if let hash = ModScanner.sha1Hash(of: downloadedFile) {
+                // 将 CurseForge 项目详情转换为 ModrinthProjectDetail
+                if let cfAsModrinth = CurseForgeToModrinthAdapter.convert(modDetail) {
+                    var detailWithFile = cfAsModrinth
+                    detailWithFile.fileName = fileDetail.fileName
+                    detailWithFile.type = "mod"
+                    ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
+                }
+            }
 
             return true
         } catch {

@@ -72,7 +72,6 @@ struct AddOrDeleteResourceButton: View {
     @State private var showGlobalResourceSheet = false
     @State private var showModPackDownloadSheet = false  // 新增：整合包下载 sheet
     @State private var preloadedProjectDetail: ModrinthProjectDetail?  // 预加载的项目详情（用于普通资源）
-    @State private var preloadedModPackDetail: ModrinthProjectDetail?  // 预加载的整合包项目详情
     @State private var isLoadingProjectDetail = false  // 是否正在加载项目详情
     @State private var isDisabled: Bool = false  // 资源是否被禁用
     @Binding var selectedItem: SidebarItem
@@ -240,14 +239,9 @@ struct AddOrDeleteResourceButton: View {
                     ModPackDownloadSheet(
                         projectId: project.projectId,
                         gameInfo: gameInfo,
-                        query: query,
-                        preloadedDetail: preloadedModPackDetail
+                        query: query
                     )
                     .environmentObject(gameRepository)
-                    .onDisappear {
-                        // sheet 关闭时清理预加载的数据
-                        preloadedModPackDetail = nil
-                    }
                 }
             )
         }
@@ -418,11 +412,7 @@ struct AddOrDeleteResourceButton: View {
                         showPlayerAlert = true
                         return
                     }
-                    // 先加载 projectDetail，然后再打开 sheet
-                    addButtonState = .loading
-                    Task {
-                        await loadModPackDetailBeforeOpeningSheet()
-                    }
+                    showModPackDownloadSheet = true
                     return
                 }
 
@@ -472,32 +462,6 @@ struct AddOrDeleteResourceButton: View {
         addButtonState = .idle
     }
 
-    // 新增：在打开整合包 sheet 前加载 projectDetail
-    private func loadModPackDetailBeforeOpeningSheet() async {
-        isLoadingProjectDetail = true
-        defer {
-            Task { @MainActor in
-                isLoadingProjectDetail = false
-                addButtonState = .idle
-            }
-        }
-
-        guard let detail = await ModrinthService.fetchProjectDetails(
-            id: project.projectId
-        ) else {
-            GlobalErrorHandler.shared.handle(GlobalError.resource(
-                chineseMessage: "无法获取整合包详情",
-                i18nKey: "error.resource.project_details_not_found",
-                level: .notification
-            ))
-            return
-        }
-
-        await MainActor.run {
-            preloadedModPackDetail = detail
-            showModPackDownloadSheet = true
-        }
-    }
 
     // 新增：在打开 sheet 前加载 projectDetail（普通资源）
     private func loadProjectDetailBeforeOpeningSheet() async {

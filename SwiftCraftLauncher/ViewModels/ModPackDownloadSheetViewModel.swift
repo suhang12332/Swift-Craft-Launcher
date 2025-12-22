@@ -38,14 +38,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     }
 
     // MARK: - Data Loading
-
-    /// 设置预加载的项目详情
-    func setPreloadedDetail(_ detail: ModrinthProjectDetail) async {
-        projectDetail = detail
-        let gameVersions = detail.gameVersions
-        availableGameVersions = CommonUtil.sortMinecraftVersions(gameVersions)
-    }
-
     func loadProjectDetails(projectId: String) async {
         isLoadingProjectDetails = true
 

@@ -53,7 +53,8 @@ struct GameInfoDetailView: View {
                     selectedItem: $selectedItem,
                     gameType: $gameType,
                     header: remoteHeader,
-                    scannedDetailIds: $scannedResources
+                    scannedDetailIds: $scannedResources,
+                    dataSource: .constant(.modrinth)  // 游戏详情视图暂时只支持 Modrinth
                 )
             } else {
                 GameLocalResourceView(

@@ -81,9 +81,9 @@ final class ModrinthSearchViewModel: ObservableObject {
         resolutions: [String],
         performanceImpact: [String],
         loaders: [String],
-        sortIndex: String,
         page: Int = 1,
-        append: Bool = false
+        append: Bool = false,
+        dataSource: DataSource = .modrinth
     ) async {
         // Cancel any existing search task
         searchTask?.cancel()
@@ -116,13 +116,43 @@ final class ModrinthSearchViewModel: ObservableObject {
 
                 try Task.checkCancellation()
 
-                let result = await ModrinthService.searchProjects(
-                    facets: facets,
-                    index: sortIndex,
-                    offset: offset,
-                    limit: pageSize,
-                    query: query
-                )
+                let result: ModrinthResult
+                if dataSource == .modrinth {
+                    // 使用 Modrinth 服务
+                    result = await ModrinthService.searchProjects(
+                        facets: facets,
+                        offset: offset,
+                        limit: pageSize,
+                        query: query
+                    )
+                } else {
+                    // 使用 CurseForge 服务并转换为 Modrinth 格式
+                    // 转换 Modrinth 搜索参数为 CurseForge 搜索参数
+                    // 注意：对于资源包（resourcepack），需要将分辨率（resolutions）一起映射到 CurseForge 的分类 ID
+                    let cfParams = convertToCurseForgeParams(
+                        projectType: projectType,
+                        versions: versions,
+                        categories: categories,
+                        resolutions: resolutions,
+                        loaders: loaders,
+                        query: query
+                    )
+
+                    let cfResult = await CurseForgeService.searchProjects(
+                        gameId: 432, // Minecraft
+                        classId: cfParams.classId,
+                        categoryId: nil,
+                        categoryIds: cfParams.categoryIds,
+                        gameVersion: nil,
+                        gameVersions: cfParams.gameVersions,
+                        searchFilter: cfParams.searchFilter,
+                        modLoaderType: nil,
+                        modLoaderTypes: cfParams.modLoaderTypes,
+                        index: offset,
+                        pageSize: pageSize
+                    )
+                    result = CurseForgeToModrinthAdapter.convertSearchResult(cfResult)
+                }
 
                 try Task.checkCancellation()
 
@@ -262,5 +292,113 @@ final class ModrinthSearchViewModel: ObservableObject {
         }
 
         return (clientFacets, serverFacets)
+    }
+
+    /// 根据项目类型获取 CurseForge 的 classId
+    private func classIdForProjectType(_ projectType: String) -> Int? {
+        switch projectType.lowercased() {
+        case "mod":
+            return 6
+        case "modpack":
+            // CurseForge Minecraft Modpacks 的 classId
+            return 4471
+        case "resourcepack":
+            return 12
+        case "shader":
+            return 6552
+        case "datapack":
+            return 6945
+        default:
+            return nil
+        }
+    }
+
+    /// CurseForge 搜索参数结构
+    private struct CurseForgeSearchParams {
+        let classId: Int?
+        let categoryIds: [Int]?
+        let gameVersions: [String]?
+        let searchFilter: String?
+        let modLoaderTypes: [Int]?
+    }
+
+    /// 将 Modrinth 搜索参数转换为 CurseForge 搜索参数
+    /// - Parameters:
+    ///   - projectType: 项目类型
+    ///   - versions: 游戏版本列表
+    ///   - categories: 分类列表（行为/功能类）
+    ///   - resolutions: 资源包分辨率列表（仅在 resourcepack 时生效）
+    ///   - loaders: 加载器列表
+    ///   - query: 搜索关键词
+    /// - Returns: CurseForge 搜索参数
+    /// - Note: API 限制：gameVersions 最多 4 个，modLoaderTypes 最多 5 个，categoryIds 最多 10 个
+    private func convertToCurseForgeParams(
+        projectType: String,
+        versions: [String],
+        categories: [String],
+        resolutions: [String],
+        loaders: [String],
+        query: String
+    ) -> CurseForgeSearchParams {
+        // 转换项目类型为 classId
+        let classId = classIdForProjectType(projectType)
+
+        // 转换游戏版本列表（CurseForge API 限制：最多 4 个版本）
+        let gameVersions: [String]?
+        if !versions.isEmpty {
+            gameVersions = Array(versions.prefix(4))
+        } else {
+            gameVersions = nil
+        }
+
+        // 转换分类（CurseForge 使用 categoryIds，从 Modrinth 分类名称映射）
+        // 对于资源包（resourcepack），需要将行为分类 + 分辨率分类一起映射
+        // API 限制：最多 10 个分类 ID
+        let categoryIds: [Int]?
+        let allCategoryNames: [String]
+        if projectType.lowercased() == "resourcepack" {
+            // 行为标签 + 分辨率标签 一起参与映射
+            allCategoryNames = categories + resolutions
+        } else {
+            allCategoryNames = categories
+        }
+
+        if !allCategoryNames.isEmpty {
+            let mappedIds = ModrinthToCurseForgeCategoryMapper.mapToCurseForgeCategoryIds(
+                modrinthCategoryNames: allCategoryNames,
+                projectType: projectType
+            )
+            categoryIds = mappedIds.isEmpty ? nil : mappedIds
+        } else {
+            categoryIds = nil
+        }
+
+        // 转换加载器列表为 modLoaderTypes
+        // ModLoaderType: 1=Forge, 4=Fabric, 5=Quilt, 6=NeoForge
+        // API 限制：最多 5 个加载器类型
+        let modLoaderTypes: [Int]?
+        if !loaders.isEmpty {
+            let loaderTypes = loaders.compactMap { loader -> Int? in
+                if let loaderType = CurseForgeModLoaderType.from(loader) {
+                    return loaderType.rawValue
+                }
+                return nil
+            }
+            // 限制最多 5 个加载器类型
+            modLoaderTypes = loaderTypes.isEmpty ? nil : Array(loaderTypes.prefix(5))
+        } else {
+            modLoaderTypes = nil
+        }
+
+        // 搜索关键词（直接传原始 query，由 CurseForgeService 负责规范化为空格为 "+")
+        let searchFilter = query.isEmpty ? nil : query
+
+        return CurseForgeSearchParams(
+            classId: classId,
+            categoryIds: categoryIds,
+            gameVersions: gameVersions,
+            searchFilter: searchFilter,
+            modLoaderTypes: modLoaderTypes
+        )
     }
 }

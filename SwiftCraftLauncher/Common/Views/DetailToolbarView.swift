@@ -4,7 +4,6 @@ import SwiftUI
 public struct DetailToolbarView: ToolbarContent {
     @Binding var selectedItem: SidebarItem
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @Binding var sortIndex: String
     @Binding var gameResourcesType: String
     @Binding var gameType: Bool  // false = local, true = server
     @Binding var versionCurrentPage: Int
@@ -16,6 +15,7 @@ public struct DetailToolbarView: ToolbarContent {
     @Binding var selectProjectId: String?
     @Binding var selectedTab: Int
     @Binding var gameId: String?
+    @Binding var dataSource: DataSource
 
     // MARK: - Computed Properties
 
@@ -76,7 +76,7 @@ public struct DetailToolbarView: ToolbarContent {
                     resourcesTypeMenu
                     resourcesMenu
                     if gameType {
-                        sortMenu
+                        dataSourceMenu
                     }
                     Spacer()
                     Button {
@@ -135,16 +135,15 @@ public struct DetailToolbarView: ToolbarContent {
                         }
                     }
                 } else {
-                    sortMenu
+                    if gameType {
+                        dataSourceMenu
+                    }
                     Spacer()
                 }
             }
         }
     }
 
-    private var currentSortTitle: String {
-        "menu.sort.\(sortIndex)".localized()
-    }
     private var currentResourceTitle: String {
         "resource.content.type.\(gameResourcesType)".localized()
     }
@@ -152,21 +151,6 @@ public struct DetailToolbarView: ToolbarContent {
         gameType
             ? "resource.content.type.server".localized()
             : "resource.content.type.local".localized()
-    }
-
-    private var sortMenu: some View {
-        Menu {
-            ForEach(
-                ["relevance", "downloads", "follows", "newest", "updated"],
-                id: \.self
-            ) { sort in
-                Button("menu.sort.\(sort)".localized()) {
-                    sortIndex = sort
-                }
-            }
-        } label: {
-            Label(currentSortTitle, systemImage: "").labelStyle(.titleOnly)
-        }.help("menu.sort.help".localized())
     }
 
     private var resourcesMenu: some View {
@@ -202,5 +186,19 @@ public struct DetailToolbarView: ToolbarContent {
             types.insert("shader", at: 2)
         }
         return types
+    }
+
+    private var dataSourceMenu: some View {
+        Menu {
+            ForEach(DataSource.allCases, id: \.self) { source in
+                Button(source.displayName) {
+                    dataSource = source
+                }
+            }
+        } label: {
+            Label(dataSource.displayName, systemImage: "network")
+                .labelStyle(.titleOnly)
+        }
+        .help("resource.data_source.help".localized())
     }
 }

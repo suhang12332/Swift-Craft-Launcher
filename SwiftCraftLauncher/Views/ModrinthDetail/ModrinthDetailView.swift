@@ -17,6 +17,7 @@ struct ModrinthDetailView: View {
     @Binding var gameType: Bool
     let header: AnyView?
     @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找
+    @Binding var dataSource: DataSource
 
     @StateObject private var viewModel = ModrinthSearchViewModel()
     @State private var hasLoaded = false
@@ -41,7 +42,8 @@ struct ModrinthDetailView: View {
         selectedItem: Binding<SidebarItem>,
         gameType: Binding<Bool>,
         header: AnyView? = nil,
-        scannedDetailIds: Binding<Set<String>> = .constant([])
+        scannedDetailIds: Binding<Set<String>> = .constant([]),
+        dataSource: Binding<DataSource> = .constant(.modrinth)
     ) {
         self.query = query
         _sortIndex = sortIndex
@@ -57,6 +59,7 @@ struct ModrinthDetailView: View {
         _gameType = gameType
         self.header = header
         _scannedDetailIds = scannedDetailIds
+        _dataSource = dataSource
     }
 
     private var searchKey: String {
@@ -70,6 +73,7 @@ struct ModrinthDetailView: View {
             selectedPerformanceImpact.joined(separator: ","),
             selectedLoader.joined(separator: ","),
             String(gameType),
+            dataSource.rawValue,
         ].joined(separator: "|")
     }
 
@@ -102,6 +106,10 @@ struct ModrinthDetailView: View {
                 resetPagination()
                 triggerSearch()
             }
+        }
+        .onChange(of: dataSource) { _, _ in
+            resetPagination()
+            triggerSearch()
         }
         .searchable(
             text: $searchText,
@@ -206,9 +214,9 @@ struct ModrinthDetailView: View {
             resolutions: selectedResolutions,
             performanceImpact: selectedPerformanceImpact,
             loaders: selectedLoader,
-            sortIndex: sortIndex,
             page: page,
-            append: append
+            append: append,
+            dataSource: dataSource
         )
     }
 
@@ -314,6 +322,7 @@ struct ModrinthDetailView: View {
             String(gameType),
             searchText,
             "page:\(page)",
+            dataSource.rawValue,
         ].joined(separator: "|")
     }
 
