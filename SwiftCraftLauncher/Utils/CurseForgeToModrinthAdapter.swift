@@ -22,7 +22,7 @@ enum CurseForgeToModrinthAdapter {
         // 提取游戏版本（从 latestFilesIndexes）
         var gameVersions: [String] = []
         if let indexes = cf.latestFilesIndexes {
-            gameVersions = Array(Set(indexes.map { $0.gameVersion })).sorted()
+            gameVersions = CommonUtil.sortMinecraftVersions(Array(Set(indexes.map { $0.gameVersion })))
         }
         
         // 提取加载器（从 latestFilesIndexes）
@@ -75,7 +75,7 @@ enum CurseForgeToModrinthAdapter {
             additionalCategories: nil,
             issuesUrl: cf.links?.issuesUrl,
             sourceUrl: cf.links?.sourceUrl,
-            wikiUrl: cf.links?.wikiUrl,
+            wikiUrl: cf.links?.wikiUrl ?? cf.links?.websiteUrl,
             discordUrl: nil, // CurseForge 没有 Discord URL
             projectType: cf.projectType,
             downloads: cf.downloadCount ?? 0,

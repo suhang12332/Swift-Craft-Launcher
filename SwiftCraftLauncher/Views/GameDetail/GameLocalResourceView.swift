@@ -141,7 +141,8 @@ struct GameLocalResourceView: View {
                 }
                 .onTapGesture {
                     // 本地资源不跳转详情页面（沿用原逻辑）
-                    if mod.author != "local" {
+                    // 使用 id 前缀判断本地资源，更可靠
+                    if !mod.projectId.hasPrefix("local_") && !mod.projectId.hasPrefix("file_") {
                         selectedProjectId = mod.projectId
                         if let type = ResourceType(rawValue: query) {
                             selectedItem = .resource(type)
@@ -213,9 +214,9 @@ struct GameLocalResourceView: View {
         // 首先根据 query 筛选资源类型
         let queryLower = query.lowercased()
         let filteredByType = details.filter { detail in
-            // 对于本地资源（team == "local"），目录本身已经根据 query 筛选了，
+            // 对于本地资源（id 以 "local_" 或 "file_" 开头），目录本身已经根据 query 筛选了，
             // 所以不需要再根据 projectType 筛选（因为 fallback detail 的 projectType 总是 "mod"）
-            if detail.team == "local" {
+            if detail.id.hasPrefix("local_") || detail.id.hasPrefix("file_") {
                 // 本地资源：目录已经筛选，直接显示
                 return true
             } else {

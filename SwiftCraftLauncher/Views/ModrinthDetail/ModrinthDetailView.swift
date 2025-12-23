@@ -227,7 +227,7 @@ struct ModrinthDetailView: View {
                 newErrorView(error)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .listRowSeparator(.hidden)
-            } else if viewModel.isLoading && viewModel.results.isEmpty {
+            } else if viewModel.isLoading {
                 HStack {
                     ProgressView()
                         .controlSize(.small)
