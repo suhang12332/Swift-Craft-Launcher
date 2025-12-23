@@ -79,10 +79,84 @@ enum CurseForgeService {
     /// - Returns: 文件列表
     /// - Throws: 网络错误或解析错误
     static func fetchProjectFilesThrowing(projectId: Int, gameVersion: String? = nil, modLoaderType: Int? = nil) async throws -> [CurseForgeModFileDetail] {
-        // 使用配置的 CurseForge API URL，支持查询参数
-        let url = URLConfig.API.CurseForge.projectFiles(projectId: projectId, gameVersion: gameVersion, modLoaderType: modLoaderType)
-
-        return try await tryFetchProjectFiles(from: url.absoluteString)
+        // 从 modDetail 中解析文件信息，无需调用 projectFiles API
+        let modDetail = try await fetchModDetailThrowing(modId: projectId)
+        
+        var files: [CurseForgeModFileDetail] = []
+        
+        // 首先尝试从 latestFiles 中获取文件列表
+        if let latestFiles = modDetail.latestFiles, !latestFiles.isEmpty {
+            files = latestFiles
+        } else if let latestFilesIndexes = modDetail.latestFilesIndexes, !latestFilesIndexes.isEmpty {
+            // 如果 latestFiles 不存在，从 latestFilesIndexes 构造文件详情
+            // 按 fileId 分组，收集所有游戏版本
+            var fileIndexMap: [Int: [CurseForgeFileIndex]] = [:]
+            for index in latestFilesIndexes {
+                fileIndexMap[index.fileId, default: []].append(index)
+            }
+            
+            // 为每个唯一的 fileId 构造文件详情
+            for (fileId, indexes) in fileIndexMap {
+                guard let firstIndex = indexes.first else { continue }
+                
+                // 收集所有匹配的游戏版本
+                let gameVersions = indexes.map { $0.gameVersion }
+                
+                // 使用 fileId 和 fileName 构建下载链接
+                let downloadUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(
+                    fileId: fileId,
+                    fileName: firstIndex.filename
+                ).absoluteString
+                
+                // 构造文件详情
+                let fileDetail = CurseForgeModFileDetail(
+                    id: fileId,
+                    displayName: firstIndex.filename,
+                    fileName: firstIndex.filename,
+                    downloadUrl: downloadUrl,
+                    fileDate: "", // latestFilesIndexes 中没有日期信息
+                    releaseType: firstIndex.releaseType,
+                    gameVersions: gameVersions,
+                    dependencies: nil,
+                    changelog: nil,
+                    fileLength: nil,
+                    hash: nil,
+                    modules: nil,
+                    projectId: projectId,
+                    projectName: modDetail.name,
+                    authors: modDetail.authors
+                )
+                files.append(fileDetail)
+            }
+        }
+        
+        // 根据 gameVersion 和 modLoaderType 进行过滤
+        var filteredFiles = files
+        
+        if let gameVersion = gameVersion {
+            filteredFiles = filteredFiles.filter { file in
+                file.gameVersions.contains(gameVersion)
+            }
+        }
+        
+        // 如果指定了 modLoaderType，需要从 latestFilesIndexes 中获取 modLoader 信息进行过滤
+        if let modLoaderType = modLoaderType {
+            if let latestFilesIndexes = modDetail.latestFilesIndexes {
+                // 获取匹配 modLoaderType 的 fileId 集合
+                let matchingFileIds = Set(latestFilesIndexes
+                    .filter { $0.modLoader == modLoaderType }
+                    .map { $0.fileId })
+                
+                // 只保留匹配的文件
+                filteredFiles = filteredFiles.filter { file in
+                    matchingFileIds.contains(file.id)
+                }
+            }
+            // 注意：如果 latestFilesIndexes 不存在，无法进行 modLoaderType 过滤
+            // 这种情况下返回所有文件（可能包含不匹配的加载器）
+        }
+        
+        return filteredFiles
     }
     
     // MARK: - Search Methods
@@ -436,11 +510,19 @@ enum CurseForgeService {
             )
         }
         
-        // 转换加载器名称到 CurseForge ModLoaderType
+        // 对于光影包、资源包、数据包，CurseForge API 不支持 modLoaderType 过滤
+        let resourceTypeLowercased = type.lowercased()
+        let shouldFilterByLoader = !(resourceTypeLowercased == "shader" || 
+                                     resourceTypeLowercased == "resourcepack" || 
+                                     resourceTypeLowercased == "datapack")
+        
+        // 转换加载器名称到 CurseForge ModLoaderType（仅对需要过滤加载器的资源类型）
         var modLoaderTypes: [Int] = []
-        for loader in selectedLoaders {
-            if let loaderType = CurseForgeModLoaderType.from(loader) {
-                modLoaderTypes.append(loaderType.rawValue)
+        if shouldFilterByLoader {
+            for loader in selectedLoaders {
+                if let loaderType = CurseForgeModLoaderType.from(loader) {
+                    modLoaderTypes.append(loaderType.rawValue)
+                }
             }
         }
         
@@ -449,10 +531,11 @@ enum CurseForgeService {
         if !selectedVersions.isEmpty {
             // 如果有选中的版本，为每个版本获取文件
             for version in selectedVersions {
+                // 对于光影包、资源包、数据包，不传递 modLoaderType 参数
                 let files = try await fetchProjectFilesThrowing(
                     projectId: modId,
                     gameVersion: version,
-                    modLoaderType: modLoaderTypes.isEmpty ? nil : modLoaderTypes.first
+                    modLoaderType: shouldFilterByLoader && !modLoaderTypes.isEmpty ? modLoaderTypes.first : nil
                 )
                 cfFiles.append(contentsOf: files)
             }
@@ -465,8 +548,9 @@ enum CurseForgeService {
             // 版本匹配
             let versionMatch = selectedVersions.isEmpty || !Set(file.gameVersions).isDisjoint(with: selectedVersions)
             
-            // 加载器匹配（需要从文件信息中获取，这里简化处理）
-            let loaderMatch = modLoaderTypes.isEmpty || true // CurseForge API 返回的文件可能不包含加载器信息
+            // 对于光影包、资源包、数据包，不需要检查加载器匹配
+            // 对于其他类型，如果指定了加载器，需要匹配（但CurseForge API可能不返回加载器信息，所以这里简化处理）
+            let loaderMatch = !shouldFilterByLoader || modLoaderTypes.isEmpty || true
             
             return versionMatch && loaderMatch
         }
@@ -528,31 +612,7 @@ enum CurseForgeService {
         return result.data
     }
 
-    /// 尝试从指定 URL 获取项目文件列表
-    /// - Parameter urlString: API URL
-    /// - Returns: 文件列表
-    /// - Throws: 网络错误或解析错误
-    private static func tryFetchProjectFiles(from urlString: String) async throws -> [CurseForgeModFileDetail] {
-        guard let url = URL(string: urlString) else {
-            throw GlobalError.validation(
-                chineseMessage: "无效的镜像 API URL",
-                i18nKey: "error.network.url",
-                level: .notification
-            )
-        }
-
-        // 使用统一的 API 客户端
-        let headers = ["Accept": "application/json"]
-        let data = try await APIClient.get(url: url, headers: headers)
-
-        // 解析响应
-        let result = try JSONDecoder().decode(CurseForgeFilesResult.self, from: data)
-        return result.data
-    }
 }
-
-// MARK: - Supporting Models
-
 /// CurseForge 文件响应
 private struct CurseForgeFileResponse: Codable {
     let data: CurseForgeModFileDetail

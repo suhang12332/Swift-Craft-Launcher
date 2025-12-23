@@ -108,7 +108,14 @@ struct ModrinthDetailView: View {
             }
         }
         .onChange(of: dataSource) { _, _ in
+            // 清理之前的旧数据
+            viewModel.clearResults()
             resetPagination()
+            searchText = ""
+            lastSearchKey = ""
+            lastSearchParams = ""
+            error = nil
+            hasLoaded = false
             triggerSearch()
         }
         .searchable(

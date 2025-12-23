@@ -1,6 +1,35 @@
 import Foundation
 
 enum CurseForgeToModrinthAdapter {
+    /// 判断字符串是否是有效的 Minecraft 游戏版本
+    /// - Parameter version: 版本字符串
+    /// - Returns: 如果是有效的游戏版本返回 true，否则返回 false
+    private static func isValidMinecraftVersion(_ version: String) -> Bool {
+        // Minecraft 版本格式通常是：数字.数字.数字 或包含 snapshot/pre/rc 等标识
+        // 例如：1.20.1, 1.19.2, 23w14a, 1.20-pre1, 1.20-rc1
+        let versionLower = version.lowercased()
+        
+        // 检查是否包含版本标识符
+        if versionLower.contains("snapshot") || versionLower.contains("pre") || versionLower.contains("rc") {
+            return true
+        }
+        
+        // 检查是否符合数字.数字.数字的格式
+        let versionPattern = #"^\d+\.\d+(\.\d+)?(-.*)?$"#
+        if let regex = try? NSRegularExpression(pattern: versionPattern, options: []),
+           regex.firstMatch(in: version, options: [], range: NSRange(location: 0, length: version.utf16.count)) != nil {
+            return true
+        }
+        
+        // 检查是否是快照格式（如 23w14a）
+        let snapshotPattern = #"^\d+w\d+[a-z]$"#
+        if let regex = try? NSRegularExpression(pattern: snapshotPattern, options: []),
+           regex.firstMatch(in: versionLower, options: [], range: NSRange(location: 0, length: versionLower.utf16.count)) != nil {
+            return true
+        }
+        
+        return false
+    }
     /// 将 CurseForge 项目详情转换为 Modrinth 格式
     /// - Parameter cf: CurseForge 项目详情
     /// - Returns: Modrinth 格式的项目详情
@@ -21,8 +50,10 @@ enum CurseForgeToModrinthAdapter {
         
         // 提取游戏版本（从 latestFilesIndexes）
         var gameVersions: [String] = []
+        var allVersionsFromIndexes: [String] = []
         if let indexes = cf.latestFilesIndexes {
-            gameVersions = CommonUtil.sortMinecraftVersions(Array(Set(indexes.map { $0.gameVersion })))
+            allVersionsFromIndexes = Array(Set(indexes.map { $0.gameVersion }))
+            gameVersions = CommonUtil.sortMinecraftVersions(allVersionsFromIndexes)
         }
         
         // 提取加载器（从 latestFilesIndexes）
@@ -45,6 +76,25 @@ enum CurseForgeToModrinthAdapter {
             }
         }
         
+        // 根据项目类型处理加载器
+        let projectType = cf.projectType
+        if loaders.isEmpty {
+            if projectType == "resourcepack" {
+                // 资源包使用 "minecraft" loader
+                loaders = ["minecraft"]
+            } else if projectType == "datapack" {
+                // 数据包使用 "datapack" loader
+                loaders = ["datapack"]
+            } else if projectType == "shader" {
+                // 光影包的 modloader 在游戏版本内，过滤出非游戏版本的，取小写就是光影的 modloader
+                let validGameVersions = Set(gameVersions)
+                let shaderLoaders = allVersionsFromIndexes
+                    .filter { !validGameVersions.contains($0) }
+                    .map { $0.lowercased() }
+                loaders = Array(Set(shaderLoaders))
+            }
+        }
+        
         // 提取版本 ID 列表
         var versions: [String] = []
         if let files = cf.latestFiles {
@@ -53,9 +103,7 @@ enum CurseForgeToModrinthAdapter {
         
         // 提取分类
         let categories = cf.categories.map { $0.slug }
-        
-        // 提取作者
-        let author = cf.authors?.first?.name ?? "Unknown"
+
         
         // 提取图标 URL
         let iconUrl = cf.logo?.url ?? cf.logo?.thumbnailUrl
@@ -81,7 +129,7 @@ enum CurseForgeToModrinthAdapter {
             downloads: cf.downloadCount ?? 0,
             iconUrl: iconUrl,
             id: "cf-\(cf.id)", // 使用 "cf-" 前缀标识
-            team: author,
+            team: "",
             published: publishedDate,
             updated: updatedDate,
             followers: 0, // CurseForge 没有关注数
