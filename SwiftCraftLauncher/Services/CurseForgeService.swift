@@ -76,18 +76,29 @@ enum CurseForgeService {
     ///   - projectId: 项目 ID
     ///   - gameVersion: 游戏版本过滤（可选）
     ///   - modLoaderType: 模组加载器类型过滤（可选）
+    ///   - modDetail: 预先获取的模组详情（可选，用于复用减少请求）
     /// - Returns: 文件列表
     /// - Throws: 网络错误或解析错误
-    static func fetchProjectFilesThrowing(projectId: Int, gameVersion: String? = nil, modLoaderType: Int? = nil) async throws -> [CurseForgeModFileDetail] {
+    static func fetchProjectFilesThrowing(
+        projectId: Int,
+        gameVersion: String? = nil,
+        modLoaderType: Int? = nil,
+        modDetail: CurseForgeModDetail? = nil
+    ) async throws -> [CurseForgeModFileDetail] {
         // 从 modDetail 中解析文件信息，无需调用 projectFiles API
-        let modDetail = try await fetchModDetailThrowing(modId: projectId)
+        let modDetailToUse: CurseForgeModDetail
+        if let providedDetail = modDetail {
+            modDetailToUse = providedDetail
+        } else {
+            modDetailToUse = try await fetchModDetailThrowing(modId: projectId)
+        }
         
         var files: [CurseForgeModFileDetail] = []
         
         // 首先尝试从 latestFiles 中获取文件列表
-        if let latestFiles = modDetail.latestFiles, !latestFiles.isEmpty {
+        if let latestFiles = modDetailToUse.latestFiles, !latestFiles.isEmpty {
             files = latestFiles
-        } else if let latestFilesIndexes = modDetail.latestFilesIndexes, !latestFilesIndexes.isEmpty {
+        } else if let latestFilesIndexes = modDetailToUse.latestFilesIndexes, !latestFilesIndexes.isEmpty {
             // 如果 latestFiles 不存在，从 latestFilesIndexes 构造文件详情
             // 按 fileId 分组，收集所有游戏版本
             var fileIndexMap: [Int: [CurseForgeFileIndex]] = [:]
@@ -123,8 +134,8 @@ enum CurseForgeService {
                     hash: nil,
                     modules: nil,
                     projectId: projectId,
-                    projectName: modDetail.name,
-                    authors: modDetail.authors
+                    projectName: modDetailToUse.name,
+                    authors: modDetailToUse.authors
                 )
                 files.append(fileDetail)
             }
@@ -141,7 +152,7 @@ enum CurseForgeService {
         
         // 如果指定了 modLoaderType，需要从 latestFilesIndexes 中获取 modLoader 信息进行过滤
         if let modLoaderType = modLoaderType {
-            if let latestFilesIndexes = modDetail.latestFilesIndexes {
+            if let latestFilesIndexes = modDetail?.latestFilesIndexes {
                 // 获取匹配 modLoaderType 的 fileId 集合
                 let matchingFileIds = Set(latestFilesIndexes
                     .filter { $0.modLoader == modLoaderType }

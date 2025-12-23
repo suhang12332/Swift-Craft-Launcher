@@ -80,7 +80,7 @@ struct AddOrDeleteResourceButton: View {
     @State private var isDownloadingMainResourceOnly = false
     @State private var showGlobalResourceSheet = false
     @State private var showModPackDownloadSheet = false  // 新增：整合包下载 sheet
-    @State private var preloadedProjectDetail: ModrinthProjectDetail?  // 预加载的项目详情（用于普通资源）
+    @State private var preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情（通用：整合包/普通资源）
     @State private var isLoadingProjectDetail = false  // 是否正在加载项目详情
     @State private var isDisabled: Bool = false  // 资源是否被禁用
     @Binding var selectedItem: SidebarItem
@@ -229,12 +229,12 @@ struct AddOrDeleteResourceButton: View {
                         project: project,
                         resourceType: query,
                         isPresented: $showGlobalResourceSheet,
-                        preloadedDetail: preloadedProjectDetail
+                        preloadedDetail: preloadedDetail
                     )
                     .environmentObject(gameRepository)
                     .onDisappear {
                         // sheet 关闭时清理预加载的数据
-                        preloadedProjectDetail = nil
+                        preloadedDetail = nil
                     }
                 }
             )
@@ -248,9 +248,14 @@ struct AddOrDeleteResourceButton: View {
                     ModPackDownloadSheet(
                         projectId: project.projectId,
                         gameInfo: gameInfo,
-                        query: query
+                        query: query,
+                        preloadedDetail: preloadedDetail
                     )
                     .environmentObject(gameRepository)
+                    .onDisappear {
+                        // sheet 关闭时清理预加载的数据
+                        preloadedDetail = nil
+                    }
                 }
             )
         }
@@ -278,7 +283,11 @@ struct AddOrDeleteResourceButton: View {
         case .idle:
             AnyView(Text("resource.add".localized()))
         case .loading:
-            AnyView(ProgressView())
+            AnyView(
+                ProgressView()
+                    .controlSize(.mini)
+                    .font(.body)  // 设置字体大小
+            )
         case .installed:
             AnyView(
                 Text(
@@ -349,7 +358,10 @@ struct AddOrDeleteResourceButton: View {
             case .idle:
                 // 新增：对整合包的特殊处理
                 if query == "modpack" {
-                    showModPackDownloadSheet = true
+                            addButtonState = .loading
+                            Task {
+                                await loadModPackDetailBeforeOpeningSheet()
+                            }
                     return
                 }
 
@@ -421,7 +433,10 @@ struct AddOrDeleteResourceButton: View {
                             activeAlert = .noPlayer
                             return
                         }
-                        showModPackDownloadSheet = true
+                        addButtonState = .loading
+                        Task {
+                            await loadModPackDetailBeforeOpeningSheet()
+                        }
                         return
                     }
                     
@@ -433,7 +448,10 @@ struct AddOrDeleteResourceButton: View {
                 } else {
                     // type 为 false (local mode) 时的原有逻辑
                     if query == "modpack" {
-                        showModPackDownloadSheet = true
+                        addButtonState = .loading
+                        Task {
+                            await loadModPackDetailBeforeOpeningSheet()
+                        }
                         return
                     }
                 }
@@ -502,8 +520,35 @@ struct AddOrDeleteResourceButton: View {
         }
 
         await MainActor.run {
-            preloadedProjectDetail = detail
+            preloadedDetail = detail
             showGlobalResourceSheet = true
+        }
+    }
+
+    // 新增：在打开整合包 sheet 前加载 projectDetail
+    private func loadModPackDetailBeforeOpeningSheet() async {
+        isLoadingProjectDetail = true
+        defer {
+            Task { @MainActor in
+                isLoadingProjectDetail = false
+                addButtonState = .idle
+            }
+        }
+
+        guard let detail = await ModrinthService.fetchProjectDetails(
+            id: project.projectId
+        ) else {
+            GlobalErrorHandler.shared.handle(GlobalError.resource(
+                chineseMessage: "无法获取整合包项目详情",
+                i18nKey: "error.resource.project_details_not_found",
+                level: .notification
+            ))
+            return
+        }
+
+        await MainActor.run {
+            preloadedDetail = detail
+            showModPackDownloadSheet = true
         }
     }
 

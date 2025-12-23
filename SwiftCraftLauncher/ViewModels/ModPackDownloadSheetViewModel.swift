@@ -37,6 +37,13 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         self.gameRepository = repository
     }
 
+    /// 应用预加载的项目详情，避免在 sheet 内重复加载
+    func applyPreloadedDetail(_ detail: ModrinthProjectDetail) {
+        projectDetail = detail
+        availableGameVersions = CommonUtil.sortMinecraftVersions(detail.gameVersions ?? [])
+        isLoadingProjectDetails = false
+    }
+
     // MARK: - Data Loading
     func loadProjectDetails(projectId: String) async {
         isLoadingProjectDetails = true

@@ -11,6 +11,7 @@ struct ModPackDownloadSheet: View {
     let projectId: String
     let gameInfo: GameVersionInfo?
     let query: String
+    let preloadedDetail: ModrinthProjectDetail?
     @EnvironmentObject private var gameRepository: GameRepository
     @Environment(\.dismiss)
     private var dismiss
@@ -24,10 +25,16 @@ struct ModPackDownloadSheet: View {
     @StateObject private var gameNameValidator: GameNameValidator
 
     // MARK: - Initializer
-    init(projectId: String, gameInfo: GameVersionInfo?, query: String) {
+    init(
+        projectId: String,
+        gameInfo: GameVersionInfo?,
+        query: String,
+        preloadedDetail: ModrinthProjectDetail? = nil
+    ) {
         self.projectId = projectId
         self.gameInfo = gameInfo
         self.query = query
+        self.preloadedDetail = preloadedDetail
         self._gameNameValidator = StateObject(wrappedValue: GameNameValidator(gameSetupService: GameSetupUtil()))
     }
 
@@ -39,8 +46,12 @@ struct ModPackDownloadSheet: View {
         )
         .onAppear {
             viewModel.setGameRepository(gameRepository)
-            Task {
-                await viewModel.loadProjectDetails(projectId: projectId)
+            if let preloadedDetail {
+                viewModel.applyPreloadedDetail(preloadedDetail)
+            } else {
+                Task {
+                    await viewModel.loadProjectDetails(projectId: projectId)
+                }
             }
         }
         .onDisappear {
