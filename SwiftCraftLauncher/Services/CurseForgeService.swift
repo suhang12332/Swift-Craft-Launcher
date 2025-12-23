@@ -83,22 +83,15 @@ enum CurseForgeService {
         projectId: Int,
         gameVersion: String? = nil,
         modLoaderType: Int? = nil,
-        modDetail: CurseForgeModDetail? = nil
     ) async throws -> [CurseForgeModFileDetail] {
         // 从 modDetail 中解析文件信息，无需调用 projectFiles API
-        let modDetailToUse: CurseForgeModDetail
-        if let providedDetail = modDetail {
-            modDetailToUse = providedDetail
-        } else {
-            modDetailToUse = try await fetchModDetailThrowing(modId: projectId)
-        }
+        let modDetailToUse = try await fetchModDetailThrowing(modId: projectId)
+
         
         var files: [CurseForgeModFileDetail] = []
         
         // 首先尝试从 latestFiles 中获取文件列表
-        if let latestFiles = modDetailToUse.latestFiles, !latestFiles.isEmpty {
-            files = latestFiles
-        } else if let latestFilesIndexes = modDetailToUse.latestFilesIndexes, !latestFilesIndexes.isEmpty {
+        if let latestFilesIndexes = modDetailToUse.latestFilesIndexes, !latestFilesIndexes.isEmpty {
             // 如果 latestFiles 不存在，从 latestFilesIndexes 构造文件详情
             // 按 fileId 分组，收集所有游戏版本
             var fileIndexMap: [Int: [CurseForgeFileIndex]] = [:]
@@ -491,10 +484,9 @@ enum CurseForgeService {
         id: String,
         selectedVersions: [String],
         selectedLoaders: [String],
-        type: String
+        type: String,
     ) async throws -> [ModrinthProjectDetailVersion] {
         let (modId, normalizedId) = try parseCurseForgeId(id)
-        
         // 对于光影包、资源包、数据包，CurseForge API 不支持 modLoaderType 过滤
         let resourceTypeLowercased = type.lowercased()
         let shouldFilterByLoader = !(resourceTypeLowercased == "shader" || 
