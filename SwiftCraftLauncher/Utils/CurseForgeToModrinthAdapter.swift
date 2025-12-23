@@ -1,35 +1,6 @@
 import Foundation
 
 enum CurseForgeToModrinthAdapter {
-    /// 判断字符串是否是有效的 Minecraft 游戏版本
-    /// - Parameter version: 版本字符串
-    /// - Returns: 如果是有效的游戏版本返回 true，否则返回 false
-    private static func isValidMinecraftVersion(_ version: String) -> Bool {
-        // Minecraft 版本格式通常是：数字.数字.数字 或包含 snapshot/pre/rc 等标识
-        // 例如：1.20.1, 1.19.2, 23w14a, 1.20-pre1, 1.20-rc1
-        let versionLower = version.lowercased()
-        
-        // 检查是否包含版本标识符
-        if versionLower.contains("snapshot") || versionLower.contains("pre") || versionLower.contains("rc") {
-            return true
-        }
-        
-        // 检查是否符合数字.数字.数字的格式
-        let versionPattern = #"^\d+\.\d+(\.\d+)?(-.*)?$"#
-        if let regex = try? NSRegularExpression(pattern: versionPattern, options: []),
-           regex.firstMatch(in: version, options: [], range: NSRange(location: 0, length: version.utf16.count)) != nil {
-            return true
-        }
-        
-        // 检查是否是快照格式（如 23w14a）
-        let snapshotPattern = #"^\d+w\d+[a-z]$"#
-        if let regex = try? NSRegularExpression(pattern: snapshotPattern, options: []),
-           regex.firstMatch(in: versionLower, options: [], range: NSRange(location: 0, length: versionLower.utf16.count)) != nil {
-            return true
-        }
-        
-        return false
-    }
     /// 将 CurseForge 项目详情转换为 Modrinth 格式
     /// - Parameter cf: CurseForge 项目详情
     /// - Returns: Modrinth 格式的项目详情
@@ -85,14 +56,7 @@ enum CurseForgeToModrinthAdapter {
             } else if projectType == "datapack" {
                 // 数据包使用 "datapack" loader
                 loaders = ["datapack"]
-            } else if projectType == "shader" {
-                // 光影包的 modloader 在游戏版本内，过滤出非游戏版本的，取小写就是光影的 modloader
-                let validGameVersions = Set(gameVersions)
-                let shaderLoaders = allVersionsFromIndexes
-                    .filter { !validGameVersions.contains($0) }
-                    .map { $0.lowercased() }
-                loaders = Array(Set(shaderLoaders))
-            }
+            } 
         }
         
         // 提取版本 ID 列表
@@ -158,23 +122,11 @@ enum CurseForgeToModrinthAdapter {
             publishedDate = dateFormatter.date(from: cfFile.fileDate) ?? Date()
         }
         
-        // 转换版本类型
-        let versionType: String
-        switch cfFile.releaseType {
-        case 1: // Release
-            versionType = "release"
-        case 2: // Beta
-            versionType = "beta"
-        case 3: // Alpha
-            versionType = "alpha"
-        default:
-            versionType = "release"
-        }
+        // 版本类型统一视为 release，避免不必要的区分
+        let versionType = "release"
         
-        // 提取加载器（需要从文件信息中推断，这里简化处理）
+        // 文件级别不推断加载器，保持空数组
         let loaders: [String] = []
-        // 注意：CurseForge 文件可能不直接包含加载器信息，需要从项目信息中获取
-        // 这里暂时返回空数组，实际使用时可能需要额外查询
         
         // 转换依赖
         var dependencies: [ModrinthVersionDependency] = []
@@ -202,29 +154,29 @@ enum CurseForgeToModrinthAdapter {
         }
         
         // 转换文件
+        let downloadUrl = cfFile.downloadUrl ?? URLConfig.API.CurseForge.fallbackDownloadUrl(
+            fileId: cfFile.id,
+            fileName: cfFile.fileName
+        ).absoluteString
+        
         var files: [ModrinthVersionFile] = []
-        let downloadUrl: String?
-        if let url = cfFile.downloadUrl {
-            downloadUrl = url
+        // 提取哈希值
+        let hashes: ModrinthVersionFileHashes
+        if let hash = cfFile.hash {
+            switch hash.algo {
+            case 1:
+                hashes = ModrinthVersionFileHashes(sha512: "", sha1: hash.value)
+            case 2:
+                hashes = ModrinthVersionFileHashes(sha512: hash.value, sha1: "")
+            default:
+                hashes = ModrinthVersionFileHashes(sha512: "", sha1: "")
+            }
         } else {
-            downloadUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(
-                fileId: cfFile.id,
-                fileName: cfFile.fileName
-            ).absoluteString
+            hashes = ModrinthVersionFileHashes(sha512: "", sha1: "")
         }
         
-        if let downloadUrl = downloadUrl {
-            // 提取哈希值
-            var hashes = ModrinthVersionFileHashes(sha512: "", sha1: "")
-            if let hash = cfFile.hash {
-                if hash.algo == 1 { // SHA1
-                    hashes = ModrinthVersionFileHashes(sha512: "", sha1: hash.value)
-                } else if hash.algo == 2 { // SHA256 (可能需要转换为 SHA512)
-                    hashes = ModrinthVersionFileHashes(sha512: hash.value, sha1: "")
-                }
-            }
-            
-            let modrinthFile = ModrinthVersionFile(
+        files.append(
+            ModrinthVersionFile(
                 hashes: hashes,
                 url: downloadUrl,
                 filename: cfFile.fileName,
@@ -232,8 +184,7 @@ enum CurseForgeToModrinthAdapter {
                 size: cfFile.fileLength ?? 0,
                 fileType: nil
             )
-            files.append(modrinthFile)
-        }
+        )
         
         // 确保 projectId 使用 "cf-" 前缀（如果还没有）
         let normalizedProjectId = projectId.hasPrefix("cf-") ? projectId : "cf-\(projectId.replacingOccurrences(of: "cf-", with: ""))"

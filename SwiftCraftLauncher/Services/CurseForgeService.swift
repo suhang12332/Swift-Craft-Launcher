@@ -152,7 +152,7 @@ enum CurseForgeService {
         
         // 如果指定了 modLoaderType，需要从 latestFilesIndexes 中获取 modLoader 信息进行过滤
         if let modLoaderType = modLoaderType {
-            if let latestFilesIndexes = modDetail?.latestFilesIndexes {
+            if let latestFilesIndexes = modDetailToUse.latestFilesIndexes {
                 // 获取匹配 modLoaderType 的 fileId 集合
                 let matchingFileIds = Set(latestFilesIndexes
                     .filter { $0.modLoader == modLoaderType }
@@ -441,15 +441,7 @@ enum CurseForgeService {
     /// - Returns: Modrinth 格式的项目详情
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectDetailsAsModrinthThrowing(id: String) async throws -> ModrinthProjectDetail {
-        // 移除 "cf-" 前缀（如果存在）
-        let cleanId = id.replacingOccurrences(of: "cf-", with: "")
-        guard let modId = Int(cleanId) else {
-            throw GlobalError.validation(
-                chineseMessage: "无效的项目 ID",
-                i18nKey: "error.validation.invalid_project_id",
-                level: .notification
-            )
-        }
+        let (modId, _) = try parseCurseForgeId(id)
         
         let cfDetail = try await fetchModDetailThrowing(modId: modId)
         guard let modrinthDetail = CurseForgeToModrinthAdapter.convert(cfDetail) else {
@@ -481,19 +473,9 @@ enum CurseForgeService {
     /// - Returns: Modrinth 格式的版本列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionsAsModrinthThrowing(id: String) async throws -> [ModrinthProjectDetailVersion] {
-        // 移除 "cf-" 前缀（如果存在）
-        let cleanId = id.replacingOccurrences(of: "cf-", with: "")
-        guard let modId = Int(cleanId) else {
-            throw GlobalError.validation(
-                chineseMessage: "无效的项目 ID",
-                i18nKey: "error.validation.invalid_project_id",
-                level: .notification
-            )
-        }
+        let (modId, normalizedId) = try parseCurseForgeId(id)
         
         let cfFiles = try await fetchProjectFilesThrowing(projectId: modId)
-        // 确保传递的 projectId 包含 "cf-" 前缀
-        let normalizedId = id.hasPrefix("cf-") ? id : "cf-\(cleanId)"
         return cfFiles.compactMap { CurseForgeToModrinthAdapter.convertVersion($0, projectId: normalizedId) }
     }
     
@@ -511,15 +493,7 @@ enum CurseForgeService {
         selectedLoaders: [String],
         type: String
     ) async throws -> [ModrinthProjectDetailVersion] {
-        // 移除 "cf-" 前缀（如果存在）
-        let cleanId = id.replacingOccurrences(of: "cf-", with: "")
-        guard let modId = Int(cleanId) else {
-            throw GlobalError.validation(
-                chineseMessage: "无效的项目 ID",
-                i18nKey: "error.validation.invalid_project_id",
-                level: .notification
-            )
-        }
+        let (modId, normalizedId) = try parseCurseForgeId(id)
         
         // 对于光影包、资源包、数据包，CurseForge API 不支持 modLoaderType 过滤
         let resourceTypeLowercased = type.lowercased()
@@ -567,7 +541,6 @@ enum CurseForgeService {
         }
         
         // 转换为 Modrinth 格式，确保 projectId 包含 "cf-" 前缀
-        let normalizedId = id.hasPrefix("cf-") ? id : "cf-\(cleanId)"
         return filteredFiles.compactMap { CurseForgeToModrinthAdapter.convertVersion($0, projectId: normalizedId) }
     }
     
@@ -621,6 +594,20 @@ enum CurseForgeService {
         // 解析响应
         let result = try JSONDecoder().decode(CurseForgeModDetailResponse.self, from: data)
         return result.data
+    }
+
+    /// 解析 CF ID，返回纯数字 ID 与带前缀的标准 ID
+    private static func parseCurseForgeId(_ id: String) throws -> (modId: Int, normalized: String) {
+        let cleanId = id.replacingOccurrences(of: "cf-", with: "")
+        guard let modId = Int(cleanId) else {
+            throw GlobalError.validation(
+                chineseMessage: "无效的项目 ID",
+                i18nKey: "error.validation.invalid_project_id",
+                level: .notification
+            )
+        }
+        let normalizedId = id.hasPrefix("cf-") ? id : "cf-\(cleanId)"
+        return (modId, normalizedId)
     }
 
 }
