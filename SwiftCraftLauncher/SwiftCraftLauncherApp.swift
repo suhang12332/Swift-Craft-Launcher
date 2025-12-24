@@ -55,10 +55,16 @@ struct SwiftCraftLauncherApp: App {
         // 清理临时窗口管理器，防止应用重启时恢复未关闭的临时窗口
         TemporaryWindowManager.shared.cleanupAllWindows()
 
-        // 提取 gameRepository 到局部变量，避免在 Task 中捕获 self
-        let repository = gameRepository
-        Task {
-            await Self.scanAllGamesModsDirectory(gameRepository: repository)
+        // 延迟执行扫描，使用临时 GameRepository 实例避免访问未安装的 StateObject
+        // 扫描操作是独立的，只需要读取游戏列表，不需要共享状态
+        DispatchQueue.main.async {
+            Task { @MainActor in
+                // 等待下一个 run loop，确保系统已初始化
+                await Task.yield()
+                // 创建临时实例用于扫描，避免访问未安装的 StateObject
+                let repository = GameRepository()
+                await Self.scanAllGamesModsDirectory(gameRepository: repository)
+            }
         }
     }
 
@@ -174,6 +180,8 @@ struct SwiftCraftLauncherApp: App {
         WindowGroup(id: "temporaryWindow", for: TemporaryWindowID.self) { $windowID in
             if let windowID = windowID {
                 TemporaryWindowView(windowID: windowID)
+                    .environmentObject(gameRepository)
+                    .environmentObject(playerListViewModel)
                     .environmentObject(generalSettingsManager)
                     .preferredColorScheme(generalSettingsManager.currentColorScheme)
                     .onDisappear {

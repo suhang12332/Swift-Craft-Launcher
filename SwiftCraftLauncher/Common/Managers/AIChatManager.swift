@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @MainActor
 class AIChatManager: ObservableObject {
@@ -530,8 +531,11 @@ class AIChatManager: ObservableObject {
     /// 打开聊天窗口
     func openChatWindow() {
         let chatState = ChatState()
+        let generalSettingsManager = GeneralSettingsManager.shared
         TemporaryWindowManager.shared.showWindow(
-            content: AIChatWindowView(chatState: chatState),
+            content: AIChatWindowView(chatState: chatState)
+                .environmentObject(generalSettingsManager)
+                .preferredColorScheme(generalSettingsManager.currentColorScheme),
             config: .aiChat(title: "ai.assistant.title".localized())
         )
     }

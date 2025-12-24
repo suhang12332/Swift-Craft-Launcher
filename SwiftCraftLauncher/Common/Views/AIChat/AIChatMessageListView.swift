@@ -49,7 +49,6 @@ struct AIChatMessageListView: View {
                         .padding()
                     }
                 }
-                .background(.white)
                 // 滚动到底部：优化 - 合并多个 onChange 以减少不必要的视图更新
                 .onChange(of: chatState.messages.count) { _, _ in
                     // 新消息时滚动
@@ -71,7 +70,6 @@ struct AIChatMessageListView: View {
                 }
             }
         }
-        .background(.white)
     }
 
     // MARK: - View Components

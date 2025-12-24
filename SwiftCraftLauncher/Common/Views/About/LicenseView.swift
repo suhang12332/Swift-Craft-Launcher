@@ -30,7 +30,6 @@ public struct LicenseView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .background(.white)
         .task {
             await loadLicense()
         }

@@ -9,8 +9,8 @@ import SwiftUI
 /// AI 对话窗口视图
 struct AIChatWindowView: View {
     @ObservedObject var chatState: ChatState
-    @StateObject private var playerListViewModel = PlayerListViewModel()
-    @StateObject private var gameRepository = GameRepository()
+    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject var gameRepository: GameRepository
     @StateObject private var aiSettings = AISettingsManager.shared
     @StateObject private var attachmentManager = AIChatAttachmentManager()
     @State private var inputText = ""
