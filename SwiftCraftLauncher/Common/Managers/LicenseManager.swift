@@ -17,8 +17,11 @@ public class LicenseManager {
     /// 显示协议窗口（使用窗口管理器）
     @MainActor
     public func showLicense() {
+        let generalSettingsManager = GeneralSettingsManager.shared
         TemporaryWindowManager.shared.showWindow(
-            content: LicenseView(),
+            content: LicenseView()
+                .environmentObject(generalSettingsManager)
+                .preferredColorScheme(generalSettingsManager.currentColorScheme),
             config: .license(title: "license.view".localized())
         )
     }

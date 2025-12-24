@@ -2,12 +2,65 @@ import Foundation
 
 struct CurseForgeSearchResult: Codable {
     let data: [CurseForgeMod]
+    let pagination: CurseForgePagination?
+}
+
+struct CurseForgePagination: Codable {
+    let index: Int
+    let pageSize: Int
+    let resultCount: Int
+    let totalCount: Int
 }
 
 struct CurseForgeMod: Codable {
     let id: Int
     let name: String
     let summary: String
+    let slug: String?
+    let authors: [CurseForgeAuthor]?
+    let logo: CurseForgeLogo?
+    let downloadCount: Int?
+    let gamePopularityRank: Int?
+    let links: CurseForgeLinks?
+    let dateCreated: String?
+    let dateModified: String?
+    let dateReleased: String?
+    let gameId: Int?
+    let classId: Int?
+    let categories: [CurseForgeCategory]?
+    let latestFiles: [CurseForgeModFileDetail]?
+    let latestFilesIndexes: [CurseForgeFileIndex]?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, summary, slug, authors, logo
+        case downloadCount
+        case gamePopularityRank
+        case links
+        case dateCreated
+        case dateModified
+        case dateReleased
+        case gameId
+        case classId
+        case categories
+        case latestFiles
+        case latestFilesIndexes
+    }
+}
+
+struct CurseForgeLogo: Codable {
+    let id: Int?
+    let modId: Int?
+    let title: String?
+    let description: String?
+    let thumbnailUrl: String?
+    let url: String?
+}
+
+struct CurseForgeLinks: Codable {
+    let websiteUrl: String?
+    let wikiUrl: String?
+    let issuesUrl: String?
+    let sourceUrl: String?
 }
 
 struct CurseForgeModDetail: Codable {
@@ -16,6 +69,19 @@ struct CurseForgeModDetail: Codable {
     let summary: String
     let classId: Int
     let categories: [CurseForgeCategory]
+    let slug: String?
+    let authors: [CurseForgeAuthor]?
+    let logo: CurseForgeLogo?
+    let downloadCount: Int?
+    let gamePopularityRank: Int?
+    let links: CurseForgeLinks?
+    let dateCreated: String?
+    let dateModified: String?
+    let dateReleased: String?
+    let gameId: Int?
+    let latestFiles: [CurseForgeModFileDetail]?
+    let latestFilesIndexes: [CurseForgeFileIndex]?
+    let body: String?
 
     /// 获取对应的内容类型枚举
     var contentType: CurseForgeClassId? {
@@ -26,6 +92,31 @@ struct CurseForgeModDetail: Codable {
     var directoryName: String {
         return contentType?.directoryName ?? AppConstants.DirectoryNames.mods
     }
+
+    /// 转换为 Modrinth 项目类型字符串
+    var projectType: String {
+        switch contentType {
+        case .mods:
+            return "mod"
+        case .resourcePacks:
+            return "resourcepack"
+        case .shaders:
+            return "shader"
+        case .datapacks:
+            return "datapack"
+        default:
+            return "mod"
+        }
+    }
+}
+
+struct CurseForgeFileIndex: Codable {
+    let gameVersion: String
+    let fileId: Int
+    let filename: String
+    let releaseType: Int
+    let gameVersionTypeId: Int?
+    let modLoader: Int?
 }
 
 /// CurseForge 内容类型枚举
@@ -75,10 +166,52 @@ enum CurseForgeModLoaderType: Int, CaseIterable {
     }
 }
 
-struct CurseForgeCategory: Codable {
+struct CurseForgeCategory: Codable, Identifiable, Hashable {
     let id: Int
     let name: String
     let slug: String
+    let url: String?
+    let avatarUrl: String?
+    let parentCategoryId: Int?
+    let rootCategoryId: Int?
+    let gameId: Int?
+    let gameName: String?
+    let classId: Int?
+    let dateModified: String?
+}
+
+/// CurseForge 分类列表响应
+struct CurseForgeCategoriesResponse: Codable {
+    let data: [CurseForgeCategory]
+}
+
+/// CurseForge 游戏版本
+struct CurseForgeGameVersion: Codable, Identifiable, Hashable {
+    let id: Int
+    let gameVersionId: Int?
+    let versionString: String
+    let jarDownloadUrl: String?
+    let jsonDownloadUrl: String?
+    let approved: Bool
+    let dateModified: String?
+    let gameVersionTypeId: Int?
+    let gameVersionStatus: Int?
+    let gameVersionTypeStatus: Int?
+
+    var identifier: String { versionString }
+
+    var version_type: String {
+        // CurseForge 没有明确的版本类型，根据版本号推断
+        if versionString.contains("snapshot") || versionString.contains("pre") || versionString.contains("rc") {
+            return "snapshot"
+        }
+        return "release"
+    }
+}
+
+/// CurseForge 游戏版本列表响应
+struct CurseForgeGameVersionsResponse: Codable {
+    let data: [CurseForgeGameVersion]
 }
 
 struct CurseForgeModDetailResponse: Codable {
@@ -101,10 +234,19 @@ struct CurseForgeModFileDetail: Codable {
     let changelog: String?
     let fileLength: Int?
     let hash: CurseForgeHash?
+    let hashes: [CurseForgeHash]?
     let modules: [CurseForgeModule]?
     let projectId: Int?
     let projectName: String?
     let authors: [CurseForgeAuthor]?
+
+    /// 从 hashes 数组中提取 algo 为 1 的 hash（SHA1）
+    var sha1Hash: CurseForgeHash? {
+        if let hashes = hashes {
+            return hashes.first { $0.algo == 1 }
+        }
+        return hash
+    }
 }
 
 struct CurseForgeDependency: Codable {

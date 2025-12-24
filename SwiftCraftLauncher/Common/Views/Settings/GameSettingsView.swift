@@ -28,6 +28,16 @@ public struct GameSettingsView: View {
                     .foregroundColor(.primary)
                 }
             }.labeledContentStyle(.custom).padding(.bottom, 10)
+            LabeledContent("settings.default_api_source.label".localized()) {
+                Picker("", selection: $gameSettings.defaultAPISource) {
+                    ForEach(DataSource.allCases, id: \.self) { source in
+                        Text(source.localizedName).tag(source)
+                    }
+                }
+
+                .labelsHidden()
+                .fixedSize()
+            }.labeledContentStyle(.custom(alignment: .firstTextBaseline)).padding(.bottom, 10)
 
             LabeledContent("settings.ai_crash_analysis".localized()) {
                 HStack {

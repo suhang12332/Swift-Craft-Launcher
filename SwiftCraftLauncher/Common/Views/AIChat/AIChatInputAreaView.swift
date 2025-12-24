@@ -38,7 +38,6 @@ struct AIChatInputAreaView: View {
             }
             .padding(.horizontal, Constants.inputHorizontalPadding)
             .padding(.vertical, Constants.inputVerticalPadding)
-            .background(Color(NSColor.textBackgroundColor))
         }
     }
 

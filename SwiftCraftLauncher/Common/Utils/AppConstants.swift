@@ -3,16 +3,22 @@ import Foundation
 enum AppConstants {
     static let defaultGameIcon = "default_game_icon.png"
     static let modLoaders = ["vanilla", "fabric", "forge", "neoforge", "quilt"]
+    static let modrinthIndex = "relevance"
 
     // Minecraft 客户端ID - 构建时会被替换
     // Minecraft/Xbox认证
     static let minecraftClientId: String = {
         let encrypted = "$(CLIENTID)"
-        let obfuscator = ClientIDObfuscator(encryptedString: encrypted)
-        return obfuscator.getClientID()
+        return Obfuscator.decryptClientID(encrypted)
     }()
     static let minecraftScope = "XboxLive.signin offline_access"
     static let callbackURLScheme = "swift-craft-launcher"
+
+    // CurseForge API Key - 构建时会被替换
+    static let curseForgeAPIKey: String? = {
+        let encrypted = "$(CURSEFORGE_API_KEY)"
+        return Obfuscator.decryptAPIKey(encrypted)
+    }()
     // 缓存资源类型
     static let cacheResourceTypes = [DirectoryNames.libraries, DirectoryNames.natives, DirectoryNames.assets, DirectoryNames.versions]
 

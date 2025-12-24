@@ -11,10 +11,12 @@ public struct DetailToolbarView: ToolbarContent {
     @EnvironmentObject var gameRepository: GameRepository
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @StateObject private var gameActionManager = GameActionManager.shared
+    @StateObject private var gameSettings = GameSettingsManager.shared
     @Binding var project: ModrinthProjectDetail?
     @Binding var selectProjectId: String?
     @Binding var selectedTab: Int
     @Binding var gameId: String?
+    @Binding var dataSource: DataSource
 
     // MARK: - Computed Properties
 
@@ -74,6 +76,9 @@ public struct DetailToolbarView: ToolbarContent {
                     //                    }
                     resourcesTypeMenu
                     resourcesMenu
+                    if gameType {
+                        dataSourceMenu
+                    }
                     Spacer()
                     Button {
                         Task {
@@ -131,6 +136,9 @@ public struct DetailToolbarView: ToolbarContent {
                         }
                     }
                 } else {
+                    if gameType {
+                        dataSourceMenu
+                    }
                     Spacer()
                 }
             }
@@ -179,5 +187,20 @@ public struct DetailToolbarView: ToolbarContent {
             types.insert("shader", at: 2)
         }
         return types
+    }
+
+    private var dataSourceMenu: some View {
+        Menu {
+            ForEach(DataSource.allCases, id: \.self) { source in
+                Button(source.localizedName) {
+                    // 只更新当前选择的值，不影响设置
+                    dataSource = source
+                }
+            }
+        } label: {
+            // 显示当前选择的值
+            Label(dataSource.localizedName, systemImage: "network")
+                .labelStyle(.titleOnly)
+        }
     }
 }

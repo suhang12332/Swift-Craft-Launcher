@@ -37,15 +37,14 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         self.gameRepository = repository
     }
 
-    // MARK: - Data Loading
-
-    /// 设置预加载的项目详情
-    func setPreloadedDetail(_ detail: ModrinthProjectDetail) async {
+    /// 应用预加载的项目详情，避免在 sheet 内重复加载
+    func applyPreloadedDetail(_ detail: ModrinthProjectDetail) {
         projectDetail = detail
-        let gameVersions = detail.gameVersions
-        availableGameVersions = CommonUtil.sortMinecraftVersions(gameVersions)
+        availableGameVersions = CommonUtil.sortMinecraftVersions(detail.gameVersions)
+        isLoadingProjectDetails = false
     }
 
+    // MARK: - Data Loading
     func loadProjectDetails(projectId: String) async {
         isLoadingProjectDetails = true
 
@@ -231,6 +230,8 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
         // 如果不是 Modrinth 格式，尝试解析 CurseForge 格式
         if let modrinthInfo = await CurseForgeManifestParser.parseManifest(extractedPath: extractedPath) {
+            // 设置 lastParsedIndexInfo 以便显示 mod 加载器进度条
+            lastParsedIndexInfo = modrinthInfo
             return modrinthInfo
         }
 
