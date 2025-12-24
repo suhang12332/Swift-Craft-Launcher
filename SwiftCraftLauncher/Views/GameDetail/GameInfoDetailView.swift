@@ -15,7 +15,7 @@ struct GameInfoDetailView: View {
     let game: GameVersionInfo
 
     @Binding var query: String
-    @Binding var sortIndex: String
+    @Binding var dataSource: DataSource
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
     @Binding var selectedFeatures: [String]
@@ -42,7 +42,6 @@ struct GameInfoDetailView: View {
                 GameRemoteResourceView(
                     game: game,
                     query: $query,
-                    sortIndex: $sortIndex,
                     selectedVersions: $selectedVersions,
                     selectedCategories: $selectedCategories,
                     selectedFeatures: $selectedFeatures,
@@ -54,7 +53,7 @@ struct GameInfoDetailView: View {
                     gameType: $gameType,
                     header: remoteHeader,
                     scannedDetailIds: $scannedResources,
-                    dataSource: .constant(.modrinth)  // 游戏详情视图暂时只支持 Modrinth
+                    dataSource: $dataSource
                 )
             } else {
                 GameLocalResourceView(
@@ -76,6 +75,19 @@ struct GameInfoDetailView: View {
         }
         .onChange(of: gameType) { _, _ in
             performRefresh()
+        }
+        // 4. 详情关闭时（selectedProjectId 从非 nil 变为 nil），重新扫描已安装资源，
+        //    用于刷新远程列表中的安装状态（安装按钮）
+        .onChange(of: selectedProjectId) { oldValue, newValue in
+            if oldValue != nil && newValue == nil {
+                resetScanState()
+                scanAllResources()
+            }
+        }
+        // 3. 资源类型（query）变化时，重新扫描已安装资源，用于更新安装状态
+        .onChange(of: query) { _, _ in
+            resetScanState()
+            scanAllResources()
         }
         .onAppear {
             // 初始化 header

@@ -376,19 +376,28 @@ final class ModrinthSearchViewModel: ObservableObject {
         // 转换加载器列表为 modLoaderTypes
         // ModLoaderType: 1=Forge, 4=Fabric, 5=Quilt, 6=NeoForge
         // API 限制：最多 5 个加载器类型
+
         let modLoaderTypes: [Int]?
-        if !loaders.isEmpty {
-            let loaderTypes = loaders.compactMap { loader -> Int? in
-                if let loaderType = CurseForgeModLoaderType.from(loader) {
-                    return loaderType.rawValue
-                }
-                return nil
-            }
-            // 限制最多 5 个加载器类型
-            modLoaderTypes = loaderTypes.isEmpty ? nil : Array(loaderTypes.prefix(5))
-        } else {
+
+        if projectType == "resourcepack" || projectType == "shaderpack" || projectType == "datapack" {
             modLoaderTypes = nil
+        } else {
+            if !loaders.isEmpty {
+                let loaderTypes = loaders.compactMap { loader -> Int? in
+                    if let loaderType = CurseForgeModLoaderType.from(loader) {
+                        return loaderType.rawValue
+                    }
+                    return nil
+                }
+                // 限制最多 5 个加载器类型
+                modLoaderTypes = loaderTypes.isEmpty ? nil : Array(loaderTypes.prefix(5))
+            } else {
+                modLoaderTypes = nil
+            }
         }
+
+
+
 
         // 搜索关键词（直接传原始 query，由 CurseForgeService 负责规范化为空格为 "+")
         let searchFilter = query.isEmpty ? nil : query

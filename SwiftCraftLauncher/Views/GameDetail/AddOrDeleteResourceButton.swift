@@ -149,6 +149,13 @@ struct AddOrDeleteResourceButton: View {
                     updateButtonState()
                 }
             }
+            // 当已安装资源的 hash 集合发生变化时（例如安装或删除资源后重新扫描），
+            // 根据最新扫描结果刷新按钮的安装状态
+            .onChange(of: scannedDetailIds) { _, _ in
+                if type {
+                    updateButtonState()
+                }
+            }
             .confirmationDialog(
                 "common.delete".localized(),
                 isPresented: $showDeleteAlert,
@@ -380,7 +387,7 @@ struct AddOrDeleteResourceButton: View {
                                 gameRepository: gameRepository
                             ) {
                                 addToScannedDetailIds()
-                                updateButtonState()
+                                markInstalled()
                             }
                         } else {
                             let hasMissingDeps =
@@ -401,7 +408,7 @@ struct AddOrDeleteResourceButton: View {
                                     gameRepository: gameRepository
                                 ) {
                                     addToScannedDetailIds()
-                                    updateButtonState()
+                                    markInstalled()
                                 }
                             }
                         }
@@ -414,7 +421,7 @@ struct AddOrDeleteResourceButton: View {
                             gameRepository: gameRepository
                         ) {
                             addToScannedDetailIds()
-                            updateButtonState()
+                            markInstalled()
                         }
                     }
                 }
@@ -480,20 +487,84 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        // scannedDetailIds 现在存储的是hash，但由于我们可能还没有文件hash
-        // 我们暂时不在这里检查，让下载时再检查
-        // 或者可以通过扫描目录来检查项目ID是否已安装
-
-        // 检查 query 是否是有效的资源类型
         let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
         let queryLowercased = query.lowercased()
 
-        // 如果 query 是 modpack 或无效的资源类型，设置为 idle
-        if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
+        // modpack 目前不支持安装状态检测
+        guard queryLowercased != "modpack",
+            validResourceTypes.contains(queryLowercased)
+        else {
             addButtonState = .idle
             return
         }
-        addButtonState = .idle
+
+        // 仅当选中游戏且为服务端模式时才尝试通过 hash 判断已安装状态
+        guard case .game = selectedItem else {
+            addButtonState = .idle
+            return
+        }
+
+        Task {
+            let installed = await checkInstalledStateForServerMode(resourceType: queryLowercased)
+            await MainActor.run {
+                addButtonState = installed ? .installed : .idle
+            }
+        }
+    }
+
+    /// 针对服务端模式的安装状态检查：获取兼容版本的文件 hash 并与已安装的 hash 比对
+    private func checkInstalledStateForServerMode(resourceType: String) async -> Bool {
+        // 已安装的 hash 列表（仅使用父视图传入的扫描结果，不做兜底扫描）
+        let installedHashes = scannedDetailIds
+        guard !installedHashes.isEmpty else { return false }
+
+        // 构造版本/loader 过滤条件（优先使用用户选择，其次使用当前游戏信息）
+        let versionFilters: [String] = {
+            if !selectedVersions.isEmpty {
+                return selectedVersions
+            }
+            if let gameInfo = gameInfo {
+                return [gameInfo.gameVersion]
+            }
+            return []
+        }()
+
+        let loaderFilters: [String] = {
+            if !selectedLoaders.isEmpty {
+                return selectedLoaders.map { $0.lowercased() }
+            }
+            if let gameInfo = gameInfo {
+                return [gameInfo.modLoader.lowercased()]
+            }
+            return []
+        }()
+
+        do {
+            let versions = try await ModrinthService.fetchProjectVersionsFilter(
+                id: project.projectId,
+                selectedVersions: versionFilters,
+                selectedLoaders: loaderFilters,
+                type: resourceType
+            )
+
+            for version in versions {
+                guard
+                    let primaryFile = ModrinthService.filterPrimaryFiles(
+                        from: version.files
+                    )
+                else { continue }
+
+                if installedHashes.contains(primaryFile.hashes.sha1) {
+                    return true
+                }
+            }
+        } catch {
+            Logger.shared.error(
+                "获取项目版本以检查安装状态失败: \(error.localizedDescription)"
+            )
+        }
+
+        return false
     }
 
 
@@ -567,6 +638,12 @@ struct AddOrDeleteResourceButton: View {
         if let hash = hash {
             scannedDetailIds.insert(hash)
         }
+    }
+
+    /// 下载完成后直接标记为已安装，避免等待后续刷新
+    @MainActor
+    private func markInstalled() {
+        addButtonState = .installed
     }
 
     private func checkDisableState() {

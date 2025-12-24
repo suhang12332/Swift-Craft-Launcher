@@ -3,7 +3,6 @@ import SwiftUI
 struct GameRemoteResourceView: View {
     let game: GameVersionInfo
     @Binding var query: String
-    @Binding var sortIndex: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
     @Binding var selectedFeatures: [String]
@@ -20,7 +19,6 @@ struct GameRemoteResourceView: View {
     init(
         game: GameVersionInfo,
         query: Binding<String>,
-        sortIndex: Binding<String>,
         selectedVersions: Binding<[String]>,
         selectedCategories: Binding<[String]>,
         selectedFeatures: Binding<[String]>,
@@ -36,7 +34,6 @@ struct GameRemoteResourceView: View {
     ) {
         self.game = game
         _query = query
-        _sortIndex = sortIndex
         _selectedVersions = selectedVersions
         _selectedCategories = selectedCategories
         _selectedFeatures = selectedFeatures
@@ -54,7 +51,6 @@ struct GameRemoteResourceView: View {
     var body: some View {
         ModrinthDetailView(
             query: query,
-            sortIndex: $sortIndex,
             selectedVersions: $selectedVersions,
             selectedCategories: $selectedCategories,
             selectedFeatures: $selectedFeatures,

@@ -120,7 +120,7 @@ enum ModrinthService {
         return await Task {
             try await searchProjectsThrowing(
                 facets: facets,
-                index: "relevance",
+                index: AppConstants.modrinthIndex,
                 offset: offset,
                 limit: limit,
                 query: query

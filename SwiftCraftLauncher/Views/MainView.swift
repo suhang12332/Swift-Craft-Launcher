@@ -16,7 +16,7 @@ struct MainView: View {
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Resource/Project State
-    @State private var sortIndex: String = "relevance"
+    @State private var sortIndex: String = AppConstants.modrinthIndex
     @State private var selectedVersions: [String] = []
     @State private var selectedLicenses: [String] = []
     @State private var selectedCategories: [String] = []
@@ -73,7 +73,6 @@ struct MainView: View {
 
             DetailView(
                 selectedItem: $selectedItem,
-                sortIndex: $sortIndex,
                 gameResourcesType: $gameResourcesType,
                 selectedVersions: $selectedVersions,
                 selectedCategories: $selectedCategories,
@@ -152,14 +151,19 @@ struct MainView: View {
         let game = gameRepository.getGame(by: gameId)
 
         if let loader = game?.modLoader.lowercased() {
+            let currentType = gameResourcesType.lowercased()
+
             if loader == "vanilla" {
-                // 对于 vanilla，如果当前资源类型是 mod，则切换为 datapack，否则保持用户原来的选择
-                if gameResourcesType.lowercased() == "mod" {
+                // 仅当当前选择与 vanilla 不兼容时才纠正，避免覆盖用户选择
+                if currentType == "mod" || currentType == "shader" {
                     gameResourcesType = "datapack"
                 }
             } else {
-                // 非 vanilla 一律使用 mod
-                gameResourcesType = "mod"
+                // 非 vanilla：保留用户的资源类型（mod/shader/datapack/resourcepack）
+                // 如果当前为空，才使用默认 mod
+                if gameResourcesType.isEmpty {
+                    gameResourcesType = "mod"
+                }
             }
         }
 
@@ -197,7 +201,7 @@ struct MainView: View {
         }
 
         // 排序方式回到默认值
-        sortIndex = "relevance"
+        sortIndex = AppConstants.modrinthIndex
 
         // 保证资源类型与当前侧边栏选择一致
         if case .resource(let resourceType) = selectedItem {

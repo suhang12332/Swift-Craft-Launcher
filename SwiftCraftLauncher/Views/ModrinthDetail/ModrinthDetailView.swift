@@ -4,7 +4,6 @@ import SwiftUI
 struct ModrinthDetailView: View {
     // MARK: - Properties
     let query: String
-    @Binding var sortIndex: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
     @Binding var selectedFeatures: [String]
@@ -24,13 +23,11 @@ struct ModrinthDetailView: View {
     @State private var searchText: String = ""
     @State private var searchTimer: Timer?
     @State private var currentPage: Int = 1
-    @State private var lastSearchKey: String = ""
     @State private var lastSearchParams: String = ""
     @State private var error: GlobalError?
 
     init(
         query: String,
-        sortIndex: Binding<String>,
         selectedVersions: Binding<[String]>,
         selectedCategories: Binding<[String]>,
         selectedFeatures: Binding<[String]>,
@@ -46,7 +43,6 @@ struct ModrinthDetailView: View {
         dataSource: Binding<DataSource> = .constant(.modrinth)
     ) {
         self.query = query
-        _sortIndex = sortIndex
         _selectedVersions = selectedVersions
         _selectedCategories = selectedCategories
         _selectedFeatures = selectedFeatures
@@ -65,7 +61,6 @@ struct ModrinthDetailView: View {
     private var searchKey: String {
         [
             query,
-            sortIndex,
             selectedVersions.joined(separator: ","),
             selectedCategories.joined(separator: ","),
             selectedFeatures.joined(separator: ","),
@@ -100,22 +95,27 @@ struct ModrinthDetailView: View {
                 await initialLoadIfNeeded()
             }
         }
-        .onChange(of: searchKey) { _, newKey in
-            if newKey != lastSearchKey {
-                lastSearchKey = newKey
+        .onChange(of: selectedProjectId, { oldValue, newValue in
+            if oldValue != nil && newValue == nil {
+                // 关闭详情后重新刷新列表，确保最新状态
+                viewModel.clearResults()
                 resetPagination()
                 triggerSearch()
             }
-        }
+        })
         .onChange(of: dataSource) { _, _ in
             // 清理之前的旧数据
             viewModel.clearResults()
             resetPagination()
             searchText = ""
-            lastSearchKey = ""
             lastSearchParams = ""
             error = nil
             hasLoaded = false
+            triggerSearch()
+        }
+        .onChange(of: query) { _, _ in
+            // 清理之前的旧数据
+            viewModel.clearResults()
             triggerSearch()
         }
         .searchable(
@@ -310,7 +310,6 @@ struct ModrinthDetailView: View {
         // 清理状态数据
         searchText = ""
         currentPage = 1
-        lastSearchKey = ""
         lastSearchParams = ""
         error = nil
         hasLoaded = false
@@ -319,7 +318,6 @@ struct ModrinthDetailView: View {
     private func buildSearchParamsKey(page: Int) -> String {
         [
             query,
-            sortIndex,
             selectedVersions.joined(separator: ","),
             selectedCategories.joined(separator: ","),
             selectedFeatures.joined(separator: ","),
