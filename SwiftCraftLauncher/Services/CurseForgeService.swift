@@ -4,6 +4,17 @@ import Foundation
 /// 提供统一的 CurseForge API 访问接口
 enum CurseForgeService {
 
+    // MARK: - Private Helpers
+
+    /// 获取 CurseForge API 请求头（包含 API key，如果可用）
+    private static func getHeaders() -> [String: String] {
+        var headers: [String: String] = ["Accept": "application/json"]
+        if let apiKey = AppConstants.curseForgeAPIKey {
+            headers["x-api-key"] = apiKey
+        }
+        return headers
+    }
+
     // MARK: - Public Methods
 
     /// 获取 CurseForge 文件详情
@@ -412,7 +423,7 @@ enum CurseForgeService {
             )
         }
 
-        let headers = ["Accept": "application/json"]
+        let headers = getHeaders()
         let data = try await APIClient.get(url: url, headers: headers)
         let result = try JSONDecoder().decode(CurseForgeSearchResult.self, from: data)
 
@@ -438,7 +449,7 @@ enum CurseForgeService {
     /// - Returns: 分类列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchCategoriesThrowing() async throws -> [CurseForgeCategory] {
-        let headers = ["Accept": "application/json"]
+        let headers = getHeaders()
         let data = try await APIClient.get(url: URLConfig.API.CurseForge.categories, headers: headers)
         let result = try JSONDecoder().decode(CurseForgeCategoriesResponse.self, from: data)
         return result.data
@@ -463,7 +474,7 @@ enum CurseForgeService {
     /// - Returns: 游戏版本列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchGameVersionsThrowing() async throws -> [CurseForgeGameVersion] {
-        let headers = ["Accept": "application/json"]
+        let headers = getHeaders()
         let data = try await APIClient.get(url: URLConfig.API.CurseForge.gameVersions, headers: headers)
         let result = try JSONDecoder().decode(CurseForgeGameVersionsResponse.self, from: data)
         // 只返回已批准且为正式版的版本
@@ -804,7 +815,7 @@ enum CurseForgeService {
         }
 
         // 使用统一的 API 客户端
-        let headers = ["Accept": "application/json"]
+        let headers = getHeaders()
         let data = try await APIClient.get(url: url, headers: headers)
 
         // 解析响应
@@ -826,7 +837,7 @@ enum CurseForgeService {
         }
 
         // 使用统一的 API 客户端
-        let headers = ["Accept": "application/json"]
+        let headers = getHeaders()
         let data = try await APIClient.get(url: url, headers: headers)
 
         // 解析响应

@@ -96,31 +96,6 @@ public struct GeneralSettingsView: View {
                     .gridColumnAlignment(.leading)
                     .labelsHidden()
             }.labeledContentStyle(.custom)
-
-            LabeledContent("settings.minecraft_versions_url.label".localized()) {
-                TextField("", text: $generalSettings.minecraftVersionManifestURL)
-                    .frame(maxWidth: 300)
-                    .focusable(false)
-                    .fixedSize()
-                    .labelsHidden()
-                    .textFieldStyle(.roundedBorder)
-            }.labeledContentStyle(.custom)
-
-            LabeledContent("settings.modrinth_api_url.label".localized()) {
-                TextField("", text: $generalSettings.modrinthAPIBaseURL).focusable(false)
-                    .frame(maxWidth: 300)
-                    .fixedSize()
-                    .labelsHidden()
-                    .textFieldStyle(.roundedBorder)
-            }.labeledContentStyle(.custom)
-
-            LabeledContent("settings.git_proxy_url.label".localized()) {
-                TextField("", text: $generalSettings.gitProxyURL).focusable(false)
-                    .frame(maxWidth: 300)
-                    .fixedSize()
-                    .labelsHidden()
-                    .textFieldStyle(.roundedBorder)
-            }.labeledContentStyle(.custom)
         }
         .alert("common.error".localized(), isPresented: $showingErrorAlert) {
             Button("common.ok".localized()) { }

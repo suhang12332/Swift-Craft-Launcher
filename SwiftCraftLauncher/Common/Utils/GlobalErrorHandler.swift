@@ -256,7 +256,7 @@ extension GlobalError {
             // 检查是否是网络相关错误
             if let urlError = error as? URLError {
                 // 如果是取消错误，使用 silent 级别，不显示通知
-                let level: GlobalError.Level = urlError.code == .cancelled ? .silent : .notification
+                let level: ErrorLevel = urlError.code == .cancelled ? .silent : .notification
                 return .network(
                     chineseMessage: urlError.localizedDescription,
                     i18nKey: "error.network.url",

@@ -18,7 +18,7 @@ enum URLConfig {
     /// - Parameter url: 原始 URL
     /// - Returns: 应用代理后的 URL（如果需要）
     static func applyGitProxyIfNeeded(_ url: URL) -> URL {
-        let proxy = GeneralSettingsManager.shared.gitProxyURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        let proxy = "https://ghfast.top"
         guard !proxy.isEmpty else { return url }
 
         // 优化：直接使用 URL 的 host 属性，避免转换为 String
@@ -217,12 +217,7 @@ enum URLConfig {
 
         // Modrinth API
         enum Modrinth {
-            static var baseURL: URL {
-                guard let url = URL(string: GeneralSettingsManager.shared.modrinthAPIBaseURL) else {
-                    fatalError("Invalid Modrinth API base URL: \(GeneralSettingsManager.shared.modrinthAPIBaseURL)")
-                }
-                return url
-            }
+            static let baseURL = URLConfig.url("https://api.modrinth.com/v2")
 
             // 项目相关
             static func project(id: String) -> URL {
@@ -288,7 +283,7 @@ enum URLConfig {
 
         // CurseForge API
         enum CurseForge {
-            static let mirrorBaseURL = URLConfig.url("https://mod.mcimirror.top/curseforge/v1")
+            static let mirrorBaseURL = URLConfig.url("https://api.curseforge.com/v1")
             static let fallbackDownloadBaseURL = URLConfig.url("https://edge.forgecdn.net/files")
 
             static func fileDetail(projectId: Int, fileId: Int) -> URL {
