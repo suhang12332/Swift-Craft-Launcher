@@ -161,58 +161,67 @@ enum CurseForgeService {
         }
 
         // 为每个文件获取完整的文件详情（包括 hashes）
-        // 使用并行请求优化性能
+        // 使用批处理限制并发数量，避免内存占用过高
+        let maxConcurrentTasks = 20 // 限制最大并发任务数
         var filesWithHashes: [CurseForgeModFileDetail] = []
-        await withTaskGroup(of: (Int, CurseForgeModFileDetail?).self) { group in
-            for file in filteredFiles {
-                group.addTask {
-                    do {
-                        let fileDetail = try await fetchFileDetailThrowing(projectId: projectId, fileId: file.id)
-                        return (file.id, fileDetail)
-                    } catch {
-                        Logger.shared.warning("获取文件详情失败 (fileId: \(file.id)): \(error.localizedDescription)")
-                        return (file.id, nil)
+        // 分批处理文件，每批最多 maxConcurrentTasks 个
+        var currentIndex = 0
+        while currentIndex < filteredFiles.count {
+            let endIndex = min(currentIndex + maxConcurrentTasks, filteredFiles.count)
+            let batch = Array(filteredFiles[currentIndex..<endIndex])
+            currentIndex = endIndex
+
+            await withTaskGroup(of: (Int, CurseForgeModFileDetail?).self) { group in
+                for file in batch {
+                    group.addTask {
+                        do {
+                            let fileDetail = try await fetchFileDetailThrowing(projectId: projectId, fileId: file.id)
+                            return (file.id, fileDetail)
+                        } catch {
+                            Logger.shared.warning("获取文件详情失败 (fileId: \(file.id)): \(error.localizedDescription)")
+                            return (file.id, nil)
+                        }
                     }
                 }
-            }
 
-            // 创建 fileId 到文件详情的映射
-            var fileDetailMap: [Int: CurseForgeModFileDetail] = [:]
-            for await (fileId, fileDetail) in group {
-                if let detail = fileDetail {
-                    fileDetailMap[fileId] = detail
+                // 创建 fileId 到文件详情的映射
+                var fileDetailMap: [Int: CurseForgeModFileDetail] = [:]
+                for await (fileId, fileDetail) in group {
+                    if let detail = fileDetail {
+                        fileDetailMap[fileId] = detail
+                    }
                 }
-            }
 
-            // 更新文件列表，使用获取到的文件详情（包含 hashes）
-            for file in filteredFiles {
-                if let detailedFile = fileDetailMap[file.id] {
-                    // 从 hashes 数组中提取 algo 为 1 的 hash
-                    let sha1Hash = detailedFile.hashes?.first { $0.algo == 1 }
+                // 更新文件列表，使用获取到的文件详情（包含 hashes）
+                for file in batch {
+                    if let detailedFile = fileDetailMap[file.id] {
+                        // 从 hashes 数组中提取 algo 为 1 的 hash
+                        let sha1Hash = detailedFile.hashes?.first { $0.algo == 1 }
 
-                    // 创建更新后的文件详情，保留原有信息但更新 hash
-                    let updatedFile = CurseForgeModFileDetail(
-                        id: file.id,
-                        displayName: file.displayName,
-                        fileName: file.fileName,
-                        downloadUrl: file.downloadUrl ?? detailedFile.downloadUrl,
-                        fileDate: file.fileDate.isEmpty ? detailedFile.fileDate : file.fileDate,
-                        releaseType: file.releaseType,
-                        gameVersions: file.gameVersions,
-                        dependencies: file.dependencies ?? detailedFile.dependencies,
-                        changelog: file.changelog ?? detailedFile.changelog,
-                        fileLength: file.fileLength ?? detailedFile.fileLength,
-                        hash: sha1Hash ?? file.hash ?? detailedFile.hash,
-                        hashes: detailedFile.hashes,
-                        modules: file.modules ?? detailedFile.modules,
-                        projectId: file.projectId,
-                        projectName: file.projectName,
-                        authors: file.authors
-                    )
-                    filesWithHashes.append(updatedFile)
-                } else {
-                    // 如果获取详情失败，保留原文件
-                    filesWithHashes.append(file)
+                        // 创建更新后的文件详情，保留原有信息但更新 hash
+                        let updatedFile = CurseForgeModFileDetail(
+                            id: file.id,
+                            displayName: file.displayName,
+                            fileName: file.fileName,
+                            downloadUrl: file.downloadUrl ?? detailedFile.downloadUrl,
+                            fileDate: file.fileDate.isEmpty ? detailedFile.fileDate : file.fileDate,
+                            releaseType: file.releaseType,
+                            gameVersions: file.gameVersions,
+                            dependencies: file.dependencies ?? detailedFile.dependencies,
+                            changelog: file.changelog ?? detailedFile.changelog,
+                            fileLength: file.fileLength ?? detailedFile.fileLength,
+                            hash: sha1Hash ?? file.hash ?? detailedFile.hash,
+                            hashes: detailedFile.hashes,
+                            modules: file.modules ?? detailedFile.modules,
+                            projectId: file.projectId,
+                            projectName: file.projectName,
+                            authors: file.authors
+                        )
+                        filesWithHashes.append(updatedFile)
+                    } else {
+                        // 如果获取详情失败，保留原文件
+                        filesWithHashes.append(file)
+                    }
                 }
             }
         }
@@ -559,9 +568,10 @@ enum CurseForgeService {
         }
 
         // 获取文件列表
+        // 优化：如果版本数量较少（<=3），为每个版本单独获取；否则一次性获取所有文件然后过滤
         var cfFiles: [CurseForgeModFileDetail] = []
-        if !selectedVersions.isEmpty {
-            // 如果有选中的版本，为每个版本获取文件
+        if !selectedVersions.isEmpty && selectedVersions.count <= 3 {
+            // 版本数量较少时，为每个版本获取文件（更精确）
             for version in selectedVersions {
                 // 对于光影包、资源包、数据包，不传递 modLoaderType 参数
                 let modLoaderType = shouldFilterByLoader && !modLoaderTypes.isEmpty ? modLoaderTypes.first : nil
@@ -573,7 +583,12 @@ enum CurseForgeService {
                 cfFiles.append(contentsOf: files)
             }
         } else {
-            cfFiles = try await fetchProjectFilesThrowing(projectId: modId)
+            // 版本数量较多或为空时，一次性获取所有文件，然后进行过滤（减少API调用和内存占用）
+            cfFiles = try await fetchProjectFilesThrowing(
+                projectId: modId,
+                gameVersion: nil,
+                modLoaderType: shouldFilterByLoader && !modLoaderTypes.isEmpty ? modLoaderTypes.first : nil
+            )
         }
 
         // 去重：按 fileId 去重，保留第一个
@@ -670,86 +685,100 @@ enum CurseForgeService {
             return ModrinthProjectDependency(projects: [])
         }
 
-        // 2. 并发获取所有依赖项目的兼容版本
-        let allDependencyVersions: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
-            for dep in firstVersion.dependencies where dep.dependencyType == "required" {
-                guard let projectId = dep.projectId else { continue }
-                group.addTask {
-                    do {
-                        let depVersion: ModrinthProjectDetailVersion
+        // 2. 并发获取所有依赖项目的兼容版本（使用批处理限制并发数量）
+        let requiredDeps = firstVersion.dependencies.filter { $0.dependencyType == "required" && $0.projectId != nil }
+        let maxConcurrentTasks = 20 // 限制最大并发任务数
+        var allDependencyVersions: [ModrinthProjectDetailVersion] = []
 
-                        // 规范化 projectId：如果是纯数字，添加 "cf-" 前缀（CurseForge 依赖通常是纯数字）
-                        let normalizedProjectId: String
-                        if !projectId.hasPrefix("cf-") && Int(projectId) != nil {
-                            // 纯数字，应该是 CurseForge 项目
-                            normalizedProjectId = "cf-\(projectId)"
-                        } else {
-                            normalizedProjectId = projectId
-                        }
+        // 分批处理依赖，每批最多 maxConcurrentTasks 个
+        var currentIndex = 0
+        while currentIndex < requiredDeps.count {
+            let endIndex = min(currentIndex + maxConcurrentTasks, requiredDeps.count)
+            let batch = Array(requiredDeps[currentIndex..<endIndex])
+            currentIndex = endIndex
 
-                        if let versionId = dep.versionId {
-                            // 如果有 versionId，需要检查是否是 CurseForge 版本
-                            if versionId.hasPrefix("cf-") {
-                                // CurseForge 版本，需要从文件 ID 获取
-                                let fileId = Int(versionId.replacingOccurrences(of: "cf-", with: "")) ?? 0
-                                // 需要从 projectId 获取 modId
-                                let (modId, _) = try parseCurseForgeId(normalizedProjectId)
-                                let cfFile = try await fetchFileDetailThrowing(projectId: modId, fileId: fileId)
-                                guard let convertedVersion = CurseForgeToModrinthAdapter.convertVersion(cfFile, projectId: normalizedProjectId) else {
-                                    return nil
-                                }
-                                depVersion = convertedVersion
+            let batchResults: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
+                for dep in batch {
+                    guard let projectId = dep.projectId else { continue }
+                    group.addTask {
+                        do {
+                            let depVersion: ModrinthProjectDetailVersion
+
+                            // 规范化 projectId：如果是纯数字，添加 "cf-" 前缀（CurseForge 依赖通常是纯数字）
+                            let normalizedProjectId: String
+                            if !projectId.hasPrefix("cf-") && Int(projectId) != nil {
+                                // 纯数字，应该是 CurseForge 项目
+                                normalizedProjectId = "cf-\(projectId)"
                             } else {
-                                // Modrinth 版本，使用 ModrinthService
-                                depVersion = try await ModrinthService.fetchProjectVersionThrowing(id: versionId)
+                                normalizedProjectId = projectId
                             }
-                        } else {
-                            // 如果没有 versionId，使用过滤逻辑获取兼容版本
-                            // 检查是否是 CurseForge 项目
-                            if normalizedProjectId.hasPrefix("cf-") {
-                                // CurseForge 项目
-                                let depVersions = try await fetchProjectVersionsFilterAsModrinth(
-                                    id: normalizedProjectId,
-                                    selectedVersions: selectedVersions,
-                                    selectedLoaders: selectedLoaders,
-                                    type: type
-                                )
-                                guard let firstDepVersion = depVersions.first else {
-                                    return nil
-                                }
-                                depVersion = firstDepVersion
-                            } else {
-                                // Modrinth 项目
-                                let depVersions = try await ModrinthService.fetchProjectVersionsFilter(
-                                    id: normalizedProjectId,
-                                    selectedVersions: selectedVersions,
-                                    selectedLoaders: selectedLoaders,
-                                    type: type
-                                )
-                                guard let firstDepVersion = depVersions.first else {
-                                    return nil
-                                }
-                                depVersion = firstDepVersion
-                            }
-                        }
 
-                        return depVersion
-                    } catch {
-                        let globalError = GlobalError.from(error)
-                        Logger.shared.error("获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)")
-                        return nil
+                            if let versionId = dep.versionId {
+                                // 如果有 versionId，需要检查是否是 CurseForge 版本
+                                if versionId.hasPrefix("cf-") {
+                                    // CurseForge 版本，需要从文件 ID 获取
+                                    let fileId = Int(versionId.replacingOccurrences(of: "cf-", with: "")) ?? 0
+                                    // 需要从 projectId 获取 modId
+                                    let (modId, _) = try parseCurseForgeId(normalizedProjectId)
+                                    let cfFile = try await fetchFileDetailThrowing(projectId: modId, fileId: fileId)
+                                    guard let convertedVersion = CurseForgeToModrinthAdapter.convertVersion(cfFile, projectId: normalizedProjectId) else {
+                                        return nil
+                                    }
+                                    depVersion = convertedVersion
+                                } else {
+                                    // Modrinth 版本，使用 ModrinthService
+                                    depVersion = try await ModrinthService.fetchProjectVersionThrowing(id: versionId)
+                                }
+                            } else {
+                                // 如果没有 versionId，使用过滤逻辑获取兼容版本
+                                // 检查是否是 CurseForge 项目
+                                if normalizedProjectId.hasPrefix("cf-") {
+                                    // CurseForge 项目
+                                    let depVersions = try await fetchProjectVersionsFilterAsModrinth(
+                                        id: normalizedProjectId,
+                                        selectedVersions: selectedVersions,
+                                        selectedLoaders: selectedLoaders,
+                                        type: type
+                                    )
+                                    guard let firstDepVersion = depVersions.first else {
+                                        return nil
+                                    }
+                                    depVersion = firstDepVersion
+                                } else {
+                                    // Modrinth 项目
+                                    let depVersions = try await ModrinthService.fetchProjectVersionsFilter(
+                                        id: normalizedProjectId,
+                                        selectedVersions: selectedVersions,
+                                        selectedLoaders: selectedLoaders,
+                                        type: type
+                                    )
+                                    guard let firstDepVersion = depVersions.first else {
+                                        return nil
+                                    }
+                                    depVersion = firstDepVersion
+                                }
+                            }
+
+                            return depVersion
+                        } catch {
+                            let globalError = GlobalError.from(error)
+                            Logger.shared.error("获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)")
+                            return nil
+                        }
                     }
                 }
-            }
 
-            var results: [ModrinthProjectDetailVersion] = []
-            for await result in group {
-                if let version = result {
-                    results.append(version)
+                var results: [ModrinthProjectDetailVersion] = []
+                for await result in group {
+                    if let version = result {
+                        results.append(version)
+                    }
                 }
+
+                return results
             }
 
-            return results
+            allDependencyVersions.append(contentsOf: batchResults)
         }
 
         // 3. 使用hash检查是否已安装，过滤出缺失的依赖

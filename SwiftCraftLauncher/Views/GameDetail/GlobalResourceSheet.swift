@@ -88,6 +88,16 @@ struct GlobalResourceSheet: View {
                 )
             }
         )
+        .onDisappear {
+            // sheet 关闭时清理所有状态数据以释放内存
+            selectedGame = nil
+            selectedVersion = nil
+            availableVersions = []
+            dependencyState = DependencyState()
+            isDownloadingAll = false
+            isDownloadingMainOnly = false
+            mainVersionId = ""
+        }
     }
 
     private func loadDependencies(

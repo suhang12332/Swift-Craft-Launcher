@@ -43,6 +43,16 @@ final class DependencySheetViewModel: ObservableObject {
         }
         overallDownloadState = .idle
     }
+
+    /// 清理所有数据，在 sheet 关闭时调用以释放内存
+    func cleanup() {
+        missingDependencies = []
+        isLoadingDependencies = true
+        dependencyDownloadStates = [:]
+        dependencyVersions = [:]
+        selectedDependencyVersion = [:]
+        overallDownloadState = .idle
+    }
 }
 
 // 1. 下载状态定义
@@ -227,11 +237,18 @@ struct AddOrDeleteResourceButton: View {
                         depVM.showDependenciesSheet = false
                     }
                 )
+                .onDisappear {
+                    // sheet 关闭时清理 ViewModel 数据以释放内存
+                    depVM.cleanup()
+                }
             }
             .sheet(
                 isPresented: $showGlobalResourceSheet,
                 onDismiss: {
                     addButtonState = .idle
+                    // sheet 关闭时清理预加载的数据
+                    preloadedDetail = nil
+                    preloadedCompatibleGames = []
                 },
                 content: {
                     GlobalResourceSheet(
@@ -254,6 +271,8 @@ struct AddOrDeleteResourceButton: View {
                 isPresented: $showModPackDownloadSheet,
                 onDismiss: {
                     addButtonState = .idle
+                    // sheet 关闭时清理预加载的数据
+                    preloadedDetail = nil
                 },
                 content: {
                     ModPackDownloadSheet(

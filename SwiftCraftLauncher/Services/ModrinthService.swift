@@ -475,49 +475,63 @@ enum ModrinthService {
             return ModrinthProjectDependency(projects: [])
         }
 
-        // 2. 并发获取所有依赖项目的兼容版本
-        let allDependencyVersions: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
-            for dep in firstVersion.dependencies where dep.dependencyType == "required" {
-                guard let projectId = dep.projectId else { continue }
-                group.addTask {
-                    do {
-                        let depVersion: ModrinthProjectDetailVersion
+        // 2. 并发获取所有依赖项目的兼容版本（使用批处理限制并发数量）
+        let requiredDeps = firstVersion.dependencies.filter { $0.dependencyType == "required" && $0.projectId != nil }
+        let maxConcurrentTasks = 10 // 限制最大并发任务数
+        var allDependencyVersions: [ModrinthProjectDetailVersion] = []
 
-                        if let versionId = dep.versionId {
-                            // 如果有 versionId，直接获取指定版本
-                            depVersion = try await fetchProjectVersionThrowing(id: versionId)
-                        } else {
-                            // 如果没有 versionId，使用过滤逻辑获取兼容版本
-                            let depVersions = try await fetchProjectVersionsFilter(
-                                id: projectId,
-                                selectedVersions: selectedVersions,
-                                selectedLoaders: selectedLoaders,
-                                type: type
-                            )
-                            guard let firstDepVersion = depVersions.first else {
-                                Logger.shared.warning("未找到兼容的依赖版本 (ID: \(projectId))")
-                                return nil
+        // 分批处理依赖，每批最多 maxConcurrentTasks 个
+        var currentIndex = 0
+        while currentIndex < requiredDeps.count {
+            let endIndex = min(currentIndex + maxConcurrentTasks, requiredDeps.count)
+            let batch = Array(requiredDeps[currentIndex..<endIndex])
+            currentIndex = endIndex
+
+            let batchResults: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
+                for dep in batch {
+                    guard let projectId = dep.projectId else { continue }
+                    group.addTask {
+                        do {
+                            let depVersion: ModrinthProjectDetailVersion
+
+                            if let versionId = dep.versionId {
+                                // 如果有 versionId，直接获取指定版本
+                                depVersion = try await fetchProjectVersionThrowing(id: versionId)
+                            } else {
+                                // 如果没有 versionId，使用过滤逻辑获取兼容版本
+                                let depVersions = try await fetchProjectVersionsFilter(
+                                    id: projectId,
+                                    selectedVersions: selectedVersions,
+                                    selectedLoaders: selectedLoaders,
+                                    type: type
+                                )
+                                guard let firstDepVersion = depVersions.first else {
+                                    Logger.shared.warning("未找到兼容的依赖版本 (ID: \(projectId))")
+                                    return nil
+                                }
+                                depVersion = firstDepVersion
                             }
-                            depVersion = firstDepVersion
-                        }
 
-                        return depVersion
-                    } catch {
-                        let globalError = GlobalError.from(error)
-                        Logger.shared.error("获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)")
-                        return nil
+                            return depVersion
+                        } catch {
+                            let globalError = GlobalError.from(error)
+                            Logger.shared.error("获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)")
+                            return nil
+                        }
                     }
                 }
-            }
 
-            var results: [ModrinthProjectDetailVersion] = []
-            for await result in group {
-                if let version = result {
-                    results.append(version)
+                var results: [ModrinthProjectDetailVersion] = []
+                for await result in group {
+                    if let version = result {
+                        results.append(version)
+                    }
                 }
+
+                return results
             }
 
-            return results
+            allDependencyVersions.append(contentsOf: batchResults)
         }
 
         // 3. 使用hash检查是否已安装，过滤出缺失的依赖
