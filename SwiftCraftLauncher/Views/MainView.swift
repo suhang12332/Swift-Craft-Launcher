@@ -16,6 +16,7 @@ struct MainView: View {
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Resource/Project State
+    @State private var sortIndex: String = AppConstants.modrinthIndex
     @State private var selectedVersions: [String] = []
     @State private var selectedLicenses: [String] = []
     @State private var selectedCategories: [String] = []
@@ -33,6 +34,9 @@ struct MainView: View {
     @State private var gameResourcesType = "mod"
     @State private var gameType = true  // false = local, true = server
     @State private var gameId: String?
+    @StateObject private var gameSettings = GameSettingsManager.shared
+    // 数据源：从设置中读取默认值，但可以临时更改（不影响设置）
+    @State private var dataSource: DataSource = GameSettingsManager.shared.defaultAPISource
 
     @State private var showingInspector: Bool = false
 
@@ -57,7 +61,8 @@ struct MainView: View {
                 gameResourcesType: $gameResourcesType,
                 selectedLoaders: $selectedLoaders,
                 gameType: $gameType,
-                gameId: $gameId
+                gameId: $gameId,
+                dataSource: $dataSource
             )
             .toolbar { ContentToolbarView() }.navigationSplitViewColumnWidth(
                 min: 235,
@@ -80,7 +85,8 @@ struct MainView: View {
                 versionCurrentPage: $versionCurrentPage,
                 versionTotal: $versionTotal,
                 gameType: $gameType,
-                selectedLoader: $selectedLoaders
+                selectedLoader: $selectedLoaders,
+                dataSource: $dataSource
             )
             .toolbar {
                 DetailToolbarView(
@@ -92,7 +98,8 @@ struct MainView: View {
                     project: $loadedProjectDetail,
                     selectProjectId: $selectedProjectId,
                     selectedTab: $selectedTab,
-                    gameId: $gameId
+                    gameId: $gameId,
+                    dataSource: $dataSource
                 )
             }
         }
@@ -144,14 +151,19 @@ struct MainView: View {
         let game = gameRepository.getGame(by: gameId)
 
         if let loader = game?.modLoader.lowercased() {
+            let currentType = gameResourcesType.lowercased()
+
             if loader == "vanilla" {
-                // 对于 vanilla，如果当前资源类型是 mod，则切换为 datapack，否则保持用户原来的选择
-                if gameResourcesType.lowercased() == "mod" {
+                // 仅当当前选择与 vanilla 不兼容时才纠正，避免覆盖用户选择
+                if currentType == "mod" || currentType == "shader" {
                     gameResourcesType = "datapack"
                 }
             } else {
-                // 非 vanilla 一律使用 mod
-                gameResourcesType = "mod"
+                // 非 vanilla：保留用户的资源类型（mod/shader/datapack/resourcepack）
+                // 如果当前为空，才使用默认 mod
+                if gameResourcesType.isEmpty {
+                    gameResourcesType = "mod"
+                }
             }
         }
 
@@ -187,6 +199,9 @@ struct MainView: View {
         if !gameType && self.selectedProjectId == nil {
             gameType = true
         }
+
+        // 排序方式回到默认值
+        sortIndex = AppConstants.modrinthIndex
 
         // 保证资源类型与当前侧边栏选择一致
         if case .resource(let resourceType) = selectedItem {

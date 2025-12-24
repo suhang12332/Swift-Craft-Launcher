@@ -69,6 +69,11 @@ class GeneralSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    @AppStorage("curseForgeAPIBaseURL")
+    var curseForgeAPIBaseURL: String = "https://api.curseforge.com/v1" {
+        didSet { objectWillChange.send() }
+    }
+
     // MARK: - 应用设置属性
     @AppStorage("concurrentDownloads")
     var concurrentDownloads: Int = 64 {

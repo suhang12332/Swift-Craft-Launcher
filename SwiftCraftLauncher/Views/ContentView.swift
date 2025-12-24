@@ -23,6 +23,7 @@ struct ContentView: View {
     @Binding var selectedLoaders: [String]
     @Binding var gameType: Bool
     @Binding var gameId: String?
+    @Binding var dataSource: DataSource
 
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
@@ -62,7 +63,8 @@ struct ContentView: View {
             selectedVersions: $selectedVersions,
             selectedLoaders: $selectedLoaders,
             gameVersion: game.gameVersion,
-            gameLoader: game.modLoader == "Vanilla" ? nil : game.modLoader
+            gameLoader: game.modLoader == "Vanilla" ? nil : game.modLoader,
+            dataSource: dataSource
         )
         .id(gameResourcesType)
     }
@@ -88,7 +90,8 @@ struct ContentView: View {
                 selectedResolutions: $selectedResolutions,
                 selectedPerformanceImpacts: $selectedPerformanceImpact,
                 selectedVersions: $selectedVersions,
-                selectedLoaders: $selectedLoaders
+                selectedLoaders: $selectedLoaders,
+                dataSource: dataSource
             )
             .id(type)
         }

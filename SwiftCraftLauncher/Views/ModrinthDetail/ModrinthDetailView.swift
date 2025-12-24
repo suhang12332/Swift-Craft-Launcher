@@ -16,13 +16,13 @@ struct ModrinthDetailView: View {
     @Binding var gameType: Bool
     let header: AnyView?
     @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找
+    @Binding var dataSource: DataSource
 
     @StateObject private var viewModel = ModrinthSearchViewModel()
     @State private var hasLoaded = false
     @State private var searchText: String = ""
     @State private var searchTimer: Timer?
     @State private var currentPage: Int = 1
-    @State private var lastSearchKey: String = ""
     @State private var lastSearchParams: String = ""
     @State private var error: GlobalError?
 
@@ -39,7 +39,8 @@ struct ModrinthDetailView: View {
         selectedItem: Binding<SidebarItem>,
         gameType: Binding<Bool>,
         header: AnyView? = nil,
-        scannedDetailIds: Binding<Set<String>> = .constant([])
+        scannedDetailIds: Binding<Set<String>> = .constant([]),
+        dataSource: Binding<DataSource> = .constant(.modrinth)
     ) {
         self.query = query
         _selectedVersions = selectedVersions
@@ -54,6 +55,7 @@ struct ModrinthDetailView: View {
         _gameType = gameType
         self.header = header
         _scannedDetailIds = scannedDetailIds
+        _dataSource = dataSource
     }
 
     private var searchKey: String {
@@ -66,6 +68,7 @@ struct ModrinthDetailView: View {
             selectedPerformanceImpact.joined(separator: ","),
             selectedLoader.joined(separator: ","),
             String(gameType),
+            dataSource.rawValue,
         ].joined(separator: "|")
     }
 
@@ -92,12 +95,28 @@ struct ModrinthDetailView: View {
                 await initialLoadIfNeeded()
             }
         }
-        .onChange(of: searchKey) { _, newKey in
-            if newKey != lastSearchKey {
-                lastSearchKey = newKey
+        .onChange(of: selectedProjectId) { oldValue, newValue in
+            if oldValue != nil && newValue == nil {
+                // 关闭详情后重新刷新列表，确保最新状态
+                viewModel.clearResults()
                 resetPagination()
                 triggerSearch()
             }
+        }
+        .onChange(of: dataSource) { _, _ in
+            // 清理之前的旧数据
+            viewModel.clearResults()
+            resetPagination()
+            searchText = ""
+            lastSearchParams = ""
+            error = nil
+            hasLoaded = false
+            triggerSearch()
+        }
+        .onChange(of: query) { _, _ in
+            // 清理之前的旧数据
+            viewModel.clearResults()
+            triggerSearch()
         }
         .searchable(
             text: $searchText,
@@ -203,7 +222,8 @@ struct ModrinthDetailView: View {
             performanceImpact: selectedPerformanceImpact,
             loaders: selectedLoader,
             page: page,
-            append: append
+            append: append,
+            dataSource: dataSource
         )
     }
 
@@ -214,7 +234,7 @@ struct ModrinthDetailView: View {
                 newErrorView(error)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .listRowSeparator(.hidden)
-            } else if viewModel.isLoading && viewModel.results.isEmpty {
+            } else if viewModel.isLoading {
                 HStack {
                     ProgressView()
                         .controlSize(.small)
@@ -290,7 +310,6 @@ struct ModrinthDetailView: View {
         // 清理状态数据
         searchText = ""
         currentPage = 1
-        lastSearchKey = ""
         lastSearchParams = ""
         error = nil
         hasLoaded = false
@@ -308,6 +327,7 @@ struct ModrinthDetailView: View {
             String(gameType),
             searchText,
             "page:\(page)",
+            dataSource.rawValue,
         ].joined(separator: "|")
     }
 

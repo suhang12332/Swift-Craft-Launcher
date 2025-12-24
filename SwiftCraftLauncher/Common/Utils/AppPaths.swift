@@ -115,8 +115,7 @@ extension AppPaths {
     /// 全局缓存文件路径 - 使用系统标准缓存目录
     static var appCache: URL {
         guard let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first else {
-            // 如果无法获取系统缓存目录，则回退到 Application Support 下的 cache 目录
-            return launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.cache)
+            fatalError("无法获取系统缓存目录")
         }
         return cachesDirectory.appendingPathComponent(Bundle.main.identifier)
     }

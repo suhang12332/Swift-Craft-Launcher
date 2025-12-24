@@ -344,6 +344,12 @@ struct MinecraftSkinUtils: View {
                     self.isLoading = false
                 }
                 return
+            } catch let urlError as URLError where urlError.code == .cancelled {
+                // URL 请求被取消（通常是视图被销毁或重新创建），静默处理
+                await MainActor.run {
+                    self.isLoading = false
+                }
+                return
             } catch {
                 let globalError = GlobalError.from(error)
                 await MainActor.run {
