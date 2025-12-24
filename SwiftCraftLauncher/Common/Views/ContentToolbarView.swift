@@ -10,6 +10,9 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var showingGameForm = false
     @EnvironmentObject var gameRepository: GameRepository
     @State private var showEditSkin = false
+    @State private var isLoadingSkin = false
+    @State private var preloadedSkinInfo: PlayerSkinService.PublicSkinInfo?
+    @State private var preloadedProfile: MinecraftProfileResponse?
 
     // MARK: - Startup Info State
     @State private var showStartupInfo = false
@@ -107,13 +110,29 @@ public struct ContentToolbarView: ToolbarContent {
                 }
                 if let player = playerListViewModel.currentPlayer, player.isOnlineAccount {
                     Button {
-                        showEditSkin = true
+                        Task {
+                            await openSkinManager()
+                        }
                     } label: {
-                        Label("skin.title".localized(), systemImage: "tshirt")
-                            .help("skin.title".localized())
+                        if isLoadingSkin {
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Label("skin.title".localized(), systemImage: "tshirt")
+                        }
                     }
+                    .help("skin.title".localized())
+                    .disabled(isLoadingSkin)
                     .sheet(isPresented: $showEditSkin) {
-                        SkinToolDetailView()
+                        SkinToolDetailView(
+                            preloadedSkinInfo: preloadedSkinInfo,
+                            preloadedProfile: preloadedProfile
+                        )
+                        .onDisappear {
+                            // 清理预加载的数据
+                            preloadedSkinInfo = nil
+                            preloadedProfile = nil
+                        }
                     }
                 }
             }
@@ -137,6 +156,27 @@ public struct ContentToolbarView: ToolbarContent {
     }
 
     // MARK: - Private Methods
+
+    /// 打开皮肤管理器（先加载数据，再显示sheet）
+    private func openSkinManager() async {
+        guard let player = playerListViewModel.currentPlayer else { return }
+
+        await MainActor.run {
+            isLoadingSkin = true
+        }
+
+        // 预加载皮肤数据
+        async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: player)
+        async let profile = PlayerSkinService.fetchPlayerProfile(player: player)
+        let (loadedSkinInfo, loadedProfile) = await (skinInfo, profile)
+
+        await MainActor.run {
+            preloadedSkinInfo = loadedSkinInfo
+            preloadedProfile = loadedProfile
+            isLoadingSkin = false
+            showEditSkin = true
+        }
+    }
 
     /// 检查是否有公告
     private func checkAnnouncement() async {

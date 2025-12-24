@@ -8,6 +8,10 @@ struct SkinToolDetailView: View {
     @Environment(\.dismiss)
     private var dismiss
 
+    // 预加载的数据（可选）
+    private let preloadedSkinInfo: PlayerSkinService.PublicSkinInfo?
+    private let preloadedProfile: MinecraftProfileResponse?
+
     @State private var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
     @State private var showingFileImporter = false
     @State private var operationInProgress = false
@@ -20,7 +24,15 @@ struct SkinToolDetailView: View {
     @State private var selectedCapeLocalPath: String?
     @State private var publicSkinInfo: PlayerSkinService.PublicSkinInfo?
     @State private var playerProfile: MinecraftProfileResponse?
-    @State private var isLoading = true
+
+    init(
+        preloadedSkinInfo: PlayerSkinService.PublicSkinInfo? = nil,
+        preloadedProfile: MinecraftProfileResponse? = nil
+    ) {
+        self.preloadedSkinInfo = preloadedSkinInfo
+        self.preloadedProfile = preloadedProfile
+    }
+
     @State private var hasChanges = false
     @State private var currentSkinRenderImage: NSImage?
     // 缓存之前的值，避免不必要的计算
@@ -43,7 +55,18 @@ struct SkinToolDetailView: View {
             handleFileSelection(result)
         }
         .onAppear {
-            loadData()
+            // 完全使用预加载的数据
+            guard let skinInfo = preloadedSkinInfo, let profile = preloadedProfile else {
+                Logger.shared.error("SkinToolDetailView: Missing preloaded data, dismissing view")
+                dismiss()
+                return
+            }
+            publicSkinInfo = skinInfo
+            playerProfile = profile
+            currentModel = skinInfo.model
+            selectedCapeId = PlayerSkinService.getActiveCapeId(from: profile)
+            loadCurrentSkinRenderImageIfNeeded()
+            updateHasChanges()
         }
         .onDisappear {
             // 页面关闭后清除所有数据
@@ -57,46 +80,38 @@ struct SkinToolDetailView: View {
     }
 
     private var bodyContentView: some View {
-        Group {
-            if isLoading {
-                ProgressView()
-                    .controlSize(.small)
-                    .frame(maxWidth: .infinity, minHeight: 100)
-            } else {
-                VStack(spacing: 24) {
-                    PlayerInfoSectionView(
-                        player: resolvedPlayer,
-                        currentModel: $currentModel
-                    )
-                    .onChange(of: currentModel) { _, _ in
-                        updateHasChanges()
-                    }
+        VStack(spacing: 24) {
+            PlayerInfoSectionView(
+                player: resolvedPlayer,
+                currentModel: $currentModel
+            )
+            .onChange(of: currentModel) { _, _ in
+                updateHasChanges()
+            }
 
-                    SkinUploadSectionView(
-                        currentModel: $currentModel,
-                        showingFileImporter: $showingFileImporter,
-                        selectedSkinImage: $selectedSkinImage,
-                        selectedSkinPath: $selectedSkinPath,
-                        currentSkinRenderImage: $currentSkinRenderImage,
-                        selectedCapeLocalPath: $selectedCapeLocalPath,
-                        showingSkinPreview: $showingSkinPreview,
-                        onSkinDropped: handleSkinDroppedImage,
-                        onDrop: handleDrop
-                    )
+            SkinUploadSectionView(
+                currentModel: $currentModel,
+                showingFileImporter: $showingFileImporter,
+                selectedSkinImage: $selectedSkinImage,
+                selectedSkinPath: $selectedSkinPath,
+                currentSkinRenderImage: $currentSkinRenderImage,
+                selectedCapeLocalPath: $selectedCapeLocalPath,
+                showingSkinPreview: $showingSkinPreview,
+                onSkinDropped: handleSkinDroppedImage,
+                onDrop: handleDrop
+            )
 
-                    CapeSelectionView(
-                        playerProfile: playerProfile,
-                        selectedCapeId: $selectedCapeId,
-                        selectedCapeImageURL: $selectedCapeImageURL
-                    ) { id, imageURL in
-                        if let imageURL = imageURL, id != nil {
-                            Task { await downloadCapeTextureIfNeeded(from: imageURL) }
-                        } else {
-                            selectedCapeLocalPath = nil
-                        }
-                        updateHasChanges()
-                    }
+            CapeSelectionView(
+                playerProfile: playerProfile,
+                selectedCapeId: $selectedCapeId,
+                selectedCapeImageURL: $selectedCapeImageURL
+            ) { id, imageURL in
+                if let imageURL = imageURL, id != nil {
+                    Task { await downloadCapeTextureIfNeeded(from: imageURL) }
+                } else {
+                    selectedCapeLocalPath = nil
                 }
+                updateHasChanges()
             }
         }
     }
@@ -106,15 +121,13 @@ struct SkinToolDetailView: View {
             Button("skin.cancel".localized()) { dismiss() }.keyboardShortcut(.cancelAction)
             Spacer()
 
-            if !isLoading {
-                HStack(spacing: 12) {
-                    if resolvedPlayer?.isOnlineAccount == true {
-                        Button("skin.reset".localized()) { resetSkin() }.disabled(operationInProgress)
-                    }
-                    Button("skin.apply".localized()) { applyChanges() }
-                        .keyboardShortcut(.defaultAction)
-                        .disabled(operationInProgress || !hasChanges)
+            HStack(spacing: 12) {
+                if resolvedPlayer?.isOnlineAccount == true {
+                    Button("skin.reset".localized()) { resetSkin() }.disabled(operationInProgress)
                 }
+                Button("skin.apply".localized()) { applyChanges() }
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(operationInProgress || !hasChanges)
             }
         }
     }
@@ -182,35 +195,6 @@ struct SkinToolDetailView: View {
 
     private var originalModel: PlayerSkinService.PublicSkinInfo.SkinModel? {
         publicSkinInfo?.model
-    }
-
-    private func loadData() {
-        guard let player = resolvedPlayer else {
-            Logger.shared.warning("No player selected for skin manager")
-            isLoading = false
-            return
-        }
-
-        Task {
-            async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: player)
-            async let profile = PlayerSkinService.fetchPlayerProfile(player: player)
-
-            let (skin, playerProfile) = await (skinInfo, profile)
-
-            await MainActor.run {
-                self.publicSkinInfo = skin
-                self.playerProfile = playerProfile
-                if let model = skin?.model {
-                    self.currentModel = model
-                } else {
-                    self.currentModel = .classic // 默认使用 classic 模型
-                }
-                self.selectedCapeId = currentActiveCapeId
-                self.isLoading = false
-                self.loadCurrentSkinRenderImageIfNeeded()
-                self.updateHasChanges()
-            }
-        }
     }
 
     private func loadCurrentSkinRenderImageIfNeeded() {
@@ -293,17 +277,14 @@ struct SkinToolDetailView: View {
         guard let player = resolvedPlayer else { return }
 
         operationInProgress = true
-        isLoading = true
         Task {
             let success = await PlayerSkinService.resetSkinAndRefresh(player: player)
 
             await MainActor.run {
                 operationInProgress = false
                 if success {
-                    clearSelectedSkin()
-                    loadData() // 重新加载数据
-                } else {
-                    isLoading = false
+                    // 重置成功后关闭视图，由外部重新打开并传入新的预加载数据
+                    dismiss()
                 }
             }
         }
@@ -446,7 +427,6 @@ extension SkinToolDetailView {
         currentSkinRenderImage = nil
         // 重置状态
         currentModel = .classic
-        isLoading = true
         hasChanges = false
         operationInProgress = false
         // 清理缓存的值
