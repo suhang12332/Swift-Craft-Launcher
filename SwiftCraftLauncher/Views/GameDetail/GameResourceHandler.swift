@@ -9,10 +9,10 @@ enum GameResourceHandler {
         addButtonState: Binding<ModrinthDetailCardView.AddButtonState>
     ) {
         guard let gameInfo = gameInfo else { return }
-        ModScanner.shared.isModInstalled(
-            slug: project.slug,
-            in: AppPaths.modsDirectory(gameName: gameInfo.gameName)
-        ) { installed in
+        // 由于没有文件hash，我们通过扫描目录来检查项目ID是否已安装
+        let modsDir = AppPaths.modsDirectory(gameName: gameInfo.gameName)
+        ModScanner.shared.scanResourceDirectory(modsDir) { details in
+            let installed = details.contains { $0.id == project.projectId }
             DispatchQueue.main.async {
                 if installed {
                     addButtonState.wrappedValue = .installed
@@ -46,29 +46,22 @@ enum GameResourceHandler {
             )
         }
 
-        // 如果是 mod 文件，删除前获取 slug 以便从缓存中移除
-        var slug: String?
+        // 如果是 mod 文件，删除前获取 hash 以便从缓存中移除
+        var hash: String?
         var gameName: String?
         if isModsDirectory(fileURL.deletingLastPathComponent()) {
             // 从文件路径提取 gameName
             gameName = extractGameName(from: fileURL.deletingLastPathComponent())
-            // 尝试从缓存获取 slug
-            if let hash = ModScanner.sha1Hash(of: fileURL),
-               let detail = AppCacheManager.shared.get(
-                   namespace: "mod",
-                   key: hash,
-                   as: ModrinthProjectDetail.self
-               ) {
-                slug = detail.slug
-            }
+            // 获取文件的hash
+            hash = ModScanner.sha1Hash(of: fileURL)
         }
 
         do {
             try FileManager.default.removeItem(at: fileURL)
 
             // 删除成功后，如果是 mod，从缓存中移除
-            if let slug = slug, let gameName = gameName {
-                ModScanner.shared.removeModSlug(slug, from: gameName)
+            if let hash = hash, let gameName = gameName {
+                ModScanner.shared.removeModHash(hash, from: gameName)
             }
         } catch {
             throw GlobalError.fileSystem(
@@ -486,7 +479,7 @@ enum GameResourceHandler {
         depVM.dependencyDownloadStates[dep.id] = .downloading
 
         do {
-            _ = try await DownloadManager.downloadResource(
+            let fileURL = try await DownloadManager.downloadResource(
                 for: gameInfo,
                 urlString: primaryFile.url,
                 resourceType: dep.projectType,
@@ -499,10 +492,13 @@ enum GameResourceHandler {
 
             // 如果是 mod，添加到安装缓存
             if query.lowercased() == "mod" {
-                ModScanner.shared.addModSlug(
-                    dep.slug,
-                    to: gameInfo.gameName
-                )
+                // 获取下载文件的hash
+                if let hash = ModScanner.sha1Hash(of: fileURL) {
+                    ModScanner.shared.addModHash(
+                        hash,
+                        to: gameInfo.gameName
+                    )
+                }
             }
 
             depVM.dependencyDownloadStates[dep.id] = .success

@@ -15,75 +15,72 @@ struct GlobalResourceFooter: View {
     let loadDependencies:
         (ModrinthProjectDetailVersion, GameVersionInfo) -> Void
     @Binding var mainVersionId: String
+    let compatibleGames: [GameVersionInfo]
 
     var body: some View {
-        if let detail = projectDetail {
-            let compatibleGames = filterCompatibleGames(
-                detail: detail,
-                gameRepository: gameRepository,
-                resourceType: resourceType,
-                projectId: project.projectId
-            )
-            if compatibleGames.isEmpty {
-                HStack {
-                    Spacer()
-                    Button("common.close".localized()) { isPresented = false }
-                }
-            } else {
-                HStack {
-                    Button("common.close".localized()) { isPresented = false }
-                    Spacer()
-                    if resourceType == "mod" {
-                        if GameSettingsManager.shared.autoDownloadDependencies {
+        Group {
+            if let detail = projectDetail {
+                if compatibleGames.isEmpty {
+                    HStack {
+                        Spacer()
+                        Button("common.close".localized()) { isPresented = false }
+                    }
+                } else {
+                    HStack {
+                        Button("common.close".localized()) { isPresented = false }
+                        Spacer()
+                        if resourceType == "mod" {
+                            if GameSettingsManager.shared.autoDownloadDependencies {
+                                if selectedVersion != nil {
+                                    Button(action: downloadAll) {
+                                        if isDownloadingAll {
+                                            ProgressView().controlSize(.small)
+                                        } else {
+                                            Text(
+                                                "global_resource.download_all"
+                                                    .localized()
+                                            )
+                                        }
+                                    }
+                                    .disabled(isDownloadingAll)
+                                    .keyboardShortcut(.defaultAction)
+                                }
+                            } else if !dependencyState.isLoading {
+                                if selectedVersion != nil {
+                                    Button(action: downloadAllManual) {
+                                        if isDownloadingAll {
+                                            ProgressView().controlSize(.small)
+                                        } else {
+                                            Text(
+                                                "global_resource.download_all"
+                                                    .localized()
+                                            )
+                                        }
+                                    }
+                                    .disabled(isDownloadingAll)
+                                    .keyboardShortcut(.defaultAction)
+                                }
+                            }
+                        } else {
                             if selectedVersion != nil {
-                                Button(action: downloadAll) {
+                                Button(action: downloadResource) {
                                     if isDownloadingAll {
                                         ProgressView().controlSize(.small)
                                     } else {
-                                        Text(
-                                            "global_resource.download_all"
-                                                .localized()
-                                        )
+                                        Text("global_resource.download".localized())
                                     }
                                 }
                                 .disabled(isDownloadingAll)
                                 .keyboardShortcut(.defaultAction)
                             }
-                        } else if !dependencyState.isLoading {
-                            if selectedVersion != nil {
-                                Button(action: downloadAllManual) {
-                                    if isDownloadingAll {
-                                        ProgressView().controlSize(.small)
-                                    } else {
-                                        Text(
-                                            "global_resource.download_all"
-                                                .localized()
-                                        )
-                                    }
-                                }
-                                .disabled(isDownloadingAll)
-                                .keyboardShortcut(.defaultAction)
-                            }
-                        }
-                    } else {
-                        if selectedVersion != nil {
-                            Button(action: downloadResource) {
-                                if isDownloadingAll {
-                                    ProgressView().controlSize(.small)
-                                } else {
-                                    Text("global_resource.download".localized())
-                                }
-                            }
-                            .disabled(isDownloadingAll)
-                            .keyboardShortcut(.defaultAction)
                         }
                     }
                 }
-            }
-        } else {
-            HStack {
-                Spacer()
-                Button("common.close".localized()) { isPresented = false }
+            } else {
+                HStack {
+                    Spacer()
+                    Button("common.close".localized()) { isPresented = false }
+                }
             }
         }
     }

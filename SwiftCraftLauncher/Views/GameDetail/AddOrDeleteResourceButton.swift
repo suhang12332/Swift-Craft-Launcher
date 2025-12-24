@@ -81,6 +81,7 @@ struct AddOrDeleteResourceButton: View {
     @State private var showGlobalResourceSheet = false
     @State private var showModPackDownloadSheet = false  // 新增：整合包下载 sheet
     @State private var preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情（通用：整合包/普通资源）
+    @State private var preloadedCompatibleGames: [GameVersionInfo] = []  // 预检测的兼容游戏列表
     @State private var isLoadingProjectDetail = false  // 是否正在加载项目详情
     @State private var isDisabled: Bool = false  // 资源是否被禁用
     @Binding var selectedItem: SidebarItem
@@ -229,12 +230,14 @@ struct AddOrDeleteResourceButton: View {
                         project: project,
                         resourceType: query,
                         isPresented: $showGlobalResourceSheet,
-                        preloadedDetail: preloadedDetail
+                        preloadedDetail: preloadedDetail,
+                        preloadedCompatibleGames: preloadedCompatibleGames
                     )
                     .environmentObject(gameRepository)
                     .onDisappear {
                         // sheet 关闭时清理预加载的数据
                         preloadedDetail = nil
+                        preloadedCompatibleGames = []
                     }
                 }
             )
@@ -477,13 +480,9 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        // 只检查 scannedDetailIds 是否包含当前项目的 slug
-        // 如果包含，说明该资源已在扫描列表中，标记为已安装
-        // 移除同步扫描以提高性能，避免卡顿
-        if scannedDetailIds.contains(project.slug) {
-            addButtonState = .installed
-            return
-        }
+        // scannedDetailIds 现在存储的是hash，但由于我们可能还没有文件hash
+        // 我们暂时不在这里检查，让下载时再检查
+        // 或者可以通过扫描目录来检查项目ID是否已安装
 
         // 检查 query 是否是有效的资源类型
         let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
@@ -519,8 +518,17 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
+        // 检测兼容游戏
+        let compatibleGames = await filterCompatibleGames(
+            detail: detail,
+            gameRepository: gameRepository,
+            resourceType: query,
+            projectId: project.projectId
+        )
+
         await MainActor.run {
             preloadedDetail = detail
+            preloadedCompatibleGames = compatibleGames
             showGlobalResourceSheet = true
         }
     }
@@ -552,9 +560,13 @@ struct AddOrDeleteResourceButton: View {
         }
     }
 
-    // 新增：在安装完成后更新 scannedDetailIds（使用slug）
-    private func addToScannedDetailIds() {
-        scannedDetailIds.insert(project.slug)
+    // 新增：在安装完成后更新 scannedDetailIds（使用hash）
+    private func addToScannedDetailIds(hash: String? = nil) {
+        // 如果有hash，使用hash；否则暂时不添加
+        // 实际使用时，应该在下载完成后获取hash并调用此函数
+        if let hash = hash {
+            scannedDetailIds.insert(hash)
+        }
     }
 
     private func checkDisableState() {

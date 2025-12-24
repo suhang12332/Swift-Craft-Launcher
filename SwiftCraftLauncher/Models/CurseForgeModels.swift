@@ -234,10 +234,19 @@ struct CurseForgeModFileDetail: Codable {
     let changelog: String?
     let fileLength: Int?
     let hash: CurseForgeHash?
+    let hashes: [CurseForgeHash]?
     let modules: [CurseForgeModule]?
     let projectId: Int?
     let projectName: String?
     let authors: [CurseForgeAuthor]?
+    
+    /// 从 hashes 数组中提取 algo 为 1 的 hash（SHA1）
+    var sha1Hash: CurseForgeHash? {
+        if let hashes = hashes {
+            return hashes.first { $0.algo == 1 }
+        }
+        return hash
+    }
 }
 
 struct CurseForgeDependency: Codable {

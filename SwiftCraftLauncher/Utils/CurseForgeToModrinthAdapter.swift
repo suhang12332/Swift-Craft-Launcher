@@ -160,9 +160,18 @@ enum CurseForgeToModrinthAdapter {
         ).absoluteString
         
         var files: [ModrinthVersionFile] = []
-        // 提取哈希值
+        // 提取哈希值：优先使用 hashes 数组，如果没有则使用 hash 字段
         let hashes: ModrinthVersionFileHashes
-        if let hash = cfFile.hash {
+        if let hashesArray = cfFile.hashes, !hashesArray.isEmpty {
+            // 优先从 hashes 数组中提取
+            let sha1Hash = hashesArray.first { $0.algo == 1 }
+            let sha512Hash = hashesArray.first { $0.algo == 2 }
+            hashes = ModrinthVersionFileHashes(
+                sha512: sha512Hash?.value ?? "",
+                sha1: sha1Hash?.value ?? ""
+            )
+        } else if let hash = cfFile.hash {
+            // 如果没有 hashes 数组，使用 hash 字段
             switch hash.algo {
             case 1:
                 hashes = ModrinthVersionFileHashes(sha512: "", sha1: hash.value)
@@ -172,6 +181,7 @@ enum CurseForgeToModrinthAdapter {
                 hashes = ModrinthVersionFileHashes(sha512: "", sha1: "")
             }
         } else {
+            // 如果都没有，使用空的 hash
             hashes = ModrinthVersionFileHashes(sha512: "", sha1: "")
         }
         

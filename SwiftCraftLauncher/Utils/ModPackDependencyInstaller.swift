@@ -380,6 +380,7 @@ enum ModPackDependencyInstaller {
                     changelog: nil,
                     fileLength: nil,
                     hash: nil,
+                    hashes: nil,
                     modules: nil,
                     projectId: projectId,
                     projectName: modDetail.name,
@@ -554,12 +555,30 @@ enum ModPackDependencyInstaller {
             return true
         }
 
-        // 检查是否已安装（使用slug）
+        // 检查是否已安装（使用hash）
         if let projectId = dep.projectId {
-            // 获取项目详情以得到slug
-            if let detail = await ModrinthService.fetchProjectDetails(id: projectId) {
-                if ModScanner.shared.isModInstalledSync(slug: detail.slug, in: resourceDir) {
-                    return true
+            // 获取项目版本信息以得到文件hash
+            if let versionId = dep.versionId {
+                // 如果有指定版本ID，直接获取该版本
+                if let version = try? await ModrinthService.fetchProjectVersionThrowing(id: versionId),
+                   let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) {
+                    if ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
+                        return true
+                    }
+                }
+            } else {
+                // 否则获取兼容版本
+                let versions = try? await ModrinthService.fetchProjectVersionsFilter(
+                    id: projectId,
+                    selectedVersions: [gameInfo.gameVersion],
+                    selectedLoaders: [gameInfo.modLoader],
+                    type: "mod"
+                )
+                if let version = versions?.first,
+                   let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) {
+                    if ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
+                        return true
+                    }
                 }
             }
         }

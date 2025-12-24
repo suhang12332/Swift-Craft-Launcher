@@ -456,6 +456,17 @@ enum ModrinthService {
         selectedVersions: [String],
         selectedLoaders: [String]
     ) async throws -> ModrinthProjectDependency {
+        // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+        if id.hasPrefix("cf-") {
+            return try await CurseForgeService.fetchProjectDependenciesThrowingAsModrinth(
+                type: type,
+                cachePath: cachePath,
+                id: id,
+                selectedVersions: selectedVersions,
+                selectedLoaders: selectedLoaders
+            )
+        }
+        
         // 1. 获取所有筛选后的版本
         let versions = try await fetchProjectVersionsFilter(
             id: id,
@@ -468,69 +479,27 @@ enum ModrinthService {
             return ModrinthProjectDependency(projects: [])
         }
 
-        // 2. 收集所有依赖的projectId和versionId，并检查是否已安装（使用slug）
-        var dependencyProjectIds = Set<String>()
-        var dependencyVersionIds: [String: String] = [:] // projectId -> versionId
-
-        // 并发获取所有依赖项目的详情，以便获取slug并检查是否已安装
-        let dependencyDetails = await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
+        // 2. 并发获取所有依赖项目的兼容版本
+        let allDependencyVersions: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
             for dep in firstVersion.dependencies where dep.dependencyType == "required" {
                 guard let projectId = dep.projectId else { continue }
-                group.addTask {
-                    return await ModrinthService.fetchProjectDetails(id: projectId)
-                }
-            }
-            
-            var results: [ModrinthProjectDetail] = []
-            for await detail in group {
-                if let detail = detail {
-                    results.append(detail)
-                }
-            }
-            return results
-        }
-
-        // 使用slug检查是否已安装，过滤出缺失的依赖
-        let missingDependencies = firstVersion.dependencies
-            .filter { $0.dependencyType == "required" }
-            .filter { dep in
-                guard let projectId = dep.projectId,
-                      let detail = dependencyDetails.first(where: { $0.id == projectId }) else {
-                    return true // 如果无法获取详情，认为缺失
-                }
-                // 使用同步方法检查是否已安装
-                return !ModScanner.shared.isModInstalledSync(slug: detail.slug, in: cachePath)
-            }
-
-        for dep in missingDependencies {
-            if let projectId = dep.projectId {
-                dependencyProjectIds.insert(projectId)
-                if let versionId = dep.versionId {
-                    dependencyVersionIds[projectId] = versionId
-                }
-            }
-        }
-
-        // 3. 并发获取所有依赖项目的兼容版本
-        let dependencyVersions: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
-            for depId in dependencyProjectIds {
                 group.addTask {
                     do {
                         let depVersion: ModrinthProjectDetailVersion
 
-                        if let versionId = dependencyVersionIds[depId] {
+                        if let versionId = dep.versionId {
                             // 如果有 versionId，直接获取指定版本
                             depVersion = try await fetchProjectVersionThrowing(id: versionId)
                         } else {
                             // 如果没有 versionId，使用过滤逻辑获取兼容版本
                             let depVersions = try await fetchProjectVersionsFilter(
-                                id: depId,
+                                id: projectId,
                                 selectedVersions: selectedVersions,
                                 selectedLoaders: selectedLoaders,
                                 type: type
                             )
                             guard let firstDepVersion = depVersions.first else {
-                                Logger.shared.warning("未找到兼容的依赖版本 (ID: \(depId))")
+                                Logger.shared.warning("未找到兼容的依赖版本 (ID: \(projectId))")
                                 return nil
                             }
                             depVersion = firstDepVersion
@@ -539,7 +508,7 @@ enum ModrinthService {
                         return depVersion
                     } catch {
                         let globalError = GlobalError.from(error)
-                        Logger.shared.error("获取依赖项目版本失败 (ID: \(depId)): \(globalError.chineseMessage)")
+                        Logger.shared.error("获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)")
                         return nil
                     }
                 }
@@ -555,7 +524,17 @@ enum ModrinthService {
             return results
         }
 
-        return ModrinthProjectDependency(projects: dependencyVersions)
+        // 3. 使用hash检查是否已安装，过滤出缺失的依赖
+        let missingDependencyVersions = allDependencyVersions.filter { version in
+            // 获取主文件的hash
+            guard let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) else {
+                return true // 如果没有主文件，认为缺失
+            }
+            // 使用hash检查是否已安装
+            return !ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: cachePath)
+        }
+
+        return ModrinthProjectDependency(projects: missingDependencyVersions)
     }
 
     /// 获取单个项目版本（抛出异常版本）

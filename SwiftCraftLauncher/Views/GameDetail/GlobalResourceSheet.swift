@@ -6,6 +6,7 @@ struct GlobalResourceSheet: View {
     let resourceType: String
     @Binding var isPresented: Bool
     let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
+    let preloadedCompatibleGames: [GameVersionInfo]  // 预检测的兼容游戏列表
     @EnvironmentObject var gameRepository: GameRepository
     @State private var selectedGame: GameVersionInfo?
     @State private var selectedVersion: ModrinthProjectDetailVersion?
@@ -31,13 +32,7 @@ struct GlobalResourceSheet: View {
             },
             body: {
                 if let detail = preloadedDetail {
-                    let compatibleGames = filterCompatibleGames(
-                        detail: detail,
-                        gameRepository: gameRepository,
-                        resourceType: resourceType,
-                        projectId: project.projectId
-                    )
-                    if compatibleGames.isEmpty {
+                    if preloadedCompatibleGames.isEmpty {
                         Text("global_resource.no_game_list".localized())
                             .foregroundColor(.secondary).padding()
                     } else {
@@ -46,7 +41,7 @@ struct GlobalResourceSheet: View {
                                 projectDetail: detail
                             ).padding(.bottom, 18)
                             CommonSheetGameBody(
-                                compatibleGames: compatibleGames,
+                                compatibleGames: preloadedCompatibleGames,
                                 selectedGame: $selectedGame
                             )
                             if let game = selectedGame {
@@ -73,7 +68,7 @@ struct GlobalResourceSheet: View {
                             }
                         }
                     }
-                } 
+                }
             },
             footer: {
                 GlobalResourceFooter(
@@ -88,7 +83,8 @@ struct GlobalResourceSheet: View {
                     isDownloadingMainOnly: $isDownloadingMainOnly,
                     gameRepository: gameRepository,
                     loadDependencies: loadDependencies,
-                    mainVersionId: $mainVersionId
+                    mainVersionId: $mainVersionId,
+                    compatibleGames: preloadedCompatibleGames
                 )
             }
         )
