@@ -198,6 +198,7 @@ final class ModrinthSearchViewModel: ObservableObject {
         isLoading = false
         isLoadingMore = false
     }
+
     @MainActor
     func beginNewSearch() {
         isLoading = true
@@ -395,9 +396,6 @@ final class ModrinthSearchViewModel: ObservableObject {
                 modLoaderTypes = nil
             }
         }
-
-
-
 
         // 搜索关键词（直接传原始 query，由 CurseForgeService 负责规范化为空格为 "+")
         let searchFilter = query.isEmpty ? nil : query

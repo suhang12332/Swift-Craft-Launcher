@@ -5,7 +5,7 @@ import SwiftUI
 enum DataSource: String, CaseIterable, Codable {
     case modrinth = "Modrinth"
     case curseforge = "CurseForge"
-    
+
     var displayName: String {
         switch self {
         case .modrinth:
@@ -14,7 +14,7 @@ enum DataSource: String, CaseIterable, Codable {
             return "CurseForge"
         }
     }
-    
+
     var localizedName: String {
         "settings.default_api_source.\(rawValue.lowercased())".localized()
     }

@@ -66,7 +66,7 @@ final class CategoryContentViewModel: ObservableObject {
         do {
             async let categoriesTask = ModrinthService.fetchCategories()
             async let versionsTask = ModrinthService.fetchGameVersions()
-            
+
             // 光影（shader）的加载器从 API 获取，其他项目类型使用静态列表
             let loadersTask: Task<[Loader], Never>
             if project == ProjectType.shader {
@@ -80,7 +80,7 @@ final class CategoryContentViewModel: ObservableObject {
                     Self.getStaticLoaders()
                 }
             }
-            
+
             let (categoriesResult, versionsResult, loadersResult) = await (
                 categoriesTask, versionsTask, loadersTask.value
             )
@@ -113,7 +113,7 @@ final class CategoryContentViewModel: ObservableObject {
 
         isLoading = false
     }
-    
+
     /// 获取静态加载器列表（不调用 API）
     /// - Returns: 四个主要加载器：fabric、forge、quilt、neoforge
     private static func getStaticLoaders() -> [Loader] {
@@ -137,7 +137,7 @@ final class CategoryContentViewModel: ObservableObject {
                 name: "neoforge",
                 icon: "neoforge",
                 supported_project_types: ["mod", "modpack"]
-            )
+            ),
         ]
     }
 

@@ -65,15 +65,16 @@ struct AddOrDeleteResourceButton: View {
     @State private var showDeleteAlert = false
     @State private var showNoGameAlert = false
     @State private var showPlayerAlert = false  // 新增：玩家验证 alert
-    
+
     // Alert 类型枚举，用于管理不同的 alert
     enum AlertType: Identifiable {
         case noGame
         case noPlayer
-        
+
         var id: Self { self }
     }
-    @State private var activeAlert: AlertType? = nil
+
+    @State private var activeAlert: AlertType?
     @StateObject private var gameSettings = GameSettingsManager.shared
     @StateObject private var depVM = DependencySheetViewModel()
     @State private var isDownloadingAllDependencies = false
@@ -449,7 +450,7 @@ struct AddOrDeleteResourceButton: View {
                         }
                         return
                     }
-                    
+
                     // 其他资源：需要游戏存在才可以点击
                     if gameRepository.games.isEmpty {
                         activeAlert = .noGame
@@ -566,7 +567,6 @@ struct AddOrDeleteResourceButton: View {
 
         return false
     }
-
 
     // 新增：在打开 sheet 前加载 projectDetail（普通资源）
     private func loadProjectDetailBeforeOpeningSheet() async {

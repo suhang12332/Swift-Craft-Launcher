@@ -26,7 +26,7 @@ enum ModrinthToCurseForgeCategoryMapper {
             return nil
         }
     }
-    
+
     /// 将多个 Modrinth 分类名称映射到 CurseForge 分类 ID 列表
     /// - Parameters:
     ///   - modrinthCategoryNames: Modrinth 分类名称列表
@@ -42,7 +42,7 @@ enum ModrinthToCurseForgeCategoryMapper {
         // API 限制：最多 10 个分类 ID
         return Array(mappedIds.prefix(10))
     }
-    
+
     // MARK: - Mod 分类映射表
     /// Modrinth mod / modpack 分类到 CurseForge 分类 ID 的映射
     /// 主要依据：`gen_category_mapping.py` 的自动结果 + 手动补充的近似分类
@@ -86,7 +86,7 @@ enum ModrinthToCurseForgeCategoryMapper {
         // 世界生成 -> World Gen
         "worldgen": 406,
     ]
-    
+
     // MARK: - Resourcepack 分类映射表
     /// Modrinth resourcepack 分类到 CurseForge 分类 ID 的映射
     /// 主要依据：`gen_category_mapping.py` 的自动结果 + 手动补充的近似分类
@@ -126,7 +126,7 @@ enum ModrinthToCurseForgeCategoryMapper {
         "fonts": 5244,           // -> Font Packs
         "modded": 4465,          // -> Mod Support
     ]
-    
+
     // MARK: - Shader 分类映射表
     /// Modrinth shader 分类到 CurseForge 分类 ID 的映射
     /// 主要依据：`gen_category_mapping.py` 的自动结果 + 手动补充的近似分类（CF 端只有 Fantasy / Realistic / Vanilla 三类）
@@ -153,7 +153,7 @@ enum ModrinthToCurseForgeCategoryMapper {
         "screenshot": 6553,
         "shadows": 6553,
     ]
-    
+
     // MARK: - Datapack 分类映射表
     /// Modrinth datapack 使用与 mod 相同的一组分类 key（adventure/magic/technology/...），
     /// 这里将这些 key 映射到 CurseForge Data Packs（classId=6945）的分类 ID
@@ -173,7 +173,7 @@ enum ModrinthToCurseForgeCategoryMapper {
         "magic": 6952,            // Magic
         "technology": 6951,       // Tech
         "utility": 6953,          // Utility
-        
+
         // 语义相近的映射（尽量避免全部归到杂项）
         "worldgen": 6948,         // 世界生成，多数是冒险/探索向 -> Adventure
         "mobs": 6948,             // 生物相关事件/生成 -> Adventure
@@ -182,7 +182,7 @@ enum ModrinthToCurseForgeCategoryMapper {
         "management": 6953,       // 管理/自动化 -> Utility
         "economy": 6953,          // 经济/货币规则 -> Utility
         "transportation": 6951,   // 交通/传送规则 -> Tech
-        
+
         // 其余暂时归到 Miscellaneous（将来可以按需要再细分）
         "cursed": 6947,
         "decoration": 6947,
@@ -192,12 +192,11 @@ enum ModrinthToCurseForgeCategoryMapper {
         "minigame": 6947,
         "social": 6947,
     ]
-    
+
     /// 从 CurseForge API 获取分类并更新映射表（可选）
     /// 这个方法可以在运行时动态获取分类来完善映射
     static func updateCategoryMapFromAPI() async {
-        // TODO: 实现从 CurseForge API 获取分类并更新映射表
-        // 目前使用静态映射表
+        // NOTE: 预留实现，从 CurseForge API 获取分类并更新映射表
+        // 当前版本使用静态映射表，避免在运行时增加额外依赖
     }
 }
-

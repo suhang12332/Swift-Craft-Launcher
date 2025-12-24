@@ -221,7 +221,6 @@ struct CategoryContentView: View {
                     selectedItems: $selectedPerformanceImpacts,
                     isLoading: viewModel.isLoading
                 )
-
             }
         }
     }

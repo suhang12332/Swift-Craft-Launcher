@@ -19,7 +19,7 @@ struct GlobalResourceFooter: View {
 
     var body: some View {
         Group {
-            if let detail = projectDetail {
+            if projectDetail != nil {
                 if compatibleGames.isEmpty {
                     HStack {
                         Spacer()

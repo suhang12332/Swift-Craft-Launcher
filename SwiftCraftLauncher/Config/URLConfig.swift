@@ -327,17 +327,17 @@ enum URLConfig {
 
                 return components?.url ?? url
             }
-            
+
             // 搜索相关
             static var search: URL {
                 mirrorBaseURL.appendingPathComponent("mods/search")
             }
-            
+
             // 分类相关
             static var categories: URL {
                 mirrorBaseURL.appendingPathComponent("categories")
             }
-            
+
             // 游戏版本相关
             static var gameVersions: URL {
                 mirrorBaseURL.appendingPathComponent("minecraft/version")

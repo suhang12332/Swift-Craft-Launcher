@@ -191,17 +191,13 @@ enum ModrinthService {
                 level: .notification
             )
         }
-        
-        // 打印 Modrinth API URL
-        Logger.shared.info("🔵 [Modrinth API] \(url.absoluteString)")
-        
         // 使用统一的 API 客户端
         let data = try await APIClient.get(url: url)
 
         let decoder = JSONDecoder()
         decoder.configureForModrinth()
         let result = try decoder.decode(ModrinthResult.self, from: data)
-        
+
         return result
     }
 
@@ -282,7 +278,7 @@ enum ModrinthService {
         if id.hasPrefix("cf-") {
             return await CurseForgeService.fetchProjectDetailsAsModrinth(id: id)
         }
-        
+
         // 使用 Modrinth 服务
         do {
             return try await fetchProjectDetailsThrowing(id: id)
@@ -303,7 +299,7 @@ enum ModrinthService {
         if id.hasPrefix("cf-") {
             return try await CurseForgeService.fetchProjectDetailsAsModrinthThrowing(id: id)
         }
-        
+
         // 使用 Modrinth 服务
         let url = URLConfig.API.Modrinth.project(id: id)
 
@@ -331,7 +327,7 @@ enum ModrinthService {
         if id.hasPrefix("cf-") {
             return await CurseForgeService.fetchProjectVersionsAsModrinth(id: id)
         }
-        
+
         do {
             return try await fetchProjectVersionsThrowing(id: id)
         } catch {
@@ -351,7 +347,7 @@ enum ModrinthService {
         if id.hasPrefix("cf-") {
             return try await CurseForgeService.fetchProjectVersionsAsModrinthThrowing(id: id)
         }
-        
+
         let url = URLConfig.API.Modrinth.version(id: id)
 
         // 使用统一的 API 客户端
@@ -385,7 +381,7 @@ enum ModrinthService {
                     type: type
                 )
             }
-            
+
             let versions = try await fetchProjectVersionsThrowing(id: id)
             var loaders = selectedLoaders
             if type == "datapack" {
@@ -466,7 +462,7 @@ enum ModrinthService {
                 selectedLoaders: selectedLoaders
             )
         }
-        
+
         // 1. 获取所有筛选后的版本
         let versions = try await fetchProjectVersionsFilter(
             id: id,
@@ -527,7 +523,7 @@ enum ModrinthService {
         // 3. 使用hash检查是否已安装，过滤出缺失的依赖
         let missingDependencyVersions = allDependencyVersions.filter { version in
             // 获取主文件的hash
-            guard let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) else {
+            guard let primaryFile = Self.filterPrimaryFiles(from: version.files) else {
                 return true // 如果没有主文件，认为缺失
             }
             // 使用hash检查是否已安装

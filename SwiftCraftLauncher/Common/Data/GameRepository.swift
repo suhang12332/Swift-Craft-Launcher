@@ -52,7 +52,7 @@ class GameRepository: ObservableObject {
     private func setupWorkingPathObserver() {
         // 在设置观察者之前，先同步更新 lastWorkingPath，避免初始化时的误触发
         lastWorkingPath = currentWorkingPath
-        
+
         // 使用 Combine 监听 GeneralSettingsManager 的变化
         // 使用 debounce 避免频繁触发
         // 使用 skip(1) 跳过订阅时的初始值，只响应后续的变化

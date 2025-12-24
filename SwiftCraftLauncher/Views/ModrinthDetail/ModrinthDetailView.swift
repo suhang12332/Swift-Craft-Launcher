@@ -95,14 +95,14 @@ struct ModrinthDetailView: View {
                 await initialLoadIfNeeded()
             }
         }
-        .onChange(of: selectedProjectId, { oldValue, newValue in
+        .onChange(of: selectedProjectId) { oldValue, newValue in
             if oldValue != nil && newValue == nil {
                 // 关闭详情后重新刷新列表，确保最新状态
                 viewModel.clearResults()
                 resetPagination()
                 triggerSearch()
             }
-        })
+        }
         .onChange(of: dataSource) { _, _ in
             // 清理之前的旧数据
             viewModel.clearResults()

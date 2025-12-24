@@ -232,7 +232,7 @@ enum ModrinthDependencyDownloader {
                         await ModrinthService.fetchProjectVersions(
                             id: depVersion.projectId
                         )
-                    
+
                     // 对于 CurseForge 项目，loaders 可能是空的，所以需要特殊处理
                     let filteredVersions: [ModrinthProjectDetailVersion]
                     if depVersion.projectId.hasPrefix("cf-") {

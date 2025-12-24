@@ -87,9 +87,8 @@ enum CurseForgeService {
         // 从 modDetail 中解析文件信息，无需调用 projectFiles API
         let modDetailToUse = try await fetchModDetailThrowing(modId: projectId)
 
-        
         var files: [CurseForgeModFileDetail] = []
-        
+
         // 首先尝试从 latestFiles 中获取文件列表
         if let latestFilesIndexes = modDetailToUse.latestFilesIndexes, !latestFilesIndexes.isEmpty {
             // 如果 latestFiles 不存在，从 latestFilesIndexes 构造文件详情
@@ -98,20 +97,20 @@ enum CurseForgeService {
             for index in latestFilesIndexes {
                 fileIndexMap[index.fileId, default: []].append(index)
             }
-            
+
             // 为每个唯一的 fileId 构造文件详情
             for (fileId, indexes) in fileIndexMap {
                 guard let firstIndex = indexes.first else { continue }
-                
+
                 // 收集所有匹配的游戏版本
                 let gameVersions = indexes.map { $0.gameVersion }
-                
+
                 // 使用 fileId 和 fileName 构建下载链接
                 let downloadUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(
                     fileId: fileId,
                     fileName: firstIndex.filename
                 ).absoluteString
-                
+
                 // 构造文件详情
                 let fileDetail = CurseForgeModFileDetail(
                     id: fileId,
@@ -134,16 +133,16 @@ enum CurseForgeService {
                 files.append(fileDetail)
             }
         }
-        
+
         // 根据 gameVersion 和 modLoaderType 进行过滤
         var filteredFiles = files
-        
+
         if let gameVersion = gameVersion {
             filteredFiles = filteredFiles.filter { file in
                 file.gameVersions.contains(gameVersion)
             }
         }
-        
+
         // 如果指定了 modLoaderType，需要从 latestFilesIndexes 中获取 modLoader 信息进行过滤
         if let modLoaderType = modLoaderType {
             if let latestFilesIndexes = modDetailToUse.latestFilesIndexes {
@@ -151,7 +150,7 @@ enum CurseForgeService {
                 let matchingFileIds = Set(latestFilesIndexes
                     .filter { $0.modLoader == modLoaderType }
                     .map { $0.fileId })
-                
+
                 // 只保留匹配的文件
                 filteredFiles = filteredFiles.filter { file in
                     matchingFileIds.contains(file.id)
@@ -160,7 +159,7 @@ enum CurseForgeService {
             // 注意：如果 latestFilesIndexes 不存在，无法进行 modLoaderType 过滤
             // 这种情况下返回所有文件（可能包含不匹配的加载器）
         }
-        
+
         // 为每个文件获取完整的文件详情（包括 hashes）
         // 使用并行请求优化性能
         var filesWithHashes: [CurseForgeModFileDetail] = []
@@ -176,7 +175,7 @@ enum CurseForgeService {
                     }
                 }
             }
-            
+
             // 创建 fileId 到文件详情的映射
             var fileDetailMap: [Int: CurseForgeModFileDetail] = [:]
             for await (fileId, fileDetail) in group {
@@ -184,13 +183,13 @@ enum CurseForgeService {
                     fileDetailMap[fileId] = detail
                 }
             }
-            
+
             // 更新文件列表，使用获取到的文件详情（包含 hashes）
             for file in filteredFiles {
                 if let detailedFile = fileDetailMap[file.id] {
                     // 从 hashes 数组中提取 algo 为 1 的 hash
                     let sha1Hash = detailedFile.hashes?.first { $0.algo == 1 }
-                    
+
                     // 创建更新后的文件详情，保留原有信息但更新 hash
                     let updatedFile = CurseForgeModFileDetail(
                         id: file.id,
@@ -217,12 +216,12 @@ enum CurseForgeService {
                 }
             }
         }
-        
+
         return filesWithHashes
     }
-    
+
     // MARK: - Search Methods
-    
+
     /// 搜索项目（静默版本）
     /// - Parameters:
     ///   - gameId: 游戏 ID（Minecraft 为 432）
@@ -272,7 +271,7 @@ enum CurseForgeService {
             return CurseForgeSearchResult(data: [], pagination: nil)
         }
     }
-    
+
     /// 搜索项目（抛出异常版本）
     /// - Parameters:
     ///   - gameId: 游戏 ID（Minecraft 为 432）
@@ -288,7 +287,7 @@ enum CurseForgeService {
     ///   - pageSize: 每页大小（可选）
     /// - Returns: 搜索结果
     /// - Throws: GlobalError 当操作失败时
-    /// - Note: 
+    /// - Note:
     ///   - 如果不传递 sortField 和 sortOrder，将使用 CurseForge API 的默认排序（通常按相关性排序）
     ///   - API 限制：categoryIds 最多 10 个，gameVersions 最多 4 个，modLoaderTypes 最多 5 个
     static func searchProjectsThrowing(
@@ -319,17 +318,17 @@ enum CurseForgeService {
                 level: .notification
             )
         }
-        
+
         var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "gameId", value: String(gameId)),
             URLQueryItem(name: "index", value: String(index)),
-            URLQueryItem(name: "pageSize", value: String(min(pageSize, 50)))
+            URLQueryItem(name: "pageSize", value: String(min(pageSize, 50))),
         ]
-        
+
         if let classId = classId {
             queryItems.append(URLQueryItem(name: "classId", value: String(classId)))
         }
-        
+
         // categoryIds 会覆盖 categoryId
         // API 限制：最多 10 个分类 ID
         if let categoryIds = categoryIds, !categoryIds.isEmpty {
@@ -348,7 +347,7 @@ enum CurseForgeService {
         } else if let categoryId = categoryId {
             queryItems.append(URLQueryItem(name: "categoryId", value: String(categoryId)))
         }
-        
+
         // gameVersions 会覆盖 gameVersion
         // API 限制：最多 4 个游戏版本
         if let gameVersions = gameVersions, !gameVersions.isEmpty {
@@ -366,7 +365,7 @@ enum CurseForgeService {
         } else if let gameVersion = gameVersion {
             queryItems.append(URLQueryItem(name: "gameVersion", value: gameVersion))
         }
-        
+
         if let rawSearchFilter = searchFilter?
             .trimmingCharacters(in: .whitespacesAndNewlines),
            !rawSearchFilter.isEmpty {
@@ -377,11 +376,11 @@ enum CurseForgeService {
             let normalizedSearchFilter = components.joined(separator: "+")
             queryItems.append(URLQueryItem(name: "searchFilter", value: normalizedSearchFilter))
         }
-        
+
         // 排序参数：默认强制添加 sortField=6, sortOrder=desc（总下载量倒序）
         queryItems.append(URLQueryItem(name: "sortField", value: String(effectiveSortField)))
         queryItems.append(URLQueryItem(name: "sortOrder", value: effectiveSortOrder))
-        
+
         // modLoaderTypes 会覆盖 modLoaderType
         // API 限制：最多 5 个加载器类型
         if let modLoaderTypes = modLoaderTypes, !modLoaderTypes.isEmpty {
@@ -400,7 +399,7 @@ enum CurseForgeService {
         } else if let modLoaderType = modLoaderType {
             queryItems.append(URLQueryItem(name: "modLoaderType", value: String(modLoaderType)))
         }
-        
+
         components.queryItems = queryItems
         guard let url = components.url else {
             throw GlobalError.validation(
@@ -409,19 +408,16 @@ enum CurseForgeService {
                 level: .notification
             )
         }
-        
-        // 打印 CurseForge API URL
-        Logger.shared.info("🟠 [CurseForge API] \(url.absoluteString)")
-        
+
         let headers = ["Accept": "application/json"]
         let data = try await APIClient.get(url: url, headers: headers)
         let result = try JSONDecoder().decode(CurseForgeSearchResult.self, from: data)
-        
+
         return result
     }
-    
+
     // MARK: - Category Methods
-    
+
     /// 获取分类列表（静默版本）
     /// - Returns: 分类列表，失败时返回空数组
     static func fetchCategories() async -> [CurseForgeCategory] {
@@ -434,7 +430,7 @@ enum CurseForgeService {
             return []
         }
     }
-    
+
     /// 获取分类列表（抛出异常版本）
     /// - Returns: 分类列表
     /// - Throws: GlobalError 当操作失败时
@@ -444,9 +440,9 @@ enum CurseForgeService {
         let result = try JSONDecoder().decode(CurseForgeCategoriesResponse.self, from: data)
         return result.data
     }
-    
+
     // MARK: - Game Version Methods
-    
+
     /// 获取游戏版本列表（静默版本）
     /// - Returns: 游戏版本列表，失败时返回空数组
     static func fetchGameVersions() async -> [CurseForgeGameVersion] {
@@ -459,7 +455,7 @@ enum CurseForgeService {
             return []
         }
     }
-    
+
     /// 获取游戏版本列表（抛出异常版本）
     /// - Returns: 游戏版本列表
     /// - Throws: GlobalError 当操作失败时
@@ -470,9 +466,9 @@ enum CurseForgeService {
         // 只返回已批准且为正式版的版本
         return result.data.filter { $0.approved && $0.version_type == "release" }
     }
-    
+
     // MARK: - Project Detail Methods (as Modrinth format)
-    
+
     /// 获取项目详情（映射为 Modrinth 格式，静默版本）
     /// - Parameter id: 项目 ID
     /// - Returns: Modrinth 格式的项目详情，失败时返回 nil
@@ -486,14 +482,14 @@ enum CurseForgeService {
             return nil
         }
     }
-    
+
     /// 获取项目详情（映射为 Modrinth 格式，抛出异常版本）
     /// - Parameter id: 项目 ID（可能包含 "cf-" 前缀）
     /// - Returns: Modrinth 格式的项目详情
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectDetailsAsModrinthThrowing(id: String) async throws -> ModrinthProjectDetail {
         let (modId, _) = try parseCurseForgeId(id)
-        
+
         let cfDetail = try await fetchModDetailThrowing(modId: modId)
         guard let modrinthDetail = CurseForgeToModrinthAdapter.convert(cfDetail) else {
             throw GlobalError.validation(
@@ -504,7 +500,7 @@ enum CurseForgeService {
         }
         return modrinthDetail
     }
-    
+
     /// 获取项目版本列表（映射为 Modrinth 格式，静默版本）
     /// - Parameter id: 项目 ID
     /// - Returns: Modrinth 格式的版本列表，失败时返回空数组
@@ -518,18 +514,18 @@ enum CurseForgeService {
             return []
         }
     }
-    
+
     /// 获取项目版本列表（映射为 Modrinth 格式，抛出异常版本）
     /// - Parameter id: 项目 ID（可能包含 "cf-" 前缀）
     /// - Returns: Modrinth 格式的版本列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionsAsModrinthThrowing(id: String) async throws -> [ModrinthProjectDetailVersion] {
         let (modId, normalizedId) = try parseCurseForgeId(id)
-        
+
         let cfFiles = try await fetchProjectFilesThrowing(projectId: modId)
         return cfFiles.compactMap { CurseForgeToModrinthAdapter.convertVersion($0, projectId: normalizedId) }
     }
-    
+
     /// 获取项目版本列表（过滤版本，映射为 Modrinth 格式）
     /// - Parameters:
     ///   - id: 项目 ID（可能包含 "cf-" 前缀）
@@ -542,16 +538,16 @@ enum CurseForgeService {
         id: String,
         selectedVersions: [String],
         selectedLoaders: [String],
-        type: String,
+        type: String
     ) async throws -> [ModrinthProjectDetailVersion] {
         let (modId, normalizedId) = try parseCurseForgeId(id)
-        
+
         // 对于光影包、资源包、数据包，CurseForge API 不支持 modLoaderType 过滤
         let resourceTypeLowercased = type.lowercased()
-        let shouldFilterByLoader = !(resourceTypeLowercased == "shader" || 
-                                     resourceTypeLowercased == "resourcepack" || 
+        let shouldFilterByLoader = !(resourceTypeLowercased == "shader" ||
+                                     resourceTypeLowercased == "resourcepack" ||
                                      resourceTypeLowercased == "datapack")
-        
+
         // 转换加载器名称到 CurseForge ModLoaderType（仅对需要过滤加载器的资源类型）
         var modLoaderTypes: [Int] = []
         if shouldFilterByLoader {
@@ -561,7 +557,7 @@ enum CurseForgeService {
                 }
             }
         }
-        
+
         // 获取文件列表
         var cfFiles: [CurseForgeModFileDetail] = []
         if !selectedVersions.isEmpty {
@@ -579,7 +575,7 @@ enum CurseForgeService {
         } else {
             cfFiles = try await fetchProjectFilesThrowing(projectId: modId)
         }
-        
+
         // 去重：按 fileId 去重，保留第一个
         var seenFileIds = Set<Int>()
         cfFiles = cfFiles.filter { file in
@@ -589,31 +585,31 @@ enum CurseForgeService {
             seenFileIds.insert(file.id)
             return true
         }
-        
+
         // 过滤文件
         let filteredFiles = cfFiles.filter { file in
             // 版本匹配
             let versionMatch = selectedVersions.isEmpty || !Set(file.gameVersions).isDisjoint(with: selectedVersions)
-            
+
             // 对于光影包、资源包、数据包，不需要检查加载器匹配
             // 对于其他类型，如果指定了加载器，需要匹配（但CurseForge API可能不返回加载器信息，所以这里简化处理）
             let loaderMatch = !shouldFilterByLoader || modLoaderTypes.isEmpty || true
-            
+
             return versionMatch && loaderMatch
         }
-        
+
         // 转换为 Modrinth 格式，确保 projectId 包含 "cf-" 前缀
         return filteredFiles.compactMap { CurseForgeToModrinthAdapter.convertVersion($0, projectId: normalizedId) }
     }
-    
+
     /// 过滤出主要文件
     static func filterPrimaryFiles(from files: [CurseForgeModFileDetail]?) -> CurseForgeModFileDetail? {
         // CurseForge 没有 primary 字段，返回第一个文件
         return files?.first
     }
-    
+
     // MARK: - Dependency Methods
-    
+
     /// 获取项目依赖（映射为 Modrinth 格式，静默版本）
     /// - Parameters:
     ///   - type: 项目类型
@@ -644,7 +640,7 @@ enum CurseForgeService {
             return ModrinthProjectDependency(projects: [])
         }
     }
-    
+
     /// 获取项目依赖（映射为 Modrinth 格式，抛出异常版本）
     /// - Parameters:
     ///   - type: 项目类型
@@ -668,12 +664,12 @@ enum CurseForgeService {
             selectedLoaders: selectedLoaders,
             type: type
         )
-        
+
         // 只取第一个版本
         guard let firstVersion = versions.first else {
             return ModrinthProjectDependency(projects: [])
         }
-        
+
         // 2. 并发获取所有依赖项目的兼容版本
         let allDependencyVersions: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
             for dep in firstVersion.dependencies where dep.dependencyType == "required" {
@@ -681,7 +677,7 @@ enum CurseForgeService {
                 group.addTask {
                     do {
                         let depVersion: ModrinthProjectDetailVersion
-                        
+
                         // 规范化 projectId：如果是纯数字，添加 "cf-" 前缀（CurseForge 依赖通常是纯数字）
                         let normalizedProjectId: String
                         if !projectId.hasPrefix("cf-") && Int(projectId) != nil {
@@ -690,7 +686,7 @@ enum CurseForgeService {
                         } else {
                             normalizedProjectId = projectId
                         }
-                        
+
                         if let versionId = dep.versionId {
                             // 如果有 versionId，需要检查是否是 CurseForge 版本
                             if versionId.hasPrefix("cf-") {
@@ -736,7 +732,7 @@ enum CurseForgeService {
                                 depVersion = firstDepVersion
                             }
                         }
-                        
+
                         return depVersion
                     } catch {
                         let globalError = GlobalError.from(error)
@@ -745,17 +741,17 @@ enum CurseForgeService {
                     }
                 }
             }
-            
+
             var results: [ModrinthProjectDetailVersion] = []
             for await result in group {
                 if let version = result {
                     results.append(version)
                 }
             }
-            
+
             return results
         }
-        
+
         // 3. 使用hash检查是否已安装，过滤出缺失的依赖
         let missingDependencyVersions = allDependencyVersions.filter { version in
             // 获取主文件的hash
@@ -765,7 +761,7 @@ enum CurseForgeService {
             // 使用hash检查是否已安装
             return !ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: cachePath)
         }
-        
+
         return ModrinthProjectDependency(projects: missingDependencyVersions)
     }
 
@@ -828,7 +824,6 @@ enum CurseForgeService {
         let normalizedId = id.hasPrefix("cf-") ? id : "cf-\(cleanId)"
         return (modId, normalizedId)
     }
-
 }
 /// CurseForge 文件响应
 private struct CurseForgeFileResponse: Codable {

@@ -30,7 +30,7 @@ struct CurseForgeMod: Codable {
     let categories: [CurseForgeCategory]?
     let latestFiles: [CurseForgeModFileDetail]?
     let latestFilesIndexes: [CurseForgeFileIndex]?
-    
+
     enum CodingKeys: String, CodingKey {
         case id, name, summary, slug, authors, logo
         case downloadCount
@@ -92,7 +92,7 @@ struct CurseForgeModDetail: Codable {
     var directoryName: String {
         return contentType?.directoryName ?? AppConstants.DirectoryNames.mods
     }
-    
+
     /// 转换为 Modrinth 项目类型字符串
     var projectType: String {
         switch contentType {
@@ -197,9 +197,9 @@ struct CurseForgeGameVersion: Codable, Identifiable, Hashable {
     let gameVersionTypeId: Int?
     let gameVersionStatus: Int?
     let gameVersionTypeStatus: Int?
-    
+
     var identifier: String { versionString }
-    
+
     var version_type: String {
         // CurseForge 没有明确的版本类型，根据版本号推断
         if versionString.contains("snapshot") || versionString.contains("pre") || versionString.contains("rc") {
@@ -239,7 +239,7 @@ struct CurseForgeModFileDetail: Codable {
     let projectId: Int?
     let projectName: String?
     let authors: [CurseForgeAuthor]?
-    
+
     /// 从 hashes 数组中提取 algo 为 1 的 hash（SHA1）
     var sha1Hash: CurseForgeHash? {
         if let hashes = hashes {
