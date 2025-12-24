@@ -317,16 +317,10 @@ enum CurseForgeService {
         let effectiveSortField = 6
         let effectiveSortOrder = "desc"
 
-        guard var components = URLComponents(
+        var components = URLComponents(
             url: URLConfig.API.CurseForge.search,
             resolvingAgainstBaseURL: true
-        ) else {
-            throw GlobalError.validation(
-                chineseMessage: "构建URLComponents失败",
-                i18nKey: "error.validation.url_components_build_failed",
-                level: .notification
-            )
-        }
+        )
 
         var queryItems: [URLQueryItem] = [
             URLQueryItem(name: "gameId", value: String(gameId)),
@@ -409,8 +403,8 @@ enum CurseForgeService {
             queryItems.append(URLQueryItem(name: "modLoaderType", value: String(modLoaderType)))
         }
 
-        components.queryItems = queryItems
-        guard let url = components.url else {
+        components?.queryItems = queryItems
+        guard let url = components?.url else {
             throw GlobalError.validation(
                 chineseMessage: "构建搜索URL失败",
                 i18nKey: "error.validation.search_url_build_failed",

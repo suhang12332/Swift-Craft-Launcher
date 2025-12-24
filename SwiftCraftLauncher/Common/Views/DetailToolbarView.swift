@@ -202,6 +202,5 @@ public struct DetailToolbarView: ToolbarContent {
             Label(dataSource.localizedName, systemImage: "network")
                 .labelStyle(.titleOnly)
         }
-        .help("resource.data_source.help".localized())
     }
 }
