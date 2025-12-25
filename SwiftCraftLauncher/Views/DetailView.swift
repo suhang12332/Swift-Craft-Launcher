@@ -24,6 +24,7 @@ struct DetailView: View {
     @Binding var gameType: Bool
     @Binding var selectedLoader: [String]
     @Binding var dataSource: DataSource
+    @Binding var searchText: String
 
     @EnvironmentObject var gameRepository: GameRepository
 
@@ -54,7 +55,8 @@ struct DetailView: View {
                 selectedProjectId: $selectedProjectId,
                 selectedLoaders: $selectedLoader,
                 gameType: $gameType,
-                selectedItem: $selectedItem
+                selectedItem: $selectedItem,
+                searchText: $searchText
             )
         }
     }
@@ -81,7 +83,8 @@ struct DetailView: View {
                 gameInfo: nil,
                 selectedItem: $selectedItem,
                 gameType: $gameType,
-                dataSource: $dataSource
+                dataSource: $dataSource,
+                searchText: $searchText
             )
         }
     }

@@ -37,6 +37,8 @@ struct MainView: View {
     @StateObject private var gameSettings = GameSettingsManager.shared
     // 数据源：从设置中读取默认值，但可以临时更改（不影响设置）
     @State private var dataSource: DataSource = GameSettingsManager.shared.defaultAPISource
+    // 搜索文本状态，用于保留从详情页返回时的搜索内容
+    @State private var searchText: String = ""
 
     @State private var showingInspector: Bool = false
 
@@ -86,7 +88,8 @@ struct MainView: View {
                 versionTotal: $versionTotal,
                 gameType: $gameType,
                 selectedLoader: $selectedLoaders,
-                dataSource: $dataSource
+                dataSource: $dataSource,
+                searchText: $searchText
             )
             .toolbar {
                 DetailToolbarView(
@@ -141,6 +144,11 @@ struct MainView: View {
 
     // MARK: - Transition Helpers
     private func handleResourceToGameTransition(gameId: String) {
+        // 清空搜索文本
+        if gameId != nil ,selectedProjectId == nil {
+            searchText = ""
+        }
+
         // 不要强制设置 gameType，保持用户之前的选择
         // 只有在 gameType 为服务器且之前没选过游戏时才设置为本地资源
         if gameType == true && self.gameId == nil {
@@ -175,6 +183,9 @@ struct MainView: View {
         from oldId: String,
         to newId: String
     ) {
+        // 清空搜索文本
+        searchText = ""
+        
         // 切换游戏时，强制使用本地模式
         gameType = false
 
@@ -190,6 +201,13 @@ struct MainView: View {
 
     // MARK: - Resource Reset
     private func resetToResourceDefaults() {
+        // 清空搜索文本
+        if case .resource = selectedItem {
+            if gameId == nil {
+                searchText = ""
+            }
+        }
+
         // 清除选中的游戏，因为切换到资源页面
         selectedGameManager.clearSelection()
 

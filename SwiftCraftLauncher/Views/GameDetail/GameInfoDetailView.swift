@@ -26,6 +26,7 @@ struct GameInfoDetailView: View {
     @Binding var gameType: Bool  // false = local,   = server
     @EnvironmentObject var gameRepository: GameRepository
     @Binding var selectedItem: SidebarItem
+    @Binding var searchText: String
     @StateObject private var cacheManager = CacheManager()
     @State private var localRefreshToken = UUID()
 
@@ -53,7 +54,8 @@ struct GameInfoDetailView: View {
                     gameType: $gameType,
                     header: remoteHeader,
                     scannedDetailIds: $scannedResources,
-                    dataSource: $dataSource
+                    dataSource: $dataSource,
+                    searchText: $searchText
                 )
             } else {
                 GameLocalResourceView(
@@ -62,7 +64,8 @@ struct GameInfoDetailView: View {
                     header: localHeader,
                     selectedItem: $selectedItem,
                     selectedProjectId: $selectedProjectId,
-                    refreshToken: localRefreshToken
+                    refreshToken: localRefreshToken,
+                    searchText: $searchText
                 )
             }
         }

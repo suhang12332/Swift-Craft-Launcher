@@ -20,7 +20,7 @@ struct ModrinthDetailView: View {
 
     @StateObject private var viewModel = ModrinthSearchViewModel()
     @State private var hasLoaded = false
-    @State private var searchText: String = ""
+    @Binding var searchText: String
     @State private var searchTimer: Timer?
     @State private var currentPage: Int = 1
     @State private var lastSearchParams: String = ""
@@ -40,7 +40,8 @@ struct ModrinthDetailView: View {
         gameType: Binding<Bool>,
         header: AnyView? = nil,
         scannedDetailIds: Binding<Set<String>> = .constant([]),
-        dataSource: Binding<DataSource> = .constant(.modrinth)
+        dataSource: Binding<DataSource> = .constant(.modrinth),
+        searchText: Binding<String> = .constant("")
     ) {
         self.query = query
         _selectedVersions = selectedVersions
@@ -56,6 +57,7 @@ struct ModrinthDetailView: View {
         self.header = header
         _scannedDetailIds = scannedDetailIds
         _dataSource = dataSource
+        _searchText = searchText
     }
 
     private var searchKey: String {
@@ -107,7 +109,7 @@ struct ModrinthDetailView: View {
             // 清理之前的旧数据
             viewModel.clearResults()
             resetPagination()
-            searchText = ""
+//            searchText = ""
             lastSearchParams = ""
             error = nil
             hasLoaded = false
@@ -117,6 +119,7 @@ struct ModrinthDetailView: View {
             // 清理之前的旧数据
             viewModel.clearResults()
             triggerSearch()
+            searchText = ""
         }
         .searchable(
             text: $searchText,
@@ -144,8 +147,8 @@ struct ModrinthDetailView: View {
             }
         }
         .onDisappear {
-            // 页面关闭后清除所有数据
-            clearAllData()
+            // 页面关闭后清除数据，但保留搜索文本
+            clearDataExceptSearchText()
         }
     }
 
@@ -309,6 +312,20 @@ struct ModrinthDetailView: View {
         viewModel.clearResults()
         // 清理状态数据
         searchText = ""
+        currentPage = 1
+        lastSearchParams = ""
+        error = nil
+        hasLoaded = false
+    }
+    
+    /// 清除数据但保留搜索文本（用于从详情页返回时）
+    private func clearDataExceptSearchText() {
+        // 清理搜索定时器，避免内存泄漏
+        searchTimer?.invalidate()
+        searchTimer = nil
+        // 清理 ViewModel 数据
+        viewModel.clearResults()
+        // 清理状态数据，但保留搜索文本
         currentPage = 1
         lastSearchParams = ""
         error = nil

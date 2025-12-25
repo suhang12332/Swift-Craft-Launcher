@@ -15,6 +15,7 @@ struct GameRemoteResourceView: View {
     let header: AnyView?
     @Binding var scannedDetailIds: Set<String> // 从父视图传入的 detailId Set，用于快速查找
     @Binding var dataSource: DataSource
+    @Binding var searchText: String
 
     init(
         game: GameVersionInfo,
@@ -30,7 +31,8 @@ struct GameRemoteResourceView: View {
         gameType: Binding<Bool>,
         header: AnyView? = nil,
         scannedDetailIds: Binding<Set<String>> = .constant([]),
-        dataSource: Binding<DataSource> = .constant(.modrinth)
+        dataSource: Binding<DataSource> = .constant(.modrinth),
+        searchText: Binding<String> = .constant("")
     ) {
         self.game = game
         _query = query
@@ -46,6 +48,7 @@ struct GameRemoteResourceView: View {
         self.header = header
         _scannedDetailIds = scannedDetailIds
         _dataSource = dataSource
+        _searchText = searchText
     }
 
     var body: some View {
@@ -63,7 +66,8 @@ struct GameRemoteResourceView: View {
             gameType: $gameType,
             header: header,
             scannedDetailIds: $scannedDetailIds,
-            dataSource: $dataSource
+            dataSource: $dataSource,
+            searchText: $searchText
         )
     }
 }
