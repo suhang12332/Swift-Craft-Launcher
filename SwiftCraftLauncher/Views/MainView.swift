@@ -159,9 +159,7 @@ struct MainView: View {
                     gameResourcesType = "datapack"
                 }
             } else {
-                // 非 vanilla：保留用户的资源类型（mod/shader/datapack/resourcepack）
-                // 如果当前为空，才使用默认 mod
-                if gameResourcesType.isEmpty {
+                if selectedProjectId == nil {
                     gameResourcesType = "mod"
                 }
             }
