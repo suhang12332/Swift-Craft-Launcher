@@ -12,7 +12,7 @@ struct MinecraftLaunchCommand {
         await MainActor.run {
             GameStatusManager.shared.setGameLaunching(gameId: game.id, isLaunching: true)
         }
-        
+
         do {
             try await launchGameThrowing()
             // 启动成功后设置启动状态为false

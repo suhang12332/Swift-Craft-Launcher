@@ -145,7 +145,7 @@ struct MainView: View {
     // MARK: - Transition Helpers
     private func handleResourceToGameTransition(gameId: String) {
         // 清空搜索文本
-        if gameId != nil ,selectedProjectId == nil {
+        if self.gameId != nil, selectedProjectId == nil {
             searchText = ""
         }
 
@@ -185,7 +185,7 @@ struct MainView: View {
     ) {
         // 清空搜索文本
         searchText = ""
-        
+
         // 切换游戏时，强制使用本地模式
         gameType = false
 

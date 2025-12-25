@@ -102,7 +102,7 @@ public struct DetailToolbarView: ToolbarContent {
                     } label: {
                         let isRunning = isGameRunning(gameId: game.id)
                         let isLaunching = gameStatusManager.isGameLaunching(gameId: game.id)
-                        
+
                         if isLaunching {
                             ProgressView()
                                 .controlSize(.small)

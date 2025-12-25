@@ -90,14 +90,14 @@ class GameStatusManager: ObservableObject {
     var allGameStates: [String: Bool] {
         return gameRunningStates
     }
-    
+
     /// 检查指定游戏是否正在启动
     /// - Parameter gameId: 游戏ID
     /// - Returns: 是否正在启动
     func isGameLaunching(gameId: String) -> Bool {
         return gameLaunchingStates[gameId] ?? false
     }
-    
+
     /// 设置游戏启动状态
     /// - Parameters:
     ///   - gameId: 游戏ID

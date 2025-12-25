@@ -317,7 +317,7 @@ struct ModrinthDetailView: View {
         error = nil
         hasLoaded = false
     }
-    
+
     /// 清除数据但保留搜索文本（用于从详情页返回时）
     private func clearDataExceptSearchText() {
         // 清理搜索定时器，避免内存泄漏
