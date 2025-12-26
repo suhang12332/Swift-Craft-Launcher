@@ -2,7 +2,6 @@
 //  ModPackImportViewModel.swift
 //  SwiftCraftLauncher
 //
-//  Created by AI Assistant on 2025/1/27.
 //
 
 import SwiftUI
