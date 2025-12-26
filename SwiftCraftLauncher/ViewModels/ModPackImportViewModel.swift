@@ -187,21 +187,19 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         // 先计算 overrides 文件总数
         let overridesTotal = await calculateOverridesTotal(extractedPath: extractedPath)
 
-        // 无论是否有 overrides 文件，都先设置 isInstalling，确保进度条能显示
-        await MainActor.run {
-            modPackViewModel.modPackInstallState.isInstalling = true
-            if overridesTotal > 0 {
+        // 只有当有 overrides 文件时，才提前设置 isInstalling 和 overridesTotal
+        // 确保进度条能在复制开始前显示（updateOverridesProgress 会在回调中更新其他状态）
+        if overridesTotal > 0 {
+            await MainActor.run {
+                modPackViewModel.modPackInstallState.isInstalling = true
                 modPackViewModel.modPackInstallState.overridesTotal = overridesTotal
-                modPackViewModel.modPackInstallState.overridesCompleted = 0
-                modPackViewModel.modPackInstallState.overridesProgress = 0.0
-                modPackViewModel.modPackInstallState.currentOverride = "正在复制文件..."
+                modPackViewModel.objectWillChange.send()
             }
-            modPackViewModel.objectWillChange.send()
         }
 
         // 等待一小段时间，确保 UI 更新
         try? await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
-        
+
         let overridesSuccess = await ModPackDependencyInstaller.installOverrides(
             extractedPath: extractedPath,
             resourceDir: resourceDir
