@@ -101,27 +101,17 @@ public struct DetailToolbarView: ToolbarContent {
                         }
                     } label: {
                         let isRunning = isGameRunning(gameId: game.id)
-                        let isLaunching = gameStatusManager.isGameLaunching(gameId: game.id)
-
-                        if isLaunching {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
-                            Label(
-                                isRunning
-                                    ? "stop.fill".localized()
-                                    : "play.fill".localized(),
-                                systemImage: isRunning
-                                    ? "stop.fill" : "play.fill"
-                            )
-                        }
+                        Label(
+                            isRunning
+                                ? "stop.fill".localized()
+                                : "play.fill".localized(),
+                            systemImage: isRunning
+                                ? "stop.fill" : "play.fill"
+                        )
                     }
                     .help(
-                        gameStatusManager.isGameLaunching(gameId: game.id)
-                            ? ""
-                            : (isGameRunning(gameId: game.id) ? "stop.fill" : "play.fill").localized()
+                        isGameRunning(gameId: game.id) ? "stop.fill" : "play.fill"
                     )
-                    .disabled(gameStatusManager.isGameLaunching(gameId: game.id))
                     .applyReplaceTransition()
 
                     Button {

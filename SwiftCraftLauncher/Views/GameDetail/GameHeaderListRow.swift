@@ -5,6 +5,7 @@ struct GameHeaderListRow: View {
     let cacheInfo: CacheInfo
     let query: String
     let onImport: () -> Void
+    var onIconTap: (() -> Void)? = nil
 
     var body: some View {
         HStack {
@@ -75,6 +76,10 @@ struct GameHeaderListRow: View {
                     .frame(width: 80, height: 80)
                     .cornerRadius(16)
             }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onIconTap?()
         }
     }
 

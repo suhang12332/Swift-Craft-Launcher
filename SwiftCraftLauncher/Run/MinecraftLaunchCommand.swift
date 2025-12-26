@@ -8,23 +8,10 @@ struct MinecraftLaunchCommand {
 
     /// 启动游戏（静默版本）
     func launchGame() async {
-        // 设置启动状态为true
-        await MainActor.run {
-            GameStatusManager.shared.setGameLaunching(gameId: game.id, isLaunching: true)
-        }
-
         do {
             try await launchGameThrowing()
-            // 启动成功后设置启动状态为false
-            await MainActor.run {
-                GameStatusManager.shared.setGameLaunching(gameId: game.id, isLaunching: false)
-            }
         } catch {
             await handleLaunchError(error)
-            // 启动失败后也要设置启动状态为false
-            await MainActor.run {
-                GameStatusManager.shared.setGameLaunching(gameId: game.id, isLaunching: false)
-            }
         }
     }
 
