@@ -5,7 +5,7 @@ struct GameHeaderListRow: View {
     let cacheInfo: CacheInfo
     let query: String
     let onImport: () -> Void
-    var onIconTap: (() -> Void)? = nil
+    var onIconTap: (() -> Void)?
 
     var body: some View {
         HStack {
