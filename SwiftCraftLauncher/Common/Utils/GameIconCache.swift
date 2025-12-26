@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Combine
 
 /// 游戏图标缓存管理器
 /// 用于缓存图标文件的存在性检查和 URL，避免重复的文件系统访问
@@ -15,6 +16,15 @@ final class GameIconCache: @unchecked Sendable {
 
     /// 缓存访问队列，确保线程安全
     private let cacheQueue = DispatchQueue(label: "com.swiftcraftlauncher.gameiconcache", attributes: .concurrent)
+
+    /// 缓存失效通知：当缓存被清除时发送通知
+    /// key 为游戏名称，nil 表示清除所有缓存
+    private let cacheInvalidationSubject = PassthroughSubject<String?, Never>()
+
+    /// 缓存失效通知的发布者
+    var cacheInvalidationPublisher: AnyPublisher<String?, Never> {
+        cacheInvalidationSubject.eraseToAnyPublisher()
+    }
 
     private init() {
         // 设置缓存限制
@@ -119,6 +129,11 @@ final class GameIconCache: @unchecked Sendable {
             // 如果需要更精细的控制，可以维护一个单独的键集合
             self.existenceCache.removeAllObjects()
             self.urlCache.removeAllObjects()
+
+            // 发送缓存失效通知
+            DispatchQueue.main.async {
+                self.cacheInvalidationSubject.send(gameName)
+            }
         }
     }
 
@@ -127,6 +142,11 @@ final class GameIconCache: @unchecked Sendable {
         cacheQueue.async(flags: .barrier) {
             self.existenceCache.removeAllObjects()
             self.urlCache.removeAllObjects()
+
+            // 发送缓存失效通知（nil 表示清除所有缓存）
+            DispatchQueue.main.async {
+                self.cacheInvalidationSubject.send(nil)
+            }
         }
     }
 }

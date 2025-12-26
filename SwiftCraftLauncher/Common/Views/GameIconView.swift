@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 /// 游戏图标视图组件
 /// 使用缓存机制优化图标加载性能，避免重复的文件系统访问
@@ -11,6 +12,7 @@ struct GameIconView: View {
     @State private var iconURL: URL?
     @State private var hasLoaded: Bool
     @State private var cachedImage: NSImage?
+    @State private var refreshTrigger: UUID = UUID()
 
     private let iconCache = GameIconCache.shared
 
@@ -56,13 +58,15 @@ struct GameIconView: View {
                 defaultIcon
             }
         }
-        .task {
-            // 如果缓存中没有结果，异步加载
-            if !hasLoaded {
-                await loadIconAsync()
-            } else if iconExists, let url = iconURL, cachedImage == nil {
-                // 如果已经加载但图片还没缓存，异步加载图片
-                await loadImageAsync(url: url)
+        .task(id: refreshTrigger) {
+            // 当 refreshTrigger 改变时，重新加载图标
+            await reloadIcon()
+        }
+        .onReceive(iconCache.cacheInvalidationPublisher) { invalidatedGameName in
+            // 监听缓存失效通知
+            // 如果通知的游戏名称匹配，或者通知为 nil（清除所有缓存），则刷新
+            if invalidatedGameName == nil || invalidatedGameName == gameName {
+                refreshTrigger = UUID()
             }
         }
     }
@@ -76,17 +80,27 @@ struct GameIconView: View {
             .clipShape(RoundedRectangle(cornerRadius: 4))
     }
 
+    /// 重新加载图标（当缓存失效时调用）
+    private func reloadIcon() async {
+        // 重置状态，确保完全重新加载
+        await MainActor.run {
+            self.hasLoaded = false
+            self.cachedImage = nil
+            self.iconExists = false
+            // iconURL 会在 loadIconAsync 中重新设置
+        }
+
+        // 重新加载图标
+        await loadIconAsync()
+    }
+
     /// 异步加载图标信息
     /// 只在缓存中没有结果时调用
     private func loadIconAsync() async {
-        guard !hasLoaded else { return }
-
         // 如果 URL 还没有设置，先设置
-        if iconURL == nil {
-            let url = iconCache.iconURL(gameName: gameName, iconName: iconName)
-            await MainActor.run {
-                self.iconURL = url
-            }
+        let url = iconCache.iconURL(gameName: gameName, iconName: iconName)
+        await MainActor.run {
+            self.iconURL = url
         }
 
         // 异步检查文件存在性（优先使用缓存）

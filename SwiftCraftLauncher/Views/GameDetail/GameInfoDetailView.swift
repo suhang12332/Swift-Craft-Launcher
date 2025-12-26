@@ -37,7 +37,7 @@ struct GameInfoDetailView: View {
     // 使用稳定的 header，避免因 cacheInfo 更新导致重建
     @State private var remoteHeader: AnyView?
     @State private var localHeader: AnyView?
-    
+
     // 文件选择器状态
     @State private var showIconFilePicker = false
 
@@ -143,7 +143,7 @@ struct GameInfoDetailView: View {
     private func updateHeaders() {
         // 尝试从 gameRepository 获取最新的游戏信息，如果找不到则使用传入的 game
         let currentGame = gameRepository.games.first { $0.id == game.id } ?? game
-        
+
         remoteHeader = AnyView(
             GameHeaderListRow(
                 game: currentGame,
@@ -238,7 +238,7 @@ struct GameInfoDetailView: View {
             }
         }
     }
-    
+
     // MARK: - 处理图标文件选择
     /// 处理用户选择的图标文件
     private func handleIconFileSelection(_ result: Result<[URL], Error>) {
@@ -253,7 +253,7 @@ struct GameInfoDetailView: View {
                 GlobalErrorHandler.shared.handle(globalError)
                 return
             }
-            
+
             guard url.startAccessingSecurityScopedResource() else {
                 let globalError = GlobalError.fileSystem(
                     chineseMessage: "无法访问所选文件",
@@ -264,26 +264,26 @@ struct GameInfoDetailView: View {
                 return
             }
             defer { url.stopAccessingSecurityScopedResource() }
-            
+
             Task {
                 do {
                     // 读取图片数据
                     let imageData = try Data(contentsOf: url)
-                    
+
                     // 保存图片到游戏目录
                     let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
                     let iconFileName = AppConstants.defaultGameIcon
                     let iconURL = profileDir.appendingPathComponent(iconFileName)
-                    
+
                     // 确保目录存在
                     try FileManager.default.createDirectory(
                         at: profileDir,
                         withIntermediateDirectories: true
                     )
-                    
+
                     // 保存图片
                     try imageData.write(to: iconURL)
-                    
+
                     // 更新游戏信息
                     let updatedGame = GameVersionInfo(
                         id: UUID(uuidString: game.id) ?? UUID(),
@@ -306,18 +306,18 @@ struct GameInfoDetailView: View {
                         gameArguments: game.gameArguments,
                         environmentVariables: game.environmentVariables
                     )
-                    
+
                     // 保存到仓库
                     try await gameRepository.updateGame(updatedGame)
-                    
+
                     // 清除图标缓存，确保侧边栏和详情页显示新图标
                     GameIconCache.shared.invalidateCache(for: game.gameName)
-                    
+
                     // 刷新 header 以显示新图标
                     await MainActor.run {
                         updateHeaders()
                     }
-                    
+
                     Logger.shared.info("成功更新游戏图标: \(game.gameName)")
                 } catch {
                     let globalError = GlobalError.from(error)
@@ -325,7 +325,6 @@ struct GameInfoDetailView: View {
                     GlobalErrorHandler.shared.handle(globalError)
                 }
             }
-            
         case .failure(let error):
             let globalError = GlobalError.from(error)
             GlobalErrorHandler.shared.handle(globalError)
