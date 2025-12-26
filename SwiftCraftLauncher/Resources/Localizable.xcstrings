@@ -41569,25 +41569,25 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dateien werden kopiert"
+            "value" : "Dateien kopieren"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copying Files"
+            "value" : "Copy Files"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copiando archivos"
+            "value" : "Copiar archivos"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kopioidaan tiedostoja"
+            "value" : "Kopioi tiedostoja"
           }
         },
         "fr" : {
@@ -41599,7 +41599,7 @@
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "फ़ाइलें कॉपी कर रहा है"
+            "value" : "फ़ाइलें कॉपी करें"
           }
         },
         "it" : {
@@ -41611,13 +41611,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ファイルをコピー中"
+            "value" : "ファイルをコピー"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "파일 복사 중"
+            "value" : "파일 복사"
           }
         },
         "nb" : {
@@ -41641,7 +41641,7 @@
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Copiando arquivos"
+            "value" : "Copiar arquivos"
           }
         },
         "ru" : {
@@ -41653,37 +41653,37 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kopierar filer"
+            "value" : "Kopiera filer"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "กำลังคัดลอกไฟล์"
+            "value" : "คัดลอกไฟล์"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dosyalar kopyalanıyor"
+            "value" : "Dosya kopyalama"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Đang sao chép tệp"
+            "value" : "Sao chép tệp"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在复制文件"
+            "value" : "复制文件"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "正在複製檔案"
+            "value" : "複製檔案"
           }
         }
       }
