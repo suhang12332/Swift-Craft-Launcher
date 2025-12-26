@@ -9,15 +9,15 @@ import Foundation
 /// GDLauncher 实例解析器
 struct GDLauncherInstanceParser: LauncherInstanceParser {
     let launcherType: ImportLauncherType = .gdLauncher
-    
+
     func isValidInstance(at instancePath: URL) -> Bool {
         let instanceJsonPath = instancePath.appendingPathComponent("instance.json")
         let fileManager = FileManager.default
-        
+
         guard fileManager.fileExists(atPath: instanceJsonPath.path) else {
             return false
         }
-        
+
         // 验证 JSON 文件可以解析
         do {
             _ = try parseInstanceJson(at: instanceJsonPath)
@@ -26,28 +26,28 @@ struct GDLauncherInstanceParser: LauncherInstanceParser {
             return false
         }
     }
-    
+
     func parseInstance(at instancePath: URL, basePath: URL) throws -> ImportInstanceInfo? {
         let instanceJsonPath = instancePath.appendingPathComponent("instance.json")
         let instanceConfig = try parseInstanceJson(at: instanceJsonPath)
-        
+
         // 提取游戏版本
         let gameVersion = instanceConfig.gameConfiguration.version.release
-        
+
         // 提取 Mod 加载器信息（取第一个 modloader）
         var modLoader = "vanilla"
         var modLoaderVersion = ""
-        
+
         if let firstModLoader = instanceConfig.gameConfiguration.version.modloaders.first {
             modLoader = firstModLoader.type.lowercased()
             modLoaderVersion = firstModLoader.version
         }
-        
+
         // 提取游戏名称
         let gameName = instanceConfig.name
-        
+
         // 提取图标路径
-        var gameIconPath: URL? = nil
+        var gameIconPath: URL?
         if let iconName = instanceConfig.icon {
             let iconPath = instancePath.appendingPathComponent(iconName)
             let fileManager = FileManager.default
@@ -55,7 +55,7 @@ struct GDLauncherInstanceParser: LauncherInstanceParser {
                 gameIconPath = iconPath
             }
         }
-        
+
         // 游戏目录可能是 instance 子文件夹，也可能是实例文件夹本身
         let gameDirectory: URL
         let instanceSubfolder = instancePath.appendingPathComponent("instance")
@@ -64,7 +64,7 @@ struct GDLauncherInstanceParser: LauncherInstanceParser {
         } else {
             gameDirectory = instancePath
         }
-        
+
         return ImportInstanceInfo(
             gameName: gameName,
             gameVersion: gameVersion,
@@ -77,9 +77,9 @@ struct GDLauncherInstanceParser: LauncherInstanceParser {
             launcherType: launcherType
         )
     }
-    
+
     // MARK: - Private Methods
-    
+
     /// 解析 instance.json 文件
     private func parseInstanceJson(at path: URL) throws -> GDLauncherInstanceConfig {
         let data = try Data(contentsOf: path)
@@ -92,7 +92,7 @@ private struct GDLauncherInstanceConfig: Codable {
     let name: String
     let icon: String?
     let gameConfiguration: GDLauncherGameConfiguration
-    
+
     enum CodingKeys: String, CodingKey {
         case name
         case icon
@@ -113,4 +113,3 @@ private struct GDLauncherModLoader: Codable {
     let type: String
     let version: String
 }
-

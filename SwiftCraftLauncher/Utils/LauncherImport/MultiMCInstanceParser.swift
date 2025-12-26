@@ -13,13 +13,13 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
     func isValidInstance(at instancePath: URL) -> Bool {
         let instanceCfgPath = instancePath.appendingPathComponent("instance.cfg")
         let mmcPackPath = instancePath.appendingPathComponent("mmc-pack.json")
-        
+
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: instanceCfgPath.path),
               fileManager.fileExists(atPath: mmcPackPath.path) else {
             return false
         }
-        
+
         // 验证文件可以解析
         do {
             _ = try parseInstanceCfg(at: instanceCfgPath)
@@ -29,30 +29,30 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
             return false
         }
     }
-    
+
     func parseInstance(at instancePath: URL, basePath: URL) throws -> ImportInstanceInfo? {
         let instanceCfgPath = instancePath.appendingPathComponent("instance.cfg")
         let mmcPackPath = instancePath.appendingPathComponent("mmc-pack.json")
-        
+
         // 解析配置文件
         let instanceCfg = try parseInstanceCfg(at: instanceCfgPath)
         let mmcPack = try parseMMCPack(at: mmcPackPath)
-        
+
         // 提取游戏版本
         let gameVersion = extractGameVersion(from: mmcPack)
-        
+
         // 提取 Mod 加载器信息
         let (modLoader, modLoaderVersion) = extractModLoader(from: mmcPack)
-        
+
         // 提取游戏名称
         let gameName = instanceCfg["name"] ?? instancePath.lastPathComponent
-        
+
         // 查找 .minecraft 文件夹
         let gameDirectory = findGameDirectory(at: instancePath)
         guard let gameDirectory = gameDirectory else {
             throw ImportError.gameDirectoryNotFound(instancePath: instancePath.path)
         }
-        
+
         return ImportInstanceInfo(
             gameName: gameName,
             gameVersion: gameVersion,
@@ -65,36 +65,36 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
             launcherType: launcherType
         )
     }
-    
+
     // MARK: - Private Methods
-    
+
     /// 解析 instance.cfg 文件（INI 格式）
     private func parseInstanceCfg(at path: URL) throws -> [String: String] {
         let content = try String(contentsOf: path, encoding: .utf8)
         var config: [String: String] = [:]
-        
+
         for line in content.components(separatedBy: .newlines) {
             let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
             if trimmed.isEmpty || trimmed.hasPrefix("#") {
                 continue
             }
-            
+
             if let equalIndex = trimmed.firstIndex(of: "=") {
                 let key = String(trimmed[..<equalIndex]).trimmingCharacters(in: .whitespacesAndNewlines)
                 let value = String(trimmed[trimmed.index(after: equalIndex)...]).trimmingCharacters(in: .whitespacesAndNewlines)
                 config[key] = value
             }
         }
-        
+
         return config
     }
-    
+
     /// 解析 mmc-pack.json 文件
     private func parseMMCPack(at path: URL) throws -> MMCPack {
         let data = try Data(contentsOf: path)
         return try JSONDecoder().decode(MMCPack.self, from: data)
     }
-    
+
     /// 从 mmc-pack.json 提取游戏版本
     private func extractGameVersion(from pack: MMCPack) -> String {
         for component in pack.components where component.uid == "net.minecraft" {
@@ -102,7 +102,7 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
         }
         return ""
     }
-    
+
     /// 从 mmc-pack.json 提取 Mod 加载器信息
     private func extractModLoader(from pack: MMCPack) -> (loader: String, version: String) {
         for component in pack.components {
@@ -121,23 +121,23 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
         }
         return ("vanilla", "")
     }
-    
+
     /// 查找 .minecraft 文件夹
     private func findGameDirectory(at instancePath: URL) -> URL? {
         let fileManager = FileManager.default
-        
+
         // 优先查找 {instance_path}/minecraft
         let minecraftPath = instancePath.appendingPathComponent("minecraft")
         if fileManager.fileExists(atPath: minecraftPath.path) {
             return minecraftPath
         }
-        
+
         // 其次查找 {instance_path}/.minecraft
         let dotMinecraftPath = instancePath.appendingPathComponent(".minecraft")
         if fileManager.fileExists(atPath: dotMinecraftPath.path) {
             return dotMinecraftPath
         }
-        
+
         return nil
     }
 }
@@ -159,7 +159,7 @@ enum ImportError: LocalizedError {
     case gameDirectoryNotFound(instancePath: String)
     case invalidConfiguration(message: String)
     case fileNotFound(path: String)
-    
+
     var errorDescription: String? {
         switch self {
         case .gameDirectoryNotFound(let path):
@@ -180,4 +180,3 @@ enum ImportError: LocalizedError {
         }
     }
 }
-

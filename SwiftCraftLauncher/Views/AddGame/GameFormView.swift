@@ -138,7 +138,7 @@ struct GameFormView: View {
             }
         }
     }
-    
+
     private var currentModeTitle: String {
         switch mode {
         case .creation:
@@ -149,7 +149,7 @@ struct GameFormView: View {
             return "launcher.import.title".localized()
         }
     }
-    
+
     private var importModePicker: some View {
         Menu {
             Button {
@@ -157,14 +157,14 @@ struct GameFormView: View {
             } label: {
                 Label("game.form.mode.manual".localized(), systemImage: "square.and.pencil")
             }
-            
+
             Button {
                 filePickerType = .modPack
                 showFilePicker = true
             } label: {
                 Label("modpack.import.title".localized(), systemImage: "square.and.arrow.up")
             }
-            
+
             Button {
                 mode = .launcherImport
             } label: {
@@ -172,7 +172,6 @@ struct GameFormView: View {
             }
         } label: {
             Text(currentModeTitle)
-
         }
         .fixedSize()
         .help("game.form.mode.import".localized())

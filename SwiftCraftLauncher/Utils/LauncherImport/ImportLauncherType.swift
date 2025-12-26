@@ -15,4 +15,3 @@ enum ImportLauncherType: String, CaseIterable {
     case sjmcLauncher = "SJMCLauncher"
     case xmcl = "XMCL"
 }
-

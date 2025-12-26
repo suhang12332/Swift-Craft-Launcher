@@ -11,12 +11,12 @@ import Foundation
 protocol LauncherInstanceParser {
     /// 启动器类型
     var launcherType: ImportLauncherType { get }
-    
+
     /// 验证实例是否有效
     /// - Parameter instancePath: 实例文件夹路径
     /// - Returns: 是否为有效实例
     func isValidInstance(at instancePath: URL) -> Bool
-    
+
     /// 解析实例信息
     /// - Parameters:
     ///   - instancePath: 实例文件夹路径
@@ -41,4 +41,3 @@ enum LauncherInstanceParserFactory {
         }
     }
 }
-
