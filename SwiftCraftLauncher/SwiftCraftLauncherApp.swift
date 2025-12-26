@@ -26,6 +26,7 @@
 
 import SwiftUI
 import UserNotifications
+import Combine
 
 @main
 struct SwiftCraftLauncherApp: App {
@@ -54,25 +55,27 @@ struct SwiftCraftLauncherApp: App {
 
         // 清理临时窗口管理器，防止应用重启时恢复未关闭的临时窗口
         TemporaryWindowManager.shared.cleanupAllWindows()
-
-        // 延迟执行扫描，使用临时 GameRepository 实例避免访问未安装的 StateObject
-        // 扫描操作是独立的，只需要读取游戏列表，不需要共享状态
-        DispatchQueue.main.async {
-            Task { @MainActor in
-                // 等待下一个 run loop，确保系统已初始化
-                await Task.yield()
-                // 创建临时实例用于扫描，避免访问未安装的 StateObject
-                let repository = GameRepository()
-                await Self.scanAllGamesModsDirectory(gameRepository: repository)
-            }
-        }
     }
 
     // MARK: - Scanning Methods
 
     /// 扫描所有游戏的 mods 目录
     /// 异步执行，不会阻塞 UI
-    private static func scanAllGamesModsDirectory(gameRepository: GameRepository) async {
+    private func scanAllGamesModsDirectory(gameRepository: GameRepository) async {
+        // 等待游戏数据初始加载完成
+        // 使用 Combine 监听 isInitialLoadComplete 标志
+        if !gameRepository.isInitialLoadComplete {
+            await withCheckedContinuation { continuation in
+                var cancellable: AnyCancellable?
+                cancellable = gameRepository.$isInitialLoadComplete
+                    .first { $0 }
+                    .sink { _ in
+                        cancellable?.cancel()
+                        continuation.resume()
+                    }
+            }
+        }
+
         let games = gameRepository.games
         Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
 
@@ -101,6 +104,10 @@ struct SwiftCraftLauncherApp: App {
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
                 .background(TemporaryWindowOpener())
+                .task {
+                    // 应用启动时执行初始扫描，等待数据加载完成
+                    await scanAllGamesModsDirectory(gameRepository: gameRepository)
+                }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
