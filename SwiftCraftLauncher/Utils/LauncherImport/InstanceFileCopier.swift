@@ -6,21 +6,21 @@
 
 import Foundation
 
-/// 实例文件复制工具
-/// 负责将源游戏目录的文件复制到目标游戏目录
+/// 实例文件合并工具
+/// 负责将源游戏目录的文件合并到目标游戏目录
 enum InstanceFileCopier {
 
-    /// 复制游戏目录内容到目标目录
+    /// 通用的合并文件夹方法
     /// - Parameters:
-    ///   - sourceDirectory: 源游戏目录（.minecraft 文件夹）
-    ///   - targetDirectory: 目标游戏目录（Profile 目录）
-    ///   - launcherType: 启动器类型（用于文件过滤）
+    ///   - sourceDirectory: 源目录
+    ///   - targetDirectory: 目标目录
+    ///   - fileFilter: 可选的文件过滤函数，返回 true 表示保留文件，false 表示过滤掉
     ///   - onProgress: 进度回调 (fileName, completed, total)
-    /// - Throws: 复制过程中的错误
-    static func copyGameDirectory(
+    /// - Throws: 合并过程中的错误
+    static func copyDirectory(
         from sourceDirectory: URL,
         to targetDirectory: URL,
-        launcherType: ImportLauncherType,
+        fileFilter: ((URL, URL) -> Bool)? = nil,
         onProgress: ((String, Int, Int) -> Void)?
     ) async throws {
         let fileManager = FileManager.default
@@ -31,32 +31,58 @@ enum InstanceFileCopier {
             withIntermediateDirectories: true
         )
 
-        // 获取所有需要复制的文件
+        // 获取所有需要合并的文件
         let allFiles = try getAllFiles(in: sourceDirectory)
 
-        // 根据启动器类型过滤文件
-        let filesToCopy = LauncherFileFilter.filterFiles(
-            allFiles,
-            sourceDirectory: sourceDirectory,
-            launcherType: launcherType
-        )
+        // 标准化源目录路径（解析符号链接，确保路径一致性）
+        let standardizedSourceURL = sourceDirectory.resolvingSymlinksInPath()
+        let sourcePath = standardizedSourceURL.path.hasSuffix("/") 
+            ? standardizedSourceURL.path 
+            : standardizedSourceURL.path + "/"
+        
+        // 应用文件过滤（如果有）
+        let filesToCopy: [URL]
+        if let fileFilter = fileFilter {
+            filesToCopy = allFiles.filter { fileURL in
+                // 标准化文件路径（解析符号链接）
+                let standardizedFileURL = fileURL.resolvingSymlinksInPath()
+                let filePath = standardizedFileURL.path
+                // 确保文件路径以源路径开头
+                guard filePath.hasPrefix(sourcePath) else {
+                    Logger.shared.warning("文件路径不在源目录内: \(filePath) (源目录: \(sourcePath))")
+                    return false
+                }
+                // 计算相对路径
+                let relativePath = String(filePath.dropFirst(sourcePath.count))
+                let targetURL = targetDirectory.appendingPathComponent(relativePath)
+                return fileFilter(fileURL, targetURL)
+            }
+        } else {
+            filesToCopy = allFiles
+        }
 
         let totalFiles = filesToCopy.count
         let filteredCount = allFiles.count - totalFiles
 
-        Logger.shared.info("开始复制游戏目录: \(sourceDirectory.path) -> \(targetDirectory.path), 共 \(totalFiles) 个文件（已过滤 \(filteredCount) 个文件）")
+        if filteredCount > 0 {
+            Logger.shared.info("开始合并目录: \(sourceDirectory.path) -> \(targetDirectory.path), 共 \(totalFiles) 个文件（已过滤 \(filteredCount) 个文件）")
+        } else {
+            Logger.shared.info("开始合并目录: \(sourceDirectory.path) -> \(targetDirectory.path), 共 \(totalFiles) 个文件")
+        }
 
         var completed = 0
         for fileURL in filesToCopy {
             // 检查任务是否被取消
             try Task.checkCancellation()
 
-            // 计算相对路径
-            let relativePath = fileURL.path.replacingOccurrences(
-                of: sourceDirectory.path + "/",
-                with: ""
-            )
-
+            // 标准化文件路径（解析符号链接，确保路径一致性）
+            let standardizedFileURL = fileURL.resolvingSymlinksInPath()
+            let filePath = standardizedFileURL.path
+            guard filePath.hasPrefix(sourcePath) else {
+                Logger.shared.error("文件路径不在源目录内: \(filePath) (源目录: \(sourcePath))")
+                throw NSError(domain: "InstanceFileCopier", code: 1, userInfo: [NSLocalizedDescriptionKey: "文件路径不在源目录内: \(filePath)"])
+            }
+            let relativePath = String(filePath.dropFirst(sourcePath.count))
             let targetURL = targetDirectory.appendingPathComponent(relativePath)
 
             // 创建目标目录（如果需要）
@@ -66,7 +92,7 @@ enum InstanceFileCopier {
                 withIntermediateDirectories: true
             )
 
-            // 复制文件
+            // 合并文件（如果目标文件已存在，先删除再合并）
             if fileManager.fileExists(atPath: targetURL.path) {
                 try fileManager.removeItem(at: targetURL)
             }
@@ -79,11 +105,50 @@ enum InstanceFileCopier {
             try await Task.sleep(nanoseconds: 1_000_000) // 1ms
         }
 
-        Logger.shared.info("游戏目录复制完成: \(completed)/\(totalFiles) 个文件")
+        Logger.shared.info("目录合并完成: \(completed)/\(totalFiles) 个文件")
+    }
+
+    /// 合并游戏目录内容到目标目录（启动器导入专用）
+    /// - Parameters:
+    ///   - sourceDirectory: 源游戏目录（.minecraft 文件夹）
+    ///   - targetDirectory: 目标游戏目录（Profile 目录）
+    ///   - launcherType: 启动器类型（用于文件过滤）
+    ///   - onProgress: 进度回调 (fileName, completed, total)
+    /// - Throws: 合并过程中的错误
+    static func copyGameDirectory(
+        from sourceDirectory: URL,
+        to targetDirectory: URL,
+        launcherType: ImportLauncherType,
+        onProgress: ((String, Int, Int) -> Void)?
+    ) async throws {
+        // 使用通用合并方法，并应用启动器特定的文件过滤
+        // copyDirectory 内部已经处理了路径标准化，这里不需要重复处理
+        try await copyDirectory(
+            from: sourceDirectory,
+            to: targetDirectory,
+            fileFilter: { fileURL, targetURL in
+                // 标准化文件路径（解析符号链接）
+                let standardizedFileURL = fileURL.resolvingSymlinksInPath()
+                let standardizedSourceURL = sourceDirectory.resolvingSymlinksInPath()
+                let sourcePath = standardizedSourceURL.path.hasSuffix("/") 
+                    ? standardizedSourceURL.path 
+                    : standardizedSourceURL.path + "/"
+                let filePath = standardizedFileURL.path
+                // 确保文件路径以源路径开头
+                guard filePath.hasPrefix(sourcePath) else {
+                    Logger.shared.warning("文件路径不在源目录内: \(filePath)")
+                    return false
+                }
+                // 计算相对路径
+                let relativePath = String(filePath.dropFirst(sourcePath.count))
+                return !LauncherFileFilter.shouldFilter(fileName: relativePath, launcherType: launcherType)
+            },
+            onProgress: onProgress
+        )
     }
 
     /// 递归获取目录中的所有文件
-    private static func getAllFiles(in directory: URL) throws -> [URL] {
+    internal static func getAllFiles(in directory: URL) throws -> [URL] {
         let fileManager = FileManager.default
         var files: [URL] = []
 

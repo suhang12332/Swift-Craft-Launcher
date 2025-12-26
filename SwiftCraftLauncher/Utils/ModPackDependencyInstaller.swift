@@ -65,18 +65,6 @@ enum ModPackDependencyInstaller {
             return false
         }
 
-        // 3. 处理 overrides 文件夹（这个必须在文件和依赖都完成后进行）
-        if let extractedPath = extractedPath {
-            guard await installOverrides(
-                extractedPath: extractedPath,
-                resourceDir: resourceDir,
-                onProgressUpdate: onProgressUpdate
-            ) else {
-                Logger.shared.error("overrides 文件夹处理失败")
-                return false
-            }
-        }
-
         return true
     }
 
@@ -89,7 +77,7 @@ enum ModPackDependencyInstaller {
     ///   - gameInfo: 游戏信息
     ///   - onProgressUpdate: 进度更新回调
     /// - Returns: 是否安装成功
-    private static func installModPackFiles(
+    static func installModPackFiles(
         files: [ModrinthIndexFile],
         resourceDir: URL,
         gameInfo: GameVersionInfo,
@@ -469,7 +457,7 @@ enum ModPackDependencyInstaller {
     ///   - resourceDir: 资源目录
     ///   - onProgressUpdate: 进度更新回调
     /// - Returns: 是否安装成功
-    private static func installModPackDependencies(
+    static func installModPackDependencies(
         dependencies: [ModrinthIndexProjectDependency],
         gameInfo: GameVersionInfo,
         resourceDir: URL,
@@ -594,7 +582,7 @@ enum ModPackDependencyInstaller {
     ///   - resourceDir: 资源目录
     ///   - onProgressUpdate: 进度更新回调
     /// - Returns: 是否安装成功
-    private static func installOverrides(
+    static func installOverrides(
         extractedPath: URL,
         resourceDir: URL,
         onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
@@ -623,98 +611,43 @@ enum ModPackDependencyInstaller {
             if let found = foundPath {
                 overridesPath = found
             } else {
+                // 如果没有 overrides 文件夹，也要通知进度回调，设置 total 为 0
+                onProgressUpdate?("", 0, 0, .overrides)
                 return true
             }
         }
 
         do {
-            // 获取 overrides 文件夹中的所有内容
-            let contents = try FileManager.default.contentsOfDirectory(
-                at: overridesPath,
-                includingPropertiesForKeys: [.isDirectoryKey],
-                options: [.skipsHiddenFiles]
-            )
-
-            // 逐个处理文件/文件夹（不显示进度）
-            for item in contents {
-                let itemName = item.lastPathComponent
-                let destinationPath = resourceDir.appendingPathComponent(itemName)
-
-                try await processOverrideItem(item: item, destinationPath: destinationPath, itemName: itemName)
+            // 先计算文件总数，以便在开始时通知进度
+            let allFiles = try InstanceFileCopier.getAllFiles(in: overridesPath)
+            let totalFiles = allFiles.count
+            
+            // 如果没有文件需要合并，直接返回成功（不显示进度条）
+            guard totalFiles > 0 else {
+                return true
             }
+            
+            // 通知开始合并（只有在有文件时才通知）
+            onProgressUpdate?("正在合并文件...", 0, totalFiles, .overrides)
+            
+            // 使用统一的合并文件夹方法
+            try await InstanceFileCopier.copyDirectory(
+                from: overridesPath,
+                to: resourceDir,
+                fileFilter: nil,  // overrides 不需要过滤文件
+                onProgress: { fileName, completed, total in
+                    // 将进度更新传递给统一的进度回调接口
+                    onProgressUpdate?(fileName, completed, total, .overrides)
+                }
+            )
+            
+            // 通知合并完成
+            onProgressUpdate?("文件合并完成", totalFiles, totalFiles, .overrides)
 
             return true
         } catch {
             Logger.shared.error("处理 overrides 文件夹失败: \(error.localizedDescription)")
             return false
-        }
-    }
-
-    /// 处理单个 overrides 项目
-    /// - Parameters:
-    ///   - item: 源项目
-    ///   - destinationPath: 目标路径
-    ///   - itemName: 项目名称
-    private static func processOverrideItem(item: URL, destinationPath: URL, itemName: String) async throws {
-        if FileManager.default.fileExists(atPath: destinationPath.path) {
-            // 如果目标路径存在，检查是否为目录
-            let itemAttributes = try FileManager.default.attributesOfItem(atPath: item.path)
-            let destinationAttributes = try FileManager.default.attributesOfItem(atPath: destinationPath.path)
-
-            let isSourceDirectory = (itemAttributes[.type] as? FileAttributeType) == .typeDirectory
-            let isDestinationDirectory = (destinationAttributes[.type] as? FileAttributeType) == .typeDirectory
-
-            if isSourceDirectory && isDestinationDirectory {
-                // 如果都是目录，递归合并
-                try await mergeDirectories(source: item, destination: destinationPath)
-            } else if !isSourceDirectory && !isDestinationDirectory {
-                // 如果都是文件，覆盖
-                try FileManager.default.removeItem(at: destinationPath)
-                try FileManager.default.moveItem(at: item, to: destinationPath)
-            }
-            // 类型不匹配的情况跳过
-        } else {
-            // 目标路径不存在，直接移动
-            try FileManager.default.moveItem(at: item, to: destinationPath)
-        }
-    }
-
-    /// 递归合并目录
-    /// - Parameters:
-    ///   - source: 源目录
-    ///   - destination: 目标目录
-    private static func mergeDirectories(source: URL, destination: URL) async throws {
-        let contents = try FileManager.default.contentsOfDirectory(
-            at: source,
-            includingPropertiesForKeys: [.isDirectoryKey],
-            options: [.skipsHiddenFiles]
-        )
-
-        for item in contents {
-            let itemName = item.lastPathComponent
-            let destinationItem = destination.appendingPathComponent(itemName)
-
-            if FileManager.default.fileExists(atPath: destinationItem.path) {
-                // 目标路径存在，检查类型
-                let itemAttributes = try FileManager.default.attributesOfItem(atPath: item.path)
-                let destinationAttributes = try FileManager.default.attributesOfItem(atPath: destinationItem.path)
-
-                let isSourceDirectory = (itemAttributes[.type] as? FileAttributeType) == .typeDirectory
-                let isDestinationDirectory = (destinationAttributes[.type] as? FileAttributeType) == .typeDirectory
-
-                if isSourceDirectory && isDestinationDirectory {
-                    // 递归合并子目录
-                    try await mergeDirectories(source: item, destination: destinationItem)
-                } else if !isSourceDirectory && !isDestinationDirectory {
-                    // 覆盖文件
-                    try FileManager.default.removeItem(at: destinationItem)
-                    try FileManager.default.moveItem(at: item, to: destinationItem)
-                }
-                // 类型不匹配的情况跳过
-            } else {
-                // 目标路径不存在，直接移动
-                try FileManager.default.moveItem(at: item, to: destinationItem)
-            }
         }
     }
 
