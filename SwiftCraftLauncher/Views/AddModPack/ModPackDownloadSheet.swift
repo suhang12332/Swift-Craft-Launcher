@@ -319,7 +319,7 @@ struct ModPackDownloadSheet: View {
         let resourceDir = AppPaths.profileDirectory(gameName: gameNameValidator.gameName)
         // 先计算 overrides 文件总数
         let overridesTotal = await calculateOverridesTotal(extractedPath: extractedPath)
-        
+
         // 无论是否有 overrides 文件，都先设置 isInstalling，确保进度条能显示
         await MainActor.run {
             viewModel.modPackInstallState.isInstalling = true
@@ -331,7 +331,7 @@ struct ModPackDownloadSheet: View {
             }
             viewModel.objectWillChange.send()
         }
-        
+
         // 等待一小段时间，确保 UI 更新
         try? await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
         
@@ -475,7 +475,7 @@ struct ModPackDownloadSheet: View {
     private func calculateOverridesTotal(extractedPath: URL) async -> Int {
         // 首先检查 Modrinth 格式的 overrides 文件夹
         var overridesPath = extractedPath.appendingPathComponent("overrides")
-        
+
         // 如果不存在，检查 CurseForge 格式的 overrides 文件夹
         if !FileManager.default.fileExists(atPath: overridesPath.path) {
             let possiblePaths = ["overrides", "Override", "override"]
@@ -487,12 +487,12 @@ struct ModPackDownloadSheet: View {
                 }
             }
         }
-        
+
         // 如果 overrides 文件夹不存在，返回 0
         guard FileManager.default.fileExists(atPath: overridesPath.path) else {
             return 0
         }
-        
+
         // 计算文件总数
         do {
             let allFiles = try InstanceFileCopier.getAllFiles(in: overridesPath)
@@ -502,7 +502,7 @@ struct ModPackDownloadSheet: View {
             return 0
         }
     }
-    
+
     private func createProfileDirectories(for gameName: String) async -> Bool {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
 

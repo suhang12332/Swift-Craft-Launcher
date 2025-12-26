@@ -173,7 +173,7 @@ private struct ModPackProgressView: View {
                         type: .overrides
                     )
                 }
-                
+
                 modPackProgressSection(
                     title: "modpack.files.title".localized(),
                     state: modPackViewModel.modPackInstallState,

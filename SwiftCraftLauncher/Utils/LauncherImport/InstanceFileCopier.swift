@@ -36,10 +36,10 @@ enum InstanceFileCopier {
 
         // 标准化源目录路径（解析符号链接，确保路径一致性）
         let standardizedSourceURL = sourceDirectory.resolvingSymlinksInPath()
-        let sourcePath = standardizedSourceURL.path.hasSuffix("/") 
-            ? standardizedSourceURL.path 
+        let sourcePath = standardizedSourceURL.path.hasSuffix("/")
+            ? standardizedSourceURL.path
             : standardizedSourceURL.path + "/"
-        
+
         // 应用文件过滤（如果有）
         let filesToCopy: [URL]
         if let fileFilter = fileFilter {
@@ -126,12 +126,12 @@ enum InstanceFileCopier {
         try await copyDirectory(
             from: sourceDirectory,
             to: targetDirectory,
-            fileFilter: { fileURL, targetURL in
+            fileFilter: { fileURL, _ in
                 // 标准化文件路径（解析符号链接）
                 let standardizedFileURL = fileURL.resolvingSymlinksInPath()
                 let standardizedSourceURL = sourceDirectory.resolvingSymlinksInPath()
-                let sourcePath = standardizedSourceURL.path.hasSuffix("/") 
-                    ? standardizedSourceURL.path 
+                let sourcePath = standardizedSourceURL.path.hasSuffix("/")
+                    ? standardizedSourceURL.path
                     : standardizedSourceURL.path + "/"
                 let filePath = standardizedFileURL.path
                 // 确保文件路径以源路径开头

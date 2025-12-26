@@ -71,7 +71,7 @@ struct DownloadProgressView: View {
                         type: .overrides
                     )
                 }
-                
+
                 progressRow(
                     title: "modpack.files.title".localized(),
                     installState: modPackInstallState,

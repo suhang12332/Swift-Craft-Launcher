@@ -611,8 +611,7 @@ enum ModPackDependencyInstaller {
             if let found = foundPath {
                 overridesPath = found
             } else {
-                // 如果没有 overrides 文件夹，也要通知进度回调，设置 total 为 0
-                onProgressUpdate?("", 0, 0, .overrides)
+                // 如果没有 overrides 文件夹，直接返回成功
                 return true
             }
         }
@@ -621,28 +620,21 @@ enum ModPackDependencyInstaller {
             // 先计算文件总数，以便在开始时通知进度
             let allFiles = try InstanceFileCopier.getAllFiles(in: overridesPath)
             let totalFiles = allFiles.count
-            
+
             // 如果没有文件需要合并，直接返回成功（不显示进度条）
             guard totalFiles > 0 else {
                 return true
             }
-            
-            // 通知开始合并（只有在有文件时才通知）
-            onProgressUpdate?("正在合并文件...", 0, totalFiles, .overrides)
-            
+
             // 使用统一的合并文件夹方法
             try await InstanceFileCopier.copyDirectory(
                 from: overridesPath,
                 to: resourceDir,
-                fileFilter: nil,  // overrides 不需要过滤文件
-                onProgress: { fileName, completed, total in
-                    // 将进度更新传递给统一的进度回调接口
-                    onProgressUpdate?(fileName, completed, total, .overrides)
-                }
-            )
-            
-            // 通知合并完成
-            onProgressUpdate?("文件合并完成", totalFiles, totalFiles, .overrides)
+                fileFilter: nil  // overrides 不需要过滤文件
+            ) { fileName, completed, total in
+                // 将进度更新传递给统一的进度回调接口
+                onProgressUpdate?(fileName, completed, total, .overrides)
+            }
 
             return true
         } catch {
