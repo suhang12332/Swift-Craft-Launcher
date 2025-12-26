@@ -20,7 +20,7 @@ enum InstanceFileCopier {
     static func copyDirectory(
         from sourceDirectory: URL,
         to targetDirectory: URL,
-        fileFilter: ((URL, URL) -> Bool)? = nil,
+        fileFilter: ((String) -> Bool)? = nil,
         onProgress: ((String, Int, Int) -> Void)?
     ) async throws {
         let fileManager = FileManager.default
@@ -36,29 +36,42 @@ enum InstanceFileCopier {
 
         // 标准化源目录路径（解析符号链接，确保路径一致性）
         let standardizedSourceURL = sourceDirectory.resolvingSymlinksInPath()
-        let sourcePath = standardizedSourceURL.path.hasSuffix("/")
-            ? standardizedSourceURL.path
-            : standardizedSourceURL.path + "/"
+        let sourcePath = getNormalizedPath(standardizedSourceURL.path)
 
-        // 应用文件过滤（如果有）
-        let filesToCopy: [URL]
+        // 标准化所有文件路径并应用文件过滤（如果有）
+        let filesToCopy: [(sourceURL: URL, relativePath: String, targetURL: URL)]
         if let fileFilter = fileFilter {
-            filesToCopy = allFiles.filter { fileURL in
-                // 标准化文件路径（解析符号链接）
+            filesToCopy = allFiles.compactMap { fileURL in
                 let standardizedFileURL = fileURL.resolvingSymlinksInPath()
                 let filePath = standardizedFileURL.path
-                // 确保文件路径以源路径开头
+
                 guard filePath.hasPrefix(sourcePath) else {
                     Logger.shared.warning("文件路径不在源目录内: \(filePath) (源目录: \(sourcePath))")
-                    return false
+                    return nil
                 }
-                // 计算相对路径
+
                 let relativePath = String(filePath.dropFirst(sourcePath.count))
+                guard fileFilter(relativePath) else {
+                    return nil
+                }
+
                 let targetURL = targetDirectory.appendingPathComponent(relativePath)
-                return fileFilter(fileURL, targetURL)
+                return (sourceURL: fileURL, relativePath: relativePath, targetURL: targetURL)
             }
         } else {
-            filesToCopy = allFiles
+            filesToCopy = allFiles.compactMap { fileURL in
+                let standardizedFileURL = fileURL.resolvingSymlinksInPath()
+                let filePath = standardizedFileURL.path
+
+                guard filePath.hasPrefix(sourcePath) else {
+                    Logger.shared.warning("文件路径不在源目录内: \(filePath) (源目录: \(sourcePath))")
+                    return nil
+                }
+
+                let relativePath = String(filePath.dropFirst(sourcePath.count))
+                let targetURL = targetDirectory.appendingPathComponent(relativePath)
+                return (sourceURL: fileURL, relativePath: relativePath, targetURL: targetURL)
+            }
         }
 
         let totalFiles = filesToCopy.count
@@ -71,19 +84,9 @@ enum InstanceFileCopier {
         }
 
         var completed = 0
-        for fileURL in filesToCopy {
+        for (sourceURL, _, targetURL) in filesToCopy {
             // 检查任务是否被取消
             try Task.checkCancellation()
-
-            // 标准化文件路径（解析符号链接，确保路径一致性）
-            let standardizedFileURL = fileURL.resolvingSymlinksInPath()
-            let filePath = standardizedFileURL.path
-            guard filePath.hasPrefix(sourcePath) else {
-                Logger.shared.error("文件路径不在源目录内: \(filePath) (源目录: \(sourcePath))")
-                throw NSError(domain: "InstanceFileCopier", code: 1, userInfo: [NSLocalizedDescriptionKey: "文件路径不在源目录内: \(filePath)"])
-            }
-            let relativePath = String(filePath.dropFirst(sourcePath.count))
-            let targetURL = targetDirectory.appendingPathComponent(relativePath)
 
             // 创建目标目录（如果需要）
             let targetDir = targetURL.deletingLastPathComponent()
@@ -96,10 +99,10 @@ enum InstanceFileCopier {
             if fileManager.fileExists(atPath: targetURL.path) {
                 try fileManager.removeItem(at: targetURL)
             }
-            try fileManager.copyItem(at: fileURL, to: targetURL)
+            try fileManager.copyItem(at: sourceURL, to: targetURL)
 
             completed += 1
-            onProgress?(fileURL.lastPathComponent, completed, totalFiles)
+            onProgress?(sourceURL.lastPathComponent, completed, totalFiles)
 
             // 避免 CPU 占用过高
             try await Task.sleep(nanoseconds: 1_000_000) // 1ms
@@ -122,26 +125,11 @@ enum InstanceFileCopier {
         onProgress: ((String, Int, Int) -> Void)?
     ) async throws {
         // 使用通用合并方法，并应用启动器特定的文件过滤
-        // copyDirectory 内部已经处理了路径标准化，这里不需要重复处理
         try await copyDirectory(
             from: sourceDirectory,
             to: targetDirectory,
-            fileFilter: { fileURL, _ in
-                // 标准化文件路径（解析符号链接）
-                let standardizedFileURL = fileURL.resolvingSymlinksInPath()
-                let standardizedSourceURL = sourceDirectory.resolvingSymlinksInPath()
-                let sourcePath = standardizedSourceURL.path.hasSuffix("/")
-                    ? standardizedSourceURL.path
-                    : standardizedSourceURL.path + "/"
-                let filePath = standardizedFileURL.path
-                // 确保文件路径以源路径开头
-                guard filePath.hasPrefix(sourcePath) else {
-                    Logger.shared.warning("文件路径不在源目录内: \(filePath)")
-                    return false
-                }
-                // 计算相对路径
-                let relativePath = String(filePath.dropFirst(sourcePath.count))
-                return !LauncherFileFilter.shouldFilter(fileName: relativePath, launcherType: launcherType)
+            fileFilter: { relativePath in
+                !LauncherFileFilter.shouldFilter(fileName: relativePath, launcherType: launcherType)
             },
             onProgress: onProgress
         )
@@ -168,5 +156,10 @@ enum InstanceFileCopier {
         }
 
         return files
+    }
+
+    /// 获取标准化的路径（确保以 / 结尾）
+    private static func getNormalizedPath(_ path: String) -> String {
+        return path.hasSuffix("/") ? path : path + "/"
     }
 }
