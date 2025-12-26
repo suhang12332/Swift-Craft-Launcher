@@ -5,12 +5,13 @@ import UniformTypeIdentifiers
 enum GameFormMode {
     case creation
     case modPackImport(file: URL, shouldProcess: Bool)
+    case launcherImport
 
     var isImportMode: Bool {
         switch self {
         case .creation:
             return false
-        case .modPackImport:
+        case .modPackImport, .launcherImport:
             return true
         }
     }
@@ -39,6 +40,7 @@ struct GameFormView: View {
     @State private var mode: GameFormMode = .creation
     @State private var isModPackParsed = false
     @State private var imagePickerHandler: ((Result<[URL], Error>) -> Void)?
+    @State private var showImportPicker = false
 
     // MARK: - Body
     var body: some View {
@@ -84,6 +86,17 @@ struct GameFormView: View {
                                 isModPackParsed = true
                             }
                         }
+                    case .launcherImport:
+                        LauncherImportView(
+                            configuration: GameFormConfiguration(
+                                isDownloading: $isDownloading,
+                                isFormValid: $isFormValid,
+                                triggerConfirm: $triggerConfirm,
+                                triggerCancel: $triggerCancel,
+                                onCancel: { dismiss() },
+                                onConfirm: { dismiss() }
+                            )
+                        )
                     }
                 }
             },
@@ -118,31 +131,51 @@ struct GameFormView: View {
     private var headerView: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("game.form.title".localized())
+                Text("\(currentModeTitle)")
                     .font(.headline)
                 Spacer()
-                // 只在创建模式或未解析完成时显示导入按钮
-                if !mode.isImportMode || !isModPackParsed {
-                    let buttonText = "game.form.mode.import".localized()
-                    let buttonImage = "document.badge.arrow.up"
-
-                    Button(
-                        action: {
-                            filePickerType = .modPack
-                            showFilePicker = true
-                        },
-                        label: {
-                            Label(buttonText, systemImage: buttonImage)
-                                .labelStyle(.iconOnly)
-                                .font(.title3)
-                                .fontWeight(.regular)
-                        }
-                    )
-                    .buttonStyle(.borderless)
-                    .help(buttonText)
-                }
+                importModePicker
             }
         }
+    }
+    
+    private var currentModeTitle: String {
+        switch mode {
+        case .creation:
+            return "game.form.mode.manual".localized()
+        case .modPackImport:
+            return "modpack.import.title".localized()
+        case .launcherImport:
+            return "launcher.import.title".localized()
+        }
+    }
+    
+    private var importModePicker: some View {
+        Menu {
+            Button {
+                mode = .creation
+            } label: {
+                Label("game.form.mode.manual".localized(), systemImage: "square.and.pencil")
+            }
+            
+            Button {
+                filePickerType = .modPack
+                showFilePicker = true
+            } label: {
+                Label("modpack.import.title".localized(), systemImage: "square.and.arrow.up")
+            }
+            
+            Button {
+                mode = .launcherImport
+            } label: {
+                Label("launcher.import.title".localized(), systemImage: "arrow.down.doc")
+            }
+        } label: {
+            Text(currentModeTitle)
+
+        }
+        .fixedSize()
+        .help("game.form.mode.import".localized())
     }
 
     private var footerView: some View {
@@ -177,7 +210,17 @@ struct GameFormView: View {
                     ProgressView()
                         .controlSize(.small)
                 } else {
-                    Text(mode.isImportMode ? "modpack.import.button".localized() : "common.confirm".localized())
+                    let buttonText: String = {
+                        switch mode {
+                        case .modPackImport:
+                            return "modpack.import.button".localized()
+                        case .launcherImport:
+                            return "launcher.import.button".localized()
+                        case .creation:
+                            return "common.confirm".localized()
+                        }
+                    }()
+                    Text(buttonText)
                 }
             }
         }
