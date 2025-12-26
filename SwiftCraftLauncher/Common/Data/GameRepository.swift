@@ -33,6 +33,9 @@ class GameRepository: ObservableObject {
     /// 工作路径改变通知（用于触发UI切换）
     @Published var workingPathChanged: Bool = false
 
+    /// 初始加载是否已完成
+    @Published private(set) var isInitialLoadComplete: Bool = false
+
     // MARK: - Initialization
 
     init() {
@@ -394,6 +397,10 @@ class GameRepository: ObservableObject {
         guard let savedGamesData = UserDefaults.standard.data(forKey: gamesKey) else {
             await MainActor.run {
                 gamesByWorkingPath = [:]
+                // 即使没有数据，也标记为加载完成
+                if !isInitialLoadComplete {
+                    isInitialLoadComplete = true
+                }
             }
             return
         }
@@ -429,12 +436,28 @@ class GameRepository: ObservableObject {
             await MainActor.run {
                 // 只保存当前工作路径的游戏
                 gamesByWorkingPath = [workingPath: validGames]
+                // 标记初始加载完成
+                if !isInitialLoadComplete {
+                    isInitialLoadComplete = true
+                }
             }
 
             Logger.shared.info("成功加载 \(validGames.count) 个游戏（工作路径: \(workingPath)）")
         } catch let error as GlobalError {
+            // 即使出错，也标记为加载完成（避免无限等待）
+            await MainActor.run {
+                if !isInitialLoadComplete {
+                    isInitialLoadComplete = true
+                }
+            }
             throw error
         } catch {
+            // 即使出错，也标记为加载完成（避免无限等待）
+            await MainActor.run {
+                if !isInitialLoadComplete {
+                    isInitialLoadComplete = true
+                }
+            }
             throw GlobalError.validation(
                 chineseMessage: "加载游戏列表失败：\(error.localizedDescription)",
                 i18nKey: "error.validation.game_list_load_failed",
