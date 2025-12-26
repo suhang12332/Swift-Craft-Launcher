@@ -63,6 +63,15 @@ struct DownloadProgressView: View {
     private var modPackInstallProgress: some View {
         Group {
             if modPackInstallState.isInstalling {
+                // 显示 overrides 进度条（只有在有文件需要合并时才显示）
+                if modPackInstallState.overridesTotal > 0 {
+                    progressRow(
+                        title: "launcher.import.copying_files".localized(),
+                        installState: modPackInstallState,
+                        type: .overrides
+                    )
+                }
+
                 progressRow(
                     title: "modpack.files.title".localized(),
                     installState: modPackInstallState,
@@ -104,16 +113,46 @@ struct DownloadProgressView: View {
         FormSection {
             DownloadProgressRow(
                 title: title,
-                progress: type == .files
-                    ? installState.filesProgress
-                    : installState.dependenciesProgress,
-                currentFile: type == .files
-                    ? installState.currentFile : installState.currentDependency,
-                completed: type == .files
-                    ? installState.filesCompleted
-                    : installState.dependenciesCompleted,
-                total: type == .files
-                    ? installState.filesTotal : installState.dependenciesTotal,
+                progress: {
+                    switch type {
+                    case .files:
+                        return installState.filesProgress
+                    case .dependencies:
+                        return installState.dependenciesProgress
+                    case .overrides:
+                        return installState.overridesProgress
+                    }
+                }(),
+                currentFile: {
+                    switch type {
+                    case .files:
+                        return installState.currentFile
+                    case .dependencies:
+                        return installState.currentDependency
+                    case .overrides:
+                        return installState.currentOverride
+                    }
+                }(),
+                completed: {
+                    switch type {
+                    case .files:
+                        return installState.filesCompleted
+                    case .dependencies:
+                        return installState.dependenciesCompleted
+                    case .overrides:
+                        return installState.overridesCompleted
+                    }
+                }(),
+                total: {
+                    switch type {
+                    case .files:
+                        return installState.filesTotal
+                    case .dependencies:
+                        return installState.dependenciesTotal
+                    case .overrides:
+                        return installState.overridesTotal
+                    }
+                }(),
                 version: nil
             )
         }
@@ -141,7 +180,7 @@ private enum ProgressType {
 }
 
 private enum InstallProgressType {
-    case files, dependencies
+    case files, dependencies, overrides
 }
 
 // MARK: - Progress Row Wrapper

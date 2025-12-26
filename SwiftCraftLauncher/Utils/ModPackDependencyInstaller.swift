@@ -65,18 +65,6 @@ enum ModPackDependencyInstaller {
             return false
         }
 
-        // 3. 处理 overrides 文件夹（这个必须在文件和依赖都完成后进行）
-        if let extractedPath = extractedPath {
-            guard await installOverrides(
-                extractedPath: extractedPath,
-                resourceDir: resourceDir,
-                onProgressUpdate: onProgressUpdate
-            ) else {
-                Logger.shared.error("overrides 文件夹处理失败")
-                return false
-            }
-        }
-
         return true
     }
 
@@ -89,7 +77,7 @@ enum ModPackDependencyInstaller {
     ///   - gameInfo: 游戏信息
     ///   - onProgressUpdate: 进度更新回调
     /// - Returns: 是否安装成功
-    private static func installModPackFiles(
+    static func installModPackFiles(
         files: [ModrinthIndexFile],
         resourceDir: URL,
         gameInfo: GameVersionInfo,
@@ -195,19 +183,32 @@ enum ModPackDependencyInstaller {
     ///   - gameInfo: 游戏信息（可选，用于兼容性检查）
     /// - Returns: 是否下载成功
     private static func downloadCurseForgeFile(projectId: Int, fileId: Int, resourceDir: URL, gameInfo: GameVersionInfo? = nil) async -> Bool {
-        // 首先尝试获取特定文件详情
-        guard let fileDetail = await CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId) else {
-            // 主要策略失败，尝试备用策略：获取项目文件列表并找到最新兼容版本
-            return await downloadCurseForgeFileWithFallback(projectId: projectId, resourceDir: resourceDir, gameInfo: gameInfo)
+        // 并发获取文件详情与模组详情，减少重复请求
+        async let fileDetailTask = CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId)
+        async let modDetailTask: CurseForgeModDetail? = try? await CurseForgeService.fetchModDetailThrowing(modId: projectId)
+
+        let fileDetail = await fileDetailTask
+        let modDetail = await modDetailTask
+
+        // 首选指定文件（若详情存在）
+        if let fileDetail = fileDetail {
+            if await downloadCurseForgeFileWithDetail(
+                fileDetail: fileDetail,
+                projectId: projectId,
+                resourceDir: resourceDir,
+                modDetail: modDetail
+            ) {
+                return true
+            }
         }
 
-        // 尝试下载指定文件
-        if await downloadCurseForgeFileWithDetail(fileDetail: fileDetail, projectId: projectId, resourceDir: resourceDir) {
-            return true
-        } else {
-            // 下载失败，尝试备用策略
-            return await downloadCurseForgeFileWithFallback(projectId: projectId, resourceDir: resourceDir, gameInfo: gameInfo)
-        }
+        // 主策略失败或下载失败，回退按版本/加载器匹配
+        return await downloadCurseForgeFileWithFallback(
+            projectId: projectId,
+            resourceDir: resourceDir,
+            gameInfo: gameInfo,
+            modDetail: modDetail
+        )
     }
 
     /// 使用备用策略下载 CurseForge 文件（精确匹配游戏版本和加载器）
@@ -216,7 +217,7 @@ enum ModPackDependencyInstaller {
     ///   - resourceDir: 资源目录
     ///   - gameInfo: 游戏信息（可选，用于兼容性检查）
     /// - Returns: 是否下载成功
-    private static func downloadCurseForgeFileWithFallback(projectId: Int, resourceDir: URL, gameInfo: GameVersionInfo?) async -> Bool {
+    private static func downloadCurseForgeFileWithFallback(projectId: Int, resourceDir: URL, gameInfo: GameVersionInfo?, modDetail: CurseForgeModDetail? = nil) async -> Bool {
         // 必须有游戏信息才能进行精确匹配
         guard let gameInfo = gameInfo else {
             Logger.shared.error("缺少游戏信息，无法进行文件过滤: \(projectId)")
@@ -225,17 +226,41 @@ enum ModPackDependencyInstaller {
 
         // 精确匹配游戏版本和加载器
         let modLoaderTypeValue = CurseForgeModLoaderType.from(gameInfo.modLoader)?.rawValue
-        guard let filteredFiles = await CurseForgeService.fetchProjectFiles(
-            projectId: projectId,
-            gameVersion: gameInfo.gameVersion,
-            modLoaderType: modLoaderTypeValue
-        ), !filteredFiles.isEmpty else {
+        let filteredFiles: [CurseForgeModFileDetail]
+
+        if let modDetail = modDetail {
+            // 复用已获取的模组详情，避免重复网络请求
+            filteredFiles = filterFiles(
+                from: modDetail,
+                projectId: projectId,
+                gameVersion: gameInfo.gameVersion,
+                modLoaderType: modLoaderTypeValue
+            )
+        } else {
+            // 仍需网络请求时退回原有逻辑
+            guard let files = await CurseForgeService.fetchProjectFiles(
+                projectId: projectId,
+                gameVersion: gameInfo.gameVersion,
+                modLoaderType: modLoaderTypeValue
+            ) else {
+                Logger.shared.error("精确匹配失败，未找到兼容文件: \(projectId)")
+                return false
+            }
+            filteredFiles = files
+        }
+
+        guard !filteredFiles.isEmpty else {
             Logger.shared.error("精确匹配失败，未找到兼容文件: \(projectId)")
             return false
         }
 
         if let fileToDownload = filteredFiles.first {
-            return await downloadCurseForgeFileWithDetail(fileDetail: fileToDownload, projectId: projectId, resourceDir: resourceDir)
+            return await downloadCurseForgeFileWithDetail(
+                fileDetail: fileToDownload,
+                projectId: projectId,
+                resourceDir: resourceDir,
+                modDetail: modDetail
+            )
         }
 
         Logger.shared.error("未找到可下载的文件: \(projectId)")
@@ -248,7 +273,12 @@ enum ModPackDependencyInstaller {
     ///   - projectId: 项目ID
     ///   - resourceDir: 资源目录
     /// - Returns: 是否下载成功
-    private static func downloadCurseForgeFileWithDetail(fileDetail: CurseForgeModFileDetail, projectId: Int, resourceDir: URL) async -> Bool {
+    private static func downloadCurseForgeFileWithDetail(
+        fileDetail: CurseForgeModFileDetail,
+        projectId: Int,
+        resourceDir: URL,
+        modDetail: CurseForgeModDetail? = nil
+    ) async -> Bool {
         do {
             // 确定下载URL
             let downloadUrl: String
@@ -259,9 +289,15 @@ enum ModPackDependencyInstaller {
                 downloadUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(fileId: fileDetail.id, fileName: fileDetail.fileName).absoluteString
             }
 
-            // 根据文件详情确定子目录
-            let modDetail = try await CurseForgeService.fetchModDetailThrowing(modId: projectId)
-            let subDirectory = modDetail.directoryName
+            // 根据文件详情确定子目录（优先使用已获取的模组详情，避免重复请求）
+            let effectiveModDetail: CurseForgeModDetail
+            if let modDetail = modDetail {
+                effectiveModDetail = modDetail
+            } else {
+                effectiveModDetail = try await CurseForgeService.fetchModDetailThrowing(modId: projectId)
+            }
+
+            let subDirectory = effectiveModDetail.directoryName
             let destinationPath = resourceDir.appendingPathComponent(subDirectory).appendingPathComponent(fileDetail.fileName)
 
             // 确保目录存在
@@ -271,17 +307,94 @@ enum ModPackDependencyInstaller {
             )
 
             // 下载文件
-            _ = try await DownloadManager.downloadFile(
+            let downloadedFile = try await DownloadManager.downloadFile(
                 urlString: downloadUrl,
                 destinationURL: destinationPath,
                 expectedSha1: fileDetail.hash?.value
             )
+
+            // 写入 Modrinth 风格缓存（使用已有的 CF→Modrinth 转换接口）
+            if let hash = ModScanner.sha1Hash(of: downloadedFile) {
+                // 将 CurseForge 项目详情转换为 ModrinthProjectDetail
+                if let cfAsModrinth = CurseForgeToModrinthAdapter.convert(effectiveModDetail) {
+                    var detailWithFile = cfAsModrinth
+                    detailWithFile.fileName = fileDetail.fileName
+                    detailWithFile.type = "mod"
+                    ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
+                }
+            }
 
             return true
         } catch {
             Logger.shared.error("下载 CurseForge 文件失败: \(fileDetail.fileName)")
             return false
         }
+    }
+
+    /// 基于已获取的模组详情筛选文件，避免额外网络请求
+    private static func filterFiles(
+        from modDetail: CurseForgeModDetail,
+        projectId: Int,
+        gameVersion: String?,
+        modLoaderType: Int?
+    ) -> [CurseForgeModFileDetail] {
+        var files: [CurseForgeModFileDetail] = []
+
+        if let latestFiles = modDetail.latestFiles, !latestFiles.isEmpty {
+            files = latestFiles
+        } else if let latestFilesIndexes = modDetail.latestFilesIndexes, !latestFilesIndexes.isEmpty {
+            var fileIndexMap: [Int: [CurseForgeFileIndex]] = [:]
+            for index in latestFilesIndexes {
+                fileIndexMap[index.fileId, default: []].append(index)
+            }
+
+            for (fileId, indexes) in fileIndexMap {
+                guard let firstIndex = indexes.first else { continue }
+                let gameVersions = indexes.map { $0.gameVersion }
+                let downloadUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(
+                    fileId: fileId,
+                    fileName: firstIndex.filename
+                ).absoluteString
+
+                let fileDetail = CurseForgeModFileDetail(
+                    id: fileId,
+                    displayName: firstIndex.filename,
+                    fileName: firstIndex.filename,
+                    downloadUrl: downloadUrl,
+                    fileDate: "",
+                    releaseType: firstIndex.releaseType,
+                    gameVersions: gameVersions,
+                    dependencies: nil,
+                    changelog: nil,
+                    fileLength: nil,
+                    hash: nil,
+                    hashes: nil,
+                    modules: nil,
+                    projectId: projectId,
+                    projectName: modDetail.name,
+                    authors: modDetail.authors
+                )
+                files.append(fileDetail)
+            }
+        }
+
+        // gameVersion 过滤
+        if let gameVersion = gameVersion {
+            files = files.filter { $0.gameVersions.contains(gameVersion) }
+        }
+
+        // modLoaderType 过滤（依赖 latestFilesIndexes 信息）
+        if let modLoaderType = modLoaderType,
+           let latestFilesIndexes = modDetail.latestFilesIndexes {
+            let matchingIds = Set(
+                latestFilesIndexes
+                    .filter { $0.modLoader == modLoaderType }
+                    .map { $0.fileId }
+            )
+            files = files.filter { matchingIds.contains($0.id) }
+        }
+
+        return files
     }
 
     /// 下载 Modrinth 文件
@@ -344,7 +457,7 @@ enum ModPackDependencyInstaller {
     ///   - resourceDir: 资源目录
     ///   - onProgressUpdate: 进度更新回调
     /// - Returns: 是否安装成功
-    private static func installModPackDependencies(
+    static func installModPackDependencies(
         dependencies: [ModrinthIndexProjectDependency],
         gameInfo: GameVersionInfo,
         resourceDir: URL,
@@ -370,7 +483,7 @@ enum ModPackDependencyInstaller {
                     defer { Task { await semaphore.signal() } }
 
                     // 检查是否需要跳过
-                    if shouldSkipDependency(dep: dep, gameInfo: gameInfo, resourceDir: resourceDir) {
+                    if await shouldSkipDependency(dep: dep, gameInfo: gameInfo, resourceDir: resourceDir) {
                         // 跳过也更新进度
                         let currentCount = completedCount.increment()
                         onProgressUpdate?("modpack.progress.dependency_skipped".localized(), currentCount, requiredDependencies.count, .dependencies)
@@ -424,16 +537,38 @@ enum ModPackDependencyInstaller {
         dep: ModrinthIndexProjectDependency,
         gameInfo: GameVersionInfo,
         resourceDir: URL
-    ) -> Bool {
+    ) async -> Bool {
         // 跳过 Fabric API 在 Quilt 上的安装
         if dep.projectId == "P7dR8mSH" && gameInfo.modLoader.lowercased() == "quilt" {
             return true
         }
 
-        // 检查是否已安装
-        if let projectId = dep.projectId,
-           ModScanner.shared.isModInstalledSync(projectId: projectId, in: resourceDir) {
-            return true
+        // 检查是否已安装（使用hash）
+        if let projectId = dep.projectId {
+            // 获取项目版本信息以得到文件hash
+            if let versionId = dep.versionId {
+                // 如果有指定版本ID，直接获取该版本
+                if let version = try? await ModrinthService.fetchProjectVersionThrowing(id: versionId),
+                   let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) {
+                    if ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
+                        return true
+                    }
+                }
+            } else {
+                // 否则获取兼容版本
+                let versions = try? await ModrinthService.fetchProjectVersionsFilter(
+                    id: projectId,
+                    selectedVersions: [gameInfo.gameVersion],
+                    selectedLoaders: [gameInfo.modLoader],
+                    type: "mod"
+                )
+                if let version = versions?.first,
+                   let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) {
+                    if ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
+                        return true
+                    }
+                }
+            }
         }
 
         return false
@@ -447,7 +582,7 @@ enum ModPackDependencyInstaller {
     ///   - resourceDir: 资源目录
     ///   - onProgressUpdate: 进度更新回调
     /// - Returns: 是否安装成功
-    private static func installOverrides(
+    static func installOverrides(
         extractedPath: URL,
         resourceDir: URL,
         onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
@@ -476,98 +611,35 @@ enum ModPackDependencyInstaller {
             if let found = foundPath {
                 overridesPath = found
             } else {
+                // 如果没有 overrides 文件夹，直接返回成功
                 return true
             }
         }
 
         do {
-            // 获取 overrides 文件夹中的所有内容
-            let contents = try FileManager.default.contentsOfDirectory(
-                at: overridesPath,
-                includingPropertiesForKeys: [.isDirectoryKey],
-                options: [.skipsHiddenFiles]
-            )
+            // 先计算文件总数，以便在开始时通知进度
+            let allFiles = try InstanceFileCopier.getAllFiles(in: overridesPath)
+            let totalFiles = allFiles.count
 
-            // 逐个处理文件/文件夹（不显示进度）
-            for item in contents {
-                let itemName = item.lastPathComponent
-                let destinationPath = resourceDir.appendingPathComponent(itemName)
+            // 如果没有文件需要合并，直接返回成功（不显示进度条）
+            guard totalFiles > 0 else {
+                return true
+            }
 
-                try await processOverrideItem(item: item, destinationPath: destinationPath, itemName: itemName)
+            // 使用统一的合并文件夹方法
+            try await InstanceFileCopier.copyDirectory(
+                from: overridesPath,
+                to: resourceDir,
+                fileFilter: nil  // overrides 不需要过滤文件
+            ) { fileName, completed, total in
+                // 将进度更新传递给统一的进度回调接口
+                onProgressUpdate?(fileName, completed, total, .overrides)
             }
 
             return true
         } catch {
             Logger.shared.error("处理 overrides 文件夹失败: \(error.localizedDescription)")
             return false
-        }
-    }
-
-    /// 处理单个 overrides 项目
-    /// - Parameters:
-    ///   - item: 源项目
-    ///   - destinationPath: 目标路径
-    ///   - itemName: 项目名称
-    private static func processOverrideItem(item: URL, destinationPath: URL, itemName: String) async throws {
-        if FileManager.default.fileExists(atPath: destinationPath.path) {
-            // 如果目标路径存在，检查是否为目录
-            let itemAttributes = try FileManager.default.attributesOfItem(atPath: item.path)
-            let destinationAttributes = try FileManager.default.attributesOfItem(atPath: destinationPath.path)
-
-            let isSourceDirectory = (itemAttributes[.type] as? FileAttributeType) == .typeDirectory
-            let isDestinationDirectory = (destinationAttributes[.type] as? FileAttributeType) == .typeDirectory
-
-            if isSourceDirectory && isDestinationDirectory {
-                // 如果都是目录，递归合并
-                try await mergeDirectories(source: item, destination: destinationPath)
-            } else if !isSourceDirectory && !isDestinationDirectory {
-                // 如果都是文件，覆盖
-                try FileManager.default.removeItem(at: destinationPath)
-                try FileManager.default.moveItem(at: item, to: destinationPath)
-            }
-            // 类型不匹配的情况跳过
-        } else {
-            // 目标路径不存在，直接移动
-            try FileManager.default.moveItem(at: item, to: destinationPath)
-        }
-    }
-
-    /// 递归合并目录
-    /// - Parameters:
-    ///   - source: 源目录
-    ///   - destination: 目标目录
-    private static func mergeDirectories(source: URL, destination: URL) async throws {
-        let contents = try FileManager.default.contentsOfDirectory(
-            at: source,
-            includingPropertiesForKeys: [.isDirectoryKey],
-            options: [.skipsHiddenFiles]
-        )
-
-        for item in contents {
-            let itemName = item.lastPathComponent
-            let destinationItem = destination.appendingPathComponent(itemName)
-
-            if FileManager.default.fileExists(atPath: destinationItem.path) {
-                // 目标路径存在，检查类型
-                let itemAttributes = try FileManager.default.attributesOfItem(atPath: item.path)
-                let destinationAttributes = try FileManager.default.attributesOfItem(atPath: destinationItem.path)
-
-                let isSourceDirectory = (itemAttributes[.type] as? FileAttributeType) == .typeDirectory
-                let isDestinationDirectory = (destinationAttributes[.type] as? FileAttributeType) == .typeDirectory
-
-                if isSourceDirectory && isDestinationDirectory {
-                    // 递归合并子目录
-                    try await mergeDirectories(source: item, destination: destinationItem)
-                } else if !isSourceDirectory && !isDestinationDirectory {
-                    // 覆盖文件
-                    try FileManager.default.removeItem(at: destinationItem)
-                    try FileManager.default.moveItem(at: item, to: destinationItem)
-                }
-                // 类型不匹配的情况跳过
-            } else {
-                // 目标路径不存在，直接移动
-                try FileManager.default.moveItem(at: item, to: destinationItem)
-            }
         }
     }
 

@@ -8,8 +8,7 @@ struct GameLocalResourceView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var selectedProjectId: String?
     let refreshToken: UUID
-
-    @State private var searchTextForResource = ""
+    @Binding var searchText: String
     @State private var scannedResources: [ModrinthProjectDetail] = []
     @State private var isLoadingResources = false
     @State private var error: GlobalError?
@@ -43,7 +42,7 @@ struct GameLocalResourceView: View {
         }
         .listStyle(.plain)
         .searchable(
-            text: $searchTextForResource,
+            text: $searchText,
             placement: .toolbar,
             prompt: "search.resources".localized()
         )
@@ -76,8 +75,10 @@ struct GameLocalResourceView: View {
                 refreshAllFiles()
                 loadPage(page: 1, append: false)
             }
+            // 注意：不再清除搜索文本，保持用户搜索状态
+            searchText = ""
         }
-        .onChange(of: searchTextForResource) { oldValue, newValue in
+        .onChange(of: searchText) { oldValue, newValue in
             // 搜索文本变化时，重置分页并触发防抖搜索
             if oldValue != newValue {
                 resetPagination()
@@ -141,7 +142,8 @@ struct GameLocalResourceView: View {
                 }
                 .onTapGesture {
                     // 本地资源不跳转详情页面（沿用原逻辑）
-                    if mod.author != "local" {
+                    // 使用 id 前缀判断本地资源，更可靠
+                    if !mod.projectId.hasPrefix("local_") && !mod.projectId.hasPrefix("file_") {
                         selectedProjectId = mod.projectId
                         if let type = ResourceType(rawValue: query) {
                             selectedItem = .resource(type)
@@ -180,7 +182,7 @@ struct GameLocalResourceView: View {
         // 清理搜索定时器
         searchTimer?.invalidate()
         searchTimer = nil
-        searchTextForResource = ""
+        // 注意：不再清除搜索文本，保持用户搜索状态
         scannedResources = []
         isLoadingResources = false
         error = nil
@@ -196,13 +198,13 @@ struct GameLocalResourceView: View {
     /// 防抖搜索
     private func debounceSearch() {
         searchTimer?.invalidate()
-        let searchText = searchTextForResource
+        let currentSearchText = searchText
         searchTimer = Timer.scheduledTimer(
             withTimeInterval: 0.5,
             repeats: false
         ) { _ in
             // 检查搜索文本是否已变化（避免过期的搜索）
-            if self.searchTextForResource == searchText {
+            if self.searchText == currentSearchText {
                 self.loadPage(page: 1, append: false)
             }
         }
@@ -213,9 +215,9 @@ struct GameLocalResourceView: View {
         // 首先根据 query 筛选资源类型
         let queryLower = query.lowercased()
         let filteredByType = details.filter { detail in
-            // 对于本地资源（team == "local"），目录本身已经根据 query 筛选了，
+            // 对于本地资源（id 以 "local_" 或 "file_" 开头），目录本身已经根据 query 筛选了，
             // 所以不需要再根据 projectType 筛选（因为 fallback detail 的 projectType 总是 "mod"）
-            if detail.team == "local" {
+            if detail.id.hasPrefix("local_") || detail.id.hasPrefix("file_") {
                 // 本地资源：目录已经筛选，直接显示
                 return true
             } else {
@@ -226,7 +228,7 @@ struct GameLocalResourceView: View {
         }
 
         // 然后根据搜索文本过滤
-        let searchLower = searchTextForResource.lowercased()
+        let searchLower = searchText.lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
 
         if searchLower.isEmpty {
@@ -319,7 +321,7 @@ struct GameLocalResourceView: View {
         }
         error = nil
 
-        let isSearching = !searchTextForResource.isEmpty
+        let isSearching = !searchText.isEmpty
 
         // 始终使用 allFiles 进行分页扫描，然后在结果中根据 title 过滤
         ModScanner.shared.scanResourceFilesPage(

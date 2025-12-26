@@ -312,7 +312,6 @@ struct ModrinthProjectContentView: View {
     private func loadProjectDetails() async {
         isLoading = true
         error = nil
-        Logger.shared.info("Loading project details for ID: \(projectId)")
 
         do {
             try await loadProjectDetailsThrowing()
@@ -364,10 +363,6 @@ struct ModrinthProjectContentView: View {
         await MainActor.run {
             projectDetail = fetchedProject
         }
-
-        Logger.shared.info(
-            "Successfully loaded project details for ID: \(projectId)"
-        )
     }
 }
 

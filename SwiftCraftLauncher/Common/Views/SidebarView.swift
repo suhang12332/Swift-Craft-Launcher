@@ -141,11 +141,13 @@ public struct SidebarView: View {
                         NavigationLink(value: SidebarItem.game(game.id)) {
                             HStack(spacing: 6) {
                                 // 使用优化的 GameIconView 组件，避免重复的文件系统 I/O
+                                // 使用稳定的 id 避免视图重新创建
                                 GameIconView(
                                     gameName: game.gameName,
                                     iconName: game.gameIcon,
                                     size: 16
                                 )
+                                .id("\(game.id)-\(game.gameIcon)")
                                 Text(game.gameName)
                                     .lineLimit(1)
                             }

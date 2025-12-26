@@ -4,7 +4,6 @@ import SwiftUI
 struct ModrinthDetailView: View {
     // MARK: - Properties
     let query: String
-    @Binding var sortIndex: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
     @Binding var selectedFeatures: [String]
@@ -17,19 +16,18 @@ struct ModrinthDetailView: View {
     @Binding var gameType: Bool
     let header: AnyView?
     @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找
+    @Binding var dataSource: DataSource
 
     @StateObject private var viewModel = ModrinthSearchViewModel()
     @State private var hasLoaded = false
-    @State private var searchText: String = ""
+    @Binding var searchText: String
     @State private var searchTimer: Timer?
     @State private var currentPage: Int = 1
-    @State private var lastSearchKey: String = ""
     @State private var lastSearchParams: String = ""
     @State private var error: GlobalError?
 
     init(
         query: String,
-        sortIndex: Binding<String>,
         selectedVersions: Binding<[String]>,
         selectedCategories: Binding<[String]>,
         selectedFeatures: Binding<[String]>,
@@ -41,10 +39,11 @@ struct ModrinthDetailView: View {
         selectedItem: Binding<SidebarItem>,
         gameType: Binding<Bool>,
         header: AnyView? = nil,
-        scannedDetailIds: Binding<Set<String>> = .constant([])
+        scannedDetailIds: Binding<Set<String>> = .constant([]),
+        dataSource: Binding<DataSource> = .constant(.modrinth),
+        searchText: Binding<String> = .constant("")
     ) {
         self.query = query
-        _sortIndex = sortIndex
         _selectedVersions = selectedVersions
         _selectedCategories = selectedCategories
         _selectedFeatures = selectedFeatures
@@ -57,12 +56,13 @@ struct ModrinthDetailView: View {
         _gameType = gameType
         self.header = header
         _scannedDetailIds = scannedDetailIds
+        _dataSource = dataSource
+        _searchText = searchText
     }
 
     private var searchKey: String {
         [
             query,
-            sortIndex,
             selectedVersions.joined(separator: ","),
             selectedCategories.joined(separator: ","),
             selectedFeatures.joined(separator: ","),
@@ -70,6 +70,7 @@ struct ModrinthDetailView: View {
             selectedPerformanceImpact.joined(separator: ","),
             selectedLoader.joined(separator: ","),
             String(gameType),
+            dataSource.rawValue,
         ].joined(separator: "|")
     }
 
@@ -96,12 +97,29 @@ struct ModrinthDetailView: View {
                 await initialLoadIfNeeded()
             }
         }
-        .onChange(of: searchKey) { _, newKey in
-            if newKey != lastSearchKey {
-                lastSearchKey = newKey
+        .onChange(of: selectedProjectId) { oldValue, newValue in
+            if oldValue != nil && newValue == nil {
+                // 关闭详情后重新刷新列表，确保最新状态
+                viewModel.clearResults()
                 resetPagination()
                 triggerSearch()
             }
+        }
+        .onChange(of: dataSource) { _, _ in
+            // 清理之前的旧数据
+            viewModel.clearResults()
+            resetPagination()
+//            searchText = ""
+            lastSearchParams = ""
+            error = nil
+            hasLoaded = false
+            triggerSearch()
+        }
+        .onChange(of: query) { _, _ in
+            // 清理之前的旧数据
+            viewModel.clearResults()
+            triggerSearch()
+            searchText = ""
         }
         .searchable(
             text: $searchText,
@@ -129,8 +147,8 @@ struct ModrinthDetailView: View {
             }
         }
         .onDisappear {
-            // 页面关闭后清除所有数据
-            clearAllData()
+            // 页面关闭后清除数据，但保留搜索文本
+            clearDataExceptSearchText()
         }
     }
 
@@ -206,9 +224,9 @@ struct ModrinthDetailView: View {
             resolutions: selectedResolutions,
             performanceImpact: selectedPerformanceImpact,
             loaders: selectedLoader,
-            sortIndex: sortIndex,
             page: page,
-            append: append
+            append: append,
+            dataSource: dataSource
         )
     }
 
@@ -219,7 +237,7 @@ struct ModrinthDetailView: View {
                 newErrorView(error)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .listRowSeparator(.hidden)
-            } else if viewModel.isLoading && viewModel.results.isEmpty {
+            } else if viewModel.isLoading {
                 HStack {
                     ProgressView()
                         .controlSize(.small)
@@ -295,7 +313,20 @@ struct ModrinthDetailView: View {
         // 清理状态数据
         searchText = ""
         currentPage = 1
-        lastSearchKey = ""
+        lastSearchParams = ""
+        error = nil
+        hasLoaded = false
+    }
+
+    /// 清除数据但保留搜索文本（用于从详情页返回时）
+    private func clearDataExceptSearchText() {
+        // 清理搜索定时器，避免内存泄漏
+        searchTimer?.invalidate()
+        searchTimer = nil
+        // 清理 ViewModel 数据
+        viewModel.clearResults()
+        // 清理状态数据，但保留搜索文本
+        currentPage = 1
         lastSearchParams = ""
         error = nil
         hasLoaded = false
@@ -304,7 +335,6 @@ struct ModrinthDetailView: View {
     private func buildSearchParamsKey(page: Int) -> String {
         [
             query,
-            sortIndex,
             selectedVersions.joined(separator: ","),
             selectedCategories.joined(separator: ","),
             selectedFeatures.joined(separator: ","),
@@ -314,6 +344,7 @@ struct ModrinthDetailView: View {
             String(gameType),
             searchText,
             "page:\(page)",
+            dataSource.rawValue,
         ].joined(separator: "|")
     }
 

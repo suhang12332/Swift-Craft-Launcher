@@ -2,7 +2,6 @@
 //  ModPackImportViewModel.swift
 //  SwiftCraftLauncher
 //
-//  Created by AI Assistant on 2025/1/27.
 //
 
 import SwiftUI
@@ -183,7 +182,45 @@ class ModPackImportViewModel: BaseGameFormViewModel {
             return
         }
 
-        // 2. 准备安装
+        // 2. 复制 overrides 文件（在安装依赖之前）
+        let resourceDir = AppPaths.profileDirectory(gameName: gameNameValidator.gameName)
+        // 先计算 overrides 文件总数
+        let overridesTotal = await calculateOverridesTotal(extractedPath: extractedPath)
+
+        // 只有当有 overrides 文件时，才提前设置 isInstalling 和 overridesTotal
+        // 确保进度条能在复制开始前显示（updateOverridesProgress 会在回调中更新其他状态）
+        if overridesTotal > 0 {
+            await MainActor.run {
+                modPackViewModel.modPackInstallState.isInstalling = true
+                modPackViewModel.modPackInstallState.overridesTotal = overridesTotal
+                modPackViewModel.objectWillChange.send()
+            }
+        }
+
+        // 等待一小段时间，确保 UI 更新
+        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
+
+        let overridesSuccess = await ModPackDependencyInstaller.installOverrides(
+            extractedPath: extractedPath,
+            resourceDir: resourceDir
+        ) { [self] fileName, completed, total, type in
+            Task { @MainActor in
+                updateModPackInstallProgress(
+                    fileName: fileName,
+                    completed: completed,
+                    total: total,
+                    type: type
+                )
+                modPackViewModel.objectWillChange.send()
+            }
+        }
+
+        if !overridesSuccess {
+            handleModPackInstallationResult(success: false, gameName: gameNameValidator.gameName)
+            return
+        }
+
+        // 3. 准备安装
         let tempGameInfo = GameVersionInfo(
             id: UUID(),
             gameName: gameNameValidator.gameName,
@@ -202,11 +239,33 @@ class ModPackImportViewModel: BaseGameFormViewModel {
 
         isProcessingModPack = false
 
-        // 3. 安装依赖
-        let dependencySuccess = await ModPackDependencyInstaller.installVersionDependencies(
-            indexInfo: indexInfo,
+        // 4. 下载整合包文件（mod 文件）
+        let filesSuccess = await ModPackDependencyInstaller.installModPackFiles(
+            files: indexInfo.files,
+            resourceDir: resourceDir,
+            gameInfo: tempGameInfo
+        ) { [self] fileName, completed, total, type in
+            Task { @MainActor in
+                modPackViewModel.objectWillChange.send()
+                updateModPackInstallProgress(
+                    fileName: fileName,
+                    completed: completed,
+                    total: total,
+                    type: type
+                )
+            }
+        }
+
+        if !filesSuccess {
+            handleModPackInstallationResult(success: false, gameName: gameNameValidator.gameName)
+            return
+        }
+
+        // 5. 安装依赖
+        let dependencySuccess = await ModPackDependencyInstaller.installModPackDependencies(
+            dependencies: indexInfo.dependencies,
             gameInfo: tempGameInfo,
-            extractedPath: extractedPath
+            resourceDir: resourceDir
         ) { [self] fileName, completed, total, type in
             Task { @MainActor in
                 modPackViewModel.objectWillChange.send()
@@ -224,7 +283,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
             return
         }
 
-        // 4. 安装游戏本体
+        // 6. 安装游戏本体
         let gameSuccess = await withCheckedContinuation { continuation in
             Task {
                 await gameSetupService.saveGame(
@@ -254,6 +313,37 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     }
 
     // MARK: - Helper Methods
+    private func calculateOverridesTotal(extractedPath: URL) async -> Int {
+        // 首先检查 Modrinth 格式的 overrides 文件夹
+        var overridesPath = extractedPath.appendingPathComponent("overrides")
+
+        // 如果不存在，检查 CurseForge 格式的 overrides 文件夹
+        if !FileManager.default.fileExists(atPath: overridesPath.path) {
+            let possiblePaths = ["overrides", "Override", "override"]
+            for pathName in possiblePaths {
+                let testPath = extractedPath.appendingPathComponent(pathName)
+                if FileManager.default.fileExists(atPath: testPath.path) {
+                    overridesPath = testPath
+                    break
+                }
+            }
+        }
+
+        // 如果 overrides 文件夹不存在，返回 0
+        guard FileManager.default.fileExists(atPath: overridesPath.path) else {
+            return 0
+        }
+
+        // 计算文件总数
+        do {
+            let allFiles = try InstanceFileCopier.getAllFiles(in: overridesPath)
+            return allFiles.count
+        } catch {
+            Logger.shared.error("计算 overrides 文件总数失败: \(error.localizedDescription)")
+            return 0
+        }
+    }
+
     private func createProfileDirectories(for gameName: String) async -> Bool {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
 
@@ -320,7 +410,11 @@ class ModPackImportViewModel: BaseGameFormViewModel {
                 total: total
             )
         case .overrides:
-            break
+            modPackViewModel.modPackInstallState.updateOverridesProgress(
+                overrideName: fileName,
+                completed: completed,
+                total: total
+            )
         }
     }
 

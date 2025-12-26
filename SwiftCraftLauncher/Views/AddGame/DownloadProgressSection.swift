@@ -2,7 +2,6 @@
 //  DownloadProgressSection.swift
 //  SwiftCraftLauncher
 //
-//  Created by AI Assistant on 2025/1/27.
 //
 
 import SwiftUI
@@ -166,6 +165,15 @@ private struct ModPackProgressView: View {
     var body: some View {
         if modPackViewModel.modPackInstallState.isInstalling {
             VStack(spacing: 24) {
+                // 显示 overrides 进度条（只有在有文件需要合并时才显示）
+                if modPackViewModel.modPackInstallState.overridesTotal > 0 {
+                    modPackProgressSection(
+                        title: "launcher.import.copying_files".localized(),
+                        state: modPackViewModel.modPackInstallState,
+                        type: .overrides
+                    )
+                }
+
                 modPackProgressSection(
                     title: "modpack.files.title".localized(),
                     state: modPackViewModel.modPackInstallState,
@@ -186,6 +194,7 @@ private struct ModPackProgressView: View {
     private enum ModPackProgressType {
         case files
         case dependencies
+        case overrides
     }
 
     private func modPackProgressSection(
@@ -196,10 +205,46 @@ private struct ModPackProgressView: View {
         FormSection {
             DownloadProgressRow(
                 title: title,
-                progress: type == .files ? state.filesProgress : state.dependenciesProgress,
-                currentFile: type == .files ? state.currentFile : state.currentDependency,
-                completed: type == .files ? state.filesCompleted : state.dependenciesCompleted,
-                total: type == .files ? state.filesTotal : state.dependenciesTotal,
+                progress: {
+                    switch type {
+                    case .files:
+                        return state.filesProgress
+                    case .dependencies:
+                        return state.dependenciesProgress
+                    case .overrides:
+                        return state.overridesProgress
+                    }
+                }(),
+                currentFile: {
+                    switch type {
+                    case .files:
+                        return state.currentFile
+                    case .dependencies:
+                        return state.currentDependency
+                    case .overrides:
+                        return state.currentOverride
+                    }
+                }(),
+                completed: {
+                    switch type {
+                    case .files:
+                        return state.filesCompleted
+                    case .dependencies:
+                        return state.dependenciesCompleted
+                    case .overrides:
+                        return state.overridesCompleted
+                    }
+                }(),
+                total: {
+                    switch type {
+                    case .files:
+                        return state.filesTotal
+                    case .dependencies:
+                        return state.dependenciesTotal
+                    case .overrides:
+                        return state.overridesTotal
+                    }
+                }(),
                 version: nil
             )
         }

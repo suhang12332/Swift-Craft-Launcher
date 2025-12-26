@@ -11,7 +11,7 @@ struct ModPackDownloadSheet: View {
     let projectId: String
     let gameInfo: GameVersionInfo?
     let query: String
-    let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
+    let preloadedDetail: ModrinthProjectDetail?
     @EnvironmentObject private var gameRepository: GameRepository
     @Environment(\.dismiss)
     private var dismiss
@@ -25,7 +25,12 @@ struct ModPackDownloadSheet: View {
     @StateObject private var gameNameValidator: GameNameValidator
 
     // MARK: - Initializer
-    init(projectId: String, gameInfo: GameVersionInfo?, query: String, preloadedDetail: ModrinthProjectDetail? = nil) {
+    init(
+        projectId: String,
+        gameInfo: GameVersionInfo?,
+        query: String,
+        preloadedDetail: ModrinthProjectDetail? = nil
+    ) {
         self.projectId = projectId
         self.gameInfo = gameInfo
         self.query = query
@@ -41,10 +46,11 @@ struct ModPackDownloadSheet: View {
         )
         .onAppear {
             viewModel.setGameRepository(gameRepository)
-            // 使用预加载的 detail
-            if let preloaded = preloadedDetail {
+            if let preloadedDetail {
+                viewModel.applyPreloadedDetail(preloadedDetail)
+            } else {
                 Task {
-                    await viewModel.setPreloadedDetail(preloaded)
+                    await viewModel.loadProjectDetails(projectId: projectId)
                 }
             }
         }
@@ -87,6 +93,9 @@ struct ModPackDownloadSheet: View {
         VStack(alignment: .leading, spacing: 12) {
             if isProcessing {
                 ProcessingView()
+            } else if viewModel.isLoadingProjectDetails {
+                ProgressView().controlSize(.small)
+                    .frame(maxWidth: .infinity, minHeight: 130)
             } else if let projectDetail = viewModel.projectDetail {
                 ModrinthProjectTitleView(projectDetail: projectDetail)
                     .padding(.bottom, 18)
@@ -114,10 +123,6 @@ struct ModPackDownloadSheet: View {
                     )
                     .padding(.top, 18)
                 }
-            } else {
-                Text("global_resource.loading_error".localized())
-                    .foregroundColor(.secondary)
-                    .padding()
             }
         }
     }
@@ -310,7 +315,45 @@ struct ModPackDownloadSheet: View {
             return
         }
 
-        // 6. 准备安装
+        // 6. 复制 overrides 文件（在安装依赖之前）
+        let resourceDir = AppPaths.profileDirectory(gameName: gameNameValidator.gameName)
+        // 先计算 overrides 文件总数
+        let overridesTotal = await calculateOverridesTotal(extractedPath: extractedPath)
+
+        // 只有当有 overrides 文件时，才提前设置 isInstalling 和 overridesTotal
+        // 确保进度条能在复制开始前显示（updateOverridesProgress 会在回调中更新其他状态）
+        if overridesTotal > 0 {
+            await MainActor.run {
+                viewModel.modPackInstallState.isInstalling = true
+                viewModel.modPackInstallState.overridesTotal = overridesTotal
+                viewModel.objectWillChange.send()
+            }
+        }
+
+        // 等待一小段时间，确保 UI 更新
+        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
+
+        let overridesSuccess = await ModPackDependencyInstaller.installOverrides(
+            extractedPath: extractedPath,
+            resourceDir: resourceDir
+        ) { fileName, completed, total, type in
+            Task { @MainActor in
+                updateInstallProgress(
+                    fileName: fileName,
+                    completed: completed,
+                    total: total,
+                    type: type
+                )
+                viewModel.objectWillChange.send()
+            }
+        }
+
+        if !overridesSuccess {
+            handleInstallationResult(success: false, gameName: gameNameValidator.gameName)
+            return
+        }
+
+        // 7. 准备安装
         let tempGameInfo = GameVersionInfo(
             id: UUID(),
             gameName: gameNameValidator.gameName,
@@ -330,30 +373,51 @@ struct ModPackDownloadSheet: View {
 
         isProcessing = false
 
-        // 7. 安装依赖
-        let dependencySuccess =
-            await ModPackDependencyInstaller.installVersionDependencies(
-                indexInfo: indexInfo,
-                gameInfo: tempGameInfo,
-                extractedPath: extractedPath
-            ) { fileName, completed, total, type in
-                Task { @MainActor in
-                    viewModel.objectWillChange.send()
-                    updateInstallProgress(
-                        fileName: fileName,
-                        completed: completed,
-                        total: total,
-                        type: type
-                    )
-                }
+        // 8. 下载整合包文件（mod 文件）
+        let filesSuccess = await ModPackDependencyInstaller.installModPackFiles(
+            files: indexInfo.files,
+            resourceDir: resourceDir,
+            gameInfo: tempGameInfo
+        ) { fileName, completed, total, type in
+            Task { @MainActor in
+                viewModel.objectWillChange.send()
+                updateInstallProgress(
+                    fileName: fileName,
+                    completed: completed,
+                    total: total,
+                    type: type
+                )
             }
+        }
+
+        if !filesSuccess {
+            handleInstallationResult(success: false, gameName: gameNameValidator.gameName)
+            return
+        }
+
+        // 9. 安装依赖
+        let dependencySuccess = await ModPackDependencyInstaller.installModPackDependencies(
+            dependencies: indexInfo.dependencies,
+            gameInfo: tempGameInfo,
+            resourceDir: resourceDir
+        ) { fileName, completed, total, type in
+            Task { @MainActor in
+                viewModel.objectWillChange.send()
+                updateInstallProgress(
+                    fileName: fileName,
+                    completed: completed,
+                    total: total,
+                    type: type
+                )
+            }
+        }
 
         if !dependencySuccess {
             handleInstallationResult(success: false, gameName: gameNameValidator.gameName)
             return
         }
 
-        // 8. 安装游戏本体
+        // 10. 安装游戏本体
         let gameSuccess = await withCheckedContinuation { continuation in
             Task {
                 await gameSetupService.saveGame(
@@ -404,6 +468,37 @@ struct ModPackDownloadSheet: View {
             file: fileToDownload,
             projectDetail: projectDetail
         )
+    }
+
+    private func calculateOverridesTotal(extractedPath: URL) async -> Int {
+        // 首先检查 Modrinth 格式的 overrides 文件夹
+        var overridesPath = extractedPath.appendingPathComponent("overrides")
+
+        // 如果不存在，检查 CurseForge 格式的 overrides 文件夹
+        if !FileManager.default.fileExists(atPath: overridesPath.path) {
+            let possiblePaths = ["overrides", "Override", "override"]
+            for pathName in possiblePaths {
+                let testPath = extractedPath.appendingPathComponent(pathName)
+                if FileManager.default.fileExists(atPath: testPath.path) {
+                    overridesPath = testPath
+                    break
+                }
+            }
+        }
+
+        // 如果 overrides 文件夹不存在，返回 0
+        guard FileManager.default.fileExists(atPath: overridesPath.path) else {
+            return 0
+        }
+
+        // 计算文件总数
+        do {
+            let allFiles = try InstanceFileCopier.getAllFiles(in: overridesPath)
+            return allFiles.count
+        } catch {
+            Logger.shared.error("计算 overrides 文件总数失败: \(error.localizedDescription)")
+            return 0
+        }
     }
 
     private func createProfileDirectories(for gameName: String) async -> Bool {
@@ -474,7 +569,11 @@ struct ModPackDownloadSheet: View {
                 total: total
             )
         case .overrides:
-            break
+            viewModel.modPackInstallState.updateOverridesProgress(
+                overrideName: fileName,
+                completed: completed,
+                total: total
+            )
         }
     }
 

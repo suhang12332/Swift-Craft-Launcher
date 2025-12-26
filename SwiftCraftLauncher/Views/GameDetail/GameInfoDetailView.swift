@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - Window Delegate
 // 已移除 NSWindowDelegate 相关代码，纯 SwiftUI 不再需要
@@ -15,7 +16,7 @@ struct GameInfoDetailView: View {
     let game: GameVersionInfo
 
     @Binding var query: String
-    @Binding var sortIndex: String
+    @Binding var dataSource: DataSource
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
     @Binding var selectedFeatures: [String]
@@ -26,6 +27,7 @@ struct GameInfoDetailView: View {
     @Binding var gameType: Bool  // false = local,   = server
     @EnvironmentObject var gameRepository: GameRepository
     @Binding var selectedItem: SidebarItem
+    @Binding var searchText: String
     @StateObject private var cacheManager = CacheManager()
     @State private var localRefreshToken = UUID()
 
@@ -36,13 +38,15 @@ struct GameInfoDetailView: View {
     @State private var remoteHeader: AnyView?
     @State private var localHeader: AnyView?
 
+    // 文件选择器状态
+    @State private var showIconFilePicker = false
+
     var body: some View {
         return Group {
             if gameType {
                 GameRemoteResourceView(
                     game: game,
                     query: $query,
-                    sortIndex: $sortIndex,
                     selectedVersions: $selectedVersions,
                     selectedCategories: $selectedCategories,
                     selectedFeatures: $selectedFeatures,
@@ -53,7 +57,9 @@ struct GameInfoDetailView: View {
                     selectedItem: $selectedItem,
                     gameType: $gameType,
                     header: remoteHeader,
-                    scannedDetailIds: $scannedResources
+                    scannedDetailIds: $scannedResources,
+                    dataSource: $dataSource,
+                    searchText: $searchText
                 )
             } else {
                 GameLocalResourceView(
@@ -62,7 +68,8 @@ struct GameInfoDetailView: View {
                     header: localHeader,
                     selectedItem: $selectedItem,
                     selectedProjectId: $selectedProjectId,
-                    refreshToken: localRefreshToken
+                    refreshToken: localRefreshToken,
+                    searchText: $searchText
                 )
             }
         }
@@ -76,6 +83,19 @@ struct GameInfoDetailView: View {
         .onChange(of: gameType) { _, _ in
             performRefresh()
         }
+        // 4. 详情关闭时（selectedProjectId 从非 nil 变为 nil），重新扫描已安装资源，
+        //    用于刷新远程列表中的安装状态（安装按钮）
+        .onChange(of: selectedProjectId) { oldValue, newValue in
+            if oldValue != nil && newValue == nil {
+                resetScanState()
+                scanAllResources()
+            }
+        }
+        // 3. 资源类型（query）变化时，重新扫描已安装资源，用于更新安装状态
+        .onChange(of: query) { _, _ in
+            resetScanState()
+            scanAllResources()
+        }
         .onAppear {
             // 初始化 header
             updateHeaders()
@@ -88,6 +108,13 @@ struct GameInfoDetailView: View {
         .onDisappear {
             // 页面关闭后清除所有数据
             clearAllData()
+        }
+        .fileImporter(
+            isPresented: $showIconFilePicker,
+            allowedContentTypes: [.png, .jpeg, .gif],
+            allowsMultipleSelection: false
+        ) { result in
+            handleIconFileSelection(result)
         }
     }
 
@@ -114,23 +141,34 @@ struct GameInfoDetailView: View {
     // MARK: - 更新 Header
     /// 更新 header 视图，但不重建整个 GameRemoteResourceView
     private func updateHeaders() {
+        // 尝试从 gameRepository 获取最新的游戏信息，如果找不到则使用传入的 game
+        let currentGame = gameRepository.games.first { $0.id == game.id } ?? game
+
         remoteHeader = AnyView(
             GameHeaderListRow(
-                game: game,
+                game: currentGame,
                 cacheInfo: cacheManager.cacheInfo,
-                query: query
-            ) {
-                triggerLocalRefresh()
-            }
+                query: query,
+                onImport: {
+                    triggerLocalRefresh()
+                },
+                onIconTap: {
+                    showIconFilePicker = true
+                }
+            )
         )
         localHeader = AnyView(
             GameHeaderListRow(
-                game: game,
+                game: currentGame,
                 cacheInfo: cacheManager.cacheInfo,
-                query: query
-            ) {
-                triggerLocalRefresh()
-            }
+                query: query,
+                onImport: {
+                    triggerLocalRefresh()
+                },
+                onIconTap: {
+                    showIconFilePicker = true
+                }
+            )
         )
     }
 
@@ -198,6 +236,98 @@ struct GameInfoDetailView: View {
                     scannedResources = []
                 }
             }
+        }
+    }
+
+    // MARK: - 处理图标文件选择
+    /// 处理用户选择的图标文件
+    private func handleIconFileSelection(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            guard let url = urls.first else {
+                let globalError = GlobalError.validation(
+                    chineseMessage: "未选择文件",
+                    i18nKey: "error.validation.no_file_selected",
+                    level: .notification
+                )
+                GlobalErrorHandler.shared.handle(globalError)
+                return
+            }
+
+            guard url.startAccessingSecurityScopedResource() else {
+                let globalError = GlobalError.fileSystem(
+                    chineseMessage: "无法访问所选文件",
+                    i18nKey: "error.filesystem.file_access_failed",
+                    level: .notification
+                )
+                GlobalErrorHandler.shared.handle(globalError)
+                return
+            }
+            defer { url.stopAccessingSecurityScopedResource() }
+
+            Task {
+                do {
+                    // 读取图片数据
+                    let imageData = try Data(contentsOf: url)
+
+                    // 保存图片到游戏目录
+                    let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
+                    let iconFileName = AppConstants.defaultGameIcon
+                    let iconURL = profileDir.appendingPathComponent(iconFileName)
+
+                    // 确保目录存在
+                    try FileManager.default.createDirectory(
+                        at: profileDir,
+                        withIntermediateDirectories: true
+                    )
+
+                    // 保存图片
+                    try imageData.write(to: iconURL)
+
+                    // 更新游戏信息
+                    let updatedGame = GameVersionInfo(
+                        id: UUID(uuidString: game.id) ?? UUID(),
+                        gameName: game.gameName,
+                        gameIcon: iconFileName,
+                        gameVersion: game.gameVersion,
+                        modVersion: game.modVersion,
+                        modJvm: game.modJvm,
+                        modClassPath: game.modClassPath,
+                        assetIndex: game.assetIndex,
+                        modLoader: game.modLoader,
+                        lastPlayed: game.lastPlayed,
+                        javaPath: game.javaPath,
+                        jvmArguments: game.jvmArguments,
+                        launchCommand: game.launchCommand,
+                        xms: game.xms,
+                        xmx: game.xmx,
+                        javaVersion: game.javaVersion,
+                        mainClass: game.mainClass,
+                        gameArguments: game.gameArguments,
+                        environmentVariables: game.environmentVariables
+                    )
+
+                    // 保存到仓库
+                    try await gameRepository.updateGame(updatedGame)
+
+                    // 清除图标缓存，确保侧边栏和详情页显示新图标
+                    GameIconCache.shared.invalidateCache(for: game.gameName)
+
+                    // 刷新 header 以显示新图标
+                    await MainActor.run {
+                        updateHeaders()
+                    }
+
+                    Logger.shared.info("成功更新游戏图标: \(game.gameName)")
+                } catch {
+                    let globalError = GlobalError.from(error)
+                    Logger.shared.error("更新游戏图标失败: \(globalError.chineseMessage)")
+                    GlobalErrorHandler.shared.handle(globalError)
+                }
+            }
+        case .failure(let error):
+            let globalError = GlobalError.from(error)
+            GlobalErrorHandler.shared.handle(globalError)
         }
     }
 }

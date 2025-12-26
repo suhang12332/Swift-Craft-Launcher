@@ -113,7 +113,6 @@ enum ModrinthService {
     /// - Returns: 搜索结果，失败时返回空结果
     static func searchProjects(
         facets: [[String]]? = nil,
-        index: String,
         offset: Int = 0,
         limit: Int,
         query: String?
@@ -121,7 +120,7 @@ enum ModrinthService {
         return await Task {
             try await searchProjectsThrowing(
                 facets: facets,
-                index: index,
+                index: AppConstants.modrinthIndex,
                 offset: offset,
                 limit: limit,
                 query: query
@@ -198,6 +197,7 @@ enum ModrinthService {
         let decoder = JSONDecoder()
         decoder.configureForModrinth()
         let result = try decoder.decode(ModrinthResult.self, from: data)
+
         return result
     }
 
@@ -271,9 +271,15 @@ enum ModrinthService {
     }
 
     /// 获取项目详情（静默版本）
-    /// - Parameter id: 项目 ID
+    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
     /// - Returns: 项目详情，失败时返回 nil
     static func fetchProjectDetails(id: String) async -> ModrinthProjectDetail? {
+        // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+        if id.hasPrefix("cf-") {
+            return await CurseForgeService.fetchProjectDetailsAsModrinth(id: id)
+        }
+
+        // 使用 Modrinth 服务
         do {
             return try await fetchProjectDetailsThrowing(id: id)
         } catch {
@@ -285,10 +291,16 @@ enum ModrinthService {
     }
 
     /// 获取项目详情（抛出异常版本）
-    /// - Parameter id: 项目 ID
+    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
     /// - Returns: 项目详情
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectDetailsThrowing(id: String) async throws -> ModrinthProjectDetail {
+        // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+        if id.hasPrefix("cf-") {
+            return try await CurseForgeService.fetchProjectDetailsAsModrinthThrowing(id: id)
+        }
+
+        // 使用 Modrinth 服务
         let url = URLConfig.API.Modrinth.project(id: id)
 
         // 使用统一的 API 客户端
@@ -302,15 +314,20 @@ enum ModrinthService {
         let releaseGameVersions = detail.gameVersions.filter {
             $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil
         }
-        detail.gameVersions = releaseGameVersions
+        detail.gameVersions = CommonUtil.sortMinecraftVersions(releaseGameVersions)
 
         return detail
     }
 
     /// 获取项目版本列表（静默版本）
-    /// - Parameter id: 项目 ID
+    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
     /// - Returns: 版本列表，失败时返回空数组
     static func fetchProjectVersions(id: String) async -> [ModrinthProjectDetailVersion] {
+        // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+        if id.hasPrefix("cf-") {
+            return await CurseForgeService.fetchProjectVersionsAsModrinth(id: id)
+        }
+
         do {
             return try await fetchProjectVersionsThrowing(id: id)
         } catch {
@@ -322,10 +339,15 @@ enum ModrinthService {
     }
 
     /// 获取项目版本列表（抛出异常版本）
-    /// - Parameter id: 项目 ID
+    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
     /// - Returns: 版本列表
     /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionsThrowing(id: String) async throws -> [ModrinthProjectDetailVersion] {
+        // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+        if id.hasPrefix("cf-") {
+            return try await CurseForgeService.fetchProjectVersionsAsModrinthThrowing(id: id)
+        }
+
         let url = URLConfig.API.Modrinth.version(id: id)
 
         // 使用统一的 API 客户端
@@ -338,7 +360,7 @@ enum ModrinthService {
 
     /// 获取项目版本列表（过滤版本）
     /// - Parameters:
-    ///   - id: 项目 ID
+    ///   - id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
     ///   - selectedVersions: 选中的版本
     ///   - selectedLoaders: 选中的加载器
     ///   - type: 项目类型
@@ -350,6 +372,16 @@ enum ModrinthService {
             selectedLoaders: [String],
             type: String
         ) async throws -> [ModrinthProjectDetailVersion] {
+            // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+            if id.hasPrefix("cf-") {
+                return try await CurseForgeService.fetchProjectVersionsFilterAsModrinth(
+                    id: id,
+                    selectedVersions: selectedVersions,
+                    selectedLoaders: selectedLoaders,
+                    type: type
+                )
+            }
+
             let versions = try await fetchProjectVersionsThrowing(id: id)
             var loaders = selectedLoaders
             if type == "datapack" {
@@ -420,6 +452,17 @@ enum ModrinthService {
         selectedVersions: [String],
         selectedLoaders: [String]
     ) async throws -> ModrinthProjectDependency {
+        // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
+        if id.hasPrefix("cf-") {
+            return try await CurseForgeService.fetchProjectDependenciesThrowingAsModrinth(
+                type: type,
+                cachePath: cachePath,
+                id: id,
+                selectedVersions: selectedVersions,
+                selectedLoaders: selectedLoaders
+            )
+        }
+
         // 1. 获取所有筛选后的版本
         let versions = try await fetchProjectVersionsFilter(
             id: id,
@@ -432,68 +475,76 @@ enum ModrinthService {
             return ModrinthProjectDependency(projects: [])
         }
 
-        // 2. 收集所有依赖的projectId和versionId
-        var dependencyProjectIds = Set<String>()
-        var dependencyVersionIds: [String: String] = [:] // projectId -> versionId
+        // 2. 并发获取所有依赖项目的兼容版本（使用批处理限制并发数量）
+        let requiredDeps = firstVersion.dependencies.filter { $0.dependencyType == "required" && $0.projectId != nil }
+        let maxConcurrentTasks = 10 // 限制最大并发任务数
+        var allDependencyVersions: [ModrinthProjectDetailVersion] = []
 
-        let missingDependencies = firstVersion.dependencies
-            .filter { $0.dependencyType == "required" }
-            .filter { !ModScanner.shared.isModInstalledSync(projectId: $0.projectId ?? "", in: cachePath) }
+        // 分批处理依赖，每批最多 maxConcurrentTasks 个
+        var currentIndex = 0
+        while currentIndex < requiredDeps.count {
+            let endIndex = min(currentIndex + maxConcurrentTasks, requiredDeps.count)
+            let batch = Array(requiredDeps[currentIndex..<endIndex])
+            currentIndex = endIndex
 
-        for dep in missingDependencies {
-            if let projectId = dep.projectId {
-                dependencyProjectIds.insert(projectId)
-                if let versionId = dep.versionId {
-                    dependencyVersionIds[projectId] = versionId
-                }
-            }
-        }
+            let batchResults: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
+                for dep in batch {
+                    guard let projectId = dep.projectId else { continue }
+                    group.addTask {
+                        do {
+                            let depVersion: ModrinthProjectDetailVersion
 
-        // 3. 并发获取所有依赖项目的兼容版本
-        let dependencyVersions: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
-            for depId in dependencyProjectIds {
-                group.addTask {
-                    do {
-                        let depVersion: ModrinthProjectDetailVersion
-
-                        if let versionId = dependencyVersionIds[depId] {
-                            // 如果有 versionId，直接获取指定版本
-                            depVersion = try await fetchProjectVersionThrowing(id: versionId)
-                        } else {
-                            // 如果没有 versionId，使用过滤逻辑获取兼容版本
-                            let depVersions = try await fetchProjectVersionsFilter(
-                                id: depId,
-                                selectedVersions: selectedVersions,
-                                selectedLoaders: selectedLoaders,
-                                type: type
-                            )
-                            guard let firstDepVersion = depVersions.first else {
-                                Logger.shared.warning("未找到兼容的依赖版本 (ID: \(depId))")
-                                return nil
+                            if let versionId = dep.versionId {
+                                // 如果有 versionId，直接获取指定版本
+                                depVersion = try await fetchProjectVersionThrowing(id: versionId)
+                            } else {
+                                // 如果没有 versionId，使用过滤逻辑获取兼容版本
+                                let depVersions = try await fetchProjectVersionsFilter(
+                                    id: projectId,
+                                    selectedVersions: selectedVersions,
+                                    selectedLoaders: selectedLoaders,
+                                    type: type
+                                )
+                                guard let firstDepVersion = depVersions.first else {
+                                    Logger.shared.warning("未找到兼容的依赖版本 (ID: \(projectId))")
+                                    return nil
+                                }
+                                depVersion = firstDepVersion
                             }
-                            depVersion = firstDepVersion
-                        }
 
-                        return depVersion
-                    } catch {
-                        let globalError = GlobalError.from(error)
-                        Logger.shared.error("获取依赖项目版本失败 (ID: \(depId)): \(globalError.chineseMessage)")
-                        return nil
+                            return depVersion
+                        } catch {
+                            let globalError = GlobalError.from(error)
+                            Logger.shared.error("获取依赖项目版本失败 (ID: \(projectId)): \(globalError.chineseMessage)")
+                            return nil
+                        }
                     }
                 }
-            }
 
-            var results: [ModrinthProjectDetailVersion] = []
-            for await result in group {
-                if let version = result {
-                    results.append(version)
+                var results: [ModrinthProjectDetailVersion] = []
+                for await result in group {
+                    if let version = result {
+                        results.append(version)
+                    }
                 }
+
+                return results
             }
 
-            return results
+            allDependencyVersions.append(contentsOf: batchResults)
         }
 
-        return ModrinthProjectDependency(projects: dependencyVersions)
+        // 3. 使用hash检查是否已安装，过滤出缺失的依赖
+        let missingDependencyVersions = allDependencyVersions.filter { version in
+            // 获取主文件的hash
+            guard let primaryFile = Self.filterPrimaryFiles(from: version.files) else {
+                return true // 如果没有主文件，认为缺失
+            }
+            // 使用hash检查是否已安装
+            return !ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: cachePath)
+        }
+
+        return ModrinthProjectDependency(projects: missingDependencyVersions)
     }
 
     /// 获取单个项目版本（抛出异常版本）

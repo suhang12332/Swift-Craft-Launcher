@@ -101,13 +101,13 @@ enum ModrinthDependencyDownloader {
                                     hash: hash,
                                     detail: detailWithFile
                                 )
-                            }
-                            // 如果是 mod，添加到安装缓存
-                            if query.lowercased() == "mod" {
-                                ModScanner.shared.addModProjectId(
-                                    detailWithFile.id,
-                                    to: gameInfo.gameName
-                                )
+                                // 如果是 mod，添加到安装缓存
+                                if query.lowercased() == "mod" {
+                                    ModScanner.shared.addModHash(
+                                        hash,
+                                        to: gameInfo.gameName
+                                    )
+                                }
                             }
                             return detailWithFile
                         }
@@ -156,13 +156,13 @@ enum ModrinthDependencyDownloader {
                                     hash: hash,
                                     detail: mainProjectDetail
                                 )
-                            }
-                            // 如果是 mod，添加到安装缓存
-                            if query.lowercased() == "mod" {
-                                ModScanner.shared.addModProjectId(
-                                    mainProjectDetail.id,
-                                    to: gameInfo.gameName
-                                )
+                                // 如果是 mod，添加到安装缓存
+                                if query.lowercased() == "mod" {
+                                    ModScanner.shared.addModHash(
+                                        hash,
+                                        to: gameInfo.gameName
+                                    )
+                                }
                             }
                             return mainProjectDetail
                         }
@@ -227,13 +227,25 @@ enum ModrinthDependencyDownloader {
                     }
 
                     // 获取项目版本并过滤
+                    // 注意：对于 CurseForge 项目，fetchProjectVersions 会调用 CurseForgeService
                     let allVersions =
                         await ModrinthService.fetchProjectVersions(
                             id: depVersion.projectId
                         )
-                    let filteredVersions = allVersions.filter {
-                        $0.loaders.contains(gameInfo.modLoader)
-                            && $0.gameVersions.contains(gameInfo.gameVersion)
+
+                    // 对于 CurseForge 项目，loaders 可能是空的，所以需要特殊处理
+                    let filteredVersions: [ModrinthProjectDetailVersion]
+                    if depVersion.projectId.hasPrefix("cf-") {
+                        // CurseForge 项目：只过滤游戏版本，不过滤加载器（因为 CurseForge 版本中 loaders 为空）
+                        filteredVersions = allVersions.filter {
+                            $0.gameVersions.contains(gameInfo.gameVersion)
+                        }
+                    } else {
+                        // Modrinth 项目：同时过滤加载器和游戏版本
+                        filteredVersions = allVersions.filter {
+                            $0.loaders.contains(gameInfo.modLoader)
+                                && $0.gameVersions.contains(gameInfo.gameVersion)
+                        }
                     }
 
                     return (projectDetail, filteredVersions)
@@ -347,13 +359,13 @@ enum ModrinthDependencyDownloader {
                                 hash: hash,
                                 detail: depCopy
                             )
-                        }
-                        // 如果是 mod，添加到安装缓存
-                        if query.lowercased() == "mod" {
-                            ModScanner.shared.addModProjectId(
-                                depCopy.id,
-                                to: gameInfo.gameName
-                            )
+                            // 如果是 mod，添加到安装缓存
+                            if query.lowercased() == "mod" {
+                                ModScanner.shared.addModHash(
+                                    hash,
+                                    to: gameInfo.gameName
+                                )
+                            }
                         }
                     } catch {
                         let globalError = GlobalError.from(error)
@@ -441,13 +453,13 @@ enum ModrinthDependencyDownloader {
                     hash: hash,
                     detail: mainProjectDetail
                 )
-            }
-            // 如果是 mod，添加到安装缓存
-            if query.lowercased() == "mod" {
-                ModScanner.shared.addModProjectId(
-                    mainProjectDetail.id,
-                    to: gameInfo.gameName
-                )
+                // 如果是 mod，添加到安装缓存
+                if query.lowercased() == "mod" {
+                    ModScanner.shared.addModHash(
+                        hash,
+                        to: gameInfo.gameName
+                    )
+                }
             }
             return true
         } catch {
@@ -506,13 +518,13 @@ enum ModrinthDependencyDownloader {
                     hash: hash,
                     detail: mainProjectDetail
                 )
-            }
-            // 如果是 mod，添加到安装缓存
-            if query.lowercased() == "mod" {
-                ModScanner.shared.addModProjectId(
-                    mainProjectDetail.id,
-                    to: gameInfo.gameName
-                )
+                // 如果是 mod，添加到安装缓存
+                if query.lowercased() == "mod" {
+                    ModScanner.shared.addModHash(
+                        hash,
+                        to: gameInfo.gameName
+                    )
+                }
             }
             return true
         } catch {

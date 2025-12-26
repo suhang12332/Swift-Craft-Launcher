@@ -57,6 +57,7 @@ struct DependencySheetView: View {
                                     }
                                     .pickerStyle(.menu)
                                     .font(.subheadline)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                             }
                         }

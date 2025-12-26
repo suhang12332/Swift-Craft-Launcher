@@ -16,7 +16,7 @@ struct MainView: View {
     @EnvironmentObject var gameRepository: GameRepository
 
     // MARK: - Resource/Project State
-    @State private var sortIndex: String = "relevance"
+    @State private var sortIndex: String = AppConstants.modrinthIndex
     @State private var selectedVersions: [String] = []
     @State private var selectedLicenses: [String] = []
     @State private var selectedCategories: [String] = []
@@ -34,6 +34,11 @@ struct MainView: View {
     @State private var gameResourcesType = "mod"
     @State private var gameType = true  // false = local, true = server
     @State private var gameId: String?
+    @StateObject private var gameSettings = GameSettingsManager.shared
+    // 数据源：从设置中读取默认值，但可以临时更改（不影响设置）
+    @State private var dataSource: DataSource = GameSettingsManager.shared.defaultAPISource
+    // 搜索文本状态，用于保留从详情页返回时的搜索内容
+    @State private var searchText: String = ""
 
     @State private var showingInspector: Bool = false
 
@@ -58,7 +63,8 @@ struct MainView: View {
                 gameResourcesType: $gameResourcesType,
                 selectedLoaders: $selectedLoaders,
                 gameType: $gameType,
-                gameId: $gameId
+                gameId: $gameId,
+                dataSource: $dataSource
             )
             .toolbar { ContentToolbarView() }.navigationSplitViewColumnWidth(
                 min: 235,
@@ -69,7 +75,6 @@ struct MainView: View {
 
             DetailView(
                 selectedItem: $selectedItem,
-                sortIndex: $sortIndex,
                 gameResourcesType: $gameResourcesType,
                 selectedVersions: $selectedVersions,
                 selectedCategories: $selectedCategories,
@@ -82,12 +87,13 @@ struct MainView: View {
                 versionCurrentPage: $versionCurrentPage,
                 versionTotal: $versionTotal,
                 gameType: $gameType,
-                selectedLoader: $selectedLoaders
+                selectedLoader: $selectedLoaders,
+                dataSource: $dataSource,
+                searchText: $searchText
             )
             .toolbar {
                 DetailToolbarView(
                     selectedItem: $selectedItem,
-                    sortIndex: $sortIndex,
                     gameResourcesType: $gameResourcesType,
                     gameType: $gameType,
                     versionCurrentPage: $versionCurrentPage,
@@ -95,7 +101,8 @@ struct MainView: View {
                     project: $loadedProjectDetail,
                     selectProjectId: $selectedProjectId,
                     selectedTab: $selectedTab,
-                    gameId: $gameId
+                    gameId: $gameId,
+                    dataSource: $dataSource
                 )
             }
         }
@@ -137,6 +144,11 @@ struct MainView: View {
 
     // MARK: - Transition Helpers
     private func handleResourceToGameTransition(gameId: String) {
+        // 清空搜索文本
+        if self.gameId != nil, selectedProjectId == nil {
+            searchText = ""
+        }
+
         // 不要强制设置 gameType，保持用户之前的选择
         // 只有在 gameType 为服务器且之前没选过游戏时才设置为本地资源
         if gameType == true && self.gameId == nil {
@@ -147,14 +159,17 @@ struct MainView: View {
         let game = gameRepository.getGame(by: gameId)
 
         if let loader = game?.modLoader.lowercased() {
+            let currentType = gameResourcesType.lowercased()
+
             if loader == "vanilla" {
-                // 对于 vanilla，如果当前资源类型是 mod，则切换为 datapack，否则保持用户原来的选择
-                if gameResourcesType.lowercased() == "mod" {
+                // 仅当当前选择与 vanilla 不兼容时才纠正，避免覆盖用户选择
+                if currentType == "mod" || currentType == "shader" {
                     gameResourcesType = "datapack"
                 }
             } else {
-                // 非 vanilla 一律使用 mod
-                gameResourcesType = "mod"
+                if selectedProjectId == nil {
+                    gameResourcesType = "mod"
+                }
             }
         }
 
@@ -168,6 +183,9 @@ struct MainView: View {
         from oldId: String,
         to newId: String
     ) {
+        // 清空搜索文本
+        searchText = ""
+
         // 切换游戏时，强制使用本地模式
         gameType = false
 
@@ -183,6 +201,13 @@ struct MainView: View {
 
     // MARK: - Resource Reset
     private func resetToResourceDefaults() {
+        // 清空搜索文本
+        if case .resource = selectedItem {
+            if gameId == nil {
+                searchText = ""
+            }
+        }
+
         // 清除选中的游戏，因为切换到资源页面
         selectedGameManager.clearSelection()
 
@@ -192,7 +217,7 @@ struct MainView: View {
         }
 
         // 排序方式回到默认值
-        sortIndex = "relevance"
+        sortIndex = AppConstants.modrinthIndex
 
         // 保证资源类型与当前侧边栏选择一致
         if case .resource(let resourceType) = selectedItem {

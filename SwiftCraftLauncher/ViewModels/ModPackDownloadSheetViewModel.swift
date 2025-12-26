@@ -37,15 +37,14 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         self.gameRepository = repository
     }
 
-    // MARK: - Data Loading
-
-    /// 设置预加载的项目详情
-    func setPreloadedDetail(_ detail: ModrinthProjectDetail) async {
+    /// 应用预加载的项目详情，避免在 sheet 内重复加载
+    func applyPreloadedDetail(_ detail: ModrinthProjectDetail) {
         projectDetail = detail
-        let gameVersions = detail.gameVersions
-        availableGameVersions = CommonUtil.sortMinecraftVersions(gameVersions)
+        availableGameVersions = CommonUtil.sortMinecraftVersions(detail.gameVersions)
+        isLoadingProjectDetails = false
     }
 
+    // MARK: - Data Loading
     func loadProjectDetails(projectId: String) async {
         isLoadingProjectDetails = true
 
@@ -231,6 +230,8 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
         // 如果不是 Modrinth 格式，尝试解析 CurseForge 格式
         if let modrinthInfo = await CurseForgeManifestParser.parseManifest(extractedPath: extractedPath) {
+            // 设置 lastParsedIndexInfo 以便显示 mod 加载器进度条
+            lastParsedIndexInfo = modrinthInfo
             return modrinthInfo
         }
 
@@ -689,14 +690,20 @@ class ModPackInstallState: ObservableObject {
     ) {
         self.filesTotal = filesTotal
         self.dependenciesTotal = dependenciesTotal
-        self.overridesTotal = overridesTotal
+        // 只有在 overrides 还没有开始时才设置 total，避免覆盖已完成的进度
+        if self.overridesTotal == 0 {
+            self.overridesTotal = overridesTotal
+        }
         self.isInstalling = true
         self.filesProgress = 0
         self.dependenciesProgress = 0
-        self.overridesProgress = 0
+        // 只有在 overrides 还没有完成时才重置进度，保留已完成的 overrides 进度
+        if self.overridesCompleted == 0 {
+            self.overridesProgress = 0
+        }
         self.filesCompleted = 0
         self.dependenciesCompleted = 0
-        self.overridesCompleted = 0
+        // 保留已完成的 overrides 进度，不重置
     }
 
     func updateFilesProgress(fileName: String, completed: Int, total: Int) {

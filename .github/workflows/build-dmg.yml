@@ -10,6 +10,7 @@ on:
 
 env:
   CLIENTID: ${{ secrets.CLIENTID }}
+  CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
   SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
 
 jobs:
@@ -57,6 +58,14 @@ jobs:
           sed -i '' "s/\$(CLIENTID)/$SAFE_CLIENTID/g" "SwiftCraftLauncher/Common/Utils/AppConstants.swift"
 
           echo "✅ CLIENTID 已替换到 AppConstants.swift"
+
+      - name: Replace CURSEFORGE_API_KEY
+        run: |
+          # 替换 AppConstants.swift 中的 CURSEFORGE_API_KEY 变量（GitHub Secret 中已经是加密后的值）
+          SAFE_CURSEFORGE_KEY=$(printf '%s' "$CURSEFORGE_API_KEY" | sed 's/[\/&]/\\&/g')
+          sed -i '' "s/\$(CURSEFORGE_API_KEY)/$SAFE_CURSEFORGE_KEY/g" "SwiftCraftLauncher/Common/Utils/AppConstants.swift"
+
+          echo "✅ CURSEFORGE_API_KEY 已替换到 AppConstants.swift"
 
       - name: Build app for ${{ matrix.arch }}
         run: |
