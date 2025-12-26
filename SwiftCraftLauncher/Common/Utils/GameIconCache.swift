@@ -61,6 +61,17 @@ final class GameIconCache: @unchecked Sendable {
             return exists
         }
     }
+    // swiftlint:disable:next discouraged_optional_boolean
+    func cachedIconExists(gameName: String, iconName: String) -> Bool? {
+        let cacheKey = "\(gameName)/\(iconName)" as NSString
+
+        return cacheQueue.sync {
+            if let cached = existenceCache.object(forKey: cacheKey) {
+                return cached.boolValue
+            }
+            return nil
+        }
+    }
 
     /// 异步检查图标文件是否存在（在后台线程执行）
     /// - Parameters:
