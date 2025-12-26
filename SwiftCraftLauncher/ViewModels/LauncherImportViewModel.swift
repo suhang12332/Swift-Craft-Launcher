@@ -14,13 +14,18 @@ class LauncherImportViewModel: BaseGameFormViewModel {
 
     @Published var selectedLauncherType: ImportLauncherType = .multiMC
     @Published var selectedInstancePath: URL?  // 直接选择的实例路径（所有启动器都使用此方式）
-    @Published var isImporting = false
+    @Published var isImporting = false {
+        didSet {
+            updateParentState()
+        }
+    }
     @Published var importProgress: (fileName: String, completed: Int, total: Int)?
 
     // MARK: - Private Properties
 
     private var gameRepository: GameRepository?
     private var playerListViewModel: PlayerListViewModel?
+    private var copyTask: Task<Void, Error>?
 
     // MARK: - Initialization
 
@@ -36,6 +41,33 @@ class LauncherImportViewModel: BaseGameFormViewModel {
         updateParentState()
     }
 
+    // MARK: - Cleanup Methods
+
+    /// 清理缓存和状态（在 sheet 关闭时调用）
+    func cleanup() {
+        // 取消正在进行的任务
+        copyTask?.cancel()
+        copyTask = nil
+        downloadTask?.cancel()
+        downloadTask = nil
+
+        // 重置状态
+        selectedInstancePath = nil
+        importProgress = nil
+        isImporting = false
+        selectedLauncherType = .multiMC
+
+        // 清理游戏名（可选，根据需求决定是否保留）
+        // gameNameValidator.gameName = ""
+
+        // 重置下载状态
+        gameSetupService.downloadState.reset()
+
+        // 清理引用
+        gameRepository = nil
+        playerListViewModel = nil
+    }
+
     // MARK: - Override Methods
 
     override func performConfirmAction() async {
@@ -48,7 +80,11 @@ class LauncherImportViewModel: BaseGameFormViewModel {
     }
 
     override func handleCancel() {
-        if isDownloading {
+        if isDownloading || isImporting {
+            // 取消复制任务
+            copyTask?.cancel()
+            copyTask = nil
+            // 取消下载任务
             downloadTask?.cancel()
             downloadTask = nil
             gameSetupService.downloadState.cancel()
@@ -70,7 +106,11 @@ class LauncherImportViewModel: BaseGameFormViewModel {
             if let info = try? parser.parseInstance(at: instancePath, basePath: basePath) {
                 do {
                     let fileManager = MinecraftFileManager()
-                    try fileManager.cleanupGameDirectories(gameName: info.gameName)
+                    // 使用用户输入的游戏名（如果有），否则使用实例的游戏名
+                    let gameName = gameNameValidator.gameName.isEmpty
+                        ? info.gameName
+                        : gameNameValidator.gameName
+                    try fileManager.cleanupGameDirectories(gameName: gameName)
                 } catch {
                     Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
                 }
@@ -78,6 +118,8 @@ class LauncherImportViewModel: BaseGameFormViewModel {
         }
 
         await MainActor.run {
+            isImporting = false
+            importProgress = nil
             gameSetupService.downloadState.reset()
             configuration.actions.onCancel()
         }
@@ -224,7 +266,47 @@ class LauncherImportViewModel: BaseGameFormViewModel {
             ? instanceInfo.gameName
             : gameNameValidator.gameName
 
-        // 1. 调用下载逻辑
+        // 1. 先复制游戏目录（保留 mods、config 等文件）
+        let targetDirectory = AppPaths.profileDirectory(gameName: finalGameName)
+
+        do {
+            // 创建复制任务，以便可以取消
+            copyTask = Task {
+                try await InstanceFileCopier.copyGameDirectory(
+                    from: instanceInfo.sourceGameDirectory,
+                    to: targetDirectory,
+                    launcherType: instanceInfo.launcherType
+                ) { fileName, completed, total in
+                    Task { @MainActor in
+                        self.importProgress = (fileName, completed, total)
+                    }
+                }
+            }
+
+            try await copyTask?.value
+            copyTask = nil
+
+            Logger.shared.info("成功复制游戏目录: \(instanceName) -> \(finalGameName)")
+        } catch is CancellationError {
+            Logger.shared.info("复制游戏目录已取消: \(instanceName)")
+            copyTask = nil
+            // 清理已复制的文件
+            await performCancelCleanup()
+            return
+        } catch {
+            Logger.shared.error("复制游戏目录失败: \(error.localizedDescription)")
+            copyTask = nil
+            GlobalErrorHandler.shared.handle(
+                GlobalError.fileSystem(
+                    chineseMessage: "复制游戏目录失败: \(error.localizedDescription)",
+                    i18nKey: "error.filesystem.copy_game_directory_failed",
+                    level: .notification
+                )
+            )
+            return
+        }
+
+        // 2. 然后下载游戏和 Mod Loader（只下载缺失的文件，不会覆盖已有的文件）
         let downloadSuccess = await withCheckedContinuation { continuation in
             Task {
                 await gameSetupService.saveGame(
@@ -253,31 +335,7 @@ class LauncherImportViewModel: BaseGameFormViewModel {
             return
         }
 
-        // 2. 复制游戏目录
-        let targetDirectory = AppPaths.profileDirectory(gameName: finalGameName)
-
-        do {
-            try await InstanceFileCopier.copyGameDirectory(
-                from: instanceInfo.sourceGameDirectory,
-                to: targetDirectory,
-                launcherType: instanceInfo.launcherType
-            ) { fileName, completed, total in
-                Task { @MainActor in
-                    self.importProgress = (fileName, completed, total)
-                }
-            }
-
-            Logger.shared.info("成功导入实例: \(instanceName) -> \(finalGameName)")
-        } catch {
-            Logger.shared.error("复制游戏目录失败: \(error.localizedDescription)")
-            GlobalErrorHandler.shared.handle(
-                GlobalError.fileSystem(
-                    chineseMessage: "复制游戏目录失败: \(error.localizedDescription)",
-                    i18nKey: "error.filesystem.copy_game_directory_failed",
-                    level: .notification
-                )
-            )
-        }
+        Logger.shared.info("成功导入实例: \(instanceName) -> \(finalGameName)")
 
         // 导入完成
         await MainActor.run {

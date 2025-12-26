@@ -48,6 +48,9 @@ enum InstanceFileCopier {
 
         var completed = 0
         for fileURL in filesToCopy {
+            // 检查任务是否被取消
+            try Task.checkCancellation()
+
             // 计算相对路径
             let relativePath = fileURL.path.replacingOccurrences(
                 of: sourceDirectory.path + "/",

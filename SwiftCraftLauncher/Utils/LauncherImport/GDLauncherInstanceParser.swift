@@ -56,15 +56,6 @@ struct GDLauncherInstanceParser: LauncherInstanceParser {
             }
         }
 
-        // 游戏目录可能是 instance 子文件夹，也可能是实例文件夹本身
-        let gameDirectory: URL
-        let instanceSubfolder = instancePath.appendingPathComponent("instance")
-        if FileManager.default.fileExists(atPath: instanceSubfolder.path) {
-            gameDirectory = instanceSubfolder
-        } else {
-            gameDirectory = instancePath
-        }
-
         return ImportInstanceInfo(
             gameName: gameName,
             gameVersion: gameVersion,
@@ -72,8 +63,7 @@ struct GDLauncherInstanceParser: LauncherInstanceParser {
             modLoaderVersion: modLoaderVersion,
             gameIconPath: gameIconPath,
             iconDownloadUrl: nil,
-            sourceGameDirectory: gameDirectory,
-            instanceFolder: instancePath,
+            sourceGameDirectory: instancePath,
             launcherType: launcherType
         )
     }

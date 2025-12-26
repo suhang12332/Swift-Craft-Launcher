@@ -30,9 +30,6 @@ struct ImportInstanceInfo {
     /// 源游戏目录路径（.minecraft 文件夹所在位置）
     let sourceGameDirectory: URL
 
-    /// 实例文件夹路径（用于获取其他信息）
-    let instanceFolder: URL
-
     /// 启动器类型
     let launcherType: ImportLauncherType
 }

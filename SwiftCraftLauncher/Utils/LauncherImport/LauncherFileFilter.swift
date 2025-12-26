@@ -21,7 +21,6 @@ enum LauncherFileFilter {
                 ".*\\.mmc-pack\\.json$",
                 ".*instance\\.cfg$",
                 ".*\\.log$",
-                ".*\\.lock$",
                 "^pack\\.meta$",
             ]
 
@@ -30,7 +29,6 @@ enum LauncherFileFilter {
                 // GDLauncher 特定文件
                 ".*config\\.json$",
                 ".*\\.log$",
-                ".*\\.lock$",
                 "^metadata\\.json$",
             ]
 
@@ -39,8 +37,9 @@ enum LauncherFileFilter {
                 // HMCL 特定文件
                 ".*config\\.json$",
                 ".*\\.log$",
-                ".*\\.lock$",
                 "^hmclversion\\.json$",
+                "^hmclversion\\.cfg$",
+                "^usercache\\.json$",
             ]
 
         case .sjmcLauncher:
@@ -48,7 +47,6 @@ enum LauncherFileFilter {
                 // SJMCL 特定文件
                 ".*sjmclcfg\\.json$",
                 ".*\\.log$",
-                ".*\\.lock$",
                 "^\\d+.*-.*\\.json$",
                 "^\\d+.*-.*\\.jar$",
             ]
@@ -58,7 +56,6 @@ enum LauncherFileFilter {
                 // XMCL 特定文件
                 ".*instance\\.json$",
                 ".*\\.log$",
-                ".*\\.lock$",
                 "^metadata\\.json$",
             ]
         }

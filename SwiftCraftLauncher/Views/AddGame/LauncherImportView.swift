@@ -34,6 +34,10 @@ struct LauncherImportView: View {
             .onAppear {
                 viewModel.setup(gameRepository: gameRepository, playerListViewModel: playerListViewModel)
             }
+            .onDisappear {
+                // Sheet 关闭时清理缓存
+                viewModel.cleanup()
+            }
             .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
             .onChange(of: viewModel.selectedLauncherType) { _, _ in
                 // 启动器类型改变时，清除之前的选择
@@ -60,7 +64,15 @@ struct LauncherImportView: View {
             }
             gameNameInputSection
             if viewModel.shouldShowProgress {
-                downloadProgressSection.padding(.top, 10)
+                VStack(spacing: 16) {
+                    // 显示复制进度（如果正在复制）
+                    if viewModel.isImporting, let progress = viewModel.importProgress {
+                        importProgressSection(progress: progress)
+                    }
+                    // 显示下载进度
+                    downloadProgressSection
+                }
+                .padding(.top, 10)
             }
         }
     }
@@ -194,6 +206,19 @@ struct LauncherImportView: View {
             modPackViewModel: nil,
             modPackIndexInfo: nil
         )
+    }
+
+    private func importProgressSection(progress: (fileName: String, completed: Int, total: Int)) -> some View {
+        FormSection {
+            DownloadProgressRow(
+                title: "launcher.import.copying_files".localized(),
+                progress: progress.total > 0 ? Double(progress.completed) / Double(progress.total) : 0.0,
+                currentFile: progress.fileName,
+                completed: progress.completed,
+                total: progress.total,
+                version: nil
+            )
+        }
     }
 
     // MARK: - Helper Methods

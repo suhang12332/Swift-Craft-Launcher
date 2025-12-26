@@ -47,12 +47,6 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
         // 提取游戏名称
         let gameName = instanceCfg["name"] ?? instancePath.lastPathComponent
 
-        // 查找 .minecraft 文件夹
-        let gameDirectory = findGameDirectory(at: instancePath)
-        guard let gameDirectory = gameDirectory else {
-            throw ImportError.gameDirectoryNotFound(instancePath: instancePath.path)
-        }
-
         return ImportInstanceInfo(
             gameName: gameName,
             gameVersion: gameVersion,
@@ -60,8 +54,7 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
             modLoaderVersion: modLoaderVersion,
             gameIconPath: nil,
             iconDownloadUrl: nil,
-            sourceGameDirectory: gameDirectory,
-            instanceFolder: instancePath,
+            sourceGameDirectory: instancePath,
             launcherType: launcherType
         )
     }
@@ -120,25 +113,6 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
             }
         }
         return ("vanilla", "")
-    }
-
-    /// 查找 .minecraft 文件夹
-    private func findGameDirectory(at instancePath: URL) -> URL? {
-        let fileManager = FileManager.default
-
-        // 优先查找 {instance_path}/minecraft
-        let minecraftPath = instancePath.appendingPathComponent("minecraft")
-        if fileManager.fileExists(atPath: minecraftPath.path) {
-            return minecraftPath
-        }
-
-        // 其次查找 {instance_path}/.minecraft
-        let dotMinecraftPath = instancePath.appendingPathComponent(".minecraft")
-        if fileManager.fileExists(atPath: dotMinecraftPath.path) {
-            return dotMinecraftPath
-        }
-
-        return nil
     }
 }
 

@@ -48,7 +48,6 @@ struct XMCLInstanceParser: LauncherInstanceParser {
             gameIconPath: nil,
             iconDownloadUrl: nil,
             sourceGameDirectory: instancePath,
-            instanceFolder: instancePath,
             launcherType: launcherType
         )
     }
