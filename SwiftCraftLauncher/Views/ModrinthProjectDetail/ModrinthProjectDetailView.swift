@@ -1,4 +1,4 @@
-import MarkdownUI
+import MarkdownView
 import SwiftUI
 
 // MARK: - Constants
@@ -114,7 +114,8 @@ struct ModrinthProjectDetailView: View {
     }
 
     private func descriptionView(_ project: ModrinthProjectDetail) -> some View {
-        Markdown(project.body)
+        // Markdown(project.body)
+        MarkdownView(project.body)
         // EmptyView()
     }
 
