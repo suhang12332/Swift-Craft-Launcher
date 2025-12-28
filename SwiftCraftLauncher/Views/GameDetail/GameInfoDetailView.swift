@@ -270,7 +270,7 @@ struct GameInfoDetailView: View {
                     // 读取图片数据
                     let imageData = try Data(contentsOf: url)
 
-                    // 保存图片到游戏目录
+                    // 保存图片到游戏目录（文件名固定，无需更新游戏信息）
                     let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
                     let iconFileName = AppConstants.defaultGameIcon
                     let iconURL = profileDir.appendingPathComponent(iconFileName)
@@ -284,37 +284,10 @@ struct GameInfoDetailView: View {
                     // 保存图片
                     try imageData.write(to: iconURL)
 
-                    // 更新游戏信息
-                    let updatedGame = GameVersionInfo(
-                        id: UUID(uuidString: game.id) ?? UUID(),
-                        gameName: game.gameName,
-                        gameIcon: iconFileName,
-                        gameVersion: game.gameVersion,
-                        modVersion: game.modVersion,
-                        modJvm: game.modJvm,
-                        modClassPath: game.modClassPath,
-                        assetIndex: game.assetIndex,
-                        modLoader: game.modLoader,
-                        lastPlayed: game.lastPlayed,
-                        javaPath: game.javaPath,
-                        jvmArguments: game.jvmArguments,
-                        launchCommand: game.launchCommand,
-                        xms: game.xms,
-                        xmx: game.xmx,
-                        javaVersion: game.javaVersion,
-                        mainClass: game.mainClass,
-                        gameArguments: game.gameArguments,
-                        environmentVariables: game.environmentVariables
-                    )
-
-                    // 保存到仓库
-                    try await gameRepository.updateGame(updatedGame)
-
-                    // 清除图标缓存，确保侧边栏和详情页显示新图标
-                    GameIconCache.shared.invalidateCache(for: game.gameName)
-
-                    // 刷新 header 以显示新图标
+                    // 发送图标刷新通知，通知侧边栏和header刷新图标
                     await MainActor.run {
+                        IconRefreshNotifier.shared.notifyRefresh(for: game.gameName)
+                        // 刷新 header 以显示新图标
                         updateHeaders()
                     }
 

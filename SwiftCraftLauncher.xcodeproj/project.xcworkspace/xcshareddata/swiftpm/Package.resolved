@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/irisWirisW/NSSkinRender",
       "state" : {
-        "revision" : "e8cfc4047d6d8d4110db3c99772bb31a132d8053",
-        "version" : "0.3.0"
+        "revision" : "40bca93758512d38435472a498bd8e23219f039f",
+        "version" : "0.4.0"
       }
     },
     {

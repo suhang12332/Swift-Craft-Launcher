@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 struct GameHeaderListRow: View {
     let game: GameVersionInfo
@@ -6,6 +7,9 @@ struct GameHeaderListRow: View {
     let query: String
     let onImport: () -> Void
     var onIconTap: (() -> Void)?
+
+    @State private var refreshTrigger: UUID = UUID()
+    @State private var cancellable: AnyCancellable?
 
     var body: some View {
         HStack {
@@ -62,25 +66,54 @@ struct GameHeaderListRow: View {
         )
     }
 
+    /// 获取图标URL（添加刷新触发器作为查询参数，强制AsyncImage重新加载）
+    private var iconURL: URL {
+        let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
+        let baseURL = profileDir.appendingPathComponent(game.gameIcon)
+        // 添加刷新触发器作为查询参数，确保文件更新后能重新加载
+        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
+        components?.queryItems = [URLQueryItem(name: "refresh", value: refreshTrigger.uuidString)]
+        return components?.url ?? baseURL
+    }
+
     private var gameIcon: some View {
-        Group {
-            let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
-            let iconURL = profileDir.appendingPathComponent(game.gameIcon)
-            if FileManager.default.fileExists(atPath: iconURL.path),
-               let nsImage = NSImage(contentsOf: iconURL) {
-                styledIcon(Image(nsImage: nsImage), size: 80)
-            } else {
-                Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-                    .resizable()
-                    .interpolation(.none)
-                    .frame(width: 80, height: 80)
-                    .cornerRadius(16)
+        AsyncImage(url: iconURL) { phase in
+            switch phase {
+            case .empty:
+                defaultIcon
+            case .success(let image):
+                styledIcon(image, size: 80)
+            case .failure:
+                defaultIcon
+            @unknown default:
+                defaultIcon
             }
         }
         .contentShape(Rectangle())
         .onTapGesture {
             onIconTap?()
         }
+        .onAppear {
+            // 监听图标刷新通知
+            cancellable = IconRefreshNotifier.shared.refreshPublisher
+                .sink { refreshedGameName in
+                    // 如果通知的游戏名称匹配，或者通知为 nil（刷新所有），则刷新
+                    if refreshedGameName == nil || refreshedGameName == game.gameName {
+                        refreshTrigger = UUID()
+                    }
+                }
+        }
+        .onDisappear {
+            cancellable?.cancel()
+        }
+    }
+
+    private var defaultIcon: some View {
+        Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
+            .resizable()
+            .interpolation(.none)
+            .frame(width: 80, height: 80)
+            .cornerRadius(16)
     }
 
     @ViewBuilder
