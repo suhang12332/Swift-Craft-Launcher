@@ -379,6 +379,9 @@ class GameRepository: ObservableObject {
         Task {
             do {
                 try await loadGamesThrowing()
+                
+                // 加载完成后，扫描所有游戏的 mods 目录
+                await scanAllGamesModsDirectory()
             } catch {
                 GlobalErrorHandler.shared.handle(error)
                 await MainActor.run {
@@ -386,6 +389,38 @@ class GameRepository: ObservableObject {
                 }
             }
         }
+    }
+    
+    /// 扫描所有游戏的 mods 目录
+    /// 异步执行，不会阻塞 UI
+    private func scanAllGamesModsDirectory() async {
+        // 等待游戏数据初始加载完成
+        // 使用 Combine 监听 isInitialLoadComplete 标志
+        if !isInitialLoadComplete {
+            await withCheckedContinuation { continuation in
+                var cancellable: AnyCancellable?
+                cancellable = $isInitialLoadComplete
+                    .first { $0 }
+                    .sink { _ in
+                        cancellable?.cancel()
+                        continuation.resume()
+                    }
+            }
+        }
+
+        let games = games
+        Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
+
+        // 并发扫描所有游戏
+        await withTaskGroup(of: Void.self) { group in
+            for game in games {
+                group.addTask {
+                    await ModScanner.shared.scanGameModsDirectory(game: game)
+                }
+            }
+        }
+
+        Logger.shared.info("完成所有游戏的 mods 目录扫描")
     }
 
     /// 从 UserDefaults 加载游戏列表（抛出异常版本）
