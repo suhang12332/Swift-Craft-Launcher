@@ -163,7 +163,7 @@ struct MainView: View {
 
             if loader == "vanilla" {
                 // 仅当当前选择与 vanilla 不兼容时才纠正，避免覆盖用户选择
-                if currentType == "mod" || currentType == "shader" {
+                if currentType == "mod" || currentType == "shader" || currentType == "modpack" {
                     gameResourcesType = "datapack"
                 }
             } else {
