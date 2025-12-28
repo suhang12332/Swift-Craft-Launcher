@@ -16,11 +16,13 @@ enum SkinType {
 private class RenderedImageCache: NSObject {
     let headImage: CGImage  // 头部图像 (8x8)
     let layerImage: CGImage // 图层图像 (8x8)
+    let hasLayerContent: Bool  // 图层是否有实际内容（非透明像素）
     let cost: Int  // 内存成本（字节数）
 
-    init(headImage: CGImage, layerImage: CGImage) {
+    init(headImage: CGImage, layerImage: CGImage, hasLayerContent: Bool) {
         self.headImage = headImage
         self.layerImage = layerImage
+        self.hasLayerContent = hasLayerContent
         // 计算内存成本：两个 8x8 RGBA 图像 = 2 * 8 * 8 * 4 = 512 字节
         // 加上 CGImage 对象的开销，每个约 1KB，总计约 2.5KB
         let headCost = Int(headImage.width * headImage.height * 4)
@@ -148,6 +150,46 @@ struct MinecraftSkinUtils: View {
         }
     }
 
+    // 检查图像是否有非透明像素
+    private static func hasNonTransparentPixels(_ cgImage: CGImage) -> Bool {
+        let width = cgImage.width
+        let height = cgImage.height
+        
+        // 创建位图上下文以确保格式一致（RGBA）
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bytesPerPixel = 4
+        let bytesPerRow = bytesPerPixel * width
+        let bitsPerComponent = 8
+        
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: bitsPerComponent,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ),
+        let pixelData = context.data?.assumingMemoryBound(to: UInt8.self) else {
+            return false
+        }
+        
+        // 将图像绘制到位图上下文中
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+        
+        // 检查每个像素的 alpha 通道（RGBA 格式中 alpha 是第4个字节）
+        for y in 0..<height {
+            for x in 0..<width {
+                let pixelOffset = (y * width + x) * bytesPerPixel
+                let alpha = pixelData[pixelOffset + 3]
+                if alpha > 0 {
+                    return true  // 找到非透明像素
+                }
+            }
+        }
+        return false  // 所有像素都是透明的
+    }
+
     // 渲染并缓存图像（裁剪后的 CGImage）
     private static func renderAndCacheImage(_ ciImage: CIImage, for key: String, context: CIContext) -> RenderedImageCache? {
         let nsKey = key as NSString
@@ -181,8 +223,11 @@ struct MinecraftSkinUtils: View {
             return nil
         }
 
+        // 检查图层是否有实际内容
+        let hasLayerContent = hasNonTransparentPixels(layerCGImage)
+
         // 创建缓存对象
-        let cache = RenderedImageCache(headImage: headCGImage, layerImage: layerCGImage)
+        let cache = RenderedImageCache(headImage: headCGImage, layerImage: layerCGImage, hasLayerContent: hasLayerContent)
         imageCache.setObject(cache, forKey: nsKey, cost: cache.cost)
         return cache
     }
@@ -275,17 +320,22 @@ struct MinecraftSkinUtils: View {
     private func avatarLayers(for cache: RenderedImageCache) -> some View {
         ZStack {
             // Head layer - 直接使用缓存的 CGImage，无需再次裁剪和转换
+            // 如果没有遮罩层，使用完整大小，否则使用 0.9 倍大小
             Image(decorative: cache.headImage, scale: 1.0)
                 .interpolation(.none)
                 .resizable()
-                .frame(width: size * 0.9, height: size * 0.9)
+                .frame(width: cache.hasLayerContent ? size * 0.9 : size, 
+                       height: cache.hasLayerContent ? size * 0.9 : size)
                 .clipped()
             // Skin layer (overlay) - 直接使用缓存的 CGImage
-            Image(decorative: cache.layerImage, scale: 1.0)
-                .interpolation(.none)
-                .resizable()
-                .frame(width: size, height: size)
-                .clipped()
+            // 只有当图层有实际内容时才显示
+            if cache.hasLayerContent {
+                Image(decorative: cache.layerImage, scale: 1.0)
+                    .interpolation(.none)
+                    .resizable()
+                    .frame(width: size, height: size)
+                    .clipped()
+            }
         }
         .shadow(color: Color.black.opacity(0.6), radius: 1)
     }
