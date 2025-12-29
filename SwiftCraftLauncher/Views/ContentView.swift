@@ -70,7 +70,7 @@ struct ContentView: View {
     }
 
     private func localModeView(game: GameVersionInfo) -> some View {
-        EmptyView()
+        SaveInfoView(gameName: game.gameName)
     }
 
     // MARK: - Resource Content View
