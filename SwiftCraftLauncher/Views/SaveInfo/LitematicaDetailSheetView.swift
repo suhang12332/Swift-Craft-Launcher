@@ -12,7 +12,8 @@ struct LitematicaDetailSheetView: View {
     // MARK: - Properties
     let filePath: URL
     let gameName: String
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
 
     @State private var metadata: LitematicMetadata?
     @State private var isLoading = true
@@ -121,8 +122,6 @@ struct LitematicaDetailSheetView: View {
                             infoRow(label: "litematica.detail.field.modified".localized(), value: formatTimestamp(metadata.timeModified))
                         }
                     }
-
-
                 }
                 .padding(.vertical, 8)
                 .padding(.bottom, 20)
@@ -156,7 +155,6 @@ struct LitematicaDetailSheetView: View {
                     }
                 }
             }
-
         }
     }
 

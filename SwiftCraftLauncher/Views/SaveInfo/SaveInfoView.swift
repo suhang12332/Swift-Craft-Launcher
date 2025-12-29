@@ -4,12 +4,12 @@ import SwiftUI
 struct SaveInfoView: View {
     let gameName: String
     @StateObject private var manager: SaveInfoManager
-    
+
     init(gameName: String) {
         self.gameName = gameName
         _manager = StateObject(wrappedValue: SaveInfoManager(gameName: gameName))
     }
-    
+
     var body: some View {
         VStack {
             // 世界信息区域
@@ -20,7 +20,7 @@ struct SaveInfoView: View {
                     gameName: gameName
                 )
             }
-            
+
             // 截图信息区域
             if !manager.screenshots.isEmpty || manager.isLoading {
                 ScreenshotSectionView(
@@ -29,19 +29,18 @@ struct SaveInfoView: View {
                     gameName: gameName
                 )
             }
-            
+
             // 服务器地址区域（始终显示，即使没有检测到服务器）
             ServerAddressSectionView(
                 servers: manager.servers,
                 isLoading: manager.isLoading,
-                gameName: gameName,
-                onRefresh: {
-                    Task {
-                        await manager.loadData()
-                    }
+                gameName: gameName
+            ) {
+                Task {
+                    await manager.loadData()
                 }
-            )
-            
+            }
+
             // Litematica 投影文件区域
             if !manager.litematicaFiles.isEmpty || manager.isLoading {
                 LitematicaSectionView(
@@ -50,7 +49,7 @@ struct SaveInfoView: View {
                     gameName: gameName
                 )
             }
-            
+
             // 日志信息区域
             if !manager.logs.isEmpty || manager.isLoading {
                 LogSectionView(
@@ -67,4 +66,3 @@ struct SaveInfoView: View {
         }
     }
 }
-

@@ -22,19 +22,19 @@ struct ServerAddressSectionView: View {
     let isLoading: Bool
     let gameName: String
     let onRefresh: (() -> Void)?
-    
+
     @State private var showOverflowPopover = false
     @State private var selectedServer: ServerAddress?
     @State private var showAddServer = false
     @State private var serverStatuses: [String: ServerConnectionStatus] = [:]
-    
+
     init(servers: [ServerAddress], isLoading: Bool, gameName: String, onRefresh: (() -> Void)? = nil) {
         self.servers = servers
         self.isLoading = isLoading
         self.gameName = gameName
         self.onRefresh = onRefresh
     }
-    
+
     // MARK: - Body
     var body: some View {
         VStack {
@@ -58,7 +58,7 @@ struct ServerAddressSectionView: View {
             checkAllServers()
         }
     }
-    
+
     // MARK: - Header Views
     private var headerView: some View {
         let (_, overflowItems) = computeVisibleAndOverflowItems()
@@ -74,7 +74,7 @@ struct ServerAddressSectionView: View {
         }
         .padding(.bottom, ServerAddressSectionConstants.headerBottomPadding)
     }
-    
+
     private var addServerButton: some View {
         Button {
             showAddServer = true
@@ -85,12 +85,12 @@ struct ServerAddressSectionView: View {
         .buttonStyle(.plain)
         .help("saveinfo.server.add".localized())
     }
-    
+
     private var headerTitle: some View {
         Text("saveinfo.servers".localized())
             .font(.headline)
     }
-    
+
     private var overflowButton: some View {
         let (_, overflowItems) = computeVisibleAndOverflowItems()
         return Button {
@@ -108,7 +108,7 @@ struct ServerAddressSectionView: View {
             overflowPopoverContent
         }
     }
-    
+
     private var overflowPopoverContent: some View {
         VStack(alignment: .leading, spacing: 0) {
             ScrollView {
@@ -132,7 +132,7 @@ struct ServerAddressSectionView: View {
         }
         .frame(width: ServerAddressSectionConstants.popoverWidth)
     }
-    
+
     // MARK: - Content Views
     private var loadingPlaceholder: some View {
         ScrollView {
@@ -156,7 +156,7 @@ struct ServerAddressSectionView: View {
         .fixedSize(horizontal: false, vertical: true)
         .padding(.vertical, ServerAddressSectionConstants.verticalPadding)
     }
-    
+
     private var contentWithOverflow: some View {
         let (visibleItems, _) = computeVisibleAndOverflowItems()
         return FlowLayout {
@@ -177,7 +177,7 @@ struct ServerAddressSectionView: View {
         .padding(.vertical, ServerAddressSectionConstants.verticalPadding)
         .padding(.bottom, ServerAddressSectionConstants.verticalPadding)
     }
-    
+
     // MARK: - Helper Methods
     private func computeVisibleAndOverflowItems() -> (
         [ServerAddress], [ServerAddress]
@@ -185,21 +185,21 @@ struct ServerAddressSectionView: View {
         // 最多显示4个
         let visibleItems = Array(servers.prefix(ServerAddressSectionConstants.maxItems))
         let overflowItems = Array(servers.dropFirst(ServerAddressSectionConstants.maxItems))
-        
+
         return (visibleItems, overflowItems)
     }
-    
+
     /// 并发检测所有服务器的连接状态
     private func checkAllServers() {
         guard !servers.isEmpty else { return }
-        
+
         // 初始化所有服务器状态为检测中
         var initialStatuses: [String: ServerConnectionStatus] = [:]
         for server in servers {
             initialStatuses[server.id] = .checking
         }
         serverStatuses = initialStatuses
-        
+
         // 并发检测所有服务器
         Task {
             await withTaskGroup(of: (String, ServerConnectionStatus).self) { group in
@@ -213,7 +213,7 @@ struct ServerAddressSectionView: View {
                         return (server.id, status)
                     }
                 }
-                
+
                 for await (serverId, status) in group {
                     await MainActor.run {
                         serverStatuses[serverId] = status
@@ -222,7 +222,6 @@ struct ServerAddressSectionView: View {
             }
         }
     }
-    
 }
 
 // MARK: - Server Address Chip
@@ -233,7 +232,7 @@ struct ServerAddressChip: View {
     let isLoading: Bool
     let connectionStatus: ServerConnectionStatus
     let action: (() -> Void)?
-    
+
     init(
         title: String,
         address: String,
@@ -249,7 +248,7 @@ struct ServerAddressChip: View {
         self.connectionStatus = connectionStatus
         self.action = action
     }
-    
+
     var body: some View {
         Button(action: action ?? {}) {
             VStack(alignment: .leading, spacing: 2) {
@@ -288,7 +287,7 @@ struct ServerAddressChip: View {
         .buttonStyle(.plain)
         .disabled(isLoading)
     }
-    
+
     /// 根据连接状态返回图标颜色
     private var iconColor: Color {
         switch connectionStatus {
@@ -309,20 +308,20 @@ struct ServerAddressChip: View {
 // MARK: - Server Address Row
 struct ServerAddressRow: View {
     let server: ServerAddress
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(server.name)
                     .font(.headline)
-                
+
                 Text(server.fullAddress)
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            
+
             Spacer()
-            
+
             Button {
                 let pasteboard = NSPasteboard.general
                 pasteboard.clearContents()
@@ -342,8 +341,9 @@ struct ServerAddressEditView: View {
     let server: ServerAddress?
     let gameName: String
     let onRefresh: (() -> Void)?
-    @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.dismiss)
+    private var dismiss
+
     @State private var serverName: String
     @State private var serverAddress: String
     @State private var serverPort: String
@@ -354,11 +354,11 @@ struct ServerAddressEditView: View {
     @State private var showError: Bool = false
     @State private var showDeleteConfirmation: Bool = false
     @State private var errorMessage: String = ""
-    
+
     var isNewServer: Bool {
         server == nil
     }
-    
+
     init(server: ServerAddress? = nil, gameName: String, onRefresh: (() -> Void)? = nil) {
         self.server = server
         self.gameName = gameName
@@ -378,7 +378,7 @@ struct ServerAddressEditView: View {
             _acceptTextures = State(initialValue: false)
         }
     }
-    
+
     var body: some View {
         CommonSheetView(
             header: { headerView },
@@ -399,7 +399,7 @@ struct ServerAddressEditView: View {
             Text(String(format: "saveinfo.server.delete_confirmation".localized(), serverName))
         }
     }
-    
+
     private var headerView: some View {
         HStack {
             Text(isNewServer ? "saveinfo.server.add".localized() : "saveinfo.server.edit".localized())
@@ -407,19 +407,20 @@ struct ServerAddressEditView: View {
             Spacer()
         }
     }
-    
+
     private var bodyView: some View {
         VStack(alignment: .leading) {
             Text("saveinfo.server.name".localized())
-            TextField("saveinfo.server.name".localized(), text: $serverName).textFieldStyle(.roundedBorder)
-                .padding(.bottom,20)
+            TextField("saveinfo.server.name".localized(), text: $serverName)
+                .textFieldStyle(.roundedBorder)
+                .padding(.bottom, 20)
 
             HStack {
                 VStack(alignment: .leading) {
                     Text("saveinfo.server.address".localized())
                     TextField("saveinfo.server.address".localized(), text: $serverAddress)
                         .textFieldStyle(.roundedBorder)
-                        .onChange(of: serverAddress) { oldValue, newValue in
+                        .onChange(of: serverAddress) { _, newValue in
                             // 如果地址包含端口，自动分离到端口字段
                             if let colonIndex = newValue.lastIndex(of: ":") {
                                 let afterColon = String(newValue[newValue.index(after: colonIndex)...])
@@ -444,7 +445,7 @@ struct ServerAddressEditView: View {
                 }
             }
             .padding(.bottom, 20)
-            
+
             HStack {
                 Toggle("saveinfo.server.hidden".localized(), isOn: $isHidden)
                 Spacer()
@@ -453,7 +454,7 @@ struct ServerAddressEditView: View {
             .padding(.bottom, 20)
         }
     }
-    
+
     private var footerView: some View {
         HStack {
             if !isNewServer {
@@ -463,15 +464,15 @@ struct ServerAddressEditView: View {
                 .keyboardShortcut(.delete, modifiers: [])
                 .disabled(isSaving || isDeleting)
             }
-            
+
             Spacer()
-            
+
             Button("common.cancel".localized()) {
                 dismiss()
             }
             .keyboardShortcut(.cancelAction)
             .disabled(isSaving || isDeleting)
-            
+
             Button("common.save".localized()) {
                 saveServer()
             }
@@ -479,25 +480,25 @@ struct ServerAddressEditView: View {
             .disabled(isSaving || isDeleting || !isFormValid)
         }
     }
-    
+
     private var isFormValid: Bool {
         let trimmedName = serverName.trimmingCharacters(in: .whitespaces)
         let trimmedAddress = serverAddress.trimmingCharacters(in: .whitespaces)
         let trimmedPort = serverPort.trimmingCharacters(in: .whitespaces)
-        
+
         // 名称和地址必填，端口可选
         guard !trimmedName.isEmpty && !trimmedAddress.isEmpty else {
             return false
         }
-        
+
         // 如果端口不为空，则必须是有效数字
         if !trimmedPort.isEmpty {
             return Int(trimmedPort) != nil
         }
-        
+
         return true
     }
-    
+
     /// 获取端口号，如果为空则返回 nil
     private var portValue: Int? {
         let trimmedPort = serverPort.trimmingCharacters(in: .whitespaces)
@@ -506,27 +507,27 @@ struct ServerAddressEditView: View {
         }
         return Int(trimmedPort)
     }
-    
+
     private func saveServer() {
         let trimmedName = serverName.trimmingCharacters(in: .whitespaces)
         let trimmedAddress = serverAddress.trimmingCharacters(in: .whitespaces)
-        
+
         guard !trimmedName.isEmpty && !trimmedAddress.isEmpty else {
             errorMessage = "saveinfo.server.invalid_fields".localized()
             showError = true
             return
         }
-        
+
         // 端口可选，如果为空则不保存端口（保存为0，表示未设置）
         let port = portValue ?? 0
-        
+
         isSaving = true
-        
+
         Task {
             do {
                 // 获取当前服务器列表
                 var currentServers = try await ServerAddressService.shared.loadServerAddresses(for: gameName)
-                
+
                 if let existingServer = server {
                     // 编辑模式：更新现有服务器
                     let updatedServer = ServerAddress(
@@ -538,7 +539,7 @@ struct ServerAddressEditView: View {
                         icon: existingServer.icon,
                         acceptTextures: acceptTextures
                     )
-                    
+
                     // 找到并更新服务器
                     if let index = currentServers.firstIndex(where: { $0.id == existingServer.id }) {
                         currentServers[index] = updatedServer
@@ -558,10 +559,10 @@ struct ServerAddressEditView: View {
                     )
                     currentServers.append(newServer)
                 }
-                
+
                 // 保存服务器列表
                 try await ServerAddressService.shared.saveServerAddresses(currentServers, for: gameName)
-                
+
                 await MainActor.run {
                     isSaving = false
                     dismiss()
@@ -577,26 +578,26 @@ struct ServerAddressEditView: View {
             }
         }
     }
-    
+
     /// 删除服务器
     private func deleteServer() {
         guard let serverToDelete = server else {
             return
         }
-        
+
         isDeleting = true
-        
+
         Task {
             do {
                 // 获取当前服务器列表
                 var currentServers = try await ServerAddressService.shared.loadServerAddresses(for: gameName)
-                
+
                 // 移除要删除的服务器
                 currentServers.removeAll { $0.id == serverToDelete.id }
-                
+
                 // 保存服务器列表
                 try await ServerAddressService.shared.saveServerAddresses(currentServers, for: gameName)
-                
+
                 await MainActor.run {
                     isDeleting = false
                     dismiss()
@@ -628,4 +629,3 @@ struct ServerAddressEditView: View {
     )
     .frame(width: 600, height: 500)
 }
-

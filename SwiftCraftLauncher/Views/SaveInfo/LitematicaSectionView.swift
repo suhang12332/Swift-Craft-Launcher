@@ -21,13 +21,13 @@ struct LitematicaSectionView: View {
     let litematicaFiles: [LitematicaInfo]
     let isLoading: Bool
     let gameName: String
-    
+
     @State private var showOverflowPopover = false
     @State private var selectedFile: LitematicaInfo?
-    
+
     @State private var visibleItems: [LitematicaInfo] = []
     @State private var overflowItems: [LitematicaInfo] = []
-    
+
     // MARK: - Body
     var body: some View {
         VStack {
@@ -41,14 +41,14 @@ struct LitematicaSectionView: View {
         .sheet(item: $selectedFile) { file in
             LitematicaDetailSheetView(filePath: file.path, gameName: gameName)
         }
-        .onChange(of: litematicaFiles) { files in
+        .onChange(of: litematicaFiles) { _, files in
             updateItemLists(from: files)
         }
         .onAppear {
             updateItemLists(from: litematicaFiles)
         }
     }
-    
+
     // MARK: - Header Views
     private var headerView: some View {
         HStack {
@@ -60,12 +60,12 @@ struct LitematicaSectionView: View {
         }
         .padding(.bottom, LitematicaSectionConstants.headerBottomPadding)
     }
-    
+
     private var headerTitle: some View {
         Text("saveinfo.litematica".localized())
             .font(.headline)
     }
-    
+
     private func overflowButton(overflowItems: [LitematicaInfo]) -> some View {
         Button {
             showOverflowPopover = true
@@ -82,7 +82,7 @@ struct LitematicaSectionView: View {
             overflowPopoverContent(overflowItems: overflowItems)
         }
     }
-    
+
     private func overflowPopoverContent(
         overflowItems: [LitematicaInfo]
     ) -> some View {
@@ -106,7 +106,7 @@ struct LitematicaSectionView: View {
         }
         .frame(width: LitematicaSectionConstants.popoverWidth)
     }
-    
+
     // MARK: - Content Views
     private var loadingPlaceholder: some View {
         ScrollView {
@@ -127,7 +127,7 @@ struct LitematicaSectionView: View {
         .fixedSize(horizontal: false, vertical: true)
         .padding(.vertical, LitematicaSectionConstants.verticalPadding)
     }
-    
+
     private var contentWithOverflow: some View {
         FlowLayout {
             ForEach(visibleItems) { file in
@@ -145,7 +145,7 @@ struct LitematicaSectionView: View {
         .padding(.vertical, LitematicaSectionConstants.verticalPadding)
         .padding(.bottom, LitematicaSectionConstants.verticalPadding)
     }
-    
+
     // MARK: - Helper Methods
     private func updateItemLists(from files: [LitematicaInfo]) {
         // 最多显示 6 个
@@ -160,14 +160,14 @@ struct LitematicaFileChip: View {
     let isLoading: Bool
     let file: LitematicaInfo?
     let action: (() -> Void)?
-    
+
     init(title: String, isLoading: Bool, file: LitematicaInfo? = nil, action: (() -> Void)? = nil) {
         self.title = title
         self.isLoading = isLoading
         self.file = file
         self.action = action
     }
-    
+
     var body: some View {
         Button(action: action ?? {}) {
             HStack(spacing: 4) {
@@ -198,33 +198,33 @@ struct LitematicaFileChip: View {
 // MARK: - Litematica File Row
 struct LitematicaFileRow: View {
     let file: LitematicaInfo
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(file.name)
                     .font(.headline)
-                
+
                 if let author = file.author {
                     Text(String(format: "saveinfo.litematica.author".localized(), author))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                
+
                 if let description = file.description, !description.isEmpty {
                     Text(description)
                         .font(.caption)
                         .foregroundColor(.secondary)
                         .lineLimit(2)
                 }
-                
+
                 HStack(spacing: 8) {
                     if let regionCount = file.regionCount {
                         Label(String(format: "saveinfo.litematica.region_count".localized(), regionCount), systemImage: "square.grid.2x2")
                             .font(.caption2)
                             .foregroundColor(.secondary)
                     }
-                    
+
                     if let totalBlocks = file.totalBlocks {
                         Label(String(format: "saveinfo.litematica.block_count".localized(), totalBlocks), systemImage: "cube")
                             .font(.caption2)
@@ -232,9 +232,9 @@ struct LitematicaFileRow: View {
                     }
                 }
             }
-            
+
             Spacer()
-            
+
             Button {
                 NSWorkspace.shared.open(file.path.deletingLastPathComponent())
             } label: {
@@ -245,4 +245,3 @@ struct LitematicaFileRow: View {
         .padding(.vertical, 4)
     }
 }
-

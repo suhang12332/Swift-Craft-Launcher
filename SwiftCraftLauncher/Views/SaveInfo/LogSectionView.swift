@@ -20,9 +20,9 @@ struct LogSectionView: View {
     // MARK: - Properties
     let logs: [LogInfo]
     let isLoading: Bool
-    
+
     @State private var showOverflowPopover = false
-    
+
     // MARK: - Body
     var body: some View {
         VStack {
@@ -34,7 +34,7 @@ struct LogSectionView: View {
             }
         }
     }
-    
+
     // MARK: - Header Views
     private var headerView: some View {
         let (_, overflowItems) = computeVisibleAndOverflowItems()
@@ -47,12 +47,12 @@ struct LogSectionView: View {
         }
         .padding(.bottom, LogSectionConstants.headerBottomPadding)
     }
-    
+
     private var headerTitle: some View {
         Text("saveinfo.logs".localized())
             .font(.headline)
     }
-    
+
     private func overflowButton(overflowItems: [LogInfo]) -> some View {
         Button {
             showOverflowPopover = true
@@ -69,7 +69,7 @@ struct LogSectionView: View {
             overflowPopoverContent(overflowItems: overflowItems)
         }
     }
-    
+
     private func overflowPopoverContent(
         overflowItems: [LogInfo]
     ) -> some View {
@@ -92,7 +92,7 @@ struct LogSectionView: View {
         }
         .frame(width: LogSectionConstants.popoverWidth)
     }
-    
+
     // MARK: - Content Views
     private var loadingPlaceholder: some View {
         ScrollView {
@@ -114,7 +114,7 @@ struct LogSectionView: View {
         .fixedSize(horizontal: false, vertical: true)
         .padding(.vertical, LogSectionConstants.verticalPadding)
     }
-    
+
     private var contentWithOverflow: some View {
         let (visibleItems, _) = computeVisibleAndOverflowItems()
         return FlowLayout {
@@ -133,7 +133,7 @@ struct LogSectionView: View {
         .padding(.vertical, LogSectionConstants.verticalPadding)
         .padding(.bottom, LogSectionConstants.verticalPadding)
     }
-    
+
     // MARK: - Helper Methods
     private func computeVisibleAndOverflowItems() -> (
         [LogInfo], [LogInfo]
@@ -141,16 +141,16 @@ struct LogSectionView: View {
         // 最多显示6个
         let visibleItems = Array(logs.prefix(LogSectionConstants.maxItems))
         let overflowItems = Array(logs.dropFirst(LogSectionConstants.maxItems))
-        
+
         return (visibleItems, overflowItems)
     }
-    
+
     /// 使用Console应用打开日志文件
     private func openLogInConsole(log: LogInfo) {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
         process.arguments = ["-a", "Console", log.path.path]
-        
+
         do {
             try process.run()
         } catch {
@@ -165,14 +165,14 @@ struct LogChip: View {
     let isCrashLog: Bool
     let isLoading: Bool
     let action: (() -> Void)?
-    
+
     init(title: String, isCrashLog: Bool, isLoading: Bool, action: (() -> Void)? = nil) {
         self.title = title
         self.isCrashLog = isCrashLog
         self.isLoading = isLoading
         self.action = action
     }
-    
+
     var body: some View {
         Button(action: action ?? {}) {
             HStack(spacing: 4) {
@@ -199,4 +199,3 @@ struct LogChip: View {
         .disabled(isLoading)
     }
 }
-

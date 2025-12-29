@@ -154,13 +154,13 @@ struct MinecraftSkinUtils: View {
     private static func hasNonTransparentPixels(_ cgImage: CGImage) -> Bool {
         let width = cgImage.width
         let height = cgImage.height
-        
+
         // 创建位图上下文以确保格式一致（RGBA）
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bytesPerPixel = 4
         let bytesPerRow = bytesPerPixel * width
         let bitsPerComponent = 8
-        
+
         guard let context = CGContext(
             data: nil,
             width: width,
@@ -173,10 +173,10 @@ struct MinecraftSkinUtils: View {
         let pixelData = context.data?.assumingMemoryBound(to: UInt8.self) else {
             return false
         }
-        
+
         // 将图像绘制到位图上下文中
         context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
-        
+
         // 检查每个像素的 alpha 通道（RGBA 格式中 alpha 是第4个字节）
         for y in 0..<height {
             for x in 0..<width {
@@ -324,8 +324,10 @@ struct MinecraftSkinUtils: View {
             Image(decorative: cache.headImage, scale: 1.0)
                 .interpolation(.none)
                 .resizable()
-                .frame(width: cache.hasLayerContent ? size * 0.9 : size, 
-                       height: cache.hasLayerContent ? size * 0.9 : size)
+                .frame(
+                    width: cache.hasLayerContent ? size * 0.9 : size,
+                    height: cache.hasLayerContent ? size * 0.9 : size
+                )
                 .clipped()
             // Skin layer (overlay) - 直接使用缓存的 CGImage
             // 只有当图层有实际内容时才显示
@@ -479,9 +481,9 @@ struct MinecraftSkinUtils: View {
             )
         }
     }
-    
+
     // MARK: - Export Functions
-    
+
     /// 导出玩家头像图像
     /// - Parameters:
     ///   - type: 皮肤类型（URL 或 Asset）
@@ -520,7 +522,7 @@ struct MinecraftSkinUtils: View {
             }
             let request = URLRequest(url: url)
             let (responseData, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
-            
+
             guard httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
                     chineseMessage: "皮肤下载失败: HTTP \(httpResponse.statusCode)",
@@ -530,7 +532,7 @@ struct MinecraftSkinUtils: View {
             }
             data = responseData
         }
-        
+
         // 创建 CIImage
         guard let ciImage = CIImage(data: data) else {
             throw GlobalError.validation(
@@ -539,7 +541,7 @@ struct MinecraftSkinUtils: View {
                 level: .silent
             )
         }
-        
+
         // 验证皮肤尺寸
         guard ciImage.extent.width == 64 && ciImage.extent.height == 64 else {
             throw GlobalError.validation(
@@ -548,7 +550,7 @@ struct MinecraftSkinUtils: View {
                 level: .silent
             )
         }
-        
+
         // 裁剪头部和图层
         let headRect = CGRect(
             x: Constants.headStartX,
@@ -557,7 +559,7 @@ struct MinecraftSkinUtils: View {
             height: Constants.headHeight
         )
         let headCropped = ciImage.cropped(to: headRect)
-        
+
         let layerRect = CGRect(
             x: Constants.layerStartX,
             y: ciImage.extent.height - Constants.layerStartY - Constants.layerHeight,
@@ -565,7 +567,7 @@ struct MinecraftSkinUtils: View {
             height: Constants.layerHeight
         )
         let layerCropped = ciImage.cropped(to: layerRect)
-        
+
         // 转换为 CGImage 并放大
         guard let headCGImage = ciContext.createCGImage(headCropped, from: headCropped.extent),
               let layerCGImage = ciContext.createCGImage(layerCropped, from: layerCropped.extent) else {
@@ -575,16 +577,16 @@ struct MinecraftSkinUtils: View {
                 level: .silent
             )
         }
-        
+
         // 检查图层是否有内容
         let hasLayerContent = hasNonTransparentPixels(layerCGImage)
-        
+
         // 创建目标尺寸的图像
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let bytesPerPixel = 4
         let bytesPerRow = bytesPerPixel * size
         let bitsPerComponent = 8
-        
+
         guard let context = CGContext(
             data: nil,
             width: size,
@@ -600,18 +602,18 @@ struct MinecraftSkinUtils: View {
                 level: .silent
             )
         }
-        
+
         // 绘制头部图层（如果需要缩放以适应图层，则缩小到 90%）
         let headSize = hasLayerContent ? Int(Double(size) * 0.9) : size
         let headOffset = hasLayerContent ? (size - headSize) / 2 : 0
         context.interpolationQuality = .none
         context.draw(headCGImage, in: CGRect(x: headOffset, y: headOffset, width: headSize, height: headSize))
-        
+
         // 如果有图层内容，绘制图层（覆盖在头部上方）
         if hasLayerContent {
             context.draw(layerCGImage, in: CGRect(x: 0, y: 0, width: size, height: size))
         }
-        
+
         // 获取最终的 CGImage
         guard let finalCGImage = context.makeImage() else {
             throw GlobalError.validation(
@@ -620,7 +622,7 @@ struct MinecraftSkinUtils: View {
                 level: .silent
             )
         }
-        
+
         // 转换为 NSImage
         return NSImage(cgImage: finalCGImage, size: NSSize(width: size, height: size))
     }

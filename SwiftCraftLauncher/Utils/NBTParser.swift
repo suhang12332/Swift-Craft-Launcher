@@ -30,16 +30,16 @@ class NBTParser {
     private var data: Data
     private var offset: Int = 0
     private var outputData: Data = Data()
-    
+
     init(data: Data) {
         self.data = data
     }
-    
+
     /// 创建用于写入的 NBT 解析器
     private init() {
         self.data = Data()
     }
-    
+
     /// 解析 NBT 数据（支持 GZIP 压缩）
     /// - Returns: 解析后的字典
     /// - Throws: 解析错误
@@ -50,7 +50,7 @@ class NBTParser {
             data = try decompressGzip(data: data)
             offset = 0
         }
-        
+
         // 读取根标签类型（应该是 TAG_Compound）
         guard !data.isEmpty else {
             throw GlobalError.fileSystem(
@@ -59,7 +59,7 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         let tagType = NBTType(rawValue: data[offset]) ?? .end
         guard tagType == .compound else {
             throw GlobalError.fileSystem(
@@ -68,16 +68,16 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         offset += 1
-        
+
         // 读取标签名称（根标签名称可能为空）
-        let name = try readString()
-        
+        _ = try readString()
+
         // 读取 Compound 内容
-        return try readCompound() as? [String: Any] ?? [:]
+        return try readCompound() as [String: Any]
     }
-    
+
     /// 读取字符串
     private func readString() throws -> String {
         guard offset + 2 <= data.count else {
@@ -87,7 +87,7 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         let length = Int(readShort())
         guard offset + length <= data.count else {
             throw GlobalError.fileSystem(
@@ -96,13 +96,13 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         let stringData = data.subdata(in: offset..<(offset + length))
         offset += length
-        
+
         return String(data: stringData, encoding: .utf8) ?? ""
     }
-    
+
     /// 读取短整型（2 字节，大端序）
     private func readShort() -> UInt16 {
         guard offset + 2 <= data.count else { return 0 }
@@ -110,7 +110,7 @@ class NBTParser {
         offset += 2
         return value
     }
-    
+
     /// 读取整型（4 字节，大端序）
     private func readInt() -> Int32 {
         guard offset + 4 <= data.count else { return 0 }
@@ -121,7 +121,7 @@ class NBTParser {
         offset += 4
         return value
     }
-    
+
     /// 读取字节
     private func readByte() -> UInt8 {
         guard offset < data.count else { return 0 }
@@ -129,27 +129,27 @@ class NBTParser {
         offset += 1
         return value
     }
-    
+
     /// 读取 Compound 标签
     private func readCompound() throws -> [String: Any] {
         var result: [String: Any] = [:]
-        
+
         while offset < data.count {
             let tagType = NBTType(rawValue: data[offset]) ?? .end
             offset += 1
-            
+
             if tagType == .end {
                 break
             }
-            
+
             let name = try readString()
             let value = try readTagValue(type: tagType)
             result[name] = value
         }
-        
+
         return result
     }
-    
+
     /// 读取标签值
     private func readTagValue(type: NBTType) throws -> Any {
         switch type {
@@ -205,7 +205,7 @@ class NBTParser {
             )
         }
     }
-    
+
     /// 读取长整型（8 字节，大端序）
     private func readLong() -> Int64 {
         guard offset + 8 <= data.count else { return 0 }
@@ -216,21 +216,21 @@ class NBTParser {
         offset += 8
         return value
     }
-    
+
     /// 读取浮点数（4 字节，IEEE 754）
     private func readFloat() -> Float {
         guard offset + 4 <= data.count else { return 0 }
         let intValue = readInt()
         return Float(bitPattern: UInt32(bitPattern: intValue))
     }
-    
+
     /// 读取双精度浮点数（8 字节，IEEE 754）
     private func readDouble() -> Double {
         guard offset + 8 <= data.count else { return 0 }
         let longValue = readLong()
         return Double(bitPattern: UInt64(bitPattern: longValue))
     }
-    
+
     /// 读取列表
     private func readList() throws -> [Any] {
         guard offset < data.count else {
@@ -240,21 +240,21 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         let listType = NBTType(rawValue: data[offset]) ?? .end
         offset += 1
-        
+
         let length = Int(readInt())
         var result: [Any] = []
-        
+
         for _ in 0..<length {
             let value = try readTagValue(type: listType)
             result.append(value)
         }
-        
+
         return result
     }
-    
+
     /// 解压 GZIP 数据（使用系统命令）
     private func decompressGzip(data: Data) throws -> Data {
         guard !data.isEmpty else {
@@ -264,30 +264,30 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         // 创建临时文件用于存储压缩数据
         let tempDir = FileManager.default.temporaryDirectory
         let tempInputFile = tempDir.appendingPathComponent(UUID().uuidString + ".gz")
         let tempOutputFile = tempDir.appendingPathComponent(UUID().uuidString)
-        
+
         defer {
             // 清理临时文件
             try? FileManager.default.removeItem(at: tempInputFile)
             try? FileManager.default.removeItem(at: tempOutputFile)
         }
-        
+
         // 写入压缩数据到临时文件
         try data.write(to: tempInputFile)
-        
+
         // 使用系统 gzip 命令解压
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/gunzip")
         process.arguments = ["-c", tempInputFile.path]
-        
+
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = Pipe()
-        
+
         do {
             try process.run()
         } catch {
@@ -297,12 +297,12 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         // 读取解压后的数据
         let fileHandle = pipe.fileHandleForReading
         let decompressedData = fileHandle.readDataToEndOfFile()
         process.waitUntilExit()
-        
+
         guard process.terminationStatus == 0 else {
             throw GlobalError.fileSystem(
                 chineseMessage: "GZIP 解压失败，退出状态: \(process.terminationStatus)",
@@ -310,7 +310,7 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         guard !decompressedData.isEmpty else {
             throw GlobalError.fileSystem(
                 chineseMessage: "GZIP 解压后数据为空",
@@ -318,12 +318,12 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         return decompressedData
     }
-    
+
     // MARK: - NBT 写入方法
-    
+
     /// 将字典数据编码为 NBT 格式（支持 GZIP 压缩）
     /// - Parameters:
     ///   - data: 要编码的字典数据
@@ -333,35 +333,35 @@ class NBTParser {
     static func encode(_ data: [String: Any], compress: Bool = true) throws -> Data {
         let parser = NBTParser()
         parser.outputData = Data()
-        
+
         // 写入根标签类型（TAG_Compound）
         parser.writeByte(NBTType.compound.rawValue)
-        
+
         // 写入根标签名称（空字符串）
         parser.writeString("")
-        
+
         // 写入 Compound 内容
         try parser.writeCompound(data)
-        
+
         // 如果启用压缩，使用 gzip 压缩
         if compress {
             return try parser.compressGzip(data: parser.outputData)
         }
-        
+
         return parser.outputData
     }
-    
+
     /// 写入字节
     private func writeByte(_ value: UInt8) {
         outputData.append(value)
     }
-    
+
     /// 写入短整型（2 字节，大端序）
     private func writeShort(_ value: UInt16) {
         outputData.append(UInt8((value >> 8) & 0xFF))
         outputData.append(UInt8(value & 0xFF))
     }
-    
+
     /// 写入整型（4 字节，大端序）
     private func writeInt(_ value: Int32) {
         outputData.append(UInt8((value >> 24) & 0xFF))
@@ -369,7 +369,7 @@ class NBTParser {
         outputData.append(UInt8((value >> 8) & 0xFF))
         outputData.append(UInt8(value & 0xFF))
     }
-    
+
     /// 写入长整型（8 字节，大端序）
     private func writeLong(_ value: Int64) {
         outputData.append(UInt8((value >> 56) & 0xFF))
@@ -381,7 +381,7 @@ class NBTParser {
         outputData.append(UInt8((value >> 8) & 0xFF))
         outputData.append(UInt8(value & 0xFF))
     }
-    
+
     /// 写入字符串
     private func writeString(_ value: String) {
         let stringData = value.data(using: .utf8) ?? Data()
@@ -389,7 +389,7 @@ class NBTParser {
         writeShort(length)
         outputData.append(stringData)
     }
-    
+
     /// 写入浮点数（4 字节，IEEE 754）
     private func writeFloat(_ value: Float) {
         let bitPattern = value.bitPattern
@@ -397,7 +397,7 @@ class NBTParser {
         let intValue = Int32(bitPattern: bitPattern)
         writeInt(intValue)
     }
-    
+
     /// 写入双精度浮点数（8 字节，IEEE 754）
     private func writeDouble(_ value: Double) {
         let bitPattern = value.bitPattern
@@ -405,7 +405,7 @@ class NBTParser {
         let longValue = Int64(bitPattern: bitPattern)
         writeLong(longValue)
     }
-    
+
     /// 写入 Compound 标签
     private func writeCompound(_ compound: [String: Any]) throws {
         for (name, value) in compound {
@@ -417,7 +417,7 @@ class NBTParser {
         // 写入 End 标签
         writeByte(NBTType.end.rawValue)
     }
-    
+
     /// 写入标签值
     private func writeTagValue(type: NBTType, value: Any) throws {
         switch type {
@@ -552,7 +552,7 @@ class NBTParser {
             break
         }
     }
-    
+
     /// 写入列表
     private func writeList(_ value: Any) throws {
         guard let array = value as? [Any], !array.isEmpty else {
@@ -561,17 +561,17 @@ class NBTParser {
             writeInt(0)
             return
         }
-        
+
         // 推断列表元素类型
         let elementType = try inferNBTType(from: array[0])
         writeByte(elementType.rawValue)
         writeInt(Int32(array.count))
-        
+
         for item in array {
             try writeTagValue(type: elementType, value: item)
         }
     }
-    
+
     /// 从值推断 NBT 类型
     private func inferNBTType(from value: Any) throws -> NBTType {
         switch value {
@@ -604,7 +604,7 @@ class NBTParser {
             return .string
         }
     }
-    
+
     /// 压缩 GZIP 数据（使用系统命令）
     private func compressGzip(data: Data) throws -> Data {
         guard !data.isEmpty else {
@@ -614,30 +614,30 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         // 创建临时文件用于存储未压缩数据
         let tempDir = FileManager.default.temporaryDirectory
         let tempInputFile = tempDir.appendingPathComponent(UUID().uuidString)
         let tempOutputFile = tempDir.appendingPathComponent(UUID().uuidString + ".gz")
-        
+
         defer {
             // 清理临时文件
             try? FileManager.default.removeItem(at: tempInputFile)
             try? FileManager.default.removeItem(at: tempOutputFile)
         }
-        
+
         // 写入未压缩数据到临时文件
         try data.write(to: tempInputFile)
-        
+
         // 使用系统 gzip 命令压缩
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/gzip")
         process.arguments = ["-c", tempInputFile.path]
-        
+
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = Pipe()
-        
+
         do {
             try process.run()
         } catch {
@@ -647,12 +647,12 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         // 读取压缩后的数据
         let fileHandle = pipe.fileHandleForReading
         let compressedData = fileHandle.readDataToEndOfFile()
         process.waitUntilExit()
-        
+
         guard process.terminationStatus == 0 else {
             throw GlobalError.fileSystem(
                 chineseMessage: "GZIP 压缩失败，退出状态: \(process.terminationStatus)",
@@ -660,7 +660,7 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         guard !compressedData.isEmpty else {
             throw GlobalError.fileSystem(
                 chineseMessage: "GZIP 压缩后数据为空",
@@ -668,9 +668,7 @@ class NBTParser {
                 level: .notification
             )
         }
-        
+
         return compressedData
     }
 }
-
-

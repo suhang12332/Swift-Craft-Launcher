@@ -22,10 +22,10 @@ struct ScreenshotSectionView: View {
     let screenshots: [ScreenshotInfo]
     let isLoading: Bool
     let gameName: String
-    
+
     @State private var showOverflowPopover = false
     @State private var selectedScreenshot: ScreenshotInfo?
-    
+
     // MARK: - Body
     var body: some View {
         VStack {
@@ -40,7 +40,7 @@ struct ScreenshotSectionView: View {
             ScreenshotDetailView(screenshot: screenshot, gameName: gameName)
         }
     }
-    
+
     // MARK: - Header Views
     private var headerView: some View {
         let (_, overflowItems) = computeVisibleAndOverflowItems()
@@ -53,12 +53,12 @@ struct ScreenshotSectionView: View {
         }
         .padding(.bottom, ScreenshotSectionConstants.headerBottomPadding)
     }
-    
+
     private var headerTitle: some View {
         Text("saveinfo.screenshots".localized())
             .font(.headline)
     }
-    
+
     private func overflowButton(overflowItems: [ScreenshotInfo]) -> some View {
         Button {
             showOverflowPopover = true
@@ -75,7 +75,7 @@ struct ScreenshotSectionView: View {
             overflowPopoverContent(overflowItems: overflowItems)
         }
     }
-    
+
     private func overflowPopoverContent(
         overflowItems: [ScreenshotInfo]
     ) -> some View {
@@ -97,7 +97,7 @@ struct ScreenshotSectionView: View {
         }
         .frame(width: ScreenshotSectionConstants.popoverWidth)
     }
-    
+
     // MARK: - Content Views
     private var loadingPlaceholder: some View {
         ScrollView {
@@ -118,7 +118,7 @@ struct ScreenshotSectionView: View {
         .fixedSize(horizontal: false, vertical: true)
         .padding(.vertical, ScreenshotSectionConstants.verticalPadding)
     }
-    
+
     private var contentWithOverflow: some View {
         let (visibleItems, _) = computeVisibleAndOverflowItems()
         return FlowLayout {
@@ -136,7 +136,7 @@ struct ScreenshotSectionView: View {
         .padding(.vertical, ScreenshotSectionConstants.verticalPadding)
         .padding(.bottom, ScreenshotSectionConstants.verticalPadding)
     }
-    
+
     // MARK: - Helper Methods
     private func computeVisibleAndOverflowItems() -> (
         [ScreenshotInfo], [ScreenshotInfo]
@@ -144,7 +144,7 @@ struct ScreenshotSectionView: View {
         // 最多显示6个
         let visibleItems = Array(screenshots.prefix(ScreenshotSectionConstants.maxItems))
         let overflowItems = Array(screenshots.dropFirst(ScreenshotSectionConstants.maxItems))
-        
+
         return (visibleItems, overflowItems)
     }
 }
@@ -154,13 +154,13 @@ struct ScreenshotChip: View {
     let title: String
     let isLoading: Bool
     let action: (() -> Void)?
-    
+
     init(title: String, isLoading: Bool, action: (() -> Void)? = nil) {
         self.title = title
         self.isLoading = isLoading
         self.action = action
     }
-    
+
     var body: some View {
         Button(action: action ?? {}) {
             HStack(spacing: 4) {
@@ -192,9 +192,9 @@ struct ScreenshotChip: View {
 struct ScreenshotThumbnail: View {
     let screenshot: ScreenshotInfo
     let action: () -> Void
-    
+
     @State private var image: NSImage?
-    
+
     var body: some View {
         Button(action: action) {
             Group {
@@ -222,7 +222,7 @@ struct ScreenshotThumbnail: View {
             loadImage()
         }
     }
-    
+
     private func loadImage() {
         DispatchQueue.global(qos: .userInitiated).async {
             if let nsImage = NSImage(contentsOf: screenshot.path) {
@@ -238,8 +238,9 @@ struct ScreenshotThumbnail: View {
 struct ScreenshotDetailView: View {
     let screenshot: ScreenshotInfo
     let gameName: String
-    @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.dismiss)
+    private var dismiss
+
     var body: some View {
         CommonSheetView(
             header: { headerView },
@@ -248,7 +249,7 @@ struct ScreenshotDetailView: View {
         )
         .frame(minWidth: 600, minHeight: 400)
     }
-    
+
     private var headerView: some View {
         HStack {
             Text(screenshot.name)
@@ -260,7 +261,6 @@ struct ScreenshotDetailView: View {
                 }
 
                 .buttonStyle(.plain)
-
             }
             Button {
                 dismiss()  // 关闭当前视图
@@ -269,7 +269,6 @@ struct ScreenshotDetailView: View {
                 .foregroundColor(.secondary)
             }
             .buttonStyle(.plain)
-
         }
     }
 
@@ -279,7 +278,7 @@ struct ScreenshotDetailView: View {
                 .frame(maxWidth: .infinity)
         }
     }
-    
+
     private var footerView: some View {
         HStack {
             if let createdDate = screenshot.createdDate {
@@ -291,9 +290,9 @@ struct ScreenshotDetailView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
             }
-            
+
             Spacer()
-            
+
             Label {
                 Text(gameName)
                     .lineLimit(1)
@@ -314,7 +313,7 @@ struct ScreenshotImageView: View {
     @State private var image: NSImage?
     @State private var isLoading: Bool = true
     @State private var loadFailed: Bool = false
-    
+
     var body: some View {
         Group {
             if isLoading {
@@ -337,7 +336,7 @@ struct ScreenshotImageView: View {
             loadImage()
         }
     }
-    
+
     private func loadImage() {
         DispatchQueue.global(qos: .userInitiated).async {
             if let nsImage = NSImage(contentsOf: path) {

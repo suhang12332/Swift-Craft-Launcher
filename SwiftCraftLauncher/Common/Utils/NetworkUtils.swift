@@ -36,7 +36,7 @@ enum NetworkUtils {
         let trimmed = input.trimmingCharacters(in: .whitespaces)
         var originalAddress = trimmed
         var originalPort = 25565
-        
+
         // 检查是否包含端口
         if let colonIndex = trimmed.lastIndex(of: ":") {
             // 检查冒号后的内容是否为数字（端口）
@@ -54,7 +54,7 @@ enum NetworkUtils {
                 )
             }
         }
-        
+
         // 不包含端口，查询 SRV 记录
         if let srvResult = await querySRVRecord(for: trimmed) {
             // SRV 记录返回的是连接地址，原始地址是输入的域名
@@ -65,7 +65,7 @@ enum NetworkUtils {
                 originalPort: 25565  // 默认端口
             )
         }
-        
+
         // 没有 SRV 记录，使用默认端口 25565
         return ResolvedServerAddress(
             address: trimmed,
@@ -74,23 +74,23 @@ enum NetworkUtils {
             originalPort: 25565
         )
     }
-    
+
     /// 查询 Minecraft SRV 记录
     /// - Parameter domain: 域名
     /// - Returns: SRV 记录中的地址和端口（仅连接信息），如果没有则返回 nil
     private static func querySRVRecord(for domain: String) async -> (address: String, port: Int)? {
         let srvName = "_minecraft._tcp.\(domain)"
-        
+
         // 使用系统的 dig 命令查询 SRV 记录（更简单可靠）
         return await withCheckedContinuation { continuation in
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/usr/bin/dig")
             process.arguments = ["+short", "SRV", srvName]
-            
+
             let pipe = Pipe()
             process.standardOutput = pipe
             process.standardError = Pipe()
-            
+
             do {
                 try process.run()
             } catch {
@@ -98,21 +98,21 @@ enum NetworkUtils {
                 continuation.resume(returning: nil)
                 return
             }
-            
+
             process.waitUntilExit()
-            
+
             guard process.terminationStatus == 0 else {
                 Logger.shared.debug("dig 查询失败，退出状态: \(process.terminationStatus)")
                 continuation.resume(returning: nil)
                 return
             }
-            
+
             let data = pipe.fileHandleForReading.readDataToEndOfFile()
             guard let output = String(data: data, encoding: .utf8) else {
                 continuation.resume(returning: nil)
                 return
             }
-            
+
             // 解析 SRV 记录格式: priority weight port target
             // 例如: "5 0 25565 mc.example.com."
             let lines = output.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: .newlines)
@@ -120,24 +120,24 @@ enum NetworkUtils {
                 continuation.resume(returning: nil)
                 return
             }
-            
+
             let components = firstLine.split(separator: " ").map(String.init)
             guard components.count >= 4 else {
                 continuation.resume(returning: nil)
                 return
             }
-            
+
             guard let port = Int(components[2]), port > 0 && port <= 65535 else {
                 continuation.resume(returning: nil)
                 return
             }
-            
+
             var target = components[3]
             // 移除末尾的点（如果有）
             if target.hasSuffix(".") {
                 target = String(target.dropLast())
             }
-            
+
             let result = (address: target, port: port)
             continuation.resume(returning: result)
         }
@@ -155,7 +155,7 @@ enum NetworkUtils {
     ) async -> ServerConnectionStatus {
         // 解析服务器地址（查询 SRV 记录）
         let resolved = await resolveServerAddress(address)
-        
+
         // 使用 Minecraft Server List Ping 协议获取服务器信息
         // 使用 SRV target + port 建立连接，但 handshake 使用原始域名
         if let serverInfo = await MinecraftServerPing.ping(
@@ -170,7 +170,7 @@ enum NetworkUtils {
             return .timeout
         }
     }
-    
+
     /// 检测服务器连接是否可用（兼容旧接口）
     /// - Parameters:
     ///   - address: 服务器地址
@@ -190,4 +190,3 @@ enum NetworkUtils {
         return false
     }
 }
-

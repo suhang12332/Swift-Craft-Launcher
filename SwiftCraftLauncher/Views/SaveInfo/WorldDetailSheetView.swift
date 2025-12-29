@@ -12,15 +12,16 @@ struct WorldDetailSheetView: View {
     // MARK: - Properties
     let world: WorldInfo
     let gameName: String
-    @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.dismiss)
+    private var dismiss
+
     @State private var metadata: WorldDetailMetadata?
     @State private var rawDataTag: [String: Any]? // 原始 Data 标签，尽可能多展示数据
     @State private var isLoading = true
     @State private var errorMessage: String?
     @State private var showError = false
     @State private var showRawData = false // 控制是否显示原始数据
-    
+
     // MARK: - Body
     var body: some View {
         CommonSheetView(
@@ -40,7 +41,7 @@ struct WorldDetailSheetView: View {
             }
         }
     }
-    
+
     // MARK: - Header View
     private var headerView: some View {
         HStack {
@@ -56,7 +57,7 @@ struct WorldDetailSheetView: View {
             .buttonStyle(.plain)
         }
     }
-    
+
     // MARK: - Body View
     private var bodyView: some View {
         Group {
@@ -69,14 +70,14 @@ struct WorldDetailSheetView: View {
             }
         }
     }
-    
+
     private var loadingView: some View {
         VStack {
             ProgressView().controlSize(.small)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
+
     private var errorView: some View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
@@ -94,7 +95,7 @@ struct WorldDetailSheetView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
     }
-    
+
     private func metadataContentView(metadata: WorldDetailMetadata) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -113,7 +114,7 @@ struct WorldDetailSheetView: View {
                             infoRow(label: "saveinfo.world.detail.label.data_version".localized(), value: "\(dataVersion)")
                         }
                     }
-                    
+
                     // 游戏设置
                     infoSection(title: "saveinfo.world.detail.section.game_settings".localized()) {
                         infoRow(label: "saveinfo.world.detail.label.game_mode".localized(), value: metadata.gameMode)
@@ -125,7 +126,7 @@ struct WorldDetailSheetView: View {
                         }
                     }
                 }
-                
+
                 // 其他信息
                 infoSection(title: "saveinfo.world.detail.section.other".localized()) {
                     if let lastPlayed = metadata.lastPlayed {
@@ -151,18 +152,18 @@ struct WorldDetailSheetView: View {
                     }
                     infoRow(label: "saveinfo.world.detail.label.world_path".localized(), value: metadata.path.path, isMultiline: true)
                 }
-                
+
                 // 原始数据切换按钮
                 if let raw = rawDataTag {
                     let displayedKeys: Set<String> = [
                         "LevelName", "Version", "DataVersion",
                         "GameType", "Difficulty", "hardcore", "allowCommands", "GameRules",
                         "LastPlayed", "RandomSeed", "SpawnX", "SpawnY", "SpawnZ",
-                        "Time", "DayTime", "raining", "thundering", "WorldBorder"
+                        "Time", "DayTime", "raining", "thundering", "WorldBorder",
                     ]
-                    
+
                     let filteredRaw = raw.filter { !displayedKeys.contains($0.key) }
-                    
+
                     if !filteredRaw.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             Button {
@@ -180,10 +181,10 @@ struct WorldDetailSheetView: View {
                                 }
                             }
                             .buttonStyle(.plain)
-                            
+
                             if showRawData {
                                 infoSection(title: "saveinfo.world.detail.section.detailed_info".localized()) {
-                                    ForEach(flattenNBTDictionary(filteredRaw).sorted(by: { $0.key < $1.key }), id: \.key) { key, value in
+                                    ForEach(flattenNBTDictionary(filteredRaw).sorted { $0.key < $1.key }, id: \.key) { key, value in
                                         infoRow(label: key, value: value, isMultiline: true)
                                     }
                                 }
@@ -195,7 +196,7 @@ struct WorldDetailSheetView: View {
             .padding(.vertical, 8)
         }
     }
-    
+
     private func infoSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
@@ -205,7 +206,7 @@ struct WorldDetailSheetView: View {
             content()
         }
     }
-    
+
     private func infoRow(label: String, value: String, isMultiline: Bool = false) -> some View {
         HStack(alignment: isMultiline ? .top : .center, spacing: 12) {
             Text(label + ":")
@@ -224,7 +225,7 @@ struct WorldDetailSheetView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
+
     // MARK: - Footer View
     private var footerView: some View {
         HStack {
@@ -238,9 +239,9 @@ struct WorldDetailSheetView: View {
             .font(.caption)
             .foregroundColor(.secondary)
             .frame(maxWidth: 200, alignment: .leading)
-            
+
             Spacer()
-            
+
             Label {
                 Text(gameName)
                     .lineLimit(1)
@@ -253,12 +254,12 @@ struct WorldDetailSheetView: View {
             .frame(maxWidth: 300, alignment: .trailing)
         }
     }
-    
+
     // MARK: - Helper Methods
     private func loadMetadata() async {
         isLoading = true
         errorMessage = nil
-        
+
         do {
             let levelDatPath = world.path.appendingPathComponent("level.dat")
             guard FileManager.default.fileExists(atPath: levelDatPath.path) else {
@@ -269,11 +270,11 @@ struct WorldDetailSheetView: View {
                 }
                 return
             }
-            
+
             let data = try Data(contentsOf: levelDatPath)
             let parser = NBTParser(data: data)
             let nbtData = try parser.parse()
-            
+
             guard let dataTag = nbtData["Data"] as? [String: Any] else {
                 await MainActor.run {
                     self.isLoading = false
@@ -282,9 +283,9 @@ struct WorldDetailSheetView: View {
                 }
                 return
             }
-            
+
             let metadata = parseWorldDetail(from: dataTag, folderName: world.name, path: world.path)
-            
+
             await MainActor.run {
                 self.rawDataTag = dataTag
                 self.metadata = metadata
@@ -299,12 +300,12 @@ struct WorldDetailSheetView: View {
             }
         }
     }
-    
+
     private func parseWorldDetail(from dataTag: [String: Any], folderName: String, path: URL) -> WorldDetailMetadata {
         let levelName = (dataTag["LevelName"] as? String) ?? folderName
-        
+
         // LastPlayed 为毫秒时间戳（Long）
-        var lastPlayedDate: Date? = nil
+        var lastPlayedDate: Date?
         if let ts = dataTag["LastPlayed"] {
             if let v = ts as? Int64 {
                 lastPlayedDate = Date(timeIntervalSince1970: TimeInterval(v) / 1000.0)
@@ -312,7 +313,7 @@ struct WorldDetailSheetView: View {
                 lastPlayedDate = Date(timeIntervalSince1970: TimeInterval(v) / 1000.0)
             }
         }
-        
+
         // GameType: 0 生存, 1 创造, 2 冒险, 3 旁观
         var gameMode = "saveinfo.world.game_mode.unknown".localized()
         if let gt = dataTag["GameType"] as? Int {
@@ -320,7 +321,7 @@ struct WorldDetailSheetView: View {
         } else if let gt32 = dataTag["GameType"] as? Int32 {
             gameMode = mapGameMode(Int(gt32))
         }
-        
+
         // Difficulty: 0 和平, 1 简单, 2 普通, 3 困难
         var difficulty = "saveinfo.world.difficulty.unknown".localized()
         if let diff = dataTag["Difficulty"] as? Int {
@@ -328,12 +329,12 @@ struct WorldDetailSheetView: View {
         } else if let diff8 = dataTag["Difficulty"] as? Int8 {
             difficulty = mapDifficulty(Int(diff8))
         }
-        
+
         let hardcore = (dataTag["hardcore"] as? Int8 ?? 0) != 0
         let cheats = (dataTag["allowCommands"] as? Int8 ?? 0) != 0
-        
-        var versionName: String? = nil
-        var versionId: Int? = nil
+
+        var versionName: String?
+        var versionId: Int?
         if let versionTag = dataTag["Version"] as? [String: Any] {
             versionName = versionTag["Name"] as? String
             if let id = versionTag["Id"] as? Int {
@@ -342,30 +343,30 @@ struct WorldDetailSheetView: View {
                 versionId = Int(id32)
             }
         }
-        
-        var dataVersion: Int? = nil
+
+        var dataVersion: Int?
         if let dv = dataTag["DataVersion"] as? Int {
             dataVersion = dv
         } else if let dv32 = dataTag["DataVersion"] as? Int32 {
             dataVersion = Int(dv32)
         }
-        
-        var seed: Int64? = nil
+
+        var seed: Int64?
         if let s = dataTag["RandomSeed"] as? Int64 {
             seed = s
         } else if let s = dataTag["RandomSeed"] as? Int {
             seed = Int64(s)
         }
-        
-        var spawn: String? = nil
+
+        var spawn: String?
         if let x = readInt64(dataTag["SpawnX"]), let y = readInt64(dataTag["SpawnY"]), let z = readInt64(dataTag["SpawnZ"]) {
             spawn = "\(x), \(y), \(z)"
         }
-        
+
         let time = readInt64(dataTag["Time"])
         let dayTime = readInt64(dataTag["DayTime"])
-        
-        var weather: String? = nil
+
+        var weather: String?
         if let raining = readInt64(dataTag["raining"]) {
             weather = (raining != 0) ? "saveinfo.world.weather.rain".localized() : "saveinfo.world.weather.clear".localized()
         }
@@ -375,17 +376,17 @@ struct WorldDetailSheetView: View {
                 weather = weather.map { "\($0), \(t)" } ?? t
             }
         }
-        
-        var worldBorder: String? = nil
+
+        var worldBorder: String?
         if let wb = dataTag["WorldBorder"] as? [String: Any] {
             worldBorder = flattenNBTDictionary(wb, prefix: "").map { "\($0.key)=\($0.value)" }.sorted().joined(separator: ", ")
         }
-        
-        var gameRules: [String]? = nil
+
+        var gameRules: [String]?
         if let gr = dataTag["GameRules"] as? [String: Any] {
             gameRules = flattenNBTDictionary(gr, prefix: "").map { "\($0.key)=\($0.value)" }.sorted()
         }
-        
+
         return WorldDetailMetadata(
             levelName: levelName,
             folderName: folderName,
@@ -407,7 +408,7 @@ struct WorldDetailSheetView: View {
             gameRules: gameRules
         )
     }
-    
+
     private func mapGameMode(_ value: Int) -> String {
         switch value {
         case 0: return "saveinfo.world.game_mode.survival".localized()
@@ -417,7 +418,7 @@ struct WorldDetailSheetView: View {
         default: return "saveinfo.world.game_mode.unknown".localized()
         }
     }
-    
+
     private func mapDifficulty(_ value: Int) -> String {
         switch value {
         case 0: return "saveinfo.world.difficulty.peaceful".localized()
@@ -427,7 +428,7 @@ struct WorldDetailSheetView: View {
         default: return "saveinfo.world.difficulty.unknown".localized()
         }
     }
-    
+
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -435,7 +436,7 @@ struct WorldDetailSheetView: View {
         formatter.locale = Locale.current
         return formatter.string(from: date)
     }
-    
+
     private func readInt64(_ any: Any?) -> Int64? {
         if let v = any as? Int64 { return v }
         if let v = any as? Int { return Int64(v) }
@@ -448,7 +449,7 @@ struct WorldDetailSheetView: View {
         if let v = any as? UInt8 { return Int64(v) }
         return nil
     }
-    
+
     private func flattenNBTDictionary(_ dict: [String: Any], prefix: String = "") -> [String: String] {
         var result: [String: String] = [:]
         for (k, v) in dict {
@@ -464,7 +465,7 @@ struct WorldDetailSheetView: View {
         }
         return result
     }
-    
+
     private func stringifyNBTValue(_ value: Any) -> String {
         if let v = value as? String { return v }
         if let v = value as? Bool { return v ? "true" : "false" }
@@ -502,5 +503,3 @@ struct WorldDetailMetadata {
     let worldBorder: String?
     let gameRules: [String]?
 }
-
-

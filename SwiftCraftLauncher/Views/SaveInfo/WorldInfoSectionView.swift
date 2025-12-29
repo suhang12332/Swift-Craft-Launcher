@@ -17,10 +17,10 @@ struct WorldInfoSectionView: View {
     let worlds: [WorldInfo]
     let isLoading: Bool
     let gameName: String
-    
+
     @State private var showOverflowPopover = false
     @State private var selectedWorld: WorldInfo?
-    
+
     // MARK: - Body
     var body: some View {
         VStack {
@@ -35,7 +35,7 @@ struct WorldInfoSectionView: View {
             WorldDetailSheetView(world: world, gameName: gameName)
         }
     }
-    
+
     // MARK: - Header Views
     private var headerView: some View {
         let (_, overflowItems) = computeVisibleAndOverflowItems()
@@ -48,12 +48,12 @@ struct WorldInfoSectionView: View {
         }
         .padding(.bottom, WorldInfoSectionConstants.headerBottomPadding)
     }
-    
+
     private var headerTitle: some View {
         Text("saveinfo.worlds".localized())
             .font(.headline)
     }
-    
+
     private func overflowButton(overflowItems: [WorldInfo]) -> some View {
         Button {
             showOverflowPopover = true
@@ -70,7 +70,7 @@ struct WorldInfoSectionView: View {
             overflowPopoverContent(overflowItems: overflowItems)
         }
     }
-    
+
     private func overflowPopoverContent(
         overflowItems: [WorldInfo]
     ) -> some View {
@@ -92,7 +92,7 @@ struct WorldInfoSectionView: View {
         }
         .frame(width: WorldInfoSectionConstants.popoverWidth)
     }
-    
+
     // MARK: - Content Views
     private var loadingPlaceholder: some View {
         ScrollView {
@@ -113,7 +113,7 @@ struct WorldInfoSectionView: View {
         .fixedSize(horizontal: false, vertical: true)
         .padding(.vertical, WorldInfoSectionConstants.verticalPadding)
     }
-    
+
     private var contentWithOverflow: some View {
         let (visibleItems, _) = computeVisibleAndOverflowItems()
         return FlowLayout {
@@ -131,7 +131,7 @@ struct WorldInfoSectionView: View {
         .padding(.vertical, WorldInfoSectionConstants.verticalPadding)
         .padding(.bottom, WorldInfoSectionConstants.verticalPadding)
     }
-    
+
     // MARK: - Helper Methods
     private func computeVisibleAndOverflowItems() -> (
         [WorldInfo], [WorldInfo]
@@ -139,7 +139,7 @@ struct WorldInfoSectionView: View {
         // 最多显示6个
         let visibleItems = Array(worlds.prefix(WorldInfoSectionConstants.maxItems))
         let overflowItems = Array(worlds.dropFirst(WorldInfoSectionConstants.maxItems))
-        
+
         return (visibleItems, overflowItems)
     }
 }
@@ -149,13 +149,13 @@ struct WorldInfoChip: View {
     let title: String
     let isLoading: Bool
     let action: (() -> Void)?
-    
+
     init(title: String, isLoading: Bool, action: (() -> Void)? = nil) {
         self.title = title
         self.isLoading = isLoading
         self.action = action
     }
-    
+
     var body: some View {
         Button(action: action ?? {}) {
             HStack(spacing: 4) {
