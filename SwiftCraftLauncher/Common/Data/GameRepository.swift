@@ -33,9 +33,6 @@ class GameRepository: ObservableObject {
     /// 工作路径改变通知（用于触发UI切换）
     @Published var workingPathChanged: Bool = false
 
-    /// 初始加载是否已完成
-    @Published private(set) var isInitialLoadComplete: Bool = false
-
     // MARK: - Initialization
 
     init() {
@@ -379,6 +376,9 @@ class GameRepository: ObservableObject {
         Task {
             do {
                 try await loadGamesThrowing()
+
+                // 加载完成后，扫描所有游戏的 mods 目录
+                await scanAllGamesModsDirectory()
             } catch {
                 GlobalErrorHandler.shared.handle(error)
                 await MainActor.run {
@@ -388,19 +388,34 @@ class GameRepository: ObservableObject {
         }
     }
 
+    /// 扫描所有游戏的 mods 目录
+    /// 异步执行，不会阻塞 UI
+    private func scanAllGamesModsDirectory() async {
+        let games = games
+        Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
+
+        // 并发扫描所有游戏
+        await withTaskGroup(of: Void.self) { group in
+            for game in games {
+                group.addTask {
+                    await ModScanner.shared.scanGameModsDirectory(game: game)
+                }
+            }
+        }
+
+        Logger.shared.info("完成所有游戏的 mods 目录扫描")
+    }
+
     /// 从 UserDefaults 加载游戏列表（抛出异常版本）
-    /// 只加载当前工作路径的游戏
+    /// 只加载当前工作路径的游戏，其他工作路径的数据不会被加载到内存中
     /// - Throws: GlobalError 当操作失败时
     func loadGamesThrowing() async throws {
         let workingPath = currentWorkingPath
 
         guard let savedGamesData = UserDefaults.standard.data(forKey: gamesKey) else {
             await MainActor.run {
-                gamesByWorkingPath = [:]
-                // 即使没有数据，也标记为加载完成
-                if !isInitialLoadComplete {
-                    isInitialLoadComplete = true
-                }
+                // 只初始化当前工作路径，不加载其他路径的数据
+                gamesByWorkingPath = [workingPath: []]
             }
             return
         }
@@ -408,9 +423,10 @@ class GameRepository: ObservableObject {
         do {
             let decoder = JSONDecoder()
             // 解码为按工作路径分组的字典格式
+            // 注意：虽然需要解码整个字典，但后续只保留当前工作路径的数据
             let allGamesByPath = try decoder.decode([String: [GameVersionInfo]].self, from: savedGamesData)
 
-            // 只获取当前工作路径的游戏
+            // 只获取当前工作路径的游戏，其他路径的数据会被丢弃
             let games = allGamesByPath[workingPath] ?? []
 
             // 验证当前工作路径下的游戏，只保留实际存在的游戏
@@ -431,32 +447,25 @@ class GameRepository: ObservableObject {
                 localGameNames = []
             }
 
+            // 只保留在当前工作路径下实际存在的游戏
             let validGames = games.filter { localGameNames.contains($0.gameName) }
 
             await MainActor.run {
-                // 只保存当前工作路径的游戏
+                // 只保存当前工作路径的游戏到内存中，其他路径的数据不加载
                 gamesByWorkingPath = [workingPath: validGames]
-                // 标记初始加载完成
-                if !isInitialLoadComplete {
-                    isInitialLoadComplete = true
-                }
             }
 
             Logger.shared.info("成功加载 \(validGames.count) 个游戏（工作路径: \(workingPath)）")
         } catch let error as GlobalError {
-            // 即使出错，也标记为加载完成（避免无限等待）
+            // 即使出错，也确保只初始化当前工作路径
             await MainActor.run {
-                if !isInitialLoadComplete {
-                    isInitialLoadComplete = true
-                }
+                gamesByWorkingPath = [workingPath: []]
             }
             throw error
         } catch {
-            // 即使出错，也标记为加载完成（避免无限等待）
+            // 即使出错，也确保只初始化当前工作路径
             await MainActor.run {
-                if !isInitialLoadComplete {
-                    isInitialLoadComplete = true
-                }
+                gamesByWorkingPath = [workingPath: []]
             }
             throw GlobalError.validation(
                 chineseMessage: "加载游戏列表失败：\(error.localizedDescription)",

@@ -35,6 +35,7 @@ enum AppConstants {
         static let shaderpacks = "shaderpacks"
         static let resourcepacks = "resourcepacks"
         static let datapacks = "datapacks"
+        static let schematics = "schematics"
         static let crashReports = "crash-reports"
         static let logs = "logs"
         static let profiles = "profiles"
