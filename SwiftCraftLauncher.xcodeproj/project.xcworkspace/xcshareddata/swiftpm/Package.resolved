@@ -1,5 +1,5 @@
 {
-  "originHash" : "b2c4e82de5822927479219bcaca65922ec291604ece6f12b2da06d97396d8f9d",
+  "originHash" : "4056a212b7bf789c683c52332d3cfce2f2c8a89d697da01c092c350342431ee8",
   "pins" : [
     {
       "identity" : "networkimage",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/irisWirisW/NSSkinRender",
       "state" : {
-        "revision" : "40bca93758512d38435472a498bd8e23219f039f",
-        "version" : "0.4.0"
+        "branch" : "main",
+        "revision" : "fa66548dc5c9762d8d980f20b914a7a74b1094e7"
       }
     },
     {
