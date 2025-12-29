@@ -83,6 +83,12 @@ enum AppPaths {
         }
     }
 
+    static func schematicsDirectory(gameName: String) -> URL {
+        cachedURL(key: "schematicsDirectory:\(gameName)") {
+            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.schematics, isDirectory: true)
+        }
+    }
+
     static let profileSubdirectories = [
         AppConstants.DirectoryNames.shaderpacks,
         AppConstants.DirectoryNames.resourcepacks,

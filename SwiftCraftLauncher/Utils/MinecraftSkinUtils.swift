@@ -16,11 +16,13 @@ enum SkinType {
 private class RenderedImageCache: NSObject {
     let headImage: CGImage  // 头部图像 (8x8)
     let layerImage: CGImage // 图层图像 (8x8)
+    let hasLayerContent: Bool  // 图层是否有实际内容（非透明像素）
     let cost: Int  // 内存成本（字节数）
 
-    init(headImage: CGImage, layerImage: CGImage) {
+    init(headImage: CGImage, layerImage: CGImage, hasLayerContent: Bool) {
         self.headImage = headImage
         self.layerImage = layerImage
+        self.hasLayerContent = hasLayerContent
         // 计算内存成本：两个 8x8 RGBA 图像 = 2 * 8 * 8 * 4 = 512 字节
         // 加上 CGImage 对象的开销，每个约 1KB，总计约 2.5KB
         let headCost = Int(headImage.width * headImage.height * 4)
@@ -148,6 +150,46 @@ struct MinecraftSkinUtils: View {
         }
     }
 
+    // 检查图像是否有非透明像素
+    private static func hasNonTransparentPixels(_ cgImage: CGImage) -> Bool {
+        let width = cgImage.width
+        let height = cgImage.height
+
+        // 创建位图上下文以确保格式一致（RGBA）
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bytesPerPixel = 4
+        let bytesPerRow = bytesPerPixel * width
+        let bitsPerComponent = 8
+
+        guard let context = CGContext(
+            data: nil,
+            width: width,
+            height: height,
+            bitsPerComponent: bitsPerComponent,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ),
+        let pixelData = context.data?.assumingMemoryBound(to: UInt8.self) else {
+            return false
+        }
+
+        // 将图像绘制到位图上下文中
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        // 检查每个像素的 alpha 通道（RGBA 格式中 alpha 是第4个字节）
+        for y in 0..<height {
+            for x in 0..<width {
+                let pixelOffset = (y * width + x) * bytesPerPixel
+                let alpha = pixelData[pixelOffset + 3]
+                if alpha > 0 {
+                    return true  // 找到非透明像素
+                }
+            }
+        }
+        return false  // 所有像素都是透明的
+    }
+
     // 渲染并缓存图像（裁剪后的 CGImage）
     private static func renderAndCacheImage(_ ciImage: CIImage, for key: String, context: CIContext) -> RenderedImageCache? {
         let nsKey = key as NSString
@@ -181,8 +223,11 @@ struct MinecraftSkinUtils: View {
             return nil
         }
 
+        // 检查图层是否有实际内容
+        let hasLayerContent = hasNonTransparentPixels(layerCGImage)
+
         // 创建缓存对象
-        let cache = RenderedImageCache(headImage: headCGImage, layerImage: layerCGImage)
+        let cache = RenderedImageCache(headImage: headCGImage, layerImage: layerCGImage, hasLayerContent: hasLayerContent)
         imageCache.setObject(cache, forKey: nsKey, cost: cache.cost)
         return cache
     }
@@ -275,17 +320,24 @@ struct MinecraftSkinUtils: View {
     private func avatarLayers(for cache: RenderedImageCache) -> some View {
         ZStack {
             // Head layer - 直接使用缓存的 CGImage，无需再次裁剪和转换
+            // 如果没有遮罩层，使用完整大小，否则使用 0.9 倍大小
             Image(decorative: cache.headImage, scale: 1.0)
                 .interpolation(.none)
                 .resizable()
-                .frame(width: size * 0.9, height: size * 0.9)
+                .frame(
+                    width: cache.hasLayerContent ? size * 0.9 : size,
+                    height: cache.hasLayerContent ? size * 0.9 : size
+                )
                 .clipped()
             // Skin layer (overlay) - 直接使用缓存的 CGImage
-            Image(decorative: cache.layerImage, scale: 1.0)
-                .interpolation(.none)
-                .resizable()
-                .frame(width: size, height: size)
-                .clipped()
+            // 只有当图层有实际内容时才显示
+            if cache.hasLayerContent {
+                Image(decorative: cache.layerImage, scale: 1.0)
+                    .interpolation(.none)
+                    .resizable()
+                    .frame(width: size, height: size)
+                    .clipped()
+            }
         }
         .shadow(color: Color.black.opacity(0.6), radius: 1)
     }
@@ -428,5 +480,150 @@ struct MinecraftSkinUtils: View {
                 level: .silent
             )
         }
+    }
+
+    // MARK: - Export Functions
+
+    /// 导出玩家头像图像
+    /// - Parameters:
+    ///   - type: 皮肤类型（URL 或 Asset）
+    ///   - src: 皮肤源（URL 或 Asset 名称）
+    ///   - size: 导出尺寸（1024 或 2048）
+    /// - Returns: 合并后的头像图像（头部和图层重叠）
+    static func exportAvatarImage(type: SkinType, src: String, size: Int) async throws -> NSImage {
+        // 加载皮肤数据
+        let data: Data
+        switch type {
+        case .asset:
+            guard let image = NSImage(named: src),
+                  let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+                throw GlobalError.resource(
+                    chineseMessage: "Asset 资源未找到: \(src)",
+                    i18nKey: "error.resource.asset_not_found",
+                    level: .silent
+                )
+            }
+            let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
+            guard let imageData = bitmapRep.representation(using: .png, properties: [:]) else {
+                throw GlobalError.validation(
+                    chineseMessage: "无效的图像数据",
+                    i18nKey: "error.validation.invalid_image_data",
+                    level: .silent
+                )
+            }
+            data = imageData
+        case .url:
+            guard let url = URL(string: src) else {
+                throw GlobalError.validation(
+                    chineseMessage: "无效的URL: \(src)",
+                    i18nKey: "error.validation.invalid_url",
+                    level: .silent
+                )
+            }
+            let request = URLRequest(url: url)
+            let (responseData, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
+
+            guard httpResponse.statusCode == 200 else {
+                throw GlobalError.download(
+                    chineseMessage: "皮肤下载失败: HTTP \(httpResponse.statusCode)",
+                    i18nKey: "error.download.skin_download_failed",
+                    level: .silent
+                )
+            }
+            data = responseData
+        }
+
+        // 创建 CIImage
+        guard let ciImage = CIImage(data: data) else {
+            throw GlobalError.validation(
+                chineseMessage: "无效的图像数据",
+                i18nKey: "error.validation.invalid_image_data",
+                level: .silent
+            )
+        }
+
+        // 验证皮肤尺寸
+        guard ciImage.extent.width == 64 && ciImage.extent.height == 64 else {
+            throw GlobalError.validation(
+                chineseMessage: "不支持的皮肤格式，仅支持64x64像素",
+                i18nKey: "error.validation.unsupported_skin_format",
+                level: .silent
+            )
+        }
+
+        // 裁剪头部和图层
+        let headRect = CGRect(
+            x: Constants.headStartX,
+            y: ciImage.extent.height - Constants.headStartY - Constants.headHeight,
+            width: Constants.headWidth,
+            height: Constants.headHeight
+        )
+        let headCropped = ciImage.cropped(to: headRect)
+
+        let layerRect = CGRect(
+            x: Constants.layerStartX,
+            y: ciImage.extent.height - Constants.layerStartY - Constants.layerHeight,
+            width: Constants.layerWidth,
+            height: Constants.layerHeight
+        )
+        let layerCropped = ciImage.cropped(to: layerRect)
+
+        // 转换为 CGImage 并放大
+        guard let headCGImage = ciContext.createCGImage(headCropped, from: headCropped.extent),
+              let layerCGImage = ciContext.createCGImage(layerCropped, from: layerCropped.extent) else {
+            throw GlobalError.validation(
+                chineseMessage: "图像处理失败",
+                i18nKey: "error.validation.image_processing_failed",
+                level: .silent
+            )
+        }
+
+        // 检查图层是否有内容
+        let hasLayerContent = hasNonTransparentPixels(layerCGImage)
+
+        // 创建目标尺寸的图像
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bytesPerPixel = 4
+        let bytesPerRow = bytesPerPixel * size
+        let bitsPerComponent = 8
+
+        guard let context = CGContext(
+            data: nil,
+            width: size,
+            height: size,
+            bitsPerComponent: bitsPerComponent,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            throw GlobalError.validation(
+                chineseMessage: "无法创建图像上下文",
+                i18nKey: "error.validation.image_context_failed",
+                level: .silent
+            )
+        }
+
+        // 绘制头部图层（如果需要缩放以适应图层，则缩小到 90%）
+        let headSize = hasLayerContent ? Int(Double(size) * 0.9) : size
+        let headOffset = hasLayerContent ? (size - headSize) / 2 : 0
+        context.interpolationQuality = .none
+        context.draw(headCGImage, in: CGRect(x: headOffset, y: headOffset, width: headSize, height: headSize))
+
+        // 如果有图层内容，绘制图层（覆盖在头部上方）
+        if hasLayerContent {
+            context.draw(layerCGImage, in: CGRect(x: 0, y: 0, width: size, height: size))
+        }
+
+        // 获取最终的 CGImage
+        guard let finalCGImage = context.makeImage() else {
+            throw GlobalError.validation(
+                chineseMessage: "无法生成最终图像",
+                i18nKey: "error.validation.final_image_failed",
+                level: .silent
+            )
+        }
+
+        // 转换为 NSImage
+        return NSImage(cgImage: finalCGImage, size: NSSize(width: size, height: size))
     }
 }

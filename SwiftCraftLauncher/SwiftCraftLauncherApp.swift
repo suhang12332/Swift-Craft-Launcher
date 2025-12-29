@@ -57,40 +57,6 @@ struct SwiftCraftLauncherApp: App {
         TemporaryWindowManager.shared.cleanupAllWindows()
     }
 
-    // MARK: - Scanning Methods
-
-    /// 扫描所有游戏的 mods 目录
-    /// 异步执行，不会阻塞 UI
-    private func scanAllGamesModsDirectory(gameRepository: GameRepository) async {
-        // 等待游戏数据初始加载完成
-        // 使用 Combine 监听 isInitialLoadComplete 标志
-        if !gameRepository.isInitialLoadComplete {
-            await withCheckedContinuation { continuation in
-                var cancellable: AnyCancellable?
-                cancellable = gameRepository.$isInitialLoadComplete
-                    .first { $0 }
-                    .sink { _ in
-                        cancellable?.cancel()
-                        continuation.resume()
-                    }
-            }
-        }
-
-        let games = gameRepository.games
-        Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
-
-        // 并发扫描所有游戏
-        await withTaskGroup(of: Void.self) { group in
-            for game in games {
-                group.addTask {
-                    await ModScanner.shared.scanGameModsDirectory(game: game)
-                }
-            }
-        }
-
-        Logger.shared.info("完成所有游戏的 mods 目录扫描")
-    }
-
     // MARK: - Body
     var body: some Scene {
 
@@ -104,10 +70,6 @@ struct SwiftCraftLauncherApp: App {
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
                 .background(TemporaryWindowOpener())
-                .task {
-                    // 应用启动时执行初始扫描，等待数据加载完成
-                    await scanAllGamesModsDirectory(gameRepository: gameRepository)
-                }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
