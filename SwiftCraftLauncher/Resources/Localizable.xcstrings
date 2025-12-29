@@ -55498,6 +55498,29 @@
         }
       }
     },
+    "saveinfo.server.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No servers"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂无服务器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暫無伺服器"
+          }
+        }
+      }
+    },
     "saveinfo.servers" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -2,10 +2,12 @@ import SwiftUI
 
 // MARK: - 存档信息主视图
 struct SaveInfoView: View {
+    let gameId: String
     let gameName: String
     @StateObject private var manager: SaveInfoManager
 
-    init(gameName: String) {
+    init(gameId: String, gameName: String) {
+        self.gameId = gameId
         self.gameName = gameName
         _manager = StateObject(wrappedValue: SaveInfoManager(gameName: gameName))
     }
@@ -56,6 +58,11 @@ struct SaveInfoView: View {
                     logs: manager.logs,
                     isLoading: manager.isLoading
                 )
+            }
+        }
+        .onChange(of: gameId) { _, _ in
+            Task {
+                await manager.loadData()
             }
         }
         .task {

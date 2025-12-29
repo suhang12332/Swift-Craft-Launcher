@@ -47,7 +47,7 @@ struct ContentView: View {
             if gameType {
                 serverModeView(game: game)
             } else {
-                localModeView(game: game)
+                localModeView(game: game, gameId: gameId)
             }
         }
     }
@@ -69,8 +69,9 @@ struct ContentView: View {
         .id(gameResourcesType)
     }
 
-    private func localModeView(game: GameVersionInfo) -> some View {
-        SaveInfoView(gameName: game.gameName)
+    private func localModeView(game: GameVersionInfo, gameId: String) -> some View {
+        SaveInfoView(gameId: gameId, gameName: game.gameName)
+            .id(gameId)
     }
 
     // MARK: - Resource Content View

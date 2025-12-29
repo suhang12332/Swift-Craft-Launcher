@@ -159,23 +159,35 @@ struct ServerAddressSectionView: View {
 
     private var contentWithOverflow: some View {
         let (visibleItems, _) = computeVisibleAndOverflowItems()
-        return FlowLayout {
-            ForEach(visibleItems) { server in
-                ServerAddressChip(
-                    title: server.name,
-                    address: server.address,
-                    port: server.port,
-                    isLoading: false,
-                    connectionStatus: serverStatuses[server.id] ?? .unknown
-                ) {
-                    selectedServer = server
+
+        return Group {
+            if servers.isEmpty {
+                Text("saveinfo.server.empty".localized())
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, ServerAddressSectionConstants.verticalPadding)
+                    .padding(.bottom, ServerAddressSectionConstants.verticalPadding)
+            } else {
+                FlowLayout {
+                    ForEach(visibleItems) { server in
+                        ServerAddressChip(
+                            title: server.name,
+                            address: server.address,
+                            port: server.port,
+                            isLoading: false,
+                            connectionStatus: serverStatuses[server.id] ?? .unknown
+                        ) {
+                            selectedServer = server
+                        }
+                    }
                 }
+                .frame(maxHeight: ServerAddressSectionConstants.maxHeight)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.vertical, ServerAddressSectionConstants.verticalPadding)
+                .padding(.bottom, ServerAddressSectionConstants.verticalPadding)
             }
         }
-        .frame(maxHeight: ServerAddressSectionConstants.maxHeight)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.vertical, ServerAddressSectionConstants.verticalPadding)
-        .padding(.bottom, ServerAddressSectionConstants.verticalPadding)
     }
 
     // MARK: - Helper Methods
