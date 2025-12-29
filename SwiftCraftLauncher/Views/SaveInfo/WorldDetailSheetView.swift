@@ -150,8 +150,21 @@ struct WorldDetailSheetView: View {
                     if let border = metadata.worldBorder {
                         infoRow(label: "saveinfo.world.detail.label.world_border".localized(), value: border, isMultiline: true)
                     }
-                    infoRow(label: "saveinfo.world.detail.label.world_path".localized(), value: metadata.path.path, isMultiline: true)
                 }
+
+                HStack(alignment: .center, spacing: 12) {
+                    Text("saveinfo.world.detail.label.world_path".localized() + ":")
+                        .font(.headline)
+                    Button {
+                        // 在 Finder 中打开文件位置
+                        NSWorkspace.shared.selectFile(metadata.path.path, inFileViewerRootedAtPath: "")
+                    } label: {
+                        PathBreadcrumbView(path: metadata.path.path)
+                            .frame(maxWidth: .infinity, alignment: .leading).font(.caption)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
 
                 // 原始数据切换按钮
                 if let raw = rawDataTag {
