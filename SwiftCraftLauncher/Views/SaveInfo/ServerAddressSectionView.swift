@@ -80,10 +80,8 @@ struct ServerAddressSectionView: View {
             showAddServer = true
         } label: {
             Image(systemName: "plus")
-                .font(.caption)
         }
         .buttonStyle(.plain)
-        .help("saveinfo.server.add".localized())
     }
 
     private var headerTitle: some View {
@@ -342,7 +340,6 @@ struct ServerAddressRow: View {
                 Image(systemName: "doc.on.doc")
             }
             .buttonStyle(.plain)
-            .help("saveinfo.server.copy".localized())
         }
         .padding(.vertical, 4)
     }
@@ -417,6 +414,18 @@ struct ServerAddressEditView: View {
             Text(isNewServer ? "saveinfo.server.add".localized() : "saveinfo.server.edit".localized())
                 .font(.headline)
             Spacer()
+            if !isNewServer {
+                Button {
+                    showDeleteConfirmation = true
+                } label: {
+                    Image(systemName: "trash.circle.fill")
+                        .font(.title3)
+                        .foregroundColor(.secondary)
+                }
+                .buttonStyle(.plain)
+                .keyboardShortcut(.delete, modifiers: [])
+                .disabled(isSaving || isDeleting)
+            }
         }
     }
 
@@ -469,22 +478,12 @@ struct ServerAddressEditView: View {
 
     private var footerView: some View {
         HStack {
-            if !isNewServer {
-                Button("common.delete".localized(), role: .destructive) {
-                    showDeleteConfirmation = true
-                }
-                .keyboardShortcut(.delete, modifiers: [])
-                .disabled(isSaving || isDeleting)
-            }
-
-            Spacer()
-
             Button("common.cancel".localized()) {
                 dismiss()
             }
             .keyboardShortcut(.cancelAction)
             .disabled(isSaving || isDeleting)
-
+            Spacer()
             Button("common.save".localized()) {
                 saveServer()
             }
@@ -625,19 +624,4 @@ struct ServerAddressEditView: View {
             }
         }
     }
-}
-
-// MARK: - Preview
-#Preview {
-    ServerAddressEditView(
-        server: ServerAddress(
-            name: "示例服务器",
-            address: "mc.example.com",
-            port: 25565,
-            hidden: false,
-            acceptTextures: true
-        ),
-        gameName: "示例游戏"
-    )
-    .frame(width: 600, height: 500)
 }

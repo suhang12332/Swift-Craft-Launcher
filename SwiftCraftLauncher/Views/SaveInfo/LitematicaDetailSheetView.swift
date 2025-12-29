@@ -51,8 +51,6 @@ struct LitematicaDetailSheetView: View {
                     Image(systemName: "square.and.arrow.up")
                 }
                 .buttonStyle(.plain)
-                .help("saveinfo.share".localized())
-
                 Button {
                     dismiss()  // 关闭当前视图
                 } label: {
