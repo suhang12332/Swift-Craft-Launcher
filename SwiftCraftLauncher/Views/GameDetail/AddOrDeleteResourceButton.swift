@@ -210,7 +210,7 @@ struct AddOrDeleteResourceButton: View {
                                     gameRepository: gameRepository
                                 ) {
                                     addToScannedDetailIds()
-                                    updateButtonState()
+                                    markInstalled()
                                 }
                         } else {
                             // 首次点击"全部下载"
@@ -223,7 +223,7 @@ struct AddOrDeleteResourceButton: View {
                                     gameRepository: gameRepository
                                 ) {
                                     addToScannedDetailIds()
-                                    updateButtonState()
+                                    markInstalled()
                                 }
                         }
                     },
@@ -236,7 +236,7 @@ struct AddOrDeleteResourceButton: View {
                             gameRepository: gameRepository
                         ) {
                             addToScannedDetailIds()
-                            updateButtonState()
+                            markInstalled()
                         }
                         isDownloadingMainResourceOnly = false
                         depVM.showDependenciesSheet = false
@@ -523,18 +523,21 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        // 仅当选中游戏且为服务端模式时才尝试通过 hash 判断已安装状态
-        guard case .game = selectedItem else {
-            addButtonState = .idle
-            return
-        }
+    // 仅当选中游戏且为服务端模式时才尝试通过 hash 判断已安装状态
+    guard case .game = selectedItem else {
+        addButtonState = .idle
+        return
+    }
 
-        Task {
-            let installed = await checkInstalledStateForServerMode(resourceType: queryLowercased)
-            await MainActor.run {
-                addButtonState = installed ? .installed : .idle
-            }
+    // 在检测开始前设置 loading 状态
+    addButtonState = .loading
+    
+    Task {
+        let installed = await checkInstalledStateForServerMode(resourceType: queryLowercased)
+        await MainActor.run {
+            addButtonState = installed ? .installed : .idle
         }
+    }
     }
 
     /// 针对服务端模式的安装状态检查：获取兼容版本的文件 hash 并与已安装的 hash 比对
