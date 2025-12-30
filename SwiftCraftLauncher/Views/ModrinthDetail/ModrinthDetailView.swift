@@ -97,6 +97,31 @@ struct ModrinthDetailView: View {
                 await initialLoadIfNeeded()
             }
         }
+        // 当筛选条件变化时，重新搜索
+        .onChange(of: selectedVersions) { _, _ in
+            resetPagination()
+            triggerSearch()
+        }
+        .onChange(of: selectedCategories) { _, _ in
+            resetPagination()
+            triggerSearch()
+        }
+        .onChange(of: selectedFeatures) { _, _ in
+            resetPagination()
+            triggerSearch()
+        }
+        .onChange(of: selectedResolutions) { _, _ in
+            resetPagination()
+            triggerSearch()
+        }
+        .onChange(of: selectedPerformanceImpact) { _, _ in
+            resetPagination()
+            triggerSearch()
+        }
+        .onChange(of: selectedLoader) { _, _ in
+            resetPagination()
+            triggerSearch()
+        }
         .onChange(of: selectedProjectId) { oldValue, newValue in
             if oldValue != nil && newValue == nil {
                 // 关闭详情后重新刷新列表，确保最新状态
