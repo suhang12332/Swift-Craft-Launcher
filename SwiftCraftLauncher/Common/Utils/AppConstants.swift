@@ -42,6 +42,7 @@ enum AppConstants {
         static let runtime = "runtime"
         static let meta = "meta"
         static let cache = "cache"
+        static let data = "data"
     }
 
     // MARK: - File Extensions

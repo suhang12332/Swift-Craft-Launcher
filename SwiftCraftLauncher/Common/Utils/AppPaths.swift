@@ -125,4 +125,16 @@ extension AppPaths {
         }
         return cachesDirectory.appendingPathComponent(Bundle.main.identifier)
     }
+
+    /// 数据目录路径
+    static var dataDirectory: URL {
+        cachedURL(key: "dataDirectory") {
+            launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.data, isDirectory: true)
+        }
+    }
+
+    /// 游戏版本数据库路径
+    static var gameVersionDatabase: URL {
+        dataDirectory.appendingPathComponent("data.db")
+    }
 }
