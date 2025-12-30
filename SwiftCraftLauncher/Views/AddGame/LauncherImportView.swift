@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 // MARK: - LauncherImportView
 struct LauncherImportView: View {
@@ -17,6 +18,9 @@ struct LauncherImportView: View {
     private let triggerCancel: Binding<Bool>
     @Environment(\.dismiss)
     private var dismiss
+
+    // 文件选择器状态
+    @State private var showFolderPicker = false
 
     // MARK: - Initializer
     init(configuration: GameFormConfiguration) {
@@ -51,6 +55,14 @@ struct LauncherImportView: View {
                     viewModel.checkAndNotifyUnsupportedModLoader()
                 }
             }
+            .fileImporter(
+                isPresented: $showFolderPicker,
+                allowedContentTypes: [.folder],
+                allowsMultipleSelection: false
+            ) { result in
+                handleFolderSelection(result)
+            }
+            .fileDialogDefaultDirectory(FileManager.default.homeDirectoryForCurrentUser)
     }
 
     // MARK: - View Components
@@ -224,41 +236,53 @@ struct LauncherImportView: View {
     // MARK: - Helper Methods
 
     private func selectLauncherPath() {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = false
-        panel.canChooseDirectories = true
-        panel.allowsMultipleSelection = false
-        panel.canSelectHiddenExtension = true  // 允许访问隐藏目录（如 Library）
+        showFolderPicker = true
+    }
 
-        // 设置初始目录为用户home目录
-        panel.directoryURL = FileManager.default.homeDirectoryForCurrentUser
+    /// 处理通过 fileImporter 选择的文件夹
+    private func handleFolderSelection(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            guard let url = urls.first else { return }
 
-        if panel.runModal() == .OK {
-            if let url = panel.url {
-                // 保持安全作用域资源访问权限
-                _ = url.startAccessingSecurityScopedResource()
-
-                // 验证选择的文件夹是否为有效实例
-                guard viewModel.validateInstance(at: url) else {
-                    let launcherName = viewModel.selectedLauncherType.rawValue
-                    GlobalErrorHandler.shared.handle(
-                        GlobalError.fileSystem(
-                            chineseMessage: "选择的文件夹不是有效的 \(launcherName) 实例",
-                            i18nKey: "error.filesystem.invalid_instance_path",
-                            level: .notification
-                        )
+            // 保持安全作用域资源访问权限
+            guard url.startAccessingSecurityScopedResource() else {
+                GlobalErrorHandler.shared.handle(
+                    GlobalError.fileSystem(
+                        chineseMessage: "无法访问所选文件夹",
+                        i18nKey: "error.filesystem.file_access_failed",
+                        level: .notification
                     )
-                    return
-                }
-
-                // 直接使用选择的实例路径
-                viewModel.selectedInstancePath = url
-
-                // 自动填充游戏名到输入框
-                viewModel.autoFillGameNameIfNeeded()
-
-                Logger.shared.info("成功选择 \(viewModel.selectedLauncherType.rawValue) 实例路径: \(url.path)")
+                )
+                return
             }
+
+            defer { url.stopAccessingSecurityScopedResource() }
+
+            // 验证选择的文件夹是否为有效实例
+            guard viewModel.validateInstance(at: url) else {
+                let launcherName = viewModel.selectedLauncherType.rawValue
+                GlobalErrorHandler.shared.handle(
+                    GlobalError.fileSystem(
+                        chineseMessage: "选择的文件夹不是有效的 \(launcherName) 实例",
+                        i18nKey: "error.filesystem.invalid_instance_path",
+                        level: .notification
+                    )
+                )
+                return
+            }
+
+            // 直接使用选择的实例路径
+            viewModel.selectedInstancePath = url
+
+            // 自动填充游戏名到输入框
+            viewModel.autoFillGameNameIfNeeded()
+
+            Logger.shared.info("成功选择 \(viewModel.selectedLauncherType.rawValue) 实例路径: \(url.path)")
+
+        case .failure(let error):
+            let globalError = GlobalError.from(error)
+            GlobalErrorHandler.shared.handle(globalError)
         }
     }
 

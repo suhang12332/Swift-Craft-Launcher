@@ -98,18 +98,17 @@ enum PlayerSkinService {
             }
 
             // 创建更新后的玩家对象
-            let updatedPlayer = try Player(
-                name: player.name,
-                uuid: player.id,
-                isOnlineAccount: player.isOnlineAccount,
-                avatarName: skinInfo.skinURL?.httpToHttps() ?? player.avatarName,
-                authXuid: player.authXuid,
-                authAccessToken: player.authAccessToken,
-                authRefreshToken: player.authRefreshToken,
-                createdAt: player.createdAt,
+            let updatedProfile = UserProfile(
+                id: player.profile.id,
+                name: player.profile.name,
+                avatar: skinInfo.skinURL?.httpToHttps() ?? player.avatarName,
                 lastPlayed: player.lastPlayed,
                 isCurrent: player.isCurrent
             )
+
+            let updatedCredential = player.credential
+
+            let updatedPlayer = Player(profile: updatedProfile, credential: updatedCredential)
 
             // 使用 dataManager 更新数据
             try dataManager.updatePlayer(updatedPlayer)

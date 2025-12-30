@@ -315,6 +315,10 @@ struct ModPackDownloadSheet: View {
             return
         }
 
+        // 进入安装阶段（复制 overrides / 下载文件 / 安装依赖），不再视为“解析中”
+        // 保持 UI 结构不变，仅通过状态切换让进度条区域可见
+        isProcessing = false
+
         // 6. 复制 overrides 文件（在安装依赖之前）
         let resourceDir = AppPaths.profileDirectory(gameName: gameNameValidator.gameName)
         // 先计算 overrides 文件总数
@@ -370,8 +374,6 @@ struct ModPackDownloadSheet: View {
             filesTotal: filesToDownload.count,
             dependenciesTotal: requiredDependencies.count
         )
-
-        isProcessing = false
 
         // 8. 下载整合包文件（mod 文件）
         let filesSuccess = await ModPackDependencyInstaller.installModPackFiles(

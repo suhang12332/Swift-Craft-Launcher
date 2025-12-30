@@ -569,18 +569,28 @@ extension MinecraftAuthService {
         let minecraftToken = try await getMinecraftTokenThrowing(xboxToken: xboxToken.token, uhs: xboxToken.displayClaims.xui.first?.uhs ?? "")
 
         // 创建更新后的玩家对象
-        let updatedPlayer = try Player(
-            name: player.name,
-            uuid: player.id,
-            isOnlineAccount: player.isOnlineAccount,
-            avatarName: player.avatarName,
-            authXuid: xboxToken.displayClaims.xui.first?.uhs ?? player.authXuid,
-            authAccessToken: minecraftToken,
-            authRefreshToken: refreshedTokens.refreshToken ?? player.authRefreshToken,
-            createdAt: player.createdAt,
-            lastPlayed: player.lastPlayed,
-            isCurrent: player.isCurrent
-        )
+        var updatedProfile = player.profile
+        updatedProfile.lastPlayed = player.lastPlayed
+        updatedProfile.isCurrent = player.isCurrent
+
+        var updatedCredential = player.credential
+        if var credential = updatedCredential {
+            credential.accessToken = minecraftToken
+            credential.refreshToken = refreshedTokens.refreshToken ?? player.authRefreshToken
+            credential.xuid = xboxToken.displayClaims.xui.first?.uhs ?? player.authXuid
+            updatedCredential = credential
+        } else {
+            // 如果原来没有 credential，创建一个新的
+            updatedCredential = AuthCredential(
+                userId: player.id,
+                accessToken: minecraftToken,
+                refreshToken: refreshedTokens.refreshToken ?? "",
+                expiresAt: nil,
+                xuid: xboxToken.displayClaims.xui.first?.uhs ?? ""
+            )
+        }
+
+        let updatedPlayer = Player(profile: updatedProfile, credential: updatedCredential)
 
         return updatedPlayer
     }

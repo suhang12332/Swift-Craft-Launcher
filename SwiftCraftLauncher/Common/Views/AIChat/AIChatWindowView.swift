@@ -5,6 +5,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// AI 对话窗口视图
 struct AIChatWindowView: View {
@@ -16,6 +17,7 @@ struct AIChatWindowView: View {
     @State private var inputText = ""
     @FocusState private var isInputFocused: Bool
     @State private var selectedGameId: String?
+    @State private var showFilePicker = false
 
     // 缓存头像视图，避免每次消息更新时重新加载
     @State private var cachedAIAvatar: AnyView?
@@ -58,10 +60,20 @@ struct AIChatWindowView: View {
                 canSend: canSend,
                 onSend: sendMessage
             ) {
-                attachmentManager.openFilePicker(selectedGame: selectedGame)
+                showFilePicker = true
             }
         }
         .frame(minWidth: 500, minHeight: 600)
+        .fileImporter(
+            isPresented: $showFilePicker,
+            allowedContentTypes: [.text, .pdf, .json, .plainText, .log],
+            allowsMultipleSelection: true
+        ) { result in
+            handleFileSelection(result)
+        }
+        .fileDialogDefaultDirectory(
+            selectedGame.map { AppPaths.profileDirectory(gameName: $0.gameName) } ?? FileManager.default.homeDirectoryForCurrentUser
+        )
         .onAppear {
             isInputFocused = true
             // 默认选择第一个游戏
@@ -170,6 +182,17 @@ struct AIChatWindowView: View {
 
         Task {
             await AIChatManager.shared.sendMessage(text, attachments: attachments, chatState: chatState)
+        }
+    }
+
+    /// 处理文件选择结果
+    private func handleFileSelection(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            attachmentManager.handleFileSelection(urls)
+        case .failure(let error):
+            let globalError = GlobalError.from(error)
+            GlobalErrorHandler.shared.handle(globalError)
         }
     }
 }

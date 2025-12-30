@@ -43,8 +43,8 @@ struct GameFormView: View {
     @State private var showImportPicker = false
 
     // MARK: - Body
-    var body: some View {
-        CommonSheetView(
+    @ViewBuilder var body: some View {
+        let content = CommonSheetView(
             header: { headerView },
             body: {
 
@@ -102,28 +102,36 @@ struct GameFormView: View {
             },
             footer: { footerView }
         )
-        .fileImporter(
-            isPresented: $showFilePicker,
-            allowedContentTypes: {
-                switch filePickerType {
-                case .modPack:
-                    return [
-                        UTType(filenameExtension: "mrpack") ?? UTType.data,
-                        .zip,
-                        UTType(filenameExtension: "zip") ?? UTType.zip,
-                    ]
-                case .gameIcon:
-                    return [.png, .jpeg, .gif]
+
+        // 当处于“导入启动器”模式时，避免在父视图再挂一个 fileImporter，
+        // 这样可以让子视图 LauncherImportView 自己的 fileImporter 正常工作。
+        if case .launcherImport = mode {
+            content
+        } else {
+            content
+                .fileImporter(
+                    isPresented: $showFilePicker,
+                    allowedContentTypes: {
+                        switch filePickerType {
+                        case .modPack:
+                            return [
+                                UTType(filenameExtension: "mrpack") ?? UTType.data,
+                                .zip,
+                                UTType(filenameExtension: "zip") ?? UTType.zip,
+                            ]
+                        case .gameIcon:
+                            return [.png, .jpeg, .gif]
+                        }
+                    }(),
+                    allowsMultipleSelection: false
+                ) { result in
+                    switch filePickerType {
+                    case .modPack:
+                        handleModPackFileSelection(result)
+                    case .gameIcon:
+                        imagePickerHandler?(result)
+                    }
                 }
-            }(),
-            allowsMultipleSelection: false
-        ) { result in
-            switch filePickerType {
-            case .modPack:
-                handleModPackFileSelection(result)
-            case .gameIcon:
-                imagePickerHandler?(result)
-            }
         }
     }
 

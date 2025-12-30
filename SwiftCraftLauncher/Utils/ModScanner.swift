@@ -40,11 +40,7 @@ class ModScanner {
             )
         }
 
-        if let cached = AppCacheManager.shared.get(
-            namespace: "mod",
-            key: hash,
-            as: ModrinthProjectDetail.self
-        ) {
+        if let cached = getModCacheFromDatabase(hash: hash) {
             // 更新文件名为当前实际文件名（可能已重命名为 .disabled）
             var updatedCached = cached
             updatedCached.fileName = fileURL.lastPathComponent
@@ -90,13 +86,40 @@ class ModScanner {
         }
     }
 
-    // 新增：外部调用缓存写入
+    // MARK: - Mod Cache (Database)
+
+    /// 从数据库读取 mod 缓存
+    /// - Parameter hash: mod 文件的 hash 值
+    /// - Returns: ModrinthProjectDetail，如果不存在则返回 nil
+    private func getModCacheFromDatabase(hash: String) -> ModrinthProjectDetail? {
+        guard let jsonData = ModCacheManager.shared.get(hash: hash) else {
+            return nil
+        }
+
+        do {
+            return try JSONDecoder().decode(ModrinthProjectDetail.self, from: jsonData)
+        } catch {
+            Logger.shared.error("解码 mod 缓存失败: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    /// 保存 mod 缓存到数据库
+    /// - Parameters:
+    ///   - hash: mod 文件的 hash 值
+    ///   - detail: ModrinthProjectDetail 对象
     func saveToCache(hash: String, detail: ModrinthProjectDetail) {
-        AppCacheManager.shared.setSilently(
-            namespace: "mod",
-            key: hash,
-            value: detail
-        )
+        do {
+            let jsonData = try JSONEncoder().encode(detail)
+            ModCacheManager.shared.setSilently(hash: hash, jsonData: jsonData)
+        } catch {
+            Logger.shared.error("编码 mod 缓存失败: \(error.localizedDescription)")
+            GlobalErrorHandler.shared.handle(GlobalError.validation(
+                chineseMessage: "保存 mod 缓存失败: \(error.localizedDescription)",
+                i18nKey: "error.validation.mod_cache_encode_failed",
+                level: .silent
+            ))
+        }
     }
 
     // MARK: - Hash
@@ -337,11 +360,7 @@ extension ModScanner {
         let jarFiles = try readJarZipFiles(from: dir)
         return jarFiles.compactMap { fileURL in
             if let hash = ModScanner.sha1Hash(of: fileURL) {
-                var detail = AppCacheManager.shared.get(
-                    namespace: "mod",
-                    key: hash,
-                    as: ModrinthProjectDetail.self
-                )
+                var detail = getModCacheFromDatabase(hash: hash)
 
                 // 如果缓存中没有找到，使用兜底策略创建基础信息
                 if detail == nil {
