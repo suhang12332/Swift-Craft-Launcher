@@ -129,6 +129,11 @@ struct AddOrDeleteResourceButton: View {
     var body: some View {
 
         HStack(spacing: 8) {
+//            Button {
+//                showInFinder(mod)
+//            } label: {
+//                Label("sidebar.context_menu.show_in_finder".localized(), systemImage: "folder")
+//            }
             // 禁用/启用按钮（仅本地资源显示）
             if type == false {
                 Toggle("Switch", isOn: Binding(
@@ -517,27 +522,27 @@ struct AddOrDeleteResourceButton: View {
 
         // modpack 目前不支持安装状态检测
         guard queryLowercased != "modpack",
-            validResourceTypes.contains(queryLowercased)
+              validResourceTypes.contains(queryLowercased)
         else {
             addButtonState = .idle
             return
         }
 
-    // 仅当选中游戏且为服务端模式时才尝试通过 hash 判断已安装状态
-    guard case .game = selectedItem else {
-        addButtonState = .idle
-        return
-    }
-
-    // 在检测开始前设置 loading 状态
-    addButtonState = .loading
-
-    Task {
-        let installed = await checkInstalledStateForServerMode(resourceType: queryLowercased)
-        await MainActor.run {
-            addButtonState = installed ? .installed : .idle
+        // 仅当选中游戏且为服务端模式时才尝试通过 hash 判断已安装状态
+        guard case .game = selectedItem else {
+            addButtonState = .idle
+            return
         }
-    }
+
+        // 在检测开始前设置 loading 状态
+        addButtonState = .loading
+
+        Task {
+            let installed = await checkInstalledStateForServerMode(resourceType: queryLowercased)
+            await MainActor.run {
+                addButtonState = installed ? .installed : .idle
+            }
+        }
     }
 
     /// 针对服务端模式的安装状态检查：获取兼容版本的文件 hash 并与已安装的 hash 比对

@@ -429,30 +429,4 @@ struct GameLocalResourceView: View {
             ))
         }
     }
-
-    /// 在 Finder 中显示文件
-    private func showInFinder(_ mod: ModrinthProject) {
-        guard let resourceDir = resourceDirectory ?? AppPaths.resourceDirectory(
-            for: query,
-            gameName: game.gameName
-        ) else {
-            Logger.shared.error("在 Finder 中显示文件失败：资源目录不存在")
-            return
-        }
-
-        guard let fileName = mod.fileName else {
-            Logger.shared.error("在 Finder 中显示文件失败：缺少文件名")
-            return
-        }
-
-        let fileURL = resourceDir.appendingPathComponent(fileName)
-
-        // 检查文件是否存在
-        if FileManager.default.fileExists(atPath: fileURL.path) {
-            NSWorkspace.shared.activateFileViewerSelecting([fileURL])
-        } else {
-            // 如果文件不存在，打开资源目录
-            NSWorkspace.shared.activateFileViewerSelecting([resourceDir])
-        }
-    }
 }
