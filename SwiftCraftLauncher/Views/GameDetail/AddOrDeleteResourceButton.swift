@@ -95,6 +95,7 @@ struct AddOrDeleteResourceButton: View {
     @State private var preloadedCompatibleGames: [GameVersionInfo] = []  // 预检测的兼容游戏列表
     @State private var isLoadingProjectDetail = false  // 是否正在加载项目详情
     @State private var isDisabled: Bool = false  // 资源是否被禁用
+    @State private var currentFileName: String?  // 当前文件名（跟踪重命名后的文件名）
     @Binding var selectedItem: SidebarItem
     //    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
     var onResourceChanged: (() -> Void)?
@@ -128,16 +129,16 @@ struct AddOrDeleteResourceButton: View {
     var body: some View {
 
         HStack(spacing: 8) {
-//            // 禁用/启用按钮（仅本地资源显示）
-//            if type == false {
-//                Button(action: toggleDisableState) {
-//                    Text(isDisabled ? "resource.enable".localized() : "resource.disable".localized())
-//                }
-//                .buttonStyle(.borderedProminent)
-//                .tint(.accentColor)  // 或 .tint(.primary) 但一般用 accentColor 更美观
-//                .font(.caption2)
-//                .controlSize(.small)
-//            }
+            // 禁用/启用按钮（仅本地资源显示）
+            if type == false {
+                Toggle("Switch", isOn: Binding(
+                    get: { !isDisabled },
+                    set: { _ in toggleDisableState() }
+                ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+                .controlSize(.mini)
+            }
 
             // 安装/删除按钮
             Button(action: handleButtonAction) {
@@ -155,6 +156,10 @@ struct AddOrDeleteResourceButton: View {
                 if type == false {
                     // local 区直接显示为已安装
                     addButtonState = .installed
+                    // 初始化当前文件名
+                    if currentFileName == nil {
+                        currentFileName = project.fileName
+                    }
                     checkDisableState()
                 } else {
                     updateButtonState()
@@ -666,7 +671,9 @@ struct AddOrDeleteResourceButton: View {
     }
 
     private func checkDisableState() {
-        isDisabled = (project.fileName?.hasSuffix(".disable") ?? false)
+        // 使用 currentFileName 如果存在，否则使用 project.fileName
+        let fileName = currentFileName ?? project.fileName
+        isDisabled = (fileName?.hasSuffix(".disable") ?? false)
     }
 
     private func toggleDisableState() {
@@ -680,7 +687,9 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        guard let fileName = project.fileName else {
+        // 使用 currentFileName 如果存在，否则使用 project.fileName
+        let fileName = currentFileName ?? project.fileName
+        guard let fileName = fileName else {
             Logger.shared.error("切换资源启用状态失败：缺少文件名")
             return
         }
@@ -703,9 +712,9 @@ struct AddOrDeleteResourceButton: View {
 
         do {
             try fileManager.moveItem(at: currentURL, to: targetURL)
-            // 根据新的文件名更新状态：如果新文件名以 .disable 结尾，则 isDisabled = true
+            // 更新当前文件名和禁用状态
+            currentFileName = targetFileName
             isDisabled = targetFileName.hasSuffix(".disable")
-            onResourceChanged?()
         } catch {
             Logger.shared.error("切换资源启用状态失败: \(error.localizedDescription)")
         }
