@@ -531,7 +531,7 @@ struct AddOrDeleteResourceButton: View {
 
     // 在检测开始前设置 loading 状态
     addButtonState = .loading
-    
+
     Task {
         let installed = await checkInstalledStateForServerMode(resourceType: queryLowercased)
         await MainActor.run {
