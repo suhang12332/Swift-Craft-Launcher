@@ -473,13 +473,8 @@ struct AddOrDeleteResourceButton: View {
 
                 addButtonState = .loading
                 Task {
-                    // 对于非整合包资源，显示版本选择弹窗
-                    if query != "modpack" {
-                        await loadMainModVersionsBeforeOpeningSheet()
-                    } else {
-                        // 整合包仍然使用原有的逻辑
-                        await loadProjectDetailBeforeOpeningSheet()
-                    }
+                    // 打开GlobalResourceSheet来选择安装到的游戏
+                    await loadProjectDetailBeforeOpeningSheet()
                 }
             case .installed, .update:
                 // 当有更新时，主按钮显示删除，点击后执行删除操作

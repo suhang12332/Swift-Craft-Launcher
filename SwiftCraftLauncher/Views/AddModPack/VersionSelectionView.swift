@@ -35,6 +35,7 @@ struct VersionSelectionView: View {
                 }
             }
             .pickerStyle(MenuPickerStyle())
+            .font(.subheadline)
             .labelsHidden()
             .onChange(of: selectedGameVersion) { _, newValue in
                 onGameVersionChange(newValue)
@@ -65,6 +66,7 @@ struct VersionSelectionView: View {
                     }
                 }
                 .labelsHidden()
+                .font(.subheadline)
                 .pickerStyle(MenuPickerStyle())
                 .onAppear {
                     onModPackVersionAppear()

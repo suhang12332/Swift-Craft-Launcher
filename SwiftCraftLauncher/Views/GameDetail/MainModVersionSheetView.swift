@@ -27,7 +27,6 @@ struct MainModVersionSheetView: View {
                     ProgressView().frame(height: 100).controlSize(.small)
                 } else {
                     ModrinthProjectTitleView(projectDetail: projectDetail)
-                    
                     VStack(alignment: .leading, spacing: 12) {
                         if !viewModel.availableVersions.isEmpty {
                             Text(projectDetail.title)
