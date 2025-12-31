@@ -28,8 +28,10 @@ struct AddOrDeleteResourceButton: View {
     @State private var activeAlert: ResourceButtonAlertType?
     @StateObject private var gameSettings = GameSettingsManager.shared
     @StateObject private var depVM = DependencySheetViewModel()
+    @StateObject private var mainModVersionVM = MainModVersionSheetViewModel()  // 新增：主mod版本弹窗ViewModel
     @State private var isDownloadingAllDependencies = false
     @State private var isDownloadingMainResourceOnly = false
+    @State private var isDownloadingMainMod = false  // 新增：主mod下载状态
     @State private var showGlobalResourceSheet = false
     @State private var showModPackDownloadSheet = false  // 新增：整合包下载 sheet
     @State private var preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情（通用：整合包/普通资源）
@@ -239,6 +241,32 @@ struct AddOrDeleteResourceButton: View {
                     }
                 }
             )
+            // 新增：主mod版本弹窗
+            .sheet(
+                isPresented: $mainModVersionVM.showMainModVersionSheet,
+                onDismiss: {
+                    // server 模式下，sheet 关闭后直接显示已安装，不跟踪是否成功
+                    if type {
+                        addButtonState = .installed
+                    } else {
+                        addButtonState = .idle
+                    }
+                    mainModVersionVM.cleanup()
+                },
+                content: {
+                    MainModVersionSheetView(
+                        viewModel: mainModVersionVM,
+                        projectDetail: project.toDetail(),
+                        isDownloading: $isDownloadingMainMod,
+                        onDownload: {
+                            await downloadMainModWithSelectedVersion()
+                        }
+                    )
+                    .onDisappear {
+                        mainModVersionVM.cleanup()
+                    }
+                }
+            )
         }
         .alert(item: $activeAlert) { alertType in
             alertType.alert
@@ -359,15 +387,8 @@ struct AddOrDeleteResourceButton: View {
                                 depVM.showDependenciesSheet = true
                                 addButtonState = .idle  // Reset button state for when sheet is dismissed
                             } else {
-                                await GameResourceHandler.downloadSingleResource(
-                                    project: project,
-                                    gameInfo: gameInfo,
-                                    query: query,
-                                    gameRepository: gameRepository
-                                ) {
-                                    addToScannedDetailIds()
-                                    markInstalled()
-                                }
+                                // 没有依赖时，显示主mod版本弹窗
+                                await loadMainModVersionsBeforeOpeningSheet()
                             }
                         }
                     } else {
@@ -524,6 +545,79 @@ struct AddOrDeleteResourceButton: View {
         await MainActor.run {
             preloadedDetail = detail
             showModPackDownloadSheet = true
+        }
+    }
+    
+    // 新增：在打开主mod版本弹窗前加载版本信息
+    private func loadMainModVersionsBeforeOpeningSheet() async {
+        guard let gameInfo = gameInfo else {
+            return
+        }
+        
+        mainModVersionVM.isLoadingVersions = true
+        defer {
+            Task { @MainActor in
+                mainModVersionVM.isLoadingVersions = false
+                addButtonState = .idle
+            }
+        }
+        
+        let versions = await ModrinthService.fetchProjectVersions(
+            id: project.projectId
+        )
+        
+        let filteredVersions = versions.filter {
+            $0.loaders.contains(gameInfo.modLoader)
+                && $0.gameVersions.contains(gameInfo.gameVersion)
+        }
+        
+        await MainActor.run {
+            mainModVersionVM.availableVersions = filteredVersions
+            if let first = filteredVersions.first {
+                mainModVersionVM.selectedVersionId = first.id
+            }
+            mainModVersionVM.showMainModVersionSheet = true
+        }
+    }
+    
+    // 新增：使用选中的版本下载主mod
+    private func downloadMainModWithSelectedVersion() async {
+        guard let gameInfo = gameInfo else {
+            return
+        }
+        
+        isDownloadingMainMod = true
+        defer {
+            Task { @MainActor in
+                isDownloadingMainMod = false
+            }
+        }
+        
+        // 使用选中的版本ID，如果没有选中则使用最新版本
+        let versionId = mainModVersionVM.selectedVersionId
+        
+        // 使用 downloadManualDependenciesAndMain，传入空的依赖数组来只下载主mod
+        let success = await ModrinthDependencyDownloader.downloadManualDependenciesAndMain(
+            dependencies: [],  // 空依赖数组，只下载主mod
+            selectedVersions: [:],
+            dependencyVersions: [:],
+            mainProjectId: project.projectId,
+            mainProjectVersionId: versionId,  // 使用选中的版本ID
+            gameInfo: gameInfo,
+            query: query,
+            gameRepository: gameRepository,
+            onDependencyDownloadStart: { _ in },
+            onDependencyDownloadFinish: { _, _ in }
+        )
+        
+        if success {
+            addToScannedDetailIds()
+            markInstalled()
+        }
+        
+        // 下载完成后关闭弹窗
+        await MainActor.run {
+            mainModVersionVM.showMainModVersionSheet = false
         }
     }
 
