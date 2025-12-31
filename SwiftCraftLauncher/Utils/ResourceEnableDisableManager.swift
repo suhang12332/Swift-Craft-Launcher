@@ -35,10 +35,10 @@ enum ResourceEnableDisableManager {
         let isCurrentlyDisabled = fileName.hasSuffix(".disable")
         if isCurrentlyDisabled {
             guard fileName.hasSuffix(".disable") else {
-                throw NSError(
-                    domain: "ResourceEnableDisableManager",
-                    code: -1,
-                    userInfo: [NSLocalizedDescriptionKey: "启用资源失败：文件后缀不包含 .disable"]
+                throw GlobalError.resource(
+                    chineseMessage: "启用资源失败：文件后缀不包含 .disable",
+                    i18nKey: "error.resource.enable_failed_invalid_suffix",
+                    level: .notification
                 )
             }
             targetFileName = String(fileName.dropLast(".disable".count))
