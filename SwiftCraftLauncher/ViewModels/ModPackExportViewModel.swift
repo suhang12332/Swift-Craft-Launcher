@@ -180,6 +180,29 @@ class ModPackExportViewModel: ObservableObject {
         summary = ""
     }
     
+    /// 清理所有整合包导出相关的数据和临时文件
+    /// 在页面关闭时调用
+    func cleanupAllData() {
+        // 取消导出任务
+        exportTask?.cancel()
+        exportTask = nil
+        
+        // 清理临时文件
+        cleanupTempFile()
+        cleanupTempDirectories()
+        
+        // 重置所有状态
+        exportState = .idle
+        exportProgress = ModPackExporter.ExportProgress()
+        exportError = nil
+        tempExportPath = nil
+        hasShownSaveDialog = false
+        saveError = nil
+        modPackName = ""
+        modPackVersion = "1.0.0"
+        summary = ""
+    }
+    
     // MARK: - Private Helper Methods
     
     /// 清理临时文件
@@ -195,6 +218,21 @@ class ModPackExportViewModel: ObservableObject {
             }
         }
         tempExportPath = nil
+    }
+    
+    /// 清理临时目录（modpack_export 目录）
+    private func cleanupTempDirectories() {
+        let tempBaseDir = FileManager.default.temporaryDirectory
+        let exportDir = tempBaseDir.appendingPathComponent("modpack_export")
+        
+        if FileManager.default.fileExists(atPath: exportDir.path) {
+            do {
+                try FileManager.default.removeItem(at: exportDir)
+                Logger.shared.info("已清理临时导出目录: \(exportDir.path)")
+            } catch {
+                Logger.shared.warning("清理临时导出目录失败: \(error.localizedDescription)")
+            }
+        }
     }
 }
 

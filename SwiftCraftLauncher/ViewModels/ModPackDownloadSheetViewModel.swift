@@ -30,6 +30,51 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         lastParsedIndexInfo = nil
     }
 
+    /// 清理所有整合包导入相关的数据和临时文件
+    func cleanupAllData() {
+        // 清理索引数据
+        clearParsedIndexInfo()
+        
+        // 清理项目详情数据
+        projectDetail = nil
+        availableGameVersions = []
+        filteredModPackVersions = []
+        allModPackVersions = []
+        
+        // 清理安装状态
+        modPackInstallState.reset()
+        
+        // 清理临时文件
+        cleanupTempFiles()
+    }
+
+    /// 清理临时文件（modpack_download 和 modpack_extraction 目录）
+    func cleanupTempFiles() {
+        let tempBaseDir = FileManager.default.temporaryDirectory
+        
+        // 清理 modpack_download 目录
+        let downloadDir = tempBaseDir.appendingPathComponent("modpack_download")
+        if FileManager.default.fileExists(atPath: downloadDir.path) {
+            do {
+                try FileManager.default.removeItem(at: downloadDir)
+                Logger.shared.info("已清理临时下载目录: \(downloadDir.path)")
+            } catch {
+                Logger.shared.warning("清理临时下载目录失败: \(error.localizedDescription)")
+            }
+        }
+        
+        // 清理 modpack_extraction 目录
+        let extractionDir = tempBaseDir.appendingPathComponent("modpack_extraction")
+        if FileManager.default.fileExists(atPath: extractionDir.path) {
+            do {
+                try FileManager.default.removeItem(at: extractionDir)
+                Logger.shared.info("已清理临时解压目录: \(extractionDir.path)")
+            } catch {
+                Logger.shared.warning("清理临时解压目录失败: \(error.localizedDescription)")
+            }
+        }
+    }
+
     private var allModPackVersions: [ModrinthProjectDetailVersion] = []
     private var gameRepository: GameRepository?
 
@@ -247,7 +292,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         do {
             // 查找并解析 modrinth.index.json
             let indexPath = extractedPath.appendingPathComponent(
-                "modrinth.index.json"
+                AppConstants.modrinthIndexFileName
             )
 
             let indexPathString = indexPath.path

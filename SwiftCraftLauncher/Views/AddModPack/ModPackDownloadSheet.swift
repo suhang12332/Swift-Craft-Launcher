@@ -75,8 +75,8 @@ struct ModPackDownloadSheet: View {
         // 清理选中的版本
         selectedGameVersion = ""
         selectedModPackVersion = nil
-        // 清理 ViewModel 数据
-        viewModel.clearParsedIndexInfo()
+        // 清理 ViewModel 所有数据和临时文件
+        viewModel.cleanupAllData()
     }
 
     // MARK: - View Components

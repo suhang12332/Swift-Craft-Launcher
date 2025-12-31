@@ -31,6 +31,10 @@ struct ModPackExportSheet: View {
         .onAppear {
             initializeDefaults()
         }
+        .onDisappear {
+            // 页面关闭后清理所有数据和临时文件
+            viewModel.cleanupAllData()
+        }
         .onChange(of: viewModel.shouldShowSaveDialog) { shouldShow in
             if shouldShow, let tempPath = viewModel.tempExportPath {
                 handleExportCompleted(tempFilePath: tempPath)

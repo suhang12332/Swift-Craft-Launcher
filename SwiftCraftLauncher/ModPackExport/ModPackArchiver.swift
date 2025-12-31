@@ -60,14 +60,29 @@ struct ModPackArchiver {
                 options: [.skipsHiddenFiles]
             )
             
+            // 标准化 overridesDir 路径（确保以 / 结尾）
+            let overridesDirPath = (overridesDir.path as NSString).standardizingPath
+            let overridesDirPathWithSlash = overridesDirPath.hasSuffix("/") 
+                ? overridesDirPath 
+                : overridesDirPath + "/"
+            
             while let fileURL = overridesEnumerator?.nextObject() as? URL {
                 if let isRegularFile = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
                    isRegularFile {
                     // 计算相对路径（相对于 overridesDir），添加 overrides/ 前缀
-                    let relativePath = fileURL.path.replacingOccurrences(
-                        of: overridesDir.path + "/",
-                        with: "overrides/"
-                    )
+                    // 使用标准化的路径来避免路径中包含 "private" 等词导致的问题
+                    let filePath = (fileURL.path as NSString).standardizingPath
+                    
+                    // 确保文件路径以 overridesDir 路径开头
+                    guard filePath.hasPrefix(overridesDirPathWithSlash) else {
+                        Logger.shared.warning("文件路径不在 overrides 目录内: \(filePath)")
+                        continue
+                    }
+                    
+                    // 提取相对路径部分
+                    let relativeToOverrides = String(filePath.dropFirst(overridesDirPathWithSlash.count))
+                    // 构建 ZIP 中的路径（以 overrides/ 开头）
+                    let relativePath = "overrides/\(relativeToOverrides)"
                     
                     let fileData = try Data(contentsOf: fileURL)
                     let fileSize = UInt32(fileData.count)

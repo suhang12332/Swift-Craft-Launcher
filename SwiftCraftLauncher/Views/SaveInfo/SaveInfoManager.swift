@@ -39,7 +39,7 @@ final class SaveInfoManager: ObservableObject {
     /// 获取游戏存档目录（从 profile 目录下读取）
     private var savesDirectory: URL? {
         let savesPath = AppPaths.profileDirectory(gameName: gameName)
-            .appendingPathComponent("saves", isDirectory: true)
+            .appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
 
         // 如果目录不存在，返回 nil（跳过）
         guard FileManager.default.fileExists(atPath: savesPath.path) else {
@@ -52,7 +52,7 @@ final class SaveInfoManager: ObservableObject {
     /// 获取游戏截图目录（从 profile 目录下读取）
     private var screenshotsDirectory: URL? {
         let screenshotsPath = AppPaths.profileDirectory(gameName: gameName)
-            .appendingPathComponent("screenshots", isDirectory: true)
+            .appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)
 
         // 如果目录不存在，返回 nil（跳过）
         guard FileManager.default.fileExists(atPath: screenshotsPath.path) else {
@@ -65,7 +65,7 @@ final class SaveInfoManager: ObservableObject {
     /// 获取游戏日志目录（从 profile 目录下读取）
     private var logsDirectory: URL? {
         let logsPath = AppPaths.profileDirectory(gameName: gameName)
-            .appendingPathComponent("logs", isDirectory: true)
+            .appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
 
         // 如果目录不存在，返回 nil（跳过）
         guard FileManager.default.fileExists(atPath: logsPath.path) else {

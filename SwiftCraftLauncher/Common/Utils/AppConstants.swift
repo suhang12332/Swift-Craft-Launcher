@@ -80,6 +80,13 @@ enum AppConstants {
     enum UserDefaultsKeys {
         static let savedGames = "savedGames"
     }
+
+    // MARK: - Database Tables
+    /// 数据库表名常量
+    enum DatabaseTables {
+        static let gameVersions = "game_versions"
+        static let modCache = "mod_cache"
+    }
 }
 
 // MARK: - Bundle Extension

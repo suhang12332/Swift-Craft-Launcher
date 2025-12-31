@@ -95,10 +95,14 @@ enum ResourceProcessor {
         
         let fileSize = (try? FileManager.default.attributesOfItem(atPath: modFile.path)[.size] as? Int64) ?? 0
         
-        // 设置 env 字段（根据标准格式，默认为 required）
+        // 设置 env 字段（根据 Modrinth 项目的 clientSide 和 serverSide）
+        // 将 Modrinth 的 "optional" 映射为 "optional"，其他值映射为 "required"
+        let clientEnv = modrinthInfo.projectDetail.clientSide == "optional" ? "optional" : "required"
+        let serverEnv = modrinthInfo.projectDetail.serverSide == "optional" ? "optional" : "required"
+        
         let env = ModrinthIndexFileEnv(
-            client: "required",
-            server: "required"
+            client: clientEnv,
+            server: serverEnv
         )
         
         return ModrinthIndexFile(
@@ -125,83 +129,13 @@ enum ModrinthResourceIdentifier {
     }
     
     /// 尝试从 Modrinth 获取 mod 信息
-    /// 优先查询数据库，如果数据库中没有或id是cf-开头，则调用Modrinth API
+    /// 始终通过 hash 查询 API
     static func getModrinthInfo(for modFile: URL) async -> ModrinthModInfo? {
         guard let hash = try? SHA1Calculator.sha1(ofFileAt: modFile) else {
             return nil
         }
         
-        // 1. 优先查询数据库
-        if let jsonData = ModCacheManager.shared.get(hash: hash),
-           let detail = try? JSONDecoder().decode(ModrinthProjectDetail.self, from: jsonData) {
-            // 检查id是否是cf-开头，如果是则跳过数据库结果，调用API
-            if detail.id.hasPrefix("cf-") {
-                // id是cf-开头，认为扫描不到，继续调用API
-            } else {
-                // 使用数据库中的信息
-                guard let versionId = detail.versions.first else {
-                    // 如果没有版本，回退到API
-                    return await getModrinthInfoFromAPI(hash: hash, modFile: modFile)
-                }
-                
-                // 使用已计算的hash（避免重复计算）
-                let fileHash = hash
-                
-                // 获取文件名
-                let fileName = modFile.lastPathComponent
-                
-                // 使用 URLConfig 生成下载 URL
-                let downloadUrl = URLConfig.API.Modrinth.downloadUrl(
-                    projectId: detail.id,
-                    versionId: versionId,
-                    fileName: fileName
-                )
-                
-                // 构造ModrinthVersionFile
-                let fileSize = (try? FileManager.default.attributesOfItem(atPath: modFile.path)[.size] as? Int64) ?? 0
-                let versionFile = ModrinthVersionFile(
-                    hashes: ModrinthVersionFileHashes(sha512: "", sha1: fileHash),
-                    url: downloadUrl,
-                    filename: fileName,
-                    primary: true,
-                    size: Int(fileSize),
-                    fileType: nil
-                )
-                
-                // 构造ModrinthProjectDetailVersion
-                let version = ModrinthProjectDetailVersion(
-                    gameVersions: [],
-                    loaders: [],
-                    id: versionId,
-                    projectId: detail.id,
-                    authorId: "",
-                    featured: false,
-                    name: "",
-                    versionNumber: "",
-                    changelog: nil,
-                    changelogUrl: nil,
-                    datePublished: Date(),
-                    downloads: 0,
-                    versionType: "release",
-                    status: "listed",
-                    requestedStatus: nil,
-                    files: [versionFile],
-                    dependencies: []
-                )
-                
-                return ModrinthModInfo(
-                    projectDetail: detail,
-                    version: version
-                )
-            }
-        }
-        
-        // 2. 数据库中没有或id是cf-开头，调用Modrinth API
-        return await getModrinthInfoFromAPI(hash: hash, modFile: modFile)
-    }
-    
-    /// 从Modrinth API获取mod信息
-    private static func getModrinthInfoFromAPI(hash: String, modFile: URL) async -> ModrinthModInfo? {
+        // 直接通过 hash 查询 API
         return await withCheckedContinuation { continuation in
             ModrinthService.fetchModrinthDetail(by: hash) { detail in
                 guard let detail = detail else {

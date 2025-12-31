@@ -237,6 +237,9 @@ enum LoaderVersionResolver {
 
             // 如果文件名中没有版本，尝试从 Modrinth 获取
             if let modrinthInfo = await ModrinthResourceIdentifier.getModrinthInfo(for: modFile) {
+                // 缓存包含 optional 的 server_side 和 client_side 信息
+                cacheModrinthSideInfo(modrinthInfo: modrinthInfo, modFile: modFile)
+                
                 let versionName = modrinthInfo.version.name
                 if let version = extractVersionFromString(versionName) {
                     return version
@@ -287,6 +290,55 @@ enum LoaderVersionResolver {
     /// 从字符串中提取版本号
     private static func extractVersionFromString(_ string: String) -> String? {
         return extractVersionFromFileName(string.lowercased())
+    }
+    
+    /// 缓存 Modrinth 项目的 server_side 和 client_side 信息
+    /// 仅缓存包含 "optional" 值的数据
+    private static func cacheModrinthSideInfo(
+        modrinthInfo: ModrinthResourceIdentifier.ModrinthModInfo,
+        modFile: URL
+    ) {
+        let projectDetail = modrinthInfo.projectDetail
+        
+        // 检查是否需要缓存（至少有一个是 optional）
+        let shouldCache = projectDetail.clientSide == "optional" || projectDetail.serverSide == "optional"
+        
+        guard shouldCache else {
+            return
+        }
+        
+        // 使用文件 hash 作为缓存键
+        guard let hash = try? SHA1Calculator.sha1(ofFileAt: modFile) else {
+            return
+        }
+        
+        // 构建缓存数据结构
+        let sideInfo = ModrinthSideInfo(
+            clientSide: projectDetail.clientSide,
+            serverSide: projectDetail.serverSide,
+            projectId: projectDetail.id
+        )
+        
+        // 缓存到 AppCacheManager
+        let cacheKey = "modrinth_side_\(hash)"
+        AppCacheManager.shared.setSilently(
+            namespace: "modrinth_side_info",
+            key: cacheKey,
+            value: sideInfo
+        )
+    }
+}
+
+/// Modrinth 项目的 server_side 和 client_side 信息缓存结构
+private struct ModrinthSideInfo: Codable {
+    let clientSide: String
+    let serverSide: String
+    let projectId: String
+    
+    enum CodingKeys: String, CodingKey {
+        case clientSide = "client_side"
+        case serverSide = "server_side"
+        case projectId = "project_id"
     }
 }
 

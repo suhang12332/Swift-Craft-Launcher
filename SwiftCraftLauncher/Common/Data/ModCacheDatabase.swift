@@ -7,7 +7,7 @@ class ModCacheDatabase {
     // MARK: - Properties
 
     private let db: SQLiteDatabase
-    private let tableName = "mod_cache"
+    private let tableName = AppConstants.DatabaseTables.modCache
 
     // MARK: - Initialization
 
