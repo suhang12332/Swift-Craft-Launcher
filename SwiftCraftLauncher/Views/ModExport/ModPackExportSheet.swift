@@ -144,36 +144,18 @@ struct ModPackExportSheet: View {
     /// 进度项视图（用于导出中和完成状态）
     private var progressItemsView: some View {
         VStack(spacing: 16) {
-            // 扫描资源进度条（固定位置，保持布局稳定）
-            progressRowContainer(
-                progress: viewModel.exportProgress.scanProgress,
-                id: "scan"
-            )
+            // 扫描资源进度条（总是显示，因为扫描是必然的）
+            if let scanProgress = viewModel.exportProgress.scanProgress {
+                progressRow(progress: scanProgress)
+                    .id("scan-\(scanProgress.completed)-\(scanProgress.total)")
+            }
             
-            // 复制文件进度条（固定位置，保持布局稳定）
-            progressRowContainer(
-                progress: viewModel.exportProgress.copyProgress,
-                id: "copy"
-            )
-        }
-    }
-    
-    /// 进度行容器（固定高度，保持布局稳定）
-    @ViewBuilder
-    private func progressRowContainer(
-        progress: ModPackExporter.ExportProgress.ProgressItem?,
-        id: String
-    ) -> some View {
-        Group {
-            if let progress = progress {
-                progressRow(progress: progress)
-            } else {
-                // 固定高度的占位符，保持布局稳定
-                Color.clear
-                    .frame(height: 70)
+            // 复制文件进度条（只在有复制任务时显示，不显示占位符）
+            if let copyProgress = viewModel.exportProgress.copyProgress {
+                progressRow(progress: copyProgress)
+                    .id("copy-\(copyProgress.completed)-\(copyProgress.total)")
             }
         }
-        .id("\(id)-\(progress?.completed ?? 0)-\(progress?.total ?? 0)")
     }
     
     /// 单个进度行（固定最小高度，保持布局稳定）

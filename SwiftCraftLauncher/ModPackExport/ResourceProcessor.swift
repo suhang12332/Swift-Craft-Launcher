@@ -19,20 +19,16 @@ enum ResourceProcessor {
         let relativePath: String
     }
     
-    /// 处理单个资源文件
+    /// 识别资源文件（不复制）
     /// - Parameters:
     ///   - file: 资源文件路径
     ///   - resourceType: 资源类型
-    ///   - overridesDir: overrides 目录
     /// - Returns: 处理结果
-    /// - Throws: 如果复制文件失败
-    static func process(
+    static func identify(
         file: URL,
-        resourceType: ResourceScanner.ResourceType,
-        overridesDir: URL
-    ) async throws -> ProcessResult {
+        resourceType: ResourceScanner.ResourceType
+    ) async -> ProcessResult {
         let relativePath = resourceType.rawValue
-        let overridesSubDir = overridesDir.appendingPathComponent(relativePath)
         
         // 尝试从 Modrinth 获取信息
         var indexFile: ModrinthIndexFile? = nil
@@ -55,8 +51,30 @@ enum ResourceProcessor {
             )
         }
         
-        // 如果索引文件创建失败（Modrinth 识别不到、创建失败等），复制到 overrides
+        // 如果索引文件创建失败（Modrinth 识别不到、创建失败等），需要复制到 overrides
+        return ProcessResult(
+            indexFile: nil,
+            shouldCopyToOverrides: true,
+            sourceFile: file,
+            relativePath: relativePath
+        )
+    }
+    
+    /// 复制文件到 overrides 目录
+    /// - Parameters:
+    ///   - file: 源文件路径
+    ///   - resourceType: 资源类型
+    ///   - overridesDir: overrides 目录
+    /// - Throws: 如果复制文件失败
+    static func copyToOverrides(
+        file: URL,
+        resourceType: ResourceScanner.ResourceType,
+        overridesDir: URL
+    ) throws {
+        let relativePath = resourceType.rawValue
+        let overridesSubDir = overridesDir.appendingPathComponent(relativePath)
         let destPath = overridesSubDir.appendingPathComponent(file.lastPathComponent)
+        
         try FileManager.default.createDirectory(at: overridesSubDir, withIntermediateDirectories: true)
         
         // 如果目标文件已存在，先删除
@@ -65,12 +83,29 @@ enum ResourceProcessor {
         }
         
         try FileManager.default.copyItem(at: file, to: destPath)
-        return ProcessResult(
-            indexFile: nil,
-            shouldCopyToOverrides: true,
-            sourceFile: file,
-            relativePath: relativePath
-        )
+    }
+    
+    /// 处理单个资源文件（兼容旧接口，先识别后复制）
+    /// - Parameters:
+    ///   - file: 资源文件路径
+    ///   - resourceType: 资源类型
+    ///   - overridesDir: overrides 目录
+    /// - Returns: 处理结果
+    /// - Throws: 如果复制文件失败
+    static func process(
+        file: URL,
+        resourceType: ResourceScanner.ResourceType,
+        overridesDir: URL
+    ) async throws -> ProcessResult {
+        // 先识别
+        let result = await identify(file: file, resourceType: resourceType)
+        
+        // 如果需要复制，则复制
+        if result.shouldCopyToOverrides {
+            try copyToOverrides(file: file, resourceType: resourceType, overridesDir: overridesDir)
+        }
+        
+        return result
     }
     
     /// 创建索引文件
