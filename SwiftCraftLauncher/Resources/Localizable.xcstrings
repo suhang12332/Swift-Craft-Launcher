@@ -42576,6 +42576,9 @@
         }
       }
     },
+    "GitHub" : {
+      "shouldTranslate" : false
+    },
     "global_resource.add" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -80883,9 +80886,6 @@
           }
         }
       }
-    },
-    "Switch" : {
-
     }
   },
   "version" : "1.1"

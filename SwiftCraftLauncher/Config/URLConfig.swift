@@ -106,6 +106,7 @@ enum URLConfig {
 
         // GitHub API
         enum GitHub {
+            static let gitHubBase = URLConfig.url("https://github.com")
             static let baseURL = URLConfig.url("https://api.github.com")
             static let repositoryOwner = "suhang12332"
             static let assetsRepositoryName = "Swift-Craft-Launcher-Assets"
@@ -137,12 +138,19 @@ enum URLConfig {
                 return URLConfig.applyGitProxyIfNeeded(url)
             }
 
+            // GitHub 仓库主页 URL
+            static func repositoryURL() -> URL {
+                return gitHubBase
+                    .appendingPathComponent(repositoryOwner)
+                    .appendingPathComponent(repositoryName)
+            }
+
             // Appcast 相关
             static func appcastURL(
                 architecture: String
             ) -> URL {
                 let appcastFileName = "appcast-\(architecture).xml"
-                let url = URLConfig.url("https://github.com")
+                let url = gitHubBase
                     .appendingPathComponent(repositoryOwner)
                     .appendingPathComponent(repositoryName)
                     .appendingPathComponent("releases")

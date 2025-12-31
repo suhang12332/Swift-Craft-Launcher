@@ -136,7 +136,7 @@ struct AddOrDeleteResourceButton: View {
 //            }
             // 禁用/启用按钮（仅本地资源显示）
             if type == false {
-                Toggle("Switch", isOn: Binding(
+                Toggle("", isOn: Binding(
                     get: { !isDisabled },
                     set: { _ in toggleDisableState() }
                 ))
