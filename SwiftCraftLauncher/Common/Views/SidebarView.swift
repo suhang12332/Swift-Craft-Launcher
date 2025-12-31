@@ -10,6 +10,8 @@ public struct SidebarView: View {
     @State private var searchText: String = ""
     @State private var showDeleteAlert: Bool = false
     @State private var gameToDelete: GameVersionInfo?
+    @State private var showExportSheet: Bool = false
+    @State private var gameToExport: GameVersionInfo?
     @StateObject private var gameActionManager = GameActionManager.shared
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @ObservedObject private var selectedGameManager = SelectedGameManager.shared
@@ -53,7 +55,8 @@ public struct SidebarView: View {
                         GameContextMenu(
                             game: game,
                             onDelete: { gameToDelete = game; showDeleteAlert = true },
-                            onOpenSettings: { openSettings() }
+                            onOpenSettings: { openSettings() },
+                            onExport: { gameToExport = game; showExportSheet = true }
                         )
                     }
                 }
@@ -119,6 +122,11 @@ public struct SidebarView: View {
                 Text(
                     String(format: "delete.game.confirm".localized(), game.gameName)
                 )
+            }
+        }
+        .sheet(isPresented: $showExportSheet) {
+            if let game = gameToExport {
+                ModPackExportSheet(gameInfo: game)
             }
         }
     }
@@ -197,6 +205,7 @@ private struct GameContextMenu: View {
     let game: GameVersionInfo
     let onDelete: () -> Void
     let onOpenSettings: () -> Void
+    let onExport: () -> Void
 
     @ObservedObject private var gameStatusManager = GameStatusManager.shared
     @ObservedObject private var gameActionManager = GameActionManager.shared
@@ -232,6 +241,12 @@ private struct GameContextMenu: View {
         }, label: {
             Label("settings.game.advanced.tab".localized(), systemImage: "gearshape")
         })
+
+        Divider()
+
+        Button(action: onExport) {
+            Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
+        }
 
         Button(action: onDelete) {
             Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")

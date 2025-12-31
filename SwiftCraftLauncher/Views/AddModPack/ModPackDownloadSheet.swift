@@ -75,8 +75,8 @@ struct ModPackDownloadSheet: View {
         // 清理选中的版本
         selectedGameVersion = ""
         selectedModPackVersion = nil
-        // 清理 ViewModel 数据
-        viewModel.clearParsedIndexInfo()
+        // 清理 ViewModel 所有数据和临时文件
+        viewModel.cleanupAllData()
     }
 
     // MARK: - View Components
@@ -92,7 +92,10 @@ struct ModPackDownloadSheet: View {
     private var bodyView: some View {
         VStack(alignment: .leading, spacing: 12) {
             if isProcessing {
-                ProcessingView()
+                ProcessingView(
+                    downloadedBytes: viewModel.modPackDownloadProgress,
+                    totalBytes: viewModel.modPackTotalSize
+                )
             } else if viewModel.isLoadingProjectDetails {
                 ProgressView().controlSize(.small)
                     .frame(maxWidth: .infinity, minHeight: 130)

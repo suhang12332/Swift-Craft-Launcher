@@ -58,7 +58,9 @@ struct GameHeaderListRow: View {
                 }
             }
             Spacer()
-            importButton
+            HStack(spacing: 8) {
+                importButton
+            }
         }
         .listRowSeparator(.hidden)
         .listRowInsets(

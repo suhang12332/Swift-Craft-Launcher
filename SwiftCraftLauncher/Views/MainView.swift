@@ -244,6 +244,7 @@ struct MainView: View {
         }
         if self.selectedProjectId == nil && self.gameId != nil {
             self.gameId = nil
+            searchText = ""
         }
         if self.loadedProjectDetail != nil && self.gameId != nil
             && self.selectedProjectId != nil {

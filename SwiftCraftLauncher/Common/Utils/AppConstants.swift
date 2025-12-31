@@ -4,6 +4,7 @@ enum AppConstants {
     static let defaultGameIcon = "default_game_icon.png"
     static let modLoaders = ["vanilla", "fabric", "forge", "neoforge", "quilt"]
     static let modrinthIndex = "relevance"
+    static let modrinthIndexFileName = "modrinth.index.json"
 
     // Minecraft 客户端ID - 构建时会被替换
     // Minecraft/Xbox认证
@@ -35,6 +36,8 @@ enum AppConstants {
         static let shaderpacks = "shaderpacks"
         static let resourcepacks = "resourcepacks"
         static let datapacks = "datapacks"
+        static let saves = "saves"
+        static let screenshots = "screenshots"
         static let schematics = "schematics"
         static let crashReports = "crash-reports"
         static let logs = "logs"
@@ -76,6 +79,13 @@ enum AppConstants {
     /// UserDefaults 存储键常量
     enum UserDefaultsKeys {
         static let savedGames = "savedGames"
+    }
+
+    // MARK: - Database Tables
+    /// 数据库表名常量
+    enum DatabaseTables {
+        static let gameVersions = "game_versions"
+        static let modCache = "mod_cache"
     }
 }
 

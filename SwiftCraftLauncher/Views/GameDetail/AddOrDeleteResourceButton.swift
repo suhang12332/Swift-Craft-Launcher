@@ -9,57 +9,6 @@ import Foundation
 import SwiftUI
 import os
 
-// 新增依赖管理ViewModel，持久化依赖相关状态
-final class DependencySheetViewModel: ObservableObject {
-    @Published var missingDependencies: [ModrinthProjectDetail] = []
-    @Published var isLoadingDependencies = true
-    @Published var showDependenciesSheet = false
-    @Published var dependencyDownloadStates: [String: ResourceDownloadState] =
-        [:]
-    @Published var dependencyVersions:
-        [String: [ModrinthProjectDetailVersion]] = [:]
-    @Published var selectedDependencyVersion: [String: String] = [:]
-    @Published var overallDownloadState: OverallDownloadState = .idle
-
-    enum OverallDownloadState {
-        case idle  // 初始状态，或全部下载成功后
-        case failed  // 首次"全部下载"操作中，有任何文件失败；/
-        case retrying  // 用户正在重试失败项
-    }
-
-    var allDependenciesDownloaded: Bool {
-        // 当没有依赖时，也认为"所有依赖都已下载"
-        if missingDependencies.isEmpty { return true }
-
-        // 检查所有列出的依赖项是否都标记为成功
-        return missingDependencies.allSatisfy {
-            dependencyDownloadStates[$0.id] == .success
-        }
-    }
-
-    func resetDownloadStates() {
-        for dep in missingDependencies {
-            dependencyDownloadStates[dep.id] = .idle
-        }
-        overallDownloadState = .idle
-    }
-
-    /// 清理所有数据，在 sheet 关闭时调用以释放内存
-    func cleanup() {
-        missingDependencies = []
-        isLoadingDependencies = true
-        dependencyDownloadStates = [:]
-        dependencyVersions = [:]
-        selectedDependencyVersion = [:]
-        overallDownloadState = .idle
-    }
-}
-
-// 1. 下载状态定义
-enum ResourceDownloadState {
-    case idle, downloading, success, failed
-}
-
 struct AddOrDeleteResourceButton: View {
     var project: ModrinthProject
     let selectedVersions: [String]
@@ -76,25 +25,22 @@ struct AddOrDeleteResourceButton: View {
     @State private var showNoGameAlert = false
     @State private var showPlayerAlert = false  // 新增：玩家验证 alert
 
-    // Alert 类型枚举，用于管理不同的 alert
-    enum AlertType: Identifiable {
-        case noGame
-        case noPlayer
-
-        var id: Self { self }
-    }
-
-    @State private var activeAlert: AlertType?
+    @State private var activeAlert: ResourceButtonAlertType?
     @StateObject private var gameSettings = GameSettingsManager.shared
     @StateObject private var depVM = DependencySheetViewModel()
+    @StateObject private var mainModVersionVM = MainModVersionSheetViewModel()  // 新增：主mod版本弹窗ViewModel
     @State private var isDownloadingAllDependencies = false
     @State private var isDownloadingMainResourceOnly = false
+    @State private var isDownloadingMainMod = false  // 新增：主mod下载状态
     @State private var showGlobalResourceSheet = false
     @State private var showModPackDownloadSheet = false  // 新增：整合包下载 sheet
     @State private var preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情（通用：整合包/普通资源）
     @State private var preloadedCompatibleGames: [GameVersionInfo] = []  // 预检测的兼容游戏列表
     @State private var isLoadingProjectDetail = false  // 是否正在加载项目详情
     @State private var isDisabled: Bool = false  // 资源是否被禁用
+    @State private var currentFileName: String?  // 当前文件名（跟踪重命名后的文件名）
+    @State private var previousButtonState: ModrinthDetailCardView.AddButtonState?  // 保存之前的状态（用于恢复）
+    @State private var hasDownloadedInSheet = false  // 标记在 sheet 中是否下载成功
     @Binding var selectedItem: SidebarItem
     //    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
     var onResourceChanged: (() -> Void)?
@@ -128,16 +74,33 @@ struct AddOrDeleteResourceButton: View {
     var body: some View {
 
         HStack(spacing: 8) {
-//            // 禁用/启用按钮（仅本地资源显示）
-//            if type == false {
-//                Button(action: toggleDisableState) {
-//                    Text(isDisabled ? "resource.enable".localized() : "resource.disable".localized())
-//                }
-//                .buttonStyle(.borderedProminent)
-//                .tint(.accentColor)  // 或 .tint(.primary) 但一般用 accentColor 更美观
-//                .font(.caption2)
-//                .controlSize(.small)
+//            Button {
+//                showInFinder(mod)
+//            } label: {
+//                Label("sidebar.context_menu.show_in_finder".localized(), systemImage: "folder")
 //            }
+            // 更新按钮（仅在 local 模式且有更新时显示）
+            if type == false && addButtonState == .update {
+                Button(action: handleUpdateAction) {
+                    Text("resource.update".localized())
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.orange)
+                .font(.caption2)
+                .controlSize(.small)
+                .disabled(addButtonState == .loading)
+            }
+
+            // 禁用/启用按钮（仅本地资源显示）
+            if type == false {
+                Toggle("", isOn: Binding(
+                    get: { !isDisabled },
+                    set: { _ in toggleDisableState() }
+                ))
+                .toggleStyle(.switch)
+                .labelsHidden()
+                .controlSize(.mini)
+            }
 
             // 安装/删除按钮
             Button(action: handleButtonAction) {
@@ -155,7 +118,15 @@ struct AddOrDeleteResourceButton: View {
                 if type == false {
                     // local 区直接显示为已安装
                     addButtonState = .installed
-                    checkDisableState()
+                    // 初始化当前文件名
+                    if currentFileName == nil {
+                        currentFileName = project.fileName
+                    }
+                    updateDisableState()
+                    // 检测是否有新版本（仅在 local 模式且为 mod 类型）
+                    if query.lowercased() == "mod" {
+                        checkForUpdate()
+                    }
                 } else {
                     updateButtonState()
                 }
@@ -205,7 +176,7 @@ struct AddOrDeleteResourceButton: View {
                                     gameRepository: gameRepository
                                 ) {
                                     addToScannedDetailIds()
-                                    updateButtonState()
+                                    markInstalled()
                                 }
                         } else {
                             // 首次点击"全部下载"
@@ -218,7 +189,7 @@ struct AddOrDeleteResourceButton: View {
                                     gameRepository: gameRepository
                                 ) {
                                     addToScannedDetailIds()
-                                    updateButtonState()
+                                    markInstalled()
                                 }
                         }
                     },
@@ -231,7 +202,7 @@ struct AddOrDeleteResourceButton: View {
                             gameRepository: gameRepository
                         ) {
                             addToScannedDetailIds()
-                            updateButtonState()
+                            markInstalled()
                         }
                         isDownloadingMainResourceOnly = false
                         depVM.showDependenciesSheet = false
@@ -288,22 +259,36 @@ struct AddOrDeleteResourceButton: View {
                     }
                 }
             )
+            // 新增：主mod版本弹窗
+            .sheet(
+                isPresented: $mainModVersionVM.showMainModVersionSheet,
+                onDismiss: {
+                    // 如果下载成功，状态已经在 downloadMainModWithSelectedVersion() 中设置好了
+                    // 如果只是关闭 sheet（没有下载），设置为"安装"状态
+                    if !hasDownloadedInSheet {
+                        addButtonState = .idle
+                    }
+                    // 重置下载标志
+                    hasDownloadedInSheet = false
+                    previousButtonState = nil  // 清除保存的状态
+                    mainModVersionVM.cleanup()
+                },
+                content: {
+                    MainModVersionSheetView(
+                        viewModel: mainModVersionVM,
+                        projectDetail: project.toDetail(),
+                        isDownloading: $isDownloadingMainMod
+                    ) {
+                        await downloadMainModWithSelectedVersion()
+                    }
+                    .onDisappear {
+                        mainModVersionVM.cleanup()
+                    }
+                }
+            )
         }
         .alert(item: $activeAlert) { alertType in
-            switch alertType {
-            case .noGame:
-                return Alert(
-                    title: Text("no_local_game.title".localized()),
-                    message: Text("no_local_game.message".localized()),
-                    dismissButton: .default(Text("common.confirm".localized()))
-                )
-            case .noPlayer:
-                return Alert(
-                    title: Text("sidebar.alert.no_player.title".localized()),
-                    message: Text("sidebar.alert.no_player.message".localized()),
-                    dismissButton: .default(Text("common.confirm".localized()))
-                )
-            }
+            alertType.alert
         }
     }
 
@@ -326,6 +311,9 @@ struct AddOrDeleteResourceButton: View {
                         : "resource.installed".localized())
                 )
             )
+        case .update:
+            // 当有更新时，主按钮显示删除（更新按钮已单独显示在左边）
+            AnyView(Text("common.delete".localized()))
         }
     }
 
@@ -381,6 +369,16 @@ struct AddOrDeleteResourceButton: View {
     }
 
     // MARK: - Actions
+    /// 处理更新按钮的点击
+    @MainActor
+    private func handleUpdateAction() {
+        if !type {
+            Task {
+                await loadMainModVersionsBeforeOpeningSheet()
+            }
+        }
+    }
+
     @MainActor
     private func handleButtonAction() {
         if case .game = selectedItem {
@@ -421,31 +419,17 @@ struct AddOrDeleteResourceButton: View {
                                 depVM.showDependenciesSheet = true
                                 addButtonState = .idle  // Reset button state for when sheet is dismissed
                             } else {
-                                await GameResourceHandler.downloadSingleResource(
-                                    project: project,
-                                    gameInfo: gameInfo,
-                                    query: query,
-                                    gameRepository: gameRepository
-                                ) {
-                                    addToScannedDetailIds()
-                                    markInstalled()
-                                }
+                                // 没有依赖时，显示主mod版本弹窗
+                                await loadMainModVersionsBeforeOpeningSheet()
                             }
                         }
                     } else {
-                        // 其他类型直接下载
-                        await GameResourceHandler.downloadSingleResource(
-                            project: project,
-                            gameInfo: gameInfo,
-                            query: query,
-                            gameRepository: gameRepository
-                        ) {
-                            addToScannedDetailIds()
-                            markInstalled()
-                        }
+                        // 其他类型也显示版本选择弹窗
+                        await loadMainModVersionsBeforeOpeningSheet()
                     }
                 }
-            case .installed:
+            case .installed, .update:
+                // 当有更新时，主按钮显示删除，点击后执行删除操作
                 if !type {
                     showDeleteAlert = true
                 }
@@ -488,10 +472,11 @@ struct AddOrDeleteResourceButton: View {
 
                 addButtonState = .loading
                 Task {
-                    // 先加载 projectDetail，然后再打开 sheet
+                    // 打开GlobalResourceSheet来选择安装到的游戏
                     await loadProjectDetailBeforeOpeningSheet()
                 }
-            case .installed:
+            case .installed, .update:
+                // 当有更新时，主按钮显示删除，点击后执行删除操作
                 if !type {
                     showDeleteAlert = true
                 }
@@ -512,7 +497,7 @@ struct AddOrDeleteResourceButton: View {
 
         // modpack 目前不支持安装状态检测
         guard queryLowercased != "modpack",
-            validResourceTypes.contains(queryLowercased)
+              validResourceTypes.contains(queryLowercased)
         else {
             addButtonState = .idle
             return
@@ -524,67 +509,22 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
+        // 在检测开始前设置 loading 状态
+        addButtonState = .loading
+
         Task {
-            let installed = await checkInstalledStateForServerMode(resourceType: queryLowercased)
+            let installed = await ResourceInstallationChecker.checkInstalledStateForServerMode(
+                project: project,
+                resourceType: queryLowercased,
+                installedHashes: scannedDetailIds,
+                selectedVersions: selectedVersions,
+                selectedLoaders: selectedLoaders,
+                gameInfo: gameInfo
+            )
             await MainActor.run {
                 addButtonState = installed ? .installed : .idle
             }
         }
-    }
-
-    /// 针对服务端模式的安装状态检查：获取兼容版本的文件 hash 并与已安装的 hash 比对
-    private func checkInstalledStateForServerMode(resourceType: String) async -> Bool {
-        // 已安装的 hash 列表（仅使用父视图传入的扫描结果，不做兜底扫描）
-        let installedHashes = scannedDetailIds
-        guard !installedHashes.isEmpty else { return false }
-
-        // 构造版本/loader 过滤条件（优先使用用户选择，其次使用当前游戏信息）
-        let versionFilters: [String] = {
-            if !selectedVersions.isEmpty {
-                return selectedVersions
-            }
-            if let gameInfo = gameInfo {
-                return [gameInfo.gameVersion]
-            }
-            return []
-        }()
-
-        let loaderFilters: [String] = {
-            if !selectedLoaders.isEmpty {
-                return selectedLoaders.map { $0.lowercased() }
-            }
-            if let gameInfo = gameInfo {
-                return [gameInfo.modLoader.lowercased()]
-            }
-            return []
-        }()
-
-        do {
-            let versions = try await ModrinthService.fetchProjectVersionsFilter(
-                id: project.projectId,
-                selectedVersions: versionFilters,
-                selectedLoaders: loaderFilters,
-                type: resourceType
-            )
-
-            for version in versions {
-                guard
-                    let primaryFile = ModrinthService.filterPrimaryFiles(
-                        from: version.files
-                    )
-                else { continue }
-
-                if installedHashes.contains(primaryFile.hashes.sha1) {
-                    return true
-                }
-            }
-        } catch {
-            Logger.shared.error(
-                "获取项目版本以检查安装状态失败: \(error.localizedDescription)"
-            )
-        }
-
-        return false
     }
 
     // 新增：在打开 sheet 前加载 projectDetail（普通资源）
@@ -597,28 +537,17 @@ struct AddOrDeleteResourceButton: View {
             }
         }
 
-        guard let detail = await ModrinthService.fetchProjectDetails(
-            id: project.projectId
+        guard let result = await ResourceDetailLoader.loadProjectDetail(
+            projectId: project.projectId,
+            gameRepository: gameRepository,
+            resourceType: query
         ) else {
-            GlobalErrorHandler.shared.handle(GlobalError.resource(
-                chineseMessage: "无法获取项目详情",
-                i18nKey: "error.resource.project_details_not_found",
-                level: .notification
-            ))
             return
         }
 
-        // 检测兼容游戏
-        let compatibleGames = await filterCompatibleGames(
-            detail: detail,
-            gameRepository: gameRepository,
-            resourceType: query,
-            projectId: project.projectId
-        )
-
         await MainActor.run {
-            preloadedDetail = detail
-            preloadedCompatibleGames = compatibleGames
+            preloadedDetail = result.detail
+            preloadedCompatibleGames = result.compatibleGames
             showGlobalResourceSheet = true
         }
     }
@@ -633,20 +562,199 @@ struct AddOrDeleteResourceButton: View {
             }
         }
 
-        guard let detail = await ModrinthService.fetchProjectDetails(
-            id: project.projectId
+        guard let detail = await ResourceDetailLoader.loadModPackDetail(
+            projectId: project.projectId
         ) else {
-            GlobalErrorHandler.shared.handle(GlobalError.resource(
-                chineseMessage: "无法获取整合包项目详情",
-                i18nKey: "error.resource.project_details_not_found",
-                level: .notification
-            ))
             return
         }
 
         await MainActor.run {
             preloadedDetail = detail
             showModPackDownloadSheet = true
+        }
+    }
+
+    // 新增：在打开主资源版本弹窗前加载版本信息（适用于所有资源类型）
+    private func loadMainModVersionsBeforeOpeningSheet() async {
+        guard let gameInfo = gameInfo else {
+            return
+        }
+
+        // 保存当前状态，以便在 sheet 关闭时恢复
+        await MainActor.run {
+            previousButtonState = addButtonState
+            hasDownloadedInSheet = false  // 重置下载标志
+        }
+
+        mainModVersionVM.isLoadingVersions = true
+        var sheetOpened = false
+        defer {
+            Task { @MainActor in
+                mainModVersionVM.isLoadingVersions = false
+                // 如果 sheet 没有打开（加载失败等情况），设置为"安装"状态
+                if !sheetOpened {
+                    addButtonState = .idle
+                    previousButtonState = nil
+                }
+            }
+        }
+
+        let versions = await ModrinthService.fetchProjectVersions(
+            id: project.projectId
+        )
+
+        // 根据资源类型过滤版本
+        // shader 类型不需要过滤 loader，其他类型需要
+        let filteredVersions: [ModrinthProjectDetailVersion]
+        if query.lowercased() == "shader" {
+            filteredVersions = versions.filter {
+                $0.gameVersions.contains(gameInfo.gameVersion)
+            }
+        } else {
+            filteredVersions = versions.filter {
+                $0.loaders.contains(gameInfo.modLoader)
+                    && $0.gameVersions.contains(gameInfo.gameVersion)
+            }
+        }
+
+        await MainActor.run {
+            mainModVersionVM.availableVersions = filteredVersions
+            if let first = filteredVersions.first {
+                mainModVersionVM.selectedVersionId = first.id
+            }
+            mainModVersionVM.showMainModVersionSheet = true
+            sheetOpened = true
+        }
+    }
+
+    // 新增：检测是否有新版本（仅在 local 模式）
+    private func checkForUpdate() {
+        guard let gameInfo = gameInfo,
+              type == false,  // 仅在 local 模式
+              query.lowercased() == "mod"  // 仅对 mod 类型检测
+        else {
+            return
+        }
+
+        Task {
+            let result = await ModUpdateChecker.checkForUpdate(
+                project: project,
+                gameInfo: gameInfo,
+                resourceType: query
+            )
+
+            await MainActor.run {
+                if result.hasUpdate {
+                    addButtonState = .update
+                } else {
+                    addButtonState = .installed
+                }
+            }
+        }
+    }
+
+    // 新增：使用选中的版本下载主资源（适用于所有资源类型）
+    private func downloadMainModWithSelectedVersion() async {
+        guard let gameInfo = gameInfo else {
+            return
+        }
+
+        // 如果是 local 模式，先删除旧文件（更新场景）
+        if !type {
+            await deleteOldFileForUpdate()
+        }
+
+        isDownloadingMainMod = true
+        defer {
+            Task { @MainActor in
+                isDownloadingMainMod = false
+            }
+        }
+
+        // 使用选中的版本ID，如果没有选中则使用最新版本
+        let versionId = mainModVersionVM.selectedVersionId
+
+        // 使用 downloadManualDependenciesAndMain，传入空的依赖数组来只下载主mod
+        let success = await ModrinthDependencyDownloader.downloadManualDependenciesAndMain(
+            dependencies: [],  // 空依赖数组，只下载主mod
+            selectedVersions: [:],
+            dependencyVersions: [:],
+            mainProjectId: project.projectId,
+            mainProjectVersionId: versionId,  // 使用选中的版本ID
+            gameInfo: gameInfo,
+            query: query,
+            gameRepository: gameRepository,
+            onDependencyDownloadStart: { _ in },
+            onDependencyDownloadFinish: { _, _ in }
+        )
+
+        if success {
+            addToScannedDetailIds()
+            await MainActor.run {
+                // 标记已下载成功
+                hasDownloadedInSheet = true
+                // 下载完成后，根据资源类型设置状态
+                if type == false && query.lowercased() == "mod" {
+                    // local 模式的 mod 类型：检测是否有更新
+                    // checkForUpdate() 会根据结果设置为 .installed 或 .update
+                    checkForUpdate()
+                } else {
+                    // 其他资源类型或 server 模式：直接设置为已安装
+                    addButtonState = .installed
+                }
+            }
+        } else {
+            // 下载失败，保持之前的状态
+            await MainActor.run {
+                hasDownloadedInSheet = false
+                // 下载失败时，如果之前是 .update，保持 .update；否则设置为 .installed
+                if let previousState = previousButtonState, previousState == .update {
+                    addButtonState = .update
+                } else {
+                    addButtonState = .installed
+                }
+            }
+        }
+
+        // 下载完成后关闭弹窗
+        await MainActor.run {
+            mainModVersionVM.showMainModVersionSheet = false
+        }
+    }
+
+    // 新增：更新前删除旧文件
+    private func deleteOldFileForUpdate() async {
+        guard let gameInfo = gameInfo,
+              let resourceDir = AppPaths.resourceDirectory(
+                  for: query,
+                  gameName: gameInfo.gameName
+              ) else {
+            return
+        }
+
+        // 使用 currentFileName 如果存在，否则使用 project.fileName
+        let fileName = currentFileName ?? project.fileName
+        guard let fileName = fileName else {
+            return
+        }
+
+        let fileURL = resourceDir.appendingPathComponent(fileName)
+
+        // 如果文件存在，删除它
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            GameResourceHandler.performDelete(fileURL: fileURL)
+        } else {
+            // 也检查 .disabled 版本
+            let disabledFileName = fileName + ".disabled"
+            let disabledFileURL = resourceDir.appendingPathComponent(disabledFileName)
+            if FileManager.default.fileExists(atPath: disabledFileURL.path) {
+                GameResourceHandler.performDelete(fileURL: disabledFileURL)
+            }
+        }
+
+        // 清空当前文件名，下载后会更新
+        await MainActor.run {
+            currentFileName = nil
         }
     }
 
@@ -665,8 +773,10 @@ struct AddOrDeleteResourceButton: View {
         addButtonState = .installed
     }
 
-    private func checkDisableState() {
-        isDisabled = (project.fileName?.hasSuffix(".disable") ?? false)
+    private func updateDisableState() {
+        // 使用 currentFileName 如果存在，否则使用 project.fileName
+        let fileName = currentFileName ?? project.fileName
+        isDisabled = ResourceEnableDisableManager.isDisabled(fileName: fileName)
     }
 
     private func toggleDisableState() {
@@ -680,32 +790,21 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        guard let fileName = project.fileName else {
+        // 使用 currentFileName 如果存在，否则使用 project.fileName
+        let fileName = currentFileName ?? project.fileName
+        guard let fileName = fileName else {
             Logger.shared.error("切换资源启用状态失败：缺少文件名")
             return
         }
 
-        let fileManager = FileManager.default
-        let currentURL = resourceDir.appendingPathComponent(fileName)
-        let targetFileName: String
-
-        if isDisabled {
-            guard fileName.hasSuffix(".disable") else {
-                Logger.shared.error("启用资源失败：文件后缀不包含 .disable")
-                return
-            }
-            targetFileName = String(fileName.dropLast(".disable".count))
-        } else {
-            targetFileName = fileName + ".disable"
-        }
-
-        let targetURL = resourceDir.appendingPathComponent(targetFileName)
-
         do {
-            try fileManager.moveItem(at: currentURL, to: targetURL)
-            // 根据新的文件名更新状态：如果新文件名以 .disable 结尾，则 isDisabled = true
-            isDisabled = targetFileName.hasSuffix(".disable")
-            onResourceChanged?()
+            let newFileName = try ResourceEnableDisableManager.toggleDisableState(
+                fileName: fileName,
+                resourceDir: resourceDir
+            )
+            // 更新当前文件名和禁用状态
+            currentFileName = newFileName
+            isDisabled = ResourceEnableDisableManager.isDisabled(fileName: newFileName)
         } catch {
             Logger.shared.error("切换资源启用状态失败: \(error.localizedDescription)")
         }

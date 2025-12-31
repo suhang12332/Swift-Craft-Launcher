@@ -182,6 +182,7 @@ struct LogChip: View {
                 Text(title)
                     .font(.subheadline)
                     .lineLimit(1)
+                    .frame(maxWidth: 150)
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 4)

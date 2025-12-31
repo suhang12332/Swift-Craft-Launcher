@@ -269,16 +269,22 @@ struct ServerAddressChip: View {
                     Text(title)
                         .font(.subheadline)
                         .fontWeight(.medium)
+                        .lineLimit(1)
+                        .frame(maxWidth: 150)
                 }
                 if !address.isEmpty {
                     if let port = port, port > 0 {
                         Text("\(address):\(String(port))")
                             .font(.caption2)
                             .foregroundColor(.secondary)
+                            .lineLimit(1)
+                            .frame(maxWidth: 150)
                     } else {
                         Text(address)
                             .font(.caption2)
                             .foregroundColor(.secondary)
+                            .lineLimit(1)
+                            .frame(maxWidth: 150)
                     }
                 }
             }

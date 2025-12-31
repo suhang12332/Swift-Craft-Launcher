@@ -21,6 +21,7 @@ struct ModrinthDetailCardView: View {
         case idle
         case loading
         case installed
+        case update  // 有新版本可用
     }
 
     // MARK: - Body

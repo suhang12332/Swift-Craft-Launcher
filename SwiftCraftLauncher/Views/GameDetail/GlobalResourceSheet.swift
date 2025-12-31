@@ -62,8 +62,10 @@ struct GlobalResourceSheet: View {
                                     }
                                 }
                                 if resourceType == "mod" && !GameSettingsManager.shared.autoDownloadDependencies {
-                                    spacerView()
-                                    DependencySectionView(state: $dependencyState)
+                                    if dependencyState.isLoading || !dependencyState.dependencies.isEmpty {
+                                        spacerView()
+                                        DependencySectionView(state: $dependencyState)
+                                    }
                                 }
                             }
                         }

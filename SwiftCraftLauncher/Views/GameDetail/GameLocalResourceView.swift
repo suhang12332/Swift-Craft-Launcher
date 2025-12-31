@@ -137,9 +137,6 @@ struct GameLocalResourceView: View {
                     EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
                 )
                 .listRowSeparator(.hidden)
-                .contextMenu {
-                    contextMenuContent(for: mod)
-                }
                 .onTapGesture {
                     // 本地资源不跳转详情页面（沿用原逻辑）
                     // 使用 id 前缀判断本地资源，更可靠
@@ -389,34 +386,6 @@ struct GameLocalResourceView: View {
         loadPage(page: 1, append: false)
     }
 
-    // MARK: - 右键菜单
-    /// 为资源项生成右键菜单内容
-    @ViewBuilder
-    private func contextMenuContent(for mod: ModrinthProject) -> some View {
-        // 启用/禁用菜单项
-        if let fileName = mod.fileName, fileName.hasSuffix(".disable") {
-            // 当前已禁用，显示启用选项
-            Button {
-                toggleResourceState(mod)
-            } label: {
-                Label("resource.enable".localized(), systemImage: "eye")
-            }
-        } else {
-            // 当前已启用，显示禁用选项
-            Button {
-                toggleResourceState(mod)
-            } label: {
-                Label("resource.disable".localized(), systemImage: "eye.slash")
-            }
-        }
-        // 在 Finder 中显示
-        Button {
-            showInFinder(mod)
-        } label: {
-            Label("sidebar.context_menu.show_in_finder".localized(), systemImage: "folder")
-        }
-    }
-
     /// 切换资源启用/禁用状态
     private func toggleResourceState(_ mod: ModrinthProject) {
         guard let resourceDir = resourceDirectory ?? AppPaths.resourceDirectory(
@@ -451,7 +420,6 @@ struct GameLocalResourceView: View {
 
         do {
             try fileManager.moveItem(at: currentURL, to: targetURL)
-            refreshResources()
         } catch {
             Logger.shared.error("切换资源启用状态失败: \(error.localizedDescription)")
             GlobalErrorHandler.shared.handle(GlobalError.resource(
@@ -459,32 +427,6 @@ struct GameLocalResourceView: View {
                 i18nKey: "error.resource.toggle_state_failed",
                 level: .notification
             ))
-        }
-    }
-
-    /// 在 Finder 中显示文件
-    private func showInFinder(_ mod: ModrinthProject) {
-        guard let resourceDir = resourceDirectory ?? AppPaths.resourceDirectory(
-            for: query,
-            gameName: game.gameName
-        ) else {
-            Logger.shared.error("在 Finder 中显示文件失败：资源目录不存在")
-            return
-        }
-
-        guard let fileName = mod.fileName else {
-            Logger.shared.error("在 Finder 中显示文件失败：缺少文件名")
-            return
-        }
-
-        let fileURL = resourceDir.appendingPathComponent(fileName)
-
-        // 检查文件是否存在
-        if FileManager.default.fileExists(atPath: fileURL.path) {
-            NSWorkspace.shared.activateFileViewerSelecting([fileURL])
-        } else {
-            // 如果文件不存在，打开资源目录
-            NSWorkspace.shared.activateFileViewerSelecting([resourceDir])
         }
     }
 }

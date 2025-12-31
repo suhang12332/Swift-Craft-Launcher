@@ -7,7 +7,7 @@ class GameVersionDatabase {
     // MARK: - Properties
 
     private let db: SQLiteDatabase
-    private let tableName = "game_versions"
+    private let tableName = AppConstants.DatabaseTables.gameVersions
 
     // MARK: - Initialization
 

@@ -89,11 +89,11 @@ struct SwiftCraftLauncherApp: App {
                     Logger.shared.openLogFile()
                 }
                 .keyboardShortcut("l", modifiers: [.command, .shift])
-            }
-            CommandGroup(after: .help) {
+
                 Divider()
-            }
-            CommandGroup(after: .help) {
+
+                Link("GitHub", destination: URLConfig.API.GitHub.repositoryURL())
+
                 Button("about.contributors".localized()) {
                     TemporaryWindowManager.shared.showWindow(
                         content: AboutView(showingAcknowledgements: false)
@@ -103,8 +103,7 @@ struct SwiftCraftLauncherApp: App {
                     )
                 }
                 .keyboardShortcut("c", modifiers: [.command, .shift])
-            }
-            CommandGroup(after: .help) {
+
                 Button("about.acknowledgements".localized()) {
                     TemporaryWindowManager.shared.showWindow(
                         content: AboutView(showingAcknowledgements: true)
@@ -114,17 +113,14 @@ struct SwiftCraftLauncherApp: App {
                     )
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
-            }
-            CommandGroup(after: .help) {
+
                 Button("license.view".localized()) {
                     LicenseManager.shared.showLicense()
                 }
                 .keyboardShortcut("l", modifiers: [.command, .option])
-            }
-            CommandGroup(after: .help) {
+
                 Divider()
-            }
-            CommandGroup(after: .help) {
+
                 Button("settings.ai.open_chat".localized()) {
                     AIChatManager.shared.openChatWindow()
                 }

@@ -167,8 +167,15 @@ struct GameFormView: View {
             }
 
             Button {
+                // 先切换到非 launcherImport 模式，确保 fileImporter 可以被附加
+                if case .launcherImport = mode {
+                    mode = .creation
+                }
                 filePickerType = .modPack
-                showFilePicker = true
+                // 使用异步确保视图已更新，fileImporter 已附加
+                DispatchQueue.main.async {
+                    showFilePicker = true
+                }
             } label: {
                 Label("modpack.import.title".localized(), systemImage: "square.and.arrow.up")
             }
