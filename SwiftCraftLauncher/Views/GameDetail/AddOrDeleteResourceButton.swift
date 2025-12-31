@@ -40,6 +40,7 @@ struct AddOrDeleteResourceButton: View {
     @State private var isDisabled: Bool = false  // 资源是否被禁用
     @State private var currentFileName: String?  // 当前文件名（跟踪重命名后的文件名）
     @State private var previousButtonState: ModrinthDetailCardView.AddButtonState?  // 保存之前的状态（用于恢复）
+    @State private var hasDownloadedInSheet = false  // 标记在 sheet 中是否下载成功
     @Binding var selectedItem: SidebarItem
     //    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
     var onResourceChanged: (() -> Void)?
@@ -262,17 +263,13 @@ struct AddOrDeleteResourceButton: View {
             .sheet(
                 isPresented: $mainModVersionVM.showMainModVersionSheet,
                 onDismiss: {
-                    // server 模式下，sheet 关闭后直接显示已安装，不跟踪是否成功
-                    if type {
-                        addButtonState = .installed
-                    } else {
-                        // local 模式下，如果之前是 update 状态，恢复为 update；否则恢复为 installed
-                        if let previousState = previousButtonState, previousState == .update {
-                            addButtonState = .update
-                        } else {
-                            addButtonState = .installed
-                        }
+                    // 如果下载成功，状态已经在 downloadMainModWithSelectedVersion() 中设置好了
+                    // 如果只是关闭 sheet（没有下载），设置为"安装"状态
+                    if !hasDownloadedInSheet {
+                        addButtonState = .idle
                     }
+                    // 重置下载标志
+                    hasDownloadedInSheet = false
                     previousButtonState = nil  // 清除保存的状态
                     mainModVersionVM.cleanup()
                 },
@@ -428,16 +425,8 @@ struct AddOrDeleteResourceButton: View {
                             }
                         }
                     } else {
-                        // 其他类型直接下载
-                        await GameResourceHandler.downloadSingleResource(
-                            project: project,
-                            gameInfo: gameInfo,
-                            query: query,
-                            gameRepository: gameRepository
-                        ) {
-                            addToScannedDetailIds()
-                            markInstalled()
-                        }
+                        // 其他类型也显示版本选择弹窗
+                        await loadMainModVersionsBeforeOpeningSheet()
                     }
                 }
             case .installed, .update:
@@ -484,8 +473,13 @@ struct AddOrDeleteResourceButton: View {
 
                 addButtonState = .loading
                 Task {
-                    // 先加载 projectDetail，然后再打开 sheet
-                    await loadProjectDetailBeforeOpeningSheet()
+                    // 对于非整合包资源，显示版本选择弹窗
+                    if query != "modpack" {
+                        await loadMainModVersionsBeforeOpeningSheet()
+                    } else {
+                        // 整合包仍然使用原有的逻辑
+                        await loadProjectDetailBeforeOpeningSheet()
+                    }
                 }
             case .installed, .update:
                 // 当有更新时，主按钮显示删除，点击后执行删除操作
@@ -586,7 +580,7 @@ struct AddOrDeleteResourceButton: View {
         }
     }
     
-    // 新增：在打开主mod版本弹窗前加载版本信息
+    // 新增：在打开主资源版本弹窗前加载版本信息（适用于所有资源类型）
     private func loadMainModVersionsBeforeOpeningSheet() async {
         guard let gameInfo = gameInfo else {
             return
@@ -595,6 +589,7 @@ struct AddOrDeleteResourceButton: View {
         // 保存当前状态，以便在 sheet 关闭时恢复
         await MainActor.run {
             previousButtonState = addButtonState
+            hasDownloadedInSheet = false  // 重置下载标志
         }
         
         mainModVersionVM.isLoadingVersions = true
@@ -602,13 +597,9 @@ struct AddOrDeleteResourceButton: View {
         defer {
             Task { @MainActor in
                 mainModVersionVM.isLoadingVersions = false
-                // 如果 sheet 没有打开（加载失败等情况），恢复之前的状态
+                // 如果 sheet 没有打开（加载失败等情况），设置为"安装"状态
                 if !sheetOpened {
-                    if let previousState = previousButtonState {
-                        addButtonState = previousState
-                    } else {
-                        addButtonState = .installed
-                    }
+                    addButtonState = .idle
                     previousButtonState = nil
                 }
             }
@@ -618,9 +609,18 @@ struct AddOrDeleteResourceButton: View {
             id: project.projectId
         )
         
-        let filteredVersions = versions.filter {
-            $0.loaders.contains(gameInfo.modLoader)
-                && $0.gameVersions.contains(gameInfo.gameVersion)
+        // 根据资源类型过滤版本
+        // shader 类型不需要过滤 loader，其他类型需要
+        let filteredVersions: [ModrinthProjectDetailVersion]
+        if query.lowercased() == "shader" {
+            filteredVersions = versions.filter {
+                $0.gameVersions.contains(gameInfo.gameVersion)
+            }
+        } else {
+            filteredVersions = versions.filter {
+                $0.loaders.contains(gameInfo.modLoader)
+                    && $0.gameVersions.contains(gameInfo.gameVersion)
+            }
         }
         
         await MainActor.run {
@@ -659,14 +659,14 @@ struct AddOrDeleteResourceButton: View {
         }
     }
     
-    // 新增：使用选中的版本下载主mod
+    // 新增：使用选中的版本下载主资源（适用于所有资源类型）
     private func downloadMainModWithSelectedVersion() async {
         guard let gameInfo = gameInfo else {
             return
         }
         
-        // 如果是 local 模式且为 mod 类型，先删除旧文件（更新场景）
-        if !type && query.lowercased() == "mod" {
+        // 如果是 local 模式，先删除旧文件（更新场景）
+        if !type {
             await deleteOldFileForUpdate()
         }
         
@@ -697,14 +697,28 @@ struct AddOrDeleteResourceButton: View {
         if success {
             addToScannedDetailIds()
             await MainActor.run {
-                // 下载完成后，直接检测是否有更新，不要先设置为 .installed
-                // 这样可以避免更新按钮闪烁（先消失再出现）
-                checkForUpdate()
+                // 标记已下载成功
+                hasDownloadedInSheet = true
+                // 下载完成后，根据资源类型设置状态
+                if type == false && query.lowercased() == "mod" {
+                    // local 模式的 mod 类型：检测是否有更新
+                    // checkForUpdate() 会根据结果设置为 .installed 或 .update
+                    checkForUpdate()
+                } else {
+                    // 其他资源类型或 server 模式：直接设置为已安装
+                    addButtonState = .installed
+                }
             }
         } else {
-            // 只有在下载失败时才设置为 .installed（保持之前的状态）
+            // 下载失败，保持之前的状态
             await MainActor.run {
-                addButtonState = .installed
+                hasDownloadedInSheet = false
+                // 下载失败时，如果之前是 .update，保持 .update；否则设置为 .installed
+                if let previousState = previousButtonState, previousState == .update {
+                    addButtonState = .update
+                } else {
+                    addButtonState = .installed
+                }
             }
         }
         
