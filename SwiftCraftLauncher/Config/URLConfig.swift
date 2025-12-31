@@ -270,6 +270,18 @@ enum URLConfig {
             static func loaderProfile(loader: String, version: String) -> URL {
                 return URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/versions/\(version).json")
             }
+            
+            // 下载 URL
+            /// 生成 Modrinth 文件下载 URL
+            /// - Parameters:
+            ///   - projectId: 项目 ID
+            ///   - versionId: 版本 ID
+            ///   - fileName: 文件名（会自动进行 URL 编码）
+            /// - Returns: 下载 URL
+            static func downloadUrl(projectId: String, versionId: String, fileName: String) -> String {
+                let encodedFileName = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? fileName
+                return "https://cdn.modrinth.com/data/\(projectId)/versions/\(versionId)/\(encodedFileName)"
+            }
         }
         // FabricMC API
         enum Fabric {

@@ -58,7 +58,10 @@ struct GameHeaderListRow: View {
                 }
             }
             Spacer()
-            importButton
+            HStack(spacing: 8) {
+                exportButton
+                importButton
+            }
         }
         .listRowSeparator(.hidden)
         .listRowInsets(
@@ -134,6 +137,19 @@ struct GameHeaderListRow: View {
             .clipShape(RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous))
     }
 
+    @State private var showExportSheet = false
+    
+    private var exportButton: some View {
+        Button {
+            showExportSheet = true
+        } label: {
+            Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
+        }
+        .sheet(isPresented: $showExportSheet) {
+            ModPackExportSheet(gameInfo: game)
+        }
+    }
+    
     private var importButton: some View {
         LocalResourceInstaller.ImportButton(
             query: query,
