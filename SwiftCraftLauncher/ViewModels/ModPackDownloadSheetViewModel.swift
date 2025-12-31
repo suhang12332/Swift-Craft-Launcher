@@ -8,7 +8,6 @@ import CommonCrypto
 import Foundation
 import SwiftUI
 import ZIPFoundation
-
 // MARK: - View Model
 @MainActor
 class ModPackDownloadSheetViewModel: ObservableObject {
@@ -21,13 +20,11 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
     // 整合包安装进度状态
     @Published var modPackInstallState = ModPackInstallState()
-    
+
     // 整合包文件下载进度状态
     @Published var modPackDownloadProgress: Int64 = 0  // 已下载字节数
     @Published var modPackTotalSize: Int64 = 0  // 总文件大小
-
     // MARK: - Memory Management
-
     /// 清理不再需要的索引数据以释放内存
     /// 在 ModPack 安装完成后调用
     func clearParsedIndexInfo() {
@@ -47,7 +44,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
         // 清理安装状态
         modPackInstallState.reset()
-        
+
         // 清理下载进度
         modPackDownloadProgress = 0
         modPackTotalSize = 0
@@ -179,7 +176,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             return nil
         }
     }
-    
     /// 下载文件并支持进度回调
     private func downloadFileWithProgress(
         urlString: String,
@@ -194,23 +190,23 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 level: .notification
             )
         }
-        
+
         // 应用代理（如果需要）
         let finalURL: URL = {
             if let host = url.host,
-               (host == "github.com" || host == "raw.githubusercontent.com") {
+               host == "github.com" || host == "raw.githubusercontent.com" {
                 return URLConfig.applyGitProxyIfNeeded(url)
             }
             return url
         }()
-        
+
         // 创建目标目录
         let fileManager = FileManager.default
         try fileManager.createDirectory(
             at: destinationURL.deletingLastPathComponent(),
             withIntermediateDirectories: true
         )
-        
+
         // 检查文件是否已存在
         if fileManager.fileExists(atPath: destinationURL.path) {
             if let expectedSha1 = expectedSha1, !expectedSha1.isEmpty {
@@ -234,11 +230,11 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 return destinationURL
             }
         }
-        
+
         // 获取文件大小
         let fileSize = try await getFileSize(from: finalURL)
         modPackTotalSize = fileSize
-        
+
         // 创建进度跟踪器
         let progressCallback: (Int64, Int64) -> Void = { [weak self] downloadedBytes, totalBytes in
             Task { @MainActor in
@@ -252,7 +248,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             totalSize: fileSize,
             progressCallback: progressCallback
         )
-        
+
         // 创建 URLSession
         let config = URLSessionConfiguration.default
         let session = URLSession(
@@ -260,7 +256,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             delegate: progressTracker,
             delegateQueue: nil
         )
-        
+
         // 下载文件
         return try await withCheckedThrowingContinuation { continuation in
             progressTracker.completionHandler = { result in
@@ -278,7 +274,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                                 )
                             }
                         }
-                        
+
                         // 移动文件到目标位置
                         if fileManager.fileExists(atPath: destinationURL.path) {
                             try fileManager.replaceItem(
@@ -291,7 +287,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                         } else {
                             try fileManager.moveItem(at: tempURL, to: destinationURL)
                         }
-                        
+
                         continuation.resume(returning: destinationURL)
                     } catch {
                         continuation.resume(throwing: error)
@@ -300,19 +296,19 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                     continuation.resume(throwing: error)
                 }
             }
-            
+
             let downloadTask = session.downloadTask(with: finalURL)
             downloadTask.resume()
         }
     }
-    
+
     /// 获取远程文件大小
     private func getFileSize(from url: URL) async throws -> Int64 {
         var request = URLRequest(url: url)
         request.httpMethod = "HEAD"
-        
+
         let (_, response) = try await URLSession.shared.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
             throw GlobalError.download(
@@ -321,7 +317,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 level: .notification
             )
         }
-        
+
         guard let contentLength = httpResponse.value(forHTTPHeaderField: "Content-Length"),
               let fileSize = Int64(contentLength) else {
             throw GlobalError.download(
@@ -330,10 +326,9 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 level: .notification
             )
         }
-        
+
         return fileSize
     }
-
     func downloadGameIcon(
         projectDetail: ModrinthProjectDetail,
         gameName: String
@@ -628,9 +623,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         return ("vanilla", "unknown")
     }
 }
-
 // MARK: - Modrinth Index Models
-
 struct ModrinthIndex: Codable {
     let formatVersion: Int
     let game: String
@@ -860,7 +853,6 @@ struct ModrinthIndexInfo {
         self.source = source
     }
 }
-
 // MARK: - ModPack Install State
 @MainActor
 class ModPackInstallState: ObservableObject {
@@ -960,18 +952,17 @@ class ModPackInstallState: ObservableObject {
         return max(0.0, min(1.0, Double(completed) / Double(total)))
     }
 }
-
 // MARK: - Download Progress Tracker
 private class ModPackDownloadProgressTracker: NSObject, URLSessionDownloadDelegate {
     private let progressCallback: (Int64, Int64) -> Void
     private let totalFileSize: Int64
     var completionHandler: ((Result<URL, Error>) -> Void)?
-    
+
     init(totalSize: Int64, progressCallback: @escaping (Int64, Int64) -> Void) {
         self.totalFileSize = totalSize
         self.progressCallback = progressCallback
     }
-    
+
     func urlSession(
         _ session: URLSession,
         downloadTask: URLSessionDownloadTask,
@@ -986,7 +977,7 @@ private class ModPackDownloadProgressTracker: NSObject, URLSessionDownloadDelega
             }
         }
     }
-    
+
     func urlSession(
         _ session: URLSession,
         downloadTask: URLSessionDownloadTask,
@@ -994,7 +985,7 @@ private class ModPackDownloadProgressTracker: NSObject, URLSessionDownloadDelega
     ) {
         completionHandler?(.success(location))
     }
-    
+
     func urlSession(
         _ session: URLSession,
         task: URLSessionTask,
