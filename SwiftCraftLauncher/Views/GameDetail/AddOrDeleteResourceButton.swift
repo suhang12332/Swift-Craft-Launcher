@@ -39,6 +39,7 @@ struct AddOrDeleteResourceButton: View {
     @State private var isLoadingProjectDetail = false  // 是否正在加载项目详情
     @State private var isDisabled: Bool = false  // 资源是否被禁用
     @State private var currentFileName: String?  // 当前文件名（跟踪重命名后的文件名）
+    @State private var previousButtonState: ModrinthDetailCardView.AddButtonState?  // 保存之前的状态（用于恢复）
     @Binding var selectedItem: SidebarItem
     //    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
     var onResourceChanged: (() -> Void)?
@@ -77,6 +78,18 @@ struct AddOrDeleteResourceButton: View {
 //            } label: {
 //                Label("sidebar.context_menu.show_in_finder".localized(), systemImage: "folder")
 //            }
+            // 更新按钮（仅在 local 模式且有更新时显示）
+            if type == false && addButtonState == .update {
+                Button(action: handleUpdateAction) {
+                    Text("resource.update".localized())
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.orange)
+                .font(.caption2)
+                .controlSize(.small)
+                .disabled(addButtonState == .loading)
+            }
+            
             // 禁用/启用按钮（仅本地资源显示）
             if type == false {
                 Toggle("", isOn: Binding(
@@ -109,6 +122,10 @@ struct AddOrDeleteResourceButton: View {
                         currentFileName = project.fileName
                     }
                     updateDisableState()
+                    // 检测是否有新版本（仅在 local 模式且为 mod 类型）
+                    if query.lowercased() == "mod" {
+                        checkForUpdate()
+                    }
                 } else {
                     updateButtonState()
                 }
@@ -249,8 +266,14 @@ struct AddOrDeleteResourceButton: View {
                     if type {
                         addButtonState = .installed
                     } else {
-                        addButtonState = .idle
+                        // local 模式下，如果之前是 update 状态，恢复为 update；否则恢复为 installed
+                        if let previousState = previousButtonState, previousState == .update {
+                            addButtonState = .update
+                        } else {
+                            addButtonState = .installed
+                        }
                     }
+                    previousButtonState = nil  // 清除保存的状态
                     mainModVersionVM.cleanup()
                 },
                 content: {
@@ -292,6 +315,9 @@ struct AddOrDeleteResourceButton: View {
                         : "resource.installed".localized())
                 )
             )
+        case .update:
+            // 当有更新时，主按钮显示删除（更新按钮已单独显示在左边）
+            AnyView(Text("common.delete".localized()))
         }
     }
 
@@ -347,6 +373,16 @@ struct AddOrDeleteResourceButton: View {
     }
 
     // MARK: - Actions
+    /// 处理更新按钮的点击
+    @MainActor
+    private func handleUpdateAction() {
+        if !type {
+            Task {
+                await loadMainModVersionsBeforeOpeningSheet()
+            }
+        }
+    }
+    
     @MainActor
     private func handleButtonAction() {
         if case .game = selectedItem {
@@ -404,7 +440,8 @@ struct AddOrDeleteResourceButton: View {
                         }
                     }
                 }
-            case .installed:
+            case .installed, .update:
+                // 当有更新时，主按钮显示删除，点击后执行删除操作
                 if !type {
                     showDeleteAlert = true
                 }
@@ -450,7 +487,8 @@ struct AddOrDeleteResourceButton: View {
                     // 先加载 projectDetail，然后再打开 sheet
                     await loadProjectDetailBeforeOpeningSheet()
                 }
-            case .installed:
+            case .installed, .update:
+                // 当有更新时，主按钮显示删除，点击后执行删除操作
                 if !type {
                     showDeleteAlert = true
                 }
@@ -554,11 +592,25 @@ struct AddOrDeleteResourceButton: View {
             return
         }
         
+        // 保存当前状态，以便在 sheet 关闭时恢复
+        await MainActor.run {
+            previousButtonState = addButtonState
+        }
+        
         mainModVersionVM.isLoadingVersions = true
+        var sheetOpened = false
         defer {
             Task { @MainActor in
                 mainModVersionVM.isLoadingVersions = false
-                addButtonState = .idle
+                // 如果 sheet 没有打开（加载失败等情况），恢复之前的状态
+                if !sheetOpened {
+                    if let previousState = previousButtonState {
+                        addButtonState = previousState
+                    } else {
+                        addButtonState = .installed
+                    }
+                    previousButtonState = nil
+                }
             }
         }
         
@@ -577,6 +629,33 @@ struct AddOrDeleteResourceButton: View {
                 mainModVersionVM.selectedVersionId = first.id
             }
             mainModVersionVM.showMainModVersionSheet = true
+            sheetOpened = true
+        }
+    }
+    
+    // 新增：检测是否有新版本（仅在 local 模式）
+    private func checkForUpdate() {
+        guard let gameInfo = gameInfo,
+              type == false,  // 仅在 local 模式
+              query.lowercased() == "mod"  // 仅对 mod 类型检测
+        else {
+            return
+        }
+        
+        Task {
+            let result = await ModUpdateChecker.checkForUpdate(
+                project: project,
+                gameInfo: gameInfo,
+                resourceType: query
+            )
+            
+            await MainActor.run {
+                if result.hasUpdate {
+                    addButtonState = .update
+                } else {
+                    addButtonState = .installed
+                }
+            }
         }
     }
     
@@ -584,6 +663,11 @@ struct AddOrDeleteResourceButton: View {
     private func downloadMainModWithSelectedVersion() async {
         guard let gameInfo = gameInfo else {
             return
+        }
+        
+        // 如果是 local 模式且为 mod 类型，先删除旧文件（更新场景）
+        if !type && query.lowercased() == "mod" {
+            await deleteOldFileForUpdate()
         }
         
         isDownloadingMainMod = true
@@ -612,12 +696,57 @@ struct AddOrDeleteResourceButton: View {
         
         if success {
             addToScannedDetailIds()
-            markInstalled()
+            await MainActor.run {
+                // 下载完成后，直接检测是否有更新，不要先设置为 .installed
+                // 这样可以避免更新按钮闪烁（先消失再出现）
+                checkForUpdate()
+            }
+        } else {
+            // 只有在下载失败时才设置为 .installed（保持之前的状态）
+            await MainActor.run {
+                addButtonState = .installed
+            }
         }
         
         // 下载完成后关闭弹窗
         await MainActor.run {
             mainModVersionVM.showMainModVersionSheet = false
+        }
+    }
+    
+    // 新增：更新前删除旧文件
+    private func deleteOldFileForUpdate() async {
+        guard let gameInfo = gameInfo,
+              let resourceDir = AppPaths.resourceDirectory(
+                  for: query,
+                  gameName: gameInfo.gameName
+              ) else {
+            return
+        }
+        
+        // 使用 currentFileName 如果存在，否则使用 project.fileName
+        let fileName = currentFileName ?? project.fileName
+        guard let fileName = fileName else {
+            return
+        }
+        
+        let fileURL = resourceDir.appendingPathComponent(fileName)
+        
+        // 如果文件存在，删除它
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            GameResourceHandler.performDelete(fileURL: fileURL)
+        } else {
+            // 也检查 .disabled 版本
+            let disabledFileName = fileName + ".disabled"
+            let disabledFileURL = resourceDir.appendingPathComponent(disabledFileName)
+            if FileManager.default.fileExists(atPath: disabledFileURL.path) {
+                GameResourceHandler.performDelete(fileURL: disabledFileURL)
+            }
+        }
+        
+        // 清空当前文件名，下载后会更新
+        await MainActor.run {
+            currentFileName = nil
         }
     }
 
