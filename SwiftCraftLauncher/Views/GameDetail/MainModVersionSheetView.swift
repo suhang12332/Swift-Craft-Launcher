@@ -12,9 +12,9 @@ struct MainModVersionSheetView: View {
     let projectDetail: ModrinthProjectDetail
     @Binding var isDownloading: Bool
     @State private var error: GlobalError?
-    
+
     let onDownload: () async -> Void
-    
+
     var body: some View {
         CommonSheetView(
             header: {
@@ -65,7 +65,7 @@ struct MainModVersionSheetView: View {
                         viewModel.showMainModVersionSheet = false
                     }
                     Spacer()
-                    
+
                     if !viewModel.availableVersions.isEmpty {
                         Button {
                             Task {
@@ -98,4 +98,3 @@ struct MainModVersionSheetView: View {
         }
     }
 }
-

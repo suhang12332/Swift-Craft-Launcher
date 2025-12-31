@@ -15,7 +15,7 @@ final class MainModVersionSheetViewModel: ObservableObject {
     @Published var availableVersions: [ModrinthProjectDetailVersion] = []
     @Published var selectedVersionId: String?
     @Published var showMainModVersionSheet = false
-    
+
     /// 清理所有数据，在 sheet 关闭时调用以释放内存
     func cleanup() {
         isLoadingVersions = true
@@ -23,4 +23,3 @@ final class MainModVersionSheetViewModel: ObservableObject {
         selectedVersionId = nil
     }
 }
-

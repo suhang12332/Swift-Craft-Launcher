@@ -90,7 +90,7 @@ struct AddOrDeleteResourceButton: View {
                 .controlSize(.small)
                 .disabled(addButtonState == .loading)
             }
-            
+
             // 禁用/启用按钮（仅本地资源显示）
             if type == false {
                 Toggle("", isOn: Binding(
@@ -277,11 +277,10 @@ struct AddOrDeleteResourceButton: View {
                     MainModVersionSheetView(
                         viewModel: mainModVersionVM,
                         projectDetail: project.toDetail(),
-                        isDownloading: $isDownloadingMainMod,
-                        onDownload: {
-                            await downloadMainModWithSelectedVersion()
-                        }
-                    )
+                        isDownloading: $isDownloadingMainMod
+                    ) {
+                        await downloadMainModWithSelectedVersion()
+                    }
                     .onDisappear {
                         mainModVersionVM.cleanup()
                     }
@@ -379,7 +378,7 @@ struct AddOrDeleteResourceButton: View {
             }
         }
     }
-    
+
     @MainActor
     private func handleButtonAction() {
         if case .game = selectedItem {
@@ -574,19 +573,19 @@ struct AddOrDeleteResourceButton: View {
             showModPackDownloadSheet = true
         }
     }
-    
+
     // 新增：在打开主资源版本弹窗前加载版本信息（适用于所有资源类型）
     private func loadMainModVersionsBeforeOpeningSheet() async {
         guard let gameInfo = gameInfo else {
             return
         }
-        
+
         // 保存当前状态，以便在 sheet 关闭时恢复
         await MainActor.run {
             previousButtonState = addButtonState
             hasDownloadedInSheet = false  // 重置下载标志
         }
-        
+
         mainModVersionVM.isLoadingVersions = true
         var sheetOpened = false
         defer {
@@ -599,11 +598,11 @@ struct AddOrDeleteResourceButton: View {
                 }
             }
         }
-        
+
         let versions = await ModrinthService.fetchProjectVersions(
             id: project.projectId
         )
-        
+
         // 根据资源类型过滤版本
         // shader 类型不需要过滤 loader，其他类型需要
         let filteredVersions: [ModrinthProjectDetailVersion]
@@ -617,7 +616,7 @@ struct AddOrDeleteResourceButton: View {
                     && $0.gameVersions.contains(gameInfo.gameVersion)
             }
         }
-        
+
         await MainActor.run {
             mainModVersionVM.availableVersions = filteredVersions
             if let first = filteredVersions.first {
@@ -627,7 +626,7 @@ struct AddOrDeleteResourceButton: View {
             sheetOpened = true
         }
     }
-    
+
     // 新增：检测是否有新版本（仅在 local 模式）
     private func checkForUpdate() {
         guard let gameInfo = gameInfo,
@@ -636,14 +635,14 @@ struct AddOrDeleteResourceButton: View {
         else {
             return
         }
-        
+
         Task {
             let result = await ModUpdateChecker.checkForUpdate(
                 project: project,
                 gameInfo: gameInfo,
                 resourceType: query
             )
-            
+
             await MainActor.run {
                 if result.hasUpdate {
                     addButtonState = .update
@@ -653,28 +652,28 @@ struct AddOrDeleteResourceButton: View {
             }
         }
     }
-    
+
     // 新增：使用选中的版本下载主资源（适用于所有资源类型）
     private func downloadMainModWithSelectedVersion() async {
         guard let gameInfo = gameInfo else {
             return
         }
-        
+
         // 如果是 local 模式，先删除旧文件（更新场景）
         if !type {
             await deleteOldFileForUpdate()
         }
-        
+
         isDownloadingMainMod = true
         defer {
             Task { @MainActor in
                 isDownloadingMainMod = false
             }
         }
-        
+
         // 使用选中的版本ID，如果没有选中则使用最新版本
         let versionId = mainModVersionVM.selectedVersionId
-        
+
         // 使用 downloadManualDependenciesAndMain，传入空的依赖数组来只下载主mod
         let success = await ModrinthDependencyDownloader.downloadManualDependenciesAndMain(
             dependencies: [],  // 空依赖数组，只下载主mod
@@ -688,7 +687,7 @@ struct AddOrDeleteResourceButton: View {
             onDependencyDownloadStart: { _ in },
             onDependencyDownloadFinish: { _, _ in }
         )
-        
+
         if success {
             addToScannedDetailIds()
             await MainActor.run {
@@ -716,13 +715,13 @@ struct AddOrDeleteResourceButton: View {
                 }
             }
         }
-        
+
         // 下载完成后关闭弹窗
         await MainActor.run {
             mainModVersionVM.showMainModVersionSheet = false
         }
     }
-    
+
     // 新增：更新前删除旧文件
     private func deleteOldFileForUpdate() async {
         guard let gameInfo = gameInfo,
@@ -732,15 +731,15 @@ struct AddOrDeleteResourceButton: View {
               ) else {
             return
         }
-        
+
         // 使用 currentFileName 如果存在，否则使用 project.fileName
         let fileName = currentFileName ?? project.fileName
         guard let fileName = fileName else {
             return
         }
-        
+
         let fileURL = resourceDir.appendingPathComponent(fileName)
-        
+
         // 如果文件存在，删除它
         if FileManager.default.fileExists(atPath: fileURL.path) {
             GameResourceHandler.performDelete(fileURL: fileURL)
@@ -752,7 +751,7 @@ struct AddOrDeleteResourceButton: View {
                 GameResourceHandler.performDelete(fileURL: disabledFileURL)
             }
         }
-        
+
         // 清空当前文件名，下载后会更新
         await MainActor.run {
             currentFileName = nil

@@ -10,7 +10,7 @@ import Foundation
 /// Mod 更新检测器
 /// 用于检测本地安装的 mod 是否有新版本可用
 enum ModUpdateChecker {
-    
+
     /// 检测结果
     struct UpdateCheckResult {
         /// 是否有新版本
@@ -22,7 +22,7 @@ enum ModUpdateChecker {
         /// 最新版本信息
         let latestVersion: ModrinthProjectDetailVersion?
     }
-    
+
     /// 检测本地 mod 是否有新版本
     /// - Parameters:
     ///   - project: Modrinth 项目信息
@@ -43,7 +43,7 @@ enum ModUpdateChecker {
                 latestVersion: nil
             )
         }
-        
+
         // 1. 获取本地文件的 hash
         guard let resourceDir = AppPaths.resourceDirectory(
             for: resourceType,
@@ -56,13 +56,13 @@ enum ModUpdateChecker {
                 latestVersion: nil
             )
         }
-        
+
         // 获取当前安装的文件 hash
         let currentHash = await getCurrentInstalledHash(
             project: project,
             resourceDir: resourceDir
         )
-        
+
         guard let currentHash = currentHash else {
             // 如果无法获取当前 hash，认为没有更新
             return UpdateCheckResult(
@@ -72,11 +72,11 @@ enum ModUpdateChecker {
                 latestVersion: nil
             )
         }
-        
+
         // 2. 获取最新兼容版本
         let loaderFilters = [gameInfo.modLoader.lowercased()]
         let versionFilters = [gameInfo.gameVersion]
-        
+
         do {
             let versions = try await ModrinthService.fetchProjectVersionsFilter(
                 id: project.projectId,
@@ -84,7 +84,7 @@ enum ModUpdateChecker {
                 selectedLoaders: loaderFilters,
                 type: resourceType
             )
-            
+
             // 获取最新版本（第一个版本通常是最新的）
             guard let latestVersion = versions.first,
                   let primaryFile = ModrinthService.filterPrimaryFiles(
@@ -97,12 +97,12 @@ enum ModUpdateChecker {
                     latestVersion: nil
                 )
             }
-            
+
             let latestHash = primaryFile.hashes.sha1
-            
+
             // 3. 比较 hash
             let hasUpdate = currentHash != latestHash
-            
+
             return UpdateCheckResult(
                 hasUpdate: hasUpdate,
                 currentHash: currentHash,
@@ -119,7 +119,7 @@ enum ModUpdateChecker {
             )
         }
     }
-    
+
     /// 获取当前安装的文件 hash
     /// - Parameters:
     ///   - project: Modrinth 项目信息
@@ -135,7 +135,7 @@ enum ModUpdateChecker {
             if FileManager.default.fileExists(atPath: fileURL.path) {
                 return ModScanner.sha1Hash(of: fileURL)
             }
-            
+
             // 也检查 .disabled 版本
             let disabledFileName = fileName + ".disabled"
             let disabledFileURL = resourceDir.appendingPathComponent(disabledFileName)
@@ -143,7 +143,7 @@ enum ModUpdateChecker {
                 return ModScanner.sha1Hash(of: disabledFileURL)
             }
         }
-        
+
         // 方法2: 通过项目 ID 查找（扫描目录）
         // 如果项目有 projectId，尝试通过扫描找到匹配的文件
         if !project.projectId.isEmpty {
@@ -152,8 +152,7 @@ enum ModUpdateChecker {
                 return matchingDetail.hash
             }
         }
-        
+
         return nil
     }
 }
-
