@@ -9,7 +9,7 @@ import Foundation
 
 /// 配置文件复制器
 /// 负责复制游戏配置文件到 overrides 目录（排除存档目录和资源目录）
-struct ConfigFileCopier {
+enum ConfigFileCopier {
 
     /// 需要排除的目录（这些目录已经在其他地方处理或不应该被复制）
     private static let excludedDirectories: Set<String> = [

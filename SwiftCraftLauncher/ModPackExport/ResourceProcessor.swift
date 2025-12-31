@@ -10,7 +10,7 @@ import Foundation
 /// 资源处理器
 /// 负责识别资源文件并决定是添加到索引还是复制到 overrides
 enum ResourceProcessor {
-    
+
     /// 处理结果
     struct ProcessResult {
         let indexFile: ModrinthIndexFile?
@@ -18,7 +18,7 @@ enum ResourceProcessor {
         let sourceFile: URL
         let relativePath: String
     }
-    
+
     /// 识别资源文件（不复制）
     /// - Parameters:
     ///   - file: 资源文件路径
@@ -29,9 +29,9 @@ enum ResourceProcessor {
         resourceType: ResourceScanner.ResourceType
     ) async -> ProcessResult {
         let relativePath = resourceType.rawValue
-        
+
         // 尝试从 Modrinth 获取信息
-        var indexFile: ModrinthIndexFile? = nil
+        var indexFile: ModrinthIndexFile?
         if let modrinthInfo = await ModrinthResourceIdentifier.getModrinthInfo(for: file) {
             // 找到 Modrinth 项目，尝试创建索引文件
             indexFile = await createIndexFile(
@@ -40,7 +40,7 @@ enum ResourceProcessor {
                 relativePath: relativePath
             )
         }
-        
+
         // 如果成功创建了索引文件，不需要复制到 overrides
         if let indexFile = indexFile {
             return ProcessResult(
@@ -50,7 +50,7 @@ enum ResourceProcessor {
                 relativePath: relativePath
             )
         }
-        
+
         // 如果索引文件创建失败（Modrinth 识别不到、创建失败等），需要复制到 overrides
         return ProcessResult(
             indexFile: nil,
@@ -59,7 +59,7 @@ enum ResourceProcessor {
             relativePath: relativePath
         )
     }
-    
+
     /// 复制文件到 overrides 目录
     /// - Parameters:
     ///   - file: 源文件路径
@@ -74,17 +74,17 @@ enum ResourceProcessor {
         let relativePath = resourceType.rawValue
         let overridesSubDir = overridesDir.appendingPathComponent(relativePath)
         let destPath = overridesSubDir.appendingPathComponent(file.lastPathComponent)
-        
+
         try FileManager.default.createDirectory(at: overridesSubDir, withIntermediateDirectories: true)
-        
+
         // 如果目标文件已存在，先删除
         if FileManager.default.fileExists(atPath: destPath.path) {
             try? FileManager.default.removeItem(at: destPath)
         }
-        
+
         try FileManager.default.copyItem(at: file, to: destPath)
     }
-    
+
     /// 处理单个资源文件（兼容旧接口，先识别后复制）
     /// - Parameters:
     ///   - file: 资源文件路径
@@ -99,15 +99,15 @@ enum ResourceProcessor {
     ) async throws -> ProcessResult {
         // 先识别
         let result = await identify(file: file, resourceType: resourceType)
-        
+
         // 如果需要复制，则复制
         if result.shouldCopyToOverrides {
             try copyToOverrides(file: file, resourceType: resourceType, overridesDir: overridesDir)
         }
-        
+
         return result
     }
-    
+
     /// 创建索引文件
     private static func createIndexFile(
         from modFile: URL,
@@ -118,33 +118,33 @@ enum ResourceProcessor {
         guard let fileHash = try? SHA1Calculator.sha1(ofFileAt: modFile) else {
             return nil
         }
-        
+
         // 找到匹配的文件
-        let matchingFile = modrinthInfo.version.files.first(where: { file in
+        let matchingFile = modrinthInfo.version.files.first { file in
             file.hashes.sha1 == fileHash
-        }) ?? modrinthInfo.version.files.first
-        
+        } ?? modrinthInfo.version.files.first
+
         guard let matchingFile = matchingFile else {
             return nil
         }
-        
+
         let fileSize = (try? FileManager.default.attributesOfItem(atPath: modFile.path)[.size] as? Int64) ?? 0
-        
+
         // 设置 env 字段（根据 Modrinth 项目的 clientSide 和 serverSide）
         // 将 Modrinth 的 "optional" 映射为 "optional"，其他值映射为 "required"
         let clientEnv = modrinthInfo.projectDetail.clientSide == "optional" ? "optional" : "required"
         let serverEnv = modrinthInfo.projectDetail.serverSide == "optional" ? "optional" : "required"
-        
+
         let env = ModrinthIndexFileEnv(
             client: clientEnv,
             server: serverEnv
         )
-        
+
         return ModrinthIndexFile(
             path: "\(relativePath)/\(modFile.lastPathComponent)",
             hashes: ModrinthIndexFileHashes(from: [
                 "sha1": matchingFile.hashes.sha1,
-                "sha512": matchingFile.hashes.sha512
+                "sha512": matchingFile.hashes.sha512,
             ]),
             downloads: [matchingFile.url],
             fileSize: Int(fileSize),
@@ -157,19 +157,19 @@ enum ResourceProcessor {
 /// Modrinth 资源识别器
 /// 负责从 Modrinth 获取资源信息
 enum ModrinthResourceIdentifier {
-    
+
     struct ModrinthModInfo {
         let projectDetail: ModrinthProjectDetail
         let version: ModrinthProjectDetailVersion
     }
-    
+
     /// 尝试从 Modrinth 获取 mod 信息
     /// 始终通过 hash 查询 API
     static func getModrinthInfo(for modFile: URL) async -> ModrinthModInfo? {
         guard let hash = try? SHA1Calculator.sha1(ofFileAt: modFile) else {
             return nil
         }
-        
+
         // 直接通过 hash 查询 API
         return await withCheckedContinuation { continuation in
             ModrinthService.fetchModrinthDetail(by: hash) { detail in
@@ -177,7 +177,7 @@ enum ModrinthResourceIdentifier {
                     continuation.resume(returning: nil)
                     return
                 }
-                
+
                 // 需要找到匹配的版本
                 Task {
                     do {
@@ -201,4 +201,3 @@ enum ModrinthResourceIdentifier {
         }
     }
 }
-

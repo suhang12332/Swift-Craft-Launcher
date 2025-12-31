@@ -34,7 +34,7 @@ enum ModrinthIndexBuilder {
             gameVersion: gameVersion,
             gameInfo: gameInfo
         )
-        
+
         Logger.shared.info("导出整合包 - 加载器类型: \(loaderType), 版本: \(loaderVersion ?? "未找到")")
 
         // 构建依赖字典
@@ -43,7 +43,7 @@ enum ModrinthIndexBuilder {
             loaderType: loaderType,
             loaderVersion: loaderVersion
         )
-        
+
         // 构建 JSON 字典
         var jsonDict: [String: Any] = [
             "formatVersion": 1,
@@ -55,7 +55,7 @@ enum ModrinthIndexBuilder {
         if let summary = summary {
             jsonDict["summary"] = summary
         }
-        
+
         // 编码 files，排除非标准字段
         var filesArray: [[String: Any]] = []
         for file in files {
@@ -82,7 +82,7 @@ enum ModrinthIndexBuilder {
                     fileDict["env"] = envDict
                 }
             }
-            
+
             filesArray.append(fileDict)
         }
         jsonDict["files"] = filesArray
@@ -105,7 +105,7 @@ enum ModrinthIndexBuilder {
             depsDict["neoforge-loader"] = neoforgeLoader
         }
         jsonDict["dependencies"] = depsDict
-        
+
         // 转换为 JSON 字符串
         let jsonData = try JSONSerialization.data(
             withJSONObject: jsonDict,
@@ -205,13 +205,13 @@ enum LoaderVersionResolver {
                 return gameInfo.modVersion
             }
         }
-        
+
         // 2. 尝试从已安装的加载器 mod 中推断版本
         let modsDir = AppPaths.modsDirectory(gameName: gameInfo.gameName)
         guard let modFiles = try? ResourceScanner.scanResourceDirectory(modsDir) else {
             return nil
         }
-        
+
         // 根据加载器类型查找对应的加载器 mod
         let loaderModPatterns: [String]
         switch loaderType {
@@ -226,7 +226,7 @@ enum LoaderVersionResolver {
         default:
             return nil
         }
-        
+
         // 查找加载器 mod 文件
         for modFile in modFiles where loaderModPatterns.contains(where: { modFile.lastPathComponent.lowercased().contains($0) }) {
             let fileName = modFile.lastPathComponent.lowercased()
@@ -239,7 +239,7 @@ enum LoaderVersionResolver {
             if let modrinthInfo = await ModrinthResourceIdentifier.getModrinthInfo(for: modFile) {
                 // 缓存包含 optional 的 server_side 和 client_side 信息
                 cacheModrinthSideInfo(modrinthInfo: modrinthInfo, modFile: modFile)
-                
+
                 let versionName = modrinthInfo.version.name
                 if let version = extractVersionFromString(versionName) {
                     return version
@@ -258,7 +258,7 @@ enum LoaderVersionResolver {
                 }
             }
         }
-        
+
         return nil
     }
 
@@ -267,7 +267,7 @@ enum LoaderVersionResolver {
         let pattern = #"^\d+\.\d+(\.\d+)?(-.*)?$"#
         return version.range(of: pattern, options: .regularExpression) != nil
     }
-    
+
     /// 从文件名中提取版本号
     private static func extractVersionFromFileName(_ fileName: String) -> String? {
         let patterns = [
@@ -275,7 +275,7 @@ enum LoaderVersionResolver {
             #"(\d+\.\d+)"#,            // 1.2
             #"v?(\d+\.\d+\.\d+)"#,     // v1.2.3
         ]
-        
+
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: []),
                let match = regex.firstMatch(in: fileName, range: NSRange(fileName.startIndex..., in: fileName)),
@@ -283,7 +283,7 @@ enum LoaderVersionResolver {
                 return String(fileName[range])
             }
         }
-        
+
         return nil
     }
 
@@ -291,7 +291,7 @@ enum LoaderVersionResolver {
     private static func extractVersionFromString(_ string: String) -> String? {
         return extractVersionFromFileName(string.lowercased())
     }
-    
+
     /// 缓存 Modrinth 项目的 server_side 和 client_side 信息
     /// 仅缓存包含 "optional" 值的数据
     private static func cacheModrinthSideInfo(
@@ -299,26 +299,26 @@ enum LoaderVersionResolver {
         modFile: URL
     ) {
         let projectDetail = modrinthInfo.projectDetail
-        
+
         // 检查是否需要缓存（至少有一个是 optional）
         let shouldCache = projectDetail.clientSide == "optional" || projectDetail.serverSide == "optional"
-        
+
         guard shouldCache else {
             return
         }
-        
+
         // 使用文件 hash 作为缓存键
         guard let hash = try? SHA1Calculator.sha1(ofFileAt: modFile) else {
             return
         }
-        
+
         // 构建缓存数据结构
         let sideInfo = ModrinthSideInfo(
             clientSide: projectDetail.clientSide,
             serverSide: projectDetail.serverSide,
             projectId: projectDetail.id
         )
-        
+
         // 缓存到 AppCacheManager
         let cacheKey = "modrinth_side_\(hash)"
         AppCacheManager.shared.setSilently(
@@ -334,11 +334,10 @@ private struct ModrinthSideInfo: Codable {
     let clientSide: String
     let serverSide: String
     let projectId: String
-    
+
     enum CodingKeys: String, CodingKey {
         case clientSide = "client_side"
         case serverSide = "server_side"
         case projectId = "project_id"
     }
 }
-

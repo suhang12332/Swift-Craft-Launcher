@@ -34,16 +34,16 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     func cleanupAllData() {
         // 清理索引数据
         clearParsedIndexInfo()
-        
+
         // 清理项目详情数据
         projectDetail = nil
         availableGameVersions = []
         filteredModPackVersions = []
         allModPackVersions = []
-        
+
         // 清理安装状态
         modPackInstallState.reset()
-        
+
         // 清理临时文件
         cleanupTempFiles()
     }
@@ -51,7 +51,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     /// 清理临时文件（modpack_download 和 modpack_extraction 目录）
     func cleanupTempFiles() {
         let tempBaseDir = FileManager.default.temporaryDirectory
-        
+
         // 清理 modpack_download 目录
         let downloadDir = tempBaseDir.appendingPathComponent("modpack_download")
         if FileManager.default.fileExists(atPath: downloadDir.path) {
@@ -62,7 +62,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 Logger.shared.warning("清理临时下载目录失败: \(error.localizedDescription)")
             }
         }
-        
+
         // 清理 modpack_extraction 目录
         let extractionDir = tempBaseDir.appendingPathComponent("modpack_extraction")
         if FileManager.default.fileExists(atPath: extractionDir.path) {

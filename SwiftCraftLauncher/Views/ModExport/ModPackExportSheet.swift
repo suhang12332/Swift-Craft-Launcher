@@ -17,10 +17,11 @@ import AppKit
 struct ModPackExportSheet: View {
     // MARK: - Properties
     let gameInfo: GameVersionInfo
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
     @StateObject private var viewModel = ModPackExportViewModel()
     @State private var showSaveErrorAlert = false
-    
+
     // MARK: - Body
     var body: some View {
         CommonSheetView(
@@ -35,7 +36,7 @@ struct ModPackExportSheet: View {
             // 页面关闭后清理所有数据和临时文件
             viewModel.cleanupAllData()
         }
-        .onChange(of: viewModel.shouldShowSaveDialog) { shouldShow in
+        .onChange(of: viewModel.shouldShowSaveDialog) { _, shouldShow in
             if shouldShow, let tempPath = viewModel.tempExportPath {
                 handleExportCompleted(tempFilePath: tempPath)
             }
@@ -49,11 +50,11 @@ struct ModPackExportSheet: View {
                 Text(error)
             }
         }
-        .onChange(of: viewModel.saveError) { error in
+        .onChange(of: viewModel.saveError) { _, error in
             showSaveErrorAlert = error != nil
         }
     }
-    
+
     private var headerView: some View {
         HStack {
             Text("modpack.export.title".localized())
@@ -61,7 +62,7 @@ struct ModPackExportSheet: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
-    
+
     private var bodyView: some View {
         Group {
             switch viewModel.exportState {
@@ -72,11 +73,11 @@ struct ModPackExportSheet: View {
                 exportProgressView
             }
         }
-        .frame(maxWidth: .infinity,alignment: .topLeading)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
-    
+
     // MARK: - State Views
-    
+
     private var idleStateView: some View {
         Group {
             if let error = viewModel.exportError {
@@ -87,7 +88,7 @@ struct ModPackExportSheet: View {
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
-    
+
     private var exportFormView: some View {
         VStack(alignment: .leading, spacing: 16) {
             // 整合包名称
@@ -98,7 +99,7 @@ struct ModPackExportSheet: View {
                 TextField("modpack.export.name.placeholder".localized(), text: $viewModel.modPackName)
                     .textFieldStyle(.roundedBorder)
             }
-            
+
             // 整合包版本
             VStack(alignment: .leading, spacing: 8) {
                 Text("modpack.export.version".localized())
@@ -109,7 +110,7 @@ struct ModPackExportSheet: View {
             }
         }
     }
-    
+
     private var exportProgressView: some View {
         VStack(alignment: .leading, spacing: 16) {
             exportFormView
@@ -118,7 +119,7 @@ struct ModPackExportSheet: View {
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
-    
+
     private var footerView: some View {
         HStack {
             Button("common.cancel".localized()) {
@@ -128,9 +129,9 @@ struct ModPackExportSheet: View {
                 dismiss()
             }
             .keyboardShortcut(.cancelAction)
-            
+
             Spacer()
-            
+
             Button("modpack.export.button".localized()) {
                 viewModel.startExport(gameInfo: gameInfo)
             }
@@ -138,9 +139,9 @@ struct ModPackExportSheet: View {
             .disabled(viewModel.modPackName.isEmpty || viewModel.isExporting)
         }
     }
-    
+
     // MARK: - Reusable Components
-    
+
     /// 进度项视图（用于导出中和完成状态）
     private var progressItemsView: some View {
         VStack(spacing: 16) {
@@ -149,7 +150,7 @@ struct ModPackExportSheet: View {
                 progressRow(progress: scanProgress)
                     .id("scan-\(scanProgress.completed)-\(scanProgress.total)")
             }
-            
+
             // 复制文件进度条（只在有复制任务时显示，不显示占位符）
             if let copyProgress = viewModel.exportProgress.copyProgress {
                 progressRow(progress: copyProgress)
@@ -157,7 +158,7 @@ struct ModPackExportSheet: View {
             }
         }
     }
-    
+
     /// 单个进度行（固定最小高度，保持布局稳定）
     private func progressRow(progress: ModPackExporter.ExportProgress.ProgressItem) -> some View {
         FormSection {
@@ -172,16 +173,16 @@ struct ModPackExportSheet: View {
         }
         .frame(minHeight: 70)
     }
-    
+
     private func errorView(error: String) -> some View {
         VStack(spacing: 16) {
             Image(systemName: "xmark.circle.fill")
                 .foregroundColor(.red)
                 .font(.system(size: 48))
-            
+
             Text("modpack.export.failed".localized())
                 .font(.headline)
-            
+
             Text(error)
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -190,16 +191,16 @@ struct ModPackExportSheet: View {
         .padding()
         .frame(maxWidth: .infinity)
     }
-    
+
     // MARK: - Actions
-    
+
     /// 初始化默认值
     private func initializeDefaults() {
         if viewModel.modPackName.isEmpty {
             viewModel.modPackName = gameInfo.gameName
         }
     }
-    
+
     /// 处理导出完成，直接显示保存对话框
     /// - Parameter tempFilePath: 临时文件路径
     private func handleExportCompleted(tempFilePath: URL) {
@@ -207,7 +208,7 @@ struct ModPackExportSheet: View {
         // 直接显示保存对话框，不延迟
         showSavePanel(tempFilePath: tempFilePath)
     }
-    
+
     /// 显示保存对话框并处理文件保存
     /// - Parameter tempFilePath: 临时文件路径
     private func showSavePanel(tempFilePath: URL) {
@@ -225,7 +226,7 @@ struct ModPackExportSheet: View {
             }
         }
     }
-    
+
     /// 创建保存面板
     private func createSavePanel() -> NSOpenPanel {
         let panel = NSOpenPanel()
@@ -235,7 +236,7 @@ struct ModPackExportSheet: View {
         panel.allowsMultipleSelection = false
         return panel
     }
-    
+
     /// 处理文件保存
     /// - Parameters:
     ///   - sourceURL: 源文件路径
@@ -243,16 +244,16 @@ struct ModPackExportSheet: View {
     ///   - fileName: 文件名
     private func handleSaveFile(from sourceURL: URL, to directoryURL: URL, fileName: String) {
         let destinationURL = directoryURL.appendingPathComponent(fileName)
-        
+
         do {
             // 如果目标文件已存在，先删除
             if FileManager.default.fileExists(atPath: destinationURL.path) {
                 try FileManager.default.removeItem(at: destinationURL)
             }
-            
+
             // 移动文件
             try FileManager.default.moveItem(at: sourceURL, to: destinationURL)
-            
+
             Logger.shared.info("整合包已保存到: \(destinationURL.path)")
             viewModel.handleSaveSuccess()
             dismiss()
@@ -261,7 +262,7 @@ struct ModPackExportSheet: View {
             viewModel.handleSaveFailure(error: error.localizedDescription)
         }
     }
-    
+
     /// 处理用户取消保存
     /// - Parameter tempFilePath: 临时文件路径（已不再使用，保留以保持接口兼容）
     private func handleSaveCancelled(tempFilePath: URL) {
@@ -269,4 +270,3 @@ struct ModPackExportSheet: View {
         viewModel.handleSaveCancelled()
     }
 }
-

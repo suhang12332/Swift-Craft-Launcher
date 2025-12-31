@@ -138,7 +138,7 @@ struct GameHeaderListRow: View {
     }
 
     @State private var showExportSheet = false
-    
+
     private var exportButton: some View {
         Button {
             showExportSheet = true
@@ -149,7 +149,7 @@ struct GameHeaderListRow: View {
             ModPackExportSheet(gameInfo: game)
         }
     }
-    
+
     private var importButton: some View {
         LocalResourceInstaller.ImportButton(
             query: query,

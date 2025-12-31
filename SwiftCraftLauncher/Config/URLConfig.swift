@@ -270,7 +270,7 @@ enum URLConfig {
             static func loaderProfile(loader: String, version: String) -> URL {
                 return URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/versions/\(version).json")
             }
-            
+
             // 下载 URL
             /// 生成 Modrinth 文件下载 URL
             /// - Parameters:
