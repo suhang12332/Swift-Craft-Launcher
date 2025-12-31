@@ -21,6 +21,10 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
     // 整合包安装进度状态
     @Published var modPackInstallState = ModPackInstallState()
+    
+    // 整合包文件下载进度状态
+    @Published var modPackDownloadProgress: Int64 = 0  // 已下载字节数
+    @Published var modPackTotalSize: Int64 = 0  // 总文件大小
 
     // MARK: - Memory Management
 
@@ -43,6 +47,10 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
         // 清理安装状态
         modPackInstallState.reset()
+        
+        // 清理下载进度
+        modPackDownloadProgress = 0
+        modPackTotalSize = 0
 
         // 清理临时文件
         cleanupTempFiles()
@@ -145,9 +153,13 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             let tempDir = try createTempDirectory(for: "modpack_download")
             let savePath = tempDir.appendingPathComponent(file.filename)
 
-            // 使用 DownloadManager 下载文件（已包含 SHA1 校验和临时文件清理）
+            // 重置下载进度
+            modPackDownloadProgress = 0
+            modPackTotalSize = 0
+
+            // 使用支持进度回调的下载方法
             do {
-                _ = try await DownloadManager.downloadFile(
+                _ = try await downloadFileWithProgress(
                     urlString: file.url,
                     destinationURL: savePath,
                     expectedSha1: file.hashes.sha1
@@ -166,6 +178,160 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             GlobalErrorHandler.shared.handle(globalError)
             return nil
         }
+    }
+    
+    /// 下载文件并支持进度回调
+    private func downloadFileWithProgress(
+        urlString: String,
+        destinationURL: URL,
+        expectedSha1: String?
+    ) async throws -> URL {
+        // 创建 URL
+        guard let url = URL(string: urlString) else {
+            throw GlobalError.validation(
+                chineseMessage: "无效的下载地址",
+                i18nKey: "error.validation.invalid_download_url",
+                level: .notification
+            )
+        }
+        
+        // 应用代理（如果需要）
+        let finalURL: URL = {
+            if let host = url.host,
+               (host == "github.com" || host == "raw.githubusercontent.com") {
+                return URLConfig.applyGitProxyIfNeeded(url)
+            }
+            return url
+        }()
+        
+        // 创建目标目录
+        let fileManager = FileManager.default
+        try fileManager.createDirectory(
+            at: destinationURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        
+        // 检查文件是否已存在
+        if fileManager.fileExists(atPath: destinationURL.path) {
+            if let expectedSha1 = expectedSha1, !expectedSha1.isEmpty {
+                let actualSha1 = try DownloadManager.calculateFileSHA1(at: destinationURL)
+                if actualSha1 == expectedSha1 {
+                    // 文件已存在且校验通过，设置进度为完成
+                    if let attributes = try? fileManager.attributesOfItem(atPath: destinationURL.path),
+                       let fileSize = attributes[.size] as? Int64 {
+                        modPackTotalSize = fileSize
+                        modPackDownloadProgress = fileSize
+                    }
+                    return destinationURL
+                }
+            } else {
+                // 没有 SHA1 校验，直接返回
+                if let attributes = try? fileManager.attributesOfItem(atPath: destinationURL.path),
+                   let fileSize = attributes[.size] as? Int64 {
+                    modPackTotalSize = fileSize
+                    modPackDownloadProgress = fileSize
+                }
+                return destinationURL
+            }
+        }
+        
+        // 获取文件大小
+        let fileSize = try await getFileSize(from: finalURL)
+        modPackTotalSize = fileSize
+        
+        // 创建进度跟踪器
+        let progressCallback: (Int64, Int64) -> Void = { [weak self] downloadedBytes, totalBytes in
+            Task { @MainActor in
+                self?.modPackDownloadProgress = downloadedBytes
+                if totalBytes > 0 {
+                    self?.modPackTotalSize = totalBytes
+                }
+            }
+        }
+        let progressTracker = ModPackDownloadProgressTracker(
+            totalSize: fileSize,
+            progressCallback: progressCallback
+        )
+        
+        // 创建 URLSession
+        let config = URLSessionConfiguration.default
+        let session = URLSession(
+            configuration: config,
+            delegate: progressTracker,
+            delegateQueue: nil
+        )
+        
+        // 下载文件
+        return try await withCheckedThrowingContinuation { continuation in
+            progressTracker.completionHandler = { result in
+                switch result {
+                case .success(let tempURL):
+                    do {
+                        // SHA1 校验
+                        if let expectedSha1 = expectedSha1, !expectedSha1.isEmpty {
+                            let actualSha1 = try DownloadManager.calculateFileSHA1(at: tempURL)
+                            if actualSha1 != expectedSha1 {
+                                throw GlobalError.validation(
+                                    chineseMessage: "SHA1 校验失败",
+                                    i18nKey: "error.validation.sha1_check_failed",
+                                    level: .notification
+                                )
+                            }
+                        }
+                        
+                        // 移动文件到目标位置
+                        if fileManager.fileExists(atPath: destinationURL.path) {
+                            try fileManager.replaceItem(
+                                at: destinationURL,
+                                withItemAt: tempURL,
+                                backupItemName: nil,
+                                options: [],
+                                resultingItemURL: nil
+                            )
+                        } else {
+                            try fileManager.moveItem(at: tempURL, to: destinationURL)
+                        }
+                        
+                        continuation.resume(returning: destinationURL)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                }
+            }
+            
+            let downloadTask = session.downloadTask(with: finalURL)
+            downloadTask.resume()
+        }
+    }
+    
+    /// 获取远程文件大小
+    private func getFileSize(from url: URL) async throws -> Int64 {
+        var request = URLRequest(url: url)
+        request.httpMethod = "HEAD"
+        
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200 else {
+            throw GlobalError.download(
+                chineseMessage: "无法获取文件大小",
+                i18nKey: "error.download.cannot_get_file_size",
+                level: .notification
+            )
+        }
+        
+        guard let contentLength = httpResponse.value(forHTTPHeaderField: "Content-Length"),
+              let fileSize = Int64(contentLength) else {
+            throw GlobalError.download(
+                chineseMessage: "无法获取文件大小",
+                i18nKey: "error.download.cannot_get_file_size",
+                level: .notification
+            )
+        }
+        
+        return fileSize
     }
 
     func downloadGameIcon(
@@ -792,5 +958,50 @@ class ModPackInstallState: ObservableObject {
     private func calculateProgress(completed: Int, total: Int) -> Double {
         guard total > 0 else { return 0.0 }
         return max(0.0, min(1.0, Double(completed) / Double(total)))
+    }
+}
+
+// MARK: - Download Progress Tracker
+private class ModPackDownloadProgressTracker: NSObject, URLSessionDownloadDelegate {
+    private let progressCallback: (Int64, Int64) -> Void
+    private let totalFileSize: Int64
+    var completionHandler: ((Result<URL, Error>) -> Void)?
+    
+    init(totalSize: Int64, progressCallback: @escaping (Int64, Int64) -> Void) {
+        self.totalFileSize = totalSize
+        self.progressCallback = progressCallback
+    }
+    
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didWriteData bytesWritten: Int64,
+        totalBytesWritten: Int64,
+        totalBytesExpectedToWrite: Int64
+    ) {
+        let actualTotalSize = totalBytesExpectedToWrite > 0 ? totalBytesExpectedToWrite : totalFileSize
+        if actualTotalSize > 0 {
+            DispatchQueue.main.async { [weak self] in
+                self?.progressCallback(totalBytesWritten, actualTotalSize)
+            }
+        }
+    }
+    
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didFinishDownloadingTo location: URL
+    ) {
+        completionHandler?(.success(location))
+    }
+    
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didCompleteWithError error: Error?
+    ) {
+        if let error = error {
+            completionHandler?(.failure(error))
+        }
     }
 }

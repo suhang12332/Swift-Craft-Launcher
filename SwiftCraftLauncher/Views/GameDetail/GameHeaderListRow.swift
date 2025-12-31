@@ -59,7 +59,6 @@ struct GameHeaderListRow: View {
             }
             Spacer()
             HStack(spacing: 8) {
-                exportButton
                 importButton
             }
         }
@@ -135,19 +134,6 @@ struct GameHeaderListRow: View {
             .padding(padding)
             .frame(width: CGFloat(size), height: CGFloat(size))
             .clipShape(RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous))
-    }
-
-    @State private var showExportSheet = false
-
-    private var exportButton: some View {
-        Button {
-            showExportSheet = true
-        } label: {
-            Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
-        }
-        .sheet(isPresented: $showExportSheet) {
-            ModPackExportSheet(gameInfo: game)
-        }
     }
 
     private var importButton: some View {
