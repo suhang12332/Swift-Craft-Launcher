@@ -1298,6 +1298,143 @@
         }
       }
     },
+    "addplayer.purchase.minecraft" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شراء Minecraft"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Køb Minecraft"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft kaufen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purchase Minecraft"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprar Minecraft"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Osta Minecraft"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acheter Minecraft"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft खरीदें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Acquista Minecraft"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraftを購入"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 구매"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kjøp Minecraft"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft kopen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kup Minecraft"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprar Minecraft"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Купить Minecraft"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Köp Minecraft"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ซื้อ Minecraft"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft Satın Al"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mua Minecraft"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "购买Minecraft"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購買Minecraft"
+          }
+        }
+      }
+    },
     "addplayer.info.line1" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -9941,6 +10078,691 @@
         }
       }
     },
+    "error.authentication.invalid_xbox_token" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل مصادقة Minecraft: رمز Xbox Live غير صالح أو منتهي الصلاحية"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft godkendelse fejlede: Xbox Live token er ugyldig eller udløbet"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-Authentifizierung fehlgeschlagen: Xbox Live-Token ist ungültig oder abgelaufen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft authentication failed: Xbox Live token is invalid or expired"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de autenticación de Minecraft: el token de Xbox Live no es válido o ha expirado"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-todennus epäonnistui: Xbox Live -tunnus on virheellinen tai vanhentunut"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de l'authentification Minecraft : le jeton Xbox Live est invalide ou expiré"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft प्रमाणीकरण विफल: Xbox Live टोकन अमान्य या समाप्त हो गया है"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autenticazione Minecraft fallita: il token Xbox Live non è valido o è scaduto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 認証に失敗しました: Xbox Live トークンが無効または期限切れです"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 인증 실패: Xbox Live 토큰이 유효하지 않거나 만료되었습니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft autentisering feilet: Xbox Live-token er ugyldig eller utløpt"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft authenticatie mislukt: Xbox Live token is ongeldig of verlopen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uwierzytelnianie Minecraft nie powiodło się: token Xbox Live jest nieprawidłowy lub wygasł"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha na autenticação do Minecraft: token do Xbox Live é inválido ou expirado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка аутентификации Minecraft: токен Xbox Live недействителен или истёк"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-autentisering misslyckades: Xbox Live-token är ogiltigt eller har gått ut"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การยืนยันตัวตน Minecraft ล้มเหลว: โทเค็น Xbox Live ไม่ถูกต้องหรือหมดอายุแล้ว"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft kimlik doğrulama başarısız: Xbox Live token geçersiz veya süresi dolmuş"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xác thực Minecraft thất bại: token Xbox Live không hợp lệ hoặc đã hết hạn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 认证失败: Xbox Live 令牌无效或已过期"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 認證失敗: Xbox Live 權杖無效或已過期"
+          }
+        }
+      }
+    },
+    "error.authentication.minecraft_not_owned" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل مصادقة Minecraft: حساب Microsoft هذا لا يمتلك Minecraft"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft godkendelse fejlede: Denne Microsoft-konto ejer ikke Minecraft"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-Authentifizierung fehlgeschlagen: Dieses Microsoft-Konto besitzt Minecraft nicht"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft authentication failed: This Microsoft account does not own Minecraft"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de autenticación de Minecraft: Esta cuenta de Microsoft no posee Minecraft"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-todennus epäonnistui: Tällä Microsoft-tilillä ei ole Minecraftia"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de l'authentification Minecraft : Ce compte Microsoft ne possède pas Minecraft"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft प्रमाणीकरण विफल: यह Microsoft खाता Minecraft का मालिक नहीं है"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autenticazione Minecraft fallita: Questo account Microsoft non possiede Minecraft"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 認証に失敗しました: この Microsoft アカウントは Minecraft を所有していません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 인증 실패: 이 Microsoft 계정은 Minecraft를 소유하지 않습니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft autentisering feilet: Denne Microsoft-kontoen eier ikke Minecraft"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft authenticatie mislukt: Dit Microsoft-account bezit Minecraft niet"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uwierzytelnianie Minecraft nie powiodło się: To konto Microsoft nie posiada Minecraft"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha na autenticação do Minecraft: Esta conta Microsoft não possui Minecraft"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка аутентификации Minecraft: Эта учётная запись Microsoft не владеет Minecraft"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-autentisering misslyckades: Detta Microsoft-konto äger inte Minecraft"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การยืนยันตัวตน Minecraft ล้มเหลว: บัญชี Microsoft นี้ไม่ได้เป็นเจ้าของ Minecraft"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft kimlik doğrulama başarısız: Bu Microsoft hesabı Minecraft'a sahip değil"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xác thực Minecraft thất bại: Tài khoản Microsoft này không sở hữu Minecraft"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 认证失败: 该Microsoft账户未购买Minecraft"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 認證失敗: 該 Microsoft 帳戶未購買 Minecraft"
+          }
+        }
+      }
+    },
+    "error.authentication.invalid_minecraft_token" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رمز وصول Minecraft غير صالح أو منتهي الصلاحية"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft adgangstoken er ugyldig eller udløbet"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-Zugriffstoken ist ungültig oder abgelaufen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft access token is invalid or expired"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El token de acceso de Minecraft no es válido o ha expirado"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-pääsytunnus on virheellinen tai vanhentunut"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le jeton d'accès Minecraft est invalide ou expiré"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft एक्सेस टोकन अमान्य या समाप्त हो गया है"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il token di accesso Minecraft non è valido o è scaduto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft アクセストークンが無効または期限切れです"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 액세스 토큰이 유효하지 않거나 만료되었습니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft tilgangstoken er ugyldig eller utløpt"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft toegangstoken is ongeldig of verlopen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token dostępu Minecraft jest nieprawidłowy lub wygasł"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token de acesso do Minecraft é inválido ou expirado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Токен доступа Minecraft недействителен или истёк"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-åtkomsttoken är ogiltigt eller har gått ut"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "โทเค็นการเข้าถึง Minecraft ไม่ถูกต้องหรือหมดอายุแล้ว"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft erişim token'ı geçersiz veya süresi dolmuş"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token truy cập Minecraft không hợp lệ hoặc đã hết hạn"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 访问令牌无效或已过期"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 存取權杖無效或已過期"
+          }
+        }
+      }
+    },
+    "error.authentication.minecraft_not_purchased" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لم يتم شراء Minecraft على هذا الحساب، يرجى تسجيل الدخول باستخدام حساب Microsoft الذي يمتلك Minecraft"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne konto har ikke købt Minecraft, log venligst ind med en Microsoft-konto, der ejer Minecraft"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Konto hat Minecraft nicht gekauft, bitte melden Sie sich mit einem Microsoft-Konto an, das Minecraft besitzt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This account has not purchased Minecraft, please log in with a Microsoft account that owns Minecraft"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta cuenta no ha comprado Minecraft, inicia sesión con una cuenta de Microsoft que posea Minecraft"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tämä tili ei ole ostanut Minecraftia, kirjaudu sisään Microsoft-tilillä, jolla on Minecraft"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce compte n'a pas acheté Minecraft, veuillez vous connecter avec un compte Microsoft qui possède Minecraft"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस खाते ने Minecraft खरीदा नहीं है, कृपया एक Microsoft खाते से लॉग इन करें जो Minecraft का मालिक है"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo account non ha acquistato Minecraft, accedi con un account Microsoft che possiede Minecraft"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアカウントは Minecraft を購入していません。Minecraft を所有している Microsoft アカウントでログインしてください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 계정은 Minecraft를 구매하지 않았습니다. Minecraft를 소유한 Microsoft 계정으로 로그인하세요"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne kontoen har ikke kjøpt Minecraft, logg inn med en Microsoft-konto som eier Minecraft"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit account heeft Minecraft niet gekocht, log in met een Microsoft-account dat Minecraft bezit"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To konto nie zakupiło Minecraft, zaloguj się kontem Microsoft, które posiada Minecraft"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta não comprou Minecraft, faça login com uma conta Microsoft que possui Minecraft"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эта учётная запись не приобрела Minecraft, войдите с учётной записью Microsoft, которая владеет Minecraft"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detta konto har inte köpt Minecraft, logga in med ett Microsoft-konto som äger Minecraft"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บัญชีนี้ไม่ได้ซื้อ Minecraft กรุณาเข้าสู่ระบบด้วยบัญชี Microsoft ที่เป็นเจ้าของ Minecraft"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu hesap Minecraft satın almadı, lütfen Minecraft'a sahip bir Microsoft hesabıyla giriş yapın"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tài khoản này chưa mua Minecraft, vui lòng đăng nhập bằng tài khoản Microsoft sở hữu Minecraft"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "该账户未购买 Minecraft，请使用已购买 Minecraft 的 Microsoft 账户登录"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "該帳戶未購買 Minecraft，請使用已購買 Minecraft 的 Microsoft 帳戶登入"
+          }
+        }
+      }
+    },
+    "error.authentication.insufficient_minecraft_entitlements" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حساب Microsoft هذا لم يشترِ Minecraft أو ليس لديه أذونات كافية، يرجى تسجيل الدخول باستخدام حساب اشترى Minecraft"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne Microsoft-konto har ikke købt Minecraft eller har utilstrækkelige tilladelser, log venligst ind med en konto, der har købt Minecraft"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Microsoft-Konto hat Minecraft nicht gekauft oder hat unzureichende Berechtigungen, bitte melden Sie sich mit einem Konto an, das Minecraft gekauft hat"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This Microsoft account has not purchased Minecraft or has insufficient entitlements, please log in with an account that has purchased Minecraft"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta cuenta de Microsoft no ha comprado Minecraft o no tiene permisos suficientes, inicia sesión con una cuenta que haya comprado Minecraft"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tällä Microsoft-tilillä ei ole ostettu Minecraftia tai sillä ei ole riittäviä oikeuksia, kirjaudu sisään tilillä, jolla on ostettu Minecraft"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce compte Microsoft n'a pas acheté Minecraft ou n'a pas les autorisations suffisantes, veuillez vous connecter avec un compte qui a acheté Minecraft"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस Microsoft खाते ने Minecraft खरीदा नहीं है या अपर्याप्त अधिकार हैं, कृपया एक खाते से लॉग इन करें जिसने Minecraft खरीदा है"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo account Microsoft non ha acquistato Minecraft o non ha autorizzazioni sufficienti, accedi con un account che ha acquistato Minecraft"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この Microsoft アカウントは Minecraft を購入していないか、権限が不足しています。Minecraft を購入したアカウントでログインしてください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 Microsoft 계정은 Minecraft를 구매하지 않았거나 권한이 부족합니다. Minecraft를 구매한 계정으로 로그인하세요"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne Microsoft-kontoen har ikke kjøpt Minecraft eller har utilstrekkelige rettigheter, logg inn med en konto som har kjøpt Minecraft"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit Microsoft-account heeft Minecraft niet gekocht of heeft onvoldoende rechten, log in met een account dat Minecraft heeft gekocht"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To konto Microsoft nie zakupiło Minecraft lub ma niewystarczające uprawnienia, zaloguj się kontem, które zakupiło Minecraft"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta conta Microsoft não comprou Minecraft ou não tem permissões suficientes, faça login com uma conta que comprou Minecraft"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эта учётная запись Microsoft не приобрела Minecraft или имеет недостаточные права, войдите с учётной записью, которая приобрела Minecraft"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detta Microsoft-konto har inte köpt Minecraft eller har otillräckliga rättigheter, logga in med ett konto som har köpt Minecraft"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บัญชี Microsoft นี้ไม่ได้ซื้อ Minecraft หรือมีสิทธิ์ไม่เพียงพอ กรุณาเข้าสู่ระบบด้วยบัญชีที่ซื้อ Minecraft แล้ว"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu Microsoft hesabı Minecraft satın almadı veya yetersiz yetkilere sahip, lütfen Minecraft satın almış bir hesapla giriş yapın"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tài khoản Microsoft này chưa mua Minecraft hoặc không đủ quyền, vui lòng đăng nhập bằng tài khoản đã mua Minecraft"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "该 Microsoft 账户未购买 Minecraft 或权限不足，请使用已购买 Minecraft 的账户登录"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "該 Microsoft 帳戶未購買 Minecraft 或權限不足，請使用已購買 Minecraft 的帳戶登入"
+          }
+        }
+      }
+    },
     "error.authentication.minecraft" : {
       "comment" : "Additional Missing Error Keys",
       "extractionState" : "manual",
@@ -10623,6 +11445,143 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "存取權杖已過期，請重新登入"
+          }
+        }
+      }
+    },
+    "error.authentication.unknown_refresh_error" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حدث خطأ غير معروف أثناء تحديث الرمز: %@"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukendt fejl opstod under opdatering af token: %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekannter Fehler beim Aktualisieren des Tokens: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown error occurred while refreshing token: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error desconocido al actualizar el token: %@"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuntematon virhe tapahtui tunnusta päivittäessä: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur inconnue lors de l'actualisation du jeton : %@"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "टोकन रीफ्रेश करते समय अज्ञात त्रुटि हुई: %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Errore sconosciuto durante l'aggiornamento del token: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トークンの更新中に不明なエラーが発生しました: %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "토큰을 새로고침하는 중 알 수 없는 오류가 발생했습니다: %@"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukjent feil oppstod under oppdatering av token: %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onbekende fout opgetreden bij het vernieuwen van token: %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieznany błąd wystąpił podczas odświeżania tokenu: %@"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erro desconhecido ao atualizar o token: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Произошла неизвестная ошибка при обновлении токена: %@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Okänt fel uppstod vid uppdatering av token: %@"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุขณะรีเฟรชโทเค็น: %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Token yenilenirken bilinmeyen bir hata oluştu: %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đã xảy ra lỗi không xác định khi làm mới token: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刷新 Token 时发生未知错误: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新整理權杖時發生未知錯誤: %@"
           }
         }
       }
@@ -12133,6 +13092,143 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法獲取資源目錄路徑"
+          }
+        }
+      }
+    },
+    "error.download.entitlements_check_failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل في التحقق من ملكية اللعبة: HTTP %@"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontroll af spilejerskab mislykkedes: HTTP %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Überprüfung des Spielbesitzes fehlgeschlagen: HTTP %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to check game ownership: HTTP %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al verificar la propiedad del juego: HTTP %@"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelien omistajuuden tarkistus epäonnistui: HTTP %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la vérification de la propriété du jeu : HTTP %@"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "गेम स्वामित्व जांचने में विफल: HTTP %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica della proprietà del gioco fallita: HTTP %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲームの所有権確認に失敗しました: HTTP %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "게임 소유권 확인 실패: HTTP %@"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontroll av spileierskap mislyktes: HTTP %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controle van spelbezit mislukt: HTTP %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sprawdzenie własności gry nie powiodło się: HTTP %@"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha ao verificar a propriedade do jogo: HTTP %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось проверить владение игрой: HTTP %@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontroll av spelägande misslyckades: HTTP %@"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การตรวจสอบความเป็นเจ้าของเกมล้มเหลว: HTTP %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyun sahipliği kontrolü başarısız: HTTP %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kiểm tra quyền sở hữu trò chơi thất bại: HTTP %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查游戏拥有情况失败: HTTP %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檢查遊戲擁有情況失敗: HTTP %@"
           }
         }
       }
@@ -21870,6 +22966,143 @@
         }
       }
     },
+    "error.network.ip_location_failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل في اكتشاف موقع IP"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP-placering registrering mislykkedes"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP-Standorterkennung fehlgeschlagen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP location detection failed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error en la detección de ubicación IP"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP-paikannuksen tunnistus epäonnistui"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de la détection de localisation IP"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP स्थान पहचान विफल"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rilevamento posizione IP fallito"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP位置の検出に失敗しました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP 위치 감지 실패"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP-plassering registrering mislyktes"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP-locatiedetectie mislukt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wykrywanie lokalizacji IP nie powiodło się"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha na detecção de localização IP"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка определения местоположения IP"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP-platsdetektering misslyckades"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การตรวจจับตำแหน่ง IP ล้มเหลว"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP konum algılama başarısız"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phát hiện vị trí IP thất bại"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP地理位置检测失败"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP地理位置檢測失敗"
+          }
+        }
+      }
+    },
     "error.network.rate_limited" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -22003,6 +23236,143 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請求過多，請稍後重試"
+          }
+        }
+      }
+    },
+    "error.network.minecraft_service_unavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خدمة مصادقة Minecraft غير متاحة مؤقتاً، يرجى المحاولة لاحقاً"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft godkendelsestjeneste er midlertidigt utilgængelig, prøv igen senere"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-Authentifizierungsdienst ist vorübergehend nicht verfügbar, bitte versuchen Sie es später erneut"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft authentication service is temporarily unavailable, please try again later"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El servicio de autenticación de Minecraft no está disponible temporalmente, inténtalo de nuevo más tarde"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-todennuspalvelu on tilapäisesti poissa käytöstä, yritä myöhemmin uudelleen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le service d'authentification Minecraft est temporairement indisponible, veuillez réessayer plus tard"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft प्रमाणीकरण सेवा अस्थायी रूप से अनुपलब्ध है, कृपया बाद में पुनः प्रयास करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il servizio di autenticazione Minecraft è temporaneamente non disponibile, riprova più tardi"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 認証サービスは一時的に利用できません。後でもう一度お試しください"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 인증 서비스가 일시적으로 사용할 수 없습니다. 나중에 다시 시도해 주세요"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft autentiseringstjeneste er midlertidig utilgjengelig, prøv igjen senere"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft authenticatieservice is tijdelijk niet beschikbaar, probeer het later opnieuw"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usługa uwierzytelniania Minecraft jest tymczasowo niedostępna, spróbuj ponownie później"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O serviço de autenticação do Minecraft está temporariamente indisponível, tente novamente mais tarde"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Служба аутентификации Minecraft временно недоступна, попробуйте позже"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft-autentiseringstjänsten är tillfälligt otillgänglig, försök igen senare"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "บริการยืนยันตัวตน Minecraft ไม่พร้อมใช้งานชั่วคราว กรุณาลองใหม่อีกครั้งในภายหลัง"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft kimlik doğrulama hizmeti geçici olarak kullanılamıyor, lütfen daha sonra tekrar deneyin"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dịch vụ xác thực Minecraft tạm thời không khả dụng, vui lòng thử lại sau"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 认证服务暂时不可用，请稍后重试"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Minecraft 認證服務暫時不可用，請稍後重試"
           }
         }
       }
@@ -28318,6 +29688,280 @@
         }
       }
     },
+    "error.validation.entitlements_parse_failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل في تحليل استجابة أذونات اللعبة: %@"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunne ikke parse spiltilladelsesrespons: %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fehler beim Parsen der Spielberechtigungsantwort: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to parse game entitlements response: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al analizar la respuesta de permisos del juego: %@"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelien oikeuksien vastauksen jäsentäminen epäonnistui: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de l'analyse de la réponse des autorisations de jeu : %@"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "गेम अधिकार प्रतिक्रिया पार्स करने में विफल: %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile analizzare la risposta dei diritti del gioco: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲーム権限の応答の解析に失敗しました: %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "게임 권한 응답을 구문 분석하지 못했습니다: %@"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunne ikke parse spiltillatelsesrespons: %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan reactie op spelrechten niet parseren: %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się przeanalizować odpowiedzi uprawnień gry: %@"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha ao analisar a resposta de permissões do jogo: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось разобрать ответ о правах на игру: %@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunde inte tolka spelegenskapsrespons: %@"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การแยกวิเคราะห์การตอบสนองสิทธิ์ของเกมล้มเหลว: %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyun yetkileri yanıtı ayrıştırılamadı: %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Không thể phân tích phản hồi quyền trò chơi: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析游戏权限响应失败: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析遊戲權限響應失敗: %@"
+          }
+        }
+      }
+    },
+    "error.validation.entitlements_check_unknown_error" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حدث خطأ غير معروف أثناء التحقق من ملكية اللعبة: %@"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukendt fejl opstod under kontroll af spilejerskab: %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekannter Fehler beim Überprüfen des Spielbesitzes: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown error occurred while checking game ownership: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error desconocido al verificar la propiedad del juego: %@"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tuntematon virhe tapahtui pelien omistajuutta tarkistettaessa: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur inconnue lors de la vérification de la propriété du jeu : %@"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "गेम स्वामित्व जांचते समय अज्ञात त्रुटि हुई: %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Errore sconosciuto durante la verifica della proprietà del gioco: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲームの所有権確認中に不明なエラーが発生しました: %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "게임 소유권 확인 중 알 수 없는 오류가 발생했습니다: %@"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukjent feil oppstod under kontroll av spileierskap: %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onbekende fout opgetreden bij het controleren van spelbezit: %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nieznany błąd wystąpił podczas sprawdzania własności gry: %@"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erro desconhecido ao verificar a propriedade do jogo: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Произошла неизвестная ошибка при проверке владения игрой: %@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Okänt fel uppstod vid kontroll av spelägande: %@"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุขณะตรวจสอบความเป็นเจ้าของเกม: %@"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyun sahipliği kontrol edilirken bilinmeyen bir hata oluştu: %@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đã xảy ra lỗi không xác định khi kiểm tra quyền sở hữu trò chơi: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查游戏拥有情况时发生未知错误: %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "檢查遊戲擁有情況時發生未知錯誤: %@"
+          }
+        }
+      }
+    },
     "error.validation.archive_open_failed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -33659,6 +35303,143 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "解析JSON失敗"
+          }
+        }
+      }
+    },
+    "error.validation.ip_location_parse_failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل في تحليل استجابة موقع IP"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunne ikke parse IP-placeringssvar"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP-Standortantwort konnte nicht analysiert werden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to parse IP location response"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al analizar la respuesta de ubicación IP"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP-paikannusvasteen jäsentäminen epäonnistui"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec de l'analyse de la réponse de localisation IP"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP स्थान प्रतिक्रिया पार्स करने में विफल"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analisi risposta posizione IP fallita"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP位置応答の解析に失敗しました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP 위치 응답 파싱 실패"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunne ikke parse IP-plasseringssvar"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP-locatierespons parseren mislukt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie udało się przeanalizować odpowiedzi lokalizacji IP"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha ao analisar resposta de localização IP"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось разобрать ответ определения местоположения IP"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunde inte tolka IP-platsrespons"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การแยกวิเคราะห์การตอบกลับตำแหน่ง IP ล้มเหลว"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP konum yanıtı ayrıştırılamadı"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Phân tích phản hồi vị trí IP thất bại"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析IP地理位置响应失败"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解析IP地理位置響應失敗"
           }
         }
       }

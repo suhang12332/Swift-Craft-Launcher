@@ -88,8 +88,11 @@ public struct ContentToolbarView: ToolbarContent {
                         onLogin: { profile in
                             // 处理正版登录成功，使用Minecraft用户资料
                             Logger.shared.debug("正版登录成功，用户: \(profile.name)")
-                            // 这里可以添加正版玩家的处理逻辑
+                            // 添加正版玩家
                             _ = playerListViewModel.addOnlinePlayer(profile: profile)
+
+                            // 设置正版账户添加标记
+                            PremiumAccountFlagManager.shared.setPremiumAccountAdded()
 
                             showingAddPlayerSheet = false
                             // 延迟清理认证状态，让用户能看到成功状态
