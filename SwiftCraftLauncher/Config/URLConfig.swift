@@ -70,6 +70,28 @@ enum URLConfig {
             static let minecraftProfileSkins = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins")
             static let minecraftProfileActiveSkin = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins/active")
             static let minecraftProfileActiveCape = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/capes/active")
+            
+            // Yggdrasil API (自定义服务器，使用动态URL)
+            // 注意：Yggdrasil 端点由 YggdrasilServerConfig 动态生成
+        }
+        
+        // Yggdrasil 三方登录服务器配置
+        enum YggdrasilServers {
+            /// 预定义的三方登录服务器列表
+            static let servers: [YggdrasilServerInfo] = [
+                YggdrasilServerInfo(
+                    name: "LittleSkin",
+                    baseURL: "https://littleskin.cn",
+                    clientId: "1181",
+                    clientSecret: "F9jNgPHh5iUuMJ3LsO3z0VNNAopcfkmycaeYGGnh", // TODO: 填入实际的 client_secret
+                    redirectURI: "swift-craft-launcher://auth"
+                )
+            ]
+            
+            /// 根据名称获取服务器配置
+            static func getServer(name: String) -> YggdrasilServerInfo? {
+                return servers.first { $0.name == name }
+            }
         }
 
         // Minecraft API
@@ -358,5 +380,25 @@ enum URLConfig {
                 mirrorBaseURL.appendingPathComponent("minecraft/version")
             }
         }
+    }
+}
+
+// MARK: - Yggdrasil Server Info
+/// Yggdrasil 三方登录服务器信息
+struct YggdrasilServerInfo: Identifiable, Hashable {
+    let id: String
+    let name: String
+    let baseURL: String
+    let clientId: String?
+    let clientSecret: String?
+    let redirectURI: String?
+    
+    init(name: String, baseURL: String, clientId: String? = nil, clientSecret: String? = nil, redirectURI: String? = nil) {
+        self.id = baseURL
+        self.name = name
+        self.baseURL = baseURL
+        self.clientId = clientId
+        self.clientSecret = clientSecret
+        self.redirectURI = redirectURI
     }
 }

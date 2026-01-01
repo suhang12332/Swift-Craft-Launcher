@@ -16,6 +16,7 @@ struct AddPlayerSheetView: View {
     @State private var isPremium: Bool = false
     @State private var authenticatedProfile: MinecraftProfileResponse?
     @StateObject private var authService = MinecraftAuthService.shared
+    @StateObject private var yggdrasilAuthService = YggdrasilAuthService.shared
 
     @Environment(\.openURL)
     private var openURL
@@ -49,6 +50,26 @@ struct AddPlayerSheetView: View {
                 switch selectedAuthType {
                 case .premium:
                     MinecraftAuthView(onLoginSuccess: onLogin)
+                case .yggdrasil:
+                    YggdrasilAuthView(onLoginSuccess: { profile in
+                        // 将 YggdrasilProfileResponse 转换为 MinecraftProfileResponse
+                        let minecraftProfile = MinecraftProfileResponse(
+                            id: profile.id,
+                            name: profile.name,
+                            skins: profile.skins.map { skin in
+                                Skin(state: skin.state, url: skin.url, variant: skin.variant)
+                            },
+                            capes: profile.capes?.map { cape in
+                                Cape(id: cape.id, state: cape.state, url: cape.url, alias: cape.alias)
+                            },
+                            accessToken: profile.accessToken,
+                            authXuid: "",
+                            refreshToken: profile.refreshToken
+                        )
+                        // 服务器信息已保存在 YggdrasilAuthService.shared.serverConfig 中
+                        // 在 addOnlinePlayerThrowing 中会读取
+                        onLogin(minecraftProfile)
+                    })
                 case .offline:
                     VStack(alignment: .leading) {
                         playerInfoSection
@@ -63,6 +84,7 @@ struct AddPlayerSheetView: View {
                         "common.cancel".localized()
                     ) {
                         authService.isLoading = false
+                        yggdrasilAuthService.isLoading = false
                         onCancel()
                     }
                     Spacer()
@@ -95,6 +117,53 @@ struct AddPlayerSheetView: View {
                         default:
                             ProgressView().controlSize(.small)
                         }
+                    } else if selectedAuthType == .yggdrasil {
+                        // 根据 Yggdrasil 认证状态显示不同的按钮
+                        if yggdrasilAuthService.serverConfig == nil {
+                            // 如果未配置服务器，显示保存配置按钮（但配置选择在 YggdrasilAuthView 中）
+                            EmptyView()
+                        } else {
+                            switch yggdrasilAuthService.authState {
+                            case .notAuthenticated:
+                                Button("addplayer.auth.start_login".localized()) {
+                                    Task {
+                                        await yggdrasilAuthService.startAuthentication()
+                                    }
+                                }
+                                .keyboardShortcut(.defaultAction)
+                                
+                            case .authenticated(let profile):
+                                Button("addplayer.auth.add".localized()) {
+                                    // 将 YggdrasilProfileResponse 转换为 MinecraftProfileResponse
+                                    let minecraftProfile = MinecraftProfileResponse(
+                                        id: profile.id,
+                                        name: profile.name,
+                                        skins: profile.skins.map { skin in
+                                            Skin(state: skin.state, url: skin.url, variant: skin.variant)
+                                        },
+                                        capes: profile.capes?.map { cape in
+                                            Cape(id: cape.id, state: cape.state, url: cape.url, alias: cape.alias)
+                                        },
+                                        accessToken: profile.accessToken,
+                                        authXuid: "",
+                                        refreshToken: profile.refreshToken
+                                    )
+                                    onLogin(minecraftProfile)
+                                }
+                                .keyboardShortcut(.defaultAction)
+                                
+                            case .error:
+                                Button("addplayer.auth.retry".localized()) {
+                                    Task {
+                                        await yggdrasilAuthService.startAuthentication()
+                                    }
+                                }
+                                .keyboardShortcut(.defaultAction)
+                                
+                            default:
+                                ProgressView().controlSize(.small)
+                            }
+                        }
                     } else {
                         Button(
                             "addplayer.create".localized()
@@ -125,6 +194,8 @@ struct AddPlayerSheetView: View {
         isPremium = false
         // 重置认证服务状态
         authService.isLoading = false
+        // 重置 Yggdrasil 认证服务状态
+        yggdrasilAuthService.isLoading = false
         // 重置焦点状态
         isTextFieldFocused = false
         showErrorPopover = false
@@ -216,11 +287,14 @@ enum AccountAuthType: String, CaseIterable, Identifiable {
 
     case offline
     case premium
+    case yggdrasil
 
     var displayName: String {
         switch self {
         case .premium:
             return "addplayer.auth.microsoft".localized()
+        case .yggdrasil:
+            return "addplayer.auth.yggdrasil".localized()
         default:
             return "addplayer.auth.offline".localized()
         }
@@ -233,6 +307,8 @@ extension AccountAuthType {
         switch self {
         case .premium:
             return ("person.crop.circle.badge.plus", .multicolor)
+        case .yggdrasil:
+            return ("person.crop.circle.badge.checkmark", .multicolor)
         default:
             return ("person.crop.circle.badge.minus", .multicolor)
         }

@@ -18,6 +18,7 @@ class PlayerDataManager {
     ///   - refreshToken: 刷新令牌，默认为空字符串
     ///   - xuid: Xbox用户ID，默认为空字符串
     ///   - expiresAt: 令牌过期时间，可选
+    ///   - yggdrasilServerURL: Yggdrasil 服务器基础URL，可选
     /// - Throws: GlobalError 当操作失败时
     func addPlayer(
         name: String,
@@ -27,7 +28,8 @@ class PlayerDataManager {
         accToken: String = "",
         refreshToken: String = "",
         xuid: String = "",
-        expiresAt: Date? = nil
+        expiresAt: Date? = nil,
+        yggdrasilServerURL: String? = nil
     ) throws {
         let players = try loadPlayersThrowing()
 
@@ -55,7 +57,8 @@ class PlayerDataManager {
                     accessToken: accToken,
                     refreshToken: refreshToken,
                     expiresAt: expiresAt,
-                    xuid: xuid
+                    xuid: xuid,
+                    yggdrasilServerURL: yggdrasilServerURL
                 )
             } else {
                 credential = nil

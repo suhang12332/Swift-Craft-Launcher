@@ -104,6 +104,10 @@ class PlayerListViewModel: ObservableObject {
     func addOnlinePlayerThrowing(profile: MinecraftProfileResponse) throws {
         let avatarUrl =
             profile.skins.isEmpty ? "" : profile.skins[0].url.httpToHttps()
+        
+        // 检查是否是 Yggdrasil 认证（通过检查 serverConfig）
+        let yggdrasilServerURL = YggdrasilAuthService.shared.serverConfig?.baseURL
+        
         try dataManager.addPlayer(
             name: profile.name,
             uuid: profile.id,
@@ -111,7 +115,8 @@ class PlayerListViewModel: ObservableObject {
             avatarName: avatarUrl,
             accToken: profile.accessToken,
             refreshToken: profile.refreshToken,
-            xuid: profile.authXuid
+            xuid: profile.authXuid,
+            yggdrasilServerURL: yggdrasilServerURL
         )
         try loadPlayersThrowing()
         Logger.shared.debug("玩家 \(profile.name) 添加成功，列表已更新。")

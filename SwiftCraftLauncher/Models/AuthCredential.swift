@@ -17,6 +17,9 @@ struct AuthCredential: Codable, Equatable {
 
     /// Xbox 用户ID（XUID）
     var xuid: String
+    
+    /// Yggdrasil 服务器基础URL（仅用于 Yggdrasil 认证）
+    var yggdrasilServerURL: String?
 
     /// 初始化认证凭据
     /// - Parameters:
@@ -25,17 +28,20 @@ struct AuthCredential: Codable, Equatable {
     ///   - refreshToken: 刷新令牌
     ///   - expiresAt: 令牌过期时间，可选
     ///   - xuid: Xbox 用户ID，默认为空字符串
+    ///   - yggdrasilServerURL: Yggdrasil 服务器基础URL，可选
     init(
         userId: String,
         accessToken: String,
         refreshToken: String,
         expiresAt: Date? = nil,
-        xuid: String = ""
+        xuid: String = "",
+        yggdrasilServerURL: String? = nil
     ) {
         self.userId = userId
         self.accessToken = accessToken
         self.refreshToken = refreshToken
         self.expiresAt = expiresAt
         self.xuid = xuid
+        self.yggdrasilServerURL = yggdrasilServerURL
     }
 }
