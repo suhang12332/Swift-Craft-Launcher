@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 public struct GeneralSettingsView: View {
     @StateObject private var generalSettings = GeneralSettingsManager.shared
@@ -233,10 +234,6 @@ private func restartApp() throws {
     }
 }
 
-#Preview {
-    GeneralSettingsView()
-}
-
 // MARK: - Theme Selector View
 struct ThemeSelectorView: View {
     @Binding var selectedTheme: ThemeMode
@@ -282,7 +279,6 @@ struct ThemeOptionView: View {
         .onTapGesture {
             onTap()
         }
-        // .scaleEffect(isSelected ? 1.05 : 1.0)
         .animation(.easeInOut(duration: 0.2), value: isSelected)
     }
 }
@@ -294,7 +290,6 @@ struct ThemeWindowIcon: View {
     var body: some View {
         Image(iconName)
             .resizable()
-            // .aspectRatio(contentMode: .fit)
             .frame(width: 60, height: 40)
             .cornerRadius(6)
     }

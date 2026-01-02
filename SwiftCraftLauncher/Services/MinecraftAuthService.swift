@@ -536,7 +536,7 @@ extension MinecraftAuthService {
         // 如果没有访问令牌，抛出错误要求重新登录
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
-                chineseMessage: String(format: "minecraft.auth.error.player_missing_token".localized(), player.name),
+                chineseMessage: "缺少访问令牌，请重新登录",
                 i18nKey: "error.authentication.missing_token",
                 level: .notification
             )
@@ -555,7 +555,7 @@ extension MinecraftAuthService {
         // Token过期，尝试使用refresh token刷新
         guard !player.authRefreshToken.isEmpty else {
             throw GlobalError.authentication(
-                chineseMessage: String(format: "minecraft.auth.error.player_token_expired".localized(), player.name),
+                chineseMessage: "登录已过期，请重新登录该账户",
                 i18nKey: "error.authentication.token_expired_relogin_required",
                 level: .popup
             )

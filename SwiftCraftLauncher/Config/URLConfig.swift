@@ -358,5 +358,19 @@ enum URLConfig {
                 mirrorBaseURL.appendingPathComponent("minecraft/version")
             }
         }
+
+        // IP Location API
+        enum IPLocation {
+            static var currentLocation: URL {
+                // 使用 ipapi.co 的免费API，支持HTTPS，返回国家代码
+                URLConfig.url("https://ipapi.co/json/")
+            }
+        }
+    }
+
+    // Store URLs
+    enum Store {
+        // Minecraft 购买链接
+        static let minecraftPurchase = URLConfig.url("https://www.xbox.com/zh-CN/games/store/productId/9NXP44L49SHJ")
     }
 }

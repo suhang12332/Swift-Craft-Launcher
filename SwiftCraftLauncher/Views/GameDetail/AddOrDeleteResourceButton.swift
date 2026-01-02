@@ -577,6 +577,9 @@ struct AddOrDeleteResourceButton: View {
     // 新增：在打开主资源版本弹窗前加载版本信息（适用于所有资源类型）
     private func loadMainModVersionsBeforeOpeningSheet() async {
         guard let gameInfo = gameInfo else {
+            await MainActor.run {
+                addButtonState = .idle
+            }
             return
         }
 
@@ -584,21 +587,11 @@ struct AddOrDeleteResourceButton: View {
         await MainActor.run {
             previousButtonState = addButtonState
             hasDownloadedInSheet = false  // 重置下载标志
+            addButtonState = .loading  // 先设置为 loading 状态
+            mainModVersionVM.isLoadingVersions = true
         }
 
-        mainModVersionVM.isLoadingVersions = true
-        var sheetOpened = false
-        defer {
-            Task { @MainActor in
-                mainModVersionVM.isLoadingVersions = false
-                // 如果 sheet 没有打开（加载失败等情况），设置为"安装"状态
-                if !sheetOpened {
-                    addButtonState = .idle
-                    previousButtonState = nil
-                }
-            }
-        }
-
+        // 加载版本数据
         let versions = await ModrinthService.fetchProjectVersions(
             id: project.projectId
         )
@@ -617,13 +610,15 @@ struct AddOrDeleteResourceButton: View {
             }
         }
 
+        // 加载完成后，设置数据并打开弹窗
         await MainActor.run {
+            mainModVersionVM.isLoadingVersions = false
             mainModVersionVM.availableVersions = filteredVersions
             if let first = filteredVersions.first {
                 mainModVersionVM.selectedVersionId = first.id
             }
+            // loading 完成后再打开弹窗
             mainModVersionVM.showMainModVersionSheet = true
-            sheetOpened = true
         }
     }
 
