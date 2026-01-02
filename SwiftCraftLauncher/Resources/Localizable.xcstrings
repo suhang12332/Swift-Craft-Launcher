@@ -8163,133 +8163,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "إصدار Mod الرئيسي"
+            "value" : "添加资源"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hovedmod-version"
+            "value" : "添加资源"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hauptmod-Version"
+            "value" : "添加资源"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Main Mod Version"
+            "value" : "添加资源"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versión del Mod Principal"
+            "value" : "添加资源"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Päämodin versio"
+            "value" : "添加资源"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Version du Mod Principal"
+            "value" : "添加资源"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मुख्य Mod संस्करण"
+            "value" : "添加资源"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versione Mod Principale"
+            "value" : "添加资源"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "メインモッドバージョン"
+            "value" : "添加资源"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "주요 모드 버전"
+            "value" : "添加资源"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hovedmod-versjon"
+            "value" : "添加资源"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hoofdmod-versie"
+            "value" : "添加资源"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wersja Głównego Moda"
+            "value" : "添加资源"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Versão do Mod Principal"
+            "value" : "添加资源"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Версия Основного Мода"
+            "value" : "添加资源"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Huvudmod-version"
+            "value" : "添加资源"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เวอร์ชัน Mod หลัก"
+            "value" : "添加资源"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ana Mod Sürümü"
+            "value" : "添加资源"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Phiên Bản Mod Chính"
+            "value" : "添加资源"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主Mod版本"
+            "value" : "添加资源"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "主Mod版本"
+            "value" : "添加资源"
           }
         }
       }
