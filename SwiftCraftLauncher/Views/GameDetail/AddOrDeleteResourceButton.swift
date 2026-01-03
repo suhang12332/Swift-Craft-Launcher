@@ -38,6 +38,7 @@ struct AddOrDeleteResourceButton: View {
     @State private var preloadedCompatibleGames: [GameVersionInfo] = []  // 预检测的兼容游戏列表
     @State private var isLoadingProjectDetail = false  // 是否正在加载项目详情
     @State private var isDisabled: Bool = false  // 资源是否被禁用
+    @Binding var isResourceDisabled: Bool  // 暴露给父视图的禁用状态（用于置灰效果）
     @State private var currentFileName: String?  // 当前文件名（跟踪重命名后的文件名）
     @State private var previousButtonState: ModrinthDetailCardView.AddButtonState?  // 保存之前的状态（用于恢复）
     @State private var hasDownloadedInSheet = false  // 标记在 sheet 中是否下载成功
@@ -57,7 +58,8 @@ struct AddOrDeleteResourceButton: View {
         selectedItem: Binding<SidebarItem>,
         onResourceChanged: (() -> Void)? = nil,
         forceInstalled: Bool = false,
-        scannedDetailIds: Binding<Set<String>> = .constant([])
+        scannedDetailIds: Binding<Set<String>> = .constant([]),
+        isResourceDisabled: Binding<Bool> = .constant(false)
     ) {
         self.project = project
         self.selectedVersions = selectedVersions
@@ -69,6 +71,7 @@ struct AddOrDeleteResourceButton: View {
         self.onResourceChanged = onResourceChanged
         self.forceInstalled = forceInstalled
         self._scannedDetailIds = scannedDetailIds
+        self._isResourceDisabled = isResourceDisabled
     }
 
     var body: some View {
@@ -85,7 +88,7 @@ struct AddOrDeleteResourceButton: View {
                     Text("resource.update".localized())
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.orange)
+                .tint(.accentColor)
                 .font(.caption2)
                 .controlSize(.small)
                 .disabled(addButtonState == .loading)
@@ -626,7 +629,7 @@ struct AddOrDeleteResourceButton: View {
     private func checkForUpdate() {
         guard let gameInfo = gameInfo,
               type == false,  // 仅在 local 模式
-              query.lowercased() == "mod"  // 仅对 mod 类型检测
+              !isDisabled  // 如果资源被禁用，不参与检测更新
         else {
             return
         }
@@ -772,6 +775,8 @@ struct AddOrDeleteResourceButton: View {
         // 使用 currentFileName 如果存在，否则使用 project.fileName
         let fileName = currentFileName ?? project.fileName
         isDisabled = ResourceEnableDisableManager.isDisabled(fileName: fileName)
+        // 同步更新暴露给父视图的状态
+        isResourceDisabled = isDisabled
     }
 
     private func toggleDisableState() {
@@ -800,6 +805,8 @@ struct AddOrDeleteResourceButton: View {
             // 更新当前文件名和禁用状态
             currentFileName = newFileName
             isDisabled = ResourceEnableDisableManager.isDisabled(fileName: newFileName)
+            // 同步更新暴露给父视图的状态
+            isResourceDisabled = isDisabled
         } catch {
             Logger.shared.error("切换资源启用状态失败: \(error.localizedDescription)")
         }

@@ -14,6 +14,7 @@ struct ModrinthDetailCardView: View {
     @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找
     @State private var addButtonState: AddButtonState = .idle
     @State private var showDeleteAlert = false
+    @State private var isResourceDisabled: Bool = false  // 资源是否被禁用（用于置灰效果）
     @EnvironmentObject private var gameRepository: GameRepository
 
     // MARK: - Enums
@@ -37,6 +38,7 @@ struct ModrinthDetailCardView: View {
             infoView
         }
         .frame(maxWidth: .infinity)
+        .opacity(isResourceDisabled ? 0.5 : 1.0)  // 禁用时置灰
     }
 
     // MARK: - View Components
@@ -161,7 +163,8 @@ struct ModrinthDetailCardView: View {
                 type: type,
                 selectedItem: $selectedItem,
                 onResourceChanged: onResourceChanged,
-                scannedDetailIds: $scannedDetailIds
+                scannedDetailIds: $scannedDetailIds,
+                isResourceDisabled: $isResourceDisabled
             )
             .environmentObject(gameRepository)
         }
