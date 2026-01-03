@@ -22,27 +22,20 @@ struct AddOrDeleteResourceButton: View {
     @State private var addButtonState: ModrinthDetailCardView.AddButtonState =
         .idle
     @State private var showDeleteAlert = false
-    @State private var showNoGameAlert = false
-    @State private var showPlayerAlert = false  // 新增：玩家验证 alert
 
     @State private var activeAlert: ResourceButtonAlertType?
-    @StateObject private var gameSettings = GameSettingsManager.shared
     @State private var showGlobalResourceSheet = false
     @State private var showModPackDownloadSheet = false  // 新增：整合包下载 sheet
     @State private var showGameResourceInstallSheet = false  // 新增：游戏资源安装 sheet
     @State private var preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情（通用：整合包/普通资源）
     @State private var preloadedCompatibleGames: [GameVersionInfo] = []  // 预检测的兼容游戏列表
-    @State private var isLoadingProjectDetail = false  // 是否正在加载项目详情
     @State private var isDisabled: Bool = false  // 资源是否被禁用
     @Binding var isResourceDisabled: Bool  // 暴露给父视图的禁用状态（用于置灰效果）
     @State private var currentFileName: String?  // 当前文件名（跟踪重命名后的文件名）
-    @State private var previousButtonState: ModrinthDetailCardView.AddButtonState?  // 保存之前的状态（用于恢复）
     @State private var hasDownloadedInSheet = false  // 标记在 sheet 中是否下载成功
+    @State private var oldFileNameForUpdate: String?  // 更新前的旧文件名（用于更新时删除旧文件）
     @Binding var selectedItem: SidebarItem
-    //    @State private var addButtonState: ModrinthDetailCardView.AddButtonState = .idle
     var onResourceChanged: (() -> Void)?
-    // 新增：local 区可强制指定已安装状态
-    var forceInstalled: Bool
     // 保证所有 init 都有 onResourceChanged 参数（带默认值）
     init(
         project: ModrinthProject,
@@ -53,7 +46,6 @@ struct AddOrDeleteResourceButton: View {
         type: Bool,
         selectedItem: Binding<SidebarItem>,
         onResourceChanged: (() -> Void)? = nil,
-        forceInstalled: Bool = false,
         scannedDetailIds: Binding<Set<String>> = .constant([]),
         isResourceDisabled: Binding<Bool> = .constant(false)
     ) {
@@ -65,7 +57,6 @@ struct AddOrDeleteResourceButton: View {
         self.type = type
         self._selectedItem = selectedItem
         self.onResourceChanged = onResourceChanged
-        self.forceInstalled = forceInstalled
         self._scannedDetailIds = scannedDetailIds
         self._isResourceDisabled = isResourceDisabled
     }
@@ -73,11 +64,6 @@ struct AddOrDeleteResourceButton: View {
     var body: some View {
 
         HStack(spacing: 8) {
-//            Button {
-//                showInFinder(mod)
-//            } label: {
-//                Label("sidebar.context_menu.show_in_finder".localized(), systemImage: "folder")
-//            }
             // 更新按钮（仅在 local 模式且有更新时显示）
             if type == false && addButtonState == .update {
                 Button(action: handleUpdateAction) {
@@ -210,10 +196,11 @@ struct AddOrDeleteResourceButton: View {
                     // 如果只是关闭 sheet（没有下载），设置为"安装"状态
                     if !hasDownloadedInSheet {
                         addButtonState = .idle
+                        // 如果取消更新操作，清理旧文件名
+                        oldFileNameForUpdate = nil
                     }
                     // 重置下载标志
                     hasDownloadedInSheet = false
-                    previousButtonState = nil  // 清除保存的状态
                     // 清理预加载的数据
                     preloadedDetail = nil
                 },
@@ -229,6 +216,14 @@ struct AddOrDeleteResourceButton: View {
                             // 下载成功，标记并更新状态
                             hasDownloadedInSheet = true
                             addToScannedDetailIds()
+                            
+                            // 如果是更新操作，先删除旧文件
+                            if let oldFileName = oldFileNameForUpdate {
+                                deleteFile(fileName: oldFileName)
+                                // 清理旧文件名
+                                oldFileNameForUpdate = nil
+                            }
+                            
                             // 如果是 local 模式，清空当前文件名（下载后会更新）
                             if !type {
                                 currentFileName = nil
@@ -280,6 +275,12 @@ struct AddOrDeleteResourceButton: View {
 
     // 根据文件名删除文件
     private func deleteFile() {
+        // 使用 project.fileName 删除
+        deleteFile(fileName: project.fileName)
+    }
+    
+    // 根据指定文件名删除文件
+    private func deleteFile(fileName: String?) {
         // 检查 query 是否是有效的资源类型
         let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
         let queryLowercased = query.lowercased()
@@ -312,8 +313,8 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        // 只使用 fileName 删除
-        guard let fileName = project.fileName else {
+        // 使用传入的 fileName 删除
+        guard let fileName = fileName else {
             let globalError = GlobalError.resource(
                 chineseMessage: "无法删除文件：缺少文件名信息",
                 i18nKey: "error.resource.file_name_missing",
@@ -334,6 +335,8 @@ struct AddOrDeleteResourceButton: View {
     @MainActor
     private func handleUpdateAction() {
         if !type {
+            // 保存旧文件名，用于更新后删除
+            oldFileNameForUpdate = currentFileName ?? project.fileName
             Task {
                 // 加载项目详情并打开游戏资源安装 sheet（复用全局资源安装逻辑）
                 await loadGameResourceInstallDetailBeforeOpeningSheet()
@@ -461,10 +464,8 @@ struct AddOrDeleteResourceButton: View {
 
     // 新增：在打开 sheet 前加载 projectDetail（普通资源）
     private func loadProjectDetailBeforeOpeningSheet() async {
-        isLoadingProjectDetail = true
         defer {
             Task { @MainActor in
-                isLoadingProjectDetail = false
                 addButtonState = .idle
             }
         }
@@ -486,10 +487,8 @@ struct AddOrDeleteResourceButton: View {
 
     // 新增：在打开整合包 sheet 前加载 projectDetail
     private func loadModPackDetailBeforeOpeningSheet() async {
-        isLoadingProjectDetail = true
         defer {
             Task { @MainActor in
-                isLoadingProjectDetail = false
                 addButtonState = .idle
             }
         }
@@ -515,18 +514,15 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        isLoadingProjectDetail = true
         defer {
             Task { @MainActor in
-                isLoadingProjectDetail = false
                 addButtonState = .idle
             }
         }
 
-        // 保存当前状态，以便在 sheet 关闭时恢复
+        // 重置下载标志
         await MainActor.run {
-            previousButtonState = addButtonState
-            hasDownloadedInSheet = false  // 重置下载标志
+            hasDownloadedInSheet = false
         }
 
         // 加载项目详情（和全局资源安装使用相同的逻辑）
@@ -578,42 +574,6 @@ struct AddOrDeleteResourceButton: View {
         }
     }
 
-    // 新增：更新前删除旧文件
-    private func deleteOldFileForUpdate() async {
-        guard let gameInfo = gameInfo,
-              let resourceDir = AppPaths.resourceDirectory(
-                  for: query,
-                  gameName: gameInfo.gameName
-              ) else {
-            return
-        }
-
-        // 使用 currentFileName 如果存在，否则使用 project.fileName
-        let fileName = currentFileName ?? project.fileName
-        guard let fileName = fileName else {
-            return
-        }
-
-        let fileURL = resourceDir.appendingPathComponent(fileName)
-
-        // 如果文件存在，删除它
-        if FileManager.default.fileExists(atPath: fileURL.path) {
-            GameResourceHandler.performDelete(fileURL: fileURL)
-        } else {
-            // 也检查 .disabled 版本
-            let disabledFileName = fileName + ".disabled"
-            let disabledFileURL = resourceDir.appendingPathComponent(disabledFileName)
-            if FileManager.default.fileExists(atPath: disabledFileURL.path) {
-                GameResourceHandler.performDelete(fileURL: disabledFileURL)
-            }
-        }
-
-        // 清空当前文件名，下载后会更新
-        await MainActor.run {
-            currentFileName = nil
-        }
-    }
-
     // 新增：在安装完成后更新 scannedDetailIds（使用hash）
     private func addToScannedDetailIds(hash: String? = nil) {
         // 如果有hash，使用hash；否则暂时不添加
@@ -621,12 +581,6 @@ struct AddOrDeleteResourceButton: View {
         if let hash = hash {
             scannedDetailIds.insert(hash)
         }
-    }
-
-    /// 下载完成后直接标记为已安装，避免等待后续刷新
-    @MainActor
-    private func markInstalled() {
-        addButtonState = .installed
     }
 
     private func updateDisableState() {

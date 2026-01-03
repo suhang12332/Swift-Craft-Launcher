@@ -34,8 +34,6 @@ struct GameResourceInstallSheet: View {
                         ModrinthProjectTitleView(
                             projectDetail: detail
                         ).padding(.bottom, 18)
-
-                        spacerView()
                         VersionPickerForSheet(
                             project: project,
                             resourceType: resourceType,
