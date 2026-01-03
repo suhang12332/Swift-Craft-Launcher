@@ -600,13 +600,24 @@ struct AddOrDeleteResourceButton: View {
         )
 
         // 根据资源类型过滤版本
-        // shader 类型不需要过滤 loader，其他类型需要
+        // shader 和 resourcepack 类型不需要过滤 loader
+        // datapack 需要检查 loader 是否为 "datapack"
+        // 其他类型（如 mod）需要检查 loader 是否匹配
         let filteredVersions: [ModrinthProjectDetailVersion]
-        if query.lowercased() == "shader" {
+        let queryLowercased = query.lowercased()
+        if queryLowercased == "shader" || queryLowercased == "resourcepack" {
+            // shader 和 resourcepack 不检查 loader，只检查游戏版本
             filteredVersions = versions.filter {
                 $0.gameVersions.contains(gameInfo.gameVersion)
             }
+        } else if queryLowercased == "datapack" {
+            // datapack 需要检查 loader 是否为 "datapack"
+            filteredVersions = versions.filter {
+                $0.loaders.contains("datapack")
+                    && $0.gameVersions.contains(gameInfo.gameVersion)
+            }
         } else {
+            // 其他类型（如 mod）需要检查 loader 是否匹配
             filteredVersions = versions.filter {
                 $0.loaders.contains(gameInfo.modLoader)
                     && $0.gameVersions.contains(gameInfo.gameVersion)
