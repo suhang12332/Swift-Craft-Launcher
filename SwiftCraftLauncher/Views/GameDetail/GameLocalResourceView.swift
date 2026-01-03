@@ -331,8 +331,12 @@ struct GameLocalResourceView: View {
                 let filteredDetails = self.filterResourcesByTitle(details)
 
                 if append {
-                    // 追加模式：只添加匹配的结果
-                    scannedResources.append(contentsOf: filteredDetails)
+                    // 追加模式：只添加匹配的结果，并去重
+                    // 获取已存在的 id 集合，用于去重
+                    let existingIds = Set(self.scannedResources.map { $0.id })
+                    // 只添加不重复的资源
+                    let newDetails = filteredDetails.filter { !existingIds.contains($0.id) }
+                    self.scannedResources.append(contentsOf: newDetails)
                 } else {
                     // 替换模式：直接使用过滤后的结果
                     scannedResources = filteredDetails

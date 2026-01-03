@@ -30,22 +30,7 @@ struct GlobalResourceFooter: View {
                         Button("common.close".localized()) { isPresented = false }
                         Spacer()
                         if resourceType == "mod" {
-                            if GameSettingsManager.shared.autoDownloadDependencies {
-                                if selectedVersion != nil {
-                                    Button(action: downloadAll) {
-                                        if isDownloadingAll {
-                                            ProgressView().controlSize(.small)
-                                        } else {
-                                            Text(
-                                                "global_resource.download_all"
-                                                    .localized()
-                                            )
-                                        }
-                                    }
-                                    .disabled(isDownloadingAll)
-                                    .keyboardShortcut(.defaultAction)
-                                }
-                            } else if !dependencyState.isLoading {
+                            if !dependencyState.isLoading {
                                 if selectedVersion != nil {
                                     Button(action: downloadAllManual) {
                                         if isDownloadingAll {
@@ -83,46 +68,6 @@ struct GlobalResourceFooter: View {
                 }
             }
         }
-    }
-
-    private func downloadAll() {
-        guard let game = selectedGame, selectedVersion != nil else { return }
-        isDownloadingAll = true
-        Task {
-            do {
-                try await downloadAllThrowing(game: game)
-            } catch {
-                let globalError = GlobalError.from(error)
-                Logger.shared.error("下载所有依赖项失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
-            }
-            _ = await MainActor.run {
-                isDownloadingAll = false
-                isPresented = false
-            }
-        }
-    }
-
-    private func downloadAllThrowing(game: GameVersionInfo) async throws {
-        guard !project.projectId.isEmpty else {
-            throw GlobalError.validation(
-                chineseMessage: "项目ID不能为空",
-                i18nKey: "error.validation.project_id_empty",
-                level: .notification
-            )
-        }
-
-        var actuallyDownloaded: [ModrinthProjectDetail] = []
-        var visited: Set<String> = []
-
-        await ModrinthDependencyDownloader.downloadAllDependenciesRecursive(
-            for: project.projectId,
-            gameInfo: game,
-            query: resourceType,
-            gameRepository: gameRepository,
-            actuallyDownloaded: &actuallyDownloaded,
-            visited: &visited
-        )
     }
 
     private func downloadMainOnly() {

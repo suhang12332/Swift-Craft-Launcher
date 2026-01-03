@@ -226,26 +226,21 @@ enum ModrinthDependencyDownloader {
                         return nil
                     }
 
-                    // 获取项目版本并过滤
-                    // 注意：对于 CurseForge 项目，fetchProjectVersions 会调用 CurseForgeService
-                    let allVersions =
-                        await ModrinthService.fetchProjectVersions(
-                            id: depVersion.projectId
-                        )
-
-                    // 对于 CurseForge 项目，loaders 可能是空的，所以需要特殊处理
+                    // 使用服务端的过滤方法，和全局资源安装逻辑一致
+                    // 预置游戏版本和加载器
+                    // 注意：fetchProjectVersionsFilter 内部会处理 CurseForge 项目的特殊情况
                     let filteredVersions: [ModrinthProjectDetailVersion]
-                    if depVersion.projectId.hasPrefix("cf-") {
-                        // CurseForge 项目：只过滤游戏版本，不过滤加载器（因为 CurseForge 版本中 loaders 为空）
-                        filteredVersions = allVersions.filter {
-                            $0.gameVersions.contains(gameInfo.gameVersion)
-                        }
-                    } else {
-                        // Modrinth 项目：同时过滤加载器和游戏版本
-                        filteredVersions = allVersions.filter {
-                            $0.loaders.contains(gameInfo.modLoader)
-                                && $0.gameVersions.contains(gameInfo.gameVersion)
-                        }
+                    do {
+                        filteredVersions = try await ModrinthService.fetchProjectVersionsFilter(
+                            id: depVersion.projectId,
+                            selectedVersions: [gameInfo.gameVersion],
+                            selectedLoaders: [gameInfo.modLoader],
+                            type: "mod"
+                        )
+                    } catch {
+                        // 如果版本获取失败，返回空列表
+                        Logger.shared.error("获取依赖 \(projectDetail.title) 的版本失败: \(error.localizedDescription)")
+                        filteredVersions = []
                     }
 
                     return (projectDetail, filteredVersions)
