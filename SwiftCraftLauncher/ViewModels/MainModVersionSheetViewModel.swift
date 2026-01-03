@@ -16,10 +16,14 @@ final class MainModVersionSheetViewModel: ObservableObject {
     @Published var selectedVersionId: String?
     @Published var showMainModVersionSheet = false
 
+    // 依赖相关状态（和全局资源安装一致）
+    @Published var dependencyState = DependencyState()
+
     /// 清理所有数据，在 sheet 关闭时调用以释放内存
     func cleanup() {
         isLoadingVersions = true
         availableVersions = []
         selectedVersionId = nil
+        dependencyState = DependencyState()
     }
 }

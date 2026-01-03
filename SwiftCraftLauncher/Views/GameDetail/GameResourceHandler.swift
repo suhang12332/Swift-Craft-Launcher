@@ -244,19 +244,29 @@ enum GameResourceHandler {
         var versionDict: [String: [ModrinthProjectDetailVersion]] = [:]
         var selectedVersionDict: [String: String] = [:]
 
+        // 使用服务端的过滤方法，和全局资源安装逻辑一致
+        // 预置游戏版本和加载器
         for dep in missing {
-            let versions = await ModrinthService.fetchProjectVersions(
-                id: dep.id
-            )
+            do {
+                // 使用和全局资源安装一样的服务端过滤方法
+                let filteredVersions = try await ModrinthService.fetchProjectVersionsFilter(
+                    id: dep.id,
+                    selectedVersions: [gameInfo.gameVersion],
+                    selectedLoaders: [gameInfo.modLoader],
+                    type: "mod"
+                )
 
-            let filteredVersions = versions.filter {
-                $0.loaders.contains(gameInfo.modLoader)
-                    && $0.gameVersions.contains(gameInfo.gameVersion)
-            }
-
-            versionDict[dep.id] = filteredVersions
-            if let first = filteredVersions.first {
-                selectedVersionDict[dep.id] = first.id
+                versionDict[dep.id] = filteredVersions
+                // 和全局资源安装一样，自动选择第一个版本
+                if let firstVersion = filteredVersions.first {
+                    selectedVersionDict[dep.id] = firstVersion.id
+                }
+            } catch {
+                // 如果某个依赖的版本获取失败，记录错误但继续处理其他依赖
+                let globalError = GlobalError.from(error)
+                Logger.shared.error("获取依赖 \(dep.title) 的版本失败: \(globalError.chineseMessage)")
+                // 设置空版本列表，让用户知道这个依赖无法安装
+                versionDict[dep.id] = []
             }
         }
 

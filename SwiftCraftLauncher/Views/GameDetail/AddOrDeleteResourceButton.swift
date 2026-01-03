@@ -27,13 +27,9 @@ struct AddOrDeleteResourceButton: View {
 
     @State private var activeAlert: ResourceButtonAlertType?
     @StateObject private var gameSettings = GameSettingsManager.shared
-    @StateObject private var depVM = DependencySheetViewModel()
-    @StateObject private var mainModVersionVM = MainModVersionSheetViewModel()  // 新增：主mod版本弹窗ViewModel
-    @State private var isDownloadingAllDependencies = false
-    @State private var isDownloadingMainResourceOnly = false
-    @State private var isDownloadingMainMod = false  // 新增：主mod下载状态
     @State private var showGlobalResourceSheet = false
     @State private var showModPackDownloadSheet = false  // 新增：整合包下载 sheet
+    @State private var showGameResourceInstallSheet = false  // 新增：游戏资源安装 sheet
     @State private var preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情（通用：整合包/普通资源）
     @State private var preloadedCompatibleGames: [GameVersionInfo] = []  // 预检测的兼容游戏列表
     @State private var isLoadingProjectDetail = false  // 是否正在加载项目详情
@@ -160,62 +156,6 @@ struct AddOrDeleteResourceButton: View {
                     )
                 )
             }
-            .sheet(isPresented: $depVM.showDependenciesSheet) {
-                DependencySheetView(
-                    viewModel: depVM,
-                    isDownloadingAllDependencies: $isDownloadingAllDependencies,
-                    isDownloadingMainResourceOnly:
-                        $isDownloadingMainResourceOnly,
-                    projectDetail: project.toDetail(),
-                    onDownloadAll: {
-                        if depVM.overallDownloadState == .failed {
-                            // 如果是失败后点击"继续"
-                            await GameResourceHandler
-                                .downloadMainResourceAfterDependencies(
-                                    project: project,
-                                    gameInfo: gameInfo,
-                                    depVM: depVM,
-                                    query: query,
-                                    gameRepository: gameRepository
-                                ) {
-                                    addToScannedDetailIds()
-                                    markInstalled()
-                                }
-                        } else {
-                            // 首次点击"全部下载"
-                            await GameResourceHandler
-                                .downloadAllDependenciesAndMain(
-                                    project: project,
-                                    gameInfo: gameInfo,
-                                    depVM: depVM,
-                                    query: query,
-                                    gameRepository: gameRepository
-                                ) {
-                                    addToScannedDetailIds()
-                                    markInstalled()
-                                }
-                        }
-                    },
-                    onDownloadMainOnly: {
-                        isDownloadingMainResourceOnly = true
-                        await GameResourceHandler.downloadSingleResource(
-                            project: project,
-                            gameInfo: gameInfo,
-                            query: query,
-                            gameRepository: gameRepository
-                        ) {
-                            addToScannedDetailIds()
-                            markInstalled()
-                        }
-                        isDownloadingMainResourceOnly = false
-                        depVM.showDependenciesSheet = false
-                    }
-                )
-                .onDisappear {
-                    // sheet 关闭时清理 ViewModel 数据以释放内存
-                    depVM.cleanup()
-                }
-            }
             .sheet(
                 isPresented: $showGlobalResourceSheet,
                 onDismiss: {
@@ -262,11 +202,11 @@ struct AddOrDeleteResourceButton: View {
                     }
                 }
             )
-            // 新增：主mod版本弹窗
+            // 新增：游戏资源安装 sheet（复用全局资源安装逻辑，预置游戏信息）
             .sheet(
-                isPresented: $mainModVersionVM.showMainModVersionSheet,
+                isPresented: $showGameResourceInstallSheet,
                 onDismiss: {
-                    // 如果下载成功，状态已经在 downloadMainModWithSelectedVersion() 中设置好了
+                    // 如果下载成功，状态已经在 sheet 中设置好了
                     // 如果只是关闭 sheet（没有下载），设置为"安装"状态
                     if !hasDownloadedInSheet {
                         addButtonState = .idle
@@ -274,18 +214,36 @@ struct AddOrDeleteResourceButton: View {
                     // 重置下载标志
                     hasDownloadedInSheet = false
                     previousButtonState = nil  // 清除保存的状态
-                    mainModVersionVM.cleanup()
+                    // 清理预加载的数据
+                    preloadedDetail = nil
                 },
                 content: {
-                    MainModVersionSheetView(
-                        viewModel: mainModVersionVM,
-                        projectDetail: project.toDetail(),
-                        isDownloading: $isDownloadingMainMod
-                    ) {
-                        await downloadMainModWithSelectedVersion()
-                    }
-                    .onDisappear {
-                        mainModVersionVM.cleanup()
+                    if let gameInfo = gameInfo {
+                        GameResourceInstallSheet(
+                            project: project,
+                            resourceType: query,
+                            gameInfo: gameInfo,
+                            isPresented: $showGameResourceInstallSheet,
+                            preloadedDetail: preloadedDetail
+                        ) {
+                            // 下载成功，标记并更新状态
+                            hasDownloadedInSheet = true
+                            addToScannedDetailIds()
+                            // 如果是 local 模式，清空当前文件名（下载后会更新）
+                            if !type {
+                                currentFileName = nil
+                            }
+                            if type == false && query.lowercased() == "mod" {
+                                // local 模式的 mod 类型：检测是否有更新
+                                checkForUpdate()
+                            } else {
+                                // 其他资源类型或 server 模式：直接设置为已安装
+                                addButtonState = .installed
+                            }
+                            // 清理预加载的数据
+                            preloadedDetail = nil
+                        }
+                        .environmentObject(gameRepository)
                     }
                 }
             )
@@ -377,7 +335,8 @@ struct AddOrDeleteResourceButton: View {
     private func handleUpdateAction() {
         if !type {
             Task {
-                await loadMainModVersionsBeforeOpeningSheet()
+                // 加载项目详情并打开游戏资源安装 sheet（复用全局资源安装逻辑）
+                await loadGameResourceInstallDetailBeforeOpeningSheet()
             }
         }
     }
@@ -398,38 +357,8 @@ struct AddOrDeleteResourceButton: View {
 
                 addButtonState = .loading
                 Task {
-                    // 仅对 mod 类型检查依赖
-                    if project.projectType == "mod" {
-                        if gameSettings.autoDownloadDependencies {
-                            await GameResourceHandler.downloadWithDependencies(
-                                project: project,
-                                gameInfo: gameInfo,
-                                query: query,
-                                gameRepository: gameRepository
-                            ) {
-                                addToScannedDetailIds()
-                                markInstalled()
-                            }
-                        } else {
-                            let hasMissingDeps =
-                                await GameResourceHandler
-                                .prepareManualDependencies(
-                                    project: project,
-                                    gameInfo: gameInfo,
-                                    depVM: depVM
-                                )
-                            if hasMissingDeps {
-                                depVM.showDependenciesSheet = true
-                                addButtonState = .idle  // Reset button state for when sheet is dismissed
-                            } else {
-                                // 没有依赖时，显示主mod版本弹窗
-                                await loadMainModVersionsBeforeOpeningSheet()
-                            }
-                        }
-                    } else {
-                        // 其他类型也显示版本选择弹窗
-                        await loadMainModVersionsBeforeOpeningSheet()
-                    }
+                    // 加载项目详情并打开游戏资源安装 sheet（复用全局资源安装逻辑）
+                    await loadGameResourceInstallDetailBeforeOpeningSheet()
                 }
             case .installed, .update:
                 // 当有更新时，主按钮显示删除，点击后执行删除操作
@@ -577,62 +506,49 @@ struct AddOrDeleteResourceButton: View {
         }
     }
 
-    // 新增：在打开主资源版本弹窗前加载版本信息（适用于所有资源类型）
-    private func loadMainModVersionsBeforeOpeningSheet() async {
-        guard let gameInfo = gameInfo else {
+    // 新增：在打开游戏资源安装 sheet 前加载项目详情（复用全局资源安装逻辑）
+    private func loadGameResourceInstallDetailBeforeOpeningSheet() async {
+        guard gameInfo != nil else {
             await MainActor.run {
                 addButtonState = .idle
             }
             return
         }
 
+        isLoadingProjectDetail = true
+        defer {
+            Task { @MainActor in
+                isLoadingProjectDetail = false
+                addButtonState = .idle
+            }
+        }
+
         // 保存当前状态，以便在 sheet 关闭时恢复
         await MainActor.run {
             previousButtonState = addButtonState
             hasDownloadedInSheet = false  // 重置下载标志
-            addButtonState = .loading  // 先设置为 loading 状态
-            mainModVersionVM.isLoadingVersions = true
         }
 
-        // 加载版本数据
-        let versions = await ModrinthService.fetchProjectVersions(
-            id: project.projectId
-        )
-
-        // 根据资源类型过滤版本
-        // shader 和 resourcepack 类型不需要过滤 loader
-        // datapack 需要检查 loader 是否为 "datapack"
-        // 其他类型（如 mod）需要检查 loader 是否匹配
-        let filteredVersions: [ModrinthProjectDetailVersion]
-        let queryLowercased = query.lowercased()
-        if queryLowercased == "shader" || queryLowercased == "resourcepack" {
-            // shader 和 resourcepack 不检查 loader，只检查游戏版本
-            filteredVersions = versions.filter {
-                $0.gameVersions.contains(gameInfo.gameVersion)
-            }
-        } else if queryLowercased == "datapack" {
-            // datapack 需要检查 loader 是否为 "datapack"
-            filteredVersions = versions.filter {
-                $0.loaders.contains("datapack")
-                    && $0.gameVersions.contains(gameInfo.gameVersion)
-            }
-        } else {
-            // 其他类型（如 mod）需要检查 loader 是否匹配
-            filteredVersions = versions.filter {
-                $0.loaders.contains(gameInfo.modLoader)
-                    && $0.gameVersions.contains(gameInfo.gameVersion)
-            }
+        // 加载项目详情（和全局资源安装使用相同的逻辑）
+        guard let result = await ResourceDetailLoader.loadProjectDetail(
+            projectId: project.projectId,
+            gameRepository: gameRepository,
+            resourceType: query
+        ) else {
+            return
         }
 
-        // 加载完成后，设置数据并打开弹窗
+        // 先设置 preloadedDetail，确保数据已准备好
         await MainActor.run {
-            mainModVersionVM.isLoadingVersions = false
-            mainModVersionVM.availableVersions = filteredVersions
-            if let first = filteredVersions.first {
-                mainModVersionVM.selectedVersionId = first.id
+            preloadedDetail = result.detail
+        }
+
+        // 等待一个主线程周期，确保 preloadedDetail 已设置，然后再显示 sheet
+        await MainActor.run {
+            // 只有当 preloadedDetail 不为 nil 时才显示 sheet
+            if preloadedDetail != nil {
+                showGameResourceInstallSheet = true
             }
-            // loading 完成后再打开弹窗
-            mainModVersionVM.showMainModVersionSheet = true
         }
     }
 
@@ -659,75 +575,6 @@ struct AddOrDeleteResourceButton: View {
                     addButtonState = .installed
                 }
             }
-        }
-    }
-
-    // 新增：使用选中的版本下载主资源（适用于所有资源类型）
-    private func downloadMainModWithSelectedVersion() async {
-        guard let gameInfo = gameInfo else {
-            return
-        }
-
-        // 如果是 local 模式，先删除旧文件（更新场景）
-        if !type {
-            await deleteOldFileForUpdate()
-        }
-
-        isDownloadingMainMod = true
-        defer {
-            Task { @MainActor in
-                isDownloadingMainMod = false
-            }
-        }
-
-        // 使用选中的版本ID，如果没有选中则使用最新版本
-        let versionId = mainModVersionVM.selectedVersionId
-
-        // 使用 downloadManualDependenciesAndMain，传入空的依赖数组来只下载主mod
-        let success = await ModrinthDependencyDownloader.downloadManualDependenciesAndMain(
-            dependencies: [],  // 空依赖数组，只下载主mod
-            selectedVersions: [:],
-            dependencyVersions: [:],
-            mainProjectId: project.projectId,
-            mainProjectVersionId: versionId,  // 使用选中的版本ID
-            gameInfo: gameInfo,
-            query: query,
-            gameRepository: gameRepository,
-            onDependencyDownloadStart: { _ in },
-            onDependencyDownloadFinish: { _, _ in }
-        )
-
-        if success {
-            addToScannedDetailIds()
-            await MainActor.run {
-                // 标记已下载成功
-                hasDownloadedInSheet = true
-                // 下载完成后，根据资源类型设置状态
-                if type == false && query.lowercased() == "mod" {
-                    // local 模式的 mod 类型：检测是否有更新
-                    // checkForUpdate() 会根据结果设置为 .installed 或 .update
-                    checkForUpdate()
-                } else {
-                    // 其他资源类型或 server 模式：直接设置为已安装
-                    addButtonState = .installed
-                }
-            }
-        } else {
-            // 下载失败，保持之前的状态
-            await MainActor.run {
-                hasDownloadedInSheet = false
-                // 下载失败时，如果之前是 .update，保持 .update；否则设置为 .installed
-                if let previousState = previousButtonState, previousState == .update {
-                    addButtonState = .update
-                } else {
-                    addButtonState = .installed
-                }
-            }
-        }
-
-        // 下载完成后关闭弹窗
-        await MainActor.run {
-            mainModVersionVM.showMainModVersionSheet = false
         }
     }
 

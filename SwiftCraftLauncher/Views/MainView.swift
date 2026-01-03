@@ -153,6 +153,7 @@ struct MainView: View {
         // 只有在 gameType 为服务器且之前没选过游戏时才设置为本地资源
         if gameType == true && self.gameId == nil {
             // 如果是从资源页面切换到游戏页面，且之前没有选择游戏，则设置为本地资源
+            searchText = ""
             gameType = false
         }
 

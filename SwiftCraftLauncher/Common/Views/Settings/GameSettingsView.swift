@@ -16,18 +16,6 @@ public struct GameSettingsView: View {
 
     public var body: some View {
         Form {
-            LabeledContent("settings.auto_handle_dependencies".localized()) {
-                HStack {
-                    Toggle(
-                        "",
-                        isOn: $gameSettings.autoDownloadDependencies
-                    ).labelsHidden()
-                    Text("settings.dependencies.description".localized()).font(
-                        .callout
-                    )
-                    .foregroundColor(.primary)
-                }
-            }.labeledContentStyle(.custom).padding(.bottom, 10)
             LabeledContent("settings.default_api_source.label".localized()) {
                 Picker("", selection: $gameSettings.defaultAPISource) {
                     ForEach(DataSource.allCases, id: \.self) { source in

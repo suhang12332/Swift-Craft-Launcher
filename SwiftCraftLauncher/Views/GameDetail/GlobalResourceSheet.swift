@@ -61,7 +61,7 @@ struct GlobalResourceSheet: View {
                                         dependencyState = DependencyState()
                                     }
                                 }
-                                if resourceType == "mod" && !GameSettingsManager.shared.autoDownloadDependencies {
+                                if resourceType == "mod" {
                                     if dependencyState.isLoading || !dependencyState.dependencies.isEmpty {
                                         spacerView()
                                         DependencySectionView(state: $dependencyState)

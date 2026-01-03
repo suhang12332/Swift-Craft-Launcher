@@ -24,11 +24,6 @@ class GameSettingsManager: ObservableObject {
     // MARK: - 单例实例
     static let shared = GameSettingsManager()
 
-    @AppStorage("autoDownloadDependencies")
-    var autoDownloadDependencies: Bool = false {
-        didSet { objectWillChange.send() }
-    }
-
     @AppStorage("forgeMavenMirrorURL")
     var forgeMavenMirrorURL: String = "" {
         didSet { objectWillChange.send() }
