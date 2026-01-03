@@ -193,10 +193,11 @@ struct AddOrDeleteResourceButton: View {
                 isPresented: $showGameResourceInstallSheet,
                 onDismiss: {
                     // 如果下载成功，状态已经在 sheet 中设置好了
-                    // 如果只是关闭 sheet（没有下载），设置为"安装"状态
+                    // 如果只是关闭 sheet（没有下载）或下载失败，设置为"安装"状态
                     if !hasDownloadedInSheet {
                         addButtonState = .idle
-                        // 如果取消更新操作，清理旧文件名
+                        // 如果取消更新操作或下载失败，清理旧文件名（不删除文件）
+                        // 只有在下载成功时才会删除旧文件
                         oldFileNameForUpdate = nil
                     }
                     // 重置下载标志
@@ -214,16 +215,18 @@ struct AddOrDeleteResourceButton: View {
                             preloadedDetail: preloadedDetail
                         ) {
                             // 下载成功，标记并更新状态
+                            // 注意：只有在这个回调被调用时，才表示下载真正成功
                             hasDownloadedInSheet = true
                             addToScannedDetailIds()
-                            
+
                             // 如果是更新操作，先删除旧文件
+                            // 只有在下载成功时才会执行删除操作
                             if let oldFileName = oldFileNameForUpdate {
                                 deleteFile(fileName: oldFileName)
                                 // 清理旧文件名
                                 oldFileNameForUpdate = nil
                             }
-                            
+
                             // 如果是 local 模式，清空当前文件名（下载后会更新）
                             if !type {
                                 currentFileName = nil
@@ -278,7 +281,7 @@ struct AddOrDeleteResourceButton: View {
         // 使用 project.fileName 删除
         deleteFile(fileName: project.fileName)
     }
-    
+
     // 根据指定文件名删除文件
     private func deleteFile(fileName: String?) {
         // 检查 query 是否是有效的资源类型
