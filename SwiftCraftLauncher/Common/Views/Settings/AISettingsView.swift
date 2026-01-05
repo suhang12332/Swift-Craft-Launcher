@@ -89,7 +89,6 @@ public struct AISettingsView: View {
             }
             .labeledContentStyle(.custom(alignment: .lastTextBaseline))
         }
-        .globalErrorHandler()
     }
 }
 

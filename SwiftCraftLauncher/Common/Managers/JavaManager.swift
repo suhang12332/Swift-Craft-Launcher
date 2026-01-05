@@ -6,20 +6,27 @@ class JavaManager {
 
     private let fileManager = FileManager.default
 
+    /// 获取Java可执行文件路径（仅拼接路径，不验证文件是否存在或Java是否可用）
+    /// - Parameter version: Java运行时component版本（如"java-runtime-alpha"）
+    /// - Returns: Java可执行文件路径
+    func getJavaExecutablePath(version: String) -> String {
+        return AppPaths.runtimeDirectory.appendingPathComponent(version).appendingPathComponent("jre.bundle/Contents/Home/bin/java").path
+    }
+
     func findJavaExecutable(version: String) -> String {
-        let javaPath = AppPaths.runtimeDirectory.appendingPathComponent(version).appendingPathComponent("jre.bundle/Contents/Home/bin/java")
+        let javaPath = getJavaExecutablePath(version: version)
 
         // 检查文件是否存在
-        guard fileManager.fileExists(atPath: javaPath.path) else {
+        guard fileManager.fileExists(atPath: javaPath) else {
             return ""
         }
 
         // 验证Java是否能正常启动
-        guard canJavaRun(at: javaPath.path) else {
+        guard canJavaRun(at: javaPath) else {
             return ""
         }
 
-        return javaPath.path
+        return javaPath
     }
 
     /// 验证Java是否能正常启动
@@ -76,5 +83,23 @@ class JavaManager {
             Logger.shared.error("Java版本 \(version) 下载完成后仍无法找到可用的Java可执行文件")
         }
         return newPath
+    }
+
+    /// 根据游戏版本号获取默认Java路径
+    /// 通过查询缓存的版本文件获取component，然后拼接Java路径（不验证文件是否存在）
+    /// - Parameter gameVersion: 游戏版本号（如"1.20.1"）
+    /// - Returns: Java可执行文件路径
+    func findDefaultJavaPath(for gameVersion: String) async -> String {
+        do {
+            // 查询缓存的版本文件获取manifest
+            let manifest = try await ModrinthService.fetchVersionInfo(from: gameVersion)
+            let component = manifest.javaVersion.component
+
+            // 使用component拼接Java路径（不验证）
+            return getJavaExecutablePath(version: component)
+        } catch {
+            Logger.shared.error("获取游戏版本信息失败: \(error.localizedDescription)")
+            return ""
+        }
     }
 }

@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import AppKit
+import UniformTypeIdentifiers
 
 struct GameAdvancedSettingsView: View {
     @EnvironmentObject var gameRepository: GameRepository
@@ -21,7 +23,9 @@ struct GameAdvancedSettingsView: View {
     @State private var enableNetworkOptimizations: Bool = false
     @State private var customJvmArguments: String = ""
     @State private var environmentVariables: String = ""
+    @State private var javaPath: String = ""
     @State private var showResetAlert = false
+    @State private var showJavaPathPicker = false
     @State private var error: GlobalError?
     @State private var isLoadingSettings = false
     @State private var saveTask: Task<Void, Never>?
@@ -50,6 +54,24 @@ struct GameAdvancedSettingsView: View {
 
     var body: some View {
         Form {
+            LabeledContent("settings.game.java.path".localized()) {
+                DirectorySettingRow(
+                    title: "settings.game.java.path".localized(),
+                    path: javaPath.isEmpty ? (currentGame?.javaPath ?? "") : javaPath,
+                    description: "settings.game.java.path.description".localized(),
+                    onChoose: { showJavaPathPicker = true },
+                    onReset: {
+                        resetJavaPathSafely()
+                    }
+                ).fixedSize()
+                    .fileImporter(
+                        isPresented: $showJavaPathPicker,
+                        allowedContentTypes: [.item],
+                        allowsMultipleSelection: false
+                    ) { result in
+                        handleJavaPathSelection(result)
+                    }
+            }.labeledContentStyle(.custom(alignment: .firstTextBaseline))
 
             LabeledContent("settings.game.java.garbage_collector".localized()) {
                 HStack {
@@ -163,14 +185,14 @@ struct GameAdvancedSettingsView: View {
         }
         .alert(
             "error.notification.validation.title".localized(),
-            isPresented: .constant(error != nil)
+            isPresented: .constant(error != nil && error?.level == .popup)
         ) {
             Button("common.close".localized()) {
                 error = nil
             }
         } message: {
             if let error = error {
-                Text(error.chineseMessage)
+                Text(error.localizedDescription)
             }
         }
     }
@@ -186,6 +208,7 @@ struct GameAdvancedSettingsView: View {
         let xmx = game.xmx == 0 ? GameSettingsManager.shared.globalXmx : game.xmx
         memoryRange = Double(xms)...Double(xmx)
         environmentVariables = game.environmentVariables
+        javaPath = game.javaPath
 
         let jvmArgs = game.jvmArguments.trimmingCharacters(in: .whitespacesAndNewlines)
         if jvmArgs.isEmpty {
@@ -359,6 +382,7 @@ struct GameAdvancedSettingsView: View {
                 updatedGame.xmx = xmx
                 updatedGame.jvmArguments = generateJvmArguments()
                 updatedGame.environmentVariables = environmentVariables
+                updatedGame.javaPath = javaPath
 
                 try await gameRepository.updateGame(updatedGame)
                 Logger.shared.debug("自动保存游戏设置: \(game.gameName)")
@@ -384,7 +408,60 @@ struct GameAdvancedSettingsView: View {
         applyOptimizationPreset(.balanced)
         customJvmArguments = ""
         environmentVariables = ""
+        resetJavaPathSafely()
         autoSave()
+    }
+
+    /// 安全地重置Java路径
+    private func resetJavaPathSafely() {
+        guard let game = currentGame else { return }
+
+        Task {
+            let defaultPath = await JavaManager.shared.findDefaultJavaPath(for: game.gameVersion)
+            await MainActor.run {
+                javaPath = defaultPath
+                autoSave()
+            }
+        }
+    }
+
+    /// 处理Java路径选择结果
+    private func handleJavaPathSelection(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            if let url = urls.first {
+                // 验证文件是否存在且可执行
+                let fileManager = FileManager.default
+                guard fileManager.fileExists(atPath: url.path) else {
+                    error = GlobalError.fileSystem(
+                        chineseMessage: "选择的文件不存在",
+                        i18nKey: "error.filesystem.file_not_found",
+                        level: .notification
+                    )
+                    return
+                }
+
+                // 验证是否为可执行文件（通过JavaManager验证）
+                if JavaManager.shared.canJavaRun(at: url.path) {
+                    javaPath = url.path
+                    autoSave()
+                    Logger.shared.info("Java路径已设置为: \(url.path)")
+                } else {
+                    error = GlobalError.validation(
+                        chineseMessage: "选择的文件不是有效的Java可执行文件",
+                        i18nKey: "error.validation.invalid_java_executable",
+                        level: .popup
+                    )
+                }
+            }
+        case .failure(let error):
+            let globalError = GlobalError.fileSystem(
+                chineseMessage: "选择Java路径失败: \(error.localizedDescription)",
+                i18nKey: "error.filesystem.java_path_selection_failed",
+                level: .notification
+            )
+            self.error = globalError
+        }
     }
 }
 
