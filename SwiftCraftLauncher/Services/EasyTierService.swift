@@ -52,7 +52,6 @@ class EasyTierService {
     func createRoom() -> EasyTierRoom {
         let roomCode = RoomCodeGenerator.generate()
         let room = EasyTierRoom(roomCode: roomCode)
-        Logger.shared.info("创建新房间: \(roomCode)")
         return room
     }
 
