@@ -53,10 +53,6 @@ struct CreateRoomWindowView: View {
             }
 
             HStack {
-                HelpButton {
-                }
-                Spacer()
-
                 // 取消按钮
                 Button(action: {
                     TemporaryWindowManager.shared.closeWindow(withTitle: "easytier.create.room.window.title".localized())
@@ -65,7 +61,7 @@ struct CreateRoomWindowView: View {
                 })
                 .buttonStyle(.bordered)
                 .disabled(isConnecting)
-
+                Spacer()
                 // 连接按钮
                 Button(action: {
                     Task { await connect() }
