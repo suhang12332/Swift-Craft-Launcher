@@ -84,5 +84,14 @@ struct MenuBarContentView: View {
             }
             .disabled(!easyTierManager.canJoinRoom)
         }
+
+        Divider()
+
+        // 直接关闭 EasyTier 菜单
+        Button("menubar.easytier.close".localized()) {
+            Task {
+                await EasyTierManager.shared.forceCloseEasyTier()
+            }
+        }
     }
 }

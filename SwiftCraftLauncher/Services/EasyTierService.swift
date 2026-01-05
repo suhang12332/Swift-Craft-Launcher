@@ -173,6 +173,37 @@ class EasyTierService {
         Logger.shared.info("EasyTier 网络已停止")
     }
 
+    /// 强制停止 EasyTier 网络（不检测房间，直接关闭）
+    func forceStopNetwork() async {
+        Logger.shared.info("强制停止 EasyTier 网络")
+
+        // 如果有当前房间和进程ID，先尝试终止该进程
+        if let room = currentRoom, let pid = room.processID {
+            do {
+                try await executeKillWithAdminPrivileges(pid: pid)
+                Logger.shared.debug("使用管理员权限终止进程 PID: \(pid)")
+            } catch {
+                Logger.shared.warning("终止进程失败: \(error.localizedDescription)")
+            }
+        }
+
+        // 使用 killall 确保所有 easytier-core 进程都被终止
+        do {
+            try await executeKillallWithAdminPrivileges()
+        } catch {
+            Logger.shared.warning("使用 killall 终止进程失败: \(error.localizedDescription)")
+        }
+
+        // 清理 Process 对象引用
+        currentProcess = nil
+
+        // 更新状态
+        currentRoom?.status = .disconnected
+        currentRoom = nil
+
+        Logger.shared.info("EasyTier 网络已强制停止")
+    }
+
     /// 获取当前网络状态
     /// - Returns: 当前房间的网络状态，如果没有活动房间则返回 nil
     func getNetworkStatus() -> EasyTierNetworkStatus? {
@@ -285,45 +316,9 @@ class EasyTierService {
     /// - Returns: 进程 PID
     /// - Throws: GlobalError 当执行失败时
     private func executeWithAdminPrivileges(executable: String, arguments: [String]) async throws -> Int32 {
-        // 检查授权引用
-        guard let authRef = authRef else {
-            throw GlobalError.configuration(
-                chineseMessage: "授权引用未初始化",
-                i18nKey: "error.configuration.authorization_failed",
-                level: .popup
-            )
-        }
-
-        // 请求管理员权限
-        let rightName = kAuthorizationRightExecute
-        // Use withCString to get a pointer that's valid for the duration of the call
-        let status = rightName.withCString { namePointer -> OSStatus in
-            var authItem = AuthorizationItem(
-                name: UnsafeMutablePointer(mutating: namePointer),
-                valueLength: 0,
-                value: nil,
-                flags: 0
-            )
-            return withUnsafeMutablePointer(to: &authItem) { itemPointer -> OSStatus in
-                var authRights = AuthorizationRights(count: 1, items: itemPointer)
-                let authFlags: AuthorizationFlags = [.interactionAllowed, .extendRights, .preAuthorize]
-                return AuthorizationCopyRights(authRef, &authRights, nil, authFlags, nil)
-            }
-        }
-        guard status == errAuthorizationSuccess else {
-            if status == errAuthorizationCanceled {
-                throw GlobalError.configuration(
-                    chineseMessage: "用户取消了管理员权限请求",
-                    i18nKey: "error.configuration.authorization_denied",
-                    level: .popup
-                )
-            }
-            throw GlobalError.configuration(
-                chineseMessage: "授权失败: \(status)",
-                i18nKey: "error.configuration.authorization_failed",
-                level: .popup
-            )
-        }
+        // 注意：我们直接使用 AppleScript 的 "with administrator privileges" 来请求权限
+        // 这样可以避免重复的密码输入（之前使用 AuthorizationCopyRights 会导致两次密码输入）
+        // AppleScript 的权限请求会在 executeScript 方法中处理
 
         Logger.shared.debug("执行管理员命令: \(executable) \(arguments.joined(separator: " "))")
 
@@ -335,7 +330,8 @@ class EasyTierService {
 
         // 使用 osascript 执行脚本（需要管理员权限）
         // 注意：AuthorizationExecuteWithPrivileges 在 macOS 10.9 之后已废弃
-        // 因此使用 osascript 的 with administrator privileges，但我们已经通过 Authorization API 请求了权限
+        // 因此使用 osascript 的 with administrator privileges 来请求管理员权限
+        // 权限请求会在 executeScript 方法中通过 AppleScript 处理
         do {
             // 创建输出文件用于检查进程是否成功启动
             let tempDir = FileManager.default.temporaryDirectory

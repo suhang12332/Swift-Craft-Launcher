@@ -109,6 +109,13 @@ class EasyTierManager: ObservableObject {
         Logger.shared.info("已离开房间")
     }
 
+    /// 直接关闭 EasyTier（无需检测是否允许）
+    func forceCloseEasyTier() async {
+        await easyTierService.forceStopNetwork()
+        connectionType = .disconnected
+        Logger.shared.info("EasyTier 已强制关闭")
+    }
+
     /// 设置房间连接类型（创建房间）
     func setRoomCreated() {
         connectionType = .created
