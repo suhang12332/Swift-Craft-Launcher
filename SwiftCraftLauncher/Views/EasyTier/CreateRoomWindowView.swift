@@ -21,6 +21,8 @@ struct CreateRoomWindowView: View {
                         .font(.headline)
                     Text("easytier.create.room.description".localized())
                         .font(.caption)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.leading)
                 }.padding(.leading, 4)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }

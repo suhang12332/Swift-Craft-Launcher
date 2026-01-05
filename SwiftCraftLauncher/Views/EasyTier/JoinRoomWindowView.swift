@@ -19,7 +19,9 @@ struct JoinRoomWindowView: View {
                     Text("easytier.join.room.title".localized())
                         .font(.headline)
                     Text("easytier.join.room.description".localized())
-                    .font(.caption)
+                        .font(.caption)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.leading)
                 }.padding(.leading, 4)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
