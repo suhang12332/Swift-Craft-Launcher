@@ -185,14 +185,14 @@ struct GameAdvancedSettingsView: View {
         }
         .alert(
             "error.notification.validation.title".localized(),
-            isPresented: .constant(error != nil)
+            isPresented: .constant(error != nil && error?.level == .popup)
         ) {
             Button("common.close".localized()) {
                 error = nil
             }
         } message: {
             if let error = error {
-                Text(error.chineseMessage)
+                Text(error.localizedDescription)
             }
         }
     }
@@ -450,7 +450,7 @@ struct GameAdvancedSettingsView: View {
                     error = GlobalError.validation(
                         chineseMessage: "选择的文件不是有效的Java可执行文件",
                         i18nKey: "error.validation.invalid_java_executable",
-                        level: .notification
+                        level: .popup
                     )
                 }
             }

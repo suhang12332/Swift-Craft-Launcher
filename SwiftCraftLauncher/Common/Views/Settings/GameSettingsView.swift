@@ -91,7 +91,6 @@ public struct GameSettingsView: View {
         .onAppear {
             calculateCacheInfoSafely()
         }
-        .globalErrorHandler()
     }
 }
 

@@ -10,8 +10,7 @@ public struct GeneralSettingsView: View {
     @State private var previousLanguage: String = ""
     @State private var isCancellingLanguageChange = false
     @State private var selectedLanguage = LanguageManager.shared.selectedLanguage
-    @State private var showingErrorAlert = false
-    @State private var errorMessage = ""
+    @State private var error: GlobalError?
 
     public init() {}
 
@@ -98,12 +97,19 @@ public struct GeneralSettingsView: View {
                     .labelsHidden()
             }.labeledContentStyle(.custom)
         }
-        .alert("common.error".localized(), isPresented: $showingErrorAlert) {
-            Button("common.ok".localized()) { }
-        } message: {
-            Text(errorMessage)
-        }
         .globalErrorHandler()
+        .alert(
+            "error.notification.validation.title".localized(),
+            isPresented: .constant(error != nil && error?.level == .popup)
+        ) {
+            Button("common.close".localized()) {
+                error = nil
+            }
+        } message: {
+            if let error = error {
+                Text(error.localizedDescription)
+            }
+        }
     }
 
     // MARK: - Private Methods
@@ -128,7 +134,7 @@ public struct GeneralSettingsView: View {
         } catch {
             let globalError = GlobalError.from(error)
             GlobalErrorHandler.shared.handle(globalError)
-            showError(globalError.chineseMessage)
+            self.error = globalError
         }
     }
 
@@ -155,7 +161,7 @@ public struct GeneralSettingsView: View {
                 } catch {
                     let globalError = GlobalError.from(error)
                     GlobalErrorHandler.shared.handle(globalError)
-                    showError(globalError.chineseMessage)
+                    self.error = globalError
                 }
             }
         case .failure(let error):
@@ -165,7 +171,7 @@ public struct GeneralSettingsView: View {
                 level: .notification
             )
             GlobalErrorHandler.shared.handle(globalError)
-            showError(globalError.chineseMessage)
+            self.error = globalError
         }
     }
 
@@ -176,14 +182,8 @@ public struct GeneralSettingsView: View {
         } catch {
             let globalError = GlobalError.from(error)
             GlobalErrorHandler.shared.handle(globalError)
-            showError(globalError.chineseMessage)
+            self.error = globalError
         }
-    }
-
-    /// 显示错误信息
-    private func showError(_ message: String) {
-        errorMessage = message
-        showingErrorAlert = true
     }
 }
 
