@@ -282,3 +282,34 @@ extension InfoIconWithPopover {
         }
     }
 }
+
+struct HelpButton: NSViewRepresentable {
+    var action: () -> Void
+
+    func makeNSView(context: Context) -> NSButton {
+        let button = NSButton()
+        button.bezelStyle = .helpButton
+        button.title = ""
+        button.target = context.coordinator
+        button.action = #selector(Coordinator.clicked)
+        return button
+    }
+
+    func updateNSView(_ nsView: NSButton, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(action: action)
+    }
+
+    class Coordinator: NSObject {
+        let action: () -> Void
+
+        init(action: @escaping () -> Void) {
+            self.action = action
+        }
+
+        @objc func clicked() {
+            action()
+        }
+    }
+}

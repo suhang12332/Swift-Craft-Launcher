@@ -6,7 +6,31 @@
 //
 
 import SwiftUI
-import AppKit
+import UniformTypeIdentifiers
+
+/// 整合包文档类型，用于文件导出
+struct ModPackDocument: FileDocument {
+    static var readableContentTypes: [UTType] {
+        [UTType(filenameExtension: "mrpack") ?? UTType.zip]
+    }
+
+    var data: Data
+
+    init(data: Data) {
+        self.data = data
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        guard let data = configuration.file.regularFileContents else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        self.data = data
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: data)
+    }
+}
 
 /// 整合包导出 Sheet 视图
 /// 提供整合包导出功能，包括：
@@ -19,8 +43,21 @@ struct ModPackExportSheet: View {
     let gameInfo: GameVersionInfo
     @Environment(\.dismiss)
     private var dismiss
-    @StateObject private var viewModel = ModPackExportViewModel()
+    @StateObject private var viewModel: ModPackExportViewModel
     @State private var showSaveErrorAlert = false
+    @State private var isExporting = false
+    @State private var exportDocument: ModPackDocument?
+
+    // MARK: - Initialization
+    init(gameInfo: GameVersionInfo) {
+        self.gameInfo = gameInfo
+        let viewModel = ModPackExportViewModel()
+        // 在初始化时设置默认值
+        if viewModel.modPackName.isEmpty {
+            viewModel.modPackName = gameInfo.gameName
+        }
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     // MARK: - Body
     var body: some View {
@@ -29,17 +66,35 @@ struct ModPackExportSheet: View {
             body: { bodyView },
             footer: { footerView }
         )
-        .onAppear {
-            initializeDefaults()
-        }
         .onDisappear {
-            // 页面关闭后清理所有数据和临时文件
             viewModel.cleanupAllData()
         }
         .onChange(of: viewModel.shouldShowSaveDialog) { _, shouldShow in
             if shouldShow, let tempPath = viewModel.tempExportPath {
                 handleExportCompleted(tempFilePath: tempPath)
             }
+        }
+        .onChange(of: isExporting) { oldValue, newValue in
+            if oldValue && !newValue && exportDocument != nil {
+                exportDocument = nil
+            }
+        }
+        .fileExporter(
+            isPresented: $isExporting,
+            document: exportDocument,
+            contentType: UTType(filenameExtension: "mrpack") ?? UTType.zip,
+            defaultFilename: viewModel.modPackName.isEmpty ? "modpack" : viewModel.modPackName
+        ) { result in
+            switch result {
+            case .success(let url):
+                Logger.shared.info("整合包已保存到: \(url.path)")
+                viewModel.handleSaveSuccess()
+                dismiss()
+            case .failure(let error):
+                Logger.shared.error("保存文件失败: \(error.localizedDescription)")
+                viewModel.handleSaveFailure(error: error.localizedDescription)
+            }
+            exportDocument = nil
         }
         .alert("common.error".localized(), isPresented: $showSaveErrorAlert) {
             Button("common.ok".localized(), role: .cancel) {
@@ -56,37 +111,29 @@ struct ModPackExportSheet: View {
     }
 
     private var headerView: some View {
-        HStack {
-            Text("modpack.export.title".localized())
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
+        Text("modpack.export.title".localized())
+            .font(.headline)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var bodyView: some View {
-        Group {
-            switch viewModel.exportState {
-            case .idle:
-                idleStateView
-            case .exporting, .completed:
-                // 完成时继续显示进度视图，直接弹出保存对话框
-                exportProgressView
-            }
+    @ViewBuilder private var bodyView: some View {
+        switch viewModel.exportState {
+        case .idle:
+            idleStateView
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+        case .exporting, .completed:
+            exportProgressView
         }
-        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
     // MARK: - State Views
 
-    private var idleStateView: some View {
-        Group {
-            if let error = viewModel.exportError {
-                errorView(error: error)
-            } else {
-                exportFormView
-            }
+    @ViewBuilder private var idleStateView: some View {
+        if let error = viewModel.exportError {
+            errorView(error: error)
+        } else {
+            exportFormView
         }
-        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
     private var exportFormView: some View {
@@ -133,7 +180,11 @@ struct ModPackExportSheet: View {
             Spacer()
 
             Button("modpack.export.button".localized()) {
-                viewModel.startExport(gameInfo: gameInfo)
+                if viewModel.exportState == .completed, let tempPath = viewModel.tempExportPath {
+                    handleExportCompleted(tempFilePath: tempPath)
+                } else {
+                    viewModel.startExport(gameInfo: gameInfo)
+                }
             }
             .keyboardShortcut(.defaultAction)
             .disabled(viewModel.modPackName.isEmpty || viewModel.isExporting)
@@ -142,7 +193,6 @@ struct ModPackExportSheet: View {
 
     // MARK: - Reusable Components
 
-    /// 进度项视图（用于导出中和完成状态）
     private var progressItemsView: some View {
         VStack(spacing: 16) {
             // 扫描资源进度条（总是显示，因为扫描是必然的）
@@ -159,7 +209,6 @@ struct ModPackExportSheet: View {
         }
     }
 
-    /// 单个进度行（固定最小高度，保持布局稳定）
     private func progressRow(progress: ModPackExporter.ExportProgress.ProgressItem) -> some View {
         FormSection {
             DownloadProgressRow(
@@ -194,79 +243,21 @@ struct ModPackExportSheet: View {
 
     // MARK: - Actions
 
-    /// 初始化默认值
-    private func initializeDefaults() {
-        if viewModel.modPackName.isEmpty {
-            viewModel.modPackName = gameInfo.gameName
-        }
-    }
-
-    /// 处理导出完成，直接显示保存对话框
-    /// - Parameter tempFilePath: 临时文件路径
+    /// 处理导出完成，显示保存对话框
     private func handleExportCompleted(tempFilePath: URL) {
-        viewModel.markSaveDialogShown()
-        // 直接显示保存对话框，不延迟
-        showSavePanel(tempFilePath: tempFilePath)
-    }
-
-    /// 显示保存对话框并处理文件保存
-    /// - Parameter tempFilePath: 临时文件路径
-    private func showSavePanel(tempFilePath: URL) {
-        let savePanel = createSavePanel()
-        let modPackName = viewModel.modPackName
-        savePanel.begin { response in
-            if response == .OK, let directoryURL = savePanel.url {
-                self.handleSaveFile(
-                    from: tempFilePath,
-                    to: directoryURL,
-                    fileName: "\(modPackName).mrpack"
-                )
-            } else {
-                self.handleSaveCancelled(tempFilePath: tempFilePath)
-            }
+        if viewModel.shouldShowSaveDialog {
+            viewModel.markSaveDialogShown()
         }
-    }
-
-    /// 创建保存面板
-    private func createSavePanel() -> NSOpenPanel {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = false
-        panel.canChooseDirectories = true
-        panel.canCreateDirectories = true
-        panel.allowsMultipleSelection = false
-        return panel
-    }
-
-    /// 处理文件保存
-    /// - Parameters:
-    ///   - sourceURL: 源文件路径
-    ///   - directoryURL: 目标目录
-    ///   - fileName: 文件名
-    private func handleSaveFile(from sourceURL: URL, to directoryURL: URL, fileName: String) {
-        let destinationURL = directoryURL.appendingPathComponent(fileName)
 
         do {
-            // 如果目标文件已存在，先删除
-            if FileManager.default.fileExists(atPath: destinationURL.path) {
-                try FileManager.default.removeItem(at: destinationURL)
+            let fileData = try Data(contentsOf: tempFilePath)
+            exportDocument = ModPackDocument(data: fileData)
+            DispatchQueue.main.async {
+                self.isExporting = true
             }
-
-            // 移动文件
-            try FileManager.default.moveItem(at: sourceURL, to: destinationURL)
-
-            Logger.shared.info("整合包已保存到: \(destinationURL.path)")
-            viewModel.handleSaveSuccess()
-            dismiss()
         } catch {
-            Logger.shared.error("保存文件失败: \(error.localizedDescription)")
+            Logger.shared.error("读取临时文件失败: \(error.localizedDescription)")
             viewModel.handleSaveFailure(error: error.localizedDescription)
         }
-    }
-
-    /// 处理用户取消保存
-    /// - Parameter tempFilePath: 临时文件路径（已不再使用，保留以保持接口兼容）
-    private func handleSaveCancelled(tempFilePath: URL) {
-        // ViewModel 负责清理临时文件
-        viewModel.handleSaveCancelled()
     }
 }

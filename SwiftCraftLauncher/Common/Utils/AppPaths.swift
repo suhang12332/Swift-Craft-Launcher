@@ -137,4 +137,19 @@ extension AppPaths {
     static var gameVersionDatabase: URL {
         dataDirectory.appendingPathComponent("data.db")
     }
+
+    /// EasyTier core 目录 URL
+    static var easytierCoreDirectory: URL {
+        launcherSupportDirectory.appendingPathComponent("core", isDirectory: true)
+    }
+
+    /// EasyTier 核心程序路径
+    static var easytierCorePath: String {
+        easytierCoreDirectory.appendingPathComponent("easytier-core").path
+    }
+
+    /// EasyTier CLI 程序路径
+    static var easytierCliPath: String {
+        easytierCoreDirectory.appendingPathComponent("easytier-cli").path
+    }
 }

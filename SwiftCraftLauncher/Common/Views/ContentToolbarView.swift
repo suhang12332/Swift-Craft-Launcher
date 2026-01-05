@@ -45,11 +45,11 @@ public struct ContentToolbarView: ToolbarContent {
 
                 // 后台下载 待实现
 //            Button(action: {
-//                
+//
 //            }) {
 //                Label("game.form.title".localized(), systemImage: "square.and.arrow.down.badge.clock")
 //                                Label("game.form.title".localized(), systemImage: "icloud.and.arrow.down.fill")
-//                
+//
 //            }
                 Spacer()
 

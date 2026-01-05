@@ -482,7 +482,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
             : "\(indexInfo.loaderType)-\(indexInfo.loaderVersion)"
     }
 
-    // MARK: - Expose Internal Objects    
+    // MARK: - Expose Internal Objects
     var modPackViewModelForProgress: ModPackDownloadSheetViewModel {
         modPackViewModel
     }

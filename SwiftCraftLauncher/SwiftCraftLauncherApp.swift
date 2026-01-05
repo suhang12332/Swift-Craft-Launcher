@@ -52,9 +52,6 @@ struct SwiftCraftLauncherApp: App {
         Task {
             await NotificationManager.requestAuthorizationIfNeeded()
         }
-
-        // 清理临时窗口管理器，防止应用重启时恢复未关闭的临时窗口
-        TemporaryWindowManager.shared.cleanupAllWindows()
     }
 
     // MARK: - Body
@@ -70,6 +67,10 @@ struct SwiftCraftLauncherApp: App {
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
                 .background(TemporaryWindowOpener())
+                .onAppear {
+                    // 应用启动时清理所有临时窗口，防止应用重启时恢复未关闭的临时窗口
+                    TemporaryWindowManager.shared.cleanupAllWindows()
+                }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
@@ -149,10 +150,6 @@ struct SwiftCraftLauncherApp: App {
                     .environmentObject(playerListViewModel)
                     .environmentObject(generalSettingsManager)
                     .preferredColorScheme(generalSettingsManager.currentColorScheme)
-                    .onDisappear {
-                        // 窗口关闭时通知管理器
-                        TemporaryWindowManager.shared.closeWindow(for: windowID.id)
-                    }
             }
         }
         .defaultPosition(.center)
@@ -160,14 +157,7 @@ struct SwiftCraftLauncherApp: App {
         // 右上角的状态栏(可以显示图标的)
         MenuBarExtra(
             content: {
-                Button("settings.ai.open_chat".localized()) {
-                    AIChatManager.shared.openChatWindow()
-                }
-
-                Divider()
-
-                Button("menu.statusbar.placeholder".localized()) {
-                }
+                MenuBarContentView()
             },
             label: {
                 Image("menu-png").resizable()

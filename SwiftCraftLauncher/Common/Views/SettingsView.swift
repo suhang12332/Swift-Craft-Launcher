@@ -4,10 +4,9 @@ import Foundation
 /// 设置标签页枚举
 enum SettingsTab: Int {
     case general = 0
-    case appIcon = 1
-    case game = 2
-    case advanced = 3
-    case ai = 4
+    case game = 1
+    case advanced = 2
+    case ai = 3
 }
 
 /// 通用设置视图
@@ -27,11 +26,6 @@ public struct SettingsView: View {
                     Label("settings.general.tab".localized(), systemImage: "gearshape")
                 }
                 .tag(SettingsTab.general)
-            AppIconSettingsView()
-                .tabItem {
-                    Label("settings.app_icon.picker".localized(), systemImage: "app.badge")
-                }
-                .tag(SettingsTab.appIcon)
             GameSettingsView()
                 .tabItem {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")

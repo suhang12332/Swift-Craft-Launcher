@@ -29,6 +29,6 @@ public class LicenseManager {
     /// 关闭协议窗口
     @MainActor
     public func closeLicense() {
-        TemporaryWindowManager.shared.closeWindow()
+        TemporaryWindowManager.shared.closeWindow(withTitle: "license.view".localized())
     }
 }
