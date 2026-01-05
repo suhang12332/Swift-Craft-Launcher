@@ -201,16 +201,21 @@ enum GlobalError: Error, LocalizedError, Identifiable {
     }
 
     /// 本地化描述（兼容性）
+    ///
+    /// - 优先：使用 `i18nKey` 对应的本地化文案
+    /// - 兜底：当找不到本地化条目时，回退到 `chineseMessage`
+    ///
+    /// 注意：占位符（例如 `%@`）的替换需要在构造 `GlobalError` 之前完成，
+    /// 即调用方先使用 `String(format:)` 格式化好再传入。
     var localizedDescription: String {
-        // 如果chineseMessage不包含未格式化的占位符，说明已经格式化过，优先使用它
-        if !chineseMessage.contains("%@") {
-            return chineseMessage
+        let localizedText = i18nKey.localized()
+
+        // 有有效的本地化条目时，始终使用本地化内容
+        if localizedText != i18nKey {
+            return localizedText
         }
-        // 否则使用errorDescription（如果它也不包含占位符）
-        if let errorDesc = errorDescription, !errorDesc.contains("%@") {
-            return errorDesc
-        }
-        // 如果都包含占位符，返回chineseMessage（至少是中文消息）
+
+        // 没有对应的本地化条目时，回退到中文消息
         return chineseMessage
     }
 

@@ -16,3 +16,12 @@ public struct GitHubContributor: Codable, Identifiable {
         case contributions
     }
 }
+
+// MARK: - GitHub Release Model
+public struct GitHubRelease: Codable {
+    public let tagName: String
+
+    enum CodingKeys: String, CodingKey {
+        case tagName = "tag_name"
+    }
+}

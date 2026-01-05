@@ -21,7 +21,7 @@ class GameSetupUtil: ObservableObject {
 
     private var downloadTask: Task<Void, Never>?
 
-    // MARK: - Public Methods    
+    // MARK: - Public Methods
 
     /// 内部游戏保存方法
     /// - Parameters:
