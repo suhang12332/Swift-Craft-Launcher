@@ -43,10 +43,21 @@ struct ModPackExportSheet: View {
     let gameInfo: GameVersionInfo
     @Environment(\.dismiss)
     private var dismiss
-    @StateObject private var viewModel = ModPackExportViewModel()
+    @StateObject private var viewModel: ModPackExportViewModel
     @State private var showSaveErrorAlert = false
     @State private var isExporting = false
     @State private var exportDocument: ModPackDocument?
+
+    // MARK: - Initialization
+    init(gameInfo: GameVersionInfo) {
+        self.gameInfo = gameInfo
+        let viewModel = ModPackExportViewModel()
+        // 在初始化时设置默认值
+        if viewModel.modPackName.isEmpty {
+            viewModel.modPackName = gameInfo.gameName
+        }
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     // MARK: - Body
     var body: some View {
@@ -55,9 +66,6 @@ struct ModPackExportSheet: View {
             body: { bodyView },
             footer: { footerView }
         )
-        .onAppear {
-            initializeDefaults()
-        }
         .onDisappear {
             viewModel.cleanupAllData()
         }
@@ -108,16 +116,14 @@ struct ModPackExportSheet: View {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var bodyView: some View {
-        Group {
-            switch viewModel.exportState {
-            case .idle:
-                idleStateView
-            case .exporting, .completed:
-                exportProgressView
-            }
+    @ViewBuilder private var bodyView: some View {
+        switch viewModel.exportState {
+        case .idle:
+            idleStateView
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+        case .exporting, .completed:
+            exportProgressView
         }
-        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 
     // MARK: - State Views
@@ -236,13 +242,6 @@ struct ModPackExportSheet: View {
     }
 
     // MARK: - Actions
-
-    /// 初始化默认值
-    private func initializeDefaults() {
-        if viewModel.modPackName.isEmpty {
-            viewModel.modPackName = gameInfo.gameName
-        }
-    }
 
     /// 处理导出完成，显示保存对话框
     private func handleExportCompleted(tempFilePath: URL) {

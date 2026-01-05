@@ -10,7 +10,6 @@ public struct SidebarView: View {
     @State private var searchText: String = ""
     @State private var showDeleteAlert: Bool = false
     @State private var gameToDelete: GameVersionInfo?
-    @State private var showExportSheet: Bool = false
     @State private var gameToExport: GameVersionInfo?
     @StateObject private var gameActionManager = GameActionManager.shared
     @StateObject private var gameStatusManager = GameStatusManager.shared
@@ -56,7 +55,9 @@ public struct SidebarView: View {
                             game: game,
                             onDelete: { gameToDelete = game; showDeleteAlert = true },
                             onOpenSettings: { openSettings() },
-                            onExport: { gameToExport = game; showExportSheet = true }
+                            onExport: {
+                                gameToExport = game
+                            }
                         )
                     }
                 }
@@ -124,10 +125,8 @@ public struct SidebarView: View {
                 )
             }
         }
-        .sheet(isPresented: $showExportSheet) {
-            if let game = gameToExport {
-                ModPackExportSheet(gameInfo: game)
-            }
+        .sheet(item: $gameToExport) { game in
+            ModPackExportSheet(gameInfo: game)
         }
     }
 
