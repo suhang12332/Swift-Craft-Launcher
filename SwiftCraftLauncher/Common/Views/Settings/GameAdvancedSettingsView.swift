@@ -40,6 +40,18 @@ struct GameAdvancedSettingsView: View {
         !customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    /// 获取当前游戏的 Java 版本
+    private var currentJavaVersion: Int {
+        currentGame?.javaVersion ?? 8
+    }
+
+    /// 根据当前 Java 版本获取可用的垃圾回收器
+    private var availableGarbageCollectors: [GarbageCollector] {
+        GarbageCollector.allCases.filter { gc in
+            gc.isSupported(by: currentJavaVersion)
+        }
+    }
+
     /// 根据当前选择的垃圾回收器获取可用的优化预设
     /// 最大优化仅在 G1GC 时可用
     private var availableOptimizationPresets: [OptimizationPreset] {
@@ -76,7 +88,7 @@ struct GameAdvancedSettingsView: View {
             LabeledContent("settings.game.java.garbage_collector".localized()) {
                 HStack {
                     Picker("", selection: $selectedGarbageCollector) {
-                        ForEach(GarbageCollector.allCases, id: \.self) { gc in
+                        ForEach(availableGarbageCollectors, id: \.self) { gc in
                             Text(gc.displayName).tag(gc)
                         }
                     }
@@ -85,6 +97,10 @@ struct GameAdvancedSettingsView: View {
                     .disabled(isUsingCustomArguments)  // 使用自定义参数时禁用
                     .onChange(of: selectedGarbageCollector) { _, _ in
                         if !isUsingCustomArguments {
+                            // 如果选择的垃圾回收器不支持当前 Java 版本，自动切换到支持的选项
+                            if !selectedGarbageCollector.isSupported(by: currentJavaVersion) {
+                                selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
+                            }
                             autoSave()
                         }
                     }
@@ -213,11 +229,17 @@ struct GameAdvancedSettingsView: View {
         let jvmArgs = game.jvmArguments.trimmingCharacters(in: .whitespacesAndNewlines)
         if jvmArgs.isEmpty {
             customJvmArguments = ""
-            selectedGarbageCollector = .g1gc
+            // 根据 Java 版本选择默认垃圾回收器
+            selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
             optimizationPreset = .balanced
             applyOptimizationPreset(.balanced)
         } else {
             customJvmArguments = parseExistingJvmArguments(jvmArgs) ? "" : jvmArgs
+            // 如果解析出的垃圾回收器不支持当前 Java 版本，自动切换到支持的选项
+            if !selectedGarbageCollector.isSupported(by: currentJavaVersion) {
+                selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
+                applyOptimizationPreset(.balanced)
+            }
         }
     }
 
@@ -233,18 +255,29 @@ struct GameAdvancedSettingsView: View {
         ]
 
         guard let (_, gc) = gcMap.first(where: { args.contains($0.0) }) else {
-            selectedGarbageCollector = .g1gc
+            selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
             optimizationPreset = .balanced
             applyOptimizationPreset(.balanced)
             return false
         }
 
-        selectedGarbageCollector = gc
+        // 验证垃圾回收器是否支持当前 Java 版本
+        if gc.isSupported(by: currentJavaVersion) {
+            selectedGarbageCollector = gc
+        } else {
+            // 如果不支持，使用默认支持的垃圾回收器
+            Logger.shared.warning("检测到不兼容的垃圾回收器 \(gc.displayName)（需要 Java \(gc.minimumJavaVersion)+，当前 Java \(currentJavaVersion)），自动切换到兼容选项")
+            selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
+            optimizationPreset = .balanced
+            applyOptimizationPreset(.balanced)
+            return false
+        }
         // 解析优化选项
         enableOptimizations = args.contains("-XX:+OptimizeStringConcat") ||
                              args.contains("-XX:+OmitStackTraceInFastThrow")
         enableMemoryOptimizations = args.contains("-XX:+UseCompressedOops") ||
-                                   args.contains("-XX:+UseCompressedClassPointers")
+                                   args.contains("-XX:+UseCompressedClassPointers") ||
+                                   args.contains("-XX:+UseCompactObjectHeaders")
         enableThreadOptimizations = args.contains("-XX:+OmitStackTraceInFastThrow")
 
         if selectedGarbageCollector == .g1gc {
@@ -309,10 +342,15 @@ struct GameAdvancedSettingsView: View {
             return customJvmArguments
         }
 
-        var arguments: [String] = []
-        arguments.append(contentsOf: selectedGarbageCollector.arguments)
+        // 确保选择的垃圾回收器支持当前 Java 版本
+        let gc = selectedGarbageCollector.isSupported(by: currentJavaVersion)
+            ? selectedGarbageCollector
+            : (availableGarbageCollectors.first ?? .g1gc)
 
-        if selectedGarbageCollector == .g1gc {
+        var arguments: [String] = []
+        arguments.append(contentsOf: gc.arguments)
+
+        if gc == .g1gc {
             arguments.append(contentsOf: [
                 "-XX:+ParallelRefProcEnabled",
                 "-XX:MaxGCPauseMillis=200",
@@ -345,8 +383,25 @@ struct GameAdvancedSettingsView: View {
             ])
         }
 
+        // 内存优化参数
+        // Java 8-14: UseCompressedOops 和 UseCompressedClassPointers 绑定
+        // Java 15-24: 显式指定 Oops + ClassPointers
+        // Java 25+: 再额外启用 CompactObjectHeaders
         if enableMemoryOptimizations {
-            arguments.append("-XX:+UseCompressedOops")
+            if currentJavaVersion < 15 {
+                arguments.append("-XX:+UseCompressedOops")
+            } else if currentJavaVersion < 25 {
+                arguments.append(contentsOf: [
+                    "-XX:+UseCompressedOops",
+                    "-XX:+UseCompressedClassPointers",
+                ])
+            } else {
+                arguments.append(contentsOf: [
+                    "-XX:+UseCompressedOops",
+                    "-XX:+UseCompressedClassPointers",
+                    "-XX:+UseCompactObjectHeaders",
+                ])
+            }
         }
 
         if enableNetworkOptimizations {
@@ -403,7 +458,8 @@ struct GameAdvancedSettingsView: View {
         defer { isLoadingSettings = false }
 
         memoryRange = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
-        selectedGarbageCollector = .g1gc
+        // 根据 Java 版本选择默认垃圾回收器
+        selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
         optimizationPreset = .balanced
         applyOptimizationPreset(.balanced)
         customJvmArguments = ""
@@ -473,6 +529,24 @@ enum GarbageCollector: String, CaseIterable {
     case shenandoah = "shenandoah"
     case parallel = "parallel"
     case serial = "serial"
+
+    /// 垃圾回收器所需的最低 Java 版本
+    var minimumJavaVersion: Int {
+        switch self {
+        case .g1gc: return 7      // Java 7+ (G1GC 在 Java 7u4+ 可用)
+        case .parallel: return 1   // Java 1.0+ (所有版本都支持)
+        case .serial: return 1     // Java 1.0+ (所有版本都支持)
+        case .zgc: return 11      // Java 11+ (ZGC 在 Java 11 引入)
+        case .shenandoah: return 12 // Java 12+ (Shenandoah 在 Java 12 引入)
+        }
+    }
+
+    /// 检查垃圾回收器是否支持指定的 Java 版本
+    /// - Parameter javaVersion: Java 主版本号（如 8, 11, 17）
+    /// - Returns: 是否支持
+    func isSupported(by javaVersion: Int) -> Bool {
+        return javaVersion >= minimumJavaVersion
+    }
 
     var displayName: String {
         switch self {

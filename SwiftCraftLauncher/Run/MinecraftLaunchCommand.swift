@@ -139,9 +139,17 @@ struct MinecraftLaunchCommand {
         // 在运行时拼接高级设置的JVM参数
         // 逻辑：如果有自定义JVM参数则直接使用，否则使用垃圾回收器+性能优化参数
         if !game.jvmArguments.isEmpty {
-            // 将自定义JVM参数插入到命令数组的开头（java命令之后）
-            let advancedArgs = game.jvmArguments.components(separatedBy: " ").filter { !$0.isEmpty }
-            replacedCommand.insert(contentsOf: advancedArgs, at: 0)
+            // 将自定义JVM参数插入到命令数组的开头（java命令之后），并去重保持顺序
+            let advancedArgs = game.jvmArguments
+                .components(separatedBy: " ")
+                .filter { !$0.isEmpty }
+            var seen = Set<String>()
+            let uniqueAdvancedArgs = advancedArgs.filter { arg in
+                if seen.contains(arg) { return false }
+                seen.insert(arg)
+                return true
+            }
+            replacedCommand.insert(contentsOf: uniqueAdvancedArgs, at: 0)
         }
 
         return replacedCommand

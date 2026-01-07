@@ -79,15 +79,21 @@ struct GameHeaderListRow: View {
     }
 
     private var gameIcon: some View {
-        AsyncImage(url: iconURL) { phase in
-            switch phase {
-            case .empty:
-                defaultIcon
-            case .success(let image):
-                styledIcon(image, size: 80)
-            case .failure:
-                defaultIcon
-            @unknown default:
+        Group {
+            if FileManager.default.fileExists(atPath: profileDir.appendingPathComponent(game.gameIcon).path) {
+                AsyncImage(url: iconURL) { phase in
+                    switch phase {
+                    case .empty:
+                        defaultIcon
+                    case .success(let image):
+                        styledIcon(image, size: 80)
+                    case .failure:
+                        defaultIcon
+                    @unknown default:
+                        defaultIcon
+                    }
+                }
+            } else {
                 defaultIcon
             }
         }
@@ -108,6 +114,10 @@ struct GameHeaderListRow: View {
         .onDisappear {
             cancellable?.cancel()
         }
+    }
+    
+    private var profileDir: URL {
+        AppPaths.profileDirectory(gameName: game.gameName)
     }
 
     private var defaultIcon: some View {
