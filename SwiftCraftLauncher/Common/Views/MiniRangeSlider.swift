@@ -63,13 +63,20 @@ private final class RangeSliderCell: NSSliderCell {
             return
         }
 
-        // 只绘制一次背景
+        // 保存当前值
+        let savedDoubleValue = doubleValue
+        
+        // 使用系统原生方法绘制完整轨道背景
+        // 设置 doubleValue 为 minValue 让系统绘制完整背景（未激活状态）
+        doubleValue = minValue
         super.drawBar(inside: rect, flipped: flipped)
-
+        
+        // 使用系统原生方法绘制激活区域
+        // 计算激活区域的矩形
         let track = self.trackRect
         let lowerKnob = knobRectForValue(lowerValue, track: track, viewBounds: view.bounds)
         let upperKnob = knobRectForValue(upperValue, track: track, viewBounds: view.bounds)
-
+        
         let barHeight = rect.height
         let activeRect = NSRect(
             x: lowerKnob.midX,
@@ -77,27 +84,57 @@ private final class RangeSliderCell: NSSliderCell {
             width: upperKnob.midX - lowerKnob.midX,
             height: barHeight
         )
-
-        guard activeRect.width > 0 else { return }
-
+        
+        guard activeRect.width > 0 else {
+            doubleValue = savedDoubleValue
+            return
+        }
+        
+        // 使用系统原生方法绘制激活区域
+        // 通过设置 doubleValue 让系统绘制从 minValue 到 upperValue 的激活区域
+        // 然后使用裁剪来只显示从 lowerValue 到 upperValue 的部分
         NSGraphicsContext.saveGraphicsState()
-
+        
+        // 设置裁剪区域为激活区域
         let radius = barHeight / 2
         let roundedPath = NSBezierPath(roundedRect: activeRect, xRadius: radius, yRadius: radius)
         roundedPath.addClip()
-
-        // 直接填充激活区域，避免再次调用 super.drawBar
-        NSColor.controlAccentColor.setFill()
-        roundedPath.fill()
-
+        
+        // 使用系统原生方法绘制激活区域
+        // 设置 doubleValue 为 upperValue，系统会绘制从 minValue 到 upperValue 的激活区域
+        doubleValue = upperValue
+        super.drawBar(inside: rect, flipped: flipped)
+        
         NSGraphicsContext.restoreGraphicsState()
+        
+        // 恢复原始值
+        doubleValue = savedDoubleValue
     }
 
     override func drawKnob(_ knobRect: NSRect) {
         guard let view = controlView else { return }
+        
+        // 保存当前值
+        let savedDoubleValue = doubleValue
         let track = self.trackRect
-        super.drawKnob(knobRectForValue(lowerValue, track: track, viewBounds: view.bounds))
-        super.drawKnob(knobRectForValue(upperValue, track: track, viewBounds: view.bounds))
+        
+        // 使用系统原生方法计算和绘制 lower knob
+        // 通过临时设置 doubleValue 让系统使用原生逻辑
+        doubleValue = lowerValue
+        // 使用系统原生的计算方法获取 knob 位置
+        // 系统会根据 doubleValue、minValue、maxValue 和 trackRect 计算位置
+        let lowerKnobRect = knobRectForValue(lowerValue, track: track, viewBounds: view.bounds)
+        // 使用系统原生的绘制方法
+        super.drawKnob(lowerKnobRect)
+        
+        // 使用系统原生方法计算和绘制 upper knob
+        doubleValue = upperValue
+        let upperKnobRect = knobRectForValue(upperValue, track: track, viewBounds: view.bounds)
+        // 使用系统原生的绘制方法
+        super.drawKnob(upperKnobRect)
+        
+        // 恢复原始值
+        doubleValue = savedDoubleValue
     }
 
     override func startTracking(at startPoint: NSPoint, in controlView: NSView) -> Bool {
