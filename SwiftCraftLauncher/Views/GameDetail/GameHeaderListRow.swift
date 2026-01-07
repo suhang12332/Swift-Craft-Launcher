@@ -115,7 +115,7 @@ struct GameHeaderListRow: View {
             cancellable?.cancel()
         }
     }
-    
+
     private var profileDir: URL {
         AppPaths.profileDirectory(gameName: game.gameName)
     }

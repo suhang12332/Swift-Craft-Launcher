@@ -47,7 +47,8 @@ public struct GameSettingsView: View {
                         bounds:
                             512...Double(gameSettings.maximumMemoryAllocation)
                     )
-                    .frame(width: 200, height: 20)
+                    .frame(width: 200)
+                    .controlSize(.mini)
                     .onChange(of: globalMemoryRange) { _, newValue in
                         gameSettings.globalXms = Int(newValue.lowerBound)
                         gameSettings.globalXmx = Int(newValue.upperBound)
@@ -86,7 +87,7 @@ public struct GameSettingsView: View {
                         systemImage: "externaldrive"
                     ).font(.callout)
                 }.foregroundStyle(.primary)
-            }.labeledContentStyle(.custom).padding(.bottom, 10)
+            }.labeledContentStyle(.custom)
         }
         .onAppear {
             calculateCacheInfoSafely()

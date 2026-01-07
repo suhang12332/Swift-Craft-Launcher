@@ -147,7 +147,8 @@ struct GameAdvancedSettingsView: View {
                         range: $memoryRange,
                         bounds: 512...Double(GameSettingsManager.shared.maximumMemoryAllocation)
                     )
-                    .frame(width: 200, height: 20)
+                    .frame(width: 200)
+                    .controlSize(.mini)
                     .onChange(of: memoryRange) { _, _ in autoSave() }
                     Text("\(Int(memoryRange.lowerBound)) MB-\(Int(memoryRange.upperBound)) MB")
                         .font(.subheadline)
