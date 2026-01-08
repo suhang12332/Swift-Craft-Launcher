@@ -127,6 +127,9 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
             }
+            CommandMenu("menu.multiplayer".localized()) {
+                EasyTierContentView()
+            }
             CommandGroup(replacing: .newItem) { }
             CommandGroup(replacing: .saveItem) { }
         }
@@ -157,7 +160,12 @@ struct SwiftCraftLauncherApp: App {
         // 右上角的状态栏(可以显示图标的)
         MenuBarExtra(
             content: {
-                MenuBarContentView()
+                Button("settings.ai.open_chat".localized()) {
+                    AIChatManager.shared.openChatWindow()
+                }
+
+                Divider()
+                EasyTierContentView()
             },
             label: {
                 Image("menu-png").resizable()
