@@ -196,7 +196,7 @@ public struct ContributorsView: View {
         staticContributorsLoadFailed = false
         Logger.shared.info("Static contributors data cleared")
     }
-    
+
     /// 清理所有数据
     private func clearAllData() {
         clearStaticContributorsData()

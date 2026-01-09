@@ -16,12 +16,12 @@ struct SkinPreviewWindowView: View {
     let skinPath: String?
     let capeImage: NSImage?
     let playerModel: PlayerModel
-    
+
     @State private var capeBinding: NSImage?
     // 使用 @State 管理数据，以便在窗口关闭时清理
     @State private var currentSkinImage: NSImage?
     @State private var currentSkinPath: String?
-    
+
     init(
         skinImage: NSImage?,
         skinPath: String?,
@@ -37,7 +37,7 @@ struct SkinPreviewWindowView: View {
         self._currentSkinImage = State(initialValue: skinImage)
         self._currentSkinPath = State(initialValue: skinPath)
     }
-    
+
     var body: some View {
         VStack(spacing: 16) {
             if currentSkinImage != nil || currentSkinPath != nil {
@@ -50,9 +50,8 @@ struct SkinPreviewWindowView: View {
             clearAllData()
         }
     }
-    
-    @ViewBuilder
-    private var previewContent: some View {
+
+    @ViewBuilder private var previewContent: some View {
         if let image = currentSkinImage {
             SkinRenderView(
                 skinImage: image,
@@ -65,7 +64,7 @@ struct SkinPreviewWindowView: View {
             )
         }
     }
-    
+
     /// 清理所有数据
     private func clearAllData() {
         // 清空皮肤数据，这会导致 SkinRenderView 被移除，从而触发其清理逻辑

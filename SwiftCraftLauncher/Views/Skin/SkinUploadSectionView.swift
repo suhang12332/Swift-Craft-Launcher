@@ -61,7 +61,7 @@ struct SkinUploadSectionView: View {
             .onTapGesture { showingFileImporter = true }
             .conditionalDrop(isEnabled: !hasSkinRenderView, perform: onDrop)
     }
-    
+
     @ViewBuilder
     private func skinRenderContent(playerModel: PlayerModel) -> some View {
         ZStack {
@@ -105,7 +105,6 @@ struct SkinUploadSectionView: View {
                     Color.clear
                 }
             }
-
         }
     }
 
@@ -117,7 +116,7 @@ struct SkinUploadSectionView: View {
             return .alex
         }
     }
-    
+
     /// 打开皮肤预览窗口
     private func openSkinPreviewWindow() {
         let playerModel = convertToPlayerModel(currentModel)
@@ -127,7 +126,7 @@ struct SkinUploadSectionView: View {
             capeImage: selectedCapeImage,
             playerModel: playerModel
         )
-        
+
         TemporaryWindowManager.shared.showWindow(
             content: previewView,
             config: .skinPreview(title: "skin.preview".localized())

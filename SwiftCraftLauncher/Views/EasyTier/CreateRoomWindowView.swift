@@ -112,7 +112,7 @@ struct CreateRoomWindowView: View {
 
         isConnecting = false
     }
-    
+
     /// 清理所有数据
     private func clearAllData() {
         roomCode = ""

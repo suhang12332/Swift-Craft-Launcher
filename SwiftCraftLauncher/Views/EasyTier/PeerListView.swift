@@ -235,7 +235,7 @@ struct PeerListView: View {
         cancellable?.cancel()
         cancellable = nil
     }
-    
+
     /// 清理所有数据
     private func clearAllData() {
         stopAutoRefresh()

@@ -3,7 +3,7 @@ import SwiftUI
 
 struct CapeTextureView: View {
     let imageURL: String
-    var selectedCapeImage: NSImage? = nil
+    var selectedCapeImage: NSImage?
 
     var body: some View {
         Group {
@@ -16,11 +16,11 @@ struct CapeTextureView: View {
                     }
             } else {
                 // 否则从 URL 异步加载
-        AsyncImage(url: URL(string: imageURL.httpToHttps())) { phase in
-            switch phase {
-            case .empty:
-                ProgressView().controlSize(.mini)
-            case .success(let image):
+                AsyncImage(url: URL(string: imageURL.httpToHttps())) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView().controlSize(.mini)
+                    case .success(let image):
                         capeImageContent(image: image)
                     case .failure:
                         Image(systemName: "photo").font(.system(size: 16)).foregroundColor(.secondary)
@@ -31,31 +31,30 @@ struct CapeTextureView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func capeImageContent(image: Image) -> some View {
-                GeometryReader { geometry in
-                    let containerWidth = geometry.size.width
-                    let containerHeight = geometry.size.height
-                    let capeAspectRatio: CGFloat = 10.0 / 16.0
-                    let containerAspectRatio = containerWidth / containerHeight
+        GeometryReader { geometry in
+            let containerWidth = geometry.size.width
+            let containerHeight = geometry.size.height
+            let capeAspectRatio: CGFloat = 10.0 / 16.0
+            let containerAspectRatio = containerWidth / containerHeight
 
-                    let scale: CGFloat = containerAspectRatio > capeAspectRatio
-                        ? containerHeight / 16.0
-                        : containerWidth / 10.0
+            let scale: CGFloat = containerAspectRatio > capeAspectRatio
+                ? containerHeight / 16.0
+                : containerWidth / 10.0
 
-                    let offsetX = (containerWidth - 10.0 * scale) / 2.0 - 1.0 * scale
-                    let offsetY = (containerHeight - 16.0 * scale) / 2.0 - 1.0 * scale
+            let offsetX = (containerWidth - 10.0 * scale) / 2.0 - 1.0 * scale
+            let offsetY = (containerHeight - 16.0 * scale) / 2.0 - 1.0 * scale
 
             image
-                        .resizable()
-                        .interpolation(.none)
-                        .frame(width: 64.0 * scale, height: 32.0 * scale)
-                        .offset(x: offsetX, y: offsetY)
-                        .clipped()
-                }
+                .resizable()
+                .interpolation(.none)
+                .frame(width: 64.0 * scale, height: 32.0 * scale)
+                .offset(x: offsetX, y: offsetY)
+                .clipped()
+        }
     }
-    
     @ViewBuilder
     private func capeImageContent(image: NSImage) -> some View {
         GeometryReader { geometry in
@@ -108,7 +107,7 @@ struct CapeSelectionView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .onChange(of: selectedCapeImage) { oldValue, newValue in
+        .onChange(of: selectedCapeImage) { _, _ in
             // 调试日志：披风预览图片变化
             // let oldInfo = oldValue != nil ? "存在(size: \(oldValue!.size.width)x\(oldValue!.size.height))" : "nil"
             // let newInfo = newValue != nil ? "存在(size: \(newValue!.size.width)x\(newValue!.size.height))" : "nil"
@@ -154,10 +153,10 @@ struct CapeSelectionView: View {
             if let imageURL = imageURL {
                 // 披风展示默认使用 URL 加载
                 // 但是当 selectedCapeImage 变化且匹配当前 URL 时，使用 selectedCapeImage 显示
-                let shouldUseLocalImage = isSelected && 
-                                         selectedCapeImage != nil && 
+                let shouldUseLocalImage = isSelected &&
+                                         selectedCapeImage != nil &&
                                          selectedCapeImageURL == imageURL
-                
+
                 CapeTextureView(
                     imageURL: imageURL,
                     selectedCapeImage: shouldUseLocalImage ? selectedCapeImage : nil

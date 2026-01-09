@@ -207,7 +207,7 @@ public struct AcknowledgementsView: View {
         loadFailed = false
         Logger.shared.info("Libraries data cleared")
     }
-    
+
     /// 清理所有数据
     private func clearAllData() {
         clearLibrariesData()

@@ -421,7 +421,7 @@ struct WindowReferenceTracking: ViewModifier {
     let onClose: () -> Void
     /// 窗口引用（内部状态）
     @State private var currentWindow: NSWindow?
-    
+
     func body(content: Content) -> some View {
         content
             .background(

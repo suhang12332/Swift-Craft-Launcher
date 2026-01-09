@@ -44,7 +44,7 @@ public struct LicenseView: View {
         } catch {}
         isLoading = false
     }
-    
+
     /// 清理所有数据
     private func clearAllData() {
         licenseText = ""
