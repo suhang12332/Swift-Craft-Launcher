@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
+import AppKit
 import SkinRenderKit
 
 struct SkinUploadSectionView: View {
@@ -46,17 +47,7 @@ struct SkinUploadSectionView: View {
 
         return skinRenderContent(playerModel: playerModel)
             .frame(height: 220)
-            .background(Color.gray.opacity(0.06))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(style: StrokeStyle(lineWidth: 1, dash: [6]))
-                    .foregroundColor(.gray.opacity(0.35))
-            )
-            .cornerRadius(10)
-            .contentShape(RoundedRectangle(cornerRadius: 10))
             .onTapGesture { showingFileImporter = true }
-            // 只在没有 SkinRenderView 时才应用外层拖拽处理
-            // SkinRenderView 内部已经支持拖拽，避免重复处理
             .conditionalDrop(isEnabled: !hasSkinRenderView, perform: onDrop)
     }
     
@@ -79,8 +70,8 @@ struct SkinUploadSectionView: View {
                         // 7. SceneKit 渲染新的角色模型
                         capeImage: $selectedCapeImage,
                         playerModel: playerModel,
-                        rotationDuration: 12.0,
-                        backgroundColor: .clear,
+                        rotationDuration: 0,
+                        backgroundColor: NSColor.clear,
                         onSkinDropped: { dropped in
                             onSkinDropped(dropped)
                         },
@@ -92,8 +83,8 @@ struct SkinUploadSectionView: View {
                         // 披风更新流程同上：selectedCapeImage 变化 → SwiftUI 重新评估 → SkinRenderView 内部处理更新
                         capeImage: $selectedCapeImage,
                         playerModel: playerModel,
-                        rotationDuration: 12.0,
-                        backgroundColor: .clear,
+                        rotationDuration: 0,
+                        backgroundColor: NSColor.clear,
                         onSkinDropped: { dropped in
                             onSkinDropped(dropped)
                         },
