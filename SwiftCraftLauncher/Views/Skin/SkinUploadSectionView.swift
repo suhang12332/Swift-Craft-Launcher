@@ -26,15 +26,26 @@ struct SkinUploadSectionView: View {
 
             skinRenderArea
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Drop skin file here or click to select")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Text("PNG 64×64 or legacy 64×32")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Drop skin file here or click to select")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text("PNG 64×64 or legacy 64×32")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+                .padding(.horizontal, 4)
+                Spacer()
+                Button {
+                    openSkinPreviewWindow()
+                } label: {
+                    Image(systemName: "eye")
+                        .font(.system(size: 14))
+                }
+                .buttonStyle(.bordered)
+                .disabled(selectedSkinImage == nil && currentSkinRenderImage == nil && selectedSkinPath == nil)
             }
-            .padding(.horizontal, 4)
         }
     }
 
@@ -104,6 +115,74 @@ struct SkinUploadSectionView: View {
             return .steve
         case .slim:
             return .alex
+        }
+    }
+    
+    /// 打开皮肤预览窗口
+    private func openSkinPreviewWindow() {
+        let playerModel = convertToPlayerModel(currentModel)
+        let previewView = SkinPreviewWindowView(
+            skinImage: selectedSkinImage ?? currentSkinRenderImage,
+            skinPath: selectedSkinPath,
+            capeImage: selectedCapeImage,
+            playerModel: playerModel
+        )
+        
+        TemporaryWindowManager.shared.showWindow(
+            content: previewView,
+            config: TemporaryWindowConfig(
+                title: "skin.preview".localized(),
+                width: 400,
+                height: 500
+            )
+        )
+    }
+}
+
+// MARK: - Skin Preview Window View
+struct SkinPreviewWindowView: View {
+    let skinImage: NSImage?
+    let skinPath: String?
+    let capeImage: NSImage?
+    let playerModel: PlayerModel
+    
+    @State private var capeBinding: NSImage?
+    
+    init(
+        skinImage: NSImage?,
+        skinPath: String?,
+        capeImage: NSImage?,
+        playerModel: PlayerModel
+    ) {
+        self.skinImage = skinImage
+        self.skinPath = skinPath
+        self.capeImage = capeImage
+        self.playerModel = playerModel
+        self._capeBinding = State(initialValue: capeImage)
+    }
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            if skinImage != nil || skinPath != nil {
+                previewContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .frame(width: 1200, height: 800)
+    }
+    
+    @ViewBuilder
+    private var previewContent: some View {
+        if let image = skinImage {
+            SkinRenderView(
+                skinImage: image,
+                capeImage: $capeBinding,
+                playerModel: playerModel,
+                rotationDuration: 0,
+                backgroundColor: NSColor.clear,
+                onSkinDropped: { _ in },
+                onCapeDropped: { _ in }
+            )
         }
     }
 }
