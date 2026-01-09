@@ -22,6 +22,9 @@ struct SkinToolDetailView: View {
     @State private var selectedCapeId: String?
     @State private var selectedCapeImageURL: String?
     @State private var selectedCapeLocalPath: String?
+    @State private var selectedCapeImage: NSImage?
+    @State private var isCapeLoading: Bool = false
+    @State private var capeLoadCompleted: Bool = false
     @State private var publicSkinInfo: PlayerSkinService.PublicSkinInfo?
     @State private var playerProfile: MinecraftProfileResponse?
 
@@ -57,7 +60,6 @@ struct SkinToolDetailView: View {
         .onAppear {
             // 完全使用预加载的数据
             guard let skinInfo = preloadedSkinInfo, let profile = preloadedProfile else {
-                Logger.shared.error("SkinToolDetailView: Missing preloaded data, dismissing view")
                 dismiss()
                 return
             }
@@ -65,7 +67,19 @@ struct SkinToolDetailView: View {
             playerProfile = profile
             currentModel = skinInfo.model
             selectedCapeId = PlayerSkinService.getActiveCapeId(from: profile)
+            
+            // 初始化加载状态
+            isCapeLoading = false
+            capeLoadCompleted = false
+            
+            // 加载当前皮肤图片
             loadCurrentSkinRenderImageIfNeeded()
+            
+            // 立即加载当前激活的披风（使用高优先级任务）
+            Task(priority: .userInitiated) {
+                await loadCurrentActiveCapeIfNeeded(from: profile)
+            }
+            
             updateHasChanges()
         }
         .onDisappear {
@@ -96,6 +110,10 @@ struct SkinToolDetailView: View {
                 selectedSkinPath: $selectedSkinPath,
                 currentSkinRenderImage: $currentSkinRenderImage,
                 selectedCapeLocalPath: $selectedCapeLocalPath,
+                selectedCapeImage: $selectedCapeImage,
+                selectedCapeImageURL: $selectedCapeImageURL,
+                isCapeLoading: $isCapeLoading,
+                capeLoadCompleted: $capeLoadCompleted,
                 showingSkinPreview: $showingSkinPreview,
                 onSkinDropped: handleSkinDroppedImage,
                 onDrop: handleDrop
@@ -104,12 +122,29 @@ struct SkinToolDetailView: View {
             CapeSelectionView(
                 playerProfile: playerProfile,
                 selectedCapeId: $selectedCapeId,
-                selectedCapeImageURL: $selectedCapeImageURL
+                selectedCapeImageURL: $selectedCapeImageURL,
+                selectedCapeImage: $selectedCapeImage
             ) { id, imageURL in
                 if let imageURL = imageURL, id != nil {
-                    Task { await downloadCapeTextureIfNeeded(from: imageURL) }
+                    Task {
+                        await MainActor.run {
+                            isCapeLoading = true
+                            capeLoadCompleted = false
+                        }
+                        await downloadCapeTextureAndSetImage(from: imageURL)
+                        await MainActor.run {
+                            isCapeLoading = false
+                            capeLoadCompleted = true
+                        }
+                    }
                 } else {
                     selectedCapeLocalPath = nil
+                    // 调试日志：取消选择披风
+                    // Logger.shared.info("[SkinToolDetailView] 设置 selectedCapeImage = nil (取消选择披风), id: \(id ?? "nil")")
+                    selectedCapeImage = nil
+                    // 取消选择披风时，立即完成（因为没有披风需要加载）
+                    capeLoadCompleted = true
+                    isCapeLoading = false
                 }
                 updateHasChanges()
             }
@@ -309,7 +344,6 @@ struct SkinToolDetailView: View {
 
     private func handleSkinChanges(player: Player) async -> Bool {
         if let skinData = selectedSkinData {
-            Logger.shared.info("Uploading new skin with model: \(currentModel.rawValue)")
             let result = await PlayerSkinService.uploadSkinAndRefresh(
                 imageData: skinData,
                 model: currentModel,
@@ -322,19 +356,15 @@ struct SkinToolDetailView: View {
             }
             return result
         } else if let original = originalModel, currentModel != original {
-            Logger.shared.info("Changing skin model from \(original.rawValue) to \(currentModel.rawValue)")
             if let currentSkinInfo = publicSkinInfo, let skinURL = currentSkinInfo.skinURL {
                 let result = await uploadCurrentSkinWithNewModel(skinURL: skinURL, player: player)
                 return result
             } else {
-                Logger.shared.warning("Cannot change skin model: no existing skin found")
                 return false
             }
         } else if originalModel == nil && currentModel != .classic {
-            Logger.shared.warning("Cannot set model without skin data. User needs to select a skin first.")
             return false
         }
-        Logger.shared.info("No skin changes needed")
         return true // No skin changes needed
     }
 
@@ -355,7 +385,6 @@ struct SkinToolDetailView: View {
             let httpsURL = skinURL.httpToHttps()
 
             guard let url = URL(string: httpsURL) else {
-                Logger.shared.error("Invalid skin URL: \(httpsURL)")
                 return false
             }
             // 使用统一的 API 客户端
@@ -382,13 +411,76 @@ extension Data {
 
 // MARK: - Cape Download Extension
 extension SkinToolDetailView {
+    /// 加载当前激活的披风（如果存在）
+    private func loadCurrentActiveCapeIfNeeded(from profile: MinecraftProfileResponse) async {
+        // 首先检查 publicSkinInfo 中是否有 capeURL（可能更快）
+        if let capeURL = publicSkinInfo?.capeURL, !capeURL.isEmpty {
+            await MainActor.run {
+                selectedCapeImageURL = capeURL
+                isCapeLoading = true
+                capeLoadCompleted = false
+            }
+            await downloadCapeTextureAndSetImage(from: capeURL)
+            await MainActor.run {
+                isCapeLoading = false
+                capeLoadCompleted = true
+            }
+            return
+        }
+        
+        // 否则从 profile 中查找激活的披风
+        guard let activeCapeId = PlayerSkinService.getActiveCapeId(from: profile) else {
+            await MainActor.run {
+                selectedCapeImageURL = nil
+                selectedCapeLocalPath = nil
+                selectedCapeImage = nil
+                isCapeLoading = false
+                capeLoadCompleted = true  // 没有披风，可以立即渲染皮肤
+            }
+            return
+        }
+        
+        guard let capes = profile.capes, !capes.isEmpty else {
+            await MainActor.run {
+                selectedCapeImageURL = nil
+                selectedCapeLocalPath = nil
+                selectedCapeImage = nil
+                isCapeLoading = false
+                capeLoadCompleted = true  // 没有披风，可以立即渲染皮肤
+            }
+            return
+        }
+        
+        guard let activeCape = capes.first(where: { $0.id == activeCapeId && $0.state == "ACTIVE" }) else {
+            await MainActor.run {
+                selectedCapeImageURL = nil
+                selectedCapeLocalPath = nil
+                selectedCapeImage = nil
+                isCapeLoading = false
+                capeLoadCompleted = true  // 没有激活的披风，可以立即渲染皮肤
+            }
+            return
+        }
+        
+        // 有披风需要加载，设置加载状态
+        await MainActor.run {
+            selectedCapeImageURL = activeCape.url
+            isCapeLoading = true
+            capeLoadCompleted = false
+        }
+        await downloadCapeTextureAndSetImage(from: activeCape.url)
+        await MainActor.run {
+            isCapeLoading = false
+            capeLoadCompleted = true
+        }
+    }
+    
     fileprivate func downloadCapeTextureIfNeeded(from urlString: String) async {
         if let current = selectedCapeImageURL, current == urlString, selectedCapeLocalPath != nil {
             return
         }
         // 验证 URL 格式（但不保留 URL 对象，节省内存）
         guard URL(string: urlString.httpToHttps()) != nil else {
-            Logger.shared.error("Invalid cape URL: \(urlString)")
             return
         }
         do {
@@ -408,6 +500,74 @@ extension SkinToolDetailView {
             Logger.shared.error("Cape download error: \(error)")
         }
     }
+    
+    /// 下载披风纹理并设置图片
+    private func downloadCapeTextureAndSetImage(from urlString: String) async {
+        
+        // 检查是否已经下载过相同的URL
+            if let currentURL = selectedCapeImageURL,
+               currentURL == urlString,
+               let currentPath = selectedCapeLocalPath,
+               FileManager.default.fileExists(atPath: currentPath),
+               let cachedImage = NSImage(contentsOfFile: currentPath) {
+            await MainActor.run {
+                // 调试日志：使用缓存披风图片
+                // Logger.shared.info("[SkinToolDetailView] 设置 selectedCapeImage (缓存), size: \(cachedImage.size.width)x\(cachedImage.size.height), URL: \(urlString)")
+                selectedCapeImage = cachedImage
+            }
+            return
+        }
+        
+        // 验证 URL 格式
+            guard let url = URL(string: urlString.httpToHttps()) else {
+                await MainActor.run {
+                    // 调试日志：URL 无效时清空披风图片
+                    // Logger.shared.info("[SkinToolDetailView] 设置 selectedCapeImage = nil (URL无效), URL: \(urlString)")
+                    selectedCapeImage = nil
+                }
+            return
+        }
+
+        do {
+            // 使用统一的 API 客户端下载图片数据（高优先级）
+            let data = try await APIClient.get(url: url)
+            guard !data.isEmpty, let image = NSImage(data: data) else {
+                await MainActor.run {
+                    // 调试日志：创建 NSImage 失败时清空披风图片
+                    // Logger.shared.info("[SkinToolDetailView] 设置 selectedCapeImage = nil (创建NSImage失败), URL: \(urlString)")
+                    selectedCapeImage = nil
+                }
+                return
+            }
+
+            
+            // 立即更新UI，不等待文件保存
+            await MainActor.run {
+                // 检查URL是否仍然匹配（防止用户快速切换）
+                if selectedCapeImageURL == urlString {
+                    // 调试日志：披风下载成功并设置图片
+                    // Logger.shared.info("[SkinToolDetailView] 设置 selectedCapeImage (下载成功), size: \(image.size.width)x\(image.size.height), URL: \(urlString)")
+                    selectedCapeImage = image
+                }
+            }
+            
+            // 异步保存到临时文件（不阻塞UI更新）
+            let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent("cape_\(UUID().uuidString).png")
+            do {
+                try data.write(to: tempFile)
+                await MainActor.run {
+                    if selectedCapeImageURL == urlString {
+                        selectedCapeLocalPath = tempFile.path
+                        Logger.shared.info("Cape saved to temp file: \(tempFile.path)")
+                    }
+                }
+            } catch {
+                Logger.shared.error("Failed to save cape to temp file: \(error)")
+            }
+        } catch {
+            Logger.shared.error("Cape download error: \(error.localizedDescription)")
+        }
+    }
 
     // MARK: - 清除数据
     /// 清除页面所有数据
@@ -421,6 +581,9 @@ extension SkinToolDetailView {
         selectedCapeId = nil
         selectedCapeImageURL = nil
         selectedCapeLocalPath = nil
+        selectedCapeImage = nil
+        isCapeLoading = false
+        capeLoadCompleted = false
         // 清理加载的数据
         publicSkinInfo = nil
         playerProfile = nil
@@ -435,10 +598,4 @@ extension SkinToolDetailView {
         lastSelectedCapeId = nil
         lastCurrentActiveCapeId = nil
     }
-}
-
-#Preview {
-    SkinToolDetailView()
-        .environmentObject(PlayerListViewModel())
-        .environmentObject(SkinSelectionStore())
 }

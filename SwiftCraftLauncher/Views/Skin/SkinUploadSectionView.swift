@@ -10,6 +10,10 @@ struct SkinUploadSectionView: View {
     @Binding var selectedSkinPath: String?
     @Binding var currentSkinRenderImage: NSImage?
     @Binding var selectedCapeLocalPath: String?
+    @Binding var selectedCapeImage: NSImage?
+    @Binding var selectedCapeImageURL: String?
+    @Binding var isCapeLoading: Bool
+    @Binding var capeLoadCompleted: Bool
     @Binding var showingSkinPreview: Bool
 
     let onSkinDropped: (NSImage) -> Void
@@ -35,13 +39,45 @@ struct SkinUploadSectionView: View {
 
     private var skinRenderArea: some View {
         let playerModel = convertToPlayerModel(currentModel)
+        // 判断是否有 SkinRenderView 显示（已有皮肤时，SkinRenderView 会处理拖拽）
+        // 这里只根据是否有皮肤数据来判断，而不依赖 capeLoadCompleted，
+        // 避免在披风加载期间误认为没有渲染视图，从而导致视图结构来回切换。
+        let hasSkinRenderView = (selectedSkinImage != nil || currentSkinRenderImage != nil || selectedSkinPath != nil)
 
-        return ZStack {
+        return skinRenderContent(playerModel: playerModel)
+            .frame(height: 220)
+            .background(Color.gray.opacity(0.06))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(style: StrokeStyle(lineWidth: 1, dash: [6]))
+                    .foregroundColor(.gray.opacity(0.35))
+            )
+            .cornerRadius(10)
+            .contentShape(RoundedRectangle(cornerRadius: 10))
+            .onTapGesture { showingFileImporter = true }
+            // 只在没有 SkinRenderView 时才应用外层拖拽处理
+            // SkinRenderView 内部已经支持拖拽，避免重复处理
+            .conditionalDrop(isEnabled: !hasSkinRenderView, perform: onDrop)
+    }
+    
+    @ViewBuilder
+    private func skinRenderContent(playerModel: PlayerModel) -> some View {
+        ZStack {
+            // 底层始终根据皮肤数据决定是否渲染角色，
+            // 不再因为披风加载状态来回切换视图类型，避免 SceneKit 视图被销毁重建。
             Group {
                 if let image = selectedSkinImage ?? currentSkinRenderImage {
                     SkinRenderView(
                         skinImage: image,
-                        capeImage: nil,
+                        // 披风更新流程：
+                        // 1. selectedCapeImage @Binding 变化（用户操作/初始化）
+                        // 2. SwiftUI body 重新评估，创建/更新 SceneKitCharacterViewRepresentable
+                        // 3. updateNSViewController 被调用
+                        // 4. 检查 capeImage 是否存在，调用 updateCapeTexture(image:) 或 removeCapeTexture()
+                        // 5. applyCapeUpdate 检查实例是否相同 (!==)，如果不同则更新并调用 rebuildCharacter()
+                        // 6. 重建或增量更新角色节点，包含新的披风纹理
+                        // 7. SceneKit 渲染新的角色模型
+                        capeImage: $selectedCapeImage,
                         playerModel: playerModel,
                         rotationDuration: 12.0,
                         backgroundColor: .clear,
@@ -53,7 +89,8 @@ struct SkinUploadSectionView: View {
                 } else if let skinPath = selectedSkinPath {
                     SkinRenderView(
                         texturePath: skinPath,
-                        capeTexturePath: selectedCapeLocalPath,
+                        // 披风更新流程同上：selectedCapeImage 变化 → SwiftUI 重新评估 → SkinRenderView 内部处理更新
+                        capeImage: $selectedCapeImage,
                         playerModel: playerModel,
                         rotationDuration: 12.0,
                         backgroundColor: .clear,
@@ -66,18 +103,8 @@ struct SkinUploadSectionView: View {
                     Color.clear
                 }
             }
-            .frame(height: 220)
-            .background(Color.gray.opacity(0.06))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(style: StrokeStyle(lineWidth: 1, dash: [6]))
-                    .foregroundColor(.gray.opacity(0.35))
-            )
-            .cornerRadius(10)
-            .contentShape(RoundedRectangle(cornerRadius: 10))
+
         }
-        .onTapGesture { showingFileImporter = true }
-        .onDrop(of: [UTType.image.identifier, UTType.fileURL.identifier], isTargeted: nil, perform: onDrop)
     }
 
     private func convertToPlayerModel(_ skinModel: PlayerSkinService.PublicSkinInfo.SkinModel) -> PlayerModel {
@@ -86,6 +113,19 @@ struct SkinUploadSectionView: View {
             return .steve
         case .slim:
             return .alex
+        }
+    }
+}
+
+// MARK: - View Extension for Conditional Drop
+extension View {
+    /// 条件性地应用拖拽处理修饰符
+    @ViewBuilder
+    func conditionalDrop(isEnabled: Bool, perform: @escaping ([NSItemProvider]) -> Bool) -> some View {
+        if isEnabled {
+            self.onDrop(of: [UTType.image.identifier, UTType.fileURL.identifier], isTargeted: nil, perform: perform)
+        } else {
+            self
         }
     }
 }
