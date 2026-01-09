@@ -23,9 +23,8 @@ public struct AcknowledgementsView: View {
             // 每次打开都重新加载数据
             loadLibraries()
         }
-        .onDisappear {
-            // 页面关闭时清空数据
-            clearLibrariesData()
+        .windowReferenceTracking {
+            clearAllData()
         }
     }
 
@@ -207,6 +206,11 @@ public struct AcknowledgementsView: View {
         isLoading = true
         loadFailed = false
         Logger.shared.info("Libraries data cleared")
+    }
+    
+    /// 清理所有数据
+    private func clearAllData() {
+        clearLibrariesData()
     }
 
     // MARK: - JSON Data Models

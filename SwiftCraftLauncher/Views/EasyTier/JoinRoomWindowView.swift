@@ -68,6 +68,9 @@ struct JoinRoomWindowView: View {
         .onAppear {
             isTextFieldFocused = true
         }
+        .windowReferenceTracking {
+            clearAllData()
+        }
         .onChange(of: viewModel.networkStatus) { _, newStatus in
             if case .connected = newStatus {
                 // 连接成功，设置房间类型为加入，关闭窗口
@@ -83,6 +86,12 @@ struct JoinRoomWindowView: View {
 
         await viewModel.startNetwork()
 
+        isConnecting = false
+    }
+    
+    /// 清理所有数据
+    private func clearAllData() {
+        roomCode = ""
         isConnecting = false
     }
 }

@@ -84,6 +84,9 @@ struct CreateRoomWindowView: View {
         .onAppear {
             createRoom()
         }
+        .windowReferenceTracking {
+            clearAllData()
+        }
         .onChange(of: viewModel.networkStatus) { _, newStatus in
             if case .connected = newStatus {
                 // 连接成功，设置房间类型为创建，关闭窗口
@@ -108,5 +111,12 @@ struct CreateRoomWindowView: View {
         await viewModel.startNetwork()
 
         isConnecting = false
+    }
+    
+    /// 清理所有数据
+    private func clearAllData() {
+        roomCode = ""
+        isConnecting = false
+        isCreating = false
     }
 }

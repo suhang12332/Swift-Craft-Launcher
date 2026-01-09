@@ -411,3 +411,45 @@ extension TemporaryWindowConfig {
         TemporaryWindowConfig(title: title, width: 1200, height: 800)
     }
 }
+
+// MARK: - Window Reference Tracking
+
+/// 窗口引用跟踪修饰符
+/// 用于自动管理窗口引用，并在窗口关闭时触发清理回调
+struct WindowReferenceTracking: ViewModifier {
+    /// 窗口关闭时的清理回调
+    let onClose: () -> Void
+    /// 窗口引用（内部状态）
+    @State private var currentWindow: NSWindow?
+    
+    func body(content: Content) -> some View {
+        content
+            .background(
+                WindowAccessor(synchronous: false) { window in
+                    // 保存窗口引用 - 使用异步方式避免在视图更新期间修改状态
+                    Task { @MainActor in
+                        currentWindow = window
+                    }
+                }
+            )
+            .onReceive(NotificationCenter.default.publisher(for: NSWindow.willCloseNotification)) { notification in
+                // 检查是否是当前窗口关闭
+                if let window = notification.object as? NSWindow, window == currentWindow {
+                    onClose()
+                }
+            }
+            .onDisappear {
+                // 作为备用清理机制
+                onClose()
+            }
+    }
+}
+
+extension View {
+    /// 添加窗口引用跟踪功能
+    /// - Parameter onClose: 窗口关闭或视图消失时调用的清理回调
+    /// - Returns: 添加了窗口引用跟踪的视图
+    func windowReferenceTracking(onClose: @escaping () -> Void) -> some View {
+        modifier(WindowReferenceTracking(onClose: onClose))
+    }
+}

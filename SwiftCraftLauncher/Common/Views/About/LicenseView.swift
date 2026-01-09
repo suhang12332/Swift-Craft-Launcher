@@ -33,10 +33,8 @@ public struct LicenseView: View {
         .task {
             await loadLicense()
         }
-        .onDisappear {
-            // 视图关闭时清理内存
-            licenseText = ""
-            isLoading = true
+        .windowReferenceTracking {
+            clearAllData()
         }
     }
 
@@ -45,6 +43,12 @@ public struct LicenseView: View {
             licenseText = try await gitHubService.fetchLicenseText()
         } catch {}
         isLoading = false
+    }
+    
+    /// 清理所有数据
+    private func clearAllData() {
+        licenseText = ""
+        isLoading = true
     }
 }
 

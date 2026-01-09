@@ -21,7 +21,6 @@ struct SkinPreviewWindowView: View {
     // 使用 @State 管理数据，以便在窗口关闭时清理
     @State private var currentSkinImage: NSImage?
     @State private var currentSkinPath: String?
-    @State private var currentWindow: NSWindow?
     
     init(
         skinImage: NSImage?,
@@ -47,20 +46,7 @@ struct SkinPreviewWindowView: View {
             }
         }
         .frame(width: 1200, height: 800)
-        .background(
-            WindowAccessor(synchronous: false) { window in
-                // 保存窗口引用
-                currentWindow = window
-            }
-        )
-        .onReceive(NotificationCenter.default.publisher(for: NSWindow.willCloseNotification)) { notification in
-            // 检查是否是当前窗口关闭
-            if let window = notification.object as? NSWindow, window == currentWindow {
-                clearAllData()
-            }
-        }
-        .onDisappear {
-            // 作为备用清理机制
+        .windowReferenceTracking {
             clearAllData()
         }
     }
@@ -86,6 +72,5 @@ struct SkinPreviewWindowView: View {
         currentSkinImage = nil
         currentSkinPath = nil
         capeBinding = nil
-        currentWindow = nil
     }
 }
