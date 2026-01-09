@@ -406,4 +406,8 @@ extension TemporaryWindowConfig {
     static func easyTierDownload(title: String) -> TemporaryWindowConfig {
         TemporaryWindowConfig(title: title, width: 400, height: 100)
     }
+
+    static func skinPreview(title: String) -> TemporaryWindowConfig {
+        TemporaryWindowConfig(title: title, width: 1200, height: 800)
+    }
 }

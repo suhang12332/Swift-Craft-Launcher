@@ -130,60 +130,8 @@ struct SkinUploadSectionView: View {
         
         TemporaryWindowManager.shared.showWindow(
             content: previewView,
-            config: TemporaryWindowConfig(
-                title: "skin.preview".localized(),
-                width: 400,
-                height: 500
-            )
+            config: .skinPreview(title: "skin.preview".localized())
         )
-    }
-}
-
-// MARK: - Skin Preview Window View
-struct SkinPreviewWindowView: View {
-    let skinImage: NSImage?
-    let skinPath: String?
-    let capeImage: NSImage?
-    let playerModel: PlayerModel
-    
-    @State private var capeBinding: NSImage?
-    
-    init(
-        skinImage: NSImage?,
-        skinPath: String?,
-        capeImage: NSImage?,
-        playerModel: PlayerModel
-    ) {
-        self.skinImage = skinImage
-        self.skinPath = skinPath
-        self.capeImage = capeImage
-        self.playerModel = playerModel
-        self._capeBinding = State(initialValue: capeImage)
-    }
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            if skinImage != nil || skinPath != nil {
-                previewContent
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-        }
-        .frame(width: 1200, height: 800)
-    }
-    
-    @ViewBuilder
-    private var previewContent: some View {
-        if let image = skinImage {
-            SkinRenderView(
-                skinImage: image,
-                capeImage: $capeBinding,
-                playerModel: playerModel,
-                rotationDuration: 0,
-                backgroundColor: NSColor.clear,
-                onSkinDropped: { _ in },
-                onCapeDropped: { _ in }
-            )
-        }
     }
 }
 
