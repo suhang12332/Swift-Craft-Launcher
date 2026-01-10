@@ -72,17 +72,32 @@ class GameProcessManager: ObservableObject {
     /// 为游戏收集日志（在检测到错误时调用）
     /// - Parameter gameId: 游戏 ID
     func collectLogsForGameImmediately(gameId: String) async {
-        // 从 UserDefaults 中加载游戏列表来查找游戏名称
-        guard let savedGamesData = UserDefaults.standard.data(forKey: "savedGames") else {
-            return
-        }
+        // 从 SQL 数据库查询游戏信息
+        let dbPath = AppPaths.gameVersionDatabase.path
+        let database = GameVersionDatabase(dbPath: dbPath)
 
-        guard let games = try? JSONDecoder().decode([GameVersionInfo].self, from: savedGamesData),
-              let game = games.first(where: { $0.id == gameId }) else {
-            return
-        }
+        do {
+            // 初始化数据库（如果尚未初始化，可能会失败，但我们可以继续尝试查询）
+            try? database.initialize()
 
-        await GameLogCollector.shared.collectAndOpenAIWindow(gameName: game.gameName)
+            // 从数据库查询游戏
+            guard let game = try database.getGame(by: gameId) else {
+                Logger.shared.warning("无法从数据库找到游戏: \(gameId)")
+                return
+            }
+
+            // 创建临时的视图模型和仓库实例用于 AI 窗口
+            let playerListViewModel = PlayerListViewModel()
+            let gameRepository = GameRepository()
+
+            await GameLogCollector.shared.collectAndOpenAIWindow(
+                gameName: game.gameName,
+                playerListViewModel: playerListViewModel,
+                gameRepository: gameRepository
+            )
+        } catch {
+            Logger.shared.error("从数据库查询游戏失败: \(error.localizedDescription)")
+        }
     }
 
     /// 处理正常退出情况

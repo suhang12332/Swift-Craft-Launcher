@@ -21,7 +21,7 @@ public struct LicenseView: View {
                         .textSelection(.enabled)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding()
-                        .frame(width: 570)
+                        .frame(minWidth: 570)
                 }
             } else {
                 Image(systemName: "exclamationmark.triangle")
@@ -30,6 +30,7 @@ public struct LicenseView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .frame(width: 570, height: 600)
         .task {
             await loadLicense()
         }

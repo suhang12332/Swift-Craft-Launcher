@@ -51,8 +51,7 @@ struct SkinPreviewWindowView: View {
         }
     }
 
-    @ViewBuilder
-    private var previewContent: some View {
+    @ViewBuilder private var previewContent: some View {
         if let image = currentSkinImage {
             SkinRenderView(
                 skinImage: image,

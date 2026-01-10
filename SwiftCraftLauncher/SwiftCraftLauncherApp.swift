@@ -66,7 +66,6 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(skinSelectionStore)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
-                .background(TemporaryWindowOpener())
                 .onAppear {
                     // 应用启动时清理所有临时窗口，防止应用重启时恢复未关闭的临时窗口
                     TemporaryWindowManager.shared.cleanupAllWindows()
@@ -123,7 +122,10 @@ struct SwiftCraftLauncherApp: App {
                 Divider()
 
                 Button("settings.ai.open_chat".localized()) {
-                    AIChatManager.shared.openChatWindow()
+                    AIChatManager.shared.openChatWindow(
+                        playerListViewModel: playerListViewModel,
+                        gameRepository: gameRepository
+                    )
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
             }
@@ -145,23 +147,14 @@ struct SwiftCraftLauncherApp: App {
         }
         .conditionalRestorationBehavior()
 
-        // 临时窗口
-        WindowGroup(id: "temporaryWindow", for: TemporaryWindowID.self) { $windowID in
-            if let windowID = windowID {
-                TemporaryWindowView(windowID: windowID)
-                    .environmentObject(gameRepository)
-                    .environmentObject(playerListViewModel)
-                    .environmentObject(generalSettingsManager)
-                    .preferredColorScheme(generalSettingsManager.currentColorScheme)
-            }
-        }
-        .defaultPosition(.center)
-
         // 右上角的状态栏(可以显示图标的)
         MenuBarExtra(
             content: {
                 Button("settings.ai.open_chat".localized()) {
-                    AIChatManager.shared.openChatWindow()
+                    AIChatManager.shared.openChatWindow(
+                        playerListViewModel: playerListViewModel,
+                        gameRepository: gameRepository
+                    )
                 }
 
                 Divider()

@@ -63,7 +63,7 @@ struct JoinRoomWindowView: View {
                 .disabled(roomCode.isEmpty || isConnecting)
             }
         }
-        .frame(width: 400, height: 100)
+        .frame(width: 400, height: 130)
         .padding(20)
         .onAppear {
             isTextFieldFocused = true
