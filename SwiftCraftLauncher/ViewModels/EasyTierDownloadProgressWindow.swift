@@ -41,6 +41,14 @@ struct EasyTierDownloadProgressWindow: View {
                 dismiss()
             }
         }
+        .windowReferenceTracking {
+            clearAllData()
+        }
+    }
+
+    /// 清理所有数据
+    private func clearAllData() {
+        // 窗口引用由 WindowReferenceTracking 自动管理
     }
 }
 

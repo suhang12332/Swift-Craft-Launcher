@@ -177,21 +177,28 @@ class EasyTierService {
     func forceStopNetwork() async {
         Logger.shared.info("强制停止 EasyTier 网络")
 
-        // 如果有当前房间和进程ID，先尝试终止该进程
+        var pidToKill: Int32?
+
+        // 优先使用当前房间记录的进程ID
         if let room = currentRoom, let pid = room.processID {
+            pidToKill = pid
+        } else {
+            // 如果没有记录的 PID，尝试通过进程名查找
+            do {
+                pidToKill = try await findProcessID(executableName: "easytier-core")
+            } catch {
+                Logger.shared.warning("查找 easytier-core 进程失败: \(error.localizedDescription)")
+            }
+        }
+
+        // 使用 kill -9 pid 终止进程
+        if let pid = pidToKill {
             do {
                 try await executeKillWithAdminPrivileges(pid: pid)
                 Logger.shared.debug("使用管理员权限终止进程 PID: \(pid)")
             } catch {
                 Logger.shared.warning("终止进程失败: \(error.localizedDescription)")
             }
-        }
-
-        // 使用 killall 确保所有 easytier-core 进程都被终止
-        do {
-            try await executeKillallWithAdminPrivileges()
-        } catch {
-            Logger.shared.warning("使用 killall 终止进程失败: \(error.localizedDescription)")
         }
 
         // 清理 Process 对象引用
@@ -542,21 +549,6 @@ class EasyTierService {
         )
         // kill -9 进程不存在是可接受情况，不抛异常
     }
-
-    /// 使用管理员权限执行 killall 命令
-    /// - Throws: GlobalError 当执行失败时
-    private func executeKillallWithAdminPrivileges() async throws {
-        let appleScript = """
-        do shell script "killall -9 easytier-core" with administrator privileges
-        """
-
-        _ = await executeAppleScript(
-            script: appleScript,
-            successMessage: "使用管理员权限清理进程成功",
-            failureMessage: "使用管理员权限清理进程（进程可能已不存在）"
-        )
-    }
-
     /// 验证网络中是否存在合法的联机中心
     /// 合法的联机中心主机名格式：scaffolding-mc-server-{port}，其中 1024 < port <= 65535
     /// - Throws: GlobalError 当找不到合法的联机中心时

@@ -189,8 +189,8 @@ struct PeerListView: View {
                 startAutoRefresh()
             }
         }
-        .onDisappear {
-            stopAutoRefresh()
+        .windowReferenceTracking {
+            clearAllData()
         }
     }
 
@@ -234,5 +234,13 @@ struct PeerListView: View {
     private func stopAutoRefresh() {
         cancellable?.cancel()
         cancellable = nil
+    }
+
+    /// 清理所有数据
+    private func clearAllData() {
+        stopAutoRefresh()
+        peers = []
+        isLoading = false
+        errorMessage = nil
     }
 }
