@@ -14,7 +14,7 @@ struct EasyTierContentView: View {
     var body: some View {
         // 创建房间菜单
         if easyTierManager.hasConnectedRoom && easyTierManager.connectionType == .created {
-            Menu("menubar.room.create".localized()) {
+            Menu("easytier.create.room.window.title".localized()) {
                 // 显示对等节点简要信息
                 if easyTierManager.peers.isEmpty {
                     Text("menubar.room.no_members".localized())
@@ -40,7 +40,7 @@ struct EasyTierContentView: View {
                 }
             }
         } else {
-            Button("menubar.room.create".localized()) {
+            Button("easytier.create.room.window.title".localized()) {
                 EasyTierManager.shared.openCreateRoomWindow()
             }
             .disabled(!easyTierManager.canCreateRoom)
@@ -48,7 +48,7 @@ struct EasyTierContentView: View {
 
         // 加入房间菜单
         if easyTierManager.hasConnectedRoom && easyTierManager.connectionType == .joined {
-            Menu("menubar.room.join".localized()) {
+            Menu("easytier.join.room.window.title".localized()) {
                 // 显示对等节点简要信息
                 if easyTierManager.peers.isEmpty {
                     Text("menubar.room.no_members".localized())
@@ -73,7 +73,7 @@ struct EasyTierContentView: View {
                 }
             }
         } else {
-            Button("menubar.room.join".localized()) {
+            Button("easytier.join.room.window.title".localized()) {
                 EasyTierManager.shared.openJoinRoomWindow()
             }
             .disabled(!easyTierManager.canJoinRoom)

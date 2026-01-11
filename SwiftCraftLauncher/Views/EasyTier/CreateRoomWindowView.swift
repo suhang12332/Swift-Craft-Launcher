@@ -72,7 +72,7 @@ struct CreateRoomWindowView: View {
                         ProgressView()
                             .controlSize(.small)
                     } else {
-                        Text("menubar.room.create".localized())
+                        Text("easytier.create.room.window.title".localized())
                     }
                 })
                 .buttonStyle(.borderedProminent)

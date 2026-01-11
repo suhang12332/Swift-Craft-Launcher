@@ -520,7 +520,7 @@ class EasyTierService {
                 throw GlobalError.configuration(
                     chineseMessage: "用户取消了管理员权限请求",
                     i18nKey: "error.configuration.authorization_denied",
-                    level: .popup
+                    level: .silent
                 )
             }
 

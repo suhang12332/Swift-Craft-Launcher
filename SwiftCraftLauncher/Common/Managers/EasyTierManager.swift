@@ -58,7 +58,7 @@ class EasyTierManager: ObservableObject {
             content: CreateRoomWindowView()
                 .environmentObject(generalSettingsManager)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme),
-            config: .easyTierCreateRoom(title: "menubar.room.create".localized())
+            config: .easyTierCreateRoom(title: "easytier.create.room.window.title".localized())
         )
     }
 
@@ -69,7 +69,7 @@ class EasyTierManager: ObservableObject {
             content: JoinRoomWindowView()
                 .environmentObject(generalSettingsManager)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme),
-            config: .easyTierJoinRoom(title: "menubar.room.join".localized())
+            config: .easyTierJoinRoom(title: "easytier.join.room.window.title".localized())
         )
     }
 
