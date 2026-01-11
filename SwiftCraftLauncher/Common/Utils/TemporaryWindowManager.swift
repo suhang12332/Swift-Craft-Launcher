@@ -107,8 +107,8 @@ class TemporaryWindowManager: ObservableObject {
     /// 配置窗口样式
     private func configureWindowStyle(_ window: NSWindow, with config: TemporaryWindowConfig) {
         // 检查是否是创建房间或加入房间窗口（禁用所有窗口控制按钮）
-        let isEasyTierRoomWindow = config.title == "menubar.room.create".localized() ||
-                                   config.title == "menubar.room.join".localized()
+        let isEasyTierRoomWindow = config.title == "easytier.create.room.window.title".localized() ||
+                                   config.title == "easytier.join.room.window.title".localized()
 
         if isEasyTierRoomWindow {
             // 禁用所有窗口控制按钮
@@ -241,8 +241,9 @@ extension TemporaryWindowConfig {
 // MARK: - Window Reference Tracking
 
 /// 窗口状态持有者（用于避免闭包捕获 @State 导致的内存问题）
-/// 注意：实现 ObservableObject 是为了满足 @StateObject 的要求，但不会触发视图更新
-private class WindowStateHolder: ObservableObject {
+/// 注意：不使用 ObservableObject，避免触发 SwiftUI 的视图更新机制
+@MainActor
+private class WindowStateHolder {
     var currentWindow: NSWindow?
 }
 
@@ -251,36 +252,38 @@ private class WindowStateHolder: ObservableObject {
 struct WindowReferenceTracking: ViewModifier {
     /// 窗口关闭时的清理回调
     let onClose: () -> Void
-    /// 窗口状态持有者（使用 @StateObject 避免闭包捕获问题）
-    @StateObject private var stateHolder = WindowStateHolder()
+    /// 窗口状态持有者（使用 @State 避免触发 ObservableObject 的更新机制）
+    @State private var stateHolder = WindowStateHolder()
 
     func body(content: Content) -> some View {
         let holder = stateHolder
         return content
             .background(
                 WindowAccessor(synchronous: false) { [weak holder] window in
-                    // 检查状态持有者是否仍然有效
+                    // WindowAccessor 的回调已经在主线程上执行（通过 DispatchQueue.main.async）
+                    // 直接设置窗口引用，因为回调已经在主线程上，且 window 对象在回调执行时是有效的
+                    // 不需要再嵌套异步调用，直接设置即可
                     guard let holder = holder else { return }
-
-                    // 保存窗口引用 - 使用异步方式避免在视图更新期间修改状态
-                    Task { @MainActor [weak holder] in
-                        // 再次检查，因为可能在 Task 执行时视图已经销毁
-                        guard let holder = holder else { return }
-                        holder.currentWindow = window
-                    }
+                    // 直接设置窗口引用，因为回调已经在主线程上执行
+                    holder.currentWindow = window
                 }
             )
             .onReceive(NotificationCenter.default.publisher(for: NSWindow.willCloseNotification)) { notification in
                 // 检查是否是当前窗口关闭
                 if let window = notification.object as? NSWindow, window == stateHolder.currentWindow {
-                    onClose()
+                    // 使用异步方式执行清理回调，避免在视图更新期间直接修改状态
+                    Task { @MainActor in
+                        onClose()
+                    }
                 }
             }
             .onDisappear {
                 // 清理窗口引用
                 stateHolder.currentWindow = nil
-                // 作为备用清理机制
-                onClose()
+                // 使用异步方式执行清理回调，避免在视图销毁过程中直接修改状态
+                Task { @MainActor in
+                    onClose()
+                }
             }
     }
 }
