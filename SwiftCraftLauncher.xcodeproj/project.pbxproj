@@ -97,8 +97,27 @@
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
+				ar,
 				Base,
+				da,
+				de,
+				en,
+				es,
+				fi,
+				fr,
+				hi,
+				it,
+				ja,
+				ko,
+				nb,
+				nl,
+				pl,
+				pt,
+				ru,
+				sv,
+				th,
+				tr,
+				vi,
 				"zh-Hans",
 				"zh-Hant",
 			);
