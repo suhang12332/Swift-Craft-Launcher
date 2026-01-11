@@ -8,9 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91B2E313A67005A53F1 /* ZIPFoundation */; };
+		9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9049FDB02F1151B50070A9E3 /* SkinRenderKit */; };
 		906099592EED2CE400C7DCA5 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 906099582EED2CE400C7DCA5 /* MarkdownUI */; };
-		90B910BF2F02D74500B6F9D3 /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90B910BE2F02D74500B6F9D3 /* SkinRenderKit */; };
-		90B910C22F02D86F00B6F9D3 /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90B910C12F02D86F00B6F9D3 /* SkinRenderKit */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
 
@@ -32,9 +31,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
-				90B910C22F02D86F00B6F9D3 /* SkinRenderKit in Frameworks */,
 				90E123456789ABCD0001 /* Sparkle in Frameworks */,
-				90B910BF2F02D74500B6F9D3 /* SkinRenderKit in Frameworks */,
+				9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */,
 				906099592EED2CE400C7DCA5 /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -74,8 +72,7 @@
 				9023D91B2E313A67005A53F1 /* ZIPFoundation */,
 				90E123456789ABCD0002 /* Sparkle */,
 				906099582EED2CE400C7DCA5 /* MarkdownUI */,
-				90B910BE2F02D74500B6F9D3 /* SkinRenderKit */,
-				90B910C12F02D86F00B6F9D3 /* SkinRenderKit */,
+				9049FDB02F1151B50070A9E3 /* SkinRenderKit */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */;
@@ -100,8 +97,27 @@
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
+				ar,
 				Base,
+				da,
+				de,
+				en,
+				es,
+				fi,
+				fr,
+				hi,
+				it,
+				ja,
+				ko,
+				nb,
+				nl,
+				pl,
+				pt,
+				ru,
+				sv,
+				th,
+				tr,
+				vi,
 				"zh-Hans",
 				"zh-Hant",
 			);
@@ -112,7 +128,7 @@
 				90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */,
 				033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 				906099572EED2CE400C7DCA5 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
-				90B910C02F02D86F00B6F9D3 /* XCRemoteSwiftPackageReference "NSSkinRender" */,
+				9049FDAF2F1151B50070A9E3 /* XCRemoteSwiftPackageReference "NSSkinRender" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -187,7 +203,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 44;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -211,7 +227,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Su";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14;
-				MARKETING_VERSION = "0.4.3-beta";
+				MARKETING_VERSION = "0.4.4-beta";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -256,7 +272,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 44;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -274,7 +290,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Su";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14;
-				MARKETING_VERSION = "0.4.3-beta";
+				MARKETING_VERSION = "0.4.4-beta";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -293,7 +309,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 44;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -305,7 +321,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14;
-				MARKETING_VERSION = "0.4.3-beta";
+				MARKETING_VERSION = "0.4.4-beta";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
@@ -326,7 +342,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 43;
+				CURRENT_PROJECT_VERSION = 44;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -338,7 +354,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14;
-				MARKETING_VERSION = "0.4.3-beta";
+				MARKETING_VERSION = "0.4.4-beta";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
@@ -388,20 +404,20 @@
 				minimumVersion = 0.9.19;
 			};
 		};
+		9049FDAF2F1151B50070A9E3 /* XCRemoteSwiftPackageReference "NSSkinRender" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/suhang12332/NSSkinRender.git";
+			requirement = {
+				branch = release;
+				kind = branch;
+			};
+		};
 		906099572EED2CE400C7DCA5 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 2.4.1;
-			};
-		};
-		90B910C02F02D86F00B6F9D3 /* XCRemoteSwiftPackageReference "NSSkinRender" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/irisWirisW/NSSkinRender";
-			requirement = {
-				branch = main;
-				kind = branch;
 			};
 		};
 		90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
@@ -425,19 +441,15 @@
 			package = 9023D91A2E313A67005A53F1 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
 		};
+		9049FDB02F1151B50070A9E3 /* SkinRenderKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9049FDAF2F1151B50070A9E3 /* XCRemoteSwiftPackageReference "NSSkinRender" */;
+			productName = SkinRenderKit;
+		};
 		906099582EED2CE400C7DCA5 /* MarkdownUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 906099572EED2CE400C7DCA5 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
 			productName = MarkdownUI;
-		};
-		90B910BE2F02D74500B6F9D3 /* SkinRenderKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = SkinRenderKit;
-		};
-		90B910C12F02D86F00B6F9D3 /* SkinRenderKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 90B910C02F02D86F00B6F9D3 /* XCRemoteSwiftPackageReference "NSSkinRender" */;
-			productName = SkinRenderKit;
 		};
 		90E123456789ABCD0002 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;

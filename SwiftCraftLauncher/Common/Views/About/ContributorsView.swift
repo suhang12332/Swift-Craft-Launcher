@@ -28,9 +28,8 @@ public struct ContributorsView: View {
             // 每次打开都重新加载静态贡献者数据
             loadStaticContributors()
         }
-        .onDisappear {
-            // 页面关闭时清空数据
-            clearStaticContributorsData()
+        .windowReferenceTracking {
+            clearAllData()
         }
     }
 
@@ -196,5 +195,10 @@ public struct ContributorsView: View {
         staticContributorsLoaded = false
         staticContributorsLoadFailed = false
         Logger.shared.info("Static contributors data cleared")
+    }
+
+    /// 清理所有数据
+    private func clearAllData() {
+        clearStaticContributorsData()
     }
 }

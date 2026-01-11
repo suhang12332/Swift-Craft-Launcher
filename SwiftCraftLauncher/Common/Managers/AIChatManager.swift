@@ -529,11 +529,19 @@ class AIChatManager: ObservableObject {
     // MARK: - 打开聊天窗口
 
     /// 打开聊天窗口
-    func openChatWindow() {
+    /// - Parameters:
+    ///   - playerListViewModel: 玩家列表视图模型
+    ///   - gameRepository: 游戏仓库
+    func openChatWindow(
+        playerListViewModel: PlayerListViewModel,
+        gameRepository: GameRepository
+    ) {
         let chatState = ChatState()
         let generalSettingsManager = GeneralSettingsManager.shared
         TemporaryWindowManager.shared.showWindow(
             content: AIChatWindowView(chatState: chatState)
+                .environmentObject(playerListViewModel)
+                .environmentObject(gameRepository)
                 .environmentObject(generalSettingsManager)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme),
             config: .aiChat(title: "ai.assistant.title".localized())

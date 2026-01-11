@@ -8,16 +8,10 @@
 import SwiftUI
 
 /// 菜单栏内容视图（用于响应状态变化）
-struct MenuBarContentView: View {
+struct EasyTierContentView: View {
     @ObservedObject private var easyTierManager = EasyTierManager.shared
 
     var body: some View {
-        Button("settings.ai.open_chat".localized()) {
-            AIChatManager.shared.openChatWindow()
-        }
-
-        Divider()
-
         // 创建房间菜单
         if easyTierManager.hasConnectedRoom && easyTierManager.connectionType == .created {
             Menu("menubar.room.create".localized()) {

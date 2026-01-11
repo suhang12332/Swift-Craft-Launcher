@@ -79,10 +79,13 @@ struct CreateRoomWindowView: View {
                 .disabled(roomCode.isEmpty || isConnecting)
             }
         }
-        .frame(width: 400, height: 100)
+        .frame(width: 400, height: 130)
         .padding(20)
         .onAppear {
             createRoom()
+        }
+        .windowReferenceTracking {
+            clearAllData()
         }
         .onChange(of: viewModel.networkStatus) { _, newStatus in
             if case .connected = newStatus {
@@ -108,5 +111,12 @@ struct CreateRoomWindowView: View {
         await viewModel.startNetwork()
 
         isConnecting = false
+    }
+
+    /// 清理所有数据
+    private func clearAllData() {
+        roomCode = ""
+        isConnecting = false
+        isCreating = false
     }
 }

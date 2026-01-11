@@ -60,15 +60,6 @@ enum CommonService {
                     )
                     return version.version
                 }
-                .filter { version in
-                    // 过滤出纯数字版本（如 1.21.1, 1.20.4 等）
-                    let components = version.components(separatedBy: ".")
-                    return components.allSatisfy {
-                        $0.rangeOfCharacter(
-                            from: CharacterSet.decimalDigits.inverted
-                        ) == nil
-                    }
-                }
             result = CommonUtil.sortMinecraftVersions(allVersions)
         }
         return result

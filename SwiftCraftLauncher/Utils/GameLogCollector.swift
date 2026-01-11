@@ -10,8 +10,15 @@ class GameLogCollector {
     private init() {}
 
     /// 收集游戏日志并打开 AI 窗口
-    /// - Parameter gameName: 游戏名称
-    func collectAndOpenAIWindow(gameName: String) async {
+    /// - Parameters:
+    ///   - gameName: 游戏名称
+    ///   - playerListViewModel: 玩家列表视图模型
+    ///   - gameRepository: 游戏仓库
+    func collectAndOpenAIWindow(
+        gameName: String,
+        playerListViewModel: PlayerListViewModel,
+        gameRepository: GameRepository
+    ) async {
         // 收集日志文件
         let logFiles = await collectLogFiles(gameName: gameName)
 
@@ -27,7 +34,12 @@ class GameLogCollector {
         }
 
         // 打开 AI 窗口并发送日志
-        await openAIWindowWithLogs(logFiles: logFiles, gameName: gameName)
+        await openAIWindowWithLogs(
+            logFiles: logFiles,
+            gameName: gameName,
+            playerListViewModel: playerListViewModel,
+            gameRepository: gameRepository
+        )
     }
 
     /// 收集日志文件
@@ -81,7 +93,14 @@ class GameLogCollector {
     /// - Parameters:
     ///   - logFiles: 日志文件 URL 数组
     ///   - gameName: 游戏名称
-    private func openAIWindowWithLogs(logFiles: [URL], gameName: String) async {
+    ///   - playerListViewModel: 玩家列表视图模型
+    ///   - gameRepository: 游戏仓库
+    private func openAIWindowWithLogs(
+        logFiles: [URL],
+        gameName: String,
+        playerListViewModel: PlayerListViewModel,
+        gameRepository: GameRepository
+    ) async {
         // 创建 ChatState
         let chatState = ChatState()
 
@@ -91,9 +110,14 @@ class GameLogCollector {
             attachments.append(.file(logFile, logFile.lastPathComponent))
         }
 
-        // 打开窗口
+        // 打开窗口（使用 AIChatManager 确保环境对象正确注入）
+        let generalSettingsManager = GeneralSettingsManager.shared
         TemporaryWindowManager.shared.showWindow(
-            content: AIChatWindowView(chatState: chatState),
+            content: AIChatWindowView(chatState: chatState)
+                .environmentObject(playerListViewModel)
+                .environmentObject(gameRepository)
+                .environmentObject(generalSettingsManager)
+                .preferredColorScheme(generalSettingsManager.currentColorScheme),
             config: .aiChat(title: "ai.assistant.title".localized())
         )
 

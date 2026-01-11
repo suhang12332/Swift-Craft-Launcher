@@ -21,7 +21,7 @@ public struct LicenseView: View {
                         .textSelection(.enabled)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding()
-                        .frame(width: 570)
+                        .frame(minWidth: 570)
                 }
             } else {
                 Image(systemName: "exclamationmark.triangle")
@@ -30,13 +30,12 @@ public struct LicenseView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .frame(width: 570, height: 600)
         .task {
             await loadLicense()
         }
-        .onDisappear {
-            // 视图关闭时清理内存
-            licenseText = ""
-            isLoading = true
+        .windowReferenceTracking {
+            clearAllData()
         }
     }
 
@@ -45,6 +44,12 @@ public struct LicenseView: View {
             licenseText = try await gitHubService.fetchLicenseText()
         } catch {}
         isLoading = false
+    }
+
+    /// 清理所有数据
+    private func clearAllData() {
+        licenseText = ""
+        isLoading = true
     }
 }
 
