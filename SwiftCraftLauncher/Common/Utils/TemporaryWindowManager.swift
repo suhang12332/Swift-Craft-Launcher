@@ -240,31 +240,45 @@ extension TemporaryWindowConfig {
 
 // MARK: - Window Reference Tracking
 
+/// 窗口状态持有者（用于避免闭包捕获 @State 导致的内存问题）
+/// 注意：实现 ObservableObject 是为了满足 @StateObject 的要求，但不会触发视图更新
+private class WindowStateHolder: ObservableObject {
+    var currentWindow: NSWindow?
+}
+
 /// 窗口引用跟踪修饰符
 /// 用于自动管理窗口引用，并在窗口关闭时触发清理回调
 struct WindowReferenceTracking: ViewModifier {
     /// 窗口关闭时的清理回调
     let onClose: () -> Void
-    /// 窗口引用（内部状态）
-    @State private var currentWindow: NSWindow?
+    /// 窗口状态持有者（使用 @StateObject 避免闭包捕获问题）
+    @StateObject private var stateHolder = WindowStateHolder()
 
     func body(content: Content) -> some View {
-        content
+        let holder = stateHolder
+        return content
             .background(
-                WindowAccessor(synchronous: false) { window in
+                WindowAccessor(synchronous: false) { [weak holder] window in
+                    // 检查状态持有者是否仍然有效
+                    guard let holder = holder else { return }
+
                     // 保存窗口引用 - 使用异步方式避免在视图更新期间修改状态
-                    Task { @MainActor in
-                        currentWindow = window
+                    Task { @MainActor [weak holder] in
+                        // 再次检查，因为可能在 Task 执行时视图已经销毁
+                        guard let holder = holder else { return }
+                        holder.currentWindow = window
                     }
                 }
             )
             .onReceive(NotificationCenter.default.publisher(for: NSWindow.willCloseNotification)) { notification in
                 // 检查是否是当前窗口关闭
-                if let window = notification.object as? NSWindow, window == currentWindow {
+                if let window = notification.object as? NSWindow, window == stateHolder.currentWindow {
                     onClose()
                 }
             }
             .onDisappear {
+                // 清理窗口引用
+                stateHolder.currentWindow = nil
                 // 作为备用清理机制
                 onClose()
             }
