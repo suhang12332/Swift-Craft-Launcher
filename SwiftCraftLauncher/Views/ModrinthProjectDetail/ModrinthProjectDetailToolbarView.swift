@@ -16,9 +16,7 @@ struct ModrinthProjectDetailToolbarView: View {
 
     var body: some View {
         backButton
-        Spacer()
         //        projectIconAndTitle
-        //        Spacer()
     }
 
     //    // MARK: - UI Components
