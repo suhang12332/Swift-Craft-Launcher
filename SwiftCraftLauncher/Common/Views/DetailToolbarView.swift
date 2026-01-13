@@ -79,9 +79,9 @@ public struct DetailToolbarView: ToolbarContent {
                     if gameType {
                         dataSourceMenu
                     }
-                    
+
                     Spacer()
-                    
+
                     Button {
                         Task {
                             let isRunning = isGameRunning(gameId: game.id)

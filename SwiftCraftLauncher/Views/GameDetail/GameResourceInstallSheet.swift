@@ -213,16 +213,16 @@ struct GameResourceInstallFooter: View {
         Task {
             do {
                 try await downloadAllManualThrowing()
+                // 下载成功已在 downloadAllManualThrowing 中处理关闭 sheet
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error(
                     "手动下载所有依赖项失败: \(globalError.chineseMessage)"
                 )
                 GlobalErrorHandler.shared.handle(globalError)
-            }
-            _ = await MainActor.run {
-                isDownloadingAll = false
-                isPresented = false
+                _ = await MainActor.run {
+                    isDownloadingAll = false
+                }
             }
         }
     }
@@ -261,9 +261,11 @@ struct GameResourceInstallFooter: View {
             )
         }
 
-        // 下载成功，调用回调
+        // 下载成功，更新按钮状态并关闭 sheet
         _ = await MainActor.run {
             onDownloadSuccess?()
+            isDownloadingAll = false
+            isPresented = false
         }
     }
 
@@ -273,14 +275,14 @@ struct GameResourceInstallFooter: View {
         Task {
             do {
                 try await downloadResourceThrowing()
+                // 下载成功已在 downloadResourceThrowing 中处理关闭 sheet
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("下载资源失败: \(globalError.chineseMessage)")
                 GlobalErrorHandler.shared.handle(globalError)
-            }
-            _ = await MainActor.run {
-                isDownloadingAll = false
-                isPresented = false
+                _ = await MainActor.run {
+                    isDownloadingAll = false
+                }
             }
         }
     }
@@ -311,9 +313,11 @@ struct GameResourceInstallFooter: View {
             )
         }
 
-        // 下载成功，调用回调
+        // 下载成功，更新按钮状态并关闭 sheet
         _ = await MainActor.run {
             onDownloadSuccess?()
+            isDownloadingAll = false
+            isPresented = false
         }
     }
 }

@@ -109,7 +109,7 @@ public struct ContentToolbarView: ToolbarContent {
                     dismissButton: .default(Text("common.confirm".localized()))
                 )
             }
-            
+
             if let player = playerListViewModel.currentPlayer, player.isOnlineAccount {
                 Button {
                     Task {
@@ -137,7 +137,7 @@ public struct ContentToolbarView: ToolbarContent {
                     }
                 }
             }
-            
+
             // 启动信息按钮 - 仅在存在公告时显示
             if hasAnnouncement, let announcement = announcementData {
                 Button {
