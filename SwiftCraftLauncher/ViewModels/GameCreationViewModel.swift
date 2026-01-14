@@ -123,7 +123,11 @@ class GameCreationViewModel: BaseGameFormViewModel {
     // MARK: - Version Management
     /// 初始化版本选择器
     func initializeVersionPicker() async {
-        let compatibleVersions = await CommonService.compatibleVersions(for: selectedModLoader)
+        let includeSnapshots = GameSettingsManager.shared.includeSnapshotsForGameVersions
+        let compatibleVersions = await CommonService.compatibleVersions(
+            for: selectedModLoader,
+            includeSnapshots: includeSnapshots
+        )
         await updateAvailableVersions(compatibleVersions)
     }
 
@@ -146,7 +150,11 @@ class GameCreationViewModel: BaseGameFormViewModel {
     /// 处理模组加载器变化
     func handleModLoaderChange(_ newLoader: String) {
         Task {
-            let compatibleVersions = await CommonService.compatibleVersions(for: newLoader)
+            let includeSnapshots = GameSettingsManager.shared.includeSnapshotsForGameVersions
+            let compatibleVersions = await CommonService.compatibleVersions(
+                for: newLoader,
+                includeSnapshots: includeSnapshots
+            )
             await updateAvailableVersions(compatibleVersions)
 
             // 更新加载器版本列表

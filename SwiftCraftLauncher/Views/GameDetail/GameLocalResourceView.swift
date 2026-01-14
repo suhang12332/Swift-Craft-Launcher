@@ -19,6 +19,7 @@ struct GameLocalResourceView: View {
     @State private var resourceDirectory: URL? // 保存资源目录路径
     @State private var allFiles: [URL] = [] // 所有文件列表
     @State private var searchTimer: Timer? // 搜索防抖定时器
+    @Binding var localFilter: LocalResourceFilter
 
     private static let pageSize: Int = 20
     private var pageSize: Int { Self.pageSize }
@@ -26,6 +27,17 @@ struct GameLocalResourceView: View {
     // 当前显示的资源列表（无限滚动）
     private var displayedResources: [ModrinthProjectDetail] {
         scannedResources
+    }
+
+    /// 当前筛选下真正用于扫描的文件列表
+    private var filesToScan: [URL] {
+        switch localFilter {
+        case .all:
+            return allFiles
+        case .disabled:
+            // 只扫描 .disable 后缀文件
+            return allFiles.filter { $0.lastPathComponent.hasSuffix(".disable") }
+        }
     }
 
     var body: some View {
@@ -85,6 +97,12 @@ struct GameLocalResourceView: View {
                 debounceSearch()
             }
         }
+        .onChange(of: localFilter) { _, _ in
+            resourceDirectory = nil
+            resetPagination()
+            refreshAllFiles()
+            loadPage(page: 1, append: false)
+        }
         .alert(
             "error.notification.validation.title".localized(),
             isPresented: .constant(error != nil)
@@ -130,6 +148,7 @@ struct GameLocalResourceView: View {
                     type: false,
                     selectedItem: $selectedItem,
                     onResourceChanged: refreshResources,
+                    onLocalDisableStateChanged: handleLocalDisableStateChanged,
                     scannedDetailIds: .constant([])
                 )
                 .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
@@ -303,7 +322,10 @@ struct GameLocalResourceView: View {
             return
         }
 
-        if allFiles.isEmpty {
+        // 根据当前筛选选择实际要扫描的文件集合
+        let sourceFiles = filesToScan
+
+        if sourceFiles.isEmpty {
             scannedResources = []
             isLoadingResources = false
             isLoadingMore = false
@@ -320,9 +342,9 @@ struct GameLocalResourceView: View {
 
         let isSearching = !searchText.isEmpty
 
-        // 始终使用 allFiles 进行分页扫描，然后在结果中根据 title 过滤
+        // 始终使用当前筛选下的文件列表进行分页扫描，然后在结果中根据 title 过滤
         ModScanner.shared.scanResourceFilesPage(
-            fileURLs: allFiles,
+            fileURLs: sourceFiles,
             page: page,
             pageSize: pageSize
         ) { [self] details, hasMore in
@@ -388,6 +410,21 @@ struct GameLocalResourceView: View {
         // 重置分页并重新加载第一页
         resetPagination()
         loadPage(page: 1, append: false)
+    }
+
+    /// 本地资源启用/禁用状态变更后的处理
+    /// - Parameters:
+    ///   - project: 对应的 ModrinthProject（由 detail 转换而来）
+    ///   - isDisabled: 变更后的禁用状态
+    private func handleLocalDisableStateChanged(
+        project: ModrinthProject,
+        isDisabled: Bool
+    ) {
+        // 在“已禁用”筛选下，当资源被启用时，从当前结果中移除该资源；无需重新扫描
+        if localFilter == .disabled, !isDisabled {
+            scannedResources.removeAll { $0.id == project.projectId }
+        }
+        // 其他场景保持现状（不额外刷新）
     }
 
     /// 切换资源启用/禁用状态

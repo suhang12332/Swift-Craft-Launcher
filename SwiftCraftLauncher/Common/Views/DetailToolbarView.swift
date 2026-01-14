@@ -17,6 +17,7 @@ public struct DetailToolbarView: ToolbarContent {
     @Binding var selectedTab: Int
     @Binding var gameId: String?
     @Binding var dataSource: DataSource
+    @Binding var localResourceFilter: LocalResourceFilter
 
     // MARK: - Computed Properties
 
@@ -76,6 +77,10 @@ public struct DetailToolbarView: ToolbarContent {
                     //                    }
                     resourcesTypeMenu
                     resourcesMenu
+                    // 仅在本地资源视图下显示“全部 / 已禁用”筛选
+                    if !gameType {
+                        localResourceFilterMenu
+                    }
                     if gameType {
                         dataSourceMenu
                     }
@@ -202,6 +207,25 @@ public struct DetailToolbarView: ToolbarContent {
             // 显示当前选择的值
             Label(dataSource.localizedName, systemImage: "network")
                 .labelStyle(.titleOnly)
+        }
+    }
+
+    /// 本地资源筛选菜单（全部 / 已禁用）
+    private var localResourceFilterMenu: some View {
+        Menu {
+            ForEach(LocalResourceFilter.allCases) { filter in
+                Button {
+                    localResourceFilter = filter
+                } label: {
+                    if localResourceFilter == filter {
+                        Label(filter.title, systemImage: "checkmark")
+                    } else {
+                        Text(filter.title)
+                    }
+                }
+            }
+        } label: {
+            Text(localResourceFilter.title)
         }
     }
 }

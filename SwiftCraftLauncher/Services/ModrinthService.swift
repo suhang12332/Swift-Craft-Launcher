@@ -249,9 +249,9 @@ enum ModrinthService {
 
     /// 获取游戏版本列表（静默版本）
     /// - Returns: 游戏版本列表，失败时返回空数组
-    static func fetchGameVersions() async -> [GameVersion] {
+    static func fetchGameVersions(includeSnapshots: Bool = false) async -> [GameVersion] {
         do {
-            return try await fetchGameVersionsThrowing()
+            return try await fetchGameVersionsThrowing(includeSnapshots: includeSnapshots)
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Modrinth 游戏版本列表失败: \(globalError.chineseMessage)")
@@ -263,11 +263,14 @@ enum ModrinthService {
     /// 获取游戏版本列表（抛出异常版本）
     /// - Returns: 游戏版本列表
     /// - Throws: GlobalError 当操作失败时
-    static func fetchGameVersionsThrowing() async throws -> [GameVersion] {
+    static func fetchGameVersionsThrowing(
+        includeSnapshots: Bool = false
+    ) async throws -> [GameVersion] {
         // 使用统一的 API 客户端
         let data = try await APIClient.get(url: URLConfig.API.Modrinth.gameVersionTag)
         let result = try JSONDecoder().decode([GameVersion].self, from: data)
-        return result.filter { $0.version_type == "release" }
+        // 默认仅返回正式版，如果 includeSnapshots 为 true，则返回所有版本
+        return includeSnapshots ? result : result.filter { $0.version_type == "release" }
     }
 
     /// 获取项目详情（静默版本）

@@ -36,6 +36,8 @@ struct AddOrDeleteResourceButton: View {
     @State private var oldFileNameForUpdate: String?  // 更新前的旧文件名（用于更新时删除旧文件）
     @Binding var selectedItem: SidebarItem
     var onResourceChanged: (() -> Void)?
+    /// 启用/禁用状态切换后的回调（仅本地资源列表使用）
+    var onToggleDisableState: ((Bool) -> Void)?
     // 保证所有 init 都有 onResourceChanged 参数（带默认值）
     init(
         project: ModrinthProject,
@@ -47,7 +49,8 @@ struct AddOrDeleteResourceButton: View {
         selectedItem: Binding<SidebarItem>,
         onResourceChanged: (() -> Void)? = nil,
         scannedDetailIds: Binding<Set<String>> = .constant([]),
-        isResourceDisabled: Binding<Bool> = .constant(false)
+        isResourceDisabled: Binding<Bool> = .constant(false),
+        onToggleDisableState: ((Bool) -> Void)? = nil
     ) {
         self.project = project
         self.selectedVersions = selectedVersions
@@ -59,6 +62,7 @@ struct AddOrDeleteResourceButton: View {
         self.onResourceChanged = onResourceChanged
         self._scannedDetailIds = scannedDetailIds
         self._isResourceDisabled = isResourceDisabled
+        self.onToggleDisableState = onToggleDisableState
     }
 
     var body: some View {
@@ -622,6 +626,9 @@ struct AddOrDeleteResourceButton: View {
             isDisabled = ResourceEnableDisableManager.isDisabled(fileName: newFileName)
             // 同步更新暴露给父视图的状态
             isResourceDisabled = isDisabled
+
+            // 通知外部本地资源的启用/禁用状态已变更
+            onToggleDisableState?(isDisabled)
         } catch {
             Logger.shared.error("切换资源启用状态失败: \(error.localizedDescription)")
         }

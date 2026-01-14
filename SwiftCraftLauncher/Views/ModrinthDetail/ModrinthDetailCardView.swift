@@ -11,6 +11,8 @@ struct ModrinthDetailCardView: View {
     let type: Bool  // false = local, true = server
     @Binding var selectedItem: SidebarItem
     var onResourceChanged: (() -> Void)?
+    /// 本地资源启用/禁用状态变更回调（仅 local 列表使用）
+    var onLocalDisableStateChanged: ((ModrinthProject, Bool) -> Void)?
     @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找
     @State private var addButtonState: AddButtonState = .idle
     @State private var showDeleteAlert = false
@@ -165,7 +167,9 @@ struct ModrinthDetailCardView: View {
                 onResourceChanged: onResourceChanged,
                 scannedDetailIds: $scannedDetailIds,
                 isResourceDisabled: $isResourceDisabled
-            )
+            ) { isDisabled in
+                onLocalDisableStateChanged?(project, isDisabled)
+            }
             .environmentObject(gameRepository)
         }
     }

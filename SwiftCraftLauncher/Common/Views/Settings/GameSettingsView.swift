@@ -27,6 +27,18 @@ public struct GameSettingsView: View {
                 .fixedSize()
             }.labeledContentStyle(.custom(alignment: .firstTextBaseline)).padding(.bottom, 10)
 
+            LabeledContent("settings.game_versions.label".localized()) {
+                HStack {
+                    Toggle(
+                        "",
+                        isOn: $gameSettings.includeSnapshotsForGameVersions
+                    )
+                    .labelsHidden()
+                    Text("settings.game_versions.include_snapshots.label".localized()).font(.callout)
+                        .foregroundColor(.primary)
+                }
+            }.labeledContentStyle(.custom).padding(.bottom, 10)
+
             LabeledContent("settings.ai_crash_analysis".localized()) {
                 HStack {
                     Toggle(

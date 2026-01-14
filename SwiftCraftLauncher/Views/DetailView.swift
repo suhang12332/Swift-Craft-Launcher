@@ -25,6 +25,7 @@ struct DetailView: View {
     @Binding var selectedLoader: [String]
     @Binding var dataSource: DataSource
     @Binding var searchText: String
+    @Binding var localResourceFilter: LocalResourceFilter
 
     @EnvironmentObject var gameRepository: GameRepository
 
@@ -56,7 +57,8 @@ struct DetailView: View {
                 selectedLoaders: $selectedLoader,
                 gameType: $gameType,
                 selectedItem: $selectedItem,
-                searchText: $searchText
+                searchText: $searchText,
+                localResourceFilter: $localResourceFilter
             )
         }
     }
