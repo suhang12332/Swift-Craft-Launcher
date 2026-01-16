@@ -28,6 +28,7 @@ struct GameInfoDetailView: View {
     @EnvironmentObject var gameRepository: GameRepository
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
+    @Binding var localResourceFilter: LocalResourceFilter
     @StateObject private var cacheManager = CacheManager()
     @State private var localRefreshToken = UUID()
 
@@ -69,7 +70,8 @@ struct GameInfoDetailView: View {
                     selectedItem: $selectedItem,
                     selectedProjectId: $selectedProjectId,
                     refreshToken: localRefreshToken,
-                    searchText: $searchText
+                    searchText: $searchText,
+                    localFilter: $localResourceFilter
                 )
             }
         }

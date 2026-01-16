@@ -39,6 +39,8 @@ struct MainView: View {
     @State private var dataSource: DataSource = GameSettingsManager.shared.defaultAPISource
     // 搜索文本状态，用于保留从详情页返回时的搜索内容
     @State private var searchText: String = ""
+    // 本地资源筛选（全部 / 已禁用）
+    @State private var localResourceFilter: LocalResourceFilter = .all
 
     @State private var showingInspector: Bool = false
 
@@ -89,7 +91,8 @@ struct MainView: View {
                 gameType: $gameType,
                 selectedLoader: $selectedLoaders,
                 dataSource: $dataSource,
-                searchText: $searchText
+                searchText: $searchText,
+                localResourceFilter: $localResourceFilter
             )
             .toolbar {
                 DetailToolbarView(
@@ -102,7 +105,8 @@ struct MainView: View {
                     selectProjectId: $selectedProjectId,
                     selectedTab: $selectedTab,
                     gameId: $gameId,
-                    dataSource: $dataSource
+                    dataSource: $dataSource,
+                    localResourceFilter: $localResourceFilter
                 )
             }
         }

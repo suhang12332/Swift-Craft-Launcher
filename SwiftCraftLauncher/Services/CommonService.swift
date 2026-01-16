@@ -5,9 +5,15 @@ enum CommonService {
     /// 根据 mod loader 获取适配的版本列表（静默版本）
     /// - Parameter loader: 加载器类型
     /// - Returns: 兼容的版本列表
-    static func compatibleVersions(for loader: String) async -> [String] {
+    static func compatibleVersions(
+        for loader: String,
+        includeSnapshots: Bool = false
+    ) async -> [String] {
         do {
-            return try await compatibleVersionsThrowing(for: loader)
+            return try await compatibleVersionsThrowing(
+                for: loader,
+                includeSnapshots: includeSnapshots
+            )
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error(
@@ -23,7 +29,8 @@ enum CommonService {
     /// - Returns: 兼容的版本列表
     /// - Throws: GlobalError 当操作失败时
     static func compatibleVersionsThrowing(
-        for loader: String
+        for loader: String,
+        includeSnapshots: Bool = false
     ) async throws -> [String] {
         var result: [String] = []
         switch loader.lowercased() {
@@ -45,7 +52,9 @@ enum CommonService {
                 }
             result = CommonUtil.sortMinecraftVersions(filteredVersions)
         default:
-            let gameVersions = await ModrinthService.fetchGameVersions()
+            let gameVersions = await ModrinthService.fetchGameVersions(
+                includeSnapshots: includeSnapshots
+            )
             let allVersions = gameVersions
                 .map { version in
                     // 缓存每个版本的时间信息

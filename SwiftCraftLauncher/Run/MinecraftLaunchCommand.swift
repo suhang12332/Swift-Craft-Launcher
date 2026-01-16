@@ -195,11 +195,8 @@ struct MinecraftLaunchCommand {
             process.environment = env
         }
 
-        // 存储进程到管理器（会自动设置终止处理器和崩溃检测）
+        // 存储进程到管理器（会自动设置终止处理器）
         GameProcessManager.shared.storeProcess(gameId: game.id, process: process)
-
-        // 在进程启动前开始监控启动错误（需要在启动前设置管道）
-        GameLaunchErrorDetector.shared.startMonitoring(gameId: game.id, process: process)
 
         do {
             try process.run()
@@ -210,9 +207,6 @@ struct MinecraftLaunchCommand {
             }
         } catch {
             Logger.shared.error("启动进程失败: \(error.localizedDescription)")
-
-            // 启动失败时停止错误监控
-            GameLaunchErrorDetector.shared.stopMonitoring(gameId: game.id)
 
             // 启动失败时清理进程并重置状态
             _ = GameProcessManager.shared.stopProcess(for: game.id)
