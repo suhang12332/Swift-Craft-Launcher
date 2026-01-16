@@ -40,6 +40,20 @@ class AIChatManager: ObservableObject {
             return
         }
 
+        guard !settings.getModel().isEmpty else {
+            let error = GlobalError.configuration(
+                chineseMessage: "AI 模型未配置，请在设置中填写模型名称",
+                i18nKey: "error.configuration.ai_model_not_configured",
+                level: .popup
+            )
+            Logger.shared.error("AI 模型未配置，请在设置中填写模型名称")
+            await MainActor.run {
+                chatState.isSending = false
+                GlobalErrorHandler.shared.handle(error)
+            }
+            return
+        }
+
         // 添加用户消息
         let userMessage = ChatMessage(
             role: .user,
@@ -100,7 +114,7 @@ class AIChatManager: ObservableObject {
         }
     }
 
-    // MARK: - OpenAI 格式（包括 DeepSeek）
+    // MARK: - OpenAI 格式（兼容 DeepSeek 等）
 
     private func sendOpenAIMessage(messages: [ChatMessage], chatState: ChatState) async throws {
         let apiURL = settings.getAPIURL()
@@ -114,7 +128,7 @@ class AIChatManager: ObservableObject {
 
         // 构建请求体
         let requestBody: [String: Any] = [
-            "model": settings.selectedProvider.defaultModel,
+            "model": settings.getModel(),
             "stream": true,
             "messages": try await buildOpenAIMessages(messages: messages),
         ]
@@ -240,7 +254,7 @@ class AIChatManager: ObservableObject {
 
         // 构建请求体
         let requestBody: [String: Any] = [
-            "model": settings.selectedProvider.defaultModel,
+            "model": settings.getModel(),
             "stream": true,
             "messages": try await buildOllamaMessages(messages: messages),
         ]
@@ -347,7 +361,7 @@ class AIChatManager: ObservableObject {
     // MARK: - Gemini 格式
 
     private func sendGeminiMessage(messages: [ChatMessage], chatState: ChatState) async throws {
-        let model = settings.selectedProvider.defaultModel
+        let model = settings.getModel()
         // Gemini API 需要将 key 作为查询参数
         let apiURL = "\(settings.selectedProvider.baseURL)/v1/models/\(model):streamGenerateContent?key=\(settings.apiKey.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? settings.apiKey)"
 
