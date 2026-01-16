@@ -30,9 +30,23 @@ class AIChatManager: ObservableObject {
             let error = GlobalError.configuration(
                 chineseMessage: "AI 服务未配置，请检查 API Key",
                 i18nKey: "error.configuration.ai_service_not_configured",
-                level: .popup
+                level: .notification
             )
             Logger.shared.error("AI 服务未配置，请检查 API Key")
+            await MainActor.run {
+                chatState.isSending = false
+                GlobalErrorHandler.shared.handle(error)
+            }
+            return
+        }
+
+        guard !settings.getModel().isEmpty else {
+            let error = GlobalError.configuration(
+                chineseMessage: "AI 模型未配置，请在设置中填写模型名称",
+                i18nKey: "error.configuration.ai_model_not_configured",
+                level: .notification
+            )
+            Logger.shared.error("AI 模型未配置，请在设置中填写模型名称")
             await MainActor.run {
                 chatState.isSending = false
                 GlobalErrorHandler.shared.handle(error)
@@ -87,7 +101,7 @@ class AIChatManager: ObservableObject {
                     let globalError = GlobalError.network(
                         chineseMessage: error.localizedDescription,
                         i18nKey: "error.network.ai_request_failed",
-                        level: .popup
+                        level: .notification
                     )
                     GlobalErrorHandler.shared.handle(globalError)
                     // 在消息中显示错误
@@ -100,7 +114,7 @@ class AIChatManager: ObservableObject {
         }
     }
 
-    // MARK: - OpenAI 格式（包括 DeepSeek）
+    // MARK: - OpenAI 格式（兼容 DeepSeek 等）
 
     private func sendOpenAIMessage(messages: [ChatMessage], chatState: ChatState) async throws {
         let apiURL = settings.getAPIURL()
@@ -108,13 +122,13 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "无效的 API URL",
                 i18nKey: "error.network.invalid_url",
-                level: .popup
+                level: .notification
             )
         }
 
         // 构建请求体
         let requestBody: [String: Any] = [
-            "model": settings.selectedProvider.defaultModel,
+            "model": settings.getModel(),
             "stream": true,
             "messages": try await buildOpenAIMessages(messages: messages),
         ]
@@ -134,7 +148,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
                 i18nKey: "error.network.invalid_response",
-                level: .popup
+                level: .notification
             )
         }
 
@@ -144,7 +158,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "API 错误: \(errorMessage)",
                 i18nKey: "error.network.api_error",
-                level: .popup
+                level: .notification
             )
         }
 
@@ -234,13 +248,13 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "无效的 API URL",
                 i18nKey: "error.network.invalid_url",
-                level: .popup
+                level: .notification
             )
         }
 
         // 构建请求体
         let requestBody: [String: Any] = [
-            "model": settings.selectedProvider.defaultModel,
+            "model": settings.getModel(),
             "stream": true,
             "messages": try await buildOllamaMessages(messages: messages),
         ]
@@ -264,7 +278,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
                 i18nKey: "error.network.invalid_response",
-                level: .popup
+                level: .notification
             )
         }
 
@@ -274,7 +288,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "API 错误: \(errorMessage)",
                 i18nKey: "error.network.api_error",
-                level: .popup
+                level: .notification
             )
         }
 
@@ -347,7 +361,7 @@ class AIChatManager: ObservableObject {
     // MARK: - Gemini 格式
 
     private func sendGeminiMessage(messages: [ChatMessage], chatState: ChatState) async throws {
-        let model = settings.selectedProvider.defaultModel
+        let model = settings.getModel()
         // Gemini API 需要将 key 作为查询参数
         let apiURL = "\(settings.selectedProvider.baseURL)/v1/models/\(model):streamGenerateContent?key=\(settings.apiKey.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? settings.apiKey)"
 
@@ -355,7 +369,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "无效的 API URL",
                 i18nKey: "error.network.invalid_url",
-                level: .popup
+                level: .notification
             )
         }
 
@@ -378,7 +392,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
                 i18nKey: "error.network.invalid_response",
-                level: .popup
+                level: .notification
             )
         }
 
@@ -388,7 +402,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "API 错误: \(errorMessage)",
                 i18nKey: "error.network.api_error",
-                level: .popup
+                level: .notification
             )
         }
 
