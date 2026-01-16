@@ -72812,133 +72812,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "إصدار البيانات"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Dataversion"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Datenversion"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Data Version"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Versión de datos"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Tietoversio"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Version des données"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "डेटा संस्करण"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Versione dati"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "データバージョン"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "데이터 버전"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Dataversjon"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Dataversie"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Wersja danych"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Versão de dados"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Версия данных"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Dataversion"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "เวอร์ชันข้อมูล"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Veri Sürümü"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "Phiên bản dữ liệu"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "数据版本"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "DataVersion"
+            "value" : "資料版本"
           }
         }
       }

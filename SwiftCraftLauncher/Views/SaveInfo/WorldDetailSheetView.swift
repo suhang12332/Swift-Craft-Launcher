@@ -121,8 +121,8 @@ struct WorldDetailSheetView: View {
                         infoRow(label: "saveinfo.world.detail.label.difficulty".localized(), value: metadata.difficulty)
                         infoRow(label: "saveinfo.world.detail.label.hardcore".localized(), value: metadata.hardcore ? "common.yes".localized() : "common.no".localized())
                         infoRow(label: "saveinfo.world.detail.label.cheats".localized(), value: metadata.cheats ? "common.yes".localized() : "common.no".localized())
-                        if let gameRules = metadata.gameRules, !gameRules.isEmpty {
-                            infoRow(label: "saveinfo.world.detail.label.game_rules".localized(), value: gameRules.joined(separator: ", "), isMultiline: true)
+                        if let seed = metadata.seed {
+                            infoRow(label: "saveinfo.world.detail.label.seed".localized(), value: "\(seed)")
                         }
                     }
                 }
@@ -131,9 +131,6 @@ struct WorldDetailSheetView: View {
                 infoSection(title: "saveinfo.world.detail.section.other".localized()) {
                     if let lastPlayed = metadata.lastPlayed {
                         infoRow(label: "saveinfo.world.detail.label.last_played".localized(), value: formatDate(lastPlayed))
-                    }
-                    if let seed = metadata.seed {
-                        infoRow(label: "saveinfo.world.detail.label.seed".localized(), value: "\(seed)")
                     }
                     if let spawn = metadata.spawn {
                         infoRow(label: "saveinfo.world.detail.label.spawn".localized(), value: spawn)
@@ -364,10 +361,18 @@ struct WorldDetailSheetView: View {
         }
 
         var seed: Int64?
+        // 优先从 RandomSeed 读取
         if let s = dataTag["RandomSeed"] as? Int64 {
             seed = s
         } else if let s = dataTag["RandomSeed"] as? Int {
             seed = Int64(s)
+        }
+        // 如果 RandomSeed 不存在，尝试从 WorldGenSettings.dimensions.seed 读取
+        if seed == nil {
+            if let worldGenSettings = dataTag["WorldGenSettings"] as? [String: Any],
+               let dimensionsSeed = readInt64(worldGenSettings["seed"]) {
+                seed = dimensionsSeed
+            }
         }
 
         var spawn: String?

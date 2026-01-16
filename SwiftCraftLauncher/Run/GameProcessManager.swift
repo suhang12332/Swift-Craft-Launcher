@@ -35,41 +35,19 @@ class GameProcessManager: ObservableObject {
     ///   - gameId: 游戏 ID
     ///   - process: 进程对象
     private func handleProcessTermination(gameId: String, process: Process) async {
-        // 检查是否检测到了启动错误（在停止监控前检查）
-        let hasStartupErrors = GameLaunchErrorDetector.shared.hasDetectedErrors(gameId: gameId)
-
-        // 停止错误监控
-        GameLaunchErrorDetector.shared.stopMonitoring(gameId: gameId)
-
         // 检查是否是被主动停止的（通过启动器停止按钮）
         let wasManuallyStopped = isManuallyStopped(gameId: gameId)
 
-        // 只处理两种情况：启动错误和正常退出
-        if hasStartupErrors {
-            // 情况1: 检测到启动错误
-            handleStartupError(gameId: gameId, wasManuallyStopped: wasManuallyStopped)
-        } else {
-            // 情况2: 正常退出
-            handleNormalExit(gameId: gameId, wasManuallyStopped: wasManuallyStopped)
-        }
+        // 处理进程退出
+        handleProcessExit(gameId: gameId, wasManuallyStopped: wasManuallyStopped)
 
-        // 统一清理：状态更新、进程清理、标记清理、错误状态清理
+        // 统一清理：状态更新、进程清理、标记清理
         GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
         gameProcesses.removeValue(forKey: gameId)
         manuallyStoppedGames.remove(gameId)
-        GameLaunchErrorDetector.shared.cleanupErrorState(gameId: gameId)
     }
 
-    /// 处理启动错误情况
-    private func handleStartupError(gameId: String, wasManuallyStopped: Bool) {
-        if wasManuallyStopped {
-            Logger.shared.info("游戏启动过程中检测到错误，但被用户主动停止: \(gameId)")
-        } else {
-            Logger.shared.info("游戏启动过程中检测到错误并退出: \(gameId)")
-        }
-    }
-
-    /// 为游戏收集日志（在检测到错误时调用）
+    /// 为游戏收集日志（可用于基于进程的崩溃检测）
     /// - Parameter gameId: 游戏 ID
     func collectLogsForGameImmediately(gameId: String) async {
         // 从 SQL 数据库查询游戏信息
@@ -100,12 +78,12 @@ class GameProcessManager: ObservableObject {
         }
     }
 
-    /// 处理正常退出情况
-    private func handleNormalExit(gameId: String, wasManuallyStopped: Bool) {
+    /// 处理进程退出情况
+    private func handleProcessExit(gameId: String, wasManuallyStopped: Bool) {
         if wasManuallyStopped {
             Logger.shared.debug("游戏被用户主动停止: \(gameId)")
         } else {
-            Logger.shared.debug("游戏正常退出: \(gameId)")
+            Logger.shared.info("游戏进程已退出: \(gameId)")
         }
     }
 
@@ -134,7 +112,7 @@ class GameProcessManager: ObservableObject {
         }
 
         // 注意：不在这里移除进程，让 terminationHandler 统一处理清理
-        // terminationHandler 会自动处理错误监控停止、状态更新和进程清理
+        // terminationHandler 会自动处理状态更新和进程清理
 
         // 延迟清理标记，确保 terminationHandler 能够正确读取标记
         // terminationHandler 是异步执行的，可能在 waitUntilExit() 返回后才执行
@@ -170,8 +148,6 @@ class GameProcessManager: ObservableObject {
         }
 
         for gameId in terminatedGameIds {
-            // 停止错误监控（如果还在运行）
-            GameLaunchErrorDetector.shared.stopMonitoring(gameId: gameId)
             // 清理进程
             gameProcesses.removeValue(forKey: gameId)
             // 清理手动停止标记
@@ -188,8 +164,6 @@ class GameProcessManager: ObservableObject {
         Task { @MainActor in
             for gameId in terminatedGameIds {
                 GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
-                // 清理错误检测器的状态
-                GameLaunchErrorDetector.shared.cleanupErrorState(gameId: gameId)
             }
         }
     }
