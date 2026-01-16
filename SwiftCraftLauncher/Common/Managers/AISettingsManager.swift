@@ -76,7 +76,7 @@ class AISettingsManager: ObservableObject {
 
     @AppStorage("aiProvider")
     private var _selectedProviderRawValue: String = "openai"
-    
+
     var selectedProvider: AIProvider {
         get {
             return AIProvider(rawValue: _selectedProviderRawValue) ?? .openai
