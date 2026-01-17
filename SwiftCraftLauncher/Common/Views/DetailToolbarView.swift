@@ -38,43 +38,6 @@ public struct DetailToolbarView: ToolbarContent {
             switch selectedItem {
             case .game:
                 if let game = currentGame {
-                    //                    if !gameType {
-                    //                        if let iconURL = AppPaths.profileDirectory(
-                    //                            gameName: game.gameName
-                    //                        )?.appendingPathComponent(game.gameIcon),
-                    //                            FileManager.default.fileExists(atPath: iconURL.path)
-                    //                        {
-                    //                            AsyncImage(url: iconURL) { phase in
-                    //                                switch phase {
-                    //                                case .empty:
-                    //                                    ProgressView()
-                    //                                case .success(let image):
-                    //                                    image
-                    //                                        .resizable()
-                    //                                        .interpolation(.none)
-                    //                                        .frame(width: 22, height: 22)
-                    //                                        .cornerRadius(6)
-                    //                                case .failure:
-                    //                                    Image("default_game_icon")
-                    //                                        .resizable()
-                    //                                        .interpolation(.none)
-                    //                                        .frame(width: 22, height: 22)
-                    //                                        .cornerRadius(6)
-                    //                                @unknown default:
-                    //                                    EmptyView()
-                    //                                }
-                    //                            }
-                    //                        } else {
-                    //                            Image("default_game_icon")
-                    //                                .resizable()
-                    //                                .interpolation(.none)
-                    //                                .frame(width: 22, height: 22)
-                    //                                .cornerRadius(6)
-                    //                        }
-                    //                        Text(game.gameName)
-                    //                            .font(.headline)
-                    //                        Spacer()
-                    //                    }
                     resourcesTypeMenu
                     resourcesMenu
                     // 仅在本地资源视图下显示“全部 / 已禁用”筛选
@@ -110,10 +73,10 @@ public struct DetailToolbarView: ToolbarContent {
                         let isRunning = isGameRunning(gameId: game.id)
                         Label(
                             isRunning
-                                ? "stop.fill".localized()
-                                : "play.fill".localized(),
+                            ? "stop.fill".localized()
+                            : "play.fill".localized(),
                             systemImage: isRunning
-                                ? "stop.fill" : "play.fill"
+                            ? "stop.fill" : "play.fill"
                         )
                     }
                     .help(
@@ -131,17 +94,17 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             case .resource:
                 if selectProjectId != nil {
-                    ModrinthProjectDetailToolbarView(
-                        projectDetail: project,
-                        gameId: gameId
-                    ) {
+                    Button {
                         if let id = gameId {
                             selectedItem = .game(id)
                         } else {
                             selectProjectId = nil
                             selectedTab = 0
                         }
+                    } label: {
+                        Label("return".localized(), systemImage: "arrow.backward")
                     }
+                    .help("return".localized())
                 } else {
                     if gameType {
                         dataSourceMenu
