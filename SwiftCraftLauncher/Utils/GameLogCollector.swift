@@ -50,7 +50,7 @@ class GameLogCollector {
         let fileManager = FileManager.default
 
         // 1. 优先收集崩溃报告文件夹中的所有文件
-        let crashReportsDir = gameDirectory.appendingPathComponent("crash-reports", isDirectory: true)
+        let crashReportsDir = gameDirectory.appendingPathComponent(AppConstants.DirectoryNames.crashReports, isDirectory: true)
 
         if fileManager.fileExists(atPath: crashReportsDir.path) {
             do {

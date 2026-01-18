@@ -41,10 +41,107 @@ class GameProcessManager: ObservableObject {
         // 处理进程退出
         handleProcessExit(gameId: gameId, wasManuallyStopped: wasManuallyStopped)
 
+        // 如果不是主动停止，检查是否是真正的崩溃
+        if !wasManuallyStopped {
+            let isCrash = await checkIfCrash(gameId: gameId, process: process)
+
+            if isCrash {
+                let gameSettings = GameSettingsManager.shared
+                if gameSettings.enableAICrashAnalysis {
+                    Logger.shared.info("检测到游戏崩溃，启用AI分析: \(gameId)")
+                    // 异步触发AI分析，不阻塞清理流程
+                    Task {
+                        await collectLogsForGameImmediately(gameId: gameId)
+                    }
+                }
+            } else {
+                Logger.shared.debug("游戏正常退出，不触发AI分析: \(gameId)")
+            }
+        }
+
         // 统一清理：状态更新、进程清理、标记清理
         GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
         gameProcesses.removeValue(forKey: gameId)
         manuallyStoppedGames.remove(gameId)
+    }
+
+    /// 检查是否是真正的崩溃
+    /// - Parameters:
+    ///   - gameId: 游戏 ID
+    ///   - process: 进程对象
+    /// - Returns: 是否是崩溃
+    private func checkIfCrash(gameId: String, process: Process) async -> Bool {
+        // 1. 检查退出码：正常退出通常是0，崩溃通常是非0
+        // 注意：通过 terminate() 停止的进程退出码可能是15（SIGTERM），但已经通过 wasManuallyStopped 排除了这种情况
+        let exitCode = process.terminationStatus
+        if exitCode == 0 {
+            // 退出码为0，可能是正常退出，但还需要检查是否有崩溃报告
+            Logger.shared.debug("游戏退出码为0: \(gameId)")
+        } else {
+            // 退出码非0，很可能是崩溃
+            Logger.shared.info("游戏退出码非0 (\(exitCode))，可能是崩溃: \(gameId)")
+            return true
+        }
+
+        // 2. 检查是否有崩溃报告文件生成（更准确的判断）
+        // 从数据库查询游戏信息以获取游戏名称
+        let dbPath = AppPaths.gameVersionDatabase.path
+        let database = GameVersionDatabase(dbPath: dbPath)
+
+        do {
+            try? database.initialize()
+            guard let game = try database.getGame(by: gameId) else {
+                Logger.shared.warning("无法从数据库找到游戏，无法检查崩溃报告: \(gameId)")
+                // 如果无法查询游戏信息，且退出码非0，则认为是崩溃
+                return exitCode != 0
+            }
+
+            // 检查崩溃报告文件夹
+            let gameDirectory = AppPaths.profileDirectory(gameName: game.gameName)
+            let crashReportsDir = gameDirectory.appendingPathComponent(AppConstants.DirectoryNames.crashReports, isDirectory: true)
+            let fileManager = FileManager.default
+
+            if fileManager.fileExists(atPath: crashReportsDir.path) {
+                do {
+                    let crashFiles = try fileManager
+                        .contentsOfDirectory(
+                            at: crashReportsDir,
+                            includingPropertiesForKeys: [.isRegularFileKey, .creationDateKey],
+                            options: [.skipsHiddenFiles]
+                        )
+                        .filter { url in
+                            guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey]) else {
+                                return false
+                            }
+                            return resourceValues.isRegularFile ?? false
+                        }
+
+                    // 检查是否有最近生成的崩溃报告（最近5分钟内）
+                    let now = Date()
+                    let fiveMinutesAgo = now.addingTimeInterval(-300)
+
+                    for crashFile in crashFiles {
+                        if let creationDate = try? crashFile.resourceValues(forKeys: [.creationDateKey]).creationDate,
+                           creationDate >= fiveMinutesAgo {
+                            Logger.shared.info("找到最近生成的崩溃报告: \(crashFile.lastPathComponent)")
+                            return true
+                        }
+                    }
+
+                    // 如果退出码为0但没有最近的崩溃报告，则认为是正常退出
+                    // （退出码非0的情况已经在上面处理了）
+                } catch {
+                    Logger.shared.warning("读取崩溃报告文件夹失败: \(error.localizedDescription)")
+                }
+            }
+
+            // 如果退出码为0且没有崩溃报告，则认为是正常退出
+            return false
+        } catch {
+            Logger.shared.error("从数据库查询游戏失败: \(error.localizedDescription)")
+            // 如果无法查询，且退出码非0，则认为是崩溃
+            return exitCode != 0
+        }
     }
 
     /// 为游戏收集日志（可用于基于进程的崩溃检测）
@@ -55,7 +152,7 @@ class GameProcessManager: ObservableObject {
         let database = GameVersionDatabase(dbPath: dbPath)
 
         do {
-            // 初始化数据库（如果尚未初始化，可能会失败，但我们可以继续尝试查询）
+            // 初始化数据库（如果尚未初始化，可能会失败，可以继续尝试查询）
             try? database.initialize()
 
             // 从数据库查询游戏
