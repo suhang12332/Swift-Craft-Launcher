@@ -61,7 +61,9 @@ public struct DetailToolbarView: ToolbarContent {
                                     gameRepository: gameRepository
                                 ).stopGame()
                             } else {
-                                // 启动游戏
+                                // 启动游戏（显示加载状态，直到启动流程结束或失败）
+                                gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: true)
+                                defer { gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: false) }
                                 await MinecraftLaunchCommand(
                                     player: playerListViewModel.currentPlayer,
                                     game: game,
@@ -71,17 +73,27 @@ public struct DetailToolbarView: ToolbarContent {
                         }
                     } label: {
                         let isRunning = isGameRunning(gameId: game.id)
-                        Label(
-                            isRunning
-                            ? "stop.fill".localized()
-                            : "play.fill".localized(),
-                            systemImage: isRunning
-                            ? "stop.fill" : "play.fill"
-                        )
+                        let isLaunchingGame = gameStatusManager.isGameLaunching(gameId: game.id)
+                        if isLaunchingGame && !isRunning {
+                            // 启动中：显示加载指示而不是三角/正方形
+                            ProgressView()
+                                .controlSize(.small)
+                        } else {
+                            Label(
+                                isRunning
+                                ? "stop.fill".localized()
+                                : "play.fill".localized(),
+                                systemImage: isRunning
+                                ? "stop.fill" : "play.fill"
+                            )
+                        }
                     }
                     .help(
-                        isGameRunning(gameId: game.id) ? "stop.fill" : "play.fill"
+                        isGameRunning(gameId: game.id)
+                        ? "stop.fill"
+                        : (gameStatusManager.isGameLaunching(gameId: game.id) ? "" : "play.fill")
                     )
+                    .disabled(gameStatusManager.isGameLaunching(gameId: game.id)) // 启动过程中禁用按钮，避免重复点击
                     .applyReplaceTransition()
 
                     Button {

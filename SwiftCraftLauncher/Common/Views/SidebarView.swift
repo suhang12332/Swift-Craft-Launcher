@@ -265,7 +265,9 @@ private struct GameContextMenu: View {
                     gameRepository: gameRepository
                 ).stopGame()
             } else {
-                // 启动游戏
+                // 启动游戏（标记为启动中，方便工具栏按钮显示 loading）
+                gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: true)
+                defer { gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: false) }
                 await MinecraftLaunchCommand(
                     player: playerListViewModel.currentPlayer,
                     game: game,
