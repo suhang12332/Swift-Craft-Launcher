@@ -69102,10 +69102,10 @@
             "value" : "الكل"
           }
         },
-        "cs" : {
+        "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vše"
+            "value" : "Alle"
           }
         },
         "de" : {
@@ -69126,28 +69126,22 @@
             "value" : "Todos"
           }
         },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kaikki"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tous"
           }
         },
-        "he" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "הכול"
-          }
-        },
-        "hu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Összes"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Semua"
+            "value" : "सभी"
           }
         },
         "it" : {
@@ -69168,10 +69162,10 @@
             "value" : "전체"
           }
         },
-        "ms" : {
+        "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Semua"
+            "value" : "Alle"
           }
         },
         "nl" : {
@@ -69245,10 +69239,10 @@
             "value" : "المعطَّلة"
           }
         },
-        "cs" : {
+        "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vypnuté"
+            "value" : "Deaktiveret"
           }
         },
         "de" : {
@@ -69269,28 +69263,22 @@
             "value" : "Deshabilitados"
           }
         },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poissa käytöstä"
+          }
+        },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Désactivés"
           }
         },
-        "he" : {
+        "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "מושבתים"
-          }
-        },
-        "hu" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letiltottak"
-          }
-        },
-        "id" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dinonaktifkan"
+            "value" : "निष्क्रिय"
           }
         },
         "it" : {
@@ -69311,10 +69299,10 @@
             "value" : "비활성화됨"
           }
         },
-        "ms" : {
+        "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dilumpuhkan"
+            "value" : "Deaktivert"
           }
         },
         "nl" : {
