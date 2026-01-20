@@ -47,46 +47,6 @@ public class GitHubService: ObservableObject {
         return try JSONDecoder().decode(T.self, from: data)
     }
 
-    // MARK: - License
-
-    /// 获取仓库 LICENSE 文本内容
-    public func fetchLicenseText() async throws -> String {
-        let url = URLConfig.API.GitHub.license()
-
-        // 使用统一的 API 客户端
-        let data = try await APIClient.get(url: url)
-
-        // 解析 GitHub API 响应并直接进行 base64 解码
-        let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-        let content = (json?["content"] as? String) ?? ""
-
-        // 清理 base64 字符串中的换行符和空格
-        // 使用 NSMutableString 避免链式调用创建多个临时字符串
-        let cleanedContent = {
-            let mutableContent = NSMutableString(string: content)
-            mutableContent.replaceOccurrences(
-                of: "\n",
-                with: "",
-                options: [],
-                range: NSRange(location: 0, length: mutableContent.length)
-            )
-            mutableContent.replaceOccurrences(
-                of: " ",
-                with: "",
-                options: [],
-                range: NSRange(location: 0, length: mutableContent.length)
-            )
-            return mutableContent as String
-        }()
-
-        guard let decodedData = Data(base64Encoded: cleanedContent),
-              let text = String(data: decodedData, encoding: .utf8) else {
-            throw GitHubServiceError.invalidLicenseResponse
-        }
-
-        return text
-    }
-
     // MARK: - Announcement
 
     /// 获取公告数据
@@ -125,6 +85,5 @@ public class GitHubService: ObservableObject {
 public enum GitHubServiceError: Error {
     case httpError(statusCode: Int)
     case invalidResponse
-    case invalidLicenseResponse
     case announcementNotSuccessful
 }

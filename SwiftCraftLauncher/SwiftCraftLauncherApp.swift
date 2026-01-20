@@ -114,10 +114,8 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
 
-                Button("license.view".localized()) {
-                    LicenseManager.shared.showLicense()
-                }
-                .keyboardShortcut("l", modifiers: [.command, .option])
+                Link("license.view".localized(), destination: URLConfig.API.GitHub.licenseWebPage())
+                    .keyboardShortcut("l", modifiers: [.command, .option])
 
                 Divider()
 
