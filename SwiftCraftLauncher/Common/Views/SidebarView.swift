@@ -31,7 +31,12 @@ public struct SidebarView: View {
             Section(header: Text("sidebar.resources.title".localized())) {
                 ForEach(ResourceType.allCases, id: \.self) { type in
                     NavigationLink(value: SidebarItem.resource(type)) {
-                        Text(type.localizedName)
+                        HStack(spacing: 6) {
+                            Image(systemName: type.systemImage)
+                                .frame(width: 16, height: 16)
+                                .foregroundColor(.secondary)
+                            Text(type.localizedName)
+                        }
                     }
                 }
             }

@@ -35,4 +35,20 @@ public enum ResourceType: String, CaseIterable {
     public var localizedName: String {
         "resource.content.type.\(rawValue)".localized()
     }
+    
+    /// 资源类型的 SF Symbol 图标名称
+    public var systemImage: String {
+        switch self {
+        case .mod:
+            return "puzzlepiece.extension"
+        case .datapack:
+            return "doc.on.doc"
+        case .shader:
+            return "sparkles"
+        case .resourcepack:
+            return "photo.stack"
+        case .modpack:
+            return "cube.box"
+        }
+    }
 }
