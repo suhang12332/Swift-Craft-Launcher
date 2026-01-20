@@ -127,9 +127,9 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
             }
-             CommandMenu("menu.multiplayer".localized()) {
-                 EasyTierContentView()
-             }
+//             CommandMenu("menu.multiplayer".localized()) {
+//                 EasyTierContentView()
+//             }
             CommandGroup(replacing: .newItem) { }
             CommandGroup(replacing: .saveItem) { }
         }
@@ -155,8 +155,8 @@ struct SwiftCraftLauncherApp: App {
                     )
                 }
 
-                 Divider()
-                 EasyTierContentView()
+//                 Divider()
+//                 EasyTierContentView()
             },
             label: {
                 Image("menu-png").resizable()
