@@ -156,15 +156,20 @@ class PlayerDataManager {
         // 从 UserProfileStore 加载所有 profiles
         let profiles = try profileStore.loadProfilesThrowing()
 
-        // 为每个 profile 加载对应的 credential（如果存在）
-        var players: [Player] = []
-        for profile in profiles {
-            let credential = credentialStore.loadCredential(userId: profile.id)
-            let player = Player(profile: profile, credential: credential)
-            players.append(player)
+        // 仅加载基础信息，不在此处访问 Keychain，
+        // 避免启动时对所有玩家的凭据进行一次性读取（会触发多次钥匙串密码弹窗）
+        let players = profiles.map { profile in
+            Player(profile: profile, credential: nil)
         }
 
         return players
+    }
+
+    /// 为指定玩家按需加载认证凭据
+    /// - Parameter userId: 玩家 ID
+    /// - Returns: 认证凭据，如不存在则返回 nil
+    func loadCredential(userId: String) -> AuthCredential? {
+        credentialStore.loadCredential(userId: userId)
     }
 
     /// 检查玩家是否存在（不区分大小写）

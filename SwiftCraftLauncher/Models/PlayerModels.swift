@@ -33,8 +33,15 @@ struct Player: Identifiable, Equatable {
         set { profile.isCurrent = newValue }
     }
 
-    /// 是否为在线账号（有认证凭据即为在线账号）
-    var isOnlineAccount: Bool { credential != nil }
+    /// 是否为在线账号
+    /// 优先依据认证凭据；在尚未从 Keychain 加载凭据时，
+    /// 通过头像是否为远程 URL（http/https）来近似判断是否为正版账号
+    var isOnlineAccount: Bool {
+        if credential != nil {
+            return true
+        }
+        return profile.avatar.hasPrefix("http://") || profile.avatar.hasPrefix("https://")
+    }
 
     /// 访问令牌
     var authAccessToken: String { credential?.accessToken ?? "" }

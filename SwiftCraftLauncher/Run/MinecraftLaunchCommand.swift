@@ -47,9 +47,18 @@ struct MinecraftLaunchCommand {
 
         Logger.shared.info("启动游戏前验证玩家 \(player.name) 的Token")
 
-        // 验证并尝试刷新Token
+        // 启动前按需从 Keychain 为该玩家加载认证凭据（只针对当前玩家，避免一次性读取所有账号）
+        var playerWithCredential = player
+        if playerWithCredential.credential == nil {
+            let dataManager = PlayerDataManager()
+            if let credential = dataManager.loadCredential(userId: playerWithCredential.id) {
+                playerWithCredential.credential = credential
+            }
+        }
+
+        // 使用已加载/更新后的玩家对象验证并尝试刷新Token
         let authService = MinecraftAuthService.shared
-        let validatedPlayer = try await authService.validateAndRefreshPlayerTokenThrowing(for: player)
+        let validatedPlayer = try await authService.validateAndRefreshPlayerTokenThrowing(for: playerWithCredential)
 
         // 如果Token被更新了，需要保存到PlayerDataManager
         if validatedPlayer.authAccessToken != player.authAccessToken {
