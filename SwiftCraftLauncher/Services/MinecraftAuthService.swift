@@ -601,8 +601,17 @@ extension MinecraftAuthService {
     /// - Throws: GlobalError 当刷新失败时
     private func refreshTokenThrowing(refreshToken: String) async throws -> TokenResponse {
         let url = URLConfig.API.Authentication.token
-        let body = "grant_type=refresh_token&client_id=\(clientId)&refresh_token=\(refreshToken)"
-        let bodyData = body.data(using: .utf8)
+
+        // refresh_token 可能包含特殊字符，必须进行 x-www-form-urlencoded 编码
+        let bodyParameters: [String: String] = [
+            "grant_type": "refresh_token",
+            "client_id": clientId,
+            "refresh_token": refreshToken,
+        ]
+        let bodyString = bodyParameters
+            .map { "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")" }
+            .joined(separator: "&")
+        let bodyData = bodyString.data(using: .utf8)
 
         // 使用统一的 API 客户端（需要处理非 200 状态码）
         var request = URLRequest(url: url)
@@ -648,6 +657,7 @@ extension MinecraftAuthService {
     /// - Parameter player: 玩家对象
     /// - Returns: 是否过期
     func isTokenExpiredBasedOnTime(for player: Player) async -> Bool {
+        // 正常逻辑：根据 JWT 中的 exp 字段判断是否即将过期（含 5 分钟缓冲）
         return JWTDecoder.isTokenExpiringSoon(player.authAccessToken)
     }
 
