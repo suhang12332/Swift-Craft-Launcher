@@ -20,7 +20,7 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var announcementData: AnnouncementData?
 
     public var body: some ToolbarContent {
-        ToolbarItemGroup(placement: .primaryAction) {
+        ToolbarItemGroup(placement: .navigation) {
             Button {
                 if playerListViewModel.currentPlayer == nil {
                     showPlayerAlert = true
@@ -42,6 +42,11 @@ public struct ContentToolbarView: ToolbarContent {
                     .presentationBackgroundInteraction(.automatic)
             }
             Spacer()
+        }
+        ToolbarItemGroup(placement: .principal) {
+            EmptyView()
+        }
+        ToolbarItemGroup(placement: .primaryAction) {
             // 后台下载 待实现
 //            Button(action: {
 //

@@ -96,6 +96,36 @@ public struct GeneralSettingsView: View {
                     .gridColumnAlignment(.leading)
                     .labelsHidden()
             }.labeledContentStyle(.custom)
+            LabeledContent("settings.github_proxy.label".localized()) {
+                VStack(alignment: .leading) {
+                    HStack {
+                        Toggle(
+                            "",
+                            isOn: $generalSettings.enableGitHubProxy
+                        )
+                        .labelsHidden()
+                        Text("settings.github_proxy.enable".localized())
+                            .font(.callout)
+                            .foregroundColor(.primary)
+                    }
+                    HStack(spacing: 8) {
+                        TextField(
+                            "",
+                            text: $generalSettings.gitProxyURL
+                        )
+                        .labelsHidden()
+                        .textFieldStyle(.roundedBorder)
+                        .frame(width: 200)
+                        .focusable(false)
+                        .disabled(!generalSettings.enableGitHubProxy)
+                        Button("settings.github_proxy.reset_default".localized()) {
+                            generalSettings.gitProxyURL = "https://gh-proxy.com"
+                        }
+                        .disabled(!generalSettings.enableGitHubProxy)
+                        InfoIconWithPopover(text: "settings.github_proxy.description".localized())
+                    }
+                }
+            }.labeledContentStyle(.custom(alignment: .firstTextBaseline)).padding(.top, 10)
         }
         .globalErrorHandler()
         .alert(

@@ -114,10 +114,8 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
 
-                Button("license.view".localized()) {
-                    LicenseManager.shared.showLicense()
-                }
-                .keyboardShortcut("l", modifiers: [.command, .option])
+                Link("license.view".localized(), destination: URLConfig.API.GitHub.licenseWebPage())
+                    .keyboardShortcut("l", modifiers: [.command, .option])
 
                 Divider()
 
@@ -129,9 +127,9 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
             }
-            // CommandMenu("menu.multiplayer".localized()) {
-            //     EasyTierContentView()
-            // }
+             CommandMenu("menu.multiplayer".localized()) {
+                 EasyTierContentView()
+             }
             CommandGroup(replacing: .newItem) { }
             CommandGroup(replacing: .saveItem) { }
         }
@@ -157,8 +155,8 @@ struct SwiftCraftLauncherApp: App {
                     )
                 }
 
-                // Divider()
-                // EasyTierContentView()
+                 Divider()
+                 EasyTierContentView()
             },
             label: {
                 Image("menu-png").resizable()

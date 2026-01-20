@@ -9,6 +9,34 @@ enum URLConfig {
         return url
     }
 
+    /// GitHub 代理设置（从 UserDefaults 读取，避免 UI 依赖）
+    private enum GitHubProxySettings {
+        static let defaultProxy = "https://gh-proxy.com"
+        static let enableKey = "enableGitHubProxy"
+        static let urlKey = "gitProxyURL"
+
+        static var isEnabled: Bool {
+            let defaults = UserDefaults.standard
+            // 未写入时默认开启
+            return (defaults.object(forKey: enableKey) as? Bool) ?? true
+        }
+
+        static var proxyString: String {
+            let defaults = UserDefaults.standard
+            return (defaults.string(forKey: urlKey) ?? defaultProxy)
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+
+        /// 返回用于拼接的代理前缀（保证为 http(s) 且不以 / 结尾），无效则返回 nil
+        static var normalizedProxyPrefix: String? {
+            let proxy = proxyString
+            guard !proxy.isEmpty else { return nil }
+            guard let url = URL(string: proxy), let scheme = url.scheme else { return nil }
+            guard scheme == "http" || scheme == "https" else { return nil }
+            return proxy.hasSuffix("/") ? String(proxy.dropLast()) : proxy
+        }
+    }
+
     // 常量字符串，避免重复创建
     private static let githubHost = "github.com"
     private static let rawGithubHost = "raw.githubusercontent.com"
@@ -18,8 +46,8 @@ enum URLConfig {
     /// - Parameter url: 原始 URL
     /// - Returns: 应用代理后的 URL（如果需要）
     static func applyGitProxyIfNeeded(_ url: URL) -> URL {
-        let proxy = "https://ghfast.top"
-        guard !proxy.isEmpty else { return url }
+        guard GitHubProxySettings.isEnabled else { return url }
+        guard let proxy = GitHubProxySettings.normalizedProxyPrefix else { return url }
 
         // 优化：直接使用 URL 的 host 属性，避免转换为 String
         guard let host = url.host else { return url }
@@ -33,7 +61,7 @@ enum URLConfig {
         if urlString.hasPrefix("\(proxy)/") { return url }
 
         // 使用字符串插值而非字符串拼接
-        let proxiedString = proxy.hasSuffix("/") ? "\(proxy)\(urlString)" : "\(proxy)/\(urlString)"
+        let proxiedString = "\(proxy)/\(urlString)"
         return Self.url(proxiedString)
     }
 
@@ -194,7 +222,7 @@ enum URLConfig {
                 return URLConfig.applyGitProxyIfNeeded(url)
             }
 
-            // LICENSE 文件
+            // LICENSE 文件（API）
             static func license(ref: String = "main") -> URL {
                 let url = repositoryBaseURL
                     .appendingPathComponent("contents")
@@ -203,6 +231,18 @@ enum URLConfig {
                         URLQueryItem(name: "ref", value: ref)
                     ])
                 return URLConfig.applyGitProxyIfNeeded(url)
+            }
+
+            // LICENSE 文件（网页）
+            static func licenseWebPage(ref: String = "main") -> URL {
+                let url = gitHubBase
+                    .appendingPathComponent(repositoryOwner)
+                    .appendingPathComponent(repositoryName)
+                    .appendingPathComponent("blob")
+                    .appendingPathComponent(ref)
+                    .appendingPathComponent("LICENSE")
+                // License 网页不走 GitHub 代理，直接打开原始 github.com 链接
+                return url
             }
 
             // Announcement API

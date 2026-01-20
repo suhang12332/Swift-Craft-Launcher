@@ -59,8 +59,14 @@ class GeneralSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    /// 是否启用 GitHub 代理（默认开启）
+    @AppStorage("enableGitHubProxy")
+    var enableGitHubProxy: Bool = true {
+        didSet { objectWillChange.send() }
+    }
+
     @AppStorage("gitProxyURL")
-    var gitProxyURL: String = "https://ghfast.top" {
+    var gitProxyURL: String = "https://gh-proxy.com" {
         didSet { objectWillChange.send() }
     }
 
