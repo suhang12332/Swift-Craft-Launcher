@@ -169,9 +169,19 @@ public struct ContentToolbarView: ToolbarContent {
             isLoadingSkin = true
         }
 
+        // 从 Keychain 按需加载认证凭据，供 fetch 使用 accessToken（使用 let 避免 Swift 6 并发下捕获 var）
+        let playerToUse: Player
+        if player.credential == nil, let c = PlayerDataManager().loadCredential(userId: player.id) {
+            var p = player
+            p.credential = c
+            playerToUse = p
+        } else {
+            playerToUse = player
+        }
+
         // 预加载皮肤数据
-        async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: player)
-        async let profile = PlayerSkinService.fetchPlayerProfile(player: player)
+        async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: playerToUse)
+        async let profile = PlayerSkinService.fetchPlayerProfile(player: playerToUse)
         let (loadedSkinInfo, loadedProfile) = await (skinInfo, profile)
 
         await MainActor.run {

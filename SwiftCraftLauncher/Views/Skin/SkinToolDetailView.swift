@@ -202,6 +202,18 @@ struct SkinToolDetailView: View {
 
     private var resolvedPlayer: Player? { playerListViewModel.currentPlayer }
 
+    /// 在需要访问皮肤/披风等受保护资源时，确保玩家已从 Keychain 加载认证凭据（accessToken）
+    private func playerWithCredentialIfNeeded(_ player: Player?) -> Player? {
+        guard let p = player, p.isOnlineAccount else { return player }
+        var copy = p
+        if copy.credential == nil {
+            if let c = PlayerDataManager().loadCredential(userId: p.id) {
+                copy.credential = c
+            }
+        }
+        return copy
+    }
+
     private func updateHasChanges() {
         // 检查是否有任何相关值发生变化
         let skinDataChanged = selectedSkinData != lastSelectedSkinData
@@ -247,8 +259,14 @@ struct SkinToolDetailView: View {
         loadSkinImageTask?.cancel()
         loadSkinImageTask = Task<Void, Never> {
             do {
-                // 使用统一的 API 客户端
-                let data = try await APIClient.get(url: url)
+                let p = playerWithCredentialIfNeeded(resolvedPlayer)
+                var headers: [String: String]?
+                if let t = p?.authAccessToken, !t.isEmpty {
+                    headers = ["Authorization": "Bearer \(t)"]
+                } else {
+                    headers = nil
+                }
+                let data = try await APIClient.get(url: url, headers: headers)
                 guard !data.isEmpty, let image = NSImage(data: data) else { return }
                 try Task.checkCancellation()
                 await MainActor.run { self.currentSkinRenderImage = image }
@@ -322,7 +340,8 @@ struct SkinToolDetailView: View {
     }
 
     private func resetSkin() {
-        guard let player = resolvedPlayer else { return }
+        guard let resolved = resolvedPlayer else { return }
+        let player = playerWithCredentialIfNeeded(resolved) ?? resolved
 
         operationInProgress = true
         resetSkinTask?.cancel()
@@ -352,7 +371,8 @@ struct SkinToolDetailView: View {
     }
 
     private func applyChanges() {
-        guard let player = resolvedPlayer else { return }
+        guard let resolved = resolvedPlayer else { return }
+        let player = playerWithCredentialIfNeeded(resolved) ?? resolved
 
         operationInProgress = true
         applyChangesTask?.cancel()
@@ -447,6 +467,7 @@ struct SkinToolDetailView: View {
     private func uploadCurrentSkinWithNewModel(skinURL: String, player: Player) async -> Bool {
         do {
             try Task.checkCancellation()
+            let p = playerWithCredentialIfNeeded(player) ?? player
 
             // 将HTTP URL转换为HTTPS以符合ATS策略
             let httpsURL = skinURL.httpToHttps()
@@ -454,14 +475,19 @@ struct SkinToolDetailView: View {
             guard let url = URL(string: httpsURL) else {
                 return false
             }
-            // 使用统一的 API 客户端
-            let data = try await APIClient.get(url: url)
+            var headers: [String: String]?
+            if !p.authAccessToken.isEmpty {
+                headers = ["Authorization": "Bearer \(p.authAccessToken)"]
+            } else {
+                headers = nil
+            }
+            let data = try await APIClient.get(url: url, headers: headers)
             try Task.checkCancellation()
 
             let result = await PlayerSkinService.uploadSkin(
                 imageData: data,
                 model: currentModel,
-                player: player
+                player: p
             )
             try Task.checkCancellation()
             return result
@@ -629,8 +655,14 @@ extension SkinToolDetailView {
         }
 
         do {
-            // 使用统一的 API 客户端下载图片数据（高优先级）
-            let data = try await APIClient.get(url: url)
+            let p = playerWithCredentialIfNeeded(resolvedPlayer)
+            var headers: [String: String]?
+            if let t = p?.authAccessToken, !t.isEmpty {
+                headers = ["Authorization": "Bearer \(t)"]
+            } else {
+                headers = nil
+            }
+            let data = try await APIClient.get(url: url, headers: headers)
             try Task.checkCancellation()
 
             guard !data.isEmpty, let image = NSImage(data: data) else {
