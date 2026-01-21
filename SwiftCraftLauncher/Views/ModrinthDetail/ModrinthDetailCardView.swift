@@ -13,6 +13,8 @@ struct ModrinthDetailCardView: View {
     var onResourceChanged: (() -> Void)?
     /// 本地资源启用/禁用状态变更回调（仅 local 列表使用）
     var onLocalDisableStateChanged: ((ModrinthProject, Bool) -> Void)?
+    /// 更新成功回调：仅更新当前条目的 hash 与列表项，不全局扫描。参数 (projectId, oldFileName, newFileName, newHash)
+    var onResourceUpdated: ((String, String, String, String?) -> Void)?
     @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找
     @State private var addButtonState: AddButtonState = .idle
     @State private var showDeleteAlert = false
@@ -116,10 +118,19 @@ struct ModrinthDetailCardView: View {
             Text(project.title)
                 .font(.headline)
                 .lineLimit(1)
-            Text("by \(project.author)")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .lineLimit(1)
+            if type == true {
+                Text("by \(project.author)")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+            }
+            if type == false, let fileName = project.fileName {
+                Text(fileName)
+                    .font(.subheadline)
+                    .bold()
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+            }
         }
     }
 
@@ -166,7 +177,8 @@ struct ModrinthDetailCardView: View {
                 selectedItem: $selectedItem,
                 onResourceChanged: onResourceChanged,
                 scannedDetailIds: $scannedDetailIds,
-                isResourceDisabled: $isResourceDisabled
+                isResourceDisabled: $isResourceDisabled,
+                onResourceUpdated: onResourceUpdated
             ) { isDisabled in
                 onLocalDisableStateChanged?(project, isDisabled)
             }

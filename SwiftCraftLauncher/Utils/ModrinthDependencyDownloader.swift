@@ -467,20 +467,21 @@ enum ModrinthDependencyDownloader {
         }
     }
 
+    /// - Returns: (success, fileName, hash)，成功时 fileName 与 hash 有值，失败为 (false, nil, nil)
     static func downloadMainResourceOnly(
         mainProjectId: String,
         gameInfo: GameVersionInfo,
         query: String,
         gameRepository: GameRepository,
         filterLoader: Bool = true
-    ) async -> Bool {
+    ) async -> (Bool, fileName: String?, hash: String?) {
         do {
             guard
                 var mainProjectDetail =
                     await ModrinthService.fetchProjectDetails(id: mainProjectId)
             else {
                 Logger.shared.error("无法获取主项目详情 (ID: \(mainProjectId))")
-                return false
+                return (false, nil, nil)
             }
             let selectedLoaders = filterLoader ? [gameInfo.modLoader] : []
             let filteredVersions =
@@ -495,7 +496,7 @@ enum ModrinthDependencyDownloader {
                     from: latestVersion.files
                 )
             else {
-                return false
+                return (false, nil, nil)
             }
 
             let fileURL = try await DownloadManager.downloadResource(
@@ -507,28 +508,30 @@ enum ModrinthDependencyDownloader {
             mainProjectDetail.fileName = primaryFile.filename
             mainProjectDetail.type = query
 
+            var hash: String?
             // 新增缓存
-            if let hash = ModScanner.sha1Hash(of: fileURL) {
+            if let h = ModScanner.sha1Hash(of: fileURL) {
+                hash = h
                 ModScanner.shared.saveToCache(
-                    hash: hash,
+                    hash: h,
                     detail: mainProjectDetail
                 )
                 // 如果是 mod，添加到安装缓存
                 if query.lowercased() == "mod" {
                     ModScanner.shared.addModHash(
-                        hash,
+                        h,
                         to: gameInfo.gameName
                     )
                 }
             }
-            return true
+            return (true, primaryFile.filename, hash)
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error(
                 "仅下载主资源 \(mainProjectId) 失败: \(globalError.chineseMessage)"
             )
             GlobalErrorHandler.shared.handle(globalError)
-            return false
+            return (false, nil, nil)
         }
     }
 }

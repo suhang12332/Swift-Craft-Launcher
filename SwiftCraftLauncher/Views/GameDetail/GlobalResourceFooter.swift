@@ -97,7 +97,7 @@ struct GlobalResourceFooter: View {
             )
         }
 
-        let success =
+        let (success, _, _) =
             await ModrinthDependencyDownloader.downloadMainResourceOnly(
                 mainProjectId: project.projectId,
                 gameInfo: game,
@@ -197,7 +197,7 @@ struct GlobalResourceFooter: View {
             )
         }
 
-        let success =
+        let (success, _, _) =
             await ModrinthDependencyDownloader.downloadMainResourceOnly(
                 mainProjectId: project.projectId,
                 gameInfo: game,
