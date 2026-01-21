@@ -21,6 +21,7 @@ struct AddOrDeleteResourceButton: View {
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @State private var addButtonState: ModrinthDetailCardView.AddButtonState =
         .idle
+    @State private var isUpdateButtonLoading = false  // 更新按钮的loading状态
     @State private var showDeleteAlert = false
 
     @State private var activeAlert: ResourceButtonAlertType?
@@ -71,13 +72,18 @@ struct AddOrDeleteResourceButton: View {
             // 更新按钮（仅在 local 模式且有更新时显示）
             if type == false && addButtonState == .update {
                 Button(action: handleUpdateAction) {
-                    Text("resource.update".localized())
+                    if isUpdateButtonLoading {
+                        ProgressView()
+                            .controlSize(.mini)
+                    } else {
+                        Text("resource.update".localized())
+                    }
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.accentColor)
                 .font(.caption2)
                 .controlSize(.small)
-                .disabled(addButtonState == .loading)
+                .disabled(addButtonState == .loading || isUpdateButtonLoading)
             }
 
             // 禁用/启用按钮（仅本地资源显示）
@@ -112,10 +118,8 @@ struct AddOrDeleteResourceButton: View {
                         currentFileName = project.fileName
                     }
                     updateDisableState()
-                    // 检测是否有新版本（仅在 local 模式且为 mod 类型）
-                    if query.lowercased() == "mod" {
-                        checkForUpdate()
-                    }
+                    // 检测是否有新版本（仅在 local 模式）
+                    checkForUpdate()
                 } else {
                     updateButtonState()
                 }
@@ -196,10 +200,19 @@ struct AddOrDeleteResourceButton: View {
             .sheet(
                 isPresented: $showGameResourceInstallSheet,
                 onDismiss: {
+                    // 重置更新按钮的loading状态
+                    isUpdateButtonLoading = false
                     // 如果下载成功，状态已经在 sheet 中设置好了
-                    // 如果只是关闭 sheet（没有下载）或下载失败，设置为"安装"状态
+                    // 如果只是关闭 sheet（没有下载）或下载失败
                     if !hasDownloadedInSheet {
-                        addButtonState = .idle
+                        // 如果是取消更新操作（oldFileNameForUpdate 不为空），保持更新状态
+                        // 否则设置为安装状态
+                        if oldFileNameForUpdate != nil {
+                            // 取消更新操作，保持更新按钮显示
+                            // 不需要改变 addButtonState，保持 .update 状态
+                        } else {
+                            addButtonState = .idle
+                        }
                         // 如果取消更新操作或下载失败，清理旧文件名（不删除文件）
                         // 只有在下载成功时才会删除旧文件
                         oldFileNameForUpdate = nil
@@ -216,7 +229,8 @@ struct AddOrDeleteResourceButton: View {
                             resourceType: query,
                             gameInfo: gameInfo,
                             isPresented: $showGameResourceInstallSheet,
-                            preloadedDetail: preloadedDetail
+                            preloadedDetail: preloadedDetail,
+                            isUpdateMode: oldFileNameForUpdate != nil
                         ) {
                             // 下载成功，标记并更新状态
                             // 注意：只有在这个回调被调用时，才表示下载真正成功
@@ -235,11 +249,11 @@ struct AddOrDeleteResourceButton: View {
                             if !type {
                                 currentFileName = nil
                             }
-                            if type == false && query.lowercased() == "mod" {
-                                // local 模式的 mod 类型：检测是否有更新
+                            if type == false {
+                                // local 模式：检测是否有更新
                                 checkForUpdate()
                             } else {
-                                // 其他资源类型或 server 模式：直接设置为已安装
+                                // server 模式：直接设置为已安装
                                 addButtonState = .installed
                             }
                             // 清理预加载的数据
@@ -344,6 +358,7 @@ struct AddOrDeleteResourceButton: View {
         if !type {
             // 保存旧文件名，用于更新后删除
             oldFileNameForUpdate = currentFileName ?? project.fileName
+            isUpdateButtonLoading = true
             Task {
                 // 加载项目详情并打开游戏资源安装 sheet（复用全局资源安装逻辑）
                 await loadGameResourceInstallDetailBeforeOpeningSheet()
@@ -523,7 +538,13 @@ struct AddOrDeleteResourceButton: View {
 
         defer {
             Task { @MainActor in
-                addButtonState = .idle
+                // 重置更新按钮的loading状态
+                isUpdateButtonLoading = false
+                // 只有在非更新操作时才重置状态
+                // 如果是更新操作（oldFileNameForUpdate 不为空），保持当前状态
+                if oldFileNameForUpdate == nil {
+                    addButtonState = .idle
+                }
             }
         }
 
@@ -559,7 +580,8 @@ struct AddOrDeleteResourceButton: View {
     private func checkForUpdate() {
         guard let gameInfo = gameInfo,
               type == false,  // 仅在 local 模式
-              !isDisabled  // 如果资源被禁用，不参与检测更新
+              !isDisabled,  // 如果资源被禁用，不参与检测更新
+              !project.projectId.hasPrefix("local_") && !project.projectId.hasPrefix("file_")  // 排除本地文件资源
         else {
             return
         }

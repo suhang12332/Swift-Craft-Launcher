@@ -7,6 +7,7 @@ struct GameResourceInstallSheet: View {
     let gameInfo: GameVersionInfo  // 预置的游戏信息
     @Binding var isPresented: Bool
     let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
+    var isUpdateMode: Bool = false  // 更新模式：footer 显示「下载」、不显示依赖
     @EnvironmentObject var gameRepository: GameRepository
     var onDownloadSuccess: (() -> Void)?  // 下载成功回调
 
@@ -43,13 +44,14 @@ struct GameResourceInstallSheet: View {
                             mainVersionId: $mainVersionId
                         ) { version in
                             if resourceType == "mod",
-                                let v = version {
+                               !isUpdateMode,
+                               let v = version {
                                 loadDependencies(for: v, game: gameInfo)
                             } else {
                                 dependencyState = DependencyState()
                             }
                         }
-                        if resourceType == "mod" {
+                        if resourceType == "mod", !isUpdateMode {
                             if dependencyState.isLoading || !dependencyState.dependencies.isEmpty {
                                 spacerView()
                                 DependencySectionView(state: $dependencyState)
@@ -62,6 +64,7 @@ struct GameResourceInstallSheet: View {
                 GameResourceInstallFooter(
                     project: project,
                     resourceType: resourceType,
+                    isUpdateMode: isUpdateMode,
                     isPresented: $isPresented,
                     projectDetail: preloadedDetail,
                     gameInfo: gameInfo,
@@ -149,6 +152,7 @@ struct GameResourceInstallSheet: View {
 struct GameResourceInstallFooter: View {
     let project: ModrinthProject
     let resourceType: String
+    var isUpdateMode: Bool = false  // 更新模式：显示「下载」、不显示依赖（由父级控制不展示依赖区块）
     @Binding var isPresented: Bool
     let projectDetail: ModrinthProjectDetail?
     let gameInfo: GameVersionInfo
@@ -167,7 +171,8 @@ struct GameResourceInstallFooter: View {
                 HStack {
                     Button("common.close".localized()) { isPresented = false }
                     Spacer()
-                    if resourceType == "mod" {
+                    if resourceType == "mod", !isUpdateMode {
+                        // 安装模式下的 mod：显示「下载全部」（含依赖）
                         if !dependencyState.isLoading {
                             if selectedVersion != nil {
                                 Button(action: downloadAllManual) {
@@ -185,6 +190,7 @@ struct GameResourceInstallFooter: View {
                             }
                         }
                     } else {
+                        // 非 mod，或更新模式：显示「下载」（仅主资源）
                         if selectedVersion != nil {
                             Button(action: downloadResource) {
                                 if isDownloadingAll {
