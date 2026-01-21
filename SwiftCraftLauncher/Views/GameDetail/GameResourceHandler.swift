@@ -393,7 +393,7 @@ enum GameResourceHandler {
             )
         }
 
-        let success =
+        let (success, _, _) =
             await ModrinthDependencyDownloader.downloadMainResourceOnly(
                 mainProjectId: project.projectId,
                 gameInfo: gameInfo,

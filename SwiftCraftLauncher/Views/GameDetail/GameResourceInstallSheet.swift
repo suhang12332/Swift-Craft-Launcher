@@ -9,7 +9,8 @@ struct GameResourceInstallSheet: View {
     let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
     var isUpdateMode: Bool = false  // 更新模式：footer 显示「下载」、不显示依赖
     @EnvironmentObject var gameRepository: GameRepository
-    var onDownloadSuccess: (() -> Void)?  // 下载成功回调
+    /// 下载成功回调，参数为 (fileName, hash)，仅 downloadResource 路径会传值，downloadAllManual 传 (nil, nil)
+    var onDownloadSuccess: ((String?, String?) -> Void)?
 
     @State private var selectedVersion: ModrinthProjectDetailVersion?
     @State private var availableVersions: [ModrinthProjectDetailVersion] = []
@@ -163,7 +164,8 @@ struct GameResourceInstallFooter: View {
     let loadDependencies:
         (ModrinthProjectDetailVersion, GameVersionInfo) -> Void
     @Binding var mainVersionId: String
-    var onDownloadSuccess: (() -> Void)?  // 下载成功回调
+    /// 下载成功回调，参数为 (fileName, hash)，仅 downloadResource 路径会传值，downloadAllManual 传 (nil, nil)
+    var onDownloadSuccess: ((String?, String?) -> Void)?
 
     var body: some View {
         Group {
@@ -267,9 +269,9 @@ struct GameResourceInstallFooter: View {
             )
         }
 
-        // 下载成功，更新按钮状态并关闭 sheet
+        // 下载成功，更新按钮状态并关闭 sheet（downloadAllManual 不传 fileName/hash）
         _ = await MainActor.run {
-            onDownloadSuccess?()
+            onDownloadSuccess?(nil, nil)
             isDownloadingAll = false
             isPresented = false
         }
@@ -302,7 +304,7 @@ struct GameResourceInstallFooter: View {
             )
         }
 
-        let success =
+        let (success, fileName, hash) =
             await ModrinthDependencyDownloader.downloadMainResourceOnly(
                 mainProjectId: project.projectId,
                 gameInfo: gameInfo,
@@ -319,9 +321,9 @@ struct GameResourceInstallFooter: View {
             )
         }
 
-        // 下载成功，更新按钮状态并关闭 sheet
+        // 下载成功，更新按钮状态并关闭 sheet，传递 (fileName, hash) 供更新流程做局部刷新
         _ = await MainActor.run {
-            onDownloadSuccess?()
+            onDownloadSuccess?(fileName, hash)
             isDownloadingAll = false
             isPresented = false
         }

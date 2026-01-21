@@ -149,6 +149,7 @@ struct GameLocalResourceView: View {
                     selectedItem: $selectedItem,
                     onResourceChanged: refreshResources,
                     onLocalDisableStateChanged: handleLocalDisableStateChanged,
+                    onResourceUpdated: handleResourceUpdated,
                     scannedDetailIds: .constant([])
                 )
                 .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
@@ -425,6 +426,34 @@ struct GameLocalResourceView: View {
             scannedResources.removeAll { $0.id == project.projectId }
         }
         // 其他场景保持现状（不额外刷新）
+    }
+
+    /// 更新成功后的局部刷新：仅更新当前条目的 hash 与列表项，不全局扫描
+    /// - Parameters:
+    ///   - projectId: 项目 id
+    ///   - oldFileName: 更新前的文件名（用于在 allFiles 中替换）
+    ///   - newFileName: 新文件名
+    ///   - newHash: 新文件 hash（ModScanner 缓存已由下载器更新，此处仅预留）
+    private func handleResourceUpdated(
+        projectId: String,
+        oldFileName: String,
+        newFileName: String,
+        newHash: String?
+    ) {
+        // 更新 scannedResources 中对应条目的 fileName
+        if let i = scannedResources.firstIndex(where: { $0.id == projectId }) {
+            var d = scannedResources[i]
+            d.fileName = newFileName
+            scannedResources[i] = d
+        }
+        // 更新 allFiles：将旧文件 URL 替换为新文件 URL，避免与后续分页不一致
+        let resourceDir = resourceDirectory ?? AppPaths.resourceDirectory(
+            for: query,
+            gameName: game.gameName
+        )
+        if let dir = resourceDir, let j = allFiles.firstIndex(where: { $0.lastPathComponent == oldFileName }) {
+            allFiles[j] = dir.appendingPathComponent(newFileName)
+        }
     }
 
     /// 切换资源启用/禁用状态
