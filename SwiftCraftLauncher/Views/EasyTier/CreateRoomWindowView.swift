@@ -7,6 +7,8 @@ struct CreateRoomWindowView: View {
     @State private var roomCode: String = ""
     @State private var isConnecting: Bool = false
     @State private var isCreating: Bool = false
+    @Environment(\.dismiss)
+    private var dismiss
 
     var body: some View {
         VStack(spacing: 20) {
@@ -57,7 +59,7 @@ struct CreateRoomWindowView: View {
             HStack {
                 // 取消按钮
                 Button(action: {
-                    TemporaryWindowManager.shared.closeWindow(withTitle: "easytier.create.room.window.title".localized())
+                    dismiss()
                 }, label: {
                     Text("common.cancel".localized())
                 })
@@ -84,14 +86,20 @@ struct CreateRoomWindowView: View {
         .onAppear {
             createRoom()
         }
-        .windowReferenceTracking {
+        .onDisappear {
             clearAllData()
+            // 如果正在连接，停止网络连接
+            if isConnecting {
+                Task {
+                    await viewModel.stopNetwork()
+                }
+            }
         }
         .onChange(of: viewModel.networkStatus) { _, newStatus in
             if case .connected = newStatus {
                 // 连接成功，设置房间类型为创建，关闭窗口
                 EasyTierManager.shared.setRoomCreated()
-                TemporaryWindowManager.shared.closeWindow(withTitle: "easytier.create.room.window.title".localized())
+                dismiss()
             }
         }
     }

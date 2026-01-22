@@ -31,19 +31,16 @@ import Combine
 @main
 struct SwiftCraftLauncherApp: App {
     // MARK: - StateObjects
-    @StateObject private var playerListViewModel = PlayerListViewModel()
-    @StateObject private var gameRepository = GameRepository()
+    @StateObject var playerListViewModel = PlayerListViewModel()
+    @StateObject var gameRepository = GameRepository()
     @StateObject private var globalErrorHandler = GlobalErrorHandler.shared
     @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
-    @StateObject private var generalSettingsManager = GeneralSettingsManager
+    @StateObject var generalSettingsManager = GeneralSettingsManager
         .shared
     @StateObject private var skinSelectionStore = SkinSelectionStore()
 
     // MARK: - Notification Delegate
     private let notificationCenterDelegate = NotificationCenterDelegate()
-
-    @Environment(\.openWindow)
-    private var openWindow
 
     init() {
         // 设置通知中心代理，确保前台时也能展示 Banner
@@ -66,9 +63,11 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(skinSelectionStore)
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
+                .windowOpener()
                 .onAppear {
-                    // 应用启动时清理所有临时窗口，防止应用重启时恢复未关闭的临时窗口
-                    TemporaryWindowManager.shared.cleanupAllWindows()
+                    // 应用启动时清理所有窗口数据
+                    WindowDataStore.shared.cleanup(for: .aiChat)
+                    WindowDataStore.shared.cleanup(for: .skinPreview)
                 }
         }
         .windowStyle(.titleBar)
@@ -95,22 +94,12 @@ struct SwiftCraftLauncherApp: App {
                 Link("GitHub", destination: URLConfig.API.GitHub.repositoryURL())
 
                 Button("about.contributors".localized()) {
-                    TemporaryWindowManager.shared.showWindow(
-                        content: AboutView(showingAcknowledgements: false)
-                            .environmentObject(generalSettingsManager)
-                            .preferredColorScheme(generalSettingsManager.currentColorScheme),
-                        config: .contributors(title: "about.contributors".localized())
-                    )
+                    WindowManager.shared.openWindow(id: .contributors)
                 }
                 .keyboardShortcut("c", modifiers: [.command, .shift])
 
                 Button("about.acknowledgements".localized()) {
-                    TemporaryWindowManager.shared.showWindow(
-                        content: AboutView(showingAcknowledgements: true)
-                            .environmentObject(generalSettingsManager)
-                            .preferredColorScheme(generalSettingsManager.currentColorScheme),
-                        config: .acknowledgements(title: "about.acknowledgements".localized())
-                    )
+                    WindowManager.shared.openWindow(id: .acknowledgements)
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
 
@@ -144,6 +133,9 @@ struct SwiftCraftLauncherApp: App {
                 .errorAlert()
         }
         .conditionalRestorationBehavior()
+
+        // 应用窗口组
+        appWindowGroups()
 
         // 右上角的状态栏(可以显示图标的)
         MenuBarExtra(

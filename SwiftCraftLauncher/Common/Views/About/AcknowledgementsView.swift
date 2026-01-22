@@ -11,7 +11,7 @@ public struct AcknowledgementsView: View {
 
     public var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            LazyVStack(spacing: 16) {
                 if isLoading {
                     loadingView
                 } else {
@@ -24,7 +24,7 @@ public struct AcknowledgementsView: View {
             // 每次打开都重新加载数据
             loadLibraries()
         }
-        .windowReferenceTracking {
+        .onDisappear {
             clearAllData()
         }
     }
@@ -39,7 +39,7 @@ public struct AcknowledgementsView: View {
 
     // MARK: - Libraries Content
     private var librariesContent: some View {
-        VStack(spacing: 0) {
+        LazyVStack(spacing: 0) {
             if !libraries.isEmpty {
                 librariesList
             } else if loadFailed {
@@ -53,6 +53,7 @@ public struct AcknowledgementsView: View {
         VStack(spacing: 0) {
             ForEach(libraries.indices, id: \.self) { index in
                 libraryRow(libraries[index])
+                    .id("library-\(index)")
 
                 if index < libraries.count - 1 {
                     Divider()
@@ -109,8 +110,10 @@ public struct AcknowledgementsView: View {
     // MARK: - Library Avatar
     private func libraryAvatar(_ library: OpenSourceLibrary) -> some View {
         Group {
-            if let avatarURL = library.avatar, let avatar = URL(string: avatarURL) {
-                AsyncImage(url: avatar) { phase in
+            if let avatarURL = library.avatar {
+                // 优化后的头像 URL（使用缩略图参数）
+                let optimizedURL = optimizedAvatarURL(from: avatarURL, size: 40)
+                AsyncImage(url: optimizedURL) { phase in
                     switch phase {
                     case .empty:
                         Rectangle()
@@ -156,6 +159,28 @@ public struct AcknowledgementsView: View {
                     .cornerRadius(8)
             }
         }
+    }
+
+    /// 获取优化后的头像 URL（使用缩略图参数减少下载大小）
+    /// - Parameters:
+    ///   - avatarURL: 原始头像 URL
+    ///   - size: 显示大小（像素）
+    /// - Returns: 优化后的 URL
+    private func optimizedAvatarURL(from avatarURL: String, size: CGFloat) -> URL? {
+        guard let url = URL(string: avatarURL) else { return nil }
+
+        // 如果已经是 GitHub 头像 URL，添加大小参数
+        // GitHub 头像 URL 格式: https://avatars.githubusercontent.com/u/xxx 或 https://github.com/identicons/xxx.png
+        if url.host?.contains("github.com") == true || url.host?.contains("avatars.githubusercontent.com") == true {
+            // 计算需要的像素大小（@2x 屏幕需要 2 倍）
+            let pixelSize = Int(size * 2)
+            // 移除现有的查询参数（如果有）
+            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+            components?.queryItems = [URLQueryItem(name: "s", value: "\(pixelSize)")]
+            return components?.url
+        }
+
+        return url
     }
 
     // MARK: - Error View

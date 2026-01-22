@@ -110,16 +110,10 @@ class GameLogCollector {
             attachments.append(.file(logFile, logFile.lastPathComponent))
         }
 
-        // 打开窗口（使用 AIChatManager 确保环境对象正确注入）
-        let generalSettingsManager = GeneralSettingsManager.shared
-        TemporaryWindowManager.shared.showWindow(
-            content: AIChatWindowView(chatState: chatState)
-                .environmentObject(playerListViewModel)
-                .environmentObject(gameRepository)
-                .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme),
-            config: .aiChat(title: "ai.assistant.title".localized())
-        )
+        // 存储到 WindowDataStore
+        WindowDataStore.shared.aiChatState = chatState
+        // 打开窗口
+        WindowManager.shared.openWindow(id: .aiChat)
 
         // 等待窗口打开后发送消息
         try? await Task.sleep(nanoseconds: 100_000_000) // 等待 0.1 秒

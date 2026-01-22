@@ -8,6 +8,10 @@
 import Foundation
 import SwiftUI
 
+// MARK: - Keychain 存储常量
+private let aiSettingsAccount = "aiSettings"
+private let aiApiKeyKeychainKey = "apiKey"
+
 /// AI 提供商枚举
 enum AIProvider: String, CaseIterable, Identifiable {
     case openai = "openai"
@@ -87,9 +91,42 @@ class AISettingsManager: ObservableObject {
         }
     }
 
-    @AppStorage("aiApiKey")
-    var apiKey: String = "" {
-        didSet {
+    /// API Key 内存缓存（避免重复读取 Keychain）
+    private var _cachedApiKey: String?
+
+    /// AI API Key（使用 Keychain 安全存储，带内存缓存）
+    var apiKey: String {
+        get {
+            // 如果缓存已存在，直接返回
+            if let cached = _cachedApiKey {
+                return cached
+            }
+
+            // 从 Keychain 读取并缓存
+            if let data = KeychainManager.load(account: aiSettingsAccount, key: aiApiKeyKeychainKey),
+               let key = String(data: data, encoding: .utf8) {
+                _cachedApiKey = key
+                return key
+            }
+
+            // Keychain 中没有数据，缓存空字符串
+            _cachedApiKey = ""
+            return ""
+        }
+        set {
+            // 更新缓存
+            _cachedApiKey = newValue.isEmpty ? "" : newValue
+
+            // 保存到 Keychain
+            if newValue.isEmpty {
+                // 如果为空，删除 Keychain 中的项
+                _ = KeychainManager.delete(account: aiSettingsAccount, key: aiApiKeyKeychainKey)
+            } else {
+                // 保存到 Keychain
+                if let data = newValue.data(using: .utf8) {
+                    _ = KeychainManager.save(data: data, account: aiSettingsAccount, key: aiApiKeyKeychainKey)
+                }
+            }
             objectWillChange.send()
         }
     }
@@ -140,5 +177,9 @@ class AISettingsManager: ObservableObject {
     func getModel() -> String {
         return modelOverride.trimmingCharacters(in: .whitespacesAndNewlines)
     }
-    private init() {}
+
+    private init() {
+        // 初始化时预加载 API Key 到缓存（避免首次访问时读取 Keychain）
+        _ = apiKey
+    }
 }

@@ -11,7 +11,7 @@ public struct ContributorsView: View {
 
     public var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            LazyVStack(spacing: 16) {
                 if viewModel.isLoading {
                     loadingView
                 } else {
@@ -28,7 +28,7 @@ public struct ContributorsView: View {
             // 每次打开都重新加载静态贡献者数据
             loadStaticContributors()
         }
-        .windowReferenceTracking {
+        .onDisappear {
             clearAllData()
         }
     }
@@ -43,12 +43,10 @@ public struct ContributorsView: View {
 
     // MARK: - Contributors Content
     private var contributorsContent: some View {
-        VStack(spacing: 16) {
+        LazyVStack(spacing: 16) {
             // GitHub贡献者列表
             if !viewModel.contributors.isEmpty {
                 contributorsList
-            } else {
-                EmptyView()
             }
             // 静态贡献者列表（只有成功加载时才显示）
             if staticContributorsLoaded && !staticContributorsLoadFailed {
@@ -69,6 +67,7 @@ public struct ContributorsView: View {
 
             ForEach(staticContributors.indices, id: \.self) { index in
                 staticContributorRow(staticContributors[index])
+                    .id("static-\(index)")
 
                 if index < staticContributors.count - 1 {
                     Divider()
@@ -107,6 +106,7 @@ public struct ContributorsView: View {
                             )
                         )
                     )
+                    .id("top-\(contributor.id)")
 
                     if index < viewModel.topContributors.count - 1 {
                         Divider()
@@ -137,6 +137,7 @@ public struct ContributorsView: View {
                         )
                     )
                 )
+                .id("other-\(contributor.id)")
 
                 if index < viewModel.otherContributors.count - 1 {
                     Divider()
@@ -200,5 +201,11 @@ public struct ContributorsView: View {
     /// 清理所有数据
     private func clearAllData() {
         clearStaticContributorsData()
+        // 清理 ViewModel 的贡献者数据，释放内存
+        viewModel.clearContributors()
+        // 清理图片缓存，释放内存
+        ContributorAvatarCache.shared.clearCache()
+        StaticContributorAvatarCache.shared.clearCache()
+        Logger.shared.info("All contributors data cleared")
     }
 }

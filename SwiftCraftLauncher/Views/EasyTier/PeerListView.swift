@@ -189,7 +189,7 @@ struct PeerListView: View {
                 startAutoRefresh()
             }
         }
-        .windowReferenceTracking {
+        .onDisappear {
             clearAllData()
         }
     }

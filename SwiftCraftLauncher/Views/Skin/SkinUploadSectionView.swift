@@ -120,17 +120,15 @@ struct SkinUploadSectionView: View {
     /// 打开皮肤预览窗口
     private func openSkinPreviewWindow() {
         let playerModel = convertToPlayerModel(currentModel)
-        let previewView = SkinPreviewWindowView(
+        // 存储到 WindowDataStore
+        WindowDataStore.shared.skinPreviewData = SkinPreviewData(
             skinImage: selectedSkinImage ?? currentSkinRenderImage,
             skinPath: selectedSkinPath,
             capeImage: selectedCapeImage,
             playerModel: playerModel
         )
-
-        TemporaryWindowManager.shared.showWindow(
-            content: previewView,
-            config: .skinPreview(title: "skin.preview".localized())
-        )
+        // 打开窗口
+        WindowManager.shared.openWindow(id: .skinPreview)
     }
 }
 

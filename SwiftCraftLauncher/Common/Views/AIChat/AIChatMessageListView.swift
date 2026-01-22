@@ -14,12 +14,18 @@ struct AIChatMessageListView: View {
     let cachedUserAvatar: AnyView?
     let aiAvatarURL: String
 
+    // 用于防抖和避免循环更新的状态
+    @State private var lastContentLength: Int = 0
+    @State private var scrollTask: Task<Void, Never>?
+    @State private var periodicScrollTask: Task<Void, Never>?
+
     private enum Constants {
         static let avatarSize: CGFloat = 32
         static let messageSpacing: CGFloat = 16
         static let messageVerticalPadding: CGFloat = 2
         static let scrollDelay: TimeInterval = 0.1
         static let scrollAnimationDuration: TimeInterval = 0.3
+        static let scrollThrottleInterval: TimeInterval = 0.2 // 防抖间隔
     }
 
     var body: some View {
@@ -49,24 +55,40 @@ struct AIChatMessageListView: View {
                         .padding()
                     }
                 }
-                // 滚动到底部：优化 - 合并多个 onChange 以减少不必要的视图更新
+                // 滚动到底部：优化 - 使用防抖机制避免频繁更新导致的循环
                 .onChange(of: chatState.messages.count) { _, _ in
                     // 新消息时滚动
                     if chatState.messages.last != nil {
-                        scrollToBottom(proxy: proxy)
+                        scheduleScroll(proxy: proxy)
                     }
                 }
-                .onChange(of: chatState.messages.last?.content.count ?? 0) { oldValue, newValue in
-                    // 流式更新时滚动（仅在内容增加时）
-                    if chatState.isSending && newValue > oldValue && newValue > 0 {
-                        scrollToBottom(proxy: proxy)
+                .onChange(of: chatState.messages.last?.id) { _, _ in
+                    // 最后一条消息的 ID 变化时（新消息），重置内容长度跟踪并滚动
+                    if let lastMessage = chatState.messages.last {
+                        lastContentLength = lastMessage.content.count
+                        scheduleScroll(proxy: proxy)
                     }
                 }
                 .onChange(of: chatState.isSending) { oldValue, newValue in
-                    // 发送完成时滚动（仅在状态从 true 变为 false 时）
-                    if oldValue && !newValue {
-                        scrollToBottom(proxy: proxy)
+                    if !oldValue && newValue {
+                        // 开始发送时，启动定期滚动检查
+                        startPeriodicScrollCheck(proxy: proxy)
+                    } else if oldValue && !newValue {
+                        // 发送完成时，停止定期滚动检查并滚动到底部
+                        stopPeriodicScrollCheck()
+                        scheduleScroll(proxy: proxy)
                     }
+                }
+                .onAppear {
+                    // 视图出现时，如果正在发送，启动定期滚动检查
+                    if chatState.isSending {
+                        startPeriodicScrollCheck(proxy: proxy)
+                    }
+                }
+                .onDisappear {
+                    // 视图消失时，停止所有滚动任务
+                    stopPeriodicScrollCheck()
+                    scrollTask?.cancel()
                 }
             }
         }
@@ -130,6 +152,44 @@ struct AIChatMessageListView: View {
     }
 
     // MARK: - Methods
+
+    /// 调度滚动到底部（带防抖）
+    private func scheduleScroll(proxy: ScrollViewProxy) {
+        // 取消之前的任务
+        scrollTask?.cancel()
+
+        // 创建新的防抖任务
+        scrollTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(Constants.scrollThrottleInterval * 1_000_000_000))
+            guard !Task.isCancelled else { return }
+            scrollToBottom(proxy: proxy)
+        }
+    }
+
+    /// 启动定期滚动检查（用于流式更新）
+    private func startPeriodicScrollCheck(proxy: ScrollViewProxy) {
+        stopPeriodicScrollCheck()
+
+        periodicScrollTask = Task { @MainActor in
+            while !Task.isCancelled && chatState.isSending {
+                // 检查内容是否更新
+                if let lastMessage = chatState.messages.last,
+                   lastMessage.content.count > lastContentLength {
+                    lastContentLength = lastMessage.content.count
+                    scrollToBottom(proxy: proxy)
+                }
+
+                // 每 0.3 秒检查一次
+                try? await Task.sleep(nanoseconds: 300_000_000)
+            }
+        }
+    }
+
+    /// 停止定期滚动检查
+    private func stopPeriodicScrollCheck() {
+        periodicScrollTask?.cancel()
+        periodicScrollTask = nil
+    }
 
     private func scrollToBottom(proxy: ScrollViewProxy) {
         Task { @MainActor in

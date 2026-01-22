@@ -30,6 +30,11 @@ public class ContributorsViewModel: ObservableObject {
         count >= 1000
             ? String(format: "%.1fk", Double(count) / 1000.0) : "\(count)"
     }
+
+    /// 清理贡献者数据，释放内存
+    public func clearContributors() {
+        contributors = []
+    }
 }
 
 extension ContributorsViewModel {
