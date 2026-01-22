@@ -81,16 +81,13 @@ class JavaDownloadManager: ObservableObject {
 
     /// 显示下载窗口
     private func showDownloadWindow() {
-        TemporaryWindowManager.shared.showWindow(
-            content: JavaDownloadProgressWindow(downloadState: downloadState),
-            config: .javaDownload(title: "global_resource.download".localized())
-        )
+        WindowManager.shared.openWindow(id: .javaDownload)
         isWindowVisible = true
     }
 
     /// 关闭窗口
     func closeWindow() {
-        TemporaryWindowManager.shared.closeWindow(withTitle: "global_resource.download".localized())
+        WindowManager.shared.closeWindow(id: .javaDownload)
         isWindowVisible = false
         downloadState.reset()
         dismissCallback?()

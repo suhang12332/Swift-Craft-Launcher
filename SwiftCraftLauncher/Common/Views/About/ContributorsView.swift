@@ -28,7 +28,7 @@ public struct ContributorsView: View {
             // 每次打开都重新加载静态贡献者数据
             loadStaticContributors()
         }
-        .windowReferenceTracking {
+        .onDisappear {
             clearAllData()
         }
     }
@@ -203,6 +203,9 @@ public struct ContributorsView: View {
         clearStaticContributorsData()
         // 清理 ViewModel 的贡献者数据，释放内存
         viewModel.clearContributors()
+        // 清理图片缓存，释放内存
+        ContributorAvatarCache.shared.clearCache()
+        StaticContributorAvatarCache.shared.clearCache()
         Logger.shared.info("All contributors data cleared")
     }
 }

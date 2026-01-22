@@ -99,7 +99,7 @@ struct AIChatWindowView: View {
                 updateAIAvatarCache()
             }
         }
-        .windowReferenceTracking {
+        .onDisappear {
             // 页面关闭后清除所有数据
             clearAllData()
         }

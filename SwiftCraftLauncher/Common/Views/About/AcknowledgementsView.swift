@@ -24,7 +24,7 @@ public struct AcknowledgementsView: View {
             // 每次打开都重新加载数据
             loadLibraries()
         }
-        .windowReferenceTracking {
+        .onDisappear {
             clearAllData()
         }
     }

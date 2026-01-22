@@ -551,14 +551,9 @@ class AIChatManager: ObservableObject {
         gameRepository: GameRepository
     ) {
         let chatState = ChatState()
-        let generalSettingsManager = GeneralSettingsManager.shared
-        TemporaryWindowManager.shared.showWindow(
-            content: AIChatWindowView(chatState: chatState)
-                .environmentObject(playerListViewModel)
-                .environmentObject(gameRepository)
-                .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme),
-            config: .aiChat(title: "ai.assistant.title".localized())
-        )
+        // 存储到 WindowDataStore
+        WindowDataStore.shared.aiChatState = chatState
+        // 打开窗口
+        WindowManager.shared.openWindow(id: .aiChat)
     }
 }

@@ -80,16 +80,13 @@ class EasyTierDownloadManager: ObservableObject {
 
     /// 显示下载窗口
     private func showDownloadWindow() {
-        TemporaryWindowManager.shared.showWindow(
-            content: EasyTierDownloadProgressWindow(downloadState: downloadState),
-            config: .easyTierDownload(title: "global_resource.download".localized())
-        )
+        WindowManager.shared.openWindow(id: .easyTierDownload)
         isWindowVisible = true
     }
 
     /// 关闭窗口
     func closeWindow() {
-        TemporaryWindowManager.shared.closeWindow(withTitle: "global_resource.download".localized())
+        WindowManager.shared.closeWindow(id: .easyTierDownload)
         isWindowVisible = false
         downloadState.reset()
         dismissCallback?()

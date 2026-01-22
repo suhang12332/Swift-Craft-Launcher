@@ -46,7 +46,7 @@ struct SkinPreviewWindowView: View {
             }
         }
         .frame(width: 1200, height: 800)
-        .windowReferenceTracking {
+        .onDisappear {
             clearAllData()
         }
     }

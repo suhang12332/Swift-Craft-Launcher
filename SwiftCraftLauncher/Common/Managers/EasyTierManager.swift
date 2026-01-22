@@ -53,35 +53,17 @@ class EasyTierManager: ObservableObject {
 
     /// 打开创建房间窗口
     func openCreateRoomWindow() {
-        let generalSettingsManager = GeneralSettingsManager.shared
-        TemporaryWindowManager.shared.showWindow(
-            content: CreateRoomWindowView()
-                .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme),
-            config: .easyTierCreateRoom(title: "easytier.create.room.window.title".localized())
-        )
+        WindowManager.shared.openWindow(id: .createRoom)
     }
 
     /// 打开加入房间窗口
     func openJoinRoomWindow() {
-        let generalSettingsManager = GeneralSettingsManager.shared
-        TemporaryWindowManager.shared.showWindow(
-            content: JoinRoomWindowView()
-                .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme),
-            config: .easyTierJoinRoom(title: "easytier.join.room.window.title".localized())
-        )
+        WindowManager.shared.openWindow(id: .joinRoom)
     }
 
     /// 打开对等节点列表窗口
     func openPeerListWindow() {
-        let generalSettingsManager = GeneralSettingsManager.shared
-        TemporaryWindowManager.shared.showWindow(
-            content: PeerListView()
-                .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme),
-            config: .peerList(title: "menubar.room.member_list".localized())
-        )
+        WindowManager.shared.openWindow(id: .peerList)
     }
 
     /// 检查是否有已连接的房间
