@@ -195,6 +195,15 @@ extension Scene {
             return self
         }
     }
+
+    /// 禁用窗口恢复行为（在所有支持的 macOS 版本上）
+    func applyRestorationBehaviorDisabled() -> some Scene {
+        if #available(macOS 15.0, *) {
+            return self.restorationBehavior(.disabled)
+        } else {
+            return self
+        }
+    }
 }
 
 // MARK: - 通用信息图标组件（带 Popover）
