@@ -169,19 +169,63 @@ public struct ContentToolbarView: ToolbarContent {
             isLoadingSkin = true
         }
 
-        // 从 Keychain 按需加载认证凭据，供 fetch 使用 accessToken（使用 let 避免 Swift 6 并发下捕获 var）
-        let playerToUse: Player
-        if player.credential == nil, let c = PlayerDataManager().loadCredential(userId: player.id) {
-            var p = player
-            p.credential = c
-            playerToUse = p
-        } else {
-            playerToUse = player
+        // 如果是离线账户，直接使用，无需刷新token
+        guard player.isOnlineAccount else {
+            // 预加载皮肤数据
+            async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: player)
+            async let profile = PlayerSkinService.fetchPlayerProfile(player: player)
+            let (loadedSkinInfo, loadedProfile) = await (skinInfo, profile)
+
+            await MainActor.run {
+                preloadedSkinInfo = loadedSkinInfo
+                preloadedProfile = loadedProfile
+                isLoadingSkin = false
+                showEditSkin = true
+            }
+            return
         }
 
-        // 预加载皮肤数据
-        async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: playerToUse)
-        async let profile = PlayerSkinService.fetchPlayerProfile(player: playerToUse)
+        Logger.shared.info("打开皮肤管理器前验证玩家 \(player.name) 的Token")
+
+        // 从 Keychain 按需加载认证凭据（只针对当前玩家，避免一次性读取所有账号）
+        var playerWithCredential = player
+        if playerWithCredential.credential == nil {
+            let dataManager = PlayerDataManager()
+            if let credential = dataManager.loadCredential(userId: playerWithCredential.id) {
+                playerWithCredential.credential = credential
+            }
+        }
+
+        // 使用已加载/更新后的玩家对象验证并尝试刷新Token
+        let authService = MinecraftAuthService.shared
+        let validatedPlayer: Player
+        do {
+            validatedPlayer = try await authService.validateAndRefreshPlayerTokenThrowing(for: playerWithCredential)
+
+            // 如果Token被更新了，需要保存到PlayerDataManager
+            if validatedPlayer.authAccessToken != player.authAccessToken {
+                Logger.shared.info("玩家 \(player.name) 的Token已更新，保存到数据管理器")
+                let dataManager = PlayerDataManager()
+                let success = dataManager.updatePlayerSilently(validatedPlayer)
+                if success {
+                    Logger.shared.debug("已更新玩家数据管理器中的Token信息")
+                    // 同步更新内存中的玩家列表（避免下次启动仍使用旧 token）
+                    NotificationCenter.default.post(
+                        name: PlayerSkinService.playerUpdatedNotification,
+                        object: nil,
+                        userInfo: ["updatedPlayer": validatedPlayer]
+                    )
+                }
+            }
+        } catch {
+            Logger.shared.error("刷新Token失败: \(error.localizedDescription)")
+            // Token刷新失败时，仍然尝试使用原有token加载皮肤数据
+            validatedPlayer = playerWithCredential
+        }
+
+        // 预加载皮肤数据（使用验证后的玩家对象）
+        async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: validatedPlayer)
+        async let profile = PlayerSkinService.fetchPlayerProfile(player: validatedPlayer)
         let (loadedSkinInfo, loadedProfile) = await (skinInfo, profile)
 
         await MainActor.run {
