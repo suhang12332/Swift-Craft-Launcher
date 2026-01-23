@@ -74,7 +74,7 @@ struct SwiftCraftLauncherApp: App {
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
-
+        .conditionalRestorationBehavior()
         .commands {
 
             CommandGroup(after: .appInfo) {
@@ -108,11 +108,8 @@ struct SwiftCraftLauncherApp: App {
 
                 Divider()
 
-                Button("settings.ai.open_chat".localized()) {
-                    AIChatManager.shared.openChatWindow(
-                        playerListViewModel: playerListViewModel,
-                        gameRepository: gameRepository
-                    )
+                Button("ai.assistant.title".localized()) {
+                    AIChatManager.shared.openChatWindow()
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
             }
@@ -132,19 +129,18 @@ struct SwiftCraftLauncherApp: App {
                 .preferredColorScheme(generalSettingsManager.currentColorScheme)
                 .errorAlert()
         }
-        .conditionalRestorationBehavior()
 
         // 应用窗口组
         appWindowGroups()
+            .windowStyle(.titleBar)
+            .applyRestorationBehaviorDisabled()
+            .windowResizability(.contentSize)
 
         // 右上角的状态栏(可以显示图标的)
         MenuBarExtra(
             content: {
-                Button("settings.ai.open_chat".localized()) {
-                    AIChatManager.shared.openChatWindow(
-                        playerListViewModel: playerListViewModel,
-                        gameRepository: gameRepository
-                    )
+                Button("ai.assistant.title".localized()) {
+                    AIChatManager.shared.openChatWindow()
                 }
 
 //                 Divider()

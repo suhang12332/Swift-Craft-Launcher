@@ -25,10 +25,10 @@ class WindowDataStore: ObservableObject {
     private init() {}
 
     // AI Chat 窗口数据
-    var aiChatState: ChatState?
+    @Published var aiChatState: ChatState?
 
     // Skin Preview 窗口数据
-    var skinPreviewData: SkinPreviewData?
+    @Published var skinPreviewData: SkinPreviewData?
 
     /// 清理指定窗口的数据
     func cleanup(for windowID: WindowID) {

@@ -32,6 +32,18 @@ struct JavaDownloadProgressWindow: View {
                     },
                     downloadState: downloadState
                 )
+            } else {
+                // 没有下载任务时的空状态
+                VStack(spacing: 16) {
+                    Image(systemName: "tray")
+                        .font(.system(size: 48))
+                        .foregroundColor(.secondary)
+                    Text("download.no.tasks".localized())
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.vertical, 40)
             }
         }
         .padding()

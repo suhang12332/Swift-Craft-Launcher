@@ -543,13 +543,7 @@ class AIChatManager: ObservableObject {
     // MARK: - 打开聊天窗口
 
     /// 打开聊天窗口
-    /// - Parameters:
-    ///   - playerListViewModel: 玩家列表视图模型
-    ///   - gameRepository: 游戏仓库
-    func openChatWindow(
-        playerListViewModel: PlayerListViewModel,
-        gameRepository: GameRepository
-    ) {
+    func openChatWindow() {
         let chatState = ChatState()
         // 存储到 WindowDataStore
         WindowDataStore.shared.aiChatState = chatState
