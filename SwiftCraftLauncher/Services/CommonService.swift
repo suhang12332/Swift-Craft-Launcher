@@ -82,8 +82,7 @@ enum CommonService {
         let jarPaths: [String] = loader.libraries.compactMap { lib in
             guard lib.includeInClasspath else { return nil }
             if lib.includeInClasspath {
-                guard let downloads = lib.downloads else { return nil }
-                let artifact = downloads.artifact
+                guard let downloads = lib.downloads, let artifact = downloads.artifact else { return nil }
                 guard let artifactPath = artifact.path else { return nil }
                 return librariesDir.appendingPathComponent(artifactPath).path
             } else {

@@ -1,43 +1,80 @@
 import Foundation
 
 struct MinecraftVersionManifest: Codable {
-    let arguments: Arguments
+    /// 新版格式：game/jvm 数组；旧版无此字段，改用 minecraftArguments。
+    let arguments: Arguments?
     let assetIndex: AssetIndex
     let assets: String
     let complianceLevel: Int?
     let downloads: Downloads
     let id: String
-    let javaVersion: JavaVersion
+    /// 旧版可能缺失，默认按 Java 8 (jre-legacy) 处理。
+    let javaVersion: JavaVersion?
     let libraries: [Library]
-    let logging: Logging
+    /// 旧版可能缺失，缺失时不下载 logging 配置。
+    let logging: Logging?
     let mainClass: String
+    /// 旧版格式：整行参数字符串；与 arguments 二选一，arguments 优先。
+    let minecraftArguments: String?
+    /// 旧版可能缺失，缺省为 0。
     let minimumLauncherVersion: Int
     let releaseTime: String
     let time: String
     let type: String
 
     enum CodingKeys: String, CodingKey {
-        case arguments, assetIndex, assets, downloads, id, javaVersion, libraries, logging, mainClass, minimumLauncherVersion, releaseTime, time, type
-        case complianceLevel = "complianceLevel"
+        case arguments, assetIndex, asset_index, assets, complianceLevel, downloads, id, javaVersion, libraries, logging, mainClass
+        case minecraftArguments
+        case minimumLauncherVersion, releaseTime, time, type
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        arguments = try container.decode(Arguments.self, forKey: .arguments)
-        assetIndex = try container.decode(AssetIndex.self, forKey: .assetIndex)
+        arguments = try container.decodeIfPresent(Arguments.self, forKey: .arguments)
+        let a1 = try container.decodeIfPresent(AssetIndex.self, forKey: .assetIndex)
+        let a2 = try container.decodeIfPresent(AssetIndex.self, forKey: .asset_index)
+        guard let ai = a1 ?? a2 else {
+            throw DecodingError.keyNotFound(CodingKeys.assetIndex, DecodingError.Context(codingPath: container.codingPath, debugDescription: "assetIndex / asset_index 均缺失"))
+        }
+        assetIndex = ai
         assets = try container.decode(String.self, forKey: .assets)
         complianceLevel = try container.decodeIfPresent(Int.self, forKey: .complianceLevel)
         downloads = try container.decode(Downloads.self, forKey: .downloads)
         id = try container.decode(String.self, forKey: .id)
-        javaVersion = try container.decode(JavaVersion.self, forKey: .javaVersion)
+        javaVersion = try container.decodeIfPresent(JavaVersion.self, forKey: .javaVersion)
         libraries = try container.decode([Library].self, forKey: .libraries)
-        logging = try container.decode(Logging.self, forKey: .logging)
+        logging = try container.decodeIfPresent(Logging.self, forKey: .logging)
         mainClass = try container.decode(String.self, forKey: .mainClass)
-        minimumLauncherVersion = try container.decode(Int.self, forKey: .minimumLauncherVersion)
+        minecraftArguments = try container.decodeIfPresent(String.self, forKey: .minecraftArguments)
+        minimumLauncherVersion = try container.decodeIfPresent(Int.self, forKey: .minimumLauncherVersion) ?? 0
         releaseTime = try container.decode(String.self, forKey: .releaseTime)
         time = try container.decode(String.self, forKey: .time)
         type = try container.decode(String.self, forKey: .type)
+    }
+
+    /// 解析旧版 minecraft_arguments 字符串为 [String]，按空格分割；占位符由调用方替换。
+    static func parseMinecraftArguments(_ s: String) -> [String] {
+        s.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(arguments, forKey: .arguments)
+        try container.encode(assetIndex, forKey: .assetIndex)
+        try container.encode(assets, forKey: .assets)
+        try container.encodeIfPresent(complianceLevel, forKey: .complianceLevel)
+        try container.encode(downloads, forKey: .downloads)
+        try container.encode(id, forKey: .id)
+        try container.encodeIfPresent(javaVersion, forKey: .javaVersion)
+        try container.encode(libraries, forKey: .libraries)
+        try container.encodeIfPresent(logging, forKey: .logging)
+        try container.encode(mainClass, forKey: .mainClass)
+        try container.encodeIfPresent(minecraftArguments, forKey: .minecraftArguments)
+        try container.encode(minimumLauncherVersion, forKey: .minimumLauncherVersion)
+        try container.encode(releaseTime, forKey: .releaseTime)
+        try container.encode(time, forKey: .time)
+        try container.encode(type, forKey: .type)
     }
 }
 
@@ -167,8 +204,29 @@ struct AssetIndex: Codable {
     let id: String
     let sha1: String
     let size: Int
-    let totalSize: Int
+    /// 老版本 assetIndex 可能无此字段。
+    let totalSize: Int?
     let url: URL
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id = try c.decode(String.self, forKey: .id)
+        sha1 = try c.decode(String.self, forKey: .sha1)
+        size = try c.decode(Int.self, forKey: .size)
+        totalSize = try c.decodeIfPresent(Int.self, forKey: .totalSize)
+        url = try c.decode(URL.self, forKey: .url)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(id, forKey: .id)
+        try c.encode(sha1, forKey: .sha1)
+        try c.encode(size, forKey: .size)
+        try c.encodeIfPresent(totalSize, forKey: .totalSize)
+        try c.encode(url, forKey: .url)
+    }
+
+    private enum CodingKeys: String, CodingKey { case id, sha1, size, totalSize, url }
 }
 
 struct Downloads: Codable {
@@ -185,7 +243,8 @@ struct DownloadInfo: Codable {
 }
 
 struct Library: Codable {
-    var downloads: LibraryDownloads
+    /// 老版本可能无此字段，仅用 name+url；缺失时不予下载与加入 classpath。
+    var downloads: LibraryDownloads?
     let name: String
     let rules: [Rule]?
     let natives: [String: String]?
@@ -202,7 +261,7 @@ struct Library: Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        downloads = try container.decode(LibraryDownloads.self, forKey: .downloads)
+        downloads = try container.decodeIfPresent(LibraryDownloads.self, forKey: .downloads)
         name = try container.decode(String.self, forKey: .name)
         rules = try container.decodeIfPresent([Rule].self, forKey: .rules)
         natives = try container.decodeIfPresent([String: String].self, forKey: .natives)
@@ -214,13 +273,25 @@ struct Library: Codable {
 }
 
 struct LibraryDownloads: Codable {
-    var artifact: LibraryArtifact
+    /// 某些库可能只有 classifiers 而没有 artifact（如仅原生库）
+    var artifact: LibraryArtifact?
     let classifiers: [String: LibraryArtifact]?  // For native libraries
 
-        // Handle potential missing keys during decoding
-        enum CodingKeys: String, CodingKey {
-            case artifact, classifiers
-        }
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        artifact = try container.decodeIfPresent(LibraryArtifact.self, forKey: .artifact)
+        classifiers = try container.decodeIfPresent([String: LibraryArtifact].self, forKey: .classifiers)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(artifact, forKey: .artifact)
+        try container.encodeIfPresent(classifiers, forKey: .classifiers)
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case artifact, classifiers
+    }
 }
 
 struct LibraryArtifact: Codable {
@@ -291,6 +362,25 @@ struct LoggingFile: Codable {
 struct JavaVersion: Codable {
     let component: String
     let majorVersion: Int
+
+    init(component: String, majorVersion: Int) {
+        self.component = component
+        self.majorVersion = majorVersion
+    }
+
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        component = try c.decodeIfPresent(String.self, forKey: .component) ?? "jre-legacy"
+        majorVersion = try c.decodeIfPresent(Int.self, forKey: .majorVersion) ?? 8
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(component, forKey: .component)
+        try c.encode(majorVersion, forKey: .majorVersion)
+    }
+
+    private enum CodingKeys: String, CodingKey { case component, majorVersion }
 }
 
 struct MojangVersionManifest: Codable {

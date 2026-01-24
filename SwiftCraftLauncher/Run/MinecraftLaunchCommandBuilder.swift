@@ -63,11 +63,29 @@ enum MinecraftLaunchCommandBuilder {
             "classpath": classpath,
         ]
 
-        // 优先解析 arguments 字段
-        var jvmArgs = manifest.arguments.jvm?
+        // 优先解析 arguments（新版）；旧版用 minecraft_arguments 整行字符串，仅作 game 参数，无 jvm
+        var jvmArgs = manifest.arguments?.jvm?
             .map { substituteVariables($0, with: variableMap) } ?? []
-        var gameArgs = manifest.arguments.game?
-            .map { substituteVariables($0, with: variableMap) } ?? []
+        var gameArgs: [String]
+        // 旧版本判断：没有 arguments 但有 minecraftArguments，或者 arguments.jvm 为空但有 minecraftArguments
+        let isOldVersion = (manifest.arguments == nil && manifest.minecraftArguments != nil) ||
+            (manifest.arguments?.jvm == nil && manifest.minecraftArguments != nil)
+        if let game = manifest.arguments?.game {
+            gameArgs = game.map { substituteVariables($0, with: variableMap) }
+        } else if let ma = manifest.minecraftArguments {
+            gameArgs = MinecraftVersionManifest.parseMinecraftArguments(ma).map { substituteVariables($0, with: variableMap) }
+        } else {
+            gameArgs = []
+        }
+
+        // 旧版本需要在 JVM 参数中显式添加 classpath 和 java.library.path（因为 minecraft_arguments 不包含这些占位符）
+        if isOldVersion {
+            jvmArgs.append("-cp")
+            jvmArgs.append(classpath)
+            let nativesPath = paths.nativesDir
+            jvmArgs.append("-Djava.library.path=\(nativesPath)")
+            Logger.shared.debug("旧版本检测到，添加 java.library.path: \(nativesPath)")
+        }
 
         // 额外拼接 JVM 内存参数
         let xmsArg = "-Xms${xms}M"
@@ -75,16 +93,19 @@ enum MinecraftLaunchCommandBuilder {
         jvmArgs.insert(contentsOf: [xmsArg, xmxArg], at: 0)
 
         // 添加 macOS 特定的 JVM 参数
-        jvmArgs.insert("-XstartOnFirstThread", at: 0)
+        if !isOldVersion {
+            jvmArgs.insert("-XstartOnFirstThread", at: 0)
+        }
 
         // 拼接 modJvm
         if !gameInfo.modJvm.isEmpty {
             jvmArgs.append(contentsOf: gameInfo.modJvm)
         }
 
-        // 拼接 gameInfo 的 gameArguments
+        // 拼接 gameInfo 的 gameArguments（过滤掉已存在的参数，避免重复）
         if !gameInfo.gameArguments.isEmpty {
-            gameArgs.append(contentsOf: gameInfo.gameArguments)
+            let filteredGameArgs = filterDuplicateArguments(gameInfo.gameArguments, existingArgs: gameArgs, variableMap: variableMap)
+            gameArgs.append(contentsOf: filteredGameArgs)
         }
 
         // 拼接参数
@@ -117,6 +138,51 @@ enum MinecraftLaunchCommandBuilder {
         }
 
         return (nativesDir: AppPaths.nativesDirectory.path, librariesDir: AppPaths.librariesDirectory, assetsDir: AppPaths.assetsDirectory.path, gameDir: AppPaths.profileDirectory(gameName: gameInfo.gameName).path, clientJarPath: clientJarPath)
+    }
+
+    /// 过滤掉与现有参数重复的参数
+    /// - Parameters:
+    ///   - newArgs: 新参数列表（来自 mod loader）
+    ///   - existingArgs: 现有参数列表（来自 manifest）
+    ///   - variableMap: 变量映射表，用于替换新参数中的占位符
+    /// - Returns: 过滤后且已替换变量的参数列表
+    private static func filterDuplicateArguments(_ newArgs: [String], existingArgs: [String], variableMap: [String: String]) -> [String] {
+        // 提取现有参数中的 key（以 -- 开头的参数名）
+        var existingKeys = Set<String>()
+        for arg in existingArgs {
+            if arg.hasPrefix("--") {
+                existingKeys.insert(arg)
+            }
+        }
+        
+        // 过滤新参数，跳过已存在的 key 及其对应的值
+        var result: [String] = []
+        var skipNext = false
+        
+        for (index, arg) in newArgs.enumerated() {
+            if skipNext {
+                skipNext = false
+                continue
+            }
+            
+            if arg.hasPrefix("--") {
+                // 检查该参数是否已存在
+                if existingKeys.contains(arg) {
+                    // 如果下一个参数不是以 -- 开头，说明它是当前参数的值，也需要跳过
+                    if index + 1 < newArgs.count && !newArgs[index + 1].hasPrefix("--") {
+                        skipNext = true
+                    }
+                    Logger.shared.debug("过滤重复参数: \(arg)")
+                    continue
+                }
+            }
+            
+            // 对参数进行变量替换后添加
+            let substitutedArg = substituteVariables(arg, with: variableMap)
+            result.append(substitutedArg)
+        }
+        
+        return result
     }
 
     private static func substituteVariables(_ arg: String, with map: [String: String]) -> String {
@@ -211,7 +277,7 @@ enum MinecraftLaunchCommandBuilder {
 
     /// 处理单个库，返回其所有相关路径
     private static func processLibrary(_ library: Library, librariesDir: URL, existingModBasePaths: Set<String>, minecraftVersion: String) -> [String]? {
-        let artifact = library.downloads.artifact
+        guard let artifact = library.downloads?.artifact else { return nil }
 
         // 获取主库路径
         let libraryPath = getLibraryPath(artifact: artifact, libraryName: library.name, librariesDir: librariesDir)

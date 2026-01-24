@@ -94,12 +94,30 @@ enum ModrinthService {
             if error is GlobalError {
                 throw error
             } else {
+                Logger.shared.error("解析版本信息失败，DecodingError: \(Self.formatDecodingError(error))")
                 throw GlobalError.validation(
                     chineseMessage: "解析版本信息失败",
                     i18nKey: "error.validation.version_info_parse_failed",
                     level: .notification
                 )
             }
+        }
+    }
+
+    /// 将 DecodingError 格式化为可读字符串，便于排查解析失败原因
+    private static func formatDecodingError(_ error: Error) -> String {
+        guard let de = error as? DecodingError else { return String(describing: error) }
+        switch de {
+        case .keyNotFound(let key, let context):
+            return "keyNotFound(\(key.stringValue)) path=\(context.codingPath.map(\.stringValue).joined(separator: "."))"
+        case .typeMismatch(let type, let context):
+            return "typeMismatch(\(type)) path=\(context.codingPath.map(\.stringValue).joined(separator: ".")) \(context.debugDescription)"
+        case .valueNotFound(let type, let context):
+            return "valueNotFound(\(type)) path=\(context.codingPath.map(\.stringValue).joined(separator: "."))"
+        case .dataCorrupted(let context):
+            return "dataCorrupted path=\(context.codingPath.map(\.stringValue).joined(separator: ".")) \(context.debugDescription)"
+        @unknown default:
+            return String(describing: de)
         }
     }
 

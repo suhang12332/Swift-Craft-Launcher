@@ -101,7 +101,7 @@ class GameSetupUtil: ObservableObject {
 
             // 确保并获取 Java 路径，避免后续再次重复校验
             let javaPath = await JavaManager.shared.ensureJavaExists(
-                version: downloadedManifest.javaVersion.component
+                version: (downloadedManifest.javaVersion ?? JavaVersion(component: "jre-legacy", majorVersion: 8)).component
             )
 
             // 设置文件管理器
@@ -346,7 +346,7 @@ class GameSetupUtil: ObservableObject {
     ) async -> GameVersionInfo {
         var updatedGameInfo = gameInfo
         updatedGameInfo.assetIndex = manifest.assetIndex.id
-        updatedGameInfo.javaVersion = manifest.javaVersion.majorVersion
+        updatedGameInfo.javaVersion = manifest.javaVersion?.majorVersion ?? 8
 
         switch selectedModLoader.lowercased() {
         case "fabric", "quilt":

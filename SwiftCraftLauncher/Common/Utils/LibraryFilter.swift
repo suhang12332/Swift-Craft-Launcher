@@ -10,6 +10,8 @@ enum LibraryFilter {
     ///   - minecraftVersion: Minecraft 版本号（可选）
     /// - Returns: 是否允许
     static func isLibraryAllowed(_ library: Library, minecraftVersion: String? = nil) -> Bool {
+        // 老版本库无 downloads 或 downloads 无 artifact，无法解析路径，直接不允许
+        guard let downloads = library.downloads, downloads.artifact != nil else { return false }
         // 检查系统规则（没有规则或空规则默认允许）
         guard let rules = library.rules, !rules.isEmpty else { return true }
         return MacRuleEvaluator.isAllowed(rules, minecraftVersion: minecraftVersion)
@@ -21,7 +23,7 @@ enum LibraryFilter {
     ///   - minecraftVersion: Minecraft 版本号（可选）
     /// - Returns: 是否应该下载
     static func shouldDownloadLibrary(_ library: Library, minecraftVersion: String? = nil) -> Bool {
-        guard library.downloadable else { return false }
+        guard library.downloadable, let downloads = library.downloads, downloads.artifact != nil else { return false }
         return isLibraryAllowed(library, minecraftVersion: minecraftVersion)
     }
 

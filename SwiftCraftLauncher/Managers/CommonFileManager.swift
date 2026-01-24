@@ -52,12 +52,12 @@ class CommonFileManager {
             guard lib.downloadable else { return nil }
 
             // 优先使用LibraryDownloads.artifact
-            if let downloads = lib.downloads, let artifactUrl = downloads.artifact.url, let artifactPath = downloads.artifact.path {
+            if let downloads = lib.downloads, let artifact = downloads.artifact, let artifactUrl = artifact.url, let artifactPath = artifact.path {
                 return JarDownloadTask(
                     name: lib.name,
                     url: artifactUrl,
                     destinationPath: artifactPath,
-                    expectedSha1: downloads.artifact.sha1.isEmpty ? nil : downloads.artifact.sha1
+                    expectedSha1: artifact.sha1.isEmpty ? nil : artifact.sha1
                 )
             }
 
@@ -178,7 +178,7 @@ class CommonFileManager {
 
         // 通过gameVersion获取对应的Java版本，只获取一次，避免在每个processor中重复请求和校验
         let versionInfo = try await ModrinthService.fetchVersionInfo(from: gameVersion)
-        let javaPath = JavaManager.shared.findJavaExecutable(version: versionInfo.javaVersion.component)
+        let javaPath = JavaManager.shared.findJavaExecutable(version: versionInfo.javaVersion?.component ?? "jre-legacy")
 
         for (index, processor) in clientProcessors.enumerated() {
             do {

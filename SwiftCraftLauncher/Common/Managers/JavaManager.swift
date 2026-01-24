@@ -93,7 +93,7 @@ class JavaManager {
         do {
             // 查询缓存的版本文件获取manifest
             let manifest = try await ModrinthService.fetchVersionInfo(from: gameVersion)
-            let component = manifest.javaVersion.component
+            let component = manifest.javaVersion?.component ?? "jre-legacy"
 
             // 使用component拼接Java路径（不验证）
             return getJavaExecutablePath(version: component)

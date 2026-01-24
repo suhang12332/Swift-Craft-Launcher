@@ -132,7 +132,7 @@ class MinecraftFileManager {
         // 统计实际会下载的原生库数量（与下载逻辑保持一致）
         let nativeLibraries = applicableLibraries.compactMap { (library: Library) -> Library? in
             // 检查是否有原生库分类器且当前平台可用
-            guard let classifiers = library.downloads.classifiers,
+            guard let classifiers = library.downloads?.classifiers,
                   let natives = library.natives else { return nil }
 
             // 查找当前平台对应的原生库分类器
@@ -144,7 +144,8 @@ class MinecraftFileManager {
             return library // 返回会实际下载原生库的库
         }.count
 
-        return 1 + applicableLibraries.count + nativeLibraries + 2  // Client JAR + Libraries + Native Libraries + Asset Index + Logging Config
+        // Client JAR + Libraries + Native Libraries + Asset Index + Logging Config（老版本可能无 logging）
+        return 1 + applicableLibraries.count + nativeLibraries + 1 + (manifest.logging != nil ? 1 : 0)
     }
 
     /// 检查分类器是否为当前平台的原生库
@@ -196,10 +197,11 @@ class MinecraftFileManager {
             group.addTask { [weak self] in
                 try await self?.downloadLibraries(manifest: manifest)
             }
-            group.addTask { [weak self] in
-                try await self?.downloadLoggingConfig(manifest: manifest)
+            if manifest.logging != nil {
+                group.addTask { [weak self] in
+                    try await self?.downloadLoggingConfig(manifest: manifest)
+                }
             }
-
             try await group.waitForAll()
         }
     }
@@ -280,10 +282,11 @@ class MinecraftFileManager {
         guard shouldDownloadLibrary(library, minecraftVersion: minecraftVersion) else {
             return
         }
+        guard let downloads = library.downloads, let artifact = downloads.artifact else { return }
 
         // 如果 path 为 nil，使用 Maven 坐标生成路径
         let destinationURL: URL
-        if let existingPath = library.downloads.artifact.path {
+        if let existingPath = artifact.path {
             // 检查 existingPath 是否是完整路径
             if existingPath.hasPrefix("/") {
                 // 如果是完整路径，直接使用
@@ -299,7 +302,7 @@ class MinecraftFileManager {
             destinationURL = URL(fileURLWithPath: fullPath)
         }
 
-        guard let artifactURL = library.downloads.artifact.url else {
+        guard let artifactURL = artifact.url else {
             throw GlobalError.download(
                 chineseMessage: "库文件缺少下载 URL",
                 i18nKey: "error.download.missing_library_url",
@@ -314,7 +317,7 @@ class MinecraftFileManager {
             _ = try await DownloadManager.downloadFile(
                 urlString: urlString,
                 destinationURL: destinationURL,
-                expectedSha1: library.downloads.artifact.sha1
+                expectedSha1: artifact.sha1
             )
             await handleLibraryDownloadComplete(library: library, metaDirectory: metaDirectory, minecraftVersion: minecraftVersion)
         } catch {
@@ -379,6 +382,14 @@ class MinecraftFileManager {
                 expectedSha1: nativeArtifact.sha1
             )
 
+            // 解压原生库 JAR 文件中的 .dylib/.so/.dll 文件到 natives 目录根目录
+            let nativesRootDir = metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.natives)
+            try extractNativeLibraries(
+                from: destinationURL,
+                to: nativesRootDir,
+                excludePatterns: library.extract?.exclude ?? ["META-INF/"]
+            )
+
             // 使用库名称，避免格式化字符串创建临时对象
             incrementCompletedFilesCount(
                 fileName: library.name,
@@ -395,6 +406,53 @@ class MinecraftFileManager {
                     level: .notification
                 )
             }
+        }
+    }
+
+    /// 从 JAR 文件中解压原生库文件（.dylib/.so/.dll）到指定目录
+    /// - Parameters:
+    ///   - jarURL: JAR 文件路径
+    ///   - destinationDir: 目标目录（natives 目录根目录）
+    ///   - excludePatterns: 要排除的文件/目录模式（如 ["META-INF/"]）
+    private func extractNativeLibraries(
+        from jarURL: URL,
+        to destinationDir: URL,
+        excludePatterns: [String]
+    ) throws {
+        // 确保目标目录存在
+        try fileManager.createDirectory(at: destinationDir, withIntermediateDirectories: true)
+
+        // 使用 Process 调用 unzip 命令解压 JAR 文件
+        // JAR 文件本质上是 ZIP 文件
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/unzip")
+
+        // 构建排除参数
+        var arguments = ["-o", "-q", jarURL.path, "-d", destinationDir.path]
+        for pattern in excludePatterns {
+            arguments.append(contentsOf: ["-x", pattern + "*"])
+        }
+        // 只解压原生库文件（.dylib, .so, .dll, .jnilib）
+        // 使用 -j 选项忽略目录结构，直接解压到目标目录
+        process.arguments = ["-o", "-j", "-q", jarURL.path, "*.dylib", "*.so", "*.dll", "*.jnilib", "-d", destinationDir.path]
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+
+            if process.terminationStatus != 0 && process.terminationStatus != 11 {
+                // 退出码 11 表示没有匹配的文件，这是可以接受的
+                Logger.shared.warning("解压原生库时 unzip 返回非零退出码: \(process.terminationStatus)，JAR: \(jarURL.lastPathComponent)")
+            } else {
+                Logger.shared.debug("成功解压原生库: \(jarURL.lastPathComponent) -> \(destinationDir.path)")
+            }
+        } catch {
+            Logger.shared.error("解压原生库失败: \(error.localizedDescription)")
+            throw GlobalError.fileSystem(
+                chineseMessage: "解压原生库文件失败",
+                i18nKey: "error.filesystem.native_extract_failed",
+                level: .notification
+            )
         }
     }
 
@@ -455,7 +513,8 @@ class MinecraftFileManager {
     private func downloadLoggingConfig(
         manifest: MinecraftVersionManifest
     ) async throws {
-        let loggingFile = manifest.logging.client.file
+        guard let logging = manifest.logging else { return }
+        let loggingFile = logging.client.file
         let versionDir = AppPaths.metaDirectory.appendingPathComponent(
             AppConstants.DirectoryNames.versions
         )
@@ -658,13 +717,13 @@ final class NSLockingCounter {
 // MARK: - Library 扩展（如有需要）
 extension Library {
     var artifactPath: String? {
-        downloads.artifact.path
+        downloads?.artifact?.path
     }
     var artifactURL: URL? {
-        downloads.artifact.url
+        downloads?.artifact?.url
     }
     var artifactSHA1: String? {
-        downloads.artifact.sha1
+        downloads?.artifact?.sha1
     }
     // 其他业务相关扩展
 }
@@ -679,7 +738,7 @@ extension MinecraftFileManager {
         )
 
         // 处理原生库
-        if let classifiers = library.downloads.classifiers {
+        if let classifiers = library.downloads?.classifiers {
             do {
                 try await downloadNativeLibrary(
                     library: library,
