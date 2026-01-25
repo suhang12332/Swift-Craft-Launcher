@@ -193,7 +193,7 @@ private struct PlayerListItemView: View {
                 playerToDelete = player
                 showDeleteAlert = true
             } label: {
-                Image(systemName: "person.fill.xmark")
+                Image(systemName: "trash.fill")
                     .help("player.remove".localized())
             }
             .buttonStyle(.borderless)
