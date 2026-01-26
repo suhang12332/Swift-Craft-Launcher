@@ -135,32 +135,14 @@ struct ModrinthDetailCardView: View {
     }
 
     private var descriptionView: some View {
-        Text(project.description)
-            .font(.subheadline)
-            .lineLimit(ModrinthConstants.UIConstants.descriptionLineLimit)
-            .foregroundColor(.secondary)
+        DescriptionView(text: project.description)
     }
 
     private var tagsView: some View {
-        HStack(spacing: ModrinthConstants.UIConstants.spacing) {
-            ForEach(
-                Array(
-                    project.displayCategories.prefix(
-                        ModrinthConstants.UIConstants.maxTags
-                    )
-                ),
-                id: \.self
-            ) { tag in
-                TagView(text: tag)
-            }
-            if project.displayCategories.count > ModrinthConstants.UIConstants.maxTags {
-                Text(
-                    "+\(project.displayCategories.count - ModrinthConstants.UIConstants.maxTags)"
-                )
-                .font(.caption2)
-                .foregroundColor(.secondary)
-            }
-        }
+        TagsView(
+            tags: project.displayCategories,
+            maxTags: ModrinthConstants.UIConstants.maxTags
+        )
     }
 
     private var infoView: some View {
@@ -213,8 +195,12 @@ struct ModrinthDetailCardView: View {
 }
 
 // MARK: - Supporting Views
-private struct TagView: View {
+private struct TagView: View, Equatable {
     let text: String
+
+    static func == (lhs: TagView, rhs: TagView) -> Bool {
+        lhs.text == rhs.text
+    }
 
     var body: some View {
         Text(text)
@@ -223,6 +209,28 @@ private struct TagView: View {
             .padding(.vertical, ModrinthConstants.UIConstants.tagVerticalPadding)
             .background(Color.gray.opacity(0.15))
             .cornerRadius(ModrinthConstants.UIConstants.tagCornerRadius)
+    }
+}
+
+private struct TagsView: View, Equatable {
+    let tags: [String]
+    let maxTags: Int
+
+    static func == (lhs: TagsView, rhs: TagsView) -> Bool {
+        lhs.tags == rhs.tags && lhs.maxTags == rhs.maxTags
+    }
+
+    var body: some View {
+        HStack(spacing: ModrinthConstants.UIConstants.spacing) {
+            ForEach(Array(tags.prefix(maxTags)), id: \.self) { tag in
+                TagView(text: tag)
+            }
+            if tags.count > maxTags {
+                Text("+\(tags.count - maxTags)")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+        }
     }
 }
 
@@ -238,5 +246,20 @@ private struct InfoRowView: View {
         }
         .font(.caption2)
         .foregroundColor(.secondary)
+    }
+}
+
+private struct DescriptionView: View, Equatable {
+    let text: String
+
+    static func == (lhs: DescriptionView, rhs: DescriptionView) -> Bool {
+        lhs.text == rhs.text
+    }
+
+    var body: some View {
+        Text(text)
+            .font(.subheadline)
+            .lineLimit(ModrinthConstants.UIConstants.descriptionLineLimit)
+            .foregroundColor(.secondary)
     }
 }
