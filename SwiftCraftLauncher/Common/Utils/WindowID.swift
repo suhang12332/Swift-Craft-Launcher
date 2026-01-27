@@ -12,11 +12,7 @@ enum WindowID: String {
     case contributors = "contributors"
     case acknowledgements = "acknowledgements"
     case aiChat = "aiChat"
-    case createRoom = "createRoom"
-    case joinRoom = "joinRoom"
-    case peerList = "peerList"
     case javaDownload = "javaDownload"
-    case easyTierDownload = "easyTierDownload"
     case skinPreview = "skinPreview"
 }
 

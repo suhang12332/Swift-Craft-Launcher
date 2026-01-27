@@ -18,11 +18,24 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var showStartupInfo = false
     @State private var hasAnnouncement = false
     @State private var announcementData: AnnouncementData?
+    @State private var hasCheckedAnnouncement = false
+
+    // MARK: - Computed Properties
+
+    /// 当前玩家（计算属性，避免重复访问）
+    private var currentPlayer: Player? {
+        playerListViewModel.currentPlayer
+    }
+
+    /// 是否为在线账户（计算属性）
+    private var isCurrentPlayerOnline: Bool {
+        currentPlayer?.isOnlineAccount ?? false
+    }
 
     public var body: some ToolbarContent {
         ToolbarItemGroup(placement: .navigation) {
             Button {
-                if playerListViewModel.currentPlayer == nil {
+                if currentPlayer == nil {
                     showPlayerAlert = true
                 } else {
                     showingGameForm.toggle()
@@ -32,8 +45,13 @@ public struct ContentToolbarView: ToolbarContent {
             }
             .help("game.form.title".localized())
             .task {
-                // 在视图出现时检查公告
-                await checkAnnouncement()
+                // 延迟检查公告，不阻塞初始渲染
+                guard !hasCheckedAnnouncement else { return }
+                hasCheckedAnnouncement = true
+                // 使用低优先级任务在后台执行，不阻塞 UI 渲染
+                Task(priority: .utility) {
+                    await checkAnnouncement()
+                }
             }
             .sheet(isPresented: $showingGameForm) {
                 GameFormView()
@@ -42,9 +60,6 @@ public struct ContentToolbarView: ToolbarContent {
                     .presentationBackgroundInteraction(.automatic)
             }
             Spacer()
-        }
-        ToolbarItemGroup(placement: .principal) {
-            EmptyView()
         }
         ToolbarItemGroup(placement: .primaryAction) {
             // 后台下载 待实现
@@ -115,7 +130,8 @@ public struct ContentToolbarView: ToolbarContent {
                 )
             }
 
-            if let player = playerListViewModel.currentPlayer, player.isOnlineAccount {
+            // 皮肤管理按钮 - 仅在线账户显示
+            if isCurrentPlayerOnline {
                 Button {
                     Task {
                         await openSkinManager()
@@ -163,7 +179,7 @@ public struct ContentToolbarView: ToolbarContent {
 
     /// 打开皮肤管理器（先加载数据，再显示sheet）
     private func openSkinManager() async {
-        guard let player = playerListViewModel.currentPlayer else { return }
+        guard let player = currentPlayer else { return }
 
         await MainActor.run {
             isLoadingSkin = true
@@ -237,6 +253,7 @@ public struct ContentToolbarView: ToolbarContent {
     }
 
     /// 检查是否有公告
+    /// 启动时只调用一次
     private func checkAnnouncement() async {
         let version = Bundle.main.appVersion
         let language = LanguageManager.shared.selectedLanguage.isEmpty

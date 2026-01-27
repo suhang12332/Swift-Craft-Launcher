@@ -14,49 +14,51 @@ struct SaveInfoView: View {
 
     var body: some View {
         VStack {
-            // 世界信息区域
-            if !manager.worlds.isEmpty || manager.isLoading {
+            // 世界信息区域（只显示存在的类型）
+            if manager.hasWorldsType {
                 WorldInfoSectionView(
                     worlds: manager.worlds,
-                    isLoading: manager.isLoading,
+                    isLoading: manager.isLoadingWorlds,
                     gameName: gameName
                 )
             }
 
-            // 截图信息区域
-            if !manager.screenshots.isEmpty || manager.isLoading {
+            // 截图信息区域（只显示存在的类型）
+            if manager.hasScreenshotsType {
                 ScreenshotSectionView(
                     screenshots: manager.screenshots,
-                    isLoading: manager.isLoading,
+                    isLoading: manager.isLoadingScreenshots,
                     gameName: gameName
                 )
             }
 
             // 服务器地址区域（始终显示，即使没有检测到服务器）
-            ServerAddressSectionView(
-                servers: manager.servers,
-                isLoading: manager.isLoading,
-                gameName: gameName
-            ) {
-                Task {
-                    await manager.loadData()
+            if manager.hasServersType {
+                ServerAddressSectionView(
+                    servers: manager.servers,
+                    isLoading: manager.isLoadingServers,
+                    gameName: gameName
+                ) {
+                    Task {
+                        await manager.loadData()
+                    }
                 }
             }
 
-            // Litematica 投影文件区域
-            if !manager.litematicaFiles.isEmpty || manager.isLoading {
+            // Litematica 投影文件区域（只显示存在的类型）
+            if manager.hasLitematicaType {
                 LitematicaSectionView(
                     litematicaFiles: manager.litematicaFiles,
-                    isLoading: manager.isLoading,
+                    isLoading: manager.isLoadingLitematica,
                     gameName: gameName
                 )
             }
 
-            // 日志信息区域
-            if !manager.logs.isEmpty || manager.isLoading {
+            // 日志信息区域（只显示存在的类型）
+            if manager.hasLogsType {
                 LogSectionView(
                     logs: manager.logs,
-                    isLoading: manager.isLoading
+                    isLoading: manager.isLoadingLogs
                 )
             }
         }

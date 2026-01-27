@@ -68,14 +68,9 @@ struct GameHeaderListRow: View {
         )
     }
 
-    /// 获取图标URL（添加刷新触发器作为查询参数，强制AsyncImage重新加载）
+    /// 图标文件 URL（路径固定不变；刷新仅依赖通知触发 .id 重建）
     private var iconURL: URL {
-        let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
-        let baseURL = profileDir.appendingPathComponent(game.gameIcon)
-        // 添加刷新触发器作为查询参数，确保文件更新后能重新加载
-        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
-        components?.queryItems = [URLQueryItem(name: "refresh", value: refreshTrigger.uuidString)]
-        return components?.url ?? baseURL
+        profileDir.appendingPathComponent(game.gameIcon)
     }
 
     private var gameIcon: some View {
@@ -84,7 +79,9 @@ struct GameHeaderListRow: View {
                 AsyncImage(url: iconURL) { phase in
                     switch phase {
                     case .empty:
-                        defaultIcon
+                        ProgressView()
+                            .controlSize(.regular)
+                            .frame(width: 80, height: 80)
                     case .success(let image):
                         styledIcon(image, size: 80)
                     case .failure:
@@ -93,6 +90,8 @@ struct GameHeaderListRow: View {
                         defaultIcon
                     }
                 }
+                // 额外加一层保险：即使 URL 拼接/缓存行为不如预期，也强制重建 AsyncImage
+                .id(refreshTrigger)
             } else {
                 defaultIcon
             }

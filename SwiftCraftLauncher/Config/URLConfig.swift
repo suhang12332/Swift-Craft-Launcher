@@ -261,39 +261,6 @@ enum URLConfig {
                     ])
                 return URLConfig.applyGitProxyIfNeeded(url)
             }
-
-            // EasyTier 相关
-            /// 获取 EasyTier 最新 Release API URL
-            static func easyTierLatestRelease() -> URL {
-                let repositoryOwner = "EasyTier"
-                let repositoryName = "EasyTier"
-                let url = baseURL
-                    .appendingPathComponent("repos")
-                    .appendingPathComponent(repositoryOwner)
-                    .appendingPathComponent(repositoryName)
-                    .appendingPathComponent("releases")
-                    .appendingPathComponent("latest")
-                return URLConfig.applyGitProxyIfNeeded(url)
-            }
-
-            /// 获取 EasyTier 下载 URL
-            /// - Parameters:
-            ///   - version: 版本号（如 "v2.5.0"）
-            ///   - architecture: 架构名称 (aarch64 或 x86_64)
-            /// - Returns: 下载 URL
-            static func easyTierDownloadURL(version: String, architecture: String) -> URL {
-                let repositoryOwner = "EasyTier"
-                let repositoryName = "EasyTier"
-                let zipFileName = "easytier-macos-\(architecture)-\(version).zip"
-                let url = gitHubBase
-                    .appendingPathComponent(repositoryOwner)
-                    .appendingPathComponent(repositoryName)
-                    .appendingPathComponent("releases")
-                    .appendingPathComponent("download")
-                    .appendingPathComponent(version)
-                    .appendingPathComponent(zipFileName)
-                return URLConfig.applyGitProxyIfNeeded(url)
-            }
         }
 
         // Modrinth API
@@ -385,6 +352,10 @@ enum URLConfig {
 
             static func modDetail(modId: Int) -> URL {
                 mirrorBaseURL.appendingPathComponent("mods/\(modId)")
+            }
+
+            static func modDescription(modId: Int) -> URL {
+                mirrorBaseURL.appendingPathComponent("mods/\(modId)/description")
             }
 
             static func fallbackDownloadUrl(fileId: Int, fileName: String) -> URL {

@@ -218,6 +218,10 @@ struct CurseForgeModDetailResponse: Codable {
     let data: CurseForgeModDetail
 }
 
+struct CurseForgeModDescriptionResponse: Codable {
+    let data: String
+}
+
 struct CurseForgeFilesResult: Codable {
     let data: [CurseForgeModFileDetail]
 }

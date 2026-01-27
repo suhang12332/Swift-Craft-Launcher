@@ -43,36 +43,6 @@ extension SwiftCraftLauncherApp {
         }
         .defaultSize(width: 500, height: 600)
 
-//        // 创建房间窗口
-//        Window("easytier.create.room.window.title".localized(), id: WindowID.createRoom.rawValue) {
-//            CreateRoomWindowView()
-//                .environmentObject(generalSettingsManager)
-//                .preferredColorScheme(generalSettingsManager.currentColorScheme)
-//                .windowStyleConfig(for: .createRoom)
-//                .windowCleanup(for: .createRoom)
-//        }
-//        .defaultSize(width: 440, height: 200)
-//
-//        // 加入房间窗口
-//        Window("easytier.join.room.window.title".localized(), id: WindowID.joinRoom.rawValue) {
-//            JoinRoomWindowView()
-//                .environmentObject(generalSettingsManager)
-//                .preferredColorScheme(generalSettingsManager.currentColorScheme)
-//                .windowStyleConfig(for: .joinRoom)
-//                .windowCleanup(for: .joinRoom)
-//        }
-//        .defaultSize(width: 440, height: 200)
-
-//        // 对等节点列表窗口
-//        Window("menubar.room.member_list".localized(), id: WindowID.peerList.rawValue) {
-//            PeerListView()
-//                .environmentObject(generalSettingsManager)
-//                .preferredColorScheme(generalSettingsManager.currentColorScheme)
-//                .windowStyleConfig(for: .peerList)
-//                .windowCleanup(for: .peerList)
-//        }
-//        .defaultSize(width: 1200, height: 500)
-
         // Java 下载窗口
         Window("global_resource.download".localized(), id: WindowID.javaDownload.rawValue) {
             JavaDownloadProgressWindow(downloadState: JavaDownloadManager.shared.downloadState)
@@ -80,16 +50,6 @@ extension SwiftCraftLauncherApp {
                 .windowCleanup(for: .javaDownload)
         }
         .defaultSize(width: 400, height: 100)
-
-//        // EasyTier 下载窗口
-//        Window("global_resource.download".localized(), id: WindowID.easyTierDownload.rawValue) {
-//            EasyTierDownloadProgressWindow(downloadState: EasyTierDownloadManager.shared.downloadState)
-//                .windowStyleConfig(for: .easyTierDownload)
-//                .windowCleanup(for: .easyTierDownload)
-//        }
-//        .windowStyle(.titleBar)
-//        .defaultSize(width: 400, height: 100)
-//        .windowResizability(.contentSize)
 
         // 皮肤预览窗口
         Window("skin.preview".localized(), id: WindowID.skinPreview.rawValue) {

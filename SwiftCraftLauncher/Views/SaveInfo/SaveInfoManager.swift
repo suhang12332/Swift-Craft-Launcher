@@ -23,6 +23,20 @@ final class SaveInfoManager: ObservableObject {
     @Published private(set) var logs: [LogInfo] = []
     @Published private(set) var isLoading: Bool = true
 
+    // 各个类型的加载状态
+    @Published private(set) var isLoadingWorlds: Bool = false
+    @Published private(set) var isLoadingScreenshots: Bool = false
+    @Published private(set) var isLoadingServers: Bool = false
+    @Published private(set) var isLoadingLitematica: Bool = false
+    @Published private(set) var isLoadingLogs: Bool = false
+
+    // 各个类型是否存在（目录或资源是否存在）
+    @Published private(set) var hasWorldsType: Bool = false
+    @Published private(set) var hasScreenshotsType: Bool = false
+    @Published private(set) var hasServersType: Bool = false
+    @Published private(set) var hasLitematicaType: Bool = false
+    @Published private(set) var hasLogsType: Bool = false
+
     // MARK: - Private Properties
     private var loadTask: Task<Void, Never>?
 
@@ -89,24 +103,63 @@ final class SaveInfoManager: ObservableObject {
     }
 
     // MARK: - Private Methods
+    /// 检查各个类型是否存在
+    private func checkTypesAvailability() {
+        // 检查世界类型
+        hasWorldsType = savesDirectory != nil
+
+        // 检查截图类型
+        hasScreenshotsType = screenshotsDirectory != nil
+
+        // 检查服务器类型（检查 servers.dat 文件是否存在）
+        let profileDir = AppPaths.profileDirectory(gameName: gameName)
+        let serversDatURL = profileDir.appendingPathComponent("servers.dat")
+        hasServersType = FileManager.default.fileExists(atPath: serversDatURL.path)
+
+        // 检查 Litematica 类型（检查 schematics 目录是否存在）
+        let schematicsDir = AppPaths.schematicsDirectory(gameName: gameName)
+        hasLitematicaType = FileManager.default.fileExists(atPath: schematicsDir.path)
+
+        // 检查日志类型
+        hasLogsType = logsDirectory != nil
+    }
+
     private func fetchData() async {
+        // 先检查哪些类型存在
+        checkTypesAvailability()
+
         isLoading = true
 
         await withTaskGroup(of: Void.self) { group in
-            group.addTask { [weak self] in
-                await self?.loadWorlds()
+            // 只加载存在的类型
+            if hasWorldsType {
+                group.addTask { [weak self] in
+                    await self?.loadWorlds()
+                }
             }
-            group.addTask { [weak self] in
-                await self?.loadScreenshots()
+
+            if hasScreenshotsType {
+                group.addTask { [weak self] in
+                    await self?.loadScreenshots()
+                }
             }
-            group.addTask { [weak self] in
-                await self?.loadServers()
+
+            if hasServersType {
+                group.addTask { [weak self] in
+                    await self?.loadServers()
+                }
             }
-            group.addTask { [weak self] in
-                await self?.loadLitematicaFiles()
+
+            if hasLitematicaType {
+                group.addTask { [weak self] in
+                    await self?.loadLitematicaFiles()
+                }
             }
-            group.addTask { [weak self] in
-                await self?.loadLogs()
+
+            if hasLogsType {
+                group.addTask { [weak self] in
+                    await self?.loadLogs()
+                }
             }
         }
 
@@ -138,6 +191,9 @@ final class SaveInfoManager: ObservableObject {
 
     /// 加载世界信息
     private func loadWorlds() async {
+        isLoadingWorlds = true
+        defer { isLoadingWorlds = false }
+
         guard let savesDir = savesDirectory else {
             worlds = []
             return
@@ -264,6 +320,9 @@ final class SaveInfoManager: ObservableObject {
 
     /// 加载截图信息
     private func loadScreenshots() async {
+        isLoadingScreenshots = true
+        defer { isLoadingScreenshots = false }
+
         guard let screenshotsDir = screenshotsDirectory else {
             screenshots = []
             return
@@ -324,6 +383,9 @@ final class SaveInfoManager: ObservableObject {
 
     /// 加载服务器地址信息（仅从 servers.dat 读取）
     private func loadServers() async {
+        isLoadingServers = true
+        defer { isLoadingServers = false }
+
         do {
             servers = try await ServerAddressService.shared.loadServerAddresses(for: gameName)
         } catch {
@@ -335,6 +397,9 @@ final class SaveInfoManager: ObservableObject {
 
     /// 加载 Litematica 投影文件信息
     private func loadLitematicaFiles() async {
+        isLoadingLitematica = true
+        defer { isLoadingLitematica = false }
+
         do {
             litematicaFiles = try await LitematicaService.shared.loadLitematicaFiles(for: gameName)
         } catch {
@@ -346,6 +411,9 @@ final class SaveInfoManager: ObservableObject {
 
     /// 加载日志文件信息
     private func loadLogs() async {
+        isLoadingLogs = true
+        defer { isLoadingLogs = false }
+
         guard let logsDir = logsDirectory else {
             logs = []
             return
@@ -423,5 +491,19 @@ final class SaveInfoManager: ObservableObject {
         litematicaFiles.removeAll(keepingCapacity: false)
         logs.removeAll(keepingCapacity: false)
         isLoading = false
+
+        // 重置各个类型的加载状态
+        isLoadingWorlds = false
+        isLoadingScreenshots = false
+        isLoadingServers = false
+        isLoadingLitematica = false
+        isLoadingLogs = false
+
+        // 重置类型存在状态
+        hasWorldsType = false
+        hasScreenshotsType = false
+        hasServersType = false
+        hasLitematicaType = false
+        hasLogsType = false
     }
 }

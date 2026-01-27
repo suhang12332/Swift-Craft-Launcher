@@ -16,14 +16,6 @@ enum WindowStyleHelper {
         window.collectionBehavior.insert(.fullScreenNone)
         window.standardWindowButton(.zoomButton)?.isEnabled = false
     }
-
-    /// 配置 EasyTier 房间窗口样式（禁用所有窗口控制按钮）
-    static func configureEasyTierRoomWindow(_ window: NSWindow) {
-        window.styleMask.remove([.closable, .miniaturizable, .resizable])
-        window.standardWindowButton(.closeButton)?.isEnabled = false
-        window.standardWindowButton(.miniaturizeButton)?.isEnabled = false
-        window.standardWindowButton(.zoomButton)?.isEnabled = false
-    }
 }
 
 /// 窗口样式配置修饰符
@@ -39,13 +31,8 @@ struct WindowStyleConfig: ViewModifier {
                         window.identifier = NSUserInterfaceItemIdentifier(windowID.rawValue)
                     }
 
-                    // 配置窗口样式
-                    switch windowID {
-                    case .createRoom, .joinRoom:
-                        WindowStyleHelper.configureEasyTierRoomWindow(window)
-                    default:
-                        WindowStyleHelper.configureStandardWindow(window)
-                    }
+                    // 统一使用标准窗口样式
+                    WindowStyleHelper.configureStandardWindow(window)
                 }
             )
     }

@@ -3,31 +3,22 @@ import SwiftUI
 
 struct CapeTextureView: View {
     let imageURL: String
-    var selectedCapeImage: NSImage?
 
     var body: some View {
-        Group {
-            // 优先使用 selectedCapeImage（如果提供且匹配当前 URL）
-            if let capeImage = selectedCapeImage {
-                capeImageContent(image: capeImage)
-                    .onAppear {
-                        // 调试日志：使用选中的披风图片显示
-                        // Logger.shared.info("[CapeTextureView] 使用 selectedCapeImage 显示，URL: \(imageURL), size: \(capeImage.size.width)x\(capeImage.size.height)")
-                    }
-            } else {
-                // 否则从 URL 异步加载
-                AsyncImage(url: URL(string: imageURL.httpToHttps())) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView().controlSize(.mini)
-                    case .success(let image):
-                        capeImageContent(image: image)
-                    case .failure:
-                        Image(systemName: "photo").font(.system(size: 16)).foregroundColor(.secondary)
-                    @unknown default:
-                        Image(systemName: "photo").font(.system(size: 16)).foregroundColor(.secondary)
-                    }
-                }
+        AsyncImage(url: URL(string: imageURL.httpToHttps())) { phase in
+            switch phase {
+            case .empty:
+                ProgressView().controlSize(.mini)
+            case .success(let image):
+                capeImageContent(image: image)
+            case .failure:
+                Image(systemName: "photo")
+                    .font(.system(size: 16))
+                    .foregroundColor(.secondary)
+            @unknown default:
+                Image(systemName: "photo")
+                    .font(.system(size: 16))
+                    .foregroundColor(.secondary)
             }
         }
     }
@@ -107,12 +98,6 @@ struct CapeSelectionView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .onChange(of: selectedCapeImage) { _, _ in
-            // 调试日志：披风预览图片变化
-            // let oldInfo = oldValue != nil ? "存在(size: \(oldValue!.size.width)x\(oldValue!.size.height))" : "nil"
-            // let newInfo = newValue != nil ? "存在(size: \(newValue!.size.width)x\(newValue!.size.height))" : "nil"
-            // Logger.shared.info("[CapeSelectionView] selectedCapeImage 变化: \(oldInfo) -> \(newInfo), URL: \(selectedCapeImageURL ?? "nil")")
-        }
     }
 
     private func capeOption(id: String?, name: String, imageURL: String? = nil, isSystemOption: Bool = false) -> some View {
@@ -120,10 +105,18 @@ struct CapeSelectionView: View {
 
         return Button {
             selectedCapeId = id
-            if let imageURL = imageURL, id != nil {
-                selectedCapeImageURL = imageURL
-            } else {
-                selectedCapeImageURL = nil
+            if let imageURL = imageURL {
+                // 异步加载 NSImage
+                DispatchQueue.global(qos: .userInitiated).async {
+                    if let url = URL(string: imageURL.httpToHttps()),
+                        let data = try? Data(contentsOf: url),
+                        let nsImage = NSImage(data: data) {
+                        DispatchQueue.main.async {
+                            selectedCapeImageURL = imageURL
+                            selectedCapeImage = nsImage
+                        }
+                    }
+                }
             }
             onCapeSelected(id, imageURL)
         } label: {
@@ -133,6 +126,7 @@ struct CapeSelectionView: View {
                     .font(.caption)
                     .lineLimit(1)
                     .foregroundColor(isSelected ? .accentColor : .primary)
+                    .frame(width: 42)
             }
         }.buttonStyle(.plain)
     }
@@ -152,16 +146,8 @@ struct CapeSelectionView: View {
 
             if let imageURL = imageURL {
                 // 披风展示默认使用 URL 加载
-                // 但是当 selectedCapeImage 变化且匹配当前 URL 时，使用 selectedCapeImage 显示
-                let shouldUseLocalImage = isSelected &&
-                                         selectedCapeImage != nil &&
-                                         selectedCapeImageURL == imageURL
-
-                CapeTextureView(
-                    imageURL: imageURL,
-                    selectedCapeImage: shouldUseLocalImage ? selectedCapeImage : nil
-                )
-                    .frame(width: 42, height: 62).clipped().cornerRadius(6)
+                CapeTextureView(imageURL: imageURL)
+                    .id(imageURL).frame(width: 42, height: 62).clipped().cornerRadius(6)
             } else if isSystemOption {
                 Image(systemName: "xmark").font(.system(size: 16)).foregroundColor(.secondary)
             }
