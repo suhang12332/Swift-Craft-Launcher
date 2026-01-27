@@ -55,42 +55,23 @@ private struct CompatibilitySection: View {
 
 private struct GameVersionsSection: View {
     let versions: [String]
-    @State private var showingVersionsPopover = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            let (visibleVersions, overflowVersions) = versions.computeVisibleAndOverflowItems(maxItems: Constants.maxVisibleVersions)
-
-            HStack {
-                Text("project.info.versions".localized())
-                    .font(.headline)
-                Spacer()
-                if !overflowVersions.isEmpty {
-                    OverflowButton(
-                        count: overflowVersions.count,
-                        isPresented: $showingVersionsPopover
-                    ) {
-                        GameVersionsPopover(versions: versions)
-                    }
-                }
-            }
-            .padding(.bottom, 4)
-
-            ContentWithOverflow(
-                items: visibleVersions.map { IdentifiableString(id: $0) },
-                maxHeight: .infinity,
-                verticalPadding: 4,
-                spacing: 8
-            ) { item in
-                VersionTag(version: item.id)
-            }
+        GenericSectionView(
+            title: "project.info.versions",
+            items: versions.map { IdentifiableString(id: $0) },
+            isLoading: false,
+            maxItems: Constants.maxVisibleVersions
+        ) { item in
+            VersionTag(version: item.id)
+        } overflowContentBuilder: { overflowItems in
+            AnyView(
+                GameVersionsPopover(versions: versions)
+            )
         }
     }
 }
 
-private struct IdentifiableString: Identifiable {
-    let id: String
-}
 
 private struct GameVersionsPopover: View {
     let versions: [String]
@@ -121,19 +102,12 @@ private struct LoadersSection: View {
     let loaders: [String]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("project.info.platforms".localized())
-                .font(.headline)
-                .padding(.bottom, 4)
-            
-            ContentWithOverflow(
-                items: loaders.map { IdentifiableString(id: $0) },
-                maxHeight: .infinity,
-                verticalPadding: 4,
-                spacing: 8
-            ) { item in
-                VersionTag(version: item.id)
-            }
+        GenericSectionView(
+            title: "project.info.platforms",
+            items: loaders.map { IdentifiableString(id: $0) },
+            isLoading: false
+        ) { item in
+            VersionTag(version: item.id)
         }
     }
 }
@@ -146,16 +120,15 @@ private struct PlatformSupportSection: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("\("platform.support".localized()):")
                 .font(.headline)
-                .padding(.bottom, 4)
+                .padding(.bottom, SectionViewConstants.defaultHeaderBottomPadding)
             
             ContentWithOverflow(
                 items: [
                     IdentifiablePlatformItem(id: "client", icon: "laptopcomputer", text: "platform.client.\(clientSide)".localized()),
                     IdentifiablePlatformItem(id: "server", icon: "server.rack", text: "platform.server.\(serverSide)".localized())
                 ],
-                maxHeight: .infinity,
-                verticalPadding: 4,
-                spacing: 8
+                maxHeight: SectionViewConstants.defaultMaxHeight,
+                verticalPadding: SectionViewConstants.defaultVerticalPadding
             ) { item in
                 PlatformSupportItem(icon: item.icon, text: item.text)
             }
@@ -188,28 +161,21 @@ private struct LinksSection: View {
     let project: ModrinthProjectDetail
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("project.info.links".localized())
-                .font(.headline)
-                .padding(.bottom, 4)
-            
-            let links = [
-                (project.issuesUrl, "project.info.links.issues".localized()),
-                (project.sourceUrl, "project.info.links.source".localized()),
-                (project.wikiUrl, "project.info.links.wiki".localized()),
-                (project.discordUrl, "project.info.links.discord".localized())
-            ].compactMap { url, text in
-                url.map { (text, $0) }
-            }
-            
-            ContentWithOverflow(
-                items: links.map { IdentifiableLink(id: $0.0, text: $0.0, url: $0.1) },
-                maxHeight: .infinity,
-                verticalPadding: 4,
-                spacing: 8
-            ) { item in
-                ProjectLink(text: item.text, url: item.url)
-            }
+        let links = [
+            (project.issuesUrl, "project.info.links.issues".localized()),
+            (project.sourceUrl, "project.info.links.source".localized()),
+            (project.wikiUrl, "project.info.links.wiki".localized()),
+            (project.discordUrl, "project.info.links.discord".localized())
+        ].compactMap { url, text in
+            url.map { (text, $0) }
+        }
+        
+        GenericSectionView(
+            title: "project.info.links",
+            items: links.map { IdentifiableLink(id: $0.0, text: $0.0, url: $0.1) },
+            isLoading: false
+        ) { item in
+            ProjectLink(text: item.text, url: item.url)
         }
     }
 }

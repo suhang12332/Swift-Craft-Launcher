@@ -3,16 +3,6 @@ import AppKit
 
 // MARK: - Constants
 private enum ScreenshotSectionConstants {
-    static let maxHeight: CGFloat = 235
-    static let verticalPadding: CGFloat = 4
-    static let headerBottomPadding: CGFloat = 4
-    static let placeholderCount: Int = 5
-    static let popoverWidth: CGFloat = 320
-    static let popoverMaxHeight: CGFloat = 320
-    static let chipPadding: CGFloat = 16
-    static let estimatedCharWidth: CGFloat = 10
-    static let maxItems: Int = 6  // 最多显示6个
-    static let maxWidth: CGFloat = 320
     static let thumbnailSize: CGFloat = 60
 }
 
@@ -23,74 +13,24 @@ struct ScreenshotSectionView: View {
     let isLoading: Bool
     let gameName: String
 
-    @State private var showOverflowPopover = false
     @State private var selectedScreenshot: ScreenshotInfo?
 
     // MARK: - Body
     var body: some View {
-        VStack {
-            headerView
-            if isLoading {
-                loadingPlaceholder
-            } else {
-                contentWithOverflow
-            }
+        GenericSectionView(
+            title: "saveinfo.screenshots",
+            items: screenshots,
+            isLoading: isLoading,
+            iconName: "photo.fill"
+        ) { screenshot in
+            screenshotChip(for: screenshot)
         }
         .sheet(item: $selectedScreenshot) { screenshot in
             ScreenshotDetailView(screenshot: screenshot, gameName: gameName)
         }
     }
-
-    // MARK: - Header Views
-    private var headerView: some View {
-        let (_, overflowItems) = screenshots.computeVisibleAndOverflowItems(maxItems: ScreenshotSectionConstants.maxItems)
-        return HStack {
-            headerTitle
-            Spacer()
-            if !overflowItems.isEmpty {
-                OverflowButton(
-                    count: overflowItems.count,
-                    isPresented: $showOverflowPopover
-                ) {
-                    OverflowPopoverContent(
-                        items: overflowItems,
-                        maxHeight: ScreenshotSectionConstants.popoverMaxHeight,
-                        width: ScreenshotSectionConstants.popoverWidth
-                    ) { screenshot in
-                        screenshotChip(for: screenshot)
-                    }
-                }
-            }
-        }
-        .padding(.bottom, ScreenshotSectionConstants.headerBottomPadding)
-    }
-
-    private var headerTitle: some View {
-        Text("saveinfo.screenshots".localized())
-            .font(.headline)
-    }
-
-    // MARK: - Content Views
-    private var loadingPlaceholder: some View {
-        LoadingPlaceholder(
-            count: ScreenshotSectionConstants.placeholderCount,
-            iconName: "photo.fill",
-            maxHeight: ScreenshotSectionConstants.maxHeight,
-            verticalPadding: ScreenshotSectionConstants.verticalPadding
-        )
-    }
-
-    private var contentWithOverflow: some View {
-        let (visibleItems, _) = screenshots.computeVisibleAndOverflowItems(maxItems: ScreenshotSectionConstants.maxItems)
-        return ContentWithOverflow(
-            items: visibleItems,
-            maxHeight: ScreenshotSectionConstants.maxHeight,
-            verticalPadding: ScreenshotSectionConstants.verticalPadding
-        ) { screenshot in
-            screenshotChip(for: screenshot)
-        }
-    }
     
+    // MARK: - Chip Builder
     private func screenshotChip(for screenshot: ScreenshotInfo) -> some View {
         FilterChip(
             title: screenshot.name,

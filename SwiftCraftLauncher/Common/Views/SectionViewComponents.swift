@@ -8,12 +8,26 @@ import SwiftUI
 
 // MARK: - Constants
 enum SectionViewConstants {
+    // 布局常量
     static let defaultMaxHeight: CGFloat = 235
     static let defaultVerticalPadding: CGFloat = 4
+    static let defaultHeaderBottomPadding: CGFloat = 4
+    
+    // 占位符常量
+    static let defaultPlaceholderCount: Int = 5
+    
+    // 弹窗常量
     static let defaultPopoverWidth: CGFloat = 320
     static let defaultPopoverMaxHeight: CGFloat = 320
-    static let defaultPlaceholderCount: Int = 5
+    
+    // 项目显示常量
     static let defaultMaxItems: Int = 6
+    static let defaultMaxWidth: CGFloat = 320
+    
+    // Chip 相关常量（用于行计算）
+    static let defaultChipPadding: CGFloat = 16
+    static let defaultEstimatedCharWidth: CGFloat = 10
+    static let defaultMaxRows: Int = 5
 }
 
 // MARK: - Overflow Popover Content
@@ -134,9 +148,44 @@ struct ContentWithOverflow<Item: Identifiable, Content: View>: View {
 
 // MARK: - Array Extension
 extension Array {
+    /// 基于最大项目数计算可见和溢出项
     func computeVisibleAndOverflowItems(maxItems: Int) -> ([Element], [Element]) {
         let visibleItems = Array(prefix(maxItems))
         let overflowItems = Array(dropFirst(maxItems))
+        return (visibleItems, overflowItems)
+    }
+    
+    /// 基于行数和宽度计算可见和溢出项（用于 CategorySectionView）
+    func computeVisibleAndOverflowItemsByRows(
+        maxRows: Int = SectionViewConstants.defaultMaxRows,
+        maxWidth: CGFloat = SectionViewConstants.defaultMaxWidth,
+        estimatedWidth: (Element) -> CGFloat
+    ) -> ([Element], [Element]) {
+        var rows: [[Element]] = []
+        var currentRow: [Element] = []
+        var currentRowWidth: CGFloat = 0
+
+        for item in self {
+            let itemWidth = estimatedWidth(item)
+
+            if currentRowWidth + itemWidth > maxWidth, !currentRow.isEmpty {
+                rows.append(currentRow)
+                currentRow = [item]
+                currentRowWidth = itemWidth
+            } else {
+                currentRow.append(item)
+                currentRowWidth += itemWidth
+            }
+        }
+
+        if !currentRow.isEmpty {
+            rows.append(currentRow)
+        }
+
+        let visibleRows = rows.prefix(maxRows)
+        let visibleItems = visibleRows.flatMap { $0 }
+        let overflowItems = Array(dropFirst(visibleItems.count))
+
         return (visibleItems, overflowItems)
     }
 }

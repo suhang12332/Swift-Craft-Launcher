@@ -2,9 +2,11 @@ import Foundation
 
 enum CurseForgeToModrinthAdapter {
     /// 将 CurseForge 项目详情转换为 Modrinth 格式
-    /// - Parameter cf: CurseForge 项目详情
+    /// - Parameters:
+    ///   - cf: CurseForge 项目详情
+    ///   - description: 从 description 接口获取的 HTML 描述内容（可选，如果提供则优先使用）
     /// - Returns: Modrinth 格式的项目详情
-    static func convert(_ cf: CurseForgeModDetail) -> ModrinthProjectDetail? {
+    static func convert(_ cf: CurseForgeModDetail, description: String = "") -> ModrinthProjectDetail? {
         // 日期解析器
         let dateFormatter = ISO8601DateFormatter()
         dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -75,14 +77,19 @@ enum CurseForgeToModrinthAdapter {
         let license = License(id: "unknown", name: "Unknown", url: nil)
 
         // 使用 "cf-" 前缀标识 CurseForge 项目，避免与 Modrinth 项目混淆
+        // 使用 description 接口返回的 HTML 内容作为 body，同时提取纯文本作为 description
+        // 如果 description 为空，则回退到 summary
+        let bodyContent = description.isEmpty ? (cf.body ?? cf.summary) : description
+        let descriptionText = description.isEmpty ? cf.summary : extractPlainText(from: description)
+        
         return ModrinthProjectDetail(
             slug: cf.slug ?? "curseforge-\(cf.id)",
             title: cf.name,
-            description: cf.summary,
+            description: descriptionText,
             categories: categories,
             clientSide: "optional", // CurseForge 没有明确的客户端/服务端信息
             serverSide: "optional",
-            body: cf.body ?? cf.summary,
+            body: bodyContent,
             additionalCategories: nil,
             issuesUrl: cf.links?.issuesUrl,
             sourceUrl: cf.links?.sourceUrl,
@@ -277,5 +284,22 @@ enum CurseForgeToModrinthAdapter {
             limit: limit,
             totalHits: totalHits
         )
+    }
+    
+    /// 从 HTML 内容中提取纯文本作为简短描述
+    /// - Parameter html: HTML 字符串
+    /// - Returns: 提取的纯文本（限制长度）
+    private static func extractPlainText(from html: String) -> String {
+        // 简单的 HTML 标签移除，提取前 200 个字符作为描述
+        let text = html
+            .replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
+            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // 限制长度，避免描述过长
+        if text.count > 200 {
+            return String(text.prefix(200)) + "..."
+        }
+        return text.isEmpty ? "" : text
     }
 }

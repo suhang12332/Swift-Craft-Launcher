@@ -67,6 +67,17 @@ enum CurseForgeService {
         return try await tryFetchModDetail(from: url.absoluteString)
     }
 
+    /// 获取 CurseForge 模组描述（抛出异常版本）
+    /// - Parameter modId: 模组 ID
+    /// - Returns: HTML 格式的描述内容
+    /// - Throws: 网络错误或解析错误
+    static func fetchModDescriptionThrowing(modId: Int) async throws -> String {
+        // 使用配置的 CurseForge API URL
+        let url = URLConfig.API.CurseForge.modDescription(modId: modId)
+
+        return try await tryFetchModDescription(from: url.absoluteString)
+    }
+
     /// 获取 CurseForge 项目文件列表
     /// - Parameters:
     ///   - projectId: 项目 ID
@@ -504,8 +515,14 @@ enum CurseForgeService {
     static func fetchProjectDetailsAsModrinthThrowing(id: String) async throws -> ModrinthProjectDetail {
         let (modId, _) = try parseCurseForgeId(id)
 
-        let cfDetail = try await fetchModDetailThrowing(modId: modId)
-        guard let modrinthDetail = CurseForgeToModrinthAdapter.convert(cfDetail) else {
+        // 并发获取项目详情和描述
+        async let cfDetailTask = fetchModDetailThrowing(modId: modId)
+        async let descriptionTask = fetchModDescriptionThrowing(modId: modId)
+        
+        let cfDetail = try await cfDetailTask
+        let description = try await descriptionTask
+        
+        guard let modrinthDetail = CurseForgeToModrinthAdapter.convert(cfDetail, description: description) else {
             throw GlobalError.validation(
                 chineseMessage: "转换项目详情失败",
                 i18nKey: "error.validation.project_detail_convert_failed",
@@ -842,6 +859,28 @@ enum CurseForgeService {
 
         // 解析响应
         let result = try JSONDecoder().decode(CurseForgeModDetailResponse.self, from: data)
+        return result.data
+    }
+
+    /// 尝试从指定 URL 获取模组描述
+    /// - Parameter urlString: API URL
+    /// - Returns: HTML 格式的描述内容
+    /// - Throws: 网络错误或解析错误
+    private static func tryFetchModDescription(from urlString: String) async throws -> String {
+        guard let url = URL(string: urlString) else {
+            throw GlobalError.validation(
+                chineseMessage: "无效的镜像 API URL",
+                i18nKey: "error.network.url",
+                level: .notification
+            )
+        }
+
+        // 使用统一的 API 客户端
+        let headers = getHeaders()
+        let data = try await APIClient.get(url: url, headers: headers)
+
+        // 解析响应
+        let result = try JSONDecoder().decode(CurseForgeModDescriptionResponse.self, from: data)
         return result.data
     }
 

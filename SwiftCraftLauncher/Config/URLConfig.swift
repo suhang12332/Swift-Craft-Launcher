@@ -387,6 +387,10 @@ enum URLConfig {
                 mirrorBaseURL.appendingPathComponent("mods/\(modId)")
             }
 
+            static func modDescription(modId: Int) -> URL {
+                mirrorBaseURL.appendingPathComponent("mods/\(modId)/description")
+            }
+
             static func fallbackDownloadUrl(fileId: Int, fileName: String) -> URL {
                 // 格式：https://edge.forgecdn.net/files/{fileId前三位}/{fileId后三位}/{fileName}
                 fallbackDownloadBaseURL
