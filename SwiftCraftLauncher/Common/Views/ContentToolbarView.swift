@@ -255,7 +255,6 @@ public struct ContentToolbarView: ToolbarContent {
     /// 检查是否有公告
     /// 启动时只调用一次
     private func checkAnnouncement() async {
-        Logger.shared.info("获取公告")
         let version = Bundle.main.appVersion
         let language = LanguageManager.shared.selectedLanguage.isEmpty
             ? LanguageManager.getDefaultLanguage()
