@@ -12,7 +12,7 @@ struct CategorySectionView: View {
     // MARK: - Body
     var body: some View {
         let (visibleItems, overflowItems) = computeVisibleAndOverflowItems()
-        
+
         return GenericSectionView(
             title: title,
             items: items,

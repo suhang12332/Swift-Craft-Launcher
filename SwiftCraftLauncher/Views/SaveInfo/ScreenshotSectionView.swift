@@ -29,7 +29,7 @@ struct ScreenshotSectionView: View {
             ScreenshotDetailView(screenshot: screenshot, gameName: gameName)
         }
     }
-    
+
     // MARK: - Chip Builder
     private func screenshotChip(for screenshot: ScreenshotInfo) -> some View {
         FilterChip(

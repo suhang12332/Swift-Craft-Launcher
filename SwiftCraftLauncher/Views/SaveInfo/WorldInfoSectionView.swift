@@ -23,7 +23,7 @@ struct WorldInfoSectionView: View {
             WorldDetailSheetView(world: world, gameName: gameName)
         }
     }
-    
+
     // MARK: - Chip Builder
     private func worldChip(for world: WorldInfo) -> some View {
         FilterChip(
@@ -37,4 +37,3 @@ struct WorldInfoSectionView: View {
         )
     }
 }
-

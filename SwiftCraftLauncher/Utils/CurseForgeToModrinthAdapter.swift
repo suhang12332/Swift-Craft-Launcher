@@ -81,7 +81,7 @@ enum CurseForgeToModrinthAdapter {
         // 如果 description 为空，则回退到 summary
         let bodyContent = description.isEmpty ? (cf.body ?? cf.summary) : description
         let descriptionText = description.isEmpty ? cf.summary : extractPlainText(from: description)
-        
+
         return ModrinthProjectDetail(
             slug: cf.slug ?? "curseforge-\(cf.id)",
             title: cf.name,
@@ -285,7 +285,7 @@ enum CurseForgeToModrinthAdapter {
             totalHits: totalHits
         )
     }
-    
+
     /// 从 HTML 内容中提取纯文本作为简短描述
     /// - Parameter html: HTML 字符串
     /// - Returns: 提取的纯文本（限制长度）
@@ -295,7 +295,7 @@ enum CurseForgeToModrinthAdapter {
             .replacingOccurrences(of: "<[^>]+>", with: " ", options: .regularExpression)
             .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        
+
         // 限制长度，避免描述过长
         if text.count > 200 {
             return String(text.prefix(200)) + "..."

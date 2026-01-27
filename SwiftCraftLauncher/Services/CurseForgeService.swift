@@ -518,10 +518,10 @@ enum CurseForgeService {
         // 并发获取项目详情和描述
         async let cfDetailTask = fetchModDetailThrowing(modId: modId)
         async let descriptionTask = fetchModDescriptionThrowing(modId: modId)
-        
+
         let cfDetail = try await cfDetailTask
         let description = try await descriptionTask
-        
+
         guard let modrinthDetail = CurseForgeToModrinthAdapter.convert(cfDetail, description: description) else {
             throw GlobalError.validation(
                 chineseMessage: "转换项目详情失败",

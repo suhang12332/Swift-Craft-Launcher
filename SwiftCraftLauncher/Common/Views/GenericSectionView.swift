@@ -20,9 +20,9 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
     let isVersionSection: Bool
     let customVisibleItems: [Item]?
     let customOverflowItems: [Item]?
-    
+
     @State private var showOverflowPopover = false
-    
+
     init(
         title: String,
         items: [Item],
@@ -50,7 +50,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         self.customVisibleItems = customVisibleItems
         self.customOverflowItems = customOverflowItems
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             headerView
@@ -61,13 +61,12 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
             }
         }
     }
-    
+
     // MARK: - Header View
-    @ViewBuilder
-    private var headerView: some View {
+    @ViewBuilder private var headerView: some View {
         if !title.isEmpty {
             let overflowItems = customOverflowItems ?? items.computeVisibleAndOverflowItems(maxItems: maxItems).1
-            
+
             HStack {
                 Text(title.localized())
                     .font(.headline)
@@ -87,7 +86,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
             .padding(.bottom, SectionViewConstants.defaultHeaderBottomPadding)
         }
     }
-    
+
     // MARK: - Loading Placeholder
     private var loadingPlaceholder: some View {
         LoadingPlaceholder(
@@ -97,11 +96,11 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
             verticalPadding: SectionViewConstants.defaultVerticalPadding
         )
     }
-    
+
     // MARK: - Content With Overflow
     private var contentWithOverflow: some View {
         let visibleItems = customVisibleItems ?? items.computeVisibleAndOverflowItems(maxItems: maxItems).0
-        
+
         return ContentWithOverflow(
             items: visibleItems,
             maxHeight: SectionViewConstants.defaultMaxHeight,
@@ -110,7 +109,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
             chipBuilder(item)
         }
     }
-    
+
     // MARK: - Overflow Popover Content
     @ViewBuilder
     private func overflowPopoverContent(overflowItems: [Item]) -> some View {
@@ -126,7 +125,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
             }
         }
     }
-    
+
     // MARK: - Clear Button
     @ViewBuilder
     private func clearButton(action: @escaping () -> Void) -> some View {

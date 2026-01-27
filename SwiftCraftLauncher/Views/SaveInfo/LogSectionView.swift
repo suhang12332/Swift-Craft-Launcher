@@ -18,7 +18,7 @@ struct LogSectionView: View {
             logChip(for: log)
         }
     }
-    
+
     // MARK: - Chip Builder
     private func logChip(for log: LogInfo) -> some View {
         FilterChip(
@@ -49,4 +49,3 @@ struct LogSectionView: View {
         }
     }
 }
-

@@ -24,7 +24,7 @@ struct LitematicaSectionView: View {
             LitematicaDetailSheetView(filePath: file.path, gameName: gameName)
         }
     }
-    
+
     // MARK: - Chip Builder
     private func litematicaChip(for file: LitematicaInfo) -> some View {
         FilterChip(

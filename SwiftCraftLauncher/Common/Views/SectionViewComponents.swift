@@ -12,18 +12,18 @@ enum SectionViewConstants {
     static let defaultMaxHeight: CGFloat = 235
     static let defaultVerticalPadding: CGFloat = 4
     static let defaultHeaderBottomPadding: CGFloat = 4
-    
+
     // 占位符常量
     static let defaultPlaceholderCount: Int = 5
-    
+
     // 弹窗常量
     static let defaultPopoverWidth: CGFloat = 320
     static let defaultPopoverMaxHeight: CGFloat = 320
-    
+
     // 项目显示常量
     static let defaultMaxItems: Int = 6
     static let defaultMaxWidth: CGFloat = 320
-    
+
     // Chip 相关常量（用于行计算）
     static let defaultChipPadding: CGFloat = 16
     static let defaultEstimatedCharWidth: CGFloat = 10
@@ -36,7 +36,7 @@ struct OverflowPopoverContent<Item: Identifiable, Content: View>: View {
     let maxHeight: CGFloat
     let width: CGFloat
     let content: (Item) -> Content
-    
+
     init(
         items: [Item],
         maxHeight: CGFloat = SectionViewConstants.defaultPopoverMaxHeight,
@@ -48,7 +48,7 @@ struct OverflowPopoverContent<Item: Identifiable, Content: View>: View {
         self.width = width
         self.content = content
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             ScrollView {
@@ -73,7 +73,7 @@ struct LoadingPlaceholder: View {
     let verticalPadding: CGFloat
     let maxTextWidth: CGFloat?
     let verticalPaddingForChip: CGFloat
-    
+
     init(
         count: Int = SectionViewConstants.defaultPlaceholderCount,
         iconName: String? = nil,
@@ -89,7 +89,7 @@ struct LoadingPlaceholder: View {
         self.maxTextWidth = maxTextWidth
         self.verticalPaddingForChip = verticalPaddingForChip
     }
-    
+
     var body: some View {
         ScrollView {
             FlowLayout {
@@ -118,7 +118,7 @@ struct ContentWithOverflow<Item: Identifiable, Content: View>: View {
     let verticalPadding: CGFloat
     let spacing: CGFloat
     let content: (Item) -> Content
-    
+
     init(
         items: [Item],
         maxHeight: CGFloat = SectionViewConstants.defaultMaxHeight,
@@ -132,7 +132,7 @@ struct ContentWithOverflow<Item: Identifiable, Content: View>: View {
         self.spacing = spacing
         self.content = content
     }
-    
+
     var body: some View {
         FlowLayout(spacing: spacing) {
             ForEach(items) { item in
@@ -154,7 +154,7 @@ extension Array {
         let overflowItems = Array(dropFirst(maxItems))
         return (visibleItems, overflowItems)
     }
-    
+
     /// 基于行数和宽度计算可见和溢出项（用于 CategorySectionView）
     func computeVisibleAndOverflowItemsByRows(
         maxRows: Int = SectionViewConstants.defaultMaxRows,

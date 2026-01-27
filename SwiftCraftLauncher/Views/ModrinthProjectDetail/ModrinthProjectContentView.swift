@@ -41,7 +41,7 @@ private struct CompatibilitySection: View {
     }
 }
 
-//private struct MinecraftVersionHeader: View {
+// private struct MinecraftVersionHeader: View {
 //    var body: some View {
 //        HStack {
 //            Text("project.info.minecraft".localized())
@@ -51,7 +51,7 @@ private struct CompatibilitySection: View {
 //                .font(.caption.bold())
 //        }
 //    }
-//}
+// }
 
 private struct GameVersionsSection: View {
     let versions: [String]
@@ -64,14 +64,13 @@ private struct GameVersionsSection: View {
             maxItems: Constants.maxVisibleVersions
         ) { item in
             VersionTag(version: item.id)
-        } overflowContentBuilder: { overflowItems in
+        } overflowContentBuilder: { _ in
             AnyView(
                 GameVersionsPopover(versions: versions)
             )
         }
     }
 }
-
 
 private struct GameVersionsPopover: View {
     let versions: [String]
@@ -121,11 +120,11 @@ private struct PlatformSupportSection: View {
             Text("\("platform.support".localized()):")
                 .font(.headline)
                 .padding(.bottom, SectionViewConstants.defaultHeaderBottomPadding)
-            
+
             ContentWithOverflow(
                 items: [
                     IdentifiablePlatformItem(id: "client", icon: "laptopcomputer", text: "platform.client.\(clientSide)".localized()),
-                    IdentifiablePlatformItem(id: "server", icon: "server.rack", text: "platform.server.\(serverSide)".localized())
+                    IdentifiablePlatformItem(id: "server", icon: "server.rack", text: "platform.server.\(serverSide)".localized()),
                 ],
                 maxHeight: SectionViewConstants.defaultMaxHeight,
                 verticalPadding: SectionViewConstants.defaultVerticalPadding
@@ -165,11 +164,11 @@ private struct LinksSection: View {
             (project.issuesUrl, "project.info.links.issues".localized()),
             (project.sourceUrl, "project.info.links.source".localized()),
             (project.wikiUrl, "project.info.links.wiki".localized()),
-            (project.discordUrl, "project.info.links.discord".localized())
+            (project.discordUrl, "project.info.links.discord".localized()),
         ].compactMap { url, text in
             url.map { (text, $0) }
         }
-        
+
         GenericSectionView(
             title: "project.info.links",
             items: links.map { IdentifiableLink(id: $0.0, text: $0.0, url: $0.1) },
@@ -219,7 +218,7 @@ private struct DetailsSection: View, Equatable {
             Text("project.info.details".localized())
                 .font(.headline)
                 .padding(.bottom, 4)
-            
+
             VStack(alignment: .leading, spacing: 8) {
                 if let license = project.license {
                     DetailRow(
