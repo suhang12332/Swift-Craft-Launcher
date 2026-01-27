@@ -1,6 +1,15 @@
 {
-  "originHash" : "1e46f72d7f9840f6bb588d7f106fd67a1c7cd05d12dcf0efd58d21e7d457291a",
+  "originHash" : "34040d0c1997163ee528fe0c2a7975cbf4d0dddfbe5e2bb961b86876391b8c8a",
   "pins" : [
+    {
+      "identity" : "lrucache",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/nicklockwood/LRUCache.git",
+      "state" : {
+        "revision" : "cb5b2bd0da83ad29c0bec762d39f41c8ad0eaf3e",
+        "version" : "1.2.1"
+      }
+    },
     {
       "identity" : "networkimage",
       "kind" : "remoteSourceControl",
@@ -29,6 +38,15 @@
       }
     },
     {
+      "identity" : "swift-atomics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-atomics.git",
+      "state" : {
+        "revision" : "b601256eab081c0f92f059e12818ac1d4f178ff7",
+        "version" : "1.3.0"
+      }
+    },
+    {
       "identity" : "swift-cmark",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-cmark",
@@ -53,6 +71,24 @@
       "state" : {
         "revision" : "634ada2eee7eac4ca79bf1fc8943ddc91408eb06",
         "version" : "0.60.0"
+      }
+    },
+    {
+      "identity" : "swiftmarkdownui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/suhang12332/SwiftMarkDownUI.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "bc21c99ddfdb6427d6351914205afd7fb83f2d26"
+      }
+    },
+    {
+      "identity" : "swiftsoup",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/scinfu/SwiftSoup.git",
+      "state" : {
+        "revision" : "d86f244ed497d48012782e2f59c985a55e77b3f5",
+        "version" : "2.11.3"
       }
     },
     {

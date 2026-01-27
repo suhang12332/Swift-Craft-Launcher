@@ -43,8 +43,6 @@ extension SwiftCraftLauncherApp {
         }
         .defaultSize(width: 500, height: 600)
 
-
-
         // Java 下载窗口
         Window("global_resource.download".localized(), id: WindowID.javaDownload.rawValue) {
             JavaDownloadProgressWindow(downloadState: JavaDownloadManager.shared.downloadState)
@@ -52,7 +50,6 @@ extension SwiftCraftLauncherApp {
                 .windowCleanup(for: .javaDownload)
         }
         .defaultSize(width: 400, height: 100)
-
 
         // 皮肤预览窗口
         Window("skin.preview".localized(), id: WindowID.skinPreview.rawValue) {

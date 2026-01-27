@@ -4,9 +4,6 @@
     "" : {
       "shouldTranslate" : false
     },
-    "-" : {
-      "shouldTranslate" : false
-    },
     ":" : {
       "shouldTranslate" : false
     },
@@ -30,20 +27,6 @@
       },
       "shouldTranslate" : false
     },
-    "%@ | %@ | %@ | %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ | %2$@ | %3$@ | %4$@"
-          }
-        }
-      },
-      "shouldTranslate" : false
-    },
-    "%@ ms" : {
-      "shouldTranslate" : false
-    },
     "%@-" : {
       "shouldTranslate" : false
     },
@@ -59,9 +42,6 @@
           }
         }
       },
-      "shouldTranslate" : false
-    },
-    "%@%%" : {
       "shouldTranslate" : false
     },
     "%lld" : {
@@ -86944,7 +86924,7 @@
           }
         }
       }
-    },
+    }
   },
   "version" : "1.1"
 }
