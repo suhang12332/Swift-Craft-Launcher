@@ -55,7 +55,18 @@ struct LitematicaSectionView: View {
             headerTitle
             Spacer()
             if !overflowItems.isEmpty {
-                overflowButton(overflowItems: overflowItems)
+                OverflowButton(
+                    count: overflowItems.count,
+                    isPresented: $showOverflowPopover
+                ) {
+                    OverflowPopoverContent(
+                        items: overflowItems,
+                        maxHeight: LitematicaSectionConstants.popoverMaxHeight,
+                        width: LitematicaSectionConstants.popoverWidth
+                    ) { file in
+                        litematicaChip(for: file, closePopover: true)
+                    }
+                }
             }
         }
         .padding(.bottom, LitematicaSectionConstants.headerBottomPadding)
@@ -66,132 +77,48 @@ struct LitematicaSectionView: View {
             .font(.headline)
     }
 
-    private func overflowButton(overflowItems: [LitematicaInfo]) -> some View {
-        Button {
-            showOverflowPopover = true
-        } label: {
-            Text("+\(overflowItems.count)")
-                .font(.caption)
-                .padding(.horizontal, 4)
-                .padding(.vertical, 2)
-                .background(Color.gray.opacity(0.15))
-                .cornerRadius(4)
-        }
-        .buttonStyle(.plain)
-        .popover(isPresented: $showOverflowPopover, arrowEdge: .leading) {
-            overflowPopoverContent(overflowItems: overflowItems)
-        }
-    }
-
-    private func overflowPopoverContent(
-        overflowItems: [LitematicaInfo]
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ScrollView {
-                FlowLayout {
-                    ForEach(overflowItems) { file in
-                        LitematicaFileChip(
-                            title: file.name,
-                            isLoading: false,
-                            file: file
-                        ) {
-                            selectedFile = file
-                            showOverflowPopover = false
-                        }
-                    }
-                }
-                .padding()
-            }
-            .frame(maxHeight: LitematicaSectionConstants.popoverMaxHeight)
-        }
-        .frame(width: LitematicaSectionConstants.popoverWidth)
-    }
-
     // MARK: - Content Views
     private var loadingPlaceholder: some View {
-        ScrollView {
-            FlowLayout {
-                ForEach(
-                    0..<LitematicaSectionConstants.placeholderCount,
-                    id: \.self
-                ) { _ in
-                    LitematicaFileChip(
-                        title: "common.loading".localized(),
-                        isLoading: true
-                    )
-                    .redacted(reason: .placeholder)
-                }
-            }
-        }
-        .frame(maxHeight: LitematicaSectionConstants.maxHeight)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.vertical, LitematicaSectionConstants.verticalPadding)
+        LoadingPlaceholder(
+            count: LitematicaSectionConstants.placeholderCount,
+            iconName: "square.stack.3d.up",
+            maxHeight: LitematicaSectionConstants.maxHeight,
+            verticalPadding: LitematicaSectionConstants.verticalPadding,
+            verticalPaddingForChip: 6
+        )
     }
 
     private var contentWithOverflow: some View {
-        FlowLayout {
-            ForEach(visibleItems) { file in
-                LitematicaFileChip(
-                    title: file.name,
-                    isLoading: false,
-                    file: file
-                ) {
-                    selectedFile = file
-                }
-            }
+        ContentWithOverflow(
+            items: visibleItems,
+            maxHeight: LitematicaSectionConstants.maxHeight,
+            verticalPadding: LitematicaSectionConstants.verticalPadding
+        ) { file in
+            litematicaChip(for: file)
         }
-        .frame(maxHeight: LitematicaSectionConstants.maxHeight)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.vertical, LitematicaSectionConstants.verticalPadding)
-        .padding(.bottom, LitematicaSectionConstants.verticalPadding)
     }
 
     // MARK: - Helper Methods
     private func updateItemLists(from files: [LitematicaInfo]) {
-        // 最多显示 6 个
-        visibleItems = Array(files.prefix(LitematicaSectionConstants.maxItems))
-        overflowItems = Array(files.dropFirst(LitematicaSectionConstants.maxItems))
+        let (visible, overflow) = files.computeVisibleAndOverflowItems(maxItems: LitematicaSectionConstants.maxItems)
+        visibleItems = visible
+        overflowItems = overflow
     }
-}
-
-// MARK: - Litematica File Chip
-struct LitematicaFileChip: View {
-    let title: String
-    let isLoading: Bool
-    let file: LitematicaInfo?
-    let action: (() -> Void)?
-
-    init(title: String, isLoading: Bool, file: LitematicaInfo? = nil, action: (() -> Void)? = nil) {
-        self.title = title
-        self.isLoading = isLoading
-        self.file = file
-        self.action = action
-    }
-
-    var body: some View {
-        Button(action: action ?? {}) {
-            HStack(spacing: 4) {
-                Image(systemName: "square.stack.3d.up")
-                    .font(.caption)
-                Text(title)
-                    .font(.subheadline)
-                    .lineLimit(1)
-                    .frame(maxWidth: 150)
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-            .background(
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.clear)
-            )
-            .foregroundStyle(.primary)
-            .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-        .disabled(isLoading)
+    
+    private func litematicaChip(for file: LitematicaInfo, closePopover: Bool = false) -> some View {
+        FilterChip(
+            title: file.name,
+            action: {
+                selectedFile = file
+                if closePopover {
+                    showOverflowPopover = false
+                }
+            },
+            iconName: "square.stack.3d.up",
+            isLoading: false,
+            verticalPadding: 6,
+            maxTextWidth: 150
+        )
     }
 }
 

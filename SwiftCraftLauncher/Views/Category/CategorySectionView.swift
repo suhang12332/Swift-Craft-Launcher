@@ -44,7 +44,12 @@ struct CategorySectionView: View {
             headerTitle
             Spacer()
             if !overflowItems.isEmpty {
-                overflowButton(overflowItems: overflowItems)
+                OverflowButton(
+                    count: overflowItems.count,
+                    isPresented: $showOverflowPopover
+                ) {
+                    overflowPopoverContent(overflowItems: overflowItems)
+                }
             }
             clearButton
         }
@@ -54,23 +59,6 @@ struct CategorySectionView: View {
     private var headerTitle: some View {
         Text(title.localized())
             .font(.headline)
-    }
-
-    private func overflowButton(overflowItems: [FilterItem]) -> some View {
-        Button {
-            showOverflowPopover = true
-        } label: {
-            Text("+\(overflowItems.count)")
-                .font(.caption)
-                .padding(.horizontal, 4)
-                .padding(.vertical, 2)
-                .background(Color.gray.opacity(0.15))
-                .cornerRadius(4)
-        }
-        .buttonStyle(.plain)
-        .popover(isPresented: $showOverflowPopover, arrowEdge: .leading) {
-            overflowPopoverContent(overflowItems: overflowItems)
-        }
     }
 
     private func overflowPopoverContent(
@@ -88,18 +76,16 @@ struct CategorySectionView: View {
                 }
                 .frame(maxHeight: CategorySectionConstants.popoverMaxHeight)
             } else {
-                ScrollView {
-                    FlowLayout {
-                        ForEach(items) { item in
-                            FilterChip(
-                                title: item.name,
-                                isSelected: selectedItems.contains(item.id)
-                            ) { toggleSelection(for: item.id) }
-                        }
-                    }
-                    .padding()
+                OverflowPopoverContent(
+                    items: items,
+                    maxHeight: CategorySectionConstants.popoverMaxHeight,
+                    width: CategorySectionConstants.popoverWidth
+                ) { item in
+                    FilterChip(
+                        title: item.name,
+                        isSelected: selectedItems.contains(item.id)
+                    ) { toggleSelection(for: item.id) }
                 }
-                .frame(maxHeight: CategorySectionConstants.popoverMaxHeight)
             }
         }
         .frame(width: CategorySectionConstants.popoverWidth)
@@ -118,39 +104,27 @@ struct CategorySectionView: View {
 
     // MARK: - Content Views
     private var loadingPlaceholder: some View {
-        ScrollView {
-            FlowLayout {
-                ForEach(
-                    0..<CategorySectionConstants.placeholderCount,
-                    id: \.self
-                ) { _ in
-                    FilterChip(
-                        title: "common.loading".localized(),
-                        isSelected: false
-                    ) {}
-                    .redacted(reason: .placeholder)
-                }
-            }
-        }
-        .frame(maxHeight: CategorySectionConstants.maxHeight)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.vertical, CategorySectionConstants.verticalPadding)
+        LoadingPlaceholder(
+            count: CategorySectionConstants.placeholderCount,
+            iconName: nil,
+            maxHeight: CategorySectionConstants.maxHeight,
+            verticalPadding: CategorySectionConstants.verticalPadding,
+            maxTextWidth: nil
+        )
     }
 
     private var contentWithOverflow: some View {
         let (visibleItems, _) = computeVisibleAndOverflowItems()
-        return FlowLayout {
-            ForEach(visibleItems) { item in
-                FilterChip(
-                    title: item.name,
-                    isSelected: selectedItems.contains(item.id)
-                ) { toggleSelection(for: item.id) }
-            }
+        return ContentWithOverflow(
+            items: visibleItems,
+            maxHeight: CategorySectionConstants.maxHeight,
+            verticalPadding: CategorySectionConstants.verticalPadding
+        ) { item in
+            FilterChip(
+                title: item.name,
+                isSelected: selectedItems.contains(item.id)
+            ) { toggleSelection(for: item.id) }
         }
-        .frame(maxHeight: CategorySectionConstants.maxHeight)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.vertical, CategorySectionConstants.verticalPadding)
-        .padding(.bottom, CategorySectionConstants.verticalPadding)
     }
 
     // MARK: - Helper Methods

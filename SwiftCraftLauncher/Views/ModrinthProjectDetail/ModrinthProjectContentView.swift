@@ -5,6 +5,7 @@
 //  Created by su on 2025/6/2.
 //
 import SwiftUI
+import AppKit
 
 // MARK: - Constants
 private enum Constants {
@@ -19,88 +20,76 @@ private enum Constants {
 // MARK: - View Components
 private struct CompatibilitySection: View {
     let project: ModrinthProjectDetail
-    @State private var showingVersionsPopover = false
 
     var body: some View {
-        SectionView(title: "project.info.compatibility".localized()) {
-            VStack(alignment: .leading, spacing: 12) {
-                MinecraftVersionHeader()
+        VStack(alignment: .leading, spacing: 12) {
+//                MinecraftVersionHeader()
 
-                if !project.gameVersions.isEmpty {
-                    GameVersionsSection(
-                        versions: project.gameVersions,
-                        showingVersionsPopover: $showingVersionsPopover
-                    )
-                }
-
-                if !project.loaders.isEmpty {
-                    LoadersSection(loaders: project.loaders)
-                }
-
-                PlatformSupportSection(
-                    clientSide: project.clientSide,
-                    serverSide: project.serverSide
-                )
+            if !project.gameVersions.isEmpty {
+                GameVersionsSection(versions: project.gameVersions)
             }
+
+            if !project.loaders.isEmpty {
+                LoadersSection(loaders: project.loaders)
+            }
+
+            PlatformSupportSection(
+                clientSide: project.clientSide,
+                serverSide: project.serverSide
+            )
         }
     }
 }
 
-private struct MinecraftVersionHeader: View {
-    var body: some View {
-        HStack {
-            Text("project.info.minecraft".localized())
-                .font(.headline)
-            Text("project.info.minecraft.edition".localized())
-                .foregroundStyle(.primary)
-                .font(.caption.bold())
-        }
-    }
-}
+//private struct MinecraftVersionHeader: View {
+//    var body: some View {
+//        HStack {
+//            Text("project.info.minecraft".localized())
+//                .font(.headline)
+//            Text("project.info.minecraft.edition".localized())
+//                .foregroundStyle(.primary)
+//                .font(.caption.bold())
+//        }
+//    }
+//}
 
 private struct GameVersionsSection: View {
     let versions: [String]
-    @Binding var showingVersionsPopover: Bool
+    @State private var showingVersionsPopover = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
+            let (visibleVersions, overflowVersions) = versions.computeVisibleAndOverflowItems(maxItems: Constants.maxVisibleVersions)
+
             HStack {
                 Text("project.info.versions".localized())
                     .font(.headline)
                 Spacer()
-                if versions.count > Constants.maxVisibleVersions {
-                    Button {
-                        showingVersionsPopover = true
-                    } label: {
-                        Text(
-                            "+\(versions.count - Constants.maxVisibleVersions)"
-                        )
-                        .font(.caption)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 2)
-                        .background(Color.gray.opacity(0.15))
-                        .cornerRadius(4)
-                    }
-                    .buttonStyle(.plain)
-                    .popover(isPresented: $showingVersionsPopover) {
+                if !overflowVersions.isEmpty {
+                    OverflowButton(
+                        count: overflowVersions.count,
+                        isPresented: $showingVersionsPopover
+                    ) {
                         GameVersionsPopover(versions: versions)
                     }
                 }
             }
+            .padding(.bottom, 4)
 
-            HStack {
-                FlowLayout(spacing: Constants.spacing) {
-                    ForEach(
-                        Array(versions.prefix(Constants.maxVisibleVersions)),
-                        id: \.self
-                    ) { version in
-                        VersionTag(version: version)
-                    }
-                }
+            ContentWithOverflow(
+                items: visibleVersions.map { IdentifiableString(id: $0) },
+                maxHeight: .infinity,
+                verticalPadding: 4,
+                spacing: 8
+            ) { item in
+                VersionTag(version: item.id)
             }
-            .padding(.top, 4)
         }
     }
+}
+
+private struct IdentifiableString: Identifiable {
+    let id: String
 }
 
 private struct GameVersionsPopover: View {
@@ -121,12 +110,10 @@ private struct VersionTag: View {
     let version: String
 
     var body: some View {
-        Text(version)
-            .font(.caption)
-            .padding(.horizontal, Constants.padding)
-            .padding(.vertical, 4)
-            .background(Color.gray.opacity(0.15))
-            .cornerRadius(Constants.cornerRadius)
+        FilterChip(
+            title: version,
+            isSelected: false
+        ) {}
     }
 }
 
@@ -137,12 +124,16 @@ private struct LoadersSection: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("project.info.platforms".localized())
                 .font(.headline)
-            FlowLayout(spacing: Constants.spacing) {
-                ForEach(loaders, id: \.self) { loader in
-                    VersionTag(version: loader)
-                }
+                .padding(.bottom, 4)
+            
+            ContentWithOverflow(
+                items: loaders.map { IdentifiableString(id: $0) },
+                maxHeight: .infinity,
+                verticalPadding: 4,
+                spacing: 8
+            ) { item in
+                VersionTag(version: item.id)
             }
-            .padding(.top, 4)
         }
     }
 }
@@ -153,21 +144,29 @@ private struct PlatformSupportSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            // 使用字符串插值而非字符串拼接
             Text("\("platform.support".localized()):")
                 .font(.headline)
-            HStack(spacing: 8) {
-                PlatformSupportItem(
-                    icon: "laptopcomputer",
-                    text: "platform.client.\(clientSide)".localized()
-                )
-                PlatformSupportItem(
-                    icon: "server.rack",
-                    text: "platform.server.\(serverSide)".localized()
-                )
-            }.padding(.top, 4)
+                .padding(.bottom, 4)
+            
+            ContentWithOverflow(
+                items: [
+                    IdentifiablePlatformItem(id: "client", icon: "laptopcomputer", text: "platform.client.\(clientSide)".localized()),
+                    IdentifiablePlatformItem(id: "server", icon: "server.rack", text: "platform.server.\(serverSide)".localized())
+                ],
+                maxHeight: .infinity,
+                verticalPadding: 4,
+                spacing: 8
+            ) { item in
+                PlatformSupportItem(icon: item.icon, text: item.text)
+            }
         }
     }
+}
+
+private struct IdentifiablePlatformItem: Identifiable {
+    let id: String
+    let icon: String
+    let text: String
 }
 
 private struct PlatformSupportItem: View {
@@ -175,13 +174,13 @@ private struct PlatformSupportItem: View {
     let text: String
 
     var body: some View {
-        HStack(spacing: 2) {
-            Image(systemName: icon)
-                .foregroundColor(.secondary)
-            Text(text)
-                .foregroundColor(.secondary)
-                .font(.caption)
-        }
+        FilterChip(
+            title: text,
+            isSelected: false,
+            action: {},
+            iconName: icon,
+            iconColor: .secondary
+        )
     }
 }
 
@@ -189,38 +188,36 @@ private struct LinksSection: View {
     let project: ModrinthProjectDetail
 
     var body: some View {
-        SectionView(title: "project.info.links".localized()) {
-            FlowLayout(spacing: Constants.spacing) {
-                if let url = project.issuesUrl {
-                    ProjectLink(
-                        text: "project.info.links.issues".localized(),
-                        url: url
-                    )
-                }
-
-                if let url = project.sourceUrl {
-                    ProjectLink(
-                        text: "project.info.links.source".localized(),
-                        url: url
-                    )
-                }
-
-                if let url = project.wikiUrl {
-                    ProjectLink(
-                        text: "project.info.links.wiki".localized(),
-                        url: url
-                    )
-                }
-
-                if let url = project.discordUrl {
-                    ProjectLink(
-                        text: "project.info.links.discord".localized(),
-                        url: url
-                    )
-                }
+        VStack(alignment: .leading, spacing: 4) {
+            Text("project.info.links".localized())
+                .font(.headline)
+                .padding(.bottom, 4)
+            
+            let links = [
+                (project.issuesUrl, "project.info.links.issues".localized()),
+                (project.sourceUrl, "project.info.links.source".localized()),
+                (project.wikiUrl, "project.info.links.wiki".localized()),
+                (project.discordUrl, "project.info.links.discord".localized())
+            ].compactMap { url, text in
+                url.map { (text, $0) }
+            }
+            
+            ContentWithOverflow(
+                items: links.map { IdentifiableLink(id: $0.0, text: $0.0, url: $0.1) },
+                maxHeight: .infinity,
+                verticalPadding: 4,
+                spacing: 8
+            ) { item in
+                ProjectLink(text: item.text, url: item.url)
             }
         }
     }
+}
+
+private struct IdentifiableLink: Identifiable {
+    let id: String
+    let text: String
+    let url: String
 }
 
 private struct ProjectLink: View {
@@ -229,13 +226,11 @@ private struct ProjectLink: View {
 
     var body: some View {
         if let url = URL(string: url) {
-            Link(destination: url) {
-                Text(text)
-                    .font(.caption)
-                    .padding(.horizontal, Constants.padding)
-                    .padding(.vertical, 4)
-                    .background(Color.gray.opacity(0.15))
-                    .cornerRadius(Constants.cornerRadius)
+            FilterChip(
+                title: text,
+                isSelected: false
+            ) {
+                NSWorkspace.shared.open(url)
             }
         }
     }
@@ -254,7 +249,11 @@ private struct DetailsSection: View, Equatable {
     }
 
     var body: some View {
-        SectionView(title: "project.info.details".localized()) {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("project.info.details".localized())
+                .font(.headline)
+                .padding(.bottom, 4)
+            
             VStack(alignment: .leading, spacing: 8) {
                 if let license = project.license {
                     DetailRow(
@@ -367,20 +366,6 @@ struct ModrinthProjectContentView: View {
 }
 
 // MARK: - Helper Views
-private struct SectionView<Content: View>: View {
-    let title: String
-    @ViewBuilder let content: () -> Content
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(.title2.bold())
-                .padding(.top, 10)
-
-            content()
-        }
-    }
-}
 
 private struct DetailRow: View, Equatable {
     let label: String
@@ -392,11 +377,10 @@ private struct DetailRow: View, Equatable {
                 .font(.callout.bold())
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 8)
-            Text(value)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.trailing)
-                .fixedSize(horizontal: false, vertical: true)
+            FilterChip(
+                title: value,
+                isSelected: false
+            ) {}
         }
         .frame(minHeight: 20) // 设置最小高度，减少布局计算
     }

@@ -38,12 +38,23 @@ struct WorldInfoSectionView: View {
 
     // MARK: - Header Views
     private var headerView: some View {
-        let (_, overflowItems) = computeVisibleAndOverflowItems()
+        let (_, overflowItems) = worlds.computeVisibleAndOverflowItems(maxItems: WorldInfoSectionConstants.maxItems)
         return HStack {
             headerTitle
             Spacer()
             if !overflowItems.isEmpty {
-                overflowButton(overflowItems: overflowItems)
+                OverflowButton(
+                    count: overflowItems.count,
+                    isPresented: $showOverflowPopover
+                ) {
+                    OverflowPopoverContent(
+                        items: overflowItems,
+                        maxHeight: WorldInfoSectionConstants.popoverMaxHeight,
+                        width: WorldInfoSectionConstants.popoverWidth
+                    ) { world in
+                        worldChip(for: world)
+                    }
+                }
             }
         }
         .padding(.bottom, WorldInfoSectionConstants.headerBottomPadding)
@@ -54,131 +65,37 @@ struct WorldInfoSectionView: View {
             .font(.headline)
     }
 
-    private func overflowButton(overflowItems: [WorldInfo]) -> some View {
-        Button {
-            showOverflowPopover = true
-        } label: {
-            Text("+\(overflowItems.count)")
-                .font(.caption)
-                .padding(.horizontal, 4)
-                .padding(.vertical, 2)
-                .background(Color.gray.opacity(0.15))
-                .cornerRadius(4)
-        }
-        .buttonStyle(.plain)
-        .popover(isPresented: $showOverflowPopover, arrowEdge: .leading) {
-            overflowPopoverContent(overflowItems: overflowItems)
-        }
-    }
-
-    private func overflowPopoverContent(
-        overflowItems: [WorldInfo]
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            ScrollView {
-                FlowLayout {
-                    ForEach(overflowItems) { world in
-                        WorldInfoChip(
-                            title: world.name,
-                            isLoading: false
-                        ) {
-                            selectedWorld = world
-                        }
-                    }
-                }
-                .padding()
-            }
-            .frame(maxHeight: WorldInfoSectionConstants.popoverMaxHeight)
-        }
-        .frame(width: WorldInfoSectionConstants.popoverWidth)
-    }
-
     // MARK: - Content Views
     private var loadingPlaceholder: some View {
-        ScrollView {
-            FlowLayout {
-                ForEach(
-                    0..<WorldInfoSectionConstants.placeholderCount,
-                    id: \.self
-                ) { _ in
-                    WorldInfoChip(
-                        title: "common.loading".localized(),
-                        isLoading: true
-                    )
-                    .redacted(reason: .placeholder)
-                }
-            }
-        }
-        .frame(maxHeight: WorldInfoSectionConstants.maxHeight)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.vertical, WorldInfoSectionConstants.verticalPadding)
+        LoadingPlaceholder(
+            count: WorldInfoSectionConstants.placeholderCount,
+            iconName: "folder.fill",
+            maxHeight: WorldInfoSectionConstants.maxHeight,
+            verticalPadding: WorldInfoSectionConstants.verticalPadding
+        )
     }
 
     private var contentWithOverflow: some View {
-        let (visibleItems, _) = computeVisibleAndOverflowItems()
-        return FlowLayout {
-            ForEach(visibleItems) { world in
-                WorldInfoChip(
-                    title: world.name,
-                    isLoading: false
-                ) {
-                    selectedWorld = world
-                }
-            }
+        let (visibleItems, _) = worlds.computeVisibleAndOverflowItems(maxItems: WorldInfoSectionConstants.maxItems)
+        return ContentWithOverflow(
+            items: visibleItems,
+            maxHeight: WorldInfoSectionConstants.maxHeight,
+            verticalPadding: WorldInfoSectionConstants.verticalPadding
+        ) { world in
+            worldChip(for: world)
         }
-        .frame(maxHeight: WorldInfoSectionConstants.maxHeight)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.vertical, WorldInfoSectionConstants.verticalPadding)
-        .padding(.bottom, WorldInfoSectionConstants.verticalPadding)
     }
-
-    // MARK: - Helper Methods
-    private func computeVisibleAndOverflowItems() -> (
-        [WorldInfo], [WorldInfo]
-    ) {
-        // 最多显示6个
-        let visibleItems = Array(worlds.prefix(WorldInfoSectionConstants.maxItems))
-        let overflowItems = Array(worlds.dropFirst(WorldInfoSectionConstants.maxItems))
-
-        return (visibleItems, overflowItems)
+    
+    private func worldChip(for world: WorldInfo) -> some View {
+        FilterChip(
+            title: world.name,
+            action: {
+                selectedWorld = world
+            },
+            iconName: "folder.fill",
+            isLoading: false,
+            maxTextWidth: 150
+        )
     }
 }
 
-// MARK: - World Info Chip
-struct WorldInfoChip: View {
-    let title: String
-    let isLoading: Bool
-    let action: (() -> Void)?
-
-    init(title: String, isLoading: Bool, action: (() -> Void)? = nil) {
-        self.title = title
-        self.isLoading = isLoading
-        self.action = action
-    }
-
-    var body: some View {
-        Button(action: action ?? {}) {
-            HStack(spacing: 4) {
-                Image(systemName: "folder.fill")
-                    .font(.caption)
-                Text(title)
-                    .font(.subheadline)
-                    .lineLimit(1)
-                    .frame(maxWidth: 150)
-            }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.clear)
-            )
-            .foregroundStyle(.primary)
-            .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-            )
-        }
-        .buttonStyle(.plain)
-        .disabled(isLoading)
-    }
-}
