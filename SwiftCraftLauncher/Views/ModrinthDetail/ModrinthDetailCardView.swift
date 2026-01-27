@@ -198,7 +198,7 @@ struct ModrinthDetailCardView: View {
 private struct TagView: View, Equatable {
     let text: String
 
-    static func == (lhs: TagView, rhs: TagView) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.text == rhs.text
     }
 
@@ -216,7 +216,7 @@ private struct TagsView: View, Equatable {
     let tags: [String]
     let maxTags: Int
 
-    static func == (lhs: TagsView, rhs: TagsView) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.tags == rhs.tags && lhs.maxTags == rhs.maxTags
     }
 
@@ -252,7 +252,7 @@ private struct InfoRowView: View {
 private struct DescriptionView: View, Equatable {
     let text: String
 
-    static func == (lhs: DescriptionView, rhs: DescriptionView) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.text == rhs.text
     }
 

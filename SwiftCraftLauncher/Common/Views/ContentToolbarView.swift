@@ -21,12 +21,12 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var hasCheckedAnnouncement = false
 
     // MARK: - Computed Properties
-    
+
     /// 当前玩家（计算属性，避免重复访问）
     private var currentPlayer: Player? {
         playerListViewModel.currentPlayer
     }
-    
+
     /// 是否为在线账户（计算属性）
     private var isCurrentPlayerOnline: Bool {
         currentPlayer?.isOnlineAccount ?? false
@@ -256,12 +256,12 @@ public struct ContentToolbarView: ToolbarContent {
     /// 使用缓存机制避免重复请求
     private func checkAnnouncement() async {
         // 使用静态缓存，避免同一会话内重复请求
-        struct AnnouncementCache {
+        enum AnnouncementCache {
             static var cachedData: AnnouncementData?
             static var lastCheckTime: Date?
             static let cacheDuration: TimeInterval = 3600 // 1小时缓存
         }
-        
+
         // 检查缓存是否有效
         if let cachedData = AnnouncementCache.cachedData,
            let lastCheck = AnnouncementCache.lastCheckTime,
@@ -272,7 +272,7 @@ public struct ContentToolbarView: ToolbarContent {
             }
             return
         }
-        
+
         let version = Bundle.main.appVersion
         let language = LanguageManager.shared.selectedLanguage.isEmpty
             ? LanguageManager.getDefaultLanguage()
