@@ -122,8 +122,12 @@ struct CapeSelectionView: View {
             selectedCapeId = id
             if let imageURL = imageURL, id != nil {
                 selectedCapeImageURL = imageURL
+                // 切换披风时立即清空旧图片，避免显示错误的预览图
+                // 新图片会在异步下载完成后更新
+                selectedCapeImage = nil
             } else {
                 selectedCapeImageURL = nil
+                selectedCapeImage = nil
             }
             onCapeSelected(id, imageURL)
         } label: {
