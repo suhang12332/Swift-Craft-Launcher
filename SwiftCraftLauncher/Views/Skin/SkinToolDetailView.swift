@@ -133,6 +133,9 @@ struct SkinToolDetailView: View {
                 selectedCapeImageURL: $selectedCapeImageURL,
                 selectedCapeImage: $selectedCapeImage
             ) { id, imageURL in
+                loadCapeTask?.cancel()
+                loadCapeTask = nil
+
                 if let imageURL = imageURL, id != nil {
                     // 切换披风时立即清空旧图片，避免显示错误的预览图
                     // 新图片会在异步下载完成后更新
@@ -451,10 +454,29 @@ struct SkinToolDetailView: View {
                 if let capeId = selectedCapeId {
                     let result = await PlayerSkinService.showCape(capeId: capeId, player: player)
                     try Task.checkCancellation()
+                    if result {
+                        // 成功后刷新玩家资料，确保当前激活披风ID与服务器一致
+                        if let newProfile = await PlayerSkinService.fetchPlayerProfile(player: player) {
+                            await MainActor.run {
+                                self.playerProfile = newProfile
+                                self.selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
+                                self.updateHasChanges()
+                            }
+                        }
+                    }
                     return result
                 } else {
                     let result = await PlayerSkinService.hideCape(player: player)
                     try Task.checkCancellation()
+                    if result {
+                        if let newProfile = await PlayerSkinService.fetchPlayerProfile(player: player) {
+                            await MainActor.run {
+                                self.playerProfile = newProfile
+                                self.selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
+                                self.updateHasChanges()
+                            }
+                        }
+                    }
                     return result
                 }
             }
@@ -462,7 +484,6 @@ struct SkinToolDetailView: View {
         } catch is CancellationError {
             return false
         } catch {
-            Logger.shared.error("Cape changes error: \(error)")
             return false
         }
     }
@@ -515,6 +536,13 @@ extension SkinToolDetailView {
     private func loadCurrentActiveCapeIfNeeded(from profile: MinecraftProfileResponse) async {
         do {
             try Task.checkCancellation()
+
+            // 如果用户已经手动选择了与当前激活披风不同的披风，则不再加载「当前激活披风」以免覆盖预览
+            if let manualSelectedId = selectedCapeId,
+               let activeId = PlayerSkinService.getActiveCapeId(from: profile),
+               manualSelectedId != activeId {
+                return
+            }
 
             // 首先检查 publicSkinInfo 中是否有 capeURL（可能更快）
             if let capeURL = publicSkinInfo?.capeURL, !capeURL.isEmpty {
@@ -640,8 +668,6 @@ extension SkinToolDetailView {
            let cachedImage = NSImage(contentsOfFile: currentPath) {
             try? Task.checkCancellation()
             await MainActor.run {
-                // 调试日志：使用缓存披风图片
-                // Logger.shared.info("[SkinToolDetailView] 设置 selectedCapeImage (缓存), size: \(cachedImage.size.width)x\(cachedImage.size.height), URL: \(urlString)")
                 selectedCapeImage = cachedImage
             }
             return
@@ -650,8 +676,6 @@ extension SkinToolDetailView {
         // 验证 URL 格式
         guard let url = URL(string: urlString.httpToHttps()) else {
             await MainActor.run {
-                // 调试日志：URL 无效时清空披风图片
-                // Logger.shared.info("[SkinToolDetailView] 设置 selectedCapeImage = nil (URL无效), URL: \(urlString)")
                 selectedCapeImage = nil
             }
             return
@@ -670,8 +694,6 @@ extension SkinToolDetailView {
 
             guard !data.isEmpty, let image = NSImage(data: data) else {
                 await MainActor.run {
-                    // 调试日志：创建 NSImage 失败时清空披风图片
-                    // Logger.shared.info("[SkinToolDetailView] 设置 selectedCapeImage = nil (创建NSImage失败), URL: \(urlString)")
                     selectedCapeImage = nil
                 }
                 return
@@ -683,8 +705,6 @@ extension SkinToolDetailView {
             await MainActor.run {
                 // 检查URL是否仍然匹配（防止用户快速切换）
                 if selectedCapeImageURL == urlString {
-                    // 调试日志：披风下载成功并设置图片
-                    // Logger.shared.info("[SkinToolDetailView] 设置 selectedCapeImage (下载成功), size: \(image.size.width)x\(image.size.height), URL: \(urlString)")
                     selectedCapeImage = image
                 }
             }
