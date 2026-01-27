@@ -134,6 +134,9 @@ struct SkinToolDetailView: View {
                 selectedCapeImage: $selectedCapeImage
             ) { id, imageURL in
                 if let imageURL = imageURL, id != nil {
+                    // 切换披风时立即清空旧图片，避免显示错误的预览图
+                    // 新图片会在异步下载完成后更新
+                    selectedCapeImage = nil
                     downloadCapeTask?.cancel()
                     downloadCapeTask = Task<Void, Never> {
                         await MainActor.run {
