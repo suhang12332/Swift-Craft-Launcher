@@ -29,38 +29,27 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
 
     // MARK: - Body
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                // 头部区域
-                header
-                    .padding(.horizontal)
-                    .padding()
-                Divider()
+        VStack(spacing: 0) {
+            // 头部区域
+            header
+                .padding(.horizontal)
+                .padding()
+            Divider()
 
-                // 主体区域
-                bodyContent
-                    .padding(.horizontal)
-                    .padding()
+            // 主体区域
+            bodyContent
+                .padding(.horizontal)
+                .padding()
 
-                // 底部区域
-                Divider()
-                footer
-                    .padding(.horizontal)
-                    .padding()
-            }
-        }
-        .modifier(SheetWidthFix())
-    }
-}
-struct SheetWidthFix: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(macOS 14.0, *) {
-            content.frame(width: 470)
-        } else {
-            content
+            // 底部区域
+            Divider()
+            footer
+                .padding(.horizontal)
+                .padding()
         }
     }
 }
+
 // MARK: - Convenience Initializers
 extension CommonSheetView where Header == EmptyView, Footer == EmptyView {
     /// 只有主体内容的初始化方法
