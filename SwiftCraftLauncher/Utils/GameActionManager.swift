@@ -79,9 +79,13 @@ class GameActionManager: ObservableObject {
                 GameProcessManager.shared.removeGameState(gameId: game.id)
                 GameStatusManager.shared.removeGameState(gameId: game.id)
 
-                // 先删除游戏文件夹
+                // 先删除游戏文件夹（若不存在则跳过但继续删记录）
                 let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
-                try FileManager.default.removeItem(at: profileDir)
+                if FileManager.default.fileExists(atPath: profileDir.path) {
+                    try FileManager.default.removeItem(at: profileDir)
+                } else {
+                    Logger.shared.warning("删除游戏时未找到游戏目录，跳过文件删除: \(profileDir.path)")
+                }
 
                 // 清除该游戏相关的所有内存缓存（图标、路径、mod 扫描结果）
                 GameIconCache.shared.invalidateCache(for: game.gameName)

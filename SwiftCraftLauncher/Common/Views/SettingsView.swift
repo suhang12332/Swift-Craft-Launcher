@@ -31,18 +31,20 @@ public struct SettingsView: View {
                     Label("settings.game.tab".localized(), systemImage: "gamecontroller")
                 }
                 .tag(SettingsTab.game)
-            if selectedGameManager.selectedGameId != nil {
-                GameAdvancedSettingsView()
-                    .tabItem {
-                        Label("settings.game.advanced.tab".localized(), systemImage: "gearshape.2")
-                    }
-                    .tag(SettingsTab.advanced)
-            }
             AISettingsView()
                 .tabItem {
                     Label("settings.ai.tab".localized(), systemImage: "brain")
                 }
                 .tag(SettingsTab.ai)
+            GameAdvancedSettingsView()
+                .tabItem {
+                    Label(
+                        "settings.game.advanced.tab".localized(),
+                        systemImage: "gearshape.2"
+                    )
+                }
+                .tag(SettingsTab.advanced)
+                .disabled(selectedGameManager.selectedGameId == nil)
         }
         .padding()
         .frame(maxWidth: .infinity)
