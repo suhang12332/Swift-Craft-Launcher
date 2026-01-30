@@ -2,49 +2,35 @@ import SwiftUI
 
 /// 详情区域工具栏内容
 public struct DetailToolbarView: ToolbarContent {
-    @Binding var selectedItem: SidebarItem
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @Binding var gameResourcesType: String
-    @Binding var gameType: Bool  // false = local, true = server
-    @Binding var versionCurrentPage: Int
-    @Binding var versionTotal: Int
+    @EnvironmentObject var filterState: ResourceFilterState
+    @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @StateObject private var gameActionManager = GameActionManager.shared
-    @StateObject private var gameSettings = GameSettingsManager.shared
-    @Binding var project: ModrinthProjectDetail?
-    @Binding var selectProjectId: String?
-    @Binding var selectedTab: Int
-    @Binding var gameId: String?
-    @Binding var dataSource: DataSource
-    @Binding var localResourceFilter: LocalResourceFilter
-
-    // MARK: - Computed Properties
 
     private var currentGame: GameVersionInfo? {
-        if case .game(let gameId) = selectedItem {
+        if case .game(let gameId) = detailState.selectedItem {
             return gameRepository.getGame(by: gameId)
         }
         return nil
     }
 
-    /// 基于进程状态判断游戏是否正在运行
     private func isGameRunning(gameId: String) -> Bool {
-        return gameStatusManager.isGameRunning(gameId: gameId)
+        gameStatusManager.isGameRunning(gameId: gameId)
     }
 
     public var body: some ToolbarContent {
         ToolbarItemGroup(placement: .primaryAction) {
-            switch selectedItem {
+            switch detailState.selectedItem {
             case .game:
                 if let game = currentGame {
                     resourcesTypeMenu
                     resourcesMenu
-                    // 仅在本地资源视图下显示“全部 / 已禁用”筛选
-                    if !gameType {
+                    if !detailState.gameType {
                         localResourceFilterMenu
                     }
-                    if gameType {
+                    if detailState.gameType {
                         dataSourceMenu
                     }
 
@@ -54,14 +40,12 @@ public struct DetailToolbarView: ToolbarContent {
                         Task {
                             let isRunning = isGameRunning(gameId: game.id)
                             if isRunning {
-                                // 停止游戏
                                 await MinecraftLaunchCommand(
                                     player: playerListViewModel.currentPlayer,
                                     game: game,
                                     gameRepository: gameRepository
                                 ).stopGame()
                             } else {
-                                // 启动游戏（显示加载状态，直到启动流程结束或失败）
                                 gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: true)
                                 defer { gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: false) }
                                 await MinecraftLaunchCommand(
@@ -75,7 +59,6 @@ public struct DetailToolbarView: ToolbarContent {
                         let isRunning = isGameRunning(gameId: game.id)
                         let isLaunchingGame = gameStatusManager.isGameLaunching(gameId: game.id)
                         if isLaunchingGame && !isRunning {
-                            // 启动中：显示加载指示而不是三角/正方形
                             ProgressView()
                                 .controlSize(.small)
                         } else {
@@ -93,7 +76,7 @@ public struct DetailToolbarView: ToolbarContent {
                         ? "stop.fill"
                         : (gameStatusManager.isGameLaunching(gameId: game.id) ? "" : "play.fill")
                     )
-                    .disabled(gameStatusManager.isGameLaunching(gameId: game.id)) // 启动过程中禁用按钮，避免重复点击
+                    .disabled(gameStatusManager.isGameLaunching(gameId: game.id))
                     .applyReplaceTransition()
 
                     Button {
@@ -105,20 +88,20 @@ public struct DetailToolbarView: ToolbarContent {
                     .help("game.path".localized())
                 }
             case .resource:
-                if selectProjectId != nil {
+                if detailState.selectedProjectId != nil {
                     Button {
-                        if let id = gameId {
-                            selectedItem = .game(id)
+                        if let id = detailState.gameId {
+                            detailState.selectedItem = .game(id)
                         } else {
-                            selectProjectId = nil
-                            selectedTab = 0
+                            detailState.selectedProjectId = nil
+                            filterState.selectedTab = 0
                         }
                     } label: {
                         Label("return".localized(), systemImage: "arrow.backward")
                     }
                     .help("return".localized())
                 } else {
-                    if gameType {
+                    if detailState.gameType {
                         dataSourceMenu
                     }
                 }
@@ -127,10 +110,10 @@ public struct DetailToolbarView: ToolbarContent {
     }
 
     private var currentResourceTitle: String {
-        "resource.content.type.\(gameResourcesType)".localized()
+        "resource.content.type.\(detailState.gameResourcesType)".localized()
     }
     private var currentResourceTypeTitle: String {
-        gameType
+        detailState.gameType
             ? "resource.content.type.server".localized()
             : "resource.content.type.local".localized()
     }
@@ -139,7 +122,7 @@ public struct DetailToolbarView: ToolbarContent {
         Menu {
             ForEach(resourceTypesForCurrentGame, id: \.self) { sort in
                 Button("resource.content.type.\(sort)".localized()) {
-                    gameResourcesType = sort
+                    detailState.gameResourcesType = sort
                 }
             }
         } label: {
@@ -149,11 +132,11 @@ public struct DetailToolbarView: ToolbarContent {
 
     private var resourcesTypeMenu: some View {
         Button {
-            gameType.toggle()
+            detailState.gameType.toggle()
         } label: {
             Label(
                 currentResourceTypeTitle,
-                systemImage: gameType
+                systemImage: detailState.gameType
                     ? "tray.and.arrow.down" : "icloud.and.arrow.down"
             ).foregroundStyle(.primary)
         }
@@ -174,25 +157,22 @@ public struct DetailToolbarView: ToolbarContent {
         Menu {
             ForEach(DataSource.allCases, id: \.self) { source in
                 Button(source.localizedName) {
-                    // 只更新当前选择的值，不影响设置
-                    dataSource = source
+                    filterState.dataSource = source
                 }
             }
         } label: {
-            // 显示当前选择的值
-            Label(dataSource.localizedName, systemImage: "network")
+            Label(filterState.dataSource.localizedName, systemImage: "network")
                 .labelStyle(.titleOnly)
         }
     }
 
-    /// 本地资源筛选菜单（全部 / 已禁用）
     private var localResourceFilterMenu: some View {
         Menu {
             ForEach(LocalResourceFilter.allCases) { filter in
                 Button {
-                    localResourceFilter = filter
+                    filterState.localResourceFilter = filter
                 } label: {
-                    if localResourceFilter == filter {
+                    if filterState.localResourceFilter == filter {
                         Label(filter.title, systemImage: "checkmark")
                     } else {
                         Text(filter.title)
@@ -200,7 +180,7 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Text(localResourceFilter.title)
+            Text(filterState.localResourceFilter.title)
         }
     }
 }

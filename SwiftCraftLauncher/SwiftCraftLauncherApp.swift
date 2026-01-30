@@ -56,6 +56,7 @@ struct SwiftCraftLauncherApp: App {
 
         WindowGroup {
             MainView()
+                .environment(\.appLogger, Logger.shared)
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .environmentObject(sparkleUpdateService)

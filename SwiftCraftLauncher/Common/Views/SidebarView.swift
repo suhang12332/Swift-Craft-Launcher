@@ -3,8 +3,7 @@ import Combine
 
 /// 通用侧边栏视图组件，用于显示游戏列表和资源列表的导航
 public struct SidebarView: View {
-    @Binding var selectedItem: SidebarItem
-    @Binding var gameType: Bool
+    @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
@@ -20,13 +19,10 @@ public struct SidebarView: View {
     @Environment(\.openSettings)
     private var openSettings
 
-    public init(selectedItem: Binding<SidebarItem>, gameType: Binding<Bool> = .constant(true)) {
-        self._selectedItem = selectedItem
-        self._gameType = gameType
-    }
+    public init() {}
 
     public var body: some View {
-        List(selection: $selectedItem) {
+        List(selection: detailState.selectedItemOptionalBinding) {
             // 资源部分
             Section(header: Text("sidebar.resources.title".localized())) {
                 ForEach(ResourceType.allCases, id: \.self) { type in
@@ -116,8 +112,8 @@ public struct SidebarView: View {
                     gameActionManager.deleteGame(
                         game: game,
                         gameRepository: gameRepository,
-                        selectedItem: $selectedItem,
-                        gameType: $gameType
+                        selectedItem: detailState.selectedItemBinding,
+                        gameType: detailState.gameTypeBinding
                     )
                 }
             }
