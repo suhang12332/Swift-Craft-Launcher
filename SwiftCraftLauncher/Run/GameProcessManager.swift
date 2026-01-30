@@ -271,4 +271,18 @@ class GameProcessManager: ObservableObject {
     func isManuallyStopped(gameId: String) -> Bool {
         return manuallyStoppedGames.contains(gameId)
     }
+
+    /// 移除指定游戏的进程与状态（删除游戏时调用）
+    /// 若游戏正在运行会先终止进程并等待退出，然后从内存中移除
+    /// - Parameter gameId: 游戏 ID
+    func removeGameState(gameId: String) {
+        if let process = gameProcesses[gameId], process.isRunning {
+            manuallyStoppedGames.insert(gameId)
+            process.terminate()
+            process.waitUntilExit()
+            manuallyStoppedGames.remove(gameId)
+        }
+        gameProcesses.removeValue(forKey: gameId)
+        manuallyStoppedGames.remove(gameId)
+    }
 }

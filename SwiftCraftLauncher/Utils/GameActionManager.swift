@@ -49,6 +49,17 @@ class GameActionManager: ObservableObject {
     ) {
         Task {
             do {
+                // 游戏运行中不允许删除
+                if GameProcessManager.shared.isGameRunning(gameId: game.id) {
+                    let error = GlobalError.validation(
+                        chineseMessage: "游戏运行中，无法删除",
+                        i18nKey: "error.validation.game_running_cannot_delete",
+                        level: .notification
+                    )
+                    GlobalErrorHandler.shared.handle(error)
+                    return
+                }
+
                 // 先切换到其他游戏或资源页面，避免删除后页面重新加载
                 if let selectedItem = selectedItem {
                     await MainActor.run {
@@ -64,9 +75,18 @@ class GameActionManager: ObservableObject {
                     }
                 }
 
+                // 清除该游戏在进程/状态管理器中的残留状态（删除后避免无效 key）
+                GameProcessManager.shared.removeGameState(gameId: game.id)
+                GameStatusManager.shared.removeGameState(gameId: game.id)
+
                 // 先删除游戏文件夹
                 let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
                 try FileManager.default.removeItem(at: profileDir)
+
+                // 清除该游戏相关的所有内存缓存（图标、路径、mod 扫描结果）
+                GameIconCache.shared.invalidateCache(for: game.gameName)
+                AppPaths.invalidatePaths(forGameName: game.gameName)
+                await ModScanner.shared.clearModCache(for: game.gameName)
 
                 // 然后删除游戏记录
                 try await gameRepository.deleteGame(id: game.id)

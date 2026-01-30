@@ -89,6 +89,24 @@ enum AppPaths {
         }
     }
 
+    /// 清除指定游戏相关的路径缓存（删除游戏时调用）
+    /// - Parameter gameName: 游戏名称
+    static func invalidatePaths(forGameName gameName: String) {
+        let keys = [
+            "profileDirectory:\(gameName)",
+            "modsDirectory:\(gameName)",
+            "datapacksDirectory:\(gameName)",
+            "shaderpacksDirectory:\(gameName)",
+            "resourcepacksDirectory:\(gameName)",
+            "schematicsDirectory:\(gameName)",
+        ] as [NSString]
+        cacheQueue.sync(flags: .barrier) {
+            for key in keys {
+                pathCache.removeObject(forKey: key)
+            }
+        }
+    }
+
     static let profileSubdirectories = [
         AppConstants.DirectoryNames.shaderpacks,
         AppConstants.DirectoryNames.resourcepacks,

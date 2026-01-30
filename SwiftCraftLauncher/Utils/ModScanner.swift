@@ -871,6 +871,12 @@ extension ModScanner {
         func setAllModsInstalled(for gameName: String, hashes: Set<String>) {
             cache[gameName] = hashes
         }
+
+        /// 删除指定游戏的 mod 扫描缓存（删除游戏时调用）
+        /// - Parameter gameName: 游戏名称
+        func removeGame(gameName: String) {
+            cache.removeValue(forKey: gameName)
+        }
     }
 
     /// 添加 hash 到缓存
@@ -898,5 +904,11 @@ extension ModScanner {
     /// - Returns: 已安装的 mod hash 集合，如果不存在则返回空集合
     func getAllModsInstalled(for gameName: String) async -> Set<String> {
         return await ModInstallationCache.shared.getAllModsInstalled(for: gameName)
+    }
+
+    /// 清除指定游戏的 mod 扫描缓存（删除游戏时调用）
+    /// - Parameter gameName: 游戏名称
+    func clearModCache(for gameName: String) async {
+        await ModInstallationCache.shared.removeGame(gameName: gameName)
     }
 }
