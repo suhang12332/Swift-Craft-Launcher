@@ -5,6 +5,7 @@ import Combine
 public struct SidebarView: View {
     @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
     @State private var showDeleteAlert: Bool = false
@@ -215,6 +216,7 @@ private struct GameContextMenu: View {
     @ObservedObject private var selectedGameManager = SelectedGameManager.shared
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
 
     /// 使用缓存的游戏状态，避免每次渲染都检查进程
     /// 这比调用 isGameRunning() 更高效，因为它直接读取已缓存的状态
@@ -262,21 +264,14 @@ private struct GameContextMenu: View {
             // 使用缓存状态而不是重新检查，减少进程查询
             let currentlyRunning = gameStatusManager.allGameStates[game.id] ?? false
             if currentlyRunning {
-                // 停止游戏
-                await MinecraftLaunchCommand(
-                    player: playerListViewModel.currentPlayer,
-                    game: game,
-                    gameRepository: gameRepository
-                ).stopGame()
+                await gameLaunchUseCase.stopGame(game: game)
             } else {
-                // 启动游戏（标记为启动中，方便工具栏按钮显示 loading）
                 gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: true)
                 defer { gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: false) }
-                await MinecraftLaunchCommand(
+                await gameLaunchUseCase.launchGame(
                     player: playerListViewModel.currentPlayer,
-                    game: game,
-                    gameRepository: gameRepository
-                ).launchGame()
+                    game: game
+                )
             }
         }
     }

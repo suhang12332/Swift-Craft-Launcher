@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import SwiftUI
 
@@ -53,7 +54,7 @@ public enum ThemeMode: String, CaseIterable {
     }
 }
 
-class GeneralSettingsManager: ObservableObject {
+class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     static let shared = GeneralSettingsManager()
 
     @AppStorage("themeMode")
@@ -154,6 +155,17 @@ class GeneralSettingsManager: ObservableObject {
                 NSApp.appearance = appearance
             }
         }
+    }
+
+    /// 当前启动器工作目录（WorkingPathProviding）
+    /// 空时使用默认支持目录
+    var currentWorkingPath: String {
+        launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : launcherWorkingDirectory
+    }
+
+    /// 工作路径或相关设置即将变化（WorkingPathProviding）
+    var workingPathWillChange: AnyPublisher<Void, Never> {
+        objectWillChange.map { _ in () }.eraseToAnyPublisher()
     }
 
     /// 获取当前有效的 ColorScheme，用于 @Environment(\.colorScheme) 的替代方案

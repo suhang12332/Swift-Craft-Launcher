@@ -33,6 +33,7 @@ struct SwiftCraftLauncherApp: App {
     // MARK: - StateObjects
     @StateObject var playerListViewModel = PlayerListViewModel()
     @StateObject var gameRepository = GameRepository()
+    @StateObject var gameLaunchUseCase = GameLaunchUseCase()
     @StateObject private var globalErrorHandler = GlobalErrorHandler.shared
     @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
     @StateObject var generalSettingsManager = GeneralSettingsManager
@@ -59,6 +60,7 @@ struct SwiftCraftLauncherApp: App {
                 .environment(\.appLogger, Logger.shared)
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
+                .environmentObject(gameLaunchUseCase)
                 .environmentObject(sparkleUpdateService)
                 .environmentObject(generalSettingsManager)
                 .environmentObject(skinSelectionStore)
@@ -121,6 +123,7 @@ struct SwiftCraftLauncherApp: App {
         Settings {
             SettingsView()
                 .environmentObject(gameRepository)
+                .environmentObject(gameLaunchUseCase)
                 .environmentObject(playerListViewModel)
                 .environmentObject(sparkleUpdateService)
                 .environmentObject(generalSettingsManager)

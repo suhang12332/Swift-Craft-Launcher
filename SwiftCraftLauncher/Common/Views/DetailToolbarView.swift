@@ -5,6 +5,7 @@ public struct DetailToolbarView: ToolbarContent {
     @EnvironmentObject var filterState: ResourceFilterState
     @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @StateObject private var gameActionManager = GameActionManager.shared
@@ -40,19 +41,14 @@ public struct DetailToolbarView: ToolbarContent {
                         Task {
                             let isRunning = isGameRunning(gameId: game.id)
                             if isRunning {
-                                await MinecraftLaunchCommand(
-                                    player: playerListViewModel.currentPlayer,
-                                    game: game,
-                                    gameRepository: gameRepository
-                                ).stopGame()
+                                await gameLaunchUseCase.stopGame(game: game)
                             } else {
                                 gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: true)
                                 defer { gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: false) }
-                                await MinecraftLaunchCommand(
+                                await gameLaunchUseCase.launchGame(
                                     player: playerListViewModel.currentPlayer,
-                                    game: game,
-                                    gameRepository: gameRepository
-                                ).launchGame()
+                                    game: game
+                                )
                             }
                         }
                     } label: {
