@@ -1,5 +1,16 @@
+import Combine
 import Foundation
 import SwiftUI
+
+/// 主界面布局风格：经典（列表在左、内容在右）/ 聚焦（内容在左、列表在右）
+public enum InterfaceLayoutStyle: String, CaseIterable {
+    case classic = "classic"   // 经典
+    case focused = "focused"  // 聚焦
+
+    public var localizedName: String {
+        "settings.interface_style.\(rawValue)".localized()
+    }
+}
 
 public enum ThemeMode: String, CaseIterable {
     case light = "light"
@@ -43,7 +54,7 @@ public enum ThemeMode: String, CaseIterable {
     }
 }
 
-class GeneralSettingsManager: ObservableObject {
+class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     static let shared = GeneralSettingsManager()
 
     @AppStorage("themeMode")
@@ -97,6 +108,12 @@ class GeneralSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    /// 界面风格：经典（列表 | 内容）/ 聚焦（内容 | 列表）
+    @AppStorage("interfaceLayoutStyle")
+    var interfaceLayoutStyle: InterfaceLayoutStyle = .classic {
+        didSet { objectWillChange.send() }
+    }
+
     // 添加系统外观变化观察者
     private var appearanceObserver: NSKeyValueObservation?
 
@@ -138,6 +155,17 @@ class GeneralSettingsManager: ObservableObject {
                 NSApp.appearance = appearance
             }
         }
+    }
+
+    /// 当前启动器工作目录（WorkingPathProviding）
+    /// 空时使用默认支持目录
+    var currentWorkingPath: String {
+        launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : launcherWorkingDirectory
+    }
+
+    /// 工作路径或相关设置即将变化（WorkingPathProviding）
+    var workingPathWillChange: AnyPublisher<Void, Never> {
+        objectWillChange.map { _ in () }.eraseToAnyPublisher()
     }
 
     /// 获取当前有效的 ColorScheme，用于 @Environment(\.colorScheme) 的替代方案

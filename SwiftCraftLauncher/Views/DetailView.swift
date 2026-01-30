@@ -8,30 +8,12 @@
 import SwiftUI
 
 struct DetailView: View {
-    // MARK: - Properties
-    @Binding var selectedItem: SidebarItem
-    @Binding var gameResourcesType: String
-    @Binding var selectedVersions: [String]
-    @Binding var selectedCategories: [String]
-    @Binding var selectedFeatures: [String]
-    @Binding var selectedResolutions: [String]
-    @Binding var selectedPerformanceImpact: [String]
-    @Binding var selectedProjectId: String?
-    @Binding var loadedProjectDetail: ModrinthProjectDetail?
-    @Binding var selectTab: Int
-    @Binding var versionCurrentPage: Int
-    @Binding var versionTotal: Int
-    @Binding var gameType: Bool
-    @Binding var selectedLoader: [String]
-    @Binding var dataSource: DataSource
-    @Binding var searchText: String
-    @Binding var localResourceFilter: LocalResourceFilter
-
+    @EnvironmentObject var filterState: ResourceFilterState
+    @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
 
-    // MARK: - Body
     @ViewBuilder var body: some View {
-        switch selectedItem {
+        switch detailState.selectedItem {
         case .game(let gameId):
             gameDetailView(gameId: gameId).frame(maxWidth: .infinity, alignment: .leading)
         case .resource(let type):
@@ -40,53 +22,51 @@ struct DetailView: View {
         }
     }
 
-    // MARK: - Game Detail View
     @ViewBuilder
     private func gameDetailView(gameId: String) -> some View {
         if let gameInfo = gameRepository.getGame(by: gameId) {
             GameInfoDetailView(
                 game: gameInfo,
-                query: $gameResourcesType,
-                dataSource: $dataSource,
-                selectedVersions: $selectedVersions,
-                selectedCategories: $selectedCategories,
-                selectedFeatures: $selectedFeatures,
-                selectedResolutions: $selectedResolutions,
-                selectedPerformanceImpact: $selectedPerformanceImpact,
-                selectedProjectId: $selectedProjectId,
-                selectedLoaders: $selectedLoader,
-                gameType: $gameType,
-                selectedItem: $selectedItem,
-                searchText: $searchText,
-                localResourceFilter: $localResourceFilter
+                query: detailState.gameResourcesTypeBinding,
+                dataSource: filterState.dataSourceBinding,
+                selectedVersions: filterState.selectedVersionsBinding,
+                selectedCategories: filterState.selectedCategoriesBinding,
+                selectedFeatures: filterState.selectedFeaturesBinding,
+                selectedResolutions: filterState.selectedResolutionsBinding,
+                selectedPerformanceImpact: filterState.selectedPerformanceImpactBinding,
+                selectedProjectId: detailState.selectedProjectIdBinding,
+                selectedLoaders: filterState.selectedLoadersBinding,
+                gameType: detailState.gameTypeBinding,
+                selectedItem: detailState.selectedItemBinding,
+                searchText: filterState.searchTextBinding,
+                localResourceFilter: filterState.localResourceFilterBinding
             )
         }
     }
 
-    // MARK: - Resource Detail View
     @ViewBuilder
     private func resourceDetailView(type: ResourceType) -> some View {
-        if selectedProjectId != nil {
+        if detailState.selectedProjectId != nil {
             List {
                 ModrinthProjectDetailView(
-                    projectDetail: loadedProjectDetail
+                    projectDetail: detailState.loadedProjectDetail
                 )
             }
         } else {
             ModrinthDetailView(
                 query: type.rawValue,
-                selectedVersions: $selectedVersions,
-                selectedCategories: $selectedCategories,
-                selectedFeatures: $selectedFeatures,
-                selectedResolutions: $selectedResolutions,
-                selectedPerformanceImpact: $selectedPerformanceImpact,
-                selectedProjectId: $selectedProjectId,
-                selectedLoader: $selectedLoader,
+                selectedVersions: filterState.selectedVersionsBinding,
+                selectedCategories: filterState.selectedCategoriesBinding,
+                selectedFeatures: filterState.selectedFeaturesBinding,
+                selectedResolutions: filterState.selectedResolutionsBinding,
+                selectedPerformanceImpact: filterState.selectedPerformanceImpactBinding,
+                selectedProjectId: detailState.selectedProjectIdBinding,
+                selectedLoader: filterState.selectedLoadersBinding,
                 gameInfo: nil,
-                selectedItem: $selectedItem,
-                gameType: $gameType,
-                dataSource: $dataSource,
-                searchText: $searchText
+                selectedItem: detailState.selectedItemBinding,
+                gameType: detailState.gameTypeBinding,
+                dataSource: filterState.dataSourceBinding,
+                searchText: filterState.searchTextBinding
             )
         }
     }

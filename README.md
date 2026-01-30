@@ -29,7 +29,10 @@
 Swift Craft Launcher 是一款采用 SwiftUI 构建的原生 macOS Minecraft 启动器 🍎，提供流畅高效的游戏体验。专为现代 macOS 系统设计，集成全面的模组加载器支持、Microsoft 账户认证和直观的游戏管理功能。
 
 <div align="center">
-  <img src="https://s2.loli.net/2025/08/12/pTPxSJh1bCzmGKo.png" alt="SwiftCraftLauncher 截图" width="800">
+  <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-Assets/refs/heads/main/imagebed/readme/screenshot2026-01-29-01.17.31.gif" alt="SwiftCraftLauncher 截图" width="800">
+</div>
+<div align="center">
+  <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-Assets/refs/heads/main/imagebed/readme/screenshot2026-01-29-01.14.06.gif" alt="SwiftCraftLauncher 截图" width="800">
 </div>
 
 ## ✨ 核心特性

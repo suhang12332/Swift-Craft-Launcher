@@ -48,12 +48,22 @@ public struct GeneralSettingsView: View {
                 } message: {
                     Text("settings.language.restart.message".localized())
                 }
-            }.labeledContentStyle(.custom)
+            }.labeledContentStyle(.custom).padding(.bottom, 10)
 
             LabeledContent("settings.theme.picker".localized()) {
                 ThemeSelectorView(selectedTheme: $generalSettings.themeMode)
                     .fixedSize()
             }.labeledContentStyle(.custom)
+
+            LabeledContent("settings.interface_style.label".localized()) {
+                Picker("", selection: $generalSettings.interfaceLayoutStyle) {
+                    ForEach(InterfaceLayoutStyle.allCases, id: \.self) { style in
+                        Text(style.localizedName).tag(style)
+                    }
+                }
+                .labelsHidden()
+                .fixedSize()
+            }.labeledContentStyle(.custom).padding(.bottom, 10)
 
             LabeledContent("settings.launcher_working_directory".localized()) {
                 DirectorySettingRow(

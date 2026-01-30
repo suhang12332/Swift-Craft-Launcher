@@ -33,7 +33,7 @@ public struct ContentToolbarView: ToolbarContent {
     }
 
     public var body: some ToolbarContent {
-        ToolbarItemGroup(placement: .navigation) {
+        ToolbarItemGroup(placement: .primaryAction) {
             Button {
                 if currentPlayer == nil {
                     showPlayerAlert = true
@@ -60,17 +60,6 @@ public struct ContentToolbarView: ToolbarContent {
                     .presentationBackgroundInteraction(.automatic)
             }
             Spacer()
-        }
-        ToolbarItemGroup(placement: .primaryAction) {
-            // 后台下载 待实现
-//            Button(action: {
-//
-//            }) {
-//                Label("game.form.title".localized(), systemImage: "square.and.arrow.down.badge.clock")
-//                                Label("game.form.title".localized(), systemImage: "icloud.and.arrow.down.fill")
-//
-//            }
-
             // 添加玩家按钮
             Button {
                 playerName = ""
