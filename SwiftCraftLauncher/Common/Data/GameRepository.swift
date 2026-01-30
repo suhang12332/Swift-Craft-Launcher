@@ -16,11 +16,13 @@ class GameRepository: ObservableObject {
         gamesByWorkingPath[currentWorkingPath] ?? []
     }
 
-    /// 获取当前工作路径
+    /// 获取当前工作路径（由注入的 WorkingPathProviding 提供，职责分离）
     private var currentWorkingPath: String {
-        let customPath = GeneralSettingsManager.shared.launcherWorkingDirectory
-        return customPath.isEmpty ? AppPaths.launcherSupportDirectory.path : customPath
+        workingPathProvider.currentWorkingPath
     }
+
+    /// 工作路径提供者（协议注入，不直接依赖 GeneralSettingsManager）
+    private let workingPathProvider: WorkingPathProviding
 
     /// SQLite 数据库存储层
     private let database: GameVersionDatabase
@@ -36,8 +38,9 @@ class GameRepository: ObservableObject {
 
     // MARK: - Initialization
 
-    init() {
-        // 初始化数据库
+    /// - Parameter workingPathProvider: 工作路径提供者，默认使用 GeneralSettingsManager.shared
+    init(workingPathProvider: WorkingPathProviding = GeneralSettingsManager.shared) {
+        self.workingPathProvider = workingPathProvider
         let dbPath = AppPaths.gameVersionDatabase.path
         self.database = GameVersionDatabase(dbPath: dbPath)
 
@@ -78,10 +81,10 @@ class GameRepository: ObservableObject {
         // 在设置观察者之前，先同步更新 lastWorkingPath，避免初始化时的误触发
         lastWorkingPath = currentWorkingPath
 
-        // 使用 Combine 监听 GeneralSettingsManager 的变化
+        // 使用注入的 WorkingPathProviding 监听工作路径变化
         // 使用 debounce 避免频繁触发
         // 使用 skip(1) 跳过订阅时的初始值，只响应后续的变化
-        workingPathCancellable = GeneralSettingsManager.shared.objectWillChange
+        workingPathCancellable = workingPathProvider.workingPathWillChange
             .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }

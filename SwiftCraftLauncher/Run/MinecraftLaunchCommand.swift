@@ -1,10 +1,9 @@
 import Foundation
 import AVFoundation
-/// Minecraft 启动命令生成器
+/// Minecraft 启动命令生成器（仅负责进程与认证，由 GameLaunchUseCase 对外暴露）
 struct MinecraftLaunchCommand {
     let player: Player?
     let game: GameVersionInfo
-    let gameRepository: GameRepository
 
     /// 启动游戏（静默版本）
     func launchGame() async {

@@ -114,4 +114,14 @@ class GameStatusManager: ObservableObject {
     func isGameLaunching(gameId: String) -> Bool {
         return gameLaunchingStates[gameId] ?? false
     }
+
+    /// 移除指定游戏的状态缓存（删除游戏时调用）
+    /// - Parameter gameId: 游戏ID
+    func removeGameState(gameId: String) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.gameRunningStates.removeValue(forKey: gameId)
+            self.gameLaunchingStates.removeValue(forKey: gameId)
+        }
+    }
 }

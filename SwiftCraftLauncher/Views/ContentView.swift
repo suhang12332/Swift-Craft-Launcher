@@ -9,29 +9,14 @@ import SwiftUI
 import WebKit
 
 struct ContentView: View {
-    // MARK: - Properties
-    let selectedItem: SidebarItem
-    @Binding var selectedVersions: [String]
-    @Binding var selectedLicenses: [String]
-    @Binding var selectedCategories: [String]
-    @Binding var selectedFeatures: [String]
-    @Binding var selectedResolutions: [String]
-    @Binding var selectedPerformanceImpact: [String]
-    @Binding var selectProjectId: String?
-    @Binding var loadedProjectDetail: ModrinthProjectDetail?
-    @Binding var gameResourcesType: String
-    @Binding var selectedLoaders: [String]
-    @Binding var gameType: Bool
-    @Binding var gameId: String?
-    @Binding var dataSource: DataSource
-
+    @EnvironmentObject var filterState: ResourceFilterState
+    @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
 
-    // MARK: - Body
     var body: some View {
         List {
-            switch selectedItem {
+            switch detailState.selectedItem {
             case .game(let gameId):
                 gameContentView(gameId: gameId)
             case .resource(let type):
@@ -40,11 +25,10 @@ struct ContentView: View {
         }
     }
 
-    // MARK: - Game Content View
     @ViewBuilder
     private func gameContentView(gameId: String) -> some View {
         if let game = gameRepository.getGame(by: gameId) {
-            if gameType {
+            if detailState.gameType {
                 serverModeView(game: game)
             } else {
                 localModeView(game: game, gameId: gameId)
@@ -54,19 +38,19 @@ struct ContentView: View {
 
     private func serverModeView(game: GameVersionInfo) -> some View {
         CategoryContentView(
-            project: gameResourcesType,
+            project: detailState.gameResourcesType,
             type: "game",
-            selectedCategories: $selectedCategories,
-            selectedFeatures: $selectedFeatures,
-            selectedResolutions: $selectedResolutions,
-            selectedPerformanceImpacts: $selectedPerformanceImpact,
-            selectedVersions: $selectedVersions,
-            selectedLoaders: $selectedLoaders,
+            selectedCategories: filterState.selectedCategoriesBinding,
+            selectedFeatures: filterState.selectedFeaturesBinding,
+            selectedResolutions: filterState.selectedResolutionsBinding,
+            selectedPerformanceImpacts: filterState.selectedPerformanceImpactBinding,
+            selectedVersions: filterState.selectedVersionsBinding,
+            selectedLoaders: filterState.selectedLoadersBinding,
             gameVersion: game.gameVersion,
             gameLoader: game.modLoader == "Vanilla" ? nil : game.modLoader,
-            dataSource: dataSource
+            dataSource: filterState.dataSource
         )
-        .id(gameResourcesType)
+        .id(detailState.gameResourcesType)
     }
 
     private func localModeView(game: GameVersionInfo, gameId: String) -> some View {
@@ -74,25 +58,24 @@ struct ContentView: View {
             .id(gameId)
     }
 
-    // MARK: - Resource Content View
     @ViewBuilder
     private func resourceContentView(type: ResourceType) -> some View {
-        if let projectId = selectProjectId {
+        if let projectId = detailState.selectedProjectId {
             ModrinthProjectContentView(
-                projectDetail: $loadedProjectDetail,
+                projectDetail: detailState.loadedProjectDetailBinding,
                 projectId: projectId
             )
         } else {
             CategoryContentView(
                 project: type.rawValue,
                 type: "resource",
-                selectedCategories: $selectedCategories,
-                selectedFeatures: $selectedFeatures,
-                selectedResolutions: $selectedResolutions,
-                selectedPerformanceImpacts: $selectedPerformanceImpact,
-                selectedVersions: $selectedVersions,
-                selectedLoaders: $selectedLoaders,
-                dataSource: dataSource
+                selectedCategories: filterState.selectedCategoriesBinding,
+                selectedFeatures: filterState.selectedFeaturesBinding,
+                selectedResolutions: filterState.selectedResolutionsBinding,
+                selectedPerformanceImpacts: filterState.selectedPerformanceImpactBinding,
+                selectedVersions: filterState.selectedVersionsBinding,
+                selectedLoaders: filterState.selectedLoadersBinding,
+                dataSource: filterState.dataSource
             )
             .id(type)
         }

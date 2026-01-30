@@ -2,7 +2,7 @@ import Foundation
 import os.log
 import AppKit
 
-class Logger {
+class Logger: AppLogging {
     static let shared = Logger()
     private let logger = OSLog(
         subsystem: Bundle.main.identifier,
@@ -199,9 +199,21 @@ class Logger {
         )
     }
 
+    // MARK: - AppLogging
+
+    func logInfo(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
+        log(items, type: .info, prefix: "ℹ️", file: file, function: function, line: line)
+    }
+    func logWarning(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
+        log(items, type: .default, prefix: "⚠️", file: file, function: function, line: line)
+    }
+    func logError(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
+        log(items, type: .error, prefix: "❌", file: file, function: function, line: line)
+    }
+
     // MARK: - Core Logging
 
-    private func log(
+    fileprivate func log(
         _ items: [Any],
         type: OSLogType,
         prefix: String,
