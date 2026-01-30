@@ -1,6 +1,16 @@
 import Foundation
 import SwiftUI
 
+/// 主界面布局风格：经典（列表在左、内容在右）/ 聚焦（内容在左、列表在右）
+public enum InterfaceLayoutStyle: String, CaseIterable {
+    case classic = "classic"   // 经典
+    case focused = "focused"  // 聚焦
+
+    public var localizedName: String {
+        "settings.interface_style.\(rawValue)".localized()
+    }
+}
+
 public enum ThemeMode: String, CaseIterable {
     case light = "light"
     case dark = "dark"
@@ -94,6 +104,12 @@ class GeneralSettingsManager: ObservableObject {
     // 新增：启动器工作目录
     @AppStorage("launcherWorkingDirectory")
     var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
+        didSet { objectWillChange.send() }
+    }
+
+    /// 界面风格：经典（列表 | 内容）/ 聚焦（内容 | 列表）
+    @AppStorage("interfaceLayoutStyle")
+    var interfaceLayoutStyle: InterfaceLayoutStyle = .classic {
         didSet { objectWillChange.send() }
     }
 

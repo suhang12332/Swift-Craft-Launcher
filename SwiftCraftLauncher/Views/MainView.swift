@@ -51,63 +51,16 @@ struct MainView: View {
             SidebarView(selectedItem: $selectedItem, gameType: $gameType)
                 .navigationSplitViewColumnWidth(min: 168, ideal: 168, max: 168)
         } content: {
-
-            ContentView(
-                selectedItem: selectedItem,
-                selectedVersions: $selectedVersions,
-                selectedLicenses: $selectedLicenses,
-                selectedCategories: $selectedCategories,
-                selectedFeatures: $selectedFeatures,
-                selectedResolutions: $selectedResolutions,
-                selectedPerformanceImpact: $selectedPerformanceImpact,
-                selectProjectId: $selectedProjectId,
-                loadedProjectDetail: $loadedProjectDetail,
-                gameResourcesType: $gameResourcesType,
-                selectedLoaders: $selectedLoaders,
-                gameType: $gameType,
-                gameId: $gameId,
-                dataSource: $dataSource
-            )
-            .toolbar { ContentToolbarView() }.navigationSplitViewColumnWidth(
-                min: 235,
-                ideal: 240,
-                max: 280
-            )
+            if general.interfaceLayoutStyle == .classic {
+                middleColumnContentView
+            } else {
+                middleColumnDetailView
+            }
         } detail: {
-
-            DetailView(
-                selectedItem: $selectedItem,
-                gameResourcesType: $gameResourcesType,
-                selectedVersions: $selectedVersions,
-                selectedCategories: $selectedCategories,
-                selectedFeatures: $selectedFeatures,
-                selectedResolutions: $selectedResolutions,
-                selectedPerformanceImpact: $selectedPerformanceImpact,
-                selectedProjectId: $selectedProjectId,
-                loadedProjectDetail: $loadedProjectDetail,
-                selectTab: $selectedTab,
-                versionCurrentPage: $versionCurrentPage,
-                versionTotal: $versionTotal,
-                gameType: $gameType,
-                selectedLoader: $selectedLoaders,
-                dataSource: $dataSource,
-                searchText: $searchText,
-                localResourceFilter: $localResourceFilter
-            )
-            .toolbar {
-                DetailToolbarView(
-                    selectedItem: $selectedItem,
-                    gameResourcesType: $gameResourcesType,
-                    gameType: $gameType,
-                    versionCurrentPage: $versionCurrentPage,
-                    versionTotal: $versionTotal,
-                    project: $loadedProjectDetail,
-                    selectProjectId: $selectedProjectId,
-                    selectedTab: $selectedTab,
-                    gameId: $gameId,
-                    dataSource: $dataSource,
-                    localResourceFilter: $localResourceFilter
-                )
+            if general.interfaceLayoutStyle == .classic {
+                middleColumnDetailView
+            } else {
+                middleColumnContentView
             }
         }
         .frame(minWidth: 900, minHeight: 500)
@@ -127,6 +80,68 @@ struct MainView: View {
             // 重新扫描所有游戏
             scanAllGamesModsDirectory()
         }
+    }
+
+    // MARK: - Content / Detail Column Views（供对调配置使用）
+
+    /// 中间列默认视图：列表/筛选（DetailView）
+    @ViewBuilder private var middleColumnDetailView: some View {
+        DetailView(
+            selectedItem: $selectedItem,
+            gameResourcesType: $gameResourcesType,
+            selectedVersions: $selectedVersions,
+            selectedCategories: $selectedCategories,
+            selectedFeatures: $selectedFeatures,
+            selectedResolutions: $selectedResolutions,
+            selectedPerformanceImpact: $selectedPerformanceImpact,
+            selectedProjectId: $selectedProjectId,
+            loadedProjectDetail: $loadedProjectDetail,
+            selectTab: $selectedTab,
+            versionCurrentPage: $versionCurrentPage,
+            versionTotal: $versionTotal,
+            gameType: $gameType,
+            selectedLoader: $selectedLoaders,
+            dataSource: $dataSource,
+            searchText: $searchText,
+            localResourceFilter: $localResourceFilter
+        )
+        .toolbar {
+            DetailToolbarView(
+                selectedItem: $selectedItem,
+                gameResourcesType: $gameResourcesType,
+                gameType: $gameType,
+                versionCurrentPage: $versionCurrentPage,
+                versionTotal: $versionTotal,
+                project: $loadedProjectDetail,
+                selectProjectId: $selectedProjectId,
+                selectedTab: $selectedTab,
+                gameId: $gameId,
+                dataSource: $dataSource,
+                localResourceFilter: $localResourceFilter
+            )
+        }
+    }
+
+    /// 右侧列默认视图：详情/内容（ContentView）
+    @ViewBuilder private var middleColumnContentView: some View {
+        ContentView(
+            selectedItem: selectedItem,
+            selectedVersions: $selectedVersions,
+            selectedLicenses: $selectedLicenses,
+            selectedCategories: $selectedCategories,
+            selectedFeatures: $selectedFeatures,
+            selectedResolutions: $selectedResolutions,
+            selectedPerformanceImpact: $selectedPerformanceImpact,
+            selectProjectId: $selectedProjectId,
+            loadedProjectDetail: $loadedProjectDetail,
+            gameResourcesType: $gameResourcesType,
+            selectedLoaders: $selectedLoaders,
+            gameType: $gameType,
+            gameId: $gameId,
+            dataSource: $dataSource
+        )
+        .toolbar { ContentToolbarView() }
+        .navigationSplitViewColumnWidth(min: 235, ideal: 235, max: 280)
     }
 
     // MARK: - Sidebar Item Change Handlers
