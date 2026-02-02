@@ -20,7 +20,6 @@ class SQLiteDatabase {
     init(path: String, queue: DispatchQueue? = nil) {
         self.dbPath = path
         self.queue = queue ?? DispatchQueue(label: "com.swiftcraftlauncher.sqlite", qos: .utility)
-        // 设置队列特定键，用于检测是否已在队列内
         self.queue.setSpecific(key: Self.queueKey, value: true)
     }
 
@@ -30,7 +29,6 @@ class SQLiteDatabase {
 
     // MARK: - Connection Management
 
-    /// 检查是否已在队列内执行
     private var isOnQueue: Bool {
         return DispatchQueue.getSpecific(key: Self.queueKey) != nil
     }
@@ -106,7 +104,6 @@ class SQLiteDatabase {
             )
         }
 
-        // 设置 WAL 自动检查点（每 1000 页或 10MB）
         sqlite3_exec(db, "PRAGMA wal_autocheckpoint=1000;", nil, nil, nil)
 
         Logger.shared.debug("WAL 模式已启用")

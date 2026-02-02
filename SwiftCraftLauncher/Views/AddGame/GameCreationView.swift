@@ -95,7 +95,7 @@ struct GameCreationView: View {
             viewModel.handleCancel()
         }
         // ViewModel 的数据会在下次打开时重新初始化，这里主要清理临时文件
-        // 注意：不要重置 ViewModel 的状态，因为可能正在使用中
+        // 不重置 ViewModel 状态，可能正在使用
     }
 
     // MARK: - View Components

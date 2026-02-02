@@ -87,7 +87,7 @@ struct GameLocalResourceView: View {
                 refreshAllFiles()
                 loadPage(page: 1, append: false)
             }
-            // 注意：不再清除搜索文本，保持用户搜索状态
+            // 保持搜索文本
             searchText = ""
         }
         .onChange(of: searchText) { oldValue, newValue in
@@ -229,22 +229,21 @@ struct GameLocalResourceView: View {
 
     /// 根据 title 和 projectType 过滤资源详情
     private func filterResourcesByTitle(_ details: [ModrinthProjectDetail]) -> [ModrinthProjectDetail] {
-        // 首先根据 query 筛选资源类型
+        // 按 query 筛选资源类型
         let queryLower = query.lowercased()
         let filteredByType = details.filter { detail in
-            // 对于本地资源（id 以 "local_" 或 "file_" 开头），目录本身已经根据 query 筛选了，
-            // 所以不需要再根据 projectType 筛选（因为 fallback detail 的 projectType 总是 "mod"）
+            // 本地资源（local_/file_ 开头）目录已按 query 筛选，fallback 的 projectType 恒为 mod
             if detail.id.hasPrefix("local_") || detail.id.hasPrefix("file_") {
                 // 本地资源：目录已经筛选，直接显示
                 return true
             } else {
                 // 从 API 获取的资源：根据 projectType 筛选
-                // 确保只显示与 query 匹配的资源类型
+                // 只显示与 query 匹配的资源类型
                 return detail.projectType.lowercased() == queryLower
             }
         }
 
-        // 然后根据搜索文本过滤
+        // 按搜索文本过滤
         let searchLower = searchText.lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
 

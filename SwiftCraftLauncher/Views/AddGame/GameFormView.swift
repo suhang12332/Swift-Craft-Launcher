@@ -104,7 +104,7 @@ struct GameFormView: View {
         )
 
         // 当处于“导入启动器”模式时，避免在父视图再挂一个 fileImporter，
-        // 这样可以让子视图 LauncherImportView 自己的 fileImporter 正常工作。
+        // 让子视图的 fileImporter 正常工作
         if case .launcherImport = mode {
             content
         } else {
@@ -167,12 +167,12 @@ struct GameFormView: View {
             }
 
             Button {
-                // 先切换到非 launcherImport 模式，确保 fileImporter 可以被附加
+                // 先切换到非 launcherImport 模式
                 if case .launcherImport = mode {
                     mode = .creation
                 }
                 filePickerType = .modPack
-                // 使用异步确保视图已更新，fileImporter 已附加
+                // 异步等待视图更新
                 DispatchQueue.main.async {
                     showFilePicker = true
                 }

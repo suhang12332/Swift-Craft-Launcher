@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 /// 选中游戏管理器
-/// 用于在主视图和设置页面之间共享当前选中的游戏ID
+/// 主视图与设置页共享当前选中的游戏 ID
 class SelectedGameManager: ObservableObject {
     // MARK: - 单例实例
     static let shared = SelectedGameManager()
@@ -23,7 +23,6 @@ class SelectedGameManager: ObservableObject {
     }
 
     private init() {
-        // 私有初始化，确保单例模式
     }
 
     /// 设置选中的游戏ID

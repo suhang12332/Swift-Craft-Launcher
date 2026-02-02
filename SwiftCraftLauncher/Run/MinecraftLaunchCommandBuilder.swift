@@ -1,8 +1,6 @@
 import Foundation
 
 enum MinecraftLaunchCommandBuilder {
-    /// 构建启动命令（静默版本）
-    /// - Returns: 启动命令数组，失败时返回空数组
     static func build(
         manifest: MinecraftVersionManifest,
         gameInfo: GameVersionInfo,
@@ -24,8 +22,6 @@ enum MinecraftLaunchCommandBuilder {
         }
     }
 
-    /// 构建启动命令（抛出异常版本）
-    /// - Throws: GlobalError 当构建失败时
     static func buildThrowing(
         manifest: MinecraftVersionManifest,
         gameInfo: GameVersionInfo,
@@ -92,12 +88,6 @@ enum MinecraftLaunchCommandBuilder {
         return allArgs
     }
 
-    /// 验证并获取必要的路径
-    /// - Parameters:
-    ///   - gameInfo: 游戏信息
-    ///   - manifest: 版本清单
-    /// - Returns: 验证后的路径集合
-    /// - Throws: GlobalError 当路径无效时
     private static func validateAndGetPaths(
         gameInfo: GameVersionInfo,
         manifest: MinecraftVersionManifest
@@ -240,8 +230,7 @@ enum MinecraftLaunchCommandBuilder {
         }
     }
 
-    /// 获取分类器库路径
-    /// 注意：classifiers 库不再添加到 classpath 中，此方法保留用于其他用途
+    // 已废弃：classifiers 库不再添加到 classpath
     private static func getClassifierPaths(library: Library, librariesDir: URL, minecraftVersion: String) -> [String] {
         // 不再将 classifiers 添加到 classpath 中
         return []

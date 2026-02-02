@@ -544,7 +544,7 @@ extension SkinToolDetailView {
                 return
             }
 
-            // 首先检查 publicSkinInfo 中是否有 capeURL（可能更快）
+            // 优先检查 publicSkinInfo 中的 capeURL
             if let capeURL = publicSkinInfo?.capeURL, !capeURL.isEmpty {
                 await MainActor.run {
                     selectedCapeImageURL = capeURL
@@ -788,7 +788,7 @@ extension SkinToolDetailView {
         // 删除临时皮肤文件
         if let skinPath = selectedSkinPath, !skinPath.isEmpty {
             let skinURL = URL(fileURLWithPath: skinPath)
-            // 只删除我们创建的临时文件（在临时目录中）
+            // 只删除临时目录中的临时文件
             if skinURL.path.hasPrefix(fileManager.temporaryDirectory.path) {
                 do {
                     try fileManager.removeItem(at: skinURL)
@@ -802,7 +802,7 @@ extension SkinToolDetailView {
         // 删除临时披风文件
         if let capePath = selectedCapeLocalPath, !capePath.isEmpty {
             let capeURL = URL(fileURLWithPath: capePath)
-            // 只删除我们创建的临时文件（在临时目录中）
+            // 只删除临时目录中的临时文件
             if capeURL.path.hasPrefix(fileManager.temporaryDirectory.path) {
                 do {
                     try fileManager.removeItem(at: capeURL)

@@ -150,7 +150,7 @@ enum CommonService {
     static func fetchAllVersionThrowing(
         type: String
     ) async throws -> [LoaderVersion] {
-        // 首先获取版本清单
+        // 获取版本清单
         let manifestURL = URLConfig.API.Modrinth.loaderManifest(loader: type)
         // 使用统一的 API 客户端
         let manifestData = try await APIClient.get(url: manifestURL)

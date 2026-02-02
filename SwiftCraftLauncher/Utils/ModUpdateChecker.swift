@@ -8,7 +8,7 @@
 import Foundation
 
 /// Mod 更新检测器
-/// 用于检测本地安装的 mod 是否有新版本可用
+/// 检测本地 mod 更新
 enum ModUpdateChecker {
 
     /// 检测结果

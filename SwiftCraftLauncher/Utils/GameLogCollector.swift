@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 
 /// 游戏日志收集器
-/// 用于收集游戏文件夹中的崩溃日志和日志文件，并发送到 AI 窗口
+/// 收集崩溃日志并发送到 AI 窗口
 @MainActor
 class GameLogCollector {
     static let shared = GameLogCollector()

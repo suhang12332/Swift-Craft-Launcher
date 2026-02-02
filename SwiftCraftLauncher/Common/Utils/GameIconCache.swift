@@ -3,7 +3,7 @@ import SwiftUI
 import Combine
 
 /// 游戏图标缓存管理器
-/// 用于缓存图标文件的存在性检查和 URL，避免重复的文件系统访问
+/// 图标缓存，避免重复文件系统访问
 /// 使用 @unchecked Sendable 因为已经通过 DispatchQueue 确保线程安全
 final class GameIconCache: @unchecked Sendable {
     static let shared = GameIconCache()
@@ -125,7 +125,7 @@ final class GameIconCache: @unchecked Sendable {
     func invalidateCache(for gameName: String) {
         cacheQueue.async(flags: .barrier) {
             // NSCache 没有 allKeys，需要手动维护键列表或使用其他方式
-            // 这里简化处理：直接清空所有缓存
+            // 简化处理：直接清空缓存
             // 如果需要更精细的控制，可以维护一个单独的键集合
             self.existenceCache.removeAllObjects()
             self.urlCache.removeAllObjects()

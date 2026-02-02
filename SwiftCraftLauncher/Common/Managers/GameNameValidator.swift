@@ -39,7 +39,6 @@ class GameNameValidator: ObservableObject {
         }
     }
 
-    /// 重置验证状态
     func reset() {
         gameName = ""
         isGameNameDuplicate = false

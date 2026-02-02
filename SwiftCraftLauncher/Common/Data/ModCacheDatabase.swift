@@ -11,7 +11,6 @@ class ModCacheDatabase {
 
     // MARK: - Initialization
 
-    /// 初始化 Mod 缓存数据库
     /// - Parameter dbPath: 数据库文件路径
     init(dbPath: String) {
         self.db = SQLiteDatabase(path: dbPath)
@@ -231,7 +230,6 @@ class ModCacheDatabase {
         }
     }
 
-    /// 检查是否存在指定的 mod 缓存
     /// - Parameter hash: mod 文件的 hash 值
     /// - Returns: 是否存在
     /// - Throws: GlobalError 当操作失败时

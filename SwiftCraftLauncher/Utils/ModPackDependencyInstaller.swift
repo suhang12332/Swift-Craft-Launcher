@@ -587,7 +587,7 @@ enum ModPackDependencyInstaller {
         resourceDir: URL,
         onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
     ) async -> Bool {
-        // 首先检查 Modrinth 格式的 overrides 文件夹
+        // 优先检查 Modrinth 格式的 overrides
         var overridesPath = extractedPath.appendingPathComponent("overrides")
 
         // 如果不存在，检查 CurseForge 格式的 overrides 文件夹

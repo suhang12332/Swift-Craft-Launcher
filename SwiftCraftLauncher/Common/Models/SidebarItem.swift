@@ -17,7 +17,7 @@ public enum SidebarItem: Hashable, Identifiable {
     public var title: String {
         switch self {
         case .game(let gameId):
-            return gameId  // 这里可以改为从游戏数据中获取名称
+            return gameId  // 可从游戏数据获取名称
         case .resource(let type):
             return type.localizedName
         }

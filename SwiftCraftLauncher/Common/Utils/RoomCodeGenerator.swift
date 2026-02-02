@@ -59,9 +59,9 @@ enum RoomCodeGenerator {
 
         // 步骤 4: 调整为 7 的倍数（调整最后一个字符）
         if mod7Value != 0 {
-            // 我们计算模7值的方式是：mod7Value = (baseMod * 6 + lastCharIndex) % 7
+            // 模7值计算：mod7Value = (baseMod * 6 + lastCharIndex) % 7
             // 其中 baseMod 是前15个字符的贡献
-            // 我们想要：0 = (baseMod * 6 + newLastChar) % 7
+            // 目标：0 = (baseMod * 6 + newLastChar) % 7
             // 所以：newLastChar ≡ -baseMod * 6 (mod 7)
             // 而：baseMod * 6 ≡ mod7Value - lastCharIndex (mod 7)
             // 因此：newLastChar ≡ -(mod7Value - lastCharIndex) ≡ lastCharIndex - mod7Value (mod 7)

@@ -26,7 +26,7 @@ class Logger: AppLogging {
         // 获取应用名称，移除空格并转换为小写
         let appName = Bundle.main.appName.replacingOccurrences(of: " ", with: "-").lowercased()
 
-        // 确保logs目录存在
+        // 创建 logs 目录
         try? FileManager.default.createDirectory(at: logsDirectory, withIntermediateDirectories: true)
 
         // 使用应用名称-日期格式作为文件名

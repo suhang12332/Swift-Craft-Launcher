@@ -88,9 +88,6 @@ class ModScanner {
 
     // MARK: - Mod Cache (Database)
 
-    /// 从数据库读取 mod 缓存
-    /// - Parameter hash: mod 文件的 hash 值
-    /// - Returns: ModrinthProjectDetail，如果不存在则返回 nil
     private func getModCacheFromDatabase(hash: String) -> ModrinthProjectDetail? {
         guard let jsonData = ModCacheManager.shared.get(hash: hash) else {
             return nil
@@ -104,10 +101,6 @@ class ModScanner {
         }
     }
 
-    /// 保存 mod 缓存到数据库
-    /// - Parameters:
-    ///   - hash: mod 文件的 hash 值
-    ///   - detail: ModrinthProjectDetail 对象
     func saveToCache(hash: String, detail: ModrinthProjectDetail) {
         do {
             let jsonData = try JSONEncoder().encode(detail)
@@ -124,12 +117,10 @@ class ModScanner {
 
     // MARK: - Hash
 
-    /// 计算文件 SHA1 哈希值（静默版本）
     static func sha1Hash(of url: URL) -> String? {
         return SHA1Calculator.sha1Silent(ofFileAt: url)
     }
 
-    /// 计算文件 SHA1 哈希值（抛出异常版本）
     static func sha1HashThrowing(of url: URL) throws -> String? {
         return try SHA1Calculator.sha1(ofFileAt: url)
     }
@@ -330,7 +321,7 @@ extension ModScanner {
         }
     }
 
-    /// 检查 mod 是否已安装（核心逻辑）
+    /// 检查 mod 是否已安装
     private func checkModInstalledCore(
         hash: String,
         gameName: String
@@ -399,9 +390,7 @@ extension ModScanner {
         }
     }
 
-    /// 异步扫描：仅获取所有 hash（抛出异常版本）
-    /// 在后台线程执行，只从缓存读取，不创建 fallback
-    /// 返回 Set 以提高查找性能（O(1)）
+    // 返回 Set 以提高查找性能（O(1)）
     public func scanAllDetailIdsThrowing(in dir: URL) async throws -> Set<String> {
         // 如果是 mods 目录，优先返回缓存
         if isModsDirectory(dir) {
@@ -460,8 +449,6 @@ extension ModScanner {
         }.value
     }
 
-    /// 扫描单个游戏的 mods 目录（异步版本）
-    /// - Parameter game: 要扫描的游戏
     public func scanGameModsDirectory(game: GameVersionInfo) async {
         let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
 
@@ -481,8 +468,6 @@ extension ModScanner {
         }
     }
 
-    /// 扫描单个游戏的 mods 目录（同步阻塞版本）
-    /// - Parameter game: 要扫描的游戏
     public func scanGameModsDirectorySync(game: GameVersionInfo) {
         let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
 
@@ -508,19 +493,12 @@ extension ModScanner {
         semaphore.wait()
     }
 
-    /// 判断目录是否是 mods 目录
-    /// - Parameter dir: 目录 URL
-    /// - Returns: 是否是 mods 目录
     private func isModsDirectory(_ dir: URL) -> Bool {
         return dir.lastPathComponent.lowercased() == "mods"
     }
 
-    /// 从 mods 目录路径中提取游戏名称
-    /// - Parameter modsDir: mods 目录 URL
-    /// - Returns: 游戏名称，如果无法提取则返回 nil
+    // mods 目录结构：profileRootDirectory/gameName/mods
     private func extractGameName(from modsDir: URL) -> String? {
-        // mods 目录结构：profileRootDirectory/gameName/mods
-        // 所以 gameName 是 mods 目录的父目录名称
         let parentDir = modsDir.deletingLastPathComponent()
         return parentDir.lastPathComponent
     }
@@ -815,20 +793,13 @@ extension ModScanner {
 
 // MARK: - Mod Installation Cache
 extension ModScanner {
-    /// Mod 安装状态缓存管理器
-    /// 用于管理 mod 的安装状态缓存（仅内存缓存）
     actor ModInstallationCache {
         static let shared = ModInstallationCache()
 
-        /// 内存缓存：gameName -> Set<hash>
         private var cache: [String: Set<String>] = [:]
 
         private init() {}
 
-        /// 添加 hash 到缓存
-        /// - Parameters:
-        ///   - hash: 要添加的 hash
-        ///   - gameName: 游戏名称
         func addHash(_ hash: String, to gameName: String) {
             if var cached = cache[gameName] {
                 cached.insert(hash)
@@ -839,10 +810,6 @@ extension ModScanner {
             }
         }
 
-        /// 从缓存中删除指定的 hash
-        /// - Parameters:
-        ///   - hash: 要删除的 hash
-        ///   - gameName: 游戏名称
         func removeHash(_ hash: String, from gameName: String) {
             if var cached = cache[gameName] {
                 cached.remove(hash)
@@ -850,64 +817,39 @@ extension ModScanner {
             }
         }
 
-        /// 查询指定游戏的所有已安装 mod hash 集合
-        /// - Parameter gameName: 游戏名称
-        /// - Returns: 已安装的 mod hash 集合，如果不存在则返回空集合
         func getAllModsInstalled(for gameName: String) -> Set<String> {
             return cache[gameName] ?? Set<String>()
         }
 
-        /// 检查指定游戏的缓存是否存在
-        /// - Parameter gameName: 游戏名称
-        /// - Returns: 缓存是否存在
         func hasCache(for gameName: String) -> Bool {
             return cache[gameName] != nil
         }
 
-        /// 批量设置指定游戏的所有已安装 mod hash 集合
-        /// - Parameters:
-        ///   - gameName: 游戏名称
-        ///   - hashes: 要设置的 hash 集合
         func setAllModsInstalled(for gameName: String, hashes: Set<String>) {
             cache[gameName] = hashes
         }
 
-        /// 删除指定游戏的 mod 扫描缓存（删除游戏时调用）
-        /// - Parameter gameName: 游戏名称
         func removeGame(gameName: String) {
             cache.removeValue(forKey: gameName)
         }
     }
 
-    /// 添加 hash 到缓存
-    /// - Parameters:
-    ///   - hash: 要添加的 hash
-    ///   - gameName: 游戏名称
     func addModHash(_ hash: String, to gameName: String) {
         Task {
             await ModInstallationCache.shared.addHash(hash, to: gameName)
         }
     }
 
-    /// 从缓存中删除指定的 hash
-    /// - Parameters:
-    ///   - hash: 要删除的 hash
-    ///   - gameName: 游戏名称
     func removeModHash(_ hash: String, from gameName: String) {
         Task {
             await ModInstallationCache.shared.removeHash(hash, from: gameName)
         }
     }
 
-    /// 查询指定游戏的所有已安装 mod hash 集合
-    /// - Parameter gameName: 游戏名称
-    /// - Returns: 已安装的 mod hash 集合，如果不存在则返回空集合
     func getAllModsInstalled(for gameName: String) async -> Set<String> {
         return await ModInstallationCache.shared.getAllModsInstalled(for: gameName)
     }
 
-    /// 清除指定游戏的 mod 扫描缓存（删除游戏时调用）
-    /// - Parameter gameName: 游戏名称
     func clearModCache(for gameName: String) async {
         await ModInstallationCache.shared.removeGame(gameName: gameName)
     }

@@ -6,9 +6,6 @@ class JavaManager {
 
     private let fileManager = FileManager.default
 
-    /// 获取Java可执行文件路径（仅拼接路径，不验证文件是否存在或Java是否可用）
-    /// - Parameter version: Java运行时component版本（如"java-runtime-alpha"）
-    /// - Returns: Java可执行文件路径
     func getJavaExecutablePath(version: String) -> String {
         return AppPaths.runtimeDirectory.appendingPathComponent(version).appendingPathComponent("jre.bundle/Contents/Home/bin/java").path
     }
@@ -29,9 +26,6 @@ class JavaManager {
         return javaPath
     }
 
-    /// 验证Java是否能正常启动
-    /// - Parameter javaPath: Java可执行文件路径
-    /// - Returns: 是否能正常启动
     func canJavaRun(at javaPath: String) -> Bool {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: javaPath)
@@ -46,7 +40,6 @@ class JavaManager {
             try process.run()
             process.waitUntilExit()
 
-            // 检查退出状态
             let exitCode = process.terminationStatus
             if exitCode == 0 {
                 Logger.shared.debug("Java启动验证成功: \(javaPath)")
@@ -61,9 +54,7 @@ class JavaManager {
         }
     }
 
-    /// 检查Java是否存在，如果不存在则使用进度窗口下载，并返回Java路径
-    /// - Parameter version: Java版本
-    /// - Returns: Java可执行文件路径（可能为空字符串，表示失败）
+    // 检查Java是否存在，不存在则使用进度窗口下载
     func ensureJavaExists(version: String) async -> String {
         // 优先使用已经存在并且可运行的 Java
         let existingPath = findJavaExecutable(version: version)
@@ -85,10 +76,6 @@ class JavaManager {
         return newPath
     }
 
-    /// 根据游戏版本号获取默认Java路径
-    /// 通过查询缓存的版本文件获取component，然后拼接Java路径（不验证文件是否存在）
-    /// - Parameter gameVersion: 游戏版本号（如"1.20.1"）
-    /// - Returns: Java可执行文件路径
     func findDefaultJavaPath(for gameVersion: String) async -> String {
         do {
             // 查询缓存的版本文件获取manifest

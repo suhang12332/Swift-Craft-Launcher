@@ -1,22 +1,15 @@
 import CryptoKit
 import SwiftUI
 
-/// 玩家工具类，提供UUID生成和头像名称获取等功能
+/// 玩家工具类
 enum PlayerUtils {
     // MARK: - Constants
 
-    /// 预定义的玩家名称列表
     private static let names = ["alex", "ari", "efe", "kai", "makena", "noor", "steve", "sunny", "zuri"]
-
-    /// UUID 前缀
     private static let offlinePrefix = "OfflinePlayer:"
 
     // MARK: - UUID Generation
 
-    /// 为离线玩家生成UUID
-    /// - Parameter username: 玩家用户名
-    /// - Returns: 生成的UUID字符串（小写）
-    /// - Throws: GlobalError 当操作失败时
     static func generateOfflineUUID(for username: String) throws -> String {
         guard !username.isEmpty else {
             throw GlobalError.player(
@@ -45,9 +38,6 @@ enum PlayerUtils {
 
     // MARK: - Avatar Name Generation
 
-    /// 根据UUID获取对应的头像名称
-    /// - Parameter uuid: 玩家UUID
-    /// - Returns: 头像名称，如果UUID无效则返回nil
     static func avatarName(for uuid: String) -> String? {
         guard let index = nameIndex(for: uuid) else {
             Logger.shared.warning("无法获取头像名称 - 无效的UUID: \(uuid)")
@@ -56,9 +46,6 @@ enum PlayerUtils {
         return names[index]
     }
 
-    /// 根据UUID计算名称数组的索引
-    /// - Parameter uuid: 玩家UUID
-    /// - Returns: 名称数组的索引（0~8），如果UUID无效则返回nil
     private static func nameIndex(for uuid: String) -> Int? {
         let cleanUUID = uuid.replacingOccurrences(of: "-", with: "")
         guard cleanUUID.count >= 32 else { return nil }

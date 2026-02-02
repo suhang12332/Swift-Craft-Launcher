@@ -255,7 +255,7 @@ class LauncherImportViewModel: BaseGameFormViewModel {
             return
         }
 
-        // 验证 Mod Loader 是否支持（错误已在 checkAndNotifyUnsupportedModLoader 中显示，这里只记录日志）
+        // 验证 Mod Loader 支持，错误已显示，此处仅记录日志
         guard AppConstants.modLoaders.contains(instanceInfo.modLoader.lowercased()) else {
             Logger.shared.error("实例 \(instanceName) 使用了不支持的 Mod Loader: \(instanceInfo.modLoader)")
             return
@@ -306,7 +306,7 @@ class LauncherImportViewModel: BaseGameFormViewModel {
             return
         }
 
-        // 2. 然后下载游戏和 Mod Loader（只下载缺失的文件，不会覆盖已有的文件）
+        // 2. 下载游戏和 Mod Loader（只下载缺失的，不覆盖已有）
         let downloadSuccess = await withCheckedContinuation { continuation in
             Task {
                 await gameSetupService.saveGame(

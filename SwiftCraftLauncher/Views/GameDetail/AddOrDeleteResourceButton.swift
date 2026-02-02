@@ -143,7 +143,7 @@ struct AddOrDeleteResourceButton: View {
                 Button("common.delete".localized(), role: .destructive) {
                     deleteFile()
                 }
-                .keyboardShortcut(.defaultAction)  // 这里可以绑定回车键
+                .keyboardShortcut(.defaultAction)  // 绑定回车键
 
                 Button("common.cancel".localized(), role: .cancel) {}
             } message: {
@@ -567,12 +567,12 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        // 先设置 preloadedDetail，确保数据已准备好
+        // 先设置 preloadedDetail
         await MainActor.run {
             preloadedDetail = result.detail
         }
 
-        // 等待一个主线程周期，确保 preloadedDetail 已设置，然后再显示 sheet
+        // 等待主线程周期后再显示 sheet
         await MainActor.run {
             // 只有当 preloadedDetail 不为 nil 时才显示 sheet
             if preloadedDetail != nil {

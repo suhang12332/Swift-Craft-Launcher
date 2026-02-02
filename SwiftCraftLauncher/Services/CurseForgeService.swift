@@ -111,7 +111,7 @@ enum CurseForgeService {
 
         var files: [CurseForgeModFileDetail] = []
 
-        // 首先尝试从 latestFiles 中获取文件列表
+        // 优先从 latestFiles 获取文件列表
         if let latestFilesIndexes = modDetailToUse.latestFilesIndexes, !latestFilesIndexes.isEmpty {
             // 如果 latestFiles 不存在，从 latestFilesIndexes 构造文件详情
             // 按 fileId 分组，收集所有游戏版本
@@ -178,7 +178,7 @@ enum CurseForgeService {
                     matchingFileIds.contains(file.id)
                 }
             }
-            // 注意：如果 latestFilesIndexes 不存在，无法进行 modLoaderType 过滤
+            // latestFilesIndexes 不存在时无法按 modLoaderType 过滤
             // 这种情况下返回所有文件（可能包含不匹配的加载器）
         }
 
@@ -629,7 +629,7 @@ enum CurseForgeService {
             let versionMatch = selectedVersions.isEmpty || !Set(file.gameVersions).isDisjoint(with: selectedVersions)
 
             // 对于光影包、资源包、数据包，不需要检查加载器匹配
-            // 对于其他类型，如果指定了加载器，需要匹配（但CurseForge API可能不返回加载器信息，所以这里简化处理）
+            // 其他类型需匹配加载器，CurseForge API 可能不返回，简化处理
             let loaderMatch = !shouldFilterByLoader || modLoaderTypes.isEmpty || true
 
             return versionMatch && loaderMatch

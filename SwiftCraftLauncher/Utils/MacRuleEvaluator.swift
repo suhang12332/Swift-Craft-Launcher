@@ -31,7 +31,6 @@ struct MacRule {
 
 enum MacRuleEvaluator {
 
-    /// 获取当前 Java 架构
     static func getCurrentJavaArch() -> String {
         #if os(macOS)
         return Architecture.current.javaArch
@@ -40,9 +39,6 @@ enum MacRuleEvaluator {
         #endif
     }
 
-    /// 检查是否为低版本 Minecraft (1.19 以下)
-    /// - Parameter version: Minecraft 版本号
-    /// - Returns: 是否为低版本
     static func isLowVersion(_ version: String) -> Bool {
         let versionComponents = version.split(separator: ".").compactMap { Int($0) }
         guard versionComponents.count >= 2 else { return false }
@@ -54,9 +50,7 @@ enum MacRuleEvaluator {
         return major < 1 || (major == 1 && minor < 19)
     }
 
-    /// 获取当前平台支持的 macOS 标识符列表（按优先级排序）
-    /// - Parameter minecraftVersion: Minecraft 版本号（可选）
-    /// - Returns: 支持的 macOS 标识符列表
+    // 返回支持的 macOS 标识符列表，按优先级排序
     static func getSupportedMacOSIdentifiers(minecraftVersion: String? = nil) -> [String] {
         #if os(macOS)
         let isLowVersion = minecraftVersion.map { Self.isLowVersion($0) } ?? false
@@ -71,16 +65,10 @@ enum MacRuleEvaluator {
         #endif
     }
 
-    /// 检查给定的标识符是否被当前平台支持
-    /// - Parameters:
-    ///   - identifier: 要检查的标识符
-    ///   - minecraftVersion: Minecraft 版本号（可选）
-    /// - Returns: 是否支持
     static func isPlatformIdentifierSupported(_ identifier: String, minecraftVersion: String? = nil) -> Bool {
         return getSupportedMacOSIdentifiers(minecraftVersion: minecraftVersion).contains(identifier)
     }
 
-    /// 从 Minecraft 的 Rule 结构转换为 MacRule
     static func convertFromMinecraftRules(_ rules: [Rule]) -> [MacRule] {
         return rules.compactMap { rule in
             guard let action = RuleAction(rawValue: rule.action) else { return nil }
@@ -98,7 +86,6 @@ enum MacRuleEvaluator {
         }
     }
 
-    /// 评估规则是否允许
     static func isAllowed(_ rules: [Rule], minecraftVersion: String? = nil) -> Bool {
         guard !rules.isEmpty else { return true }
 

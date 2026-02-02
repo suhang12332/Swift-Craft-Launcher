@@ -156,7 +156,7 @@ enum ModrinthToCurseForgeCategoryMapper {
 
     // MARK: - Datapack 分类映射表
     /// Modrinth datapack 使用与 mod 相同的一组分类 key（adventure/magic/technology/...），
-    /// 这里将这些 key 映射到 CurseForge Data Packs（classId=6945）的分类 ID
+    /// 将 key 映射到 CurseForge Data Packs（classId=6945）分类 ID
     /// 参考 `cf.json` 中 classId=6945 下的分类：
     /// - 6948 Adventure
     /// - 6949 Fantasy

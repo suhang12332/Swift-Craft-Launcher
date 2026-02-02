@@ -461,7 +461,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         do {
             let profile = try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
 
-            // 由于 accessToken、authXuid 和 refreshToken 不是从 API 响应中获取的，我们需要手动设置
+            // accessToken、authXuid 和 refreshToken 非 API 返回，需手动设置
             return MinecraftProfileResponse(
                 id: profile.id,
                 name: profile.name,

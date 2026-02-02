@@ -429,7 +429,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     }
 
     func parseModrinthIndex(extractedPath: URL) async -> ModrinthIndexInfo? {
-        // 首先尝试解析 Modrinth 格式
+            // 优先解析 Modrinth 格式
         if let modrinthInfo = await parseModrinthIndexInternal(extractedPath: extractedPath) {
             return modrinthInfo
         }

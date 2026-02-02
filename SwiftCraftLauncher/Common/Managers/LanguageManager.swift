@@ -4,10 +4,23 @@ import SwiftUI
 /// 语言管理器
 /// 只负责语言列表和 bundle
 public class LanguageManager {
-    // 新增：启动器工作目录
-    @AppStorage("selectedLanguage")
-    public var selectedLanguage: String = "" {
-        didSet {  }
+    private static let appleLanguagesKey = "AppleLanguages"
+
+    /// 当前选中的语言（取 AppleLanguages 数组的第一个）
+    public var selectedLanguage: String {
+        get {
+            UserDefaults.standard.stringArray(forKey: Self.appleLanguagesKey)?.first ?? ""
+        }
+        set {
+            if newValue.isEmpty {
+                UserDefaults.standard.set([String](), forKey: Self.appleLanguagesKey)
+            } else {
+                var langs = UserDefaults.standard.stringArray(forKey: Self.appleLanguagesKey) ?? []
+                langs.removeAll { $0 == newValue }
+                langs.insert(newValue, at: 0)
+                UserDefaults.standard.set(langs, forKey: Self.appleLanguagesKey)
+            }
+        }
     }
 
     /// 单例实例
@@ -57,10 +70,8 @@ public class LanguageManager {
 
     public static func getDefaultLanguage() -> String {
 
-        // 获取系统首选语言列表
         let preferredLanguages = Locale.preferredLanguages
 
-        // 遍历系统首选语言，找到第一个支持的语言
         for preferredLanguage in preferredLanguages {
             // 处理语言代码匹配
             let languageCode = preferredLanguage.prefix(2).lowercased()

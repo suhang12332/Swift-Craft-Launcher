@@ -88,7 +88,6 @@ class AIChatManager: ObservableObject {
             await MainActor.run {
                 chatState.isSending = false
 
-                // 如果是 GlobalError，使用统一错误处理
                 if let globalError = error as? GlobalError {
                     GlobalErrorHandler.shared.handle(globalError)
                     // 在消息中显示错误
@@ -310,7 +309,6 @@ class AIChatManager: ObservableObject {
                 }
             }
 
-            // 检查是否完成
             if let done = json["done"] as? Bool, done {
                 break
             }

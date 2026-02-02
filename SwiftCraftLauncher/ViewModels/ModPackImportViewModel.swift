@@ -314,7 +314,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
 
     // MARK: - Helper Methods
     private func calculateOverridesTotal(extractedPath: URL) async -> Int {
-        // 首先检查 Modrinth 格式的 overrides 文件夹
+        // 优先检查 Modrinth 格式的 overrides
         var overridesPath = extractedPath.appendingPathComponent("overrides")
 
         // 如果不存在，检查 CurseForge 格式的 overrides 文件夹

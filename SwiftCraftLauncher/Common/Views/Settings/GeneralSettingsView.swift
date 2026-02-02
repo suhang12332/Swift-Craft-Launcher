@@ -195,7 +195,7 @@ public struct GeneralSettingsView: View {
                     }
 
                     generalSettings.launcherWorkingDirectory = url.path
-                    // 注意：GameRepository 的观察者会自动检测工作路径变化并重新加载游戏，无需手动调用 loadGames()
+                    // GameRepository 观察者会自动重新加载，无需手动 loadGames
 
                     Logger.shared.info("工作目录已设置为: \(url.path)")
                 } catch {

@@ -128,7 +128,7 @@ final class ModrinthSearchViewModel: ObservableObject {
                 } else {
                     // 使用 CurseForge 服务并转换为 Modrinth 格式
                     // 转换 Modrinth 搜索参数为 CurseForge 搜索参数
-                    // 注意：对于资源包（resourcepack），需要将分辨率（resolutions）一起映射到 CurseForge 的分类 ID
+                    // 资源包需将 resolutions 一起映射到 CurseForge 分类 ID
                     let cfParams = convertToCurseForgeParams(
                         projectType: projectType,
                         versions: versions,

@@ -38,7 +38,7 @@ struct MinecraftAuthView: View {
         if case .notAuthenticated = authService.authState {
             authService.isLoading = false
         }
-        // 注意：如果已经认证成功，不清除状态，因为可能需要使用认证信息
+        // 认证成功时不清除状态，可能仍需认证信息
     }
 
     // MARK: - 未认证状态

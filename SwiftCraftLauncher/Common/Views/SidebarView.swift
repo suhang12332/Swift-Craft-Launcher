@@ -1,7 +1,7 @@
 import SwiftUI
 import Combine
 
-/// 通用侧边栏视图组件，用于显示游戏列表和资源列表的导航
+/// 侧边栏：游戏列表与资源列表导航
 public struct SidebarView: View {
     @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository

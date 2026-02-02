@@ -31,7 +31,6 @@ class ModCacheManager {
 
     // MARK: - Public API
 
-    /// 设置 mod 缓存值
     /// - Parameters:
     ///   - hash: mod 文件的 hash 值
     ///   - jsonData: JSON 数据的 Data（原始 JSON bytes）
@@ -43,7 +42,6 @@ class ModCacheManager {
         }
     }
 
-    /// 设置 mod 缓存值（静默版本）
     /// - Parameters:
     ///   - hash: mod 文件的 hash 值
     ///   - jsonData: JSON 数据的 Data（原始 JSON bytes）
@@ -142,7 +140,6 @@ class ModCacheManager {
         }
     }
 
-    /// 检查是否存在指定的 mod 缓存
     /// - Parameter hash: mod 文件的 hash 值
     /// - Returns: 是否存在
     func has(hash: String) -> Bool {
@@ -157,7 +154,6 @@ class ModCacheManager {
         }
     }
 
-    /// 批量设置 mod 缓存值
     /// - Parameter data: hash -> JSON Data 的字典
     /// - Throws: GlobalError 当操作失败时
     func setAll(_ data: [String: Data]) throws {
@@ -167,7 +163,6 @@ class ModCacheManager {
         }
     }
 
-    /// 批量设置 mod 缓存值（静默版本）
     /// - Parameter data: hash -> JSON Data 的字典
     func setAllSilently(_ data: [String: Data]) {
         do {

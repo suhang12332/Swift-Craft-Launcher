@@ -4,7 +4,6 @@ import os
 
 // MARK: - Notification Center Delegate
 
-/// 负责处理 UNUserNotificationCenter 的回调
 final class NotificationCenterDelegate: NSObject, UNUserNotificationCenterDelegate {
 
     /// App 在前台时收到通知，决定如何展示
@@ -109,7 +108,6 @@ enum NotificationManager {
         }
     }
 
-    /// 检查通知权限状态
     /// - Returns: 权限状态
     static func checkAuthorizationStatus() async -> UNAuthorizationStatus {
         return await UNUserNotificationCenter.current().notificationSettings().authorizationStatus

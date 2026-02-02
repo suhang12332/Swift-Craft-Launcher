@@ -118,7 +118,6 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     private var appearanceObserver: NSKeyValueObservation?
 
     private init() {
-        // 延迟应用外观设置，确保 NSApp 已完全初始化
         DispatchQueue.main.async { [weak self] in
             self?.applyAppAppearance()
             self?.setupAppearanceObserver()
@@ -163,16 +162,12 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
         launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : launcherWorkingDirectory
     }
 
-    /// 工作路径或相关设置即将变化（WorkingPathProviding）
     var workingPathWillChange: AnyPublisher<Void, Never> {
         objectWillChange.map { _ in () }.eraseToAnyPublisher()
     }
 
-    /// 获取当前有效的 ColorScheme，用于 @Environment(\.colorScheme) 的替代方案
     /// 当主题模式为 system 时，返回系统当前的主题
     var currentColorScheme: ColorScheme? {
-        // 安全检查：确保 NSApplication 已初始化
-        // 在应用启动早期，可能无法访问 effectiveAppearance
         guard NSApplication.shared.isRunning else {
             // 如果应用未运行，返回 nil 让 SwiftUI 使用默认值
             return themeMode == .system ? nil : themeMode.effectiveColorScheme

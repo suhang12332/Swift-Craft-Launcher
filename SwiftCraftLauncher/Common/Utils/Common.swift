@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 
 extension URL {
-    /// 将 HTTP URL 转换为 HTTPS URL
     func forceHTTPS() -> URL? {
         guard
             var components = URLComponents(
@@ -31,8 +30,7 @@ extension URL {
     }
 }
 extension String {
-    /// 将字符串中的 HTTP URL 转换为 HTTPS URL
-    /// 优化：使用 autoreleasepool 及时释放临时 URL 对象
+    /// 将字符串中的 HTTP URL 转换为 HTTPS
     func httpToHttps() -> String {
         return autoreleasepool {
             guard let url = URL(string: self) else { return self }
@@ -75,11 +73,7 @@ enum CommonUtil {
 
     // MARK: - Minecraft 版本比较和排序
 
-    /// 比较两个 Minecraft 版本号
-    /// - Parameters:
-    ///   - version1: 第一个版本号
-    ///   - version2: 第二个版本号
-    /// - Returns: 比较结果：-1 表示 version1 < version2，0 表示相等，1 表示 version1 > version2
+    /// - Returns: -1 表示 version1 < version2，0 相等，1 表示 version1 > version2
     static func compareMinecraftVersions(_ version1: String, _ version2: String) -> Int {
         let components1 = parseVersionComponents(version1)
         let components2 = parseVersionComponents(version2)
@@ -98,17 +92,11 @@ enum CommonUtil {
         return 0
     }
 
-    /// 解析版本号组件
-    /// - Parameter version: 版本号字符串
-    /// - Returns: 版本号组件数组
     private static func parseVersionComponents(_ version: String) -> [Int] {
         return version.components(separatedBy: ".")
             .compactMap { Int($0.trimmingCharacters(in: .whitespacesAndNewlines)) }
     }
 
-    /// 对 Minecraft 版本列表进行排序（从大到小）
-    /// - Parameter versions: 版本号数组
-    /// - Returns: 排序后的版本号数组
     static func sortMinecraftVersions(_ versions: [String]) -> [String] {
         return versions.sorted { version1, version2 in
             compareMinecraftVersions(version1, version2) > 0

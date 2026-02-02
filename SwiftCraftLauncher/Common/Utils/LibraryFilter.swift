@@ -1,7 +1,7 @@
 import Foundation
 
 /// 统一的库过滤工具类
-/// 用于消除下载和classpath构建阶段的重复判断逻辑
+/// 统一下载和 classpath 构建的库过滤逻辑
 enum LibraryFilter {
 
     /// 判断库是否被允许（基于平台规则）

@@ -22,7 +22,6 @@ class CacheManager: ObservableObject {
         }
     }
 
-    /// 计算元数据缓存信息（抛出异常版本）
     /// - Throws: GlobalError 当操作失败时
     func calculateMetaCacheInfoThrowing() throws {
         do {
@@ -48,7 +47,6 @@ class CacheManager: ObservableObject {
         }
     }
 
-    /// 计算数据缓存信息（抛出异常版本）
     /// - Throws: GlobalError 当操作失败时
     func calculateDataCacheInfoThrowing() throws {
         do {
@@ -75,7 +73,6 @@ class CacheManager: ObservableObject {
         }
     }
 
-    /// 计算游戏缓存信息（抛出异常版本）
     /// - Parameter game: 游戏名称
     /// - Throws: GlobalError 当操作失败时
     func calculateGameCacheInfoThrowing(_ game: String) throws {

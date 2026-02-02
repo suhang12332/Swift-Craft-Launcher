@@ -9,7 +9,7 @@ enum GameResourceHandler {
         addButtonState: Binding<ModrinthDetailCardView.AddButtonState>
     ) {
         guard let gameInfo = gameInfo else { return }
-        // 由于没有文件hash，我们通过扫描目录来检查项目ID是否已安装
+        // 无文件 hash 时，通过扫描目录检查项目 ID 是否已安装
         let modsDir = AppPaths.modsDirectory(gameName: gameInfo.gameName)
         ModScanner.shared.scanResourceDirectory(modsDir) { details in
             let installed = details.contains { $0.id == project.projectId }
@@ -84,8 +84,7 @@ enum GameResourceHandler {
     /// - Parameter modsDir: mods 目录 URL
     /// - Returns: 游戏名称，如果无法提取则返回 nil
     private static func extractGameName(from modsDir: URL) -> String? {
-        // mods 目录结构：profileRootDirectory/gameName/mods
-        // 所以 gameName 是 mods 目录的父目录名称
+        // mods 目录结构：profileRootDirectory/gameName/mods，gameName 即父目录
         let parentDir = modsDir.deletingLastPathComponent()
         return parentDir.lastPathComponent
     }

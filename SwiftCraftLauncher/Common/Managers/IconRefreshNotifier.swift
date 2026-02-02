@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 /// 图标刷新通知管理器
-/// 用于在图标更新后通知所有相关视图刷新
+/// 图标更新后通知视图刷新
 final class IconRefreshNotifier: ObservableObject {
     static let shared = IconRefreshNotifier()
 

@@ -1,7 +1,7 @@
 import Foundation
 
 /// JWT解码器工具类
-/// 用于解析JWT token并提取其中的过期时间等信息
+/// 解析 JWT 并提取过期时间
 enum JWTDecoder {
     /// 解析JWT token并提取过期时间
     /// - Parameter jwt: JWT token字符串

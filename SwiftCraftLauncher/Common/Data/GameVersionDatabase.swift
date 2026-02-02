@@ -322,8 +322,6 @@ class GameVersionDatabase {
     /// - Throws: GlobalError 当操作失败时
     func updateLastPlayed(id: String, lastPlayed: Date) throws {
         try db.transaction {
-            // 使用 JSON1 扩展更新 JSON 中的 lastPlayed 字段
-            // 使用秒级时间戳（与编码策略一致）
             let timestamp = lastPlayed.timeIntervalSince1970
             let sql = """
             UPDATE \(tableName)

@@ -211,7 +211,7 @@ class PlayerListViewModel: ObservableObject {
         } else {
             Logger.shared.info("  - 当前玩家: 无")
         }
-        // 注意：数据管理器已在 PlayerSkinService 中更新，这里只更新内存中的状态
+        // 数据已在 PlayerSkinService 更新，此处仅更新内存状态
 
         // 更新本地玩家列表
         if let index = players.firstIndex(where: { $0.id == updatedPlayer.id }) {

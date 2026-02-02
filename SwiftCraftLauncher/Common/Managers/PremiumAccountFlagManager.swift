@@ -1,7 +1,7 @@
 import Foundation
 
 /// 正版账户标记管理器
-/// 用于标记是否曾经添加过正版账户，用于判断是否允许添加离线账户
+/// 标记是否曾添加正版账户，判断是否允许添加离线账户
 @MainActor
 class PremiumAccountFlagManager {
     static let shared = PremiumAccountFlagManager()

@@ -92,7 +92,7 @@ class GameActionManager: ObservableObject {
                 AppPaths.invalidatePaths(forGameName: game.gameName)
                 await ModScanner.shared.clearModCache(for: game.gameName)
 
-                // 然后删除游戏记录
+                // 删除游戏记录
                 try await gameRepository.deleteGame(id: game.id)
 
                 Logger.shared.info("成功删除游戏: \(game.gameName)")

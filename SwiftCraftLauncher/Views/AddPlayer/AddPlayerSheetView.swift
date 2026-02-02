@@ -168,7 +168,7 @@ struct AddPlayerSheetView: View {
                 isForeignIP = foreign
                 isCheckingFlag = false
 
-                // 确保 selectedAuthType 在可用选项中
+                // selectedAuthType 落在可用选项中
                 if !availableAuthTypes.contains(selectedAuthType) {
                     selectedAuthType = .premium
                 }
@@ -279,7 +279,7 @@ struct AddPlayerSheetView: View {
         if playerListViewModel.playerExists(name: trimmedName) {
             return "addplayer.name.error.duplicate".localized()
         }
-        // 可以根据需要添加其他校验规则
+        // 可添加其他校验规则
         return nil
     }
 

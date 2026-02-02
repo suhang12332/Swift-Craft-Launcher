@@ -1,7 +1,7 @@
 import Foundation
 
 /// IP地理位置服务
-/// 用于检测用户IP所在的国家/地区
+/// 检测用户 IP 所在国家/地区
 @MainActor
 class IPLocationService: ObservableObject {
     static let shared = IPLocationService()

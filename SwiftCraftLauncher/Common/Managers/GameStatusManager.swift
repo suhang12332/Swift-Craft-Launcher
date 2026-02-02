@@ -9,18 +9,14 @@ class GameStatusManager: ObservableObject {
     /// 游戏启动中状态字典，key为gameId，value为是否正在启动（尚未进入运行态）
     @Published private var gameLaunchingStates: [String: Bool] = [:]
 
-    private init() {
-        // 移除定期检测，改为按需检查
-    }
+    private init() {}
 
-    /// 检查指定游戏是否正在运行（只读，不修改状态）
+    /// 检查指定游戏是否正在运行
     /// - Parameter gameId: 游戏ID
     /// - Returns: 是否正在运行
     func isGameRunning(gameId: String) -> Bool {
-        // 总是检查实际进程状态，确保状态同步
         let actuallyRunning = GameProcessManager.shared.isGameRunning(gameId: gameId)
 
-        // 异步更新缓存状态，避免在视图更新期间修改@Published属性
         DispatchQueue.main.async {
             self.updateGameStatusIfNeeded(gameId: gameId, actuallyRunning: actuallyRunning)
         }
@@ -51,14 +47,12 @@ class GameStatusManager: ObservableObject {
         }
     }
 
-    /// 设置游戏运行状态
     /// - Parameters:
     ///   - gameId: 游戏ID
     ///   - isRunning: 是否正在运行
     func setGameRunning(gameId: String, isRunning: Bool) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            // 检查状态是否真的发生了变化，避免重复日志
             let currentState = self.gameRunningStates[gameId]
             if currentState != isRunning {
                 self.gameRunningStates[gameId] = isRunning
@@ -93,7 +87,6 @@ class GameStatusManager: ObservableObject {
 
     // MARK: - 启动中状态管理
 
-    /// 设置游戏是否处于“启动中”状态
     /// - Parameters:
     ///   - gameId: 游戏ID
     ///   - isLaunching: 是否正在启动
@@ -108,14 +101,12 @@ class GameStatusManager: ObservableObject {
         }
     }
 
-    /// 检查指定游戏是否处于“启动中”状态
     /// - Parameter gameId: 游戏ID
     /// - Returns: 是否正在启动
     func isGameLaunching(gameId: String) -> Bool {
         return gameLaunchingStates[gameId] ?? false
     }
 
-    /// 移除指定游戏的状态缓存（删除游戏时调用）
     /// - Parameter gameId: 游戏ID
     func removeGameState(gameId: String) {
         DispatchQueue.main.async { [weak self] in

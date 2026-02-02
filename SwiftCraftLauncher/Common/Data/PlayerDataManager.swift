@@ -43,7 +43,7 @@ class PlayerDataManager {
             // 创建 Player 对象
             let credential: AuthCredential?
             if isOnline && !accToken.isEmpty {
-                // 需要先创建 Player 来获取 ID，但这里我们先创建 profile
+                // 需先创建 Player 获取 ID，此处先创建 profile
                 let tempId: String
                 if let providedUUID = uuid {
                     tempId = providedUUID

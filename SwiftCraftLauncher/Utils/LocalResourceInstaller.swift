@@ -154,7 +154,7 @@ extension LocalResourceInstaller {
 
                             try LocalResourceInstaller.install(
                                 fileURL: fileURL,
-                                resourceType: .mod, // 这里 resourceType 只用于 install 的 allowedExtensions 校验，已在上面手动校验
+                                resourceType: .mod, // 仅用于 allowedExtensions 校验，已手动校验
                                 gameRoot: gameRoot
                             )
                             onResourceChanged()

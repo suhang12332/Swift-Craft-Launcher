@@ -38,7 +38,7 @@ private enum Constants {
 
     // 缓存配置 - 优化后的配置
     // 缓存裁剪后的 CGImage (每个约 2.5KB)，而不是完整的 CIImage (每个约 20KB)
-    // 这样可以缓存更多图像，同时使用更少的内存
+    // 缓存更多图像，减少内存占用
     static let maxCacheSize = 100  // 最多缓存100个渲染后的图像（之前是50个完整图像）
     static let maxCacheMemory = 2 * 1024 * 1024  // 最多缓存2MB内存（约800个渲染后的图像）
 
@@ -67,7 +67,7 @@ struct MinecraftSkinUtils: View {
     @State private var loadTask: Task<Void, Never>?
 
     // 使用 NSCache 缓存渲染后的 CGImage，而不是完整的 CIImage
-    // 这样可以显著减少内存占用：每个缓存项从 ~20KB 减少到 ~2.5KB
+    // 显著减少内存占用：每项 ~20KB → ~2.5KB
     private static let imageCache: NSCache<NSString, RenderedImageCache> = {
         let cache = NSCache<NSString, RenderedImageCache>()
         cache.countLimit = Constants.maxCacheSize
@@ -84,7 +84,7 @@ struct MinecraftSkinUtils: View {
         config.timeoutIntervalForResource = Constants.networkTimeout
         // 使用缓存策略：允许使用本地缓存，但会验证服务器响应
         config.requestCachePolicy = .returnCacheDataElseLoad
-        // 减少 URLSession 缓存大小，因为我们已经有了自己的缓存
+        // 减少 URLSession 缓存大小，应用已有独立缓存
         config.urlCache = URLCache(
             memoryCapacity: 2 * 1024 * 1024,  // 2MB 内存缓存（从 5MB 减少）
             diskCapacity: 5 * 1024 * 1024,    // 5MB 磁盘缓存（从 10MB 减少）
@@ -96,7 +96,7 @@ struct MinecraftSkinUtils: View {
     // 缓存统计（用于调试和监控）
     private static var cacheStats = CacheStats()
 
-    // 确保缓存初始化逻辑只执行一次
+    // 只初始化一次
     private static var memoryObserverSetup = false
     private static let memoryObserverQueue = DispatchQueue(label: "com.swiftcraftlauncher.skincache.memory")
 
@@ -121,7 +121,7 @@ struct MinecraftSkinUtils: View {
             .name: "MinecraftSkinProcessor",
         ]
         let context = CIContext(options: options)
-        // 初始化缓存维护任务（确保只初始化一次）
+        // 初始化缓存维护任务（只一次）
         setupMemoryPressureObserverOnce()
         return context
     }()

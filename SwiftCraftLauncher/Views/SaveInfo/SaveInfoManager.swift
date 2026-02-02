@@ -471,7 +471,7 @@ final class SaveInfoManager: ObservableObject {
                 if log1.isCrashLog != log2.isCrashLog {
                     return log1.isCrashLog
                 }
-                // 然后按时间排序
+                // 按时间排序
                 let date1 = log1.createdDate ?? Date.distantPast
                 let date2 = log2.createdDate ?? Date.distantPast
                 return date1 > date2

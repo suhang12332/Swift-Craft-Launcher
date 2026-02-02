@@ -1,23 +1,16 @@
 import Foundation
 
 /// 游戏进程管理器
-/// 用于管理游戏进程的启动、停止和状态跟踪
 class GameProcessManager: ObservableObject {
     static let shared = GameProcessManager()
 
-    /// 存储游戏进程的字典，key 为游戏 ID
     private var gameProcesses: [String: Process] = [:]
-
-    /// 标记主动停止的游戏，key 为游戏 ID
-    /// 用于区分用户主动关闭和真正的崩溃
+    
+    // 标记主动停止的游戏，用于区分用户主动关闭和真正的崩溃
     private var manuallyStoppedGames: Set<String> = []
 
     private init() {}
 
-    /// 存储游戏进程并设置终止处理器
-    /// - Parameters:
-    ///   - gameId: 游戏 ID
-    ///   - process: 进程对象
     func storeProcess(gameId: String, process: Process) {
         // 设置进程终止处理器（在启动前设置）
         process.terminationHandler = { [weak self] process in
@@ -30,10 +23,7 @@ class GameProcessManager: ObservableObject {
         Logger.shared.debug("存储游戏进程: \(gameId)")
     }
 
-    /// 处理进程终止事件（统一处理所有清理逻辑）
-    /// - Parameters:
-    ///   - gameId: 游戏 ID
-    ///   - process: 进程对象
+    // 统一处理所有清理逻辑
     private func handleProcessTermination(gameId: String, process: Process) async {
         // 检查是否是被主动停止的（通过启动器停止按钮）
         let wasManuallyStopped = isManuallyStopped(gameId: gameId)
@@ -65,14 +55,9 @@ class GameProcessManager: ObservableObject {
         manuallyStoppedGames.remove(gameId)
     }
 
-    /// 检查是否是真正的崩溃
-    /// - Parameters:
-    ///   - gameId: 游戏 ID
-    ///   - process: 进程对象
-    /// - Returns: 是否是崩溃
     private func checkIfCrash(gameId: String, process: Process) async -> Bool {
         // 1. 检查退出码：正常退出通常是0，崩溃通常是非0
-        // 注意：通过 terminate() 停止的进程退出码可能是15（SIGTERM），但已经通过 wasManuallyStopped 排除了这种情况
+        // terminate() 停止的进程退出码可能为15，已通过 wasManuallyStopped 排除
         let exitCode = process.terminationStatus
         if exitCode == 0 {
             // 退出码为0，可能是正常退出，但还需要检查是否有崩溃报告
@@ -208,7 +193,7 @@ class GameProcessManager: ObservableObject {
             process.waitUntilExit()
         }
 
-        // 注意：不在这里移除进程，让 terminationHandler 统一处理清理
+        // 由 terminationHandler 统一清理
         // terminationHandler 会自动处理状态更新和进程清理
 
         // 延迟清理标记，确保 terminationHandler 能够正确读取标记
@@ -231,9 +216,7 @@ class GameProcessManager: ObservableObject {
         return process.isRunning
     }
 
-    /// 清理已终止的进程
-    /// 注意：这个方法主要用于清理那些没有正确触发 terminationHandler 的进程
-    /// 正常情况下，进程终止应该通过 terminationHandler 处理
+    // 清理没有正确触发 terminationHandler 的进程
     func cleanupTerminatedProcesses() {
         let terminatedGameIds = gameProcesses.compactMap { gameId, process in
             !process.isRunning ? gameId : nil

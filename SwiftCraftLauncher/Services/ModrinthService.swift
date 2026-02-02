@@ -25,10 +25,6 @@ private extension JSONDecoder {
 
 enum ModrinthService {
 
-    /// 直接从 Modrinth API 获取指定版本的详细信息
-    /// - Parameter version: 版本号（如 "1.21.1"）
-    /// - Returns: 版本信息
-    /// - Throws: GlobalError 当操作失败时
     static func fetchVersionInfo(from version: String) async throws -> MinecraftVersionManifest {
         let cacheKey = "version_info_\(version)"
 
@@ -75,10 +71,6 @@ enum ModrinthService {
         }
     }
 
-    /// 直接从 Modrinth API 获取指定版本的详细信息（抛出异常版本）
-    /// - Parameter version: 版本号（如 "1.21.1"）
-    /// - Returns: 版本信息
-    /// - Throws: GlobalError 当操作失败时
     static func fetchVersionInfoThrowing(from version: String) async throws -> MinecraftVersionManifest {
         let url = URLConfig.API.Modrinth.versionInfo(version: version)
 
@@ -103,14 +95,6 @@ enum ModrinthService {
         }
     }
 
-    /// 搜索项目（静默版本）
-    /// - Parameters:
-    ///   - facets: 搜索条件
-    ///   - index: 索引类型
-    ///   - offset: 偏移量
-    ///   - limit: 限制数量
-    ///   - query: 查询字符串
-    /// - Returns: 搜索结果，失败时返回空结果
     static func searchProjects(
         facets: [[String]]? = nil,
         offset: Int = 0,
@@ -133,15 +117,6 @@ enum ModrinthService {
         }
     }
 
-    /// 搜索项目（抛出异常版本）
-    /// - Parameters:
-    ///   - facets: 搜索条件
-    ///   - index: 索引类型
-    ///   - offset: 偏移量
-    ///   - limit: 限制数量
-    ///   - query: 查询字符串
-    /// - Returns: 搜索结果
-    /// - Throws: GlobalError 当操作失败时
     static func searchProjectsThrowing(
         facets: [[String]]? = nil,
         index: String,
@@ -201,8 +176,6 @@ enum ModrinthService {
         return result
     }
 
-    /// 获取加载器列表（静默版本）
-    /// - Returns: 加载器列表，失败时返回空数组
     static func fetchLoaders() async -> [Loader] {
         do {
             return try await fetchLoadersThrowing()
@@ -214,9 +187,6 @@ enum ModrinthService {
         }
     }
 
-    /// 获取加载器列表（抛出异常版本）
-    /// - Returns: 加载器列表
-    /// - Throws: GlobalError 当操作失败时
     static func fetchLoadersThrowing() async throws -> [Loader] {
         // 使用统一的 API 客户端
         let data = try await APIClient.get(url: URLConfig.API.Modrinth.loaderTag)
@@ -224,8 +194,6 @@ enum ModrinthService {
         return result
     }
 
-    /// 获取分类列表（静默版本）
-    /// - Returns: 分类列表，失败时返回空数组
     static func fetchCategories() async -> [Category] {
         do {
             return try await fetchCategoriesThrowing()
@@ -237,9 +205,6 @@ enum ModrinthService {
         }
     }
 
-    /// 获取分类列表（抛出异常版本）
-    /// - Returns: 分类列表
-    /// - Throws: GlobalError 当操作失败时
     static func fetchCategoriesThrowing() async throws -> [Category] {
         // 使用统一的 API 客户端
         let data = try await APIClient.get(url: URLConfig.API.Modrinth.categoryTag)
@@ -247,8 +212,6 @@ enum ModrinthService {
         return result
     }
 
-    /// 获取游戏版本列表（静默版本）
-    /// - Returns: 游戏版本列表，失败时返回空数组
     static func fetchGameVersions(includeSnapshots: Bool = false) async -> [GameVersion] {
         do {
             return try await fetchGameVersionsThrowing(includeSnapshots: includeSnapshots)
@@ -260,9 +223,6 @@ enum ModrinthService {
         }
     }
 
-    /// 获取游戏版本列表（抛出异常版本）
-    /// - Returns: 游戏版本列表
-    /// - Throws: GlobalError 当操作失败时
     static func fetchGameVersionsThrowing(
         includeSnapshots: Bool = false
     ) async throws -> [GameVersion] {
@@ -273,9 +233,6 @@ enum ModrinthService {
         return includeSnapshots ? result : result.filter { $0.version_type == "release" }
     }
 
-    /// 获取项目详情（静默版本）
-    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
-    /// - Returns: 项目详情，失败时返回 nil
     static func fetchProjectDetails(id: String) async -> ModrinthProjectDetail? {
         // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
         if id.hasPrefix("cf-") {
@@ -293,10 +250,6 @@ enum ModrinthService {
         }
     }
 
-    /// 获取项目详情（抛出异常版本）
-    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
-    /// - Returns: 项目详情
-    /// - Throws: GlobalError 当操作失败时
     static func fetchProjectDetailsThrowing(id: String) async throws -> ModrinthProjectDetail {
         // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
         if id.hasPrefix("cf-") {
@@ -322,9 +275,6 @@ enum ModrinthService {
         return detail
     }
 
-    /// 获取项目版本列表（静默版本）
-    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
-    /// - Returns: 版本列表，失败时返回空数组
     static func fetchProjectVersions(id: String) async -> [ModrinthProjectDetailVersion] {
         // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
         if id.hasPrefix("cf-") {
@@ -341,10 +291,6 @@ enum ModrinthService {
         }
     }
 
-    /// 获取项目版本列表（抛出异常版本）
-    /// - Parameter id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
-    /// - Returns: 版本列表
-    /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionsThrowing(id: String) async throws -> [ModrinthProjectDetailVersion] {
         // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
         if id.hasPrefix("cf-") {
@@ -361,14 +307,6 @@ enum ModrinthService {
         return try decoder.decode([ModrinthProjectDetailVersion].self, from: data)
     }
 
-    /// 获取项目版本列表（过滤版本）
-    /// - Parameters:
-    ///   - id: 项目 ID（如果以 "cf-" 开头，则使用 CurseForge 服务）
-    ///   - selectedVersions: 选中的版本
-    ///   - selectedLoaders: 选中的加载器
-    ///   - type: 项目类型
-    /// - Returns: 过滤后的版本列表
-    /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionsFilter(
             id: String,
             selectedVersions: [String],
@@ -408,14 +346,6 @@ enum ModrinthService {
             }
         }
 
-    /// 获取项目依赖（静默版本）
-    /// - Parameters:
-    ///   - type: 项目类型
-    ///   - cachePath: 缓存路径
-    ///   - id: 项目 ID
-    ///   - selectedVersions: 选中的版本
-    ///   - selectedLoaders: 选中的加载器
-    /// - Returns: 项目依赖，失败时返回空依赖
     static func fetchProjectDependencies(
         type: String,
         cachePath: URL,
@@ -439,15 +369,6 @@ enum ModrinthService {
         }
     }
 
-    /// 获取项目依赖（抛出异常版本）
-    /// - Parameters:
-    ///   - type: 项目类型
-    ///   - cachePath: 缓存路径
-    ///   - id: 项目 ID
-    ///   - selectedVersions: 选中的版本
-    ///   - selectedLoaders: 选中的加载器
-    /// - Returns: 项目依赖
-    /// - Throws: GlobalError 当操作失败时
     static func fetchProjectDependenciesThrowing(
         type: String,
         cachePath: URL,
@@ -550,10 +471,6 @@ enum ModrinthService {
         return ModrinthProjectDependency(projects: missingDependencyVersions)
     }
 
-    /// 获取单个项目版本（抛出异常版本）
-    /// - Parameter id: 版本 ID
-    /// - Returns: 版本信息
-    /// - Throws: GlobalError 当操作失败时
     static func fetchProjectVersionThrowing(id: String) async throws -> ModrinthProjectDetailVersion {
         let url = URLConfig.API.Modrinth.versionId(versionId: id)
 
@@ -565,14 +482,11 @@ enum ModrinthService {
         return try decoder.decode(ModrinthProjectDetailVersion.self, from: data)
     }
 
-    // 过滤出 primary == true 的文件
+    // 过滤主文件
     static func filterPrimaryFiles(from files: [ModrinthVersionFile]?) -> ModrinthVersionFile? {
         return files?.first { $0.primary == true }
     }
 
-    /// 通过文件 hash 查询 Modrinth API，返回 ModrinthProjectDetail（静默版本）
-    /// - Parameter hash: 文件哈希值
-    /// - Parameter completion: 完成回调
     static func fetchModrinthDetail(by hash: String, completion: @escaping (ModrinthProjectDetail?) -> Void) {
         let url = URLConfig.API.Modrinth.versionFile(hash: hash)
         let task = URLSession.shared.dataTask(with: url) { data, _, _ in

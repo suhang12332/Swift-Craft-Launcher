@@ -91,7 +91,6 @@ class AISettingsManager: ObservableObject {
         }
     }
 
-    /// API Key 内存缓存（避免重复读取 Keychain）
     private var _cachedApiKey: String?
 
     /// AI API Key（使用 Keychain 安全存储，带内存缓存）
@@ -179,7 +178,6 @@ class AISettingsManager: ObservableObject {
     }
 
     private init() {
-        // 初始化时预加载 API Key 到缓存（避免首次访问时读取 Keychain）
         _ = apiKey
     }
 }

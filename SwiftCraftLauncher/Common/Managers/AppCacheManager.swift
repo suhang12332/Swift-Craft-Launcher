@@ -21,7 +21,6 @@ class AppCacheManager {
 
     // MARK: - Public API
 
-    /// 设置缓存值
     /// - Parameters:
     ///   - namespace: 命名空间
     ///   - key: 键
@@ -45,7 +44,6 @@ class AppCacheManager {
         }
     }
 
-    /// 设置缓存值（静默版本，失败时记录错误但不抛出异常）
     /// - Parameters:
     ///   - namespace: 命名空间
     ///   - key: 键

@@ -228,7 +228,7 @@ enum ModrinthDependencyDownloader {
 
                     // 使用服务端的过滤方法，和全局资源安装逻辑一致
                     // 预置游戏版本和加载器
-                    // 注意：fetchProjectVersionsFilter 内部会处理 CurseForge 项目的特殊情况
+                    // fetchProjectVersionsFilter 内部处理 CurseForge 项目
                     let filteredVersions: [ModrinthProjectDetailVersion]
                     do {
                         filteredVersions = try await ModrinthService.fetchProjectVersionsFilter(

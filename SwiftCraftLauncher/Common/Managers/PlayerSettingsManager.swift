@@ -8,6 +8,5 @@ class PlayerSettingsManager: ObservableObject {
     var currentPlayerId: String = "" {
         didSet { objectWillChange.send() }
     }
-    // 可扩展更多玩家相关设置
     private init() {}
 }

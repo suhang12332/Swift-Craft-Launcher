@@ -52,7 +52,7 @@ struct SkinUploadSectionView: View {
     private var skinRenderArea: some View {
         let playerModel = convertToPlayerModel(currentModel)
         // 判断是否有 SkinRenderView 显示（已有皮肤时，SkinRenderView 会处理拖拽）
-        // 这里只根据是否有皮肤数据来判断，而不依赖 capeLoadCompleted，
+        // 根据是否有皮肤数据判断，不依赖 capeLoadCompleted
         // 避免在披风加载期间误认为没有渲染视图，从而导致视图结构来回切换。
         let hasSkinRenderView = (selectedSkinImage != nil || currentSkinRenderImage != nil || selectedSkinPath != nil)
 

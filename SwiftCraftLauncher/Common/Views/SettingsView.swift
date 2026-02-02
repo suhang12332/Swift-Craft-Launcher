@@ -10,7 +10,7 @@ enum SettingsTab: Int {
 }
 
 /// 通用设置视图
-/// 用于显示应用程序的设置选项
+/// 应用设置
 public struct SettingsView: View {
     @StateObject private var general = GeneralSettingsManager.shared
     @StateObject private var selectedGameManager = SelectedGameManager.shared

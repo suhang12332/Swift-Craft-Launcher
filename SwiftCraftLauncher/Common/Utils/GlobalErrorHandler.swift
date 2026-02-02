@@ -200,13 +200,7 @@ enum GlobalError: Error, LocalizedError, Identifiable {
         return i18nKey.localized()
     }
 
-    /// 本地化描述（兼容性）
-    ///
-    /// - 优先：使用 `i18nKey` 对应的本地化文案
-    /// - 兜底：当找不到本地化条目时，回退到 `chineseMessage`
-    ///
-    /// 注意：占位符（例如 `%@`）的替换需要在构造 `GlobalError` 之前完成，
-    /// 即调用方先使用 `String(format:)` 格式化好再传入。
+    /// 本地化描述：优先使用 i18nKey，找不到时回退到 chineseMessage
     var localizedDescription: String {
         let localizedText = i18nKey.localized()
 
@@ -258,7 +252,6 @@ extension GlobalError {
             return globalError
 
         default:
-            // 检查是否是网络相关错误
             if let urlError = error as? URLError {
                 // 如果是取消错误，使用 silent 级别，不显示通知
                 let level: ErrorLevel = urlError.code == .cancelled ? .silent : .notification
@@ -290,7 +283,6 @@ extension GlobalError {
 
 // MARK: - Global Error Handler
 
-/// 全局错误处理器
 class GlobalErrorHandler: ObservableObject {
     static let shared = GlobalErrorHandler()
 
@@ -301,15 +293,11 @@ class GlobalErrorHandler: ObservableObject {
 
     private init() {}
 
-    /// 处理错误
-    /// - Parameter error: 要处理的错误
     func handle(_ error: Error) {
         let globalError = GlobalError.from(error)
         handle(globalError)
     }
 
-    /// 处理全局错误
-    /// - Parameter globalError: 全局错误
     func handle(_ globalError: GlobalError) {
         DispatchQueue.main.async {
             self.currentError = globalError
@@ -323,9 +311,7 @@ class GlobalErrorHandler: ObservableObject {
     private func handleErrorByLevel(_ error: GlobalError) {
         switch error.level {
         case .popup:
-            // 弹窗显示 - 通过 @Published 属性触发 UI 更新
             Logger.shared.error("[GlobalError-Popup] \(error.chineseMessage)")
-            // 弹窗显示逻辑由 ErrorAlertModifier 处理
 
         case .notification:
             // 发送通知
@@ -368,7 +354,7 @@ class GlobalErrorHandler: ObservableObject {
         }
     }
 
-    /// 清理内存（用于应用退出时）
+    /// 应用退出时清理内存
     func cleanup() {
         DispatchQueue.main.async {
             self.currentError = nil
@@ -384,7 +370,6 @@ class GlobalErrorHandler: ObservableObject {
 
 // MARK: - Error Handling View Modifier
 
-/// 错误处理视图修饰符（已废弃，使用 errorAlert() 替代）
 struct GlobalErrorHandlerModifier: ViewModifier {
     @StateObject private var errorHandler = GlobalErrorHandler.shared
 
@@ -402,7 +387,6 @@ struct GlobalErrorHandlerModifier: ViewModifier {
 // MARK: - View Extension
 
 extension View {
-    /// 添加全局错误处理（已废弃，使用 errorAlert() 替代）
     func globalErrorHandler() -> some View {
         self.modifier(GlobalErrorHandlerModifier())
     }
@@ -411,57 +395,46 @@ extension View {
 // MARK: - Convenience Methods
 
 extension GlobalErrorHandler {
-    /// 网络错误
     static func network(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .notification) -> GlobalError {
         return .network(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
 
-    /// 文件系统错误
     static func fileSystem(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .notification) -> GlobalError {
         return .fileSystem(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
 
-    /// 认证错误
     static func authentication(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .popup) -> GlobalError {
         return .authentication(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
 
-    /// 验证错误
     static func validation(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .notification) -> GlobalError {
         return .validation(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
 
-    /// 下载错误
     static func download(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .notification) -> GlobalError {
         return .download(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
 
-    /// 安装错误
     static func installation(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .notification) -> GlobalError {
         return .installation(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
 
-    /// 游戏启动错误
     static func gameLaunch(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .popup) -> GlobalError {
         return .gameLaunch(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
 
-    /// 资源错误
     static func resource(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .notification) -> GlobalError {
         return .resource(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
 
-    /// 玩家错误
     static func player(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .notification) -> GlobalError {
         return .player(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
 
-    /// 配置错误
     static func configuration(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .notification) -> GlobalError {
         return .configuration(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
 
-    /// 未知错误
     static func unknown(_ chineseMessage: String, i18nKey: String, level: ErrorLevel = .silent) -> GlobalError {
         return .unknown(chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }

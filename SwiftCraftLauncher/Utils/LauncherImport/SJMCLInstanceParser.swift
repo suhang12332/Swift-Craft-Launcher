@@ -6,8 +6,7 @@
 
 import Foundation
 
-/// HMCL/SJMCLauncher 实例解析器
-/// 注意：HMCL 和 SJMCL 使用不同的 JSON 格式
+/// HMCL 和 SJMCL 使用不同的 JSON 格式
 struct SJMCLInstanceParser: LauncherInstanceParser {
     let launcherType: ImportLauncherType
 
@@ -312,7 +311,7 @@ private struct SJMCLModLoader: Codable {
 }
 
 private struct SJMCLSpecGameConfig: Codable {
-    // 如果需要可以添加字段
+    // 可添加字段
 }
 
 // MARK: - HMCL Models
