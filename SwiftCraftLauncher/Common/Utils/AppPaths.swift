@@ -30,6 +30,11 @@ enum AppPaths {
     static var runtimeDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.runtime)
     }
+
+    /// 指定版本的 Java 可执行文件路径（runtime 目录下的 jre.bundle）
+    static func javaExecutablePath(version: String) -> String {
+        runtimeDirectory.appendingPathComponent(version).appendingPathComponent("jre.bundle/Contents/Home/bin/java").path
+    }
     static var metaDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.meta)
     }
