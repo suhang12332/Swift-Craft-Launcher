@@ -20,7 +20,7 @@ class GameRepository: ObservableObject {
     private let database: GameVersionDatabase
     private var workingPathCancellable: AnyCancellable?
     private var lastWorkingPath: String = ""
-    
+
     @Published var workingPathChanged: Bool = false
 
     // MARK: - Initialization

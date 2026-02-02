@@ -8,5 +8,6 @@ class PlayerSettingsManager: ObservableObject {
     var currentPlayerId: String = "" {
         didSet { objectWillChange.send() }
     }
+
     private init() {}
 }

@@ -5,7 +5,7 @@ class GameProcessManager: ObservableObject {
     static let shared = GameProcessManager()
 
     private var gameProcesses: [String: Process] = [:]
-    
+
     // 标记主动停止的游戏，用于区分用户主动关闭和真正的崩溃
     private var manuallyStoppedGames: Set<String> = []
 

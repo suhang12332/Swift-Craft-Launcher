@@ -35,6 +35,7 @@ enum AppPaths {
     static func javaExecutablePath(version: String) -> String {
         runtimeDirectory.appendingPathComponent(version).appendingPathComponent("jre.bundle/Contents/Home/bin/java").path
     }
+
     static var metaDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.meta)
     }
