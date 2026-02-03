@@ -148,7 +148,6 @@ struct SwiftCraftLauncherApp: App {
                 Image("menu-png").resizable()
                     .renderingMode(.template)
                     .scaledToFit()
-                // 推荐保持模板模式
             }
         )
     }
