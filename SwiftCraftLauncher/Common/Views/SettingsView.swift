@@ -47,7 +47,6 @@ public struct SettingsView: View {
                 .disabled(selectedGameManager.selectedGameId == nil)
         }
         .padding()
-        .frame(maxWidth: .infinity)
         .onChange(of: selectedGameManager.shouldOpenAdvancedSettings) { _, shouldOpen in
             // 当标志被设置时（窗口已打开的情况），切换到高级设置标签
             if shouldOpen {
