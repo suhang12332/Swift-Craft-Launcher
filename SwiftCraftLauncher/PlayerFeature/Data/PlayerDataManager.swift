@@ -299,8 +299,7 @@ class PlayerDataManager {
                 )
             }
         } else {
-            // 如果 credential 为 nil，删除 Keychain 中的数据
-            _ = credentialStore.deleteCredential(userId: updatedPlayer.id)
+            Logger.shared.debug("未提供新的认证凭据，保留现有 Keychain 状态 - userId: \(updatedPlayer.id)")
         }
 
         Logger.shared.debug("已更新玩家信息: \(updatedPlayer.name)")
