@@ -2,6 +2,8 @@ import SwiftUI
 
 /// 详情区域工具栏内容
 public struct DetailToolbarView: ToolbarContent {
+    @Environment(\.openURL)
+    private var openURL
     @EnvironmentObject var filterState: ResourceFilterState
     @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
@@ -19,6 +21,21 @@ public struct DetailToolbarView: ToolbarContent {
 
     private func isGameRunning(gameId: String) -> Bool {
         gameStatusManager.isGameRunning(gameId: gameId)
+    }
+
+    /// 打开当前资源在浏览器中的项目页面
+    private func openCurrentResourceInBrowser() {
+        guard let slug = detailState.loadedProjectDetail?.slug else { return }
+
+        let baseURL: String = switch filterState.dataSource {
+        case .modrinth:
+            URLConfig.API.Modrinth.webProjectBase
+        case .curseforge:
+            URLConfig.API.CurseForge.webProjectBase
+        }
+
+        guard let url = URL(string: baseURL + slug) else { return }
+        openURL(url)
     }
 
     public var body: some ToolbarContent {
@@ -96,6 +113,13 @@ public struct DetailToolbarView: ToolbarContent {
                         Label("return".localized(), systemImage: "arrow.backward")
                     }
                     .help("return".localized())
+                    Spacer()
+                    Button {
+                        openCurrentResourceInBrowser()
+                    } label: {
+                        Label("common.browser".localized(), systemImage: "safari")
+                    }
+                    .help("resource.open_in_browser".localized())
                 } else {
                     if detailState.gameType {
                         dataSourceMenu
