@@ -43,7 +43,8 @@ struct AddPlayerSheetView: View {
                     if isCheckingFlag {
                         ProgressView()
                             .controlSize(.small)
-                            .padding(.trailing, 8)
+                            .frame(height: 20) // 设置固定高度，与 Picker 保持一致
+                            .padding(.trailing, 10)
                     } else {
                         Picker("", selection: $selectedAuthType) {
                             ForEach(availableAuthTypes) { type in
