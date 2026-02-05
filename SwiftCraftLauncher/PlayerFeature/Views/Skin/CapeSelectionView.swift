@@ -104,6 +104,9 @@ struct CapeSelectionView: View {
         let isSelected = selectedCapeId == id
 
         return Button {
+            // 已选中的披风不允许重复点击
+            guard !isSelected else { return }
+
             selectedCapeId = id
             if let imageURL = imageURL {
                 // 异步加载 NSImage
@@ -128,7 +131,10 @@ struct CapeSelectionView: View {
                     .foregroundColor(isSelected ? .accentColor : .primary)
                     .frame(width: 42)
             }
-        }.buttonStyle(.plain)
+        }
+        .buttonStyle(.plain)
+        // 仅禁用当前已选中的披风按钮，其它仍可选择
+        .disabled(isSelected)
     }
 
     private func capeIconContainer(isSelected: Bool, imageURL: String?, isSystemOption: Bool) -> some View {
