@@ -276,9 +276,13 @@ struct WorldDetailSheetView: View {
 
         do {
             let levelDatPath = world.path.appendingPathComponent("level.dat")
+            let worldGenSettingsPath = world.path
+                .appendingPathComponent("data", isDirectory: true)
+                .appendingPathComponent("minecraft", isDirectory: true)
+                .appendingPathComponent("world_gen_settings.dat")
             let pathForBackground = levelDatPath
 
-            let dataTag: [String: Any] = try await Task.detached(priority: .userInitiated) {
+        let (dataTag, seedOverride): ([String: Any], Int64?) = try await Task.detached(priority: .userInitiated) {
                 guard FileManager.default.fileExists(atPath: pathForBackground.path) else {
                     throw WorldDetailLoadError.levelDatNotFound
                 }
@@ -288,10 +292,27 @@ struct WorldDetailSheetView: View {
                 guard let tag = nbtData["Data"] as? [String: Any] else {
                     throw WorldDetailLoadError.invalidStructure
                 }
-                return tag
+
+                // 26+ 新版存档：seed 拆到 data/minecraft/world_gen_settings.dat
+                var seed: Int64?
+                if FileManager.default.fileExists(atPath: worldGenSettingsPath.path) {
+                    do {
+                        let wgsData = try Data(contentsOf: worldGenSettingsPath)
+                        let wgsParser = NBTParser(data: wgsData)
+                        let wgsNBT = try wgsParser.parse()
+                        if let dataTag = wgsNBT["data"] as? [String: Any],
+                           let s = WorldNBTMapper.readInt64(dataTag["seed"]) {
+                            seed = s
+                        }
+                    } catch {
+                        // 读取失败不影响 level.dat 的展示
+                    }
+                }
+
+                return (tag, seed)
             }.value
 
-            let metadata = parseWorldDetail(from: dataTag, folderName: world.name, path: world.path)
+            let metadata = parseWorldDetail(from: dataTag, folderName: world.name, path: world.path, seedOverride: seedOverride)
             await MainActor.run {
                 self.rawDataTag = dataTag
                 self.metadata = metadata
@@ -319,37 +340,38 @@ struct WorldDetailSheetView: View {
         }
     }
 
-    private func parseWorldDetail(from dataTag: [String: Any], folderName: String, path: URL) -> WorldDetailMetadata {
+    private func parseWorldDetail(from dataTag: [String: Any], folderName: String, path: URL, seedOverride: Int64?) -> WorldDetailMetadata {
         let levelName = (dataTag["LevelName"] as? String) ?? folderName
 
-        // LastPlayed 为毫秒时间戳（Long）
+        // LastPlayed 为毫秒时间戳（Long），兼容 Int/Int64 等类型
         var lastPlayedDate: Date?
-        if let ts = dataTag["LastPlayed"] {
-            if let v = ts as? Int64 {
-                lastPlayedDate = Date(timeIntervalSince1970: TimeInterval(v) / 1000.0)
-            } else if let v = ts as? Int {
-                lastPlayedDate = Date(timeIntervalSince1970: TimeInterval(v) / 1000.0)
-            }
+        if let ts = WorldNBTMapper.readInt64(dataTag["LastPlayed"]) {
+            lastPlayedDate = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
         }
 
         // GameType: 0 生存, 1 创造, 2 冒险, 3 旁观
         var gameMode = "saveinfo.world.game_mode.unknown".localized()
-        if let gt = dataTag["GameType"] as? Int {
-            gameMode = mapGameMode(gt)
-        } else if let gt32 = dataTag["GameType"] as? Int32 {
-            gameMode = mapGameMode(Int(gt32))
+        if let gt = WorldNBTMapper.readInt64(dataTag["GameType"]) {
+            gameMode = WorldNBTMapper.mapGameMode(Int(gt))
         }
 
-        // Difficulty: 0 和平, 1 简单, 2 普通, 3 困难
+        // Difficulty: 旧版为数值，新版（26+）常为 difficulty_settings.difficulty 字符串
         var difficulty = "saveinfo.world.difficulty.unknown".localized()
-        if let diff = dataTag["Difficulty"] as? Int {
-            difficulty = mapDifficulty(diff)
-        } else if let diff8 = dataTag["Difficulty"] as? Int8 {
-            difficulty = mapDifficulty(Int(diff8))
+        if let diff = WorldNBTMapper.readInt64(dataTag["Difficulty"]) {
+            difficulty = WorldNBTMapper.mapDifficulty(Int(diff))
+        } else if let ds = dataTag["difficulty_settings"] as? [String: Any],
+                  let diffStr = ds["difficulty"] as? String {
+            difficulty = WorldNBTMapper.mapDifficultyString(diffStr)
         }
 
-        let hardcore = (dataTag["hardcore"] as? Int8 ?? 0) != 0
-        let cheats = (dataTag["allowCommands"] as? Int8 ?? 0) != 0
+        // 极限/作弊标志在新版可能是 byte 或 bool，这里统一为「非 0 即 true」
+        let hardcore: Bool = {
+            if let v = WorldNBTMapper.readBoolFlag(dataTag["hardcore"]) { return v }
+            if let ds = dataTag["difficulty_settings"] as? [String: Any],
+               let v = WorldNBTMapper.readBoolFlag(ds["hardcore"]) { return v }
+            return false
+        }()
+        let cheats: Bool = WorldNBTMapper.readBoolFlag(dataTag["allowCommands"]) ?? false
 
         var versionName: String?
         var versionId: Int?
@@ -369,35 +391,42 @@ struct WorldDetailSheetView: View {
             dataVersion = Int(dv32)
         }
 
-        var seed: Int64?
-        // 优先从 RandomSeed 读取
-        if let s = dataTag["RandomSeed"] as? Int64 {
-            seed = s
-        } else if let s = dataTag["RandomSeed"] as? Int {
-            seed = Int64(s)
-        }
-        // 如果 RandomSeed 不存在，尝试从 WorldGenSettings.dimensions.seed 读取
+        // 种子：26+ 优先 world_gen_settings.dat，其次 level.dat 的 RandomSeed / WorldGenSettings.seed
+        var seed: Int64? = seedOverride
         if seed == nil {
-            if let worldGenSettings = dataTag["WorldGenSettings"] as? [String: Any],
-               let dimensionsSeed = readInt64(worldGenSettings["seed"]) {
-                seed = dimensionsSeed
-            }
+            seed = WorldNBTMapper.readSeed(from: dataTag, worldPath: path)
         }
 
         var spawn: String?
-        if let x = readInt64(dataTag["SpawnX"]), let y = readInt64(dataTag["SpawnY"]), let z = readInt64(dataTag["SpawnZ"]) {
+        if let x = WorldNBTMapper.readInt64(dataTag["SpawnX"]),
+           let y = WorldNBTMapper.readInt64(dataTag["SpawnY"]),
+           let z = WorldNBTMapper.readInt64(dataTag["SpawnZ"]) {
             spawn = "\(x), \(y), \(z)"
+        } else if let spawnTag = dataTag["spawn"] as? [String: Any],
+                  let pos = spawnTag["pos"] as? [Any],
+                  pos.count >= 3,
+                  let x = WorldNBTMapper.readInt64(pos[0]),
+                  let y = WorldNBTMapper.readInt64(pos[1]),
+                  let z = WorldNBTMapper.readInt64(pos[2]) {
+            // 26+ 新版存档：spawn.pos = [x, y, z]，同时可能带 dimension/yaw/pitch
+            if let dim = spawnTag["dimension"] as? String, !dim.isEmpty {
+                spawn = "\(x), \(y), \(z) (\(dim))"
+            } else {
+                spawn = "\(x), \(y), \(z)"
+            }
         }
 
-        let time = readInt64(dataTag["Time"])
-        let dayTime = readInt64(dataTag["DayTime"])
+        let time = WorldNBTMapper.readInt64(dataTag["Time"])
+        let dayTime = WorldNBTMapper.readInt64(dataTag["DayTime"])
 
         var weather: String?
-        if let raining = readInt64(dataTag["raining"]) {
-            weather = (raining != 0) ? "saveinfo.world.weather.rain".localized() : "saveinfo.world.weather.clear".localized()
+        if let rainingFlag = dataTag["raining"] {
+            let raining = WorldNBTMapper.readBoolFlag(rainingFlag) ?? false
+            weather = raining ? "saveinfo.world.weather.rain".localized() : "saveinfo.world.weather.clear".localized()
         }
-        if let thundering = readInt64(dataTag["thundering"]) {
-            let t = (thundering != 0) ? "saveinfo.world.weather.thunderstorm".localized() : nil
+        if let thunderingFlag = dataTag["thundering"] {
+            let thundering = WorldNBTMapper.readBoolFlag(thunderingFlag) ?? false
+            let t = thundering ? "saveinfo.world.weather.thunderstorm".localized() : nil
             if let t {
                 weather = weather.map { "\($0), \(t)" } ?? t
             }
@@ -435,45 +464,12 @@ struct WorldDetailSheetView: View {
         )
     }
 
-    private func mapGameMode(_ value: Int) -> String {
-        switch value {
-        case 0: return "saveinfo.world.game_mode.survival".localized()
-        case 1: return "saveinfo.world.game_mode.creative".localized()
-        case 2: return "saveinfo.world.game_mode.adventure".localized()
-        case 3: return "saveinfo.world.game_mode.spectator".localized()
-        default: return "saveinfo.world.game_mode.unknown".localized()
-        }
-    }
-
-    private func mapDifficulty(_ value: Int) -> String {
-        switch value {
-        case 0: return "saveinfo.world.difficulty.peaceful".localized()
-        case 1: return "saveinfo.world.difficulty.easy".localized()
-        case 2: return "saveinfo.world.difficulty.normal".localized()
-        case 3: return "saveinfo.world.difficulty.hard".localized()
-        default: return "saveinfo.world.difficulty.unknown".localized()
-        }
-    }
-
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
         formatter.locale = Locale.current
         return formatter.string(from: date)
-    }
-
-    private func readInt64(_ any: Any?) -> Int64? {
-        if let v = any as? Int64 { return v }
-        if let v = any as? Int { return Int64(v) }
-        if let v = any as? Int32 { return Int64(v) }
-        if let v = any as? Int16 { return Int64(v) }
-        if let v = any as? Int8 { return Int64(v) }
-        if let v = any as? UInt64 { return Int64(v) }
-        if let v = any as? UInt32 { return Int64(v) }
-        if let v = any as? UInt16 { return Int64(v) }
-        if let v = any as? UInt8 { return Int64(v) }
-        return nil
     }
 
     private func flattenNBTDictionary(_ dict: [String: Any], prefix: String = "") -> [String: String] {

@@ -271,26 +271,6 @@ final class SaveInfoManager: ObservableObject {
     }
 
     // MARK: - 后台加载静态方法（避免主线程 FileManager / Data(contentsOf:)）
-    nonisolated private static func mapGameMode(_ value: Int) -> String {
-        switch value {
-        case 0: return "saveinfo.world.game_mode.survival".localized()
-        case 1: return "saveinfo.world.game_mode.creative".localized()
-        case 2: return "saveinfo.world.game_mode.adventure".localized()
-        case 3: return "saveinfo.world.game_mode.spectator".localized()
-        default: return "saveinfo.world.game_mode.unknown".localized()
-        }
-    }
-
-    nonisolated private static func mapDifficulty(_ value: Int) -> String {
-        switch value {
-        case 0: return "saveinfo.world.difficulty.peaceful".localized()
-        case 1: return "saveinfo.world.difficulty.easy".localized()
-        case 2: return "saveinfo.world.difficulty.normal".localized()
-        case 3: return "saveinfo.world.difficulty.hard".localized()
-        default: return "saveinfo.world.difficulty.unknown".localized()
-        }
-    }
-
     nonisolated private static func loadWorldsFromDirectory(gameName: String) -> [WorldInfo] {
         let savesPath = AppPaths.profileDirectory(gameName: gameName)
             .appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
@@ -324,21 +304,60 @@ final class SaveInfoManager: ObservableObject {
                         loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil))
                         continue
                     }
-                    if let ts = dataTag["LastPlayed"] as? Int64 {
-                        lastPlayed = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
-                    } else if let ts = dataTag["LastPlayed"] as? Int {
+                    if let ts = WorldNBTMapper.readInt64(dataTag["LastPlayed"]) {
+                        // LastPlayed 为毫秒时间戳
                         lastPlayed = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
                     }
-                    let gameMode: String? = (dataTag["GameType"] as? Int).map { mapGameMode($0) }
-                        ?? (dataTag["GameType"] as? Int32).map { mapGameMode(Int($0)) }
-                    let difficulty: String? = (dataTag["Difficulty"] as? Int).map { mapDifficulty($0) }
-                        ?? (dataTag["Difficulty"] as? Int8).map { mapDifficulty(Int($0)) }
+
+                    // 统一使用 readInt64，兼容旧版与 26+ 新版存档的数值类型
+                    let gameMode: String? = {
+                        if let v = WorldNBTMapper.readInt64(dataTag["GameType"]) {
+                            return WorldNBTMapper.mapGameMode(Int(v))
+                        }
+                        return nil
+                    }()
+
+                    let difficulty: String? = {
+                        if let v = WorldNBTMapper.readInt64(dataTag["Difficulty"]) {
+                            return WorldNBTMapper.mapDifficulty(Int(v))
+                        }
+                        // 26+ 新版存档：difficulty_settings.difficulty 为字符串（peaceful/easy/normal/hard）
+                        if let ds = dataTag["difficulty_settings"] as? [String: Any],
+                           let diffStr = ds["difficulty"] as? String {
+                            return WorldNBTMapper.mapDifficultyString(diffStr)
+                        }
+                        return nil
+                    }()
+
                     let version: String? = (dataTag["Version"] as? [String: Any])?["Name"] as? String
-                    let seed: Int64? = dataTag["RandomSeed"] as? Int64 ?? (dataTag["RandomSeed"] as? Int).map { Int64($0) }
-                    loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: gameMode, difficulty: difficulty, version: version, seed: seed))
+                    // 极限模式 / 是否允许作弊（不同版本字段位置不同）
+                    let hardcore: Bool? = {
+                        if let v = WorldNBTMapper.readBoolFlag(dataTag["hardcore"]) { return v }
+                        if let ds = dataTag["difficulty_settings"] as? [String: Any],
+                           let v = WorldNBTMapper.readBoolFlag(ds["hardcore"]) { return v }
+                        return nil
+                    }()
+                    let cheats: Bool? = WorldNBTMapper.readBoolFlag(dataTag["allowCommands"])
+
+                    // 种子字段在新旧版本之间有差异：旧版 level.dat 使用 RandomSeed，新版拆到 world_gen_settings.dat
+                    let seed: Int64? = WorldNBTMapper.readSeed(from: dataTag, worldPath: worldPath)
+
+                    loadedWorlds.append(
+                        WorldInfo(
+                            name: worldName,
+                            path: worldPath,
+                            lastPlayed: lastPlayed,
+                            gameMode: gameMode,
+                            difficulty: difficulty,
+                            hardcore: hardcore,
+                            cheats: cheats,
+                            version: version,
+                            seed: seed
+                        )
+                    )
                 } catch {
                     Logger.shared.error("解析 level.dat 失败 (\(worldName)): \(error.localizedDescription)")
-                    loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil))
+                    loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, hardcore: nil, cheats: nil, version: nil, seed: nil))
                 }
             }
             loadedWorlds.sort { ($0.lastPlayed ?? .distantPast) > ($1.lastPlayed ?? .distantPast) }

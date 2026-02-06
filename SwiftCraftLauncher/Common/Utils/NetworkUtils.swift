@@ -82,7 +82,6 @@ enum NetworkUtils {
         let srvName = "_minecraft._tcp.\(domain)"
 
         // 使用系统的 dig 命令查询 SRV 记录（更简单可靠）
-        // 注意：不能在 async 上下文里用 `waitUntilExit()` 同步阻塞（若调用者在主线程/主 Actor 会卡 UI）。
         guard let output = await runDigShortSRVQuery(srvName: srvName) else { return nil }
 
         // 解析 SRV 记录格式: priority weight port target

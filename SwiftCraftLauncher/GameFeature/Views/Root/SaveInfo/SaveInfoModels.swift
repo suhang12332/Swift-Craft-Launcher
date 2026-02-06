@@ -8,6 +8,10 @@ struct WorldInfo: Identifiable, Equatable {
     let lastPlayed: Date?
     let gameMode: String?
     let difficulty: String?
+    /// 是否极限模式（不同版本字段位置不同，可能无法解析时为 nil）
+    let hardcore: Bool?
+    /// 是否允许作弊/指令（allowCommands），可能无法解析时为 nil
+    let cheats: Bool?
     let version: String?
     let seed: Int64?
 
@@ -17,6 +21,8 @@ struct WorldInfo: Identifiable, Equatable {
         lastPlayed: Date? = nil,
         gameMode: String? = nil,
         difficulty: String? = nil,
+        hardcore: Bool? = nil,
+        cheats: Bool? = nil,
         version: String? = nil,
         seed: Int64? = nil
     ) {
@@ -26,6 +32,8 @@ struct WorldInfo: Identifiable, Equatable {
         self.lastPlayed = lastPlayed
         self.gameMode = gameMode
         self.difficulty = difficulty
+        self.hardcore = hardcore
+        self.cheats = cheats
         self.version = version
         self.seed = seed
     }

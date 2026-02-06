@@ -3,6 +3,7 @@ import AppKit
 
 public struct GeneralSettingsView: View {
     @StateObject private var generalSettings = GeneralSettingsManager.shared
+    @StateObject private var themeManager = ThemeManager.shared
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var sparkleUpdateService: SparkleUpdateService
     @State private var showDirectoryPicker = false
@@ -51,7 +52,7 @@ public struct GeneralSettingsView: View {
             }.labeledContentStyle(.custom).padding(.bottom, 10)
 
             LabeledContent("settings.theme.picker".localized()) {
-                ThemeSelectorView(selectedTheme: $generalSettings.themeMode)
+                ThemeSelectorView(selectedTheme: $themeManager.themeMode)
                     .fixedSize()
             }.labeledContentStyle(.custom)
 
