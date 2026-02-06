@@ -23,16 +23,15 @@ class ServerAddressService {
         let profileDir = AppPaths.profileDirectory(gameName: gameName)
         let serversDatURL = profileDir.appendingPathComponent("servers.dat")
 
-        // 检查 servers.dat 文件是否存在
         guard FileManager.default.fileExists(atPath: serversDatURL.path) else {
             Logger.shared.debug("servers.dat 文件不存在: \(serversDatURL.path)")
             return []
         }
-
         Logger.shared.debug("开始读取 servers.dat: \(serversDatURL.path)")
-
         do {
-            let data = try Data(contentsOf: serversDatURL)
+            let data = try await Task.detached(priority: .userInitiated) {
+                try Data(contentsOf: serversDatURL)
+            }.value
             Logger.shared.debug("servers.dat 文件大小: \(data.count) 字节")
             let servers = try parseServersDat(data: data)
             Logger.shared.debug("成功解析 \(servers.count) 个服务器")

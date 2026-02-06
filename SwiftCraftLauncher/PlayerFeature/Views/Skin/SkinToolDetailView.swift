@@ -200,8 +200,13 @@ struct SkinToolDetailView: View {
 
         selectedSkinData = data
         selectedSkinImage = image
-        selectedSkinPath = saveTempSkinFile(data: data)?.path
-        updateHasChanges()
+        Task { @MainActor in
+            let path = await Task.detached(priority: .userInitiated) {
+                self.saveTempSkinFile(data: data)?.path
+            }.value
+            selectedSkinPath = path
+            updateHasChanges()
+        }
 
         Logger.shared.info("Skin image dropped and processed successfully. Model: \(currentModel.rawValue)")
     }
@@ -289,13 +294,18 @@ struct SkinToolDetailView: View {
         case .success(let urls):
             guard let url = urls.first,
                   url.startAccessingSecurityScopedResource() else { return }
-            defer { url.stopAccessingSecurityScopedResource() }
 
-            do {
-                let data = try Data(contentsOf: url)
-                processSkinData(data, filePath: url.path)
-            } catch {
-                Logger.shared.error("Failed to read skin file: \(error)")
+            let urlForBackground = url
+            Task { @MainActor in
+                let data = await Task.detached(priority: .userInitiated) {
+                    try? Data(contentsOf: urlForBackground)
+                }.value
+                urlForBackground.stopAccessingSecurityScopedResource()
+                if let data = data {
+                    processSkinData(data, filePath: urlForBackground.path)
+                } else {
+                    Logger.shared.error("Failed to read skin file")
+                }
             }
         case .failure(let error):
             Logger.shared.error("File selection failed: \(error)")
@@ -307,8 +317,19 @@ struct SkinToolDetailView: View {
 
         provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in
             guard let data = data else { return }
-            DispatchQueue.main.async {
-                let tempURL = self.saveTempSkinFile(data: data)
+            Task { @MainActor in
+                let tempURL = await Task.detached(priority: .userInitiated) { () -> URL? in
+                    let tempDir = FileManager.default.temporaryDirectory
+                    let fileName = "temp_skin_\(UUID().uuidString).png"
+                    let tempURL = tempDir.appendingPathComponent(fileName)
+                    do {
+                        try data.write(to: tempURL)
+                        return tempURL
+                    } catch {
+                        Logger.shared.error("Failed to save temporary skin file: \(error)")
+                        return nil
+                    }
+                }.value
                 self.processSkinData(data, filePath: tempURL?.path)
             }
         }
@@ -323,11 +344,11 @@ struct SkinToolDetailView: View {
         updateHasChanges()
     }
 
-    private func saveTempSkinFile(data: Data) -> URL? {
+    /// 在后台写入临时皮肤文件，避免主线程 data.write
+    nonisolated private func saveTempSkinFile(data: Data) -> URL? {
         let tempDir = FileManager.default.temporaryDirectory
         let fileName = "temp_skin_\(UUID().uuidString).png"
         let tempURL = tempDir.appendingPathComponent(fileName)
-
         do {
             try data.write(to: tempURL)
             return tempURL

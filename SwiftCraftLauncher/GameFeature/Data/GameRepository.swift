@@ -98,11 +98,15 @@ class GameRepository: ObservableObject {
 
     func addGame(_ game: GameVersionInfo) async throws {
         let workingPath = currentWorkingPath
+        let dbPath = AppPaths.gameVersionDatabase.path
+        let gameToSave = game
 
-        // 保存到数据库
-        try database.saveGame(game, workingPath: workingPath)
+        try await Task.detached(priority: .userInitiated) {
+            let db = GameVersionDatabase(dbPath: dbPath)
+            try? db.initialize()
+            try db.saveGame(gameToSave, workingPath: workingPath)
+        }.value
 
-        // 更新内存缓存
         await MainActor.run {
             if gamesByWorkingPath[workingPath] == nil {
                 gamesByWorkingPath[workingPath] = []
@@ -136,11 +140,14 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
+        let dbPath = AppPaths.gameVersionDatabase.path
 
-        // 从数据库删除
-        try database.deleteGame(id: id)
+        try await Task.detached(priority: .userInitiated) {
+            let db = GameVersionDatabase(dbPath: dbPath)
+            try? db.initialize()
+            try db.deleteGame(id: id)
+        }.value
 
-        // 更新内存缓存
         await MainActor.run {
             gamesByWorkingPath[workingPath]?.removeAll { $0.id == id }
         }
@@ -168,16 +175,19 @@ class GameRepository: ObservableObject {
 
     func updateGame(_ game: GameVersionInfo) async throws {
         let workingPath = currentWorkingPath
+        let dbPath = AppPaths.gameVersionDatabase.path
+        let gameToSave = game
 
-        // 保存到数据库
-        try database.saveGame(game, workingPath: workingPath)
+        try await Task.detached(priority: .userInitiated) {
+            let db = GameVersionDatabase(dbPath: dbPath)
+            try? db.initialize()
+            try db.saveGame(gameToSave, workingPath: workingPath)
+        }.value
 
-        // 更新内存缓存
         await MainActor.run {
             if let index = gamesByWorkingPath[workingPath]?.firstIndex(where: { $0.id == game.id }) {
                 gamesByWorkingPath[workingPath]?[index] = game
             } else {
-                // 如果内存中没有，添加到内存
                 if gamesByWorkingPath[workingPath] == nil {
                     gamesByWorkingPath[workingPath] = []
                 }
@@ -208,11 +218,14 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
+        let dbPath = AppPaths.gameVersionDatabase.path
 
-        // 更新数据库
-        try database.updateLastPlayed(id: id, lastPlayed: lastPlayed)
+        try await Task.detached(priority: .userInitiated) {
+            let db = GameVersionDatabase(dbPath: dbPath)
+            try? db.initialize()
+            try db.updateLastPlayed(id: id, lastPlayed: lastPlayed)
+        }.value
 
-        // 更新内存缓存
         game.lastPlayed = lastPlayed
         let updatedGame = game
         await MainActor.run {
@@ -361,39 +374,38 @@ class GameRepository: ObservableObject {
         Logger.shared.info("完成所有游戏的 mods 目录扫描")
     }
 
-    // 只加载当前工作路径的游戏
+    // 只加载当前工作路径的游戏（数据库与目录扫描在后台执行，避免主线程阻塞）
     func loadGamesThrowing() async throws {
         let workingPath = currentWorkingPath
+        let dbPath = AppPaths.gameVersionDatabase.path
 
-        // 从数据库加载当前工作路径的游戏
-        let games = try database.loadGames(workingPath: workingPath)
-
-        // 验证当前工作路径下的游戏，只保留实际存在的游戏
-        let fileManager = FileManager.default
-        let baseURL = URL(fileURLWithPath: workingPath, isDirectory: true)
-        let profileRootDir = baseURL.appendingPathComponent(AppConstants.DirectoryNames.profiles, isDirectory: true)
-
-        let localGameNames: Set<String>
-        do {
-            if fileManager.fileExists(atPath: profileRootDir.path) {
-                let contents = try fileManager.contentsOfDirectory(atPath: profileRootDir.path)
-                localGameNames = Set(contents)
-            } else {
+        let (validGames, pathForLog): ([GameVersionInfo], String) = try await Task.detached(priority: .userInitiated) {
+            let db = GameVersionDatabase(dbPath: dbPath)
+            try? db.initialize()
+            let games = try db.loadGames(workingPath: workingPath)
+            let fm = FileManager.default
+            let baseURL = URL(fileURLWithPath: workingPath, isDirectory: true)
+            let profileRootDir = baseURL.appendingPathComponent(AppConstants.DirectoryNames.profiles, isDirectory: true)
+            let localGameNames: Set<String>
+            do {
+                if fm.fileExists(atPath: profileRootDir.path) {
+                    let contents = try fm.contentsOfDirectory(atPath: profileRootDir.path)
+                    localGameNames = Set(contents)
+                } else {
+                    localGameNames = []
+                }
+            } catch {
+                Logger.shared.warning("无法读取工作路径的游戏目录: \(workingPath), 错误: \(error.localizedDescription)")
                 localGameNames = []
             }
-        } catch {
-            Logger.shared.warning("无法读取工作路径的游戏目录: \(workingPath), 错误: \(error.localizedDescription)")
-            localGameNames = []
-        }
-
-        // 只保留在当前工作路径下实际存在的游戏
-        let validGames = games.filter { localGameNames.contains($0.gameName) }
+            let valid = games.filter { localGameNames.contains($0.gameName) }
+            return (valid, workingPath)
+        }.value
 
         await MainActor.run {
-            // 只保存当前工作路径的游戏到内存中，其他路径的数据不加载
             gamesByWorkingPath = [workingPath: validGames]
         }
 
-        Logger.shared.info("成功加载 \(validGames.count) 个游戏（工作路径: \(workingPath)）")
+        Logger.shared.info("成功加载 \(validGames.count) 个游戏（工作路径: \(pathForLog)）")
     }
 }

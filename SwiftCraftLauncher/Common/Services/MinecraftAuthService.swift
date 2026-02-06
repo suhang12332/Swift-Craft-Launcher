@@ -27,7 +27,11 @@ class MinecraftAuthService: NSObject, ObservableObject {
         isLoading = true
         authState = .waitingForBrowserAuth
 
-        let authURL = buildAuthorizationURL()
+        guard let authURL = buildAuthorizationURL() else {
+            isLoading = false
+            authState = .error("minecraft.auth.error.authentication_failed".localized())
+            return
+        }
 
         await withCheckedContinuation { continuation in
             webAuthSession = ASWebAuthenticationSession(
@@ -101,10 +105,11 @@ class MinecraftAuthService: NSObject, ObservableObject {
         }
     }
 
-    // MARK: - 构建授权 URL
-    private func buildAuthorizationURL() -> URL {
+    // MARK: - 构建授权 URL（失败时返回 nil，由调用方处理，避免生产环境闪退）
+    private func buildAuthorizationURL() -> URL? {
         guard var components = URLComponents(url: URLConfig.API.Authentication.authorize, resolvingAgainstBaseURL: false) else {
-            fatalError("Invalid authorization URL configuration")
+            Logger.shared.error("Invalid authorization URL configuration")
+            return nil
         }
         components.queryItems = [
             URLQueryItem(name: "client_id", value: clientId),
@@ -115,7 +120,8 @@ class MinecraftAuthService: NSObject, ObservableObject {
             URLQueryItem(name: "state", value: UUID().uuidString),
         ]
         guard let url = components.url else {
-            fatalError("Failed to build authorization URL")
+            Logger.shared.error("Failed to build authorization URL")
+            return nil
         }
         return url
     }

@@ -259,27 +259,35 @@ struct GameFormView: View {
                 return
             }
 
-            defer { url.stopAccessingSecurityScopedResource() }
+            let urlForBackground = url
+            Task {
+                let tempFileResult: Result<URL, Error> = await Task.detached(priority: .userInitiated) {
+                    do {
+                        let tempDir = FileManager.default.temporaryDirectory
+                            .appendingPathComponent("modpack_import")
+                            .appendingPathComponent(UUID().uuidString)
+                        try FileManager.default.createDirectory(
+                            at: tempDir,
+                            withIntermediateDirectories: true
+                        )
+                        let tempFile = tempDir.appendingPathComponent(urlForBackground.lastPathComponent)
+                        try FileManager.default.copyItem(at: urlForBackground, to: tempFile)
+                        return .success(tempFile)
+                    } catch {
+                        return .failure(error)
+                    }
+                }.value
+                urlForBackground.stopAccessingSecurityScopedResource()
 
-            // 复制文件到临时目录以便后续使用
-            do {
-                let tempDir = FileManager.default.temporaryDirectory
-                    .appendingPathComponent("modpack_import")
-                    .appendingPathComponent(UUID().uuidString)
-                try FileManager.default.createDirectory(
-                    at: tempDir,
-                    withIntermediateDirectories: true
-                )
-
-                let tempFile = tempDir.appendingPathComponent(url.lastPathComponent)
-                try FileManager.default.copyItem(at: url, to: tempFile)
-
-                // 切换到导入模式并开始处理
-                mode = .modPackImport(file: tempFile, shouldProcess: true)
-                isModPackParsed = false
-            } catch {
-                let globalError = GlobalError.from(error)
-                GlobalErrorHandler.shared.handle(globalError)
+                await MainActor.run {
+                    switch tempFileResult {
+                    case .success(let tempFile):
+                        mode = .modPackImport(file: tempFile, shouldProcess: true)
+                        isModPackParsed = false
+                    case .failure(let error):
+                        GlobalErrorHandler.shared.handle(GlobalError.from(error))
+                    }
+                }
             }
 
         case .failure(let error):

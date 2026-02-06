@@ -8,6 +8,11 @@ import CommonCrypto
 import Foundation
 import SwiftUI
 import ZIPFoundation
+
+private enum ModrinthIndexError: Error {
+    case emptyIndex
+}
+
 // MARK: - View Model
 @MainActor
 class ModPackDownloadSheetViewModel: ObservableObject {
@@ -53,29 +58,28 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         cleanupTempFiles()
     }
 
-    /// 清理临时文件（modpack_download 和 modpack_extraction 目录）
+    /// 清理临时文件（modpack_download 和 modpack_extraction 目录），在后台执行避免主线程阻塞
     func cleanupTempFiles() {
-        let tempBaseDir = FileManager.default.temporaryDirectory
-
-        // 清理 modpack_download 目录
-        let downloadDir = tempBaseDir.appendingPathComponent("modpack_download")
-        if FileManager.default.fileExists(atPath: downloadDir.path) {
-            do {
-                try FileManager.default.removeItem(at: downloadDir)
-                Logger.shared.info("已清理临时下载目录: \(downloadDir.path)")
-            } catch {
-                Logger.shared.warning("清理临时下载目录失败: \(error.localizedDescription)")
+        Task.detached(priority: .utility) {
+            let fm = FileManager.default
+            let tempBaseDir = fm.temporaryDirectory
+            let downloadDir = tempBaseDir.appendingPathComponent("modpack_download")
+            if fm.fileExists(atPath: downloadDir.path) {
+                do {
+                    try fm.removeItem(at: downloadDir)
+                    Logger.shared.info("已清理临时下载目录: \(downloadDir.path)")
+                } catch {
+                    Logger.shared.warning("清理临时下载目录失败: \(error.localizedDescription)")
+                }
             }
-        }
-
-        // 清理 modpack_extraction 目录
-        let extractionDir = tempBaseDir.appendingPathComponent("modpack_extraction")
-        if FileManager.default.fileExists(atPath: extractionDir.path) {
-            do {
-                try FileManager.default.removeItem(at: extractionDir)
-                Logger.shared.info("已清理临时解压目录: \(extractionDir.path)")
-            } catch {
-                Logger.shared.warning("清理临时解压目录失败: \(error.localizedDescription)")
+            let extractionDir = tempBaseDir.appendingPathComponent("modpack_extraction")
+            if fm.fileExists(atPath: extractionDir.path) {
+                do {
+                    try fm.removeItem(at: extractionDir)
+                    Logger.shared.info("已清理临时解压目录: \(extractionDir.path)")
+                } catch {
+                    Logger.shared.warning("清理临时解压目录失败: \(error.localizedDescription)")
+                }
             }
         }
     }
@@ -450,67 +454,36 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     }
 
     private func parseModrinthIndexInternal(extractedPath: URL) async -> ModrinthIndexInfo? {
+        let indexPath = extractedPath.appendingPathComponent(AppConstants.modrinthIndexFileName)
         do {
-            // 查找并解析 modrinth.index.json
-            let indexPath = extractedPath.appendingPathComponent(
-                AppConstants.modrinthIndexFileName
-            )
-
-            let indexPathString = indexPath.path
-            guard FileManager.default.fileExists(atPath: indexPathString) else {
-                return nil
-            }
-
-            // 获取文件大小
-            let fileAttributes = try FileManager.default.attributesOfItem(
-                atPath: indexPathString
-            )
-            let fileSize = fileAttributes[.size] as? Int64 ?? 0
-
-            guard fileSize > 0 else {
-                handleDownloadError(
-                    "modrinth.index.json 文件为空",
-                    "error.resource.modrinth_index_empty"
-                )
-                return nil
-            }
-
-            // 使用局部作用域确保中间变量尽早释放
-            let indexInfo: ModrinthIndexInfo = try {
+            let modPackIndex: ModrinthIndex? = try await Task.detached(priority: .userInitiated) { () throws -> ModrinthIndex? in
+                let indexPathString = indexPath.path
+                guard FileManager.default.fileExists(atPath: indexPathString) else { return nil }
+                let fileAttributes = try FileManager.default.attributesOfItem(atPath: indexPathString)
+                let fileSize = fileAttributes[.size] as? Int64 ?? 0
+                guard fileSize > 0 else { throw ModrinthIndexError.emptyIndex }
                 let indexData = try Data(contentsOf: indexPath)
+                return try JSONDecoder().decode(ModrinthIndex.self, from: indexData)
+            }.value
 
-                // 尝试解析 JSON
-                let modPackIndex = try JSONDecoder().decode(
-                    ModrinthIndex.self,
-                    from: indexData
-                )
-
-                // 确定加载器类型和版本
-                let loaderInfo = determineLoaderInfo(
-                    from: modPackIndex.dependencies
-                )
-
-                // 创建解析结果
-                let info = ModrinthIndexInfo(
-                    gameVersion: modPackIndex.dependencies.minecraft ?? "unknown",
-                    loaderType: loaderInfo.type,
-                    loaderVersion: loaderInfo.version,
-                    modPackName: modPackIndex.name,
-                    modPackVersion: modPackIndex.versionId,
-                    summary: modPackIndex.summary,
-                    files: modPackIndex.files,
-                    dependencies: modPackIndex.dependencies.dependencies ?? []
-                )
-                // indexData 和 modPackIndex 在此作用域结束后会自动释放
-                return info
-            }()
-
+            guard let modPackIndex = modPackIndex else { return nil }
+            let loaderInfo = determineLoaderInfo(from: modPackIndex.dependencies)
+            let indexInfo = ModrinthIndexInfo(
+                gameVersion: modPackIndex.dependencies.minecraft ?? "unknown",
+                loaderType: loaderInfo.type,
+                loaderVersion: loaderInfo.version,
+                modPackName: modPackIndex.name,
+                modPackVersion: modPackIndex.versionId,
+                summary: modPackIndex.summary,
+                files: modPackIndex.files,
+                dependencies: modPackIndex.dependencies.dependencies ?? []
+            )
             lastParsedIndexInfo = indexInfo
-
-            // 仅保留关键日志
             return indexInfo
+        } catch ModrinthIndexError.emptyIndex {
+            handleDownloadError("modrinth.index.json 文件为空", "error.resource.modrinth_index_empty")
+            return nil
         } catch {
-            // 仅记录错误日志
             if error is DecodingError {
                 Logger.shared.error("解析 modrinth.index.json 失败: JSON 格式错误")
             }

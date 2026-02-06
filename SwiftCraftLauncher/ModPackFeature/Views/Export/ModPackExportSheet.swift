@@ -249,15 +249,19 @@ struct ModPackExportSheet: View {
             viewModel.markSaveDialogShown()
         }
 
-        do {
-            let fileData = try Data(contentsOf: tempFilePath)
-            exportDocument = ModPackDocument(data: fileData)
-            DispatchQueue.main.async {
-                self.isExporting = true
+        Task {
+            do {
+                let fileData = try await Task.detached(priority: .userInitiated) {
+                    try Data(contentsOf: tempFilePath)
+                }.value
+                await MainActor.run {
+                    self.exportDocument = ModPackDocument(data: fileData)
+                    self.isExporting = true
+                }
+            } catch {
+                Logger.shared.error("读取临时文件失败: \(error.localizedDescription)")
+                viewModel.handleSaveFailure(error: error.localizedDescription)
             }
-        } catch {
-            Logger.shared.error("读取临时文件失败: \(error.localizedDescription)")
-            viewModel.handleSaveFailure(error: error.localizedDescription)
         }
     }
 }

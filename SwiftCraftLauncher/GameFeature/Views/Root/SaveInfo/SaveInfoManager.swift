@@ -103,30 +103,34 @@ final class SaveInfoManager: ObservableObject {
     }
 
     // MARK: - Private Methods
-    /// 检查各个类型是否存在
-    private func checkTypesAvailability() {
-        // 检查世界类型
-        hasWorldsType = savesDirectory != nil
-
-        // 检查截图类型
-        hasScreenshotsType = screenshotsDirectory != nil
-
-        // 检查服务器类型（检查 servers.dat 文件是否存在）
-        let profileDir = AppPaths.profileDirectory(gameName: gameName)
-        let serversDatURL = profileDir.appendingPathComponent("servers.dat")
-        hasServersType = FileManager.default.fileExists(atPath: serversDatURL.path)
-
-        // 检查 Litematica 类型（检查 schematics 目录是否存在）
-        let schematicsDir = AppPaths.schematicsDirectory(gameName: gameName)
-        hasLitematicaType = FileManager.default.fileExists(atPath: schematicsDir.path)
-
-        // 检查日志类型
-        hasLogsType = logsDirectory != nil
+    /// 检查各个类型是否存在（在后台执行，避免主线程 FileManager）
+    private func checkTypesAvailability() async {
+        let name = gameName
+        let (worlds, screenshots, servers, litematica, logs) = await Task.detached(priority: .userInitiated) {
+            let fm = FileManager.default
+            let profileDir = AppPaths.profileDirectory(gameName: name)
+            let savesPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
+            let screenshotsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)
+            let logsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
+            let serversDatURL = profileDir.appendingPathComponent("servers.dat")
+            let schematicsDir = AppPaths.schematicsDirectory(gameName: name)
+            return (
+                fm.fileExists(atPath: savesPath.path),
+                fm.fileExists(atPath: screenshotsPath.path),
+                fm.fileExists(atPath: serversDatURL.path),
+                fm.fileExists(atPath: schematicsDir.path),
+                fm.fileExists(atPath: logsPath.path)
+            )
+        }.value
+        hasWorldsType = worlds
+        hasScreenshotsType = screenshots
+        hasServersType = servers
+        hasLitematicaType = litematica
+        hasLogsType = logs
     }
 
     private func fetchData() async {
-        // 先检查哪些类型存在
-        checkTypesAvailability()
+        await checkTypesAvailability()
 
         isLoading = true
 
@@ -167,218 +171,36 @@ final class SaveInfoManager: ObservableObject {
     }
 
     // MARK: - Helper (Worlds)
-    /// 将 GameType 数值映射为本地化描述
-    private func mapGameMode(_ value: Int) -> String {
-        switch value {
-        case 0: return "saveinfo.world.game_mode.survival".localized()
-        case 1: return "saveinfo.world.game_mode.creative".localized()
-        case 2: return "saveinfo.world.game_mode.adventure".localized()
-        case 3: return "saveinfo.world.game_mode.spectator".localized()
-        default: return "saveinfo.world.game_mode.unknown".localized()
-        }
-    }
-
-    /// 将 Difficulty 数值映射为本地化描述
-    private func mapDifficulty(_ value: Int) -> String {
-        switch value {
-        case 0: return "saveinfo.world.difficulty.peaceful".localized()
-        case 1: return "saveinfo.world.difficulty.easy".localized()
-        case 2: return "saveinfo.world.difficulty.normal".localized()
-        case 3: return "saveinfo.world.difficulty.hard".localized()
-        default: return "saveinfo.world.difficulty.unknown".localized()
-        }
-    }
-
-    /// 加载世界信息
+    /// 加载世界信息（目录与文件 I/O 在后台执行）
     private func loadWorlds() async {
         isLoadingWorlds = true
         defer { isLoadingWorlds = false }
 
-        guard let savesDir = savesDirectory else {
+        guard savesDirectory != nil else {
             worlds = []
             return
         }
-
-        var loadedWorlds: [WorldInfo] = []
-
-        do {
-            let contents = try FileManager.default.contentsOfDirectory(
-                at: savesDir,
-                includingPropertiesForKeys: [.isDirectoryKey, .contentModificationDateKey],
-                options: [.skipsHiddenFiles]
-            )
-
-            for worldPath in contents {
-                guard let isDirectory = try? worldPath.resourceValues(forKeys: [.isDirectoryKey]).isDirectory,
-                      isDirectory == true else {
-                    continue
-                }
-
-                let worldName = worldPath.lastPathComponent
-                let levelDatPath = worldPath.appendingPathComponent("level.dat")
-
-                // 读取世界信息
-                let parseResult: WorldParseResult = {
-                    // 获取文件修改时间作为最后游玩时间（作为兜底）
-                    var lastPlayed: Date?
-                    if let modDate = try? worldPath.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate {
-                        lastPlayed = modDate
-                    }
-
-                    guard FileManager.default.fileExists(atPath: levelDatPath.path) else {
-                        return WorldParseResult(lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil)
-                    }
-
-                    // 使用 NBTParser 解析 level.dat
-                    do {
-                        let data = try Data(contentsOf: levelDatPath)
-                        let parser = NBTParser(data: data)
-                        let nbtData = try parser.parse()
-
-                        guard let dataTag = nbtData["Data"] as? [String: Any] else {
-                            return WorldParseResult(lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil)
-                        }
-
-                        // LastPlayed 为毫秒时间戳
-                        if let ts = dataTag["LastPlayed"] as? Int64 {
-                            lastPlayed = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
-                        } else if let ts = dataTag["LastPlayed"] as? Int {
-                            lastPlayed = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
-                        }
-
-                        // GameType: 0 生存, 1 创造, 2 冒险, 3 旁观
-                        let gameMode: String?
-                        if let gt = dataTag["GameType"] as? Int {
-                            gameMode = mapGameMode(gt)
-                        } else if let gt32 = dataTag["GameType"] as? Int32 {
-                            gameMode = mapGameMode(Int(gt32))
-                        } else {
-                            gameMode = nil
-                        }
-
-                        // Difficulty: 0 和平, 1 简单, 2 普通, 3 困难
-                        let difficulty: String?
-                        if let diff = dataTag["Difficulty"] as? Int {
-                            difficulty = mapDifficulty(diff)
-                        } else if let diff8 = dataTag["Difficulty"] as? Int8 {
-                            difficulty = mapDifficulty(Int(diff8))
-                        } else {
-                            difficulty = nil
-                        }
-
-                        // Version 信息
-                        let version: String?
-                        if let versionTag = dataTag["Version"] as? [String: Any] {
-                            version = versionTag["Name"] as? String
-                        } else {
-                            version = nil
-                        }
-
-                        // 世界种子
-                        let seed: Int64?
-                        if let s = dataTag["RandomSeed"] as? Int64 {
-                            seed = s
-                        } else if let s = dataTag["RandomSeed"] as? Int {
-                            seed = Int64(s)
-                        } else {
-                            seed = nil
-                        }
-
-                        return WorldParseResult(lastPlayed: lastPlayed, gameMode: gameMode, difficulty: difficulty, version: version, seed: seed)
-                    } catch {
-                        Logger.shared.error("解析 level.dat 失败 (\(worldName)): \(error.localizedDescription)")
-                        return WorldParseResult(lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil)
-                    }
-                }()
-
-                let worldInfo = WorldInfo(
-                    name: worldName,
-                    path: worldPath,
-                    lastPlayed: parseResult.lastPlayed,
-                    gameMode: parseResult.gameMode,
-                    difficulty: parseResult.difficulty,
-                    version: parseResult.version,
-                    seed: parseResult.seed
-                )
-
-                loadedWorlds.append(worldInfo)
-            }
-
-            // 按最后游玩时间排序
-            loadedWorlds.sort { world1, world2 in
-                let date1 = world1.lastPlayed ?? Date.distantPast
-                let date2 = world2.lastPlayed ?? Date.distantPast
-                return date1 > date2
-            }
-
-            worlds = loadedWorlds
-        } catch {
-            Logger.shared.error("加载世界信息失败: \(error.localizedDescription)")
-            worlds = []
-        }
+        let name = gameName
+        let result = await Task.detached(priority: .userInitiated) {
+            Self.loadWorldsFromDirectory(gameName: name)
+        }.value
+        worlds = result
     }
 
-    /// 加载截图信息
+    /// 加载截图信息（目录与文件 I/O 在后台执行）
     private func loadScreenshots() async {
         isLoadingScreenshots = true
         defer { isLoadingScreenshots = false }
 
-        guard let screenshotsDir = screenshotsDirectory else {
+        guard screenshotsDirectory != nil else {
             screenshots = []
             return
         }
-
-        var loadedScreenshots: [ScreenshotInfo] = []
-
-        do {
-            let contents = try FileManager.default.contentsOfDirectory(
-                at: screenshotsDir,
-                includingPropertiesForKeys: [
-                    .isRegularFileKey,
-                    .creationDateKey,
-                    .fileSizeKey,
-                ],
-                options: [.skipsHiddenFiles]
-            )
-
-            for screenshotPath in contents {
-                guard let isFile = try? screenshotPath.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
-                      isFile == true else {
-                    continue
-                }
-
-                // 只处理图片文件
-                let fileExtension = screenshotPath.pathExtension.lowercased()
-                guard ["png", "jpg", "jpeg"].contains(fileExtension) else {
-                    continue
-                }
-
-                let screenshotName = screenshotPath.lastPathComponent
-                let creationDate = try? screenshotPath.resourceValues(forKeys: [.creationDateKey]).creationDate
-                let fileSize = (try? screenshotPath.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
-
-                let screenshotInfo = ScreenshotInfo(
-                    name: screenshotName,
-                    path: screenshotPath,
-                    createdDate: creationDate,
-                    fileSize: Int64(fileSize)
-                )
-
-                loadedScreenshots.append(screenshotInfo)
-            }
-
-            // 按创建时间排序
-            loadedScreenshots.sort { screenshot1, screenshot2 in
-                let date1 = screenshot1.createdDate ?? Date.distantPast
-                let date2 = screenshot2.createdDate ?? Date.distantPast
-                return date1 > date2
-            }
-
-            screenshots = loadedScreenshots
-        } catch {
-            Logger.shared.error("加载截图信息失败: \(error.localizedDescription)")
-            screenshots = []
-        }
+        let name = gameName
+        let result = await Task.detached(priority: .userInitiated) {
+            Self.loadScreenshotsFromDirectory(gameName: name)
+        }.value
+        screenshots = result
     }
 
     /// 加载服务器地址信息（仅从 servers.dat 读取）
@@ -409,79 +231,20 @@ final class SaveInfoManager: ObservableObject {
         }
     }
 
-    /// 加载日志文件信息
+    /// 加载日志文件信息（目录与文件 I/O 在后台执行）
     private func loadLogs() async {
         isLoadingLogs = true
         defer { isLoadingLogs = false }
 
-        guard let logsDir = logsDirectory else {
+        guard logsDirectory != nil else {
             logs = []
             return
         }
-
-        var loadedLogs: [LogInfo] = []
-
-        do {
-            let contents = try FileManager.default.contentsOfDirectory(
-                at: logsDir,
-                includingPropertiesForKeys: [
-                    .isRegularFileKey,
-                    .creationDateKey,
-                    .fileSizeKey,
-                ],
-                options: [.skipsHiddenFiles]
-            )
-
-            for logPath in contents {
-                guard let isFile = try? logPath.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
-                      isFile == true else {
-                    continue
-                }
-
-                // 只处理.log结尾的文件
-                let fileExtension = logPath.pathExtension.lowercased()
-                guard fileExtension == "log" else {
-                    continue
-                }
-
-                let logName = logPath.lastPathComponent
-                let creationDate = try? logPath.resourceValues(forKeys: [.creationDateKey]).creationDate
-                let fileSize = (try? logPath.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
-
-                // 判断是否为崩溃日志（文件名包含crash或error等关键词）
-                let fileNameLower = logName.lowercased()
-                let isCrashLog = fileNameLower.contains("crash") ||
-                                fileNameLower.contains("error") ||
-                                fileNameLower.contains("exception")
-
-                let logInfo = LogInfo(
-                    name: logName,
-                    path: logPath,
-                    createdDate: creationDate,
-                    fileSize: Int64(fileSize),
-                    isCrashLog: isCrashLog
-                )
-
-                loadedLogs.append(logInfo)
-            }
-
-            // 按创建时间排序，崩溃日志优先显示
-            loadedLogs.sort { log1, log2 in
-                // 崩溃日志优先
-                if log1.isCrashLog != log2.isCrashLog {
-                    return log1.isCrashLog
-                }
-                // 按时间排序
-                let date1 = log1.createdDate ?? Date.distantPast
-                let date2 = log2.createdDate ?? Date.distantPast
-                return date1 > date2
-            }
-
-            logs = loadedLogs
-        } catch {
-            Logger.shared.error("加载日志信息失败: \(error.localizedDescription)")
-            logs = []
-        }
+        let name = gameName
+        let result = await Task.detached(priority: .userInitiated) {
+            Self.loadLogsFromDirectory(gameName: name)
+        }.value
+        logs = result
     }
 
     private func resetData() {
@@ -505,5 +268,144 @@ final class SaveInfoManager: ObservableObject {
         hasServersType = false
         hasLitematicaType = false
         hasLogsType = false
+    }
+
+    // MARK: - 后台加载静态方法（避免主线程 FileManager / Data(contentsOf:)）
+    nonisolated private static func mapGameMode(_ value: Int) -> String {
+        switch value {
+        case 0: return "saveinfo.world.game_mode.survival".localized()
+        case 1: return "saveinfo.world.game_mode.creative".localized()
+        case 2: return "saveinfo.world.game_mode.adventure".localized()
+        case 3: return "saveinfo.world.game_mode.spectator".localized()
+        default: return "saveinfo.world.game_mode.unknown".localized()
+        }
+    }
+
+    nonisolated private static func mapDifficulty(_ value: Int) -> String {
+        switch value {
+        case 0: return "saveinfo.world.difficulty.peaceful".localized()
+        case 1: return "saveinfo.world.difficulty.easy".localized()
+        case 2: return "saveinfo.world.difficulty.normal".localized()
+        case 3: return "saveinfo.world.difficulty.hard".localized()
+        default: return "saveinfo.world.difficulty.unknown".localized()
+        }
+    }
+
+    nonisolated private static func loadWorldsFromDirectory(gameName: String) -> [WorldInfo] {
+        let savesPath = AppPaths.profileDirectory(gameName: gameName)
+            .appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: savesPath.path) else { return [] }
+        do {
+            let contents = try fm.contentsOfDirectory(
+                at: savesPath,
+                includingPropertiesForKeys: [.isDirectoryKey, .contentModificationDateKey],
+                options: [.skipsHiddenFiles]
+            )
+            var loadedWorlds: [WorldInfo] = []
+            for worldPath in contents {
+                guard let isDirectory = try? worldPath.resourceValues(forKeys: [.isDirectoryKey]).isDirectory,
+                      isDirectory == true else { continue }
+                let worldName = worldPath.lastPathComponent
+                let levelDatPath = worldPath.appendingPathComponent("level.dat")
+                var lastPlayed: Date?
+                if let modDate = try? worldPath.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate {
+                    lastPlayed = modDate
+                }
+                guard fm.fileExists(atPath: levelDatPath.path) else {
+                    loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil))
+                    continue
+                }
+                do {
+                    let data = try Data(contentsOf: levelDatPath)
+                    let parser = NBTParser(data: data)
+                    let nbtData = try parser.parse()
+                    guard let dataTag = nbtData["Data"] as? [String: Any] else {
+                        loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil))
+                        continue
+                    }
+                    if let ts = dataTag["LastPlayed"] as? Int64 {
+                        lastPlayed = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
+                    } else if let ts = dataTag["LastPlayed"] as? Int {
+                        lastPlayed = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
+                    }
+                    let gameMode: String? = (dataTag["GameType"] as? Int).map { mapGameMode($0) }
+                        ?? (dataTag["GameType"] as? Int32).map { mapGameMode(Int($0)) }
+                    let difficulty: String? = (dataTag["Difficulty"] as? Int).map { mapDifficulty($0) }
+                        ?? (dataTag["Difficulty"] as? Int8).map { mapDifficulty(Int($0)) }
+                    let version: String? = (dataTag["Version"] as? [String: Any])?["Name"] as? String
+                    let seed: Int64? = dataTag["RandomSeed"] as? Int64 ?? (dataTag["RandomSeed"] as? Int).map { Int64($0) }
+                    loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: gameMode, difficulty: difficulty, version: version, seed: seed))
+                } catch {
+                    Logger.shared.error("解析 level.dat 失败 (\(worldName)): \(error.localizedDescription)")
+                    loadedWorlds.append(WorldInfo(name: worldName, path: worldPath, lastPlayed: lastPlayed, gameMode: nil, difficulty: nil, version: nil, seed: nil))
+                }
+            }
+            loadedWorlds.sort { ($0.lastPlayed ?? .distantPast) > ($1.lastPlayed ?? .distantPast) }
+            return loadedWorlds
+        } catch {
+            Logger.shared.error("加载世界信息失败: \(error.localizedDescription)")
+            return []
+        }
+    }
+
+    nonisolated private static func loadScreenshotsFromDirectory(gameName: String) -> [ScreenshotInfo] {
+        let screenshotsPath = AppPaths.profileDirectory(gameName: gameName)
+            .appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: screenshotsPath.path) else { return [] }
+        do {
+            let contents = try fm.contentsOfDirectory(
+                at: screenshotsPath,
+                includingPropertiesForKeys: [.isRegularFileKey, .creationDateKey, .fileSizeKey],
+                options: [.skipsHiddenFiles]
+            )
+            var loaded: [ScreenshotInfo] = []
+            for screenshotPath in contents {
+                guard let isFile = try? screenshotPath.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
+                      isFile == true else { continue }
+                let ext = screenshotPath.pathExtension.lowercased()
+                guard ["png", "jpg", "jpeg"].contains(ext) else { continue }
+                let creationDate = try? screenshotPath.resourceValues(forKeys: [.creationDateKey]).creationDate
+                let fileSize = (try? screenshotPath.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+                loaded.append(ScreenshotInfo(name: screenshotPath.lastPathComponent, path: screenshotPath, createdDate: creationDate, fileSize: Int64(fileSize)))
+            }
+            loaded.sort { ($0.createdDate ?? .distantPast) > ($1.createdDate ?? .distantPast) }
+            return loaded
+        } catch {
+            Logger.shared.error("加载截图信息失败: \(error.localizedDescription)")
+            return []
+        }
+    }
+
+    nonisolated private static func loadLogsFromDirectory(gameName: String) -> [LogInfo] {
+        let logsPath = AppPaths.profileDirectory(gameName: gameName)
+            .appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: logsPath.path) else { return [] }
+        do {
+            let contents = try fm.contentsOfDirectory(
+                at: logsPath,
+                includingPropertiesForKeys: [.isRegularFileKey, .creationDateKey, .fileSizeKey],
+                options: [.skipsHiddenFiles]
+            )
+            var loaded: [LogInfo] = []
+            for logPath in contents {
+                guard let isFile = try? logPath.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
+                      isFile == true else { continue }
+                guard logPath.pathExtension.lowercased() == "log" else { continue }
+                let name = logPath.lastPathComponent
+                let creationDate = try? logPath.resourceValues(forKeys: [.creationDateKey]).creationDate
+                let fileSize = (try? logPath.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
+                let fileNameLower = name.lowercased()
+                let isCrashLog = fileNameLower.contains("crash") || fileNameLower.contains("error") || fileNameLower.contains("exception")
+                loaded.append(LogInfo(name: name, path: logPath, createdDate: creationDate, fileSize: Int64(fileSize), isCrashLog: isCrashLog))
+            }
+            loaded.sort { if $0.isCrashLog != $1.isCrashLog { return $0.isCrashLog }; return ($0.createdDate ?? .distantPast) > ($1.createdDate ?? .distantPast) }
+            return loaded
+        } catch {
+            Logger.shared.error("加载日志信息失败: \(error.localizedDescription)")
+            return []
+        }
     }
 }

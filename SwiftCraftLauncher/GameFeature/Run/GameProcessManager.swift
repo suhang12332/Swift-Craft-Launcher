@@ -1,37 +1,38 @@
 import Foundation
 
 /// 游戏进程管理器
-class GameProcessManager: ObservableObject {
+final class GameProcessManager: ObservableObject, @unchecked Sendable {
     static let shared = GameProcessManager()
 
     private var gameProcesses: [String: Process] = [:]
 
     // 标记主动停止的游戏，用于区分用户主动关闭和真正的崩溃
     private var manuallyStoppedGames: Set<String> = []
+    private let queue = DispatchQueue(label: "com.swiftcraftlauncher.gameprocessmanager")
 
     private init() {}
 
     func storeProcess(gameId: String, process: Process) {
         // 设置进程终止处理器（在启动前设置）
+        // 不在主线程执行：数据库与文件扫描放到后台，仅 UI 状态更新回主线程
         process.terminationHandler = { [weak self] process in
-            Task { @MainActor in
+            Task {
                 await self?.handleProcessTermination(gameId: gameId, process: process)
             }
         }
 
-        gameProcesses[gameId] = process
+        queue.async { [weak self] in
+            self?.gameProcesses[gameId] = process
+        }
         Logger.shared.debug("存储游戏进程: \(gameId)")
     }
 
     // 统一处理所有清理逻辑
     private func handleProcessTermination(gameId: String, process: Process) async {
-        // 检查是否是被主动停止的（通过启动器停止按钮）
-        let wasManuallyStopped = isManuallyStopped(gameId: gameId)
+        let wasManuallyStopped = queue.sync { manuallyStoppedGames.contains(gameId) }
 
-        // 处理进程退出
         handleProcessExit(gameId: gameId, wasManuallyStopped: wasManuallyStopped)
 
-        // 如果不是主动停止，检查是否是真正的崩溃
         if !wasManuallyStopped {
             let isCrash = await checkIfCrash(gameId: gameId, process: process)
 
@@ -39,20 +40,20 @@ class GameProcessManager: ObservableObject {
                 let gameSettings = GameSettingsManager.shared
                 if gameSettings.enableAICrashAnalysis {
                     Logger.shared.info("检测到游戏崩溃，启用AI分析: \(gameId)")
-                    // 异步触发AI分析，不阻塞清理流程
-                    Task {
-                        await collectLogsForGameImmediately(gameId: gameId)
-                    }
+                    await collectLogsForGameImmediately(gameId: gameId)
                 }
             } else {
                 Logger.shared.debug("游戏正常退出，不触发AI分析: \(gameId)")
             }
         }
 
-        // 统一清理：状态更新、进程清理、标记清理
-        GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
-        gameProcesses.removeValue(forKey: gameId)
-        manuallyStoppedGames.remove(gameId)
+        await MainActor.run {
+            GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
+        }
+        queue.async { [weak self] in
+            self?.gameProcesses.removeValue(forKey: gameId)
+            self?.manuallyStoppedGames.remove(gameId)
+        }
     }
 
     private func checkIfCrash(gameId: String, process: Process) async -> Bool {
@@ -173,33 +174,26 @@ class GameProcessManager: ObservableObject {
     /// - Parameter gameId: 游戏 ID
     /// - Returns: 进程对象，如果不存在则返回 nil
     func getProcess(for gameId: String) -> Process? {
-        return gameProcesses[gameId]
+        queue.sync { gameProcesses[gameId] }
     }
 
-    /// 停止游戏进程
+    /// 停止游戏进程（不在主线程等待进程退出，避免卡 UI）
     /// - Parameter gameId: 游戏 ID
-    /// - Returns: 是否成功停止
+    /// - Returns: 是否成功发起停止
     func stopProcess(for gameId: String) -> Bool {
-        guard let process = gameProcesses[gameId] else {
-            return false
+        let process: Process? = queue.sync {
+            guard let proc = gameProcesses[gameId] else { return nil }
+            manuallyStoppedGames.insert(gameId)
+            return proc
         }
-
-        // 标记为主动停止，避免被判定为崩溃
-        manuallyStoppedGames.insert(gameId)
+        guard let process = process else { return false }
 
         if process.isRunning {
             process.terminate()
-            // 等待进程终止
-            process.waitUntilExit()
-        }
-
-        // 由 terminationHandler 统一清理
-        // terminationHandler 会自动处理状态更新和进程清理
-
-        // 延迟清理标记，确保 terminationHandler 能够正确读取标记
-        // terminationHandler 是异步执行的，可能在 waitUntilExit() 返回后才执行
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.manuallyStoppedGames.remove(gameId)
+            // 在后台等待退出，避免主线程调用 waitUntilExit() 卡住 UI
+            DispatchQueue.global(qos: .utility).async {
+                process.waitUntilExit()
+            }
         }
 
         Logger.shared.debug("停止游戏进程: \(gameId)")
@@ -210,37 +204,29 @@ class GameProcessManager: ObservableObject {
     /// - Parameter gameId: 游戏 ID
     /// - Returns: 是否正在运行
     func isGameRunning(gameId: String) -> Bool {
-        guard let process = gameProcesses[gameId] else {
-            return false
-        }
-        return process.isRunning
+        queue.sync { gameProcesses[gameId]?.isRunning ?? false }
     }
 
     // 清理没有正确触发 terminationHandler 的进程
     func cleanupTerminatedProcesses() {
-        let terminatedGameIds = gameProcesses.compactMap { gameId, process in
-            !process.isRunning ? gameId : nil
+        let terminatedGameIds: [String] = queue.sync {
+            let ids = gameProcesses.compactMap { gameId, process in
+                !process.isRunning ? gameId : nil
+            }
+            guard !ids.isEmpty else { return [] }
+            for gameId in ids {
+                gameProcesses.removeValue(forKey: gameId)
+                manuallyStoppedGames.remove(gameId)
+            }
+            return ids
         }
 
-        // 如果没有需要清理的进程，直接返回
-        guard !terminatedGameIds.isEmpty else {
-            return
-        }
+        guard !terminatedGameIds.isEmpty else { return }
 
         for gameId in terminatedGameIds {
-            // 清理进程
-            gameProcesses.removeValue(forKey: gameId)
-            // 清理手动停止标记
-            manuallyStoppedGames.remove(gameId)
+            Logger.shared.debug("清理已终止的进程: \(gameId)")
         }
 
-        DispatchQueue.main.async {
-            for gameId in terminatedGameIds {
-                Logger.shared.debug("清理已终止的进程: \(gameId)")
-            }
-        }
-
-        // 通知状态管理器更新状态
         Task { @MainActor in
             for gameId in terminatedGameIds {
                 GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
@@ -252,20 +238,35 @@ class GameProcessManager: ObservableObject {
     /// - Parameter gameId: 游戏 ID
     /// - Returns: 是否是被主动停止的
     func isManuallyStopped(gameId: String) -> Bool {
-        return manuallyStoppedGames.contains(gameId)
+        queue.sync { manuallyStoppedGames.contains(gameId) }
     }
 
     /// 移除指定游戏的进程与状态（删除游戏时调用）
-    /// 若游戏正在运行会先终止进程并等待退出，然后从内存中移除
+    /// 若游戏正在运行会先终止进程，在后台等待退出后从内存移除，不阻塞调用线程
     /// - Parameter gameId: 游戏 ID
     func removeGameState(gameId: String) {
-        if let process = gameProcesses[gameId], process.isRunning {
-            manuallyStoppedGames.insert(gameId)
-            process.terminate()
-            process.waitUntilExit()
-            manuallyStoppedGames.remove(gameId)
+        let process: Process? = queue.sync {
+            let proc = gameProcesses[gameId]
+            if proc?.isRunning == true {
+                manuallyStoppedGames.insert(gameId)
+            }
+            return proc
         }
-        gameProcesses.removeValue(forKey: gameId)
-        manuallyStoppedGames.remove(gameId)
+
+        if let process = process, process.isRunning {
+            process.terminate()
+            DispatchQueue.global(qos: .utility).async { [weak self] in
+                process.waitUntilExit()
+                self?.queue.async {
+                    self?.gameProcesses.removeValue(forKey: gameId)
+                    self?.manuallyStoppedGames.remove(gameId)
+                }
+            }
+        } else {
+            queue.async { [weak self] in
+                self?.gameProcesses.removeValue(forKey: gameId)
+                self?.manuallyStoppedGames.remove(gameId)
+            }
+        }
     }
 }

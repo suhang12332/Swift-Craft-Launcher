@@ -241,19 +241,27 @@ class GameCreationViewModel: BaseGameFormViewModel {
                 handleFileAccessError(URLError(.cannotOpenFile), context: "图片文件")
                 return
             }
-            defer { url.stopAccessingSecurityScopedResource() }
-
-            do {
-                let data = try Data(contentsOf: url)
-                // 使用字符串插值而非字符串拼接
-                let tempURL = FileManager.default.temporaryDirectory
-                    .appendingPathComponent("\(UUID().uuidString).png")
-                try data.write(to: tempURL)
-                pendingIconURL = tempURL
-                pendingIconData = data
-                iconImage = nil
-            } catch {
-                handleFileReadError(error, context: "图片文件")
+            Task {
+                let result: Result<(Data, URL), Error> = await Task.detached(priority: .userInitiated) {
+                    do {
+                        let data = try Data(contentsOf: url)
+                        let tempDir = FileManager.default.temporaryDirectory
+                        let tempURL = tempDir.appendingPathComponent("\(UUID().uuidString).png")
+                        try data.write(to: tempURL)
+                        return .success((data, tempURL))
+                    } catch {
+                        return .failure(error)
+                    }
+                }.value
+                url.stopAccessingSecurityScopedResource()
+                switch result {
+                case .success(let (dataToWrite, tempURL)):
+                    pendingIconURL = tempURL
+                    pendingIconData = dataToWrite
+                    iconImage = nil
+                case .failure(let error):
+                    handleFileReadError(error, context: "图片文件")
+                }
             }
 
         case .failure(let error):
@@ -287,17 +295,23 @@ class GameCreationViewModel: BaseGameFormViewModel {
                 }
 
                 if let data = data {
-                    DispatchQueue.main.async {
-                        // 使用字符串插值而非字符串拼接
-                    let tempURL = FileManager.default.temporaryDirectory
-                            .appendingPathComponent("\(UUID().uuidString).png")
-                        do {
-                            try data.write(to: tempURL)
+                    Task { @MainActor in
+                        let result: URL? = await Task.detached(priority: .userInitiated) {
+                            let tempURL = FileManager.default.temporaryDirectory
+                                .appendingPathComponent("\(UUID().uuidString).png")
+                            do {
+                                try data.write(to: tempURL)
+                                return tempURL
+                            } catch {
+                                return nil
+                            }
+                        }.value
+                        if let tempURL = result {
                             self.pendingIconURL = tempURL
                             self.pendingIconData = data
                             self.iconImage = nil
-                        } catch {
-                            self.handleFileReadError(error, context: "图片保存")
+                        } else {
+                            self.handleFileReadError(NSError(domain: NSCocoaErrorDomain, code: NSFileWriteUnknownError, userInfo: nil), context: "图片保存")
                         }
                     }
                 }

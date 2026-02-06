@@ -81,42 +81,36 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     }
 
     override func performCancelCleanup() async {
-        // 如果正在下载时取消，需要删除已创建的游戏文件夹和临时文件
         let gameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let extractedPath = extractedModPackPath
 
-        if !gameName.isEmpty {
-            do {
+        // 在后台执行文件删除，避免主线程 FileManager
+        await Task.detached(priority: .utility) {
+            let fm = FileManager.default
+            if !gameName.isEmpty {
                 let profileDir = AppPaths.profileDirectory(gameName: gameName)
-
-                // 检查目录是否存在
-                if FileManager.default.fileExists(atPath: profileDir.path) {
-                    try FileManager.default.removeItem(at: profileDir)
-                    Logger.shared.info("已删除取消创建的ModPack游戏文件夹: \(profileDir.path)")
+                if fm.fileExists(atPath: profileDir.path) {
+                    do {
+                        try fm.removeItem(at: profileDir)
+                        Logger.shared.info("已删除取消创建的ModPack游戏文件夹: \(profileDir.path)")
+                    } catch {
+                        Logger.shared.error("删除ModPack游戏文件夹失败: \(error.localizedDescription)")
+                    }
                 }
-            } catch {
-                Logger.shared.error("删除ModPack游戏文件夹失败: \(error.localizedDescription)")
-                // 即使删除失败，也不应该阻止关闭窗口
             }
-        }
-
-        // 清理解压的临时文件
-        if let extractedPath = extractedModPackPath {
-            do {
-                if FileManager.default.fileExists(atPath: extractedPath.path) {
-                    try FileManager.default.removeItem(at: extractedPath)
-                    Logger.shared.info("已删除ModPack临时解压文件: \(extractedPath.path)")
+            if let path = extractedPath, fm.fileExists(atPath: path.path) {
+                do {
+                    try fm.removeItem(at: path)
+                    Logger.shared.info("已删除ModPack临时解压文件: \(path.path)")
+                } catch {
+                    Logger.shared.error("删除ModPack临时文件失败: \(error.localizedDescription)")
                 }
-            } catch {
-                Logger.shared.error("删除ModPack临时文件失败: \(error.localizedDescription)")
             }
-        }
+        }.value
 
-        // 重置下载状态并关闭窗口
-        await MainActor.run {
-            gameSetupService.downloadState.reset()
-            modPackViewModel.modPackInstallState.reset()
-            configuration.actions.onCancel()
-        }
+        gameSetupService.downloadState.reset()
+        modPackViewModel.modPackInstallState.reset()
+        configuration.actions.onCancel()
     }
 
     override func computeIsDownloading() -> Bool {

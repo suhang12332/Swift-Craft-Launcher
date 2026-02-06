@@ -248,8 +248,10 @@ class GameSetupUtil: ObservableObject {
 
         do {
             _ = try await DownloadManager.downloadFile(urlString: manifest.assetIndex.url.absoluteString, destinationURL: destinationURL, expectedSha1: manifest.assetIndex.sha1)
-            let data = try Data(contentsOf: destinationURL)
-            let assetIndexData = try JSONDecoder().decode(AssetIndexData.self, from: data)
+            let assetIndexData = try await Task.detached(priority: .userInitiated) {
+                let data = try Data(contentsOf: destinationURL)
+                return try JSONDecoder().decode(AssetIndexData.self, from: data)
+            }.value
             var totalSize = 0
             for object in assetIndexData.objects.values {
                 totalSize += object.size

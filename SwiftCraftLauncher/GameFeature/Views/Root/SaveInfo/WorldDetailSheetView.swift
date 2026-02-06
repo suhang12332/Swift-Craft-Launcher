@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+private enum WorldDetailLoadError: Error {
+    case levelDatNotFound
+    case invalidStructure
+}
+
 /// 世界详细信息视图（读取 level.dat）
 struct WorldDetailSheetView: View {
     // MARK: - Properties
@@ -271,34 +276,38 @@ struct WorldDetailSheetView: View {
 
         do {
             let levelDatPath = world.path.appendingPathComponent("level.dat")
-            guard FileManager.default.fileExists(atPath: levelDatPath.path) else {
-                await MainActor.run {
-                    self.isLoading = false
-                    self.errorMessage = "saveinfo.world.detail.error.level_dat_not_found".localized()
-                    self.showError = true
-                }
-                return
-            }
+            let pathForBackground = levelDatPath
 
-            let data = try Data(contentsOf: levelDatPath)
-            let parser = NBTParser(data: data)
-            let nbtData = try parser.parse()
-
-            guard let dataTag = nbtData["Data"] as? [String: Any] else {
-                await MainActor.run {
-                    self.isLoading = false
-                    self.errorMessage = "saveinfo.world.detail.error.invalid_structure".localized()
-                    self.showError = true
+            let dataTag: [String: Any] = try await Task.detached(priority: .userInitiated) {
+                guard FileManager.default.fileExists(atPath: pathForBackground.path) else {
+                    throw WorldDetailLoadError.levelDatNotFound
                 }
-                return
-            }
+                let data = try Data(contentsOf: pathForBackground)
+                let parser = NBTParser(data: data)
+                let nbtData = try parser.parse()
+                guard let tag = nbtData["Data"] as? [String: Any] else {
+                    throw WorldDetailLoadError.invalidStructure
+                }
+                return tag
+            }.value
 
             let metadata = parseWorldDetail(from: dataTag, folderName: world.name, path: world.path)
-
             await MainActor.run {
                 self.rawDataTag = dataTag
                 self.metadata = metadata
                 self.isLoading = false
+            }
+        } catch WorldDetailLoadError.levelDatNotFound {
+            await MainActor.run {
+                self.isLoading = false
+                self.errorMessage = "saveinfo.world.detail.error.level_dat_not_found".localized()
+                self.showError = true
+            }
+        } catch WorldDetailLoadError.invalidStructure {
+            await MainActor.run {
+                self.isLoading = false
+                self.errorMessage = "saveinfo.world.detail.error.invalid_structure".localized()
+                self.showError = true
             }
         } catch {
             Logger.shared.error("加载世界详细信息失败: \(error.localizedDescription)")

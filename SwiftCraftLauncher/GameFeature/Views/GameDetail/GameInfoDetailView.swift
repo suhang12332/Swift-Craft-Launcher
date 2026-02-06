@@ -267,33 +267,26 @@ struct GameInfoDetailView: View {
             }
             defer { url.stopAccessingSecurityScopedResource() }
 
+            let gameName = game.gameName
             Task {
                 do {
-                    // 读取图片数据
-                    let imageData = try Data(contentsOf: url)
+                    try await Task.detached(priority: .userInitiated) {
+                        let imageData = try Data(contentsOf: url)
+                        let profileDir = AppPaths.profileDirectory(gameName: gameName)
+                        let iconFileName = AppConstants.defaultGameIcon
+                        let iconURL = profileDir.appendingPathComponent(iconFileName)
+                        try FileManager.default.createDirectory(
+                            at: profileDir,
+                            withIntermediateDirectories: true
+                        )
+                        try imageData.write(to: iconURL)
+                    }.value
 
-                    // 保存图片到游戏目录（文件名固定，无需更新游戏信息）
-                    let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
-                    let iconFileName = AppConstants.defaultGameIcon
-                    let iconURL = profileDir.appendingPathComponent(iconFileName)
-
-                    // 确保目录存在
-                    try FileManager.default.createDirectory(
-                        at: profileDir,
-                        withIntermediateDirectories: true
-                    )
-
-                    // 保存图片
-                    try imageData.write(to: iconURL)
-
-                    // 发送图标刷新通知，通知侧边栏和header刷新图标
                     await MainActor.run {
-                        IconRefreshNotifier.shared.notifyRefresh(for: game.gameName)
-                        // 刷新 header 以显示新图标
+                        IconRefreshNotifier.shared.notifyRefresh(for: gameName)
                         updateHeaders()
                     }
-
-                    Logger.shared.info("成功更新游戏图标: \(game.gameName)")
+                    Logger.shared.info("成功更新游戏图标: \(gameName)")
                 } catch {
                     let globalError = GlobalError.from(error)
                     Logger.shared.error("更新游戏图标失败: \(globalError.chineseMessage)")
