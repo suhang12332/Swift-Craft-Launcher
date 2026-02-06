@@ -82,64 +82,88 @@ enum NetworkUtils {
         let srvName = "_minecraft._tcp.\(domain)"
 
         // 使用系统的 dig 命令查询 SRV 记录（更简单可靠）
-        return await withCheckedContinuation { continuation in
+        // 注意：不能在 async 上下文里用 `waitUntilExit()` 同步阻塞（若调用者在主线程/主 Actor 会卡 UI）。
+        guard let output = await runDigShortSRVQuery(srvName: srvName) else { return nil }
+
+        // 解析 SRV 记录格式: priority weight port target
+        // 例如: "5 0 25565 mc.example.com."
+        let lines = output.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: .newlines)
+        guard let firstLine = lines.first, !firstLine.isEmpty else {
+            return nil
+        }
+
+        let components = firstLine.split(separator: " ").map(String.init)
+        guard components.count >= 4 else {
+            return nil
+        }
+
+        guard let port = Int(components[2]), port > 0 && port <= 65535 else {
+            return nil
+        }
+
+        var target = components[3]
+        // 移除末尾的点（如果有）
+        if target.hasSuffix(".") {
+            target = String(target.dropLast())
+        }
+
+        return (address: target, port: port)
+    }
+
+    /// 异步执行 `dig +short SRV <srvName>` 并返回 stdout 文本
+    private static func runDigShortSRVQuery(srvName: String) async -> String? {
+        await withCheckedContinuation { continuation in
+            final class ResumeGuard: @unchecked Sendable {
+                private let lock = NSLock()
+                private var didResume = false
+                private let continuation: CheckedContinuation<String?, Never>
+
+                init(continuation: CheckedContinuation<String?, Never>) {
+                    self.continuation = continuation
+                }
+
+                func resumeOnce(_ value: String?) {
+                    lock.lock()
+                    defer { lock.unlock() }
+                    guard !didResume else { return }
+                    didResume = true
+                    continuation.resume(returning: value)
+                }
+            }
+            let resumeGuard = ResumeGuard(continuation: continuation)
+
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/usr/bin/dig")
             process.arguments = ["+short", "SRV", srvName]
 
-            let pipe = Pipe()
-            process.standardOutput = pipe
+            let stdoutPipe = Pipe()
+            process.standardOutput = stdoutPipe
             process.standardError = Pipe()
+
+            process.terminationHandler = { proc in
+                let data = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
+                try? stdoutPipe.fileHandleForReading.close()
+
+                guard proc.terminationStatus == 0 else {
+                    Logger.shared.debug("dig 查询失败，退出状态: \(proc.terminationStatus)")
+                    resumeGuard.resumeOnce(nil)
+                    return
+                }
+
+                guard let output = String(data: data, encoding: .utf8) else {
+                    resumeGuard.resumeOnce(nil)
+                    return
+                }
+
+                resumeGuard.resumeOnce(output)
+            }
 
             do {
                 try process.run()
             } catch {
                 Logger.shared.debug("无法启动 dig 进程: \(error.localizedDescription)")
-                continuation.resume(returning: nil)
-                return
+                resumeGuard.resumeOnce(nil)
             }
-
-            process.waitUntilExit()
-
-            guard process.terminationStatus == 0 else {
-                Logger.shared.debug("dig 查询失败，退出状态: \(process.terminationStatus)")
-                continuation.resume(returning: nil)
-                return
-            }
-
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            guard let output = String(data: data, encoding: .utf8) else {
-                continuation.resume(returning: nil)
-                return
-            }
-
-            // 解析 SRV 记录格式: priority weight port target
-            // 例如: "5 0 25565 mc.example.com."
-            let lines = output.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: .newlines)
-            guard let firstLine = lines.first, !firstLine.isEmpty else {
-                continuation.resume(returning: nil)
-                return
-            }
-
-            let components = firstLine.split(separator: " ").map(String.init)
-            guard components.count >= 4 else {
-                continuation.resume(returning: nil)
-                return
-            }
-
-            guard let port = Int(components[2]), port > 0 && port <= 65535 else {
-                continuation.resume(returning: nil)
-                return
-            }
-
-            var target = components[3]
-            // 移除末尾的点（如果有）
-            if target.hasSuffix(".") {
-                target = String(target.dropLast())
-            }
-
-            let result = (address: target, port: port)
-            continuation.resume(returning: result)
         }
     }
     /// 检测服务器连接状态（使用 Minecraft Server List Ping 协议）

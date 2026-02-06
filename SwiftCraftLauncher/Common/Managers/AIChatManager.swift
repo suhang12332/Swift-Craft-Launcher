@@ -509,14 +509,20 @@ class AIChatManager: ObservableObject {
 
     /// 获取文件大小（字节）
     private func getFileSize(url: URL) async -> Int64? {
-        guard url.startAccessingSecurityScopedResource() else { return nil }
-        defer { url.stopAccessingSecurityScopedResource() }
+        await Task.detached(priority: .utility) {
+            guard url.startAccessingSecurityScopedResource() else { return nil }
+            defer { url.stopAccessingSecurityScopedResource() }
 
-        guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path),
-              let size = attributes[.size] as? Int64 else {
+            guard let attributes = try? FileManager.default.attributesOfItem(atPath: url.path) else {
+                return nil
+            }
+
+            // `.size` 在不同平台/场景下可能是 Int/Int64/NSNumber，做一次兼容解析
+            if let size = attributes[.size] as? Int64 { return size }
+            if let size = attributes[.size] as? Int { return Int64(size) }
+            if let size = attributes[.size] as? NSNumber { return size.int64Value }
             return nil
-        }
-        return size
+        }.value
     }
 
     /// 格式化文件大小
@@ -532,10 +538,13 @@ class AIChatManager: ObservableObject {
 
     /// 将文件加载为文本
     private func loadFileAsText(url: URL) async -> String? {
-        guard url.startAccessingSecurityScopedResource() else { return nil }
-        defer { url.stopAccessingSecurityScopedResource() }
+        await Task.detached(priority: .utility) {
+            guard url.startAccessingSecurityScopedResource() else { return nil }
+            defer { url.stopAccessingSecurityScopedResource() }
 
-        return try? String(contentsOf: url, encoding: .utf8)
+            // 这里用同步读取，但放到后台线程，避免 @MainActor 阻塞（日志/文本附件会很明显）
+            return try? String(contentsOf: url, encoding: .utf8)
+        }.value
     }
 
     // MARK: - 打开聊天窗口
