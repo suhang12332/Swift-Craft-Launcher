@@ -57,14 +57,6 @@ public enum ThemeMode: String, CaseIterable {
 class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     static let shared = GeneralSettingsManager()
 
-    @AppStorage("themeMode")
-    var themeMode: ThemeMode = .system {
-        didSet {
-            applyAppAppearance()
-            objectWillChange.send()
-        }
-    }
-
     @AppStorage("minecraftVersionManifestURL")
     var minecraftVersionManifestURL: String = "https://launchermeta.mojang.com/mc/game/version_manifest.json" {
         didSet { objectWillChange.send() }
@@ -114,47 +106,7 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
         didSet { objectWillChange.send() }
     }
 
-    // 添加系统外观变化观察者
-    private var appearanceObserver: NSKeyValueObservation?
-
-    private init() {
-        DispatchQueue.main.async { [weak self] in
-            self?.applyAppAppearance()
-            self?.setupAppearanceObserver()
-        }
-    }
-
-    deinit {
-        appearanceObserver?.invalidate()
-    }
-
-    /// 设置系统外观变化观察者
-    private func setupAppearanceObserver() {
-        // 监听 NSApp 的 effectiveAppearance 变化
-        appearanceObserver = NSApp.observe(
-            \.effectiveAppearance,
-            options: [.new, .initial]
-        ) { [weak self] _, _ in
-            DispatchQueue.main.async {
-                // 当系统外观变化时，如果当前主题模式是 system，则通知 UI 更新
-                if self?.themeMode == .system {
-                    self?.objectWillChange.send()
-                }
-            }
-        }
-    }
-
-    /// 应用基于主题设置的全局 AppKit 外观（影响 Sparkle 等 AppKit UI）
-    func applyAppAppearance() {
-        let appearance = themeMode.nsAppearance
-        if Thread.isMainThread {
-            NSApp.appearance = appearance
-        } else {
-            DispatchQueue.main.async {
-                NSApp.appearance = appearance
-            }
-        }
-    }
+    private init() {}
 
     /// 当前启动器工作目录（WorkingPathProviding）
     /// 空时使用默认支持目录
@@ -164,14 +116,5 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
 
     var workingPathWillChange: AnyPublisher<Void, Never> {
         objectWillChange.map { _ in () }.eraseToAnyPublisher()
-    }
-
-    /// 当主题模式为 system 时，返回系统当前的主题
-    var currentColorScheme: ColorScheme? {
-        guard NSApplication.shared.isRunning else {
-            // 如果应用未运行，返回 nil 让 SwiftUI 使用默认值
-            return themeMode == .system ? nil : themeMode.effectiveColorScheme
-        }
-        return themeMode.effectiveColorScheme
     }
 }

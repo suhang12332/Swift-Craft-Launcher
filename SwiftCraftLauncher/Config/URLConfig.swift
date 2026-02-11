@@ -1,10 +1,16 @@
 import Foundation
 
 enum URLConfig {
-    // 安全创建 URL 的辅助方法
+    /// 安全创建 URL 的辅助方法，无效时记录日志并返回占位 URL，避免生产环境闪退
     private static func url(_ string: String) -> URL {
         guard let url = URL(string: string) else {
-            fatalError("Invalid URL: \(string)")
+            Logger.shared.error("Invalid URL: \(string)，使用占位 URL")
+            // 使用 guard let 避免强制解包
+            guard let fallbackURL = URL(string: "https://localhost") else {
+                // 如果连 localhost 都失败，返回一个硬编码的 URL（这种情况理论上不应该发生）
+                return URL(string: "https://localhost") ?? URL(fileURLWithPath: "/")
+            }
+            return fallbackURL
         }
         return url
     }
@@ -266,6 +272,8 @@ enum URLConfig {
         // Modrinth API
         enum Modrinth {
             static let baseURL = URLConfig.url("https://api.modrinth.com/v2")
+            /// Modrinth 项目详情基础 URL，例如：https://modrinth.com/mod/fabric-api
+            static let webProjectBase = "https://modrinth.com/mod/"
 
             // 项目相关
             static func project(id: String) -> URL {
@@ -345,6 +353,8 @@ enum URLConfig {
         enum CurseForge {
             static let mirrorBaseURL = URLConfig.url("https://api.curseforge.com/v1")
             static let fallbackDownloadBaseURL = URLConfig.url("https://edge.forgecdn.net/files")
+            /// CurseForge 项目详情基础 URL，例如：https://www.curseforge.com/minecraft/mc-mods/geckolib
+            static let webProjectBase = "https://www.curseforge.com/minecraft/mc-mods/"
 
             static func fileDetail(projectId: Int, fileId: Int) -> URL {
                 mirrorBaseURL.appendingPathComponent("mods/\(projectId)/files/\(fileId)")

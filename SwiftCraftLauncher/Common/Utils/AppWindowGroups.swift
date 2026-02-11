@@ -16,7 +16,7 @@ extension SwiftCraftLauncherApp {
         Window("about.contributors".localized(), id: WindowID.contributors.rawValue) {
             AboutView(showingAcknowledgements: false)
                 .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme)
+                .preferredColorScheme(themeManager.currentColorScheme)
                 .windowStyleConfig(for: .contributors)
                 .windowCleanup(for: .contributors)
         }
@@ -26,7 +26,7 @@ extension SwiftCraftLauncherApp {
         Window("about.acknowledgements".localized(), id: WindowID.acknowledgements.rawValue) {
             AboutView(showingAcknowledgements: true)
                 .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme)
+                .preferredColorScheme(themeManager.currentColorScheme)
                 .windowStyleConfig(for: .acknowledgements)
                 .windowCleanup(for: .acknowledgements)
         }
@@ -66,6 +66,7 @@ extension SwiftCraftLauncherApp {
 /// AI 聊天窗口内容视图（用于观察 WindowDataStore 变化）
 private struct AIChatWindowContent: View {
     @ObservedObject private var windowDataStore = WindowDataStore.shared
+    @ObservedObject private var themeManager = ThemeManager.shared
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var generalSettingsManager: GeneralSettingsManager
@@ -74,7 +75,7 @@ private struct AIChatWindowContent: View {
         Group {
             if let chatState = windowDataStore.aiChatState {
                 AIChatWindowView(chatState: chatState)
-                    .preferredColorScheme(generalSettingsManager.currentColorScheme)
+                    .preferredColorScheme(themeManager.currentColorScheme)
             } else {
                 EmptyView()
             }

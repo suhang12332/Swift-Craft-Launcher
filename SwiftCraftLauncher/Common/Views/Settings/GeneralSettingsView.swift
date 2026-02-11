@@ -3,6 +3,7 @@ import AppKit
 
 public struct GeneralSettingsView: View {
     @StateObject private var generalSettings = GeneralSettingsManager.shared
+    @StateObject private var themeManager = ThemeManager.shared
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var sparkleUpdateService: SparkleUpdateService
     @State private var showDirectoryPicker = false
@@ -51,7 +52,7 @@ public struct GeneralSettingsView: View {
             }.labeledContentStyle(.custom).padding(.bottom, 10)
 
             LabeledContent("settings.theme.picker".localized()) {
-                ThemeSelectorView(selectedTheme: $generalSettings.themeMode)
+                ThemeSelectorView(selectedTheme: $themeManager.themeMode)
                     .fixedSize()
             }.labeledContentStyle(.custom)
 
@@ -230,47 +231,22 @@ public struct GeneralSettingsView: View {
 /// 重启应用
 /// - Throws: GlobalError 当重启失败时
 private func restartApp() throws {
-    // 使用更简单和可靠的重启方法
+    guard let appURL = Bundle.main.bundleURL as URL? else {
+        throw GlobalError.configuration(
+            chineseMessage: "无法获取应用路径",
+            i18nKey: "error.configuration.app_path_not_found",
+            level: .popup
+        )
+    }
+
     let task = Process()
-    task.launchPath = "/usr/bin/open"
-    task.arguments = ["-a", Bundle.main.identifier]
-    do {
-        try task.run()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            NSApplication.shared.terminate(nil)
-        }
-    } catch {
-        // 如果上面的方法失败，尝试备用方法
-        guard let resourcePath = Bundle.main.resourcePath,
-              let executableURL = Bundle.main.executableURL else {
-            throw GlobalError.resource(
-                chineseMessage: "无法获取应用资源路径",
-                i18nKey: "error.resource.app_executable_not_found",
-                level: .popup
-            )
-        }
+    task.executableURL = URL(fileURLWithPath: "/usr/bin/open")
+    task.arguments = [appURL.path]
 
-        let url = URL(fileURLWithPath: resourcePath)
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .appendingPathComponent("MacOS")
-            .appendingPathComponent(executableURL.lastPathComponent)
+    try task.run()
 
-        let process = Process()
-        process.executableURL = url
-        process.arguments = CommandLine.arguments
-
-        do {
-            try process.run()
-            NSApplication.shared.terminate(nil)
-        } catch {
-            // 如果所有方法都失败，抛出错误
-            throw GlobalError.configuration(
-                chineseMessage: "所有重启方法都失败了: \(error.localizedDescription)",
-                i18nKey: "error.configuration.app_restart_failed",
-                level: .popup
-            )
-        }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        NSApplication.shared.terminate(nil)
     }
 }
 

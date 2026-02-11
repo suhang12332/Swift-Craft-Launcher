@@ -38,9 +38,11 @@ private class WindowAccessorView: NSView {
         super.init(frame: .zero)
     }
 
-    @available(*, unavailable)
+    /// 仅用于从 xib/storyboard 加载（本视图仅代码创建），避免生产环境闪退
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        self.callback = { _ in }
+        self.synchronous = false
+        super.init(coder: coder)
     }
 
     override func viewDidMoveToWindow() {

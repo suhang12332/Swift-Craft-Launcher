@@ -91,23 +91,49 @@ enum KeychainManager {
     }
 
     /// 删除账户的所有 Keychain 数据
+    /// 保存时使用 kSecAttrAccount = "\(account).\(key)"，此处需先查出该 account 前缀的所有项再逐条删除
     /// - Parameter account: 账户标识符（通常是用户ID）
-    /// - Returns: 是否删除成功
+    /// - Returns: 是否全部删除成功
     static func deleteAll(account: String) -> Bool {
+        let accountPrefix = "\(account)."
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
+            kSecMatchLimit as String: kSecMatchLimitAll,
+            kSecReturnAttributes as String: true,
         ]
 
-        let status = SecItemDelete(query as CFDictionary)
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
 
-        if status == errSecSuccess || status == errSecItemNotFound {
-            Logger.shared.debug("Keychain 删除所有数据成功 - account: \(account)")
-            return true
-        } else {
-            Logger.shared.error("Keychain 删除所有数据失败 - account: \(account), status: \(status)")
+        guard status == errSecSuccess, let items = result as? [[String: Any]] else {
+            if status == errSecItemNotFound {
+                Logger.shared.debug("Keychain 无数据可删 - account: \(account)")
+                return true
+            }
+            Logger.shared.error("Keychain 查询所有数据失败 - account: \(account), status: \(status)")
             return false
         }
+
+        var allSucceeded = true
+        for item in items {
+            guard let storedAccount = item[kSecAttrAccount as String] as? String,
+                  storedAccount.hasPrefix(accountPrefix) else { continue }
+            let deleteQuery: [String: Any] = [
+                kSecClass as String: kSecClassGenericPassword,
+                kSecAttrService as String: service,
+                kSecAttrAccount as String: storedAccount,
+            ]
+            let deleteStatus = SecItemDelete(deleteQuery as CFDictionary)
+            if deleteStatus != errSecSuccess && deleteStatus != errSecItemNotFound {
+                Logger.shared.error("Keychain 删除单项失败 - account: \(storedAccount), status: \(deleteStatus)")
+                allSucceeded = false
+            }
+        }
+
+        if allSucceeded {
+            Logger.shared.debug("Keychain 删除所有数据成功 - account: \(account)")
+        }
+        return allSucceeded
     }
 }

@@ -36,8 +36,8 @@ struct SwiftCraftLauncherApp: App {
     @StateObject var gameLaunchUseCase = GameLaunchUseCase()
     @StateObject private var globalErrorHandler = GlobalErrorHandler.shared
     @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
-    @StateObject var generalSettingsManager = GeneralSettingsManager
-        .shared
+    @StateObject var generalSettingsManager = GeneralSettingsManager.shared
+    @StateObject var themeManager = ThemeManager.shared
     @StateObject private var skinSelectionStore = SkinSelectionStore()
 
     // MARK: - Notification Delegate
@@ -64,7 +64,7 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(sparkleUpdateService)
                 .environmentObject(generalSettingsManager)
                 .environmentObject(skinSelectionStore)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme)
+                .preferredColorScheme(themeManager.currentColorScheme)
                 .errorAlert()
                 .windowOpener()
                 .onAppear {
@@ -127,7 +127,7 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(playerListViewModel)
                 .environmentObject(sparkleUpdateService)
                 .environmentObject(generalSettingsManager)
-                .preferredColorScheme(generalSettingsManager.currentColorScheme)
+                .preferredColorScheme(themeManager.currentColorScheme)
                 .errorAlert()
         }
 
@@ -148,7 +148,6 @@ struct SwiftCraftLauncherApp: App {
                 Image("menu-png").resizable()
                     .renderingMode(.template)
                     .scaledToFit()
-                // 推荐保持模板模式
             }
         )
     }
