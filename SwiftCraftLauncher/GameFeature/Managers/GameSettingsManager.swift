@@ -24,11 +24,6 @@ class GameSettingsManager: ObservableObject {
     // MARK: - 单例实例
     static let shared = GameSettingsManager()
 
-    @AppStorage("forgeMavenMirrorURL")
-    var forgeMavenMirrorURL: String = "" {
-        didSet { objectWillChange.send() }
-    }
-
     @AppStorage("globalXms")
     var globalXms: Int = 512 {
         didSet { objectWillChange.send() }
