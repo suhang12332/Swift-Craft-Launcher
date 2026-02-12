@@ -57,11 +57,6 @@ public enum ThemeMode: String, CaseIterable {
 class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     static let shared = GeneralSettingsManager()
 
-    @AppStorage("minecraftVersionManifestURL")
-    var minecraftVersionManifestURL: String = "https://launchermeta.mojang.com/mc/game/version_manifest.json" {
-        didSet { objectWillChange.send() }
-    }
-
     /// 是否启用 GitHub 代理（默认开启）
     @AppStorage("enableGitHubProxy")
     var enableGitHubProxy: Bool = true {
@@ -70,16 +65,6 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
 
     @AppStorage("gitProxyURL")
     var gitProxyURL: String = "https://gh-proxy.com" {
-        didSet { objectWillChange.send() }
-    }
-
-    @AppStorage("modrinthAPIBaseURL")
-    var modrinthAPIBaseURL: String = "https://api.modrinth.com/v2" {
-        didSet { objectWillChange.send() }
-    }
-
-    @AppStorage("curseForgeAPIBaseURL")
-    var curseForgeAPIBaseURL: String = "https://api.curseforge.com/v1" {
         didSet { objectWillChange.send() }
     }
 
