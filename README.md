@@ -8,7 +8,7 @@
   [![Swift Craft Launcher](https://img.shields.io/badge/Swift%20Craft%20Launcher-SCL-orange.svg?logo=swift)](https://github.com/suhang12332/Swift-Craft-Launcher)
   [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg?logo=swift)](https://swift.org/)
 
-  [![QQ群](https://img.shields.io/badge/QQ%E7%BE%A4-1057517524-blue.svg?logo=tencentqq)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
+  [![QQ Group](https://img.shields.io/badge/QQ%20Group-1057517524-blue.svg?logo=tencentqq)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
   [![Discord](https://img.shields.io/badge/Discord-bule.svg?logo=discord)](https://discord.gg/P8T47PNg)
 
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?logo=gnu)](https://www.gnu.org/licenses/agpl-3.0)
