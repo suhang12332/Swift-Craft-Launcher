@@ -203,16 +203,7 @@ class PlayerListViewModel: ObservableObject {
     /// - Throws: GlobalError 当操作失败时
     func updatePlayerInListThrowing(_ updatedPlayer: Player) throws {
         // 记录更新前的当前玩家信息
-        Logger.shared.info("📱 [updatePlayerInListThrowing] 更新前当前玩家信息:")
-        if let currentPlayer = currentPlayer {
-            Logger.shared.info("  - 姓名: \(currentPlayer.name)")
-            Logger.shared.info("  - 皮肤URL: \(currentPlayer.avatarName)")
-            Logger.shared.info("  - 是否当前玩家: \(currentPlayer.isCurrent)")
-        } else {
-            Logger.shared.info("  - 当前玩家: 无")
-        }
-        // 数据已在 PlayerSkinService 更新，此处仅更新内存状态
-
+        Logger.shared.info("[updatePlayerInListThrowing] 更新前当前玩家信息:")
         // 更新本地玩家列表
         if let index = players.firstIndex(where: { $0.id == updatedPlayer.id }) {
             players[index] = updatedPlayer
@@ -220,10 +211,6 @@ class PlayerListViewModel: ObservableObject {
             // 如果更新的是当前玩家，也要更新 currentPlayer
             if let currentPlayer = currentPlayer, currentPlayer.id == updatedPlayer.id {
                 self.currentPlayer = updatedPlayer
-                Logger.shared.info("📱 [updatePlayerInListThrowing] 当前玩家信息已更新:")
-                Logger.shared.info("  - 姓名: \(updatedPlayer.name)")
-                Logger.shared.info("  - 皮肤URL: \(updatedPlayer.avatarName)")
-                Logger.shared.info("  - 是否当前玩家: \(updatedPlayer.isCurrent)")
             }
 
             Logger.shared.debug("玩家列表中的玩家信息已更新: \(updatedPlayer.name)")
