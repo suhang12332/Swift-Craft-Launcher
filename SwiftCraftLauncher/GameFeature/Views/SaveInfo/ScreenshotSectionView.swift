@@ -107,25 +107,9 @@ struct ScreenshotDetailView: View {
     }
 
     private var headerView: some View {
-        HStack {
-            Text(screenshot.name)
-                .font(.headline)
-            Spacer()
-            HStack(spacing: 8) {
-                ShareLink(item: screenshot.path) {
-                    Image(systemName: "square.and.arrow.up")
-                }
-
-                .buttonStyle(.plain)
-            }
-            Button {
-                dismiss()  // 关闭当前视图
-            } label: {
-            Image(systemName: "xmark.circle.fill")
-                .foregroundColor(.secondary)
-            }
-            .buttonStyle(.plain)
-        }
+        Text(screenshot.name)
+            .font(.headline)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var bodyView: some View {
@@ -148,17 +132,10 @@ struct ScreenshotDetailView: View {
             }
 
             Spacer()
-
-            Label {
-                Text(gameName)
-                    .lineLimit(1)
-                    .truncationMode(.middle) // 可选：中间省略，长路径更好看
-            } icon: {
-                Image(systemName: "gamecontroller")
+            Button("common.close".localized()) {
+                dismiss()
             }
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .frame(maxWidth: 300, alignment: .trailing)
+            .keyboardShortcut(.defaultAction)
         }
     }
 }
@@ -208,12 +185,4 @@ struct ScreenshotImageView: View {
             }
         }
     }
-}
-
-// MARK: - Preview
-#Preview {
-    ScreenshotImageView(
-        path: URL(fileURLWithPath: "/Users/su/Library/Application Support/Swift Craft Launcher/profiles/Fabulously Optimized-1.21.11-20251228-143710/screenshots/2025-12-28_14.48.23.png")
-    )
-    .frame(width: 600, height: 400)
 }

@@ -416,23 +416,9 @@ struct ServerAddressEditView: View {
     }
 
     private var headerView: some View {
-        HStack {
-            Text(isNewServer ? "saveinfo.server.add".localized() : "saveinfo.server.edit".localized())
-                .font(.headline)
-            Spacer()
-            if !isNewServer {
-                Button {
-                    showDeleteConfirmation = true
-                } label: {
-                    Image(systemName: "trash.circle.fill")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
-                }
-                .buttonStyle(.plain)
-                .keyboardShortcut(.delete, modifiers: [])
-                .disabled(isSaving || isDeleting)
-            }
-        }
+        Text(isNewServer ? "saveinfo.server.add".localized() : "saveinfo.server.edit".localized())
+            .font(.headline)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var bodyView: some View {
@@ -489,6 +475,13 @@ struct ServerAddressEditView: View {
             }
             .keyboardShortcut(.cancelAction)
             .disabled(isSaving || isDeleting)
+            if !isNewServer {
+                Button("common.delete".localized()) {
+                    saveServer()
+                }
+                .keyboardShortcut(.delete, modifiers: [])
+                .disabled(isSaving || isDeleting)
+            }
             Spacer()
             Button("common.save".localized()) {
                 saveServer()

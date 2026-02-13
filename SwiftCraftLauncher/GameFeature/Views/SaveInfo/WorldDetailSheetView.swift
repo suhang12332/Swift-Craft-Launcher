@@ -49,18 +49,9 @@ struct WorldDetailSheetView: View {
 
     // MARK: - Header View
     private var headerView: some View {
-        HStack {
-            Text(world.name)
-                .font(.headline)
-            Spacer()
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .foregroundColor(.secondary)
-            }
-            .buttonStyle(.plain)
-        }
+        Text(world.name)
+            .font(.headline)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Body View
@@ -244,19 +235,6 @@ struct WorldDetailSheetView: View {
     private var footerView: some View {
         HStack {
             Label {
-                Text(world.path.lastPathComponent)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-            } icon: {
-                Image(systemName: "folder.fill")
-            }
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .frame(maxWidth: 200, alignment: .leading)
-
-            Spacer()
-
-            Label {
                 Text(gameName)
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -265,7 +243,14 @@ struct WorldDetailSheetView: View {
             }
             .font(.caption)
             .foregroundColor(.secondary)
-            .frame(maxWidth: 300, alignment: .trailing)
+            .frame(maxWidth: 300, alignment: .leading)
+
+            Spacer()
+
+            Button("common.close".localized()) {
+                dismiss()
+            }
+            .keyboardShortcut(.defaultAction)
         }
     }
 
@@ -724,26 +709,4 @@ struct NBTValueRow: View {
             }
         }
     }
-}
-
-// MARK: - 世界详细信息模型
-struct WorldDetailMetadata {
-    let levelName: String
-    let folderName: String
-    let path: URL
-    let lastPlayed: Date?
-    let gameMode: String
-    let difficulty: String
-    let hardcore: Bool
-    let cheats: Bool
-    let versionName: String?
-    let versionId: Int?
-    let dataVersion: Int?
-    let seed: Int64?
-    let spawn: String?
-    let time: Int64?
-    let dayTime: Int64?
-    let weather: String?
-    let worldBorder: String?
-    let gameRules: [String]?
 }

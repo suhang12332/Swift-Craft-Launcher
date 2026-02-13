@@ -61,6 +61,14 @@ struct SaveInfoView: View {
                     isLoading: manager.isLoadingLogs
                 )
             }
+
+            // 当没有任何可用信息类型时显示空状态
+            if !manager.isLoading && !manager.hasWorldsType && !manager.hasScreenshotsType && !manager.hasServersType && !manager.hasLitematicaType && !manager.hasLogsType {
+                Text("saveinfo.no_available_info".localized())
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+            }
         }
         .onChange(of: gameId) { _, _ in
             Task {
