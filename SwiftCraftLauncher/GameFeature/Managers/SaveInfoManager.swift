@@ -114,12 +114,90 @@ final class SaveInfoManager: ObservableObject {
             let logsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
             let serversDatURL = profileDir.appendingPathComponent("servers.dat")
             let schematicsDir = AppPaths.schematicsDirectory(gameName: name)
+
+            // 检查世界目录是否存在且包含世界子目录
+            var hasWorlds = false
+            if fm.fileExists(atPath: savesPath.path) {
+                do {
+                    let contents = try fm.contentsOfDirectory(
+                        at: savesPath,
+                        includingPropertiesForKeys: [.isDirectoryKey],
+                        options: [.skipsHiddenFiles]
+                    )
+                    hasWorlds = contents.contains { url in
+                        guard let isDirectory = try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory,
+                              isDirectory == true else { return false }
+                        return true
+                    }
+                } catch {
+                    hasWorlds = false
+                }
+            }
+
+            // 检查截图目录是否存在且包含图片文件
+            var hasScreenshots = false
+            if fm.fileExists(atPath: screenshotsPath.path) {
+                do {
+                    let contents = try fm.contentsOfDirectory(
+                        at: screenshotsPath,
+                        includingPropertiesForKeys: [.isRegularFileKey],
+                        options: [.skipsHiddenFiles]
+                    )
+                    hasScreenshots = contents.contains { url in
+                        guard let isFile = try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
+                              isFile == true else { return false }
+                        let ext = url.pathExtension.lowercased()
+                        return ["png", "jpg", "jpeg"].contains(ext)
+                    }
+                } catch {
+                    hasScreenshots = false
+                }
+            }
+
+            // 检查 Litematica 目录是否存在且包含 .litematic 文件
+            var hasLitematicaFiles = false
+            if fm.fileExists(atPath: schematicsDir.path) {
+                do {
+                    let contents = try fm.contentsOfDirectory(
+                        at: schematicsDir,
+                        includingPropertiesForKeys: [.isRegularFileKey],
+                        options: [.skipsHiddenFiles]
+                    )
+                    hasLitematicaFiles = contents.contains { url in
+                        guard let isFile = try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
+                              isFile == true else { return false }
+                        return url.pathExtension.lowercased() == "litematic"
+                    }
+                } catch {
+                    hasLitematicaFiles = false
+                }
+            }
+
+            // 检查日志目录是否存在且包含 .log 文件
+            var hasLogs = false
+            if fm.fileExists(atPath: logsPath.path) {
+                do {
+                    let contents = try fm.contentsOfDirectory(
+                        at: logsPath,
+                        includingPropertiesForKeys: [.isRegularFileKey],
+                        options: [.skipsHiddenFiles]
+                    )
+                    hasLogs = contents.contains { url in
+                        guard let isFile = try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
+                              isFile == true else { return false }
+                        return url.pathExtension.lowercased() == "log"
+                    }
+                } catch {
+                    hasLogs = false
+                }
+            }
+
             return (
-                fm.fileExists(atPath: savesPath.path),
-                fm.fileExists(atPath: screenshotsPath.path),
+                hasWorlds,
+                hasScreenshots,
                 fm.fileExists(atPath: serversDatURL.path),
-                fm.fileExists(atPath: schematicsDir.path),
-                fm.fileExists(atPath: logsPath.path)
+                hasLitematicaFiles,
+                hasLogs
             )
         }.value
         hasWorldsType = worlds

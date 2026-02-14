@@ -420,19 +420,35 @@ struct ServerAddressEditView: View {
             Text(isNewServer ? "saveinfo.server.add".localized() : "saveinfo.server.edit".localized())
                 .font(.headline)
             Spacer()
-            if !isNewServer {
-                Button {
-                    showDeleteConfirmation = true
-                } label: {
-                    Image(systemName: "trash.circle.fill")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
+            if let shareText = shareTextForServer, !shareText.isEmpty {
+                ShareLink(item: shareText) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 14, weight: .semibold))
                 }
-                .buttonStyle(.plain)
-                .keyboardShortcut(.delete, modifiers: [])
-                .disabled(isSaving || isDeleting)
+                .buttonStyle(.borderless)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// 当前服务器的分享文本（优先使用正在编辑的地址和端口）
+    private var shareTextForServer: String? {
+        let address = serverAddress.trimmingCharacters(in: .whitespaces)
+        let port = serverPort.trimmingCharacters(in: .whitespaces)
+
+        if !address.isEmpty {
+            if !port.isEmpty {
+                return "\(address):\(port)"
+            } else {
+                return address
+            }
+        }
+
+        if let existing = server {
+            return existing.fullAddress
+        }
+
+        return nil
     }
 
     private var bodyView: some View {
@@ -489,6 +505,13 @@ struct ServerAddressEditView: View {
             }
             .keyboardShortcut(.cancelAction)
             .disabled(isSaving || isDeleting)
+            if !isNewServer {
+                Button("common.delete".localized()) {
+                    saveServer()
+                }
+                .keyboardShortcut(.delete, modifiers: [])
+                .disabled(isSaving || isDeleting)
+            }
             Spacer()
             Button("common.save".localized()) {
                 saveServer()

@@ -74,3 +74,24 @@ struct LogInfo: Identifiable, Equatable {
         self.isCrashLog = isCrashLog
     }
 }
+// MARK: - 世界详细信息模型
+struct WorldDetailMetadata {
+    let levelName: String
+    let folderName: String
+    let path: URL
+    let lastPlayed: Date?
+    let gameMode: String
+    let difficulty: String
+    let hardcore: Bool
+    let cheats: Bool
+    let versionName: String?
+    let versionId: Int?
+    let dataVersion: Int?
+    let seed: Int64?
+    let spawn: String?
+    let time: Int64?
+    let dayTime: Int64?
+    let weather: String?
+    let worldBorder: String?
+    let gameRules: [String]?
+}

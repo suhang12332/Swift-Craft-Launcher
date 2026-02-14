@@ -46,20 +46,13 @@ struct LitematicaDetailSheetView: View {
             Text("litematica.detail.title".localized())
                 .font(.headline)
             Spacer()
-            HStack(spacing: 8) {
-                ShareLink(item: filePath) {
-                    Image(systemName: "square.and.arrow.up")
-                }
-                .buttonStyle(.plain)
-                Button {
-                    dismiss()  // 关闭当前视图
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
-                }
-                .buttonStyle(.plain)
+            ShareLink(item: filePath) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 14, weight: .semibold))
             }
+            .buttonStyle(.borderless)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Body View
@@ -198,20 +191,14 @@ struct LitematicaDetailSheetView: View {
             }
             .font(.caption)
             .foregroundColor(.secondary)
-            .frame(maxWidth: 150, alignment: .leading)
+            .frame(maxWidth: 300, alignment: .leading)
 
             Spacer()
 
-            Label {
-                Text(gameName)
-                    .lineLimit(1)
-                    .truncationMode(.middle) // 可选：中间省略，长路径更好看
-            } icon: {
-                Image(systemName: "gamecontroller")
+            Button("common.close".localized()) {
+                dismiss()
             }
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .frame(maxWidth: 300, alignment: .trailing)
+            .keyboardShortcut(.defaultAction)
         }
     }
 
