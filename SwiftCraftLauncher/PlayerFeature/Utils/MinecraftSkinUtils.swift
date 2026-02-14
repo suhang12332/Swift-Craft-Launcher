@@ -10,9 +10,6 @@ enum SkinType {
 }
 
 // MARK: - Cache Wrapper
-
-/// 包装渲染后的 CGImage 以便在 NSCache 中使用，并计算内存成本
-/// 缓存裁剪后的 CGImage 而不是完整的 CIImage，可以显著减少内存占用
 private class RenderedImageCache: NSObject {
     let headImage: CGImage  // 头部图像 (8x8)
     let layerImage: CGImage // 图层图像 (8x8)
@@ -37,8 +34,6 @@ private enum Constants {
     static let networkTimeout: TimeInterval = 10.0
 
     // 缓存配置 - 优化后的配置
-    // 缓存裁剪后的 CGImage (每个约 2.5KB)，而不是完整的 CIImage (每个约 20KB)
-    // 缓存更多图像，减少内存占用
     static let maxCacheSize = 100  // 最多缓存100个渲染后的图像（之前是50个完整图像）
     static let maxCacheMemory = 2 * 1024 * 1024  // 最多缓存2MB内存（约800个渲染后的图像）
 
@@ -66,8 +61,6 @@ struct MinecraftSkinUtils: View {
     @State private var isLoading: Bool = false
     @State private var loadTask: Task<Void, Never>?
 
-    // 使用 NSCache 缓存渲染后的 CGImage，而不是完整的 CIImage
-    // 显著减少内存占用：每项 ~20KB → ~2.5KB
     private static let imageCache: NSCache<NSString, RenderedImageCache> = {
         let cache = NSCache<NSString, RenderedImageCache>()
         cache.countLimit = Constants.maxCacheSize
@@ -282,9 +275,8 @@ struct MinecraftSkinUtils: View {
                         .controlSize(.small)
                 }
             } else if error != nil {
-                Image(systemName: "person.slash")
-                    .foregroundColor(.orange)
-                    .font(.title2)
+                // 加载失败时使用默认 Steve 皮肤
+                Self(type: .asset, src: "steve", size: size)
             }
         }
         .frame(width: size, height: size)
