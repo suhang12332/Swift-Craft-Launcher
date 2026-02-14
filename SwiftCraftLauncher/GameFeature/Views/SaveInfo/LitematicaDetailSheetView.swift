@@ -42,9 +42,17 @@ struct LitematicaDetailSheetView: View {
 
     // MARK: - Header View
     private var headerView: some View {
-        Text("litematica.detail.title".localized())
-            .font(.headline)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        HStack {
+            Text("litematica.detail.title".localized())
+                .font(.headline)
+            Spacer()
+            ShareLink(item: filePath) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 14, weight: .semibold))
+            }
+            .buttonStyle(.borderless)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Body View

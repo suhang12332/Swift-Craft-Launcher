@@ -114,7 +114,7 @@ final class SaveInfoManager: ObservableObject {
             let logsPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
             let serversDatURL = profileDir.appendingPathComponent("servers.dat")
             let schematicsDir = AppPaths.schematicsDirectory(gameName: name)
-            
+
             // 检查世界目录是否存在且包含世界子目录
             var hasWorlds = false
             if fm.fileExists(atPath: savesPath.path) {
@@ -133,7 +133,7 @@ final class SaveInfoManager: ObservableObject {
                     hasWorlds = false
                 }
             }
-            
+
             // 检查截图目录是否存在且包含图片文件
             var hasScreenshots = false
             if fm.fileExists(atPath: screenshotsPath.path) {
@@ -153,7 +153,7 @@ final class SaveInfoManager: ObservableObject {
                     hasScreenshots = false
                 }
             }
-            
+
             // 检查 Litematica 目录是否存在且包含 .litematic 文件
             var hasLitematicaFiles = false
             if fm.fileExists(atPath: schematicsDir.path) {
@@ -172,7 +172,7 @@ final class SaveInfoManager: ObservableObject {
                     hasLitematicaFiles = false
                 }
             }
-            
+
             // 检查日志目录是否存在且包含 .log 文件
             var hasLogs = false
             if fm.fileExists(atPath: logsPath.path) {
@@ -191,7 +191,7 @@ final class SaveInfoManager: ObservableObject {
                     hasLogs = false
                 }
             }
-            
+
             return (
                 hasWorlds,
                 hasScreenshots,

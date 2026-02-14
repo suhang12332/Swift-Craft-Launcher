@@ -107,9 +107,17 @@ struct ScreenshotDetailView: View {
     }
 
     private var headerView: some View {
-        Text(screenshot.name)
-            .font(.headline)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        HStack {
+            Text(screenshot.name)
+                .font(.headline)
+            Spacer()
+            ShareLink(item: screenshot.path) {
+                Image(systemName: "square.and.arrow.up")
+                    .font(.system(size: 14, weight: .semibold))
+            }
+            .buttonStyle(.borderless)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var bodyView: some View {

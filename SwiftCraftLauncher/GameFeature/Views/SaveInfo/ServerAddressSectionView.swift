@@ -416,9 +416,39 @@ struct ServerAddressEditView: View {
     }
 
     private var headerView: some View {
-        Text(isNewServer ? "saveinfo.server.add".localized() : "saveinfo.server.edit".localized())
-            .font(.headline)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        HStack {
+            Text(isNewServer ? "saveinfo.server.add".localized() : "saveinfo.server.edit".localized())
+                .font(.headline)
+            Spacer()
+            if let shareText = shareTextForServer, !shareText.isEmpty {
+                ShareLink(item: shareText) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.system(size: 14, weight: .semibold))
+                }
+                .buttonStyle(.borderless)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// 当前服务器的分享文本（优先使用正在编辑的地址和端口）
+    private var shareTextForServer: String? {
+        let address = serverAddress.trimmingCharacters(in: .whitespaces)
+        let port = serverPort.trimmingCharacters(in: .whitespaces)
+
+        if !address.isEmpty {
+            if !port.isEmpty {
+                return "\(address):\(port)"
+            } else {
+                return address
+            }
+        }
+
+        if let existing = server {
+            return existing.fullAddress
+        }
+
+        return nil
     }
 
     private var bodyView: some View {
