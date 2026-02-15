@@ -98,53 +98,49 @@ struct ModrinthDetailView: View {
             }
         }
         // 当筛选条件变化时，重新搜索
-        .onChange(of: selectedVersions) { _, _ in
+        .onChange(of: selectedVersions) {
             resetPagination()
             triggerSearch()
         }
-        .onChange(of: selectedCategories) { _, _ in
+        .onChange(of: selectedCategories) {
             resetPagination()
             triggerSearch()
         }
-        .onChange(of: selectedFeatures) { _, _ in
+        .onChange(of: selectedFeatures) {
             resetPagination()
             triggerSearch()
         }
-        .onChange(of: selectedResolutions) { _, _ in
+        .onChange(of: selectedResolutions) {
             resetPagination()
             triggerSearch()
         }
-        .onChange(of: selectedPerformanceImpact) { _, _ in
+        .onChange(of: selectedPerformanceImpact) {
             resetPagination()
             triggerSearch()
         }
-        .onChange(of: selectedLoader) { _, _ in
+        .onChange(of: selectedLoader) {
             resetPagination()
             triggerSearch()
         }
-        .onChange(of: selectedProjectId) { oldValue, newValue in
-            if oldValue != nil && newValue == nil {
-                // 关闭详情后重新刷新列表，确保最新状态
-                viewModel.clearResults()
-                resetPagination()
-                triggerSearch()
-            }
+        .onChange(of: selectedProjectId) { _, _ in
+            // 关闭详情页后不需要重新刷新，使用缓存数据即可
+            // 如果需要更新状态（如已安装标记），视图会自动更新
         }
         .onChange(of: dataSource) { _, _ in
-            // 清理之前的旧数据
-            viewModel.clearResults()
+            // 切换数据源时重置状态并触发新搜索
+            hasLoaded = false
             resetPagination()
-//            searchText = ""
+            searchText = ""
             lastSearchParams = ""
             error = nil
-            hasLoaded = false
             triggerSearch()
         }
         .onChange(of: query) { _, _ in
-            // 清理之前的旧数据
-            viewModel.clearResults()
-            triggerSearch()
+            // 切换查询类型时重置状态并触发新搜索
+            hasLoaded = false
+            resetPagination()
             searchText = ""
+            triggerSearch()
         }
         .searchable(
             text: $searchText,
@@ -172,8 +168,9 @@ struct ModrinthDetailView: View {
             }
         }
         .onDisappear {
-            // 页面关闭后清除数据，但保留搜索文本
-            clearDataExceptSearchText()
+            // 页面消失时重置状态，确保下次进入时能正确加载（使用缓存或网络请求）
+            hasLoaded = false
+            resetPagination()
         }
     }
 

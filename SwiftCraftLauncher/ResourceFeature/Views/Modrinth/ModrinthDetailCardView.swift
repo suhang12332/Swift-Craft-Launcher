@@ -61,25 +61,12 @@ struct ModrinthDetailCardView: View {
                 localResourceIcon
             } else if let iconUrl = project.iconUrl,
                 let url = URL(string: iconUrl) {
-                AsyncImage(
-                    url: url,
-                    transaction: Transaction(
-                        animation: .easeInOut(duration: 0.2)
-                    )
-                ) { phase in
-                    switch phase {
-                    case .empty:
-                        placeholderIcon
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .transition(.opacity)
-                    case .failure:
-                        placeholderIcon
-                    @unknown default:
-                        placeholderIcon
-                    }
+                CachedAsyncImage(url: url) { image in
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                } placeholder: {
+                    placeholderIcon
                 }
                 .frame(
                     width: ModrinthConstants.UIConstants.iconSize,
@@ -87,12 +74,6 @@ struct ModrinthDetailCardView: View {
                 )
                 .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
                 .clipped()
-                .onDisappear {
-                    // 清理图片缓存，避免内存泄漏
-                    URLCache.shared.removeCachedResponse(
-                        for: URLRequest(url: url)
-                    )
-                }
             } else {
                 placeholderIcon
             }

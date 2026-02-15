@@ -47,8 +47,9 @@ struct CategoryContentView: View {
         self.gameVersion = gameVersion
         self.gameLoader = gameLoader
         self.dataSource = dataSource
+        // 使用全局共享的 ViewModel，避免重复创建和数据加载
         self._viewModel = StateObject(
-            wrappedValue: CategoryContentViewModel(project: project)
+            wrappedValue: CategoryDataCacheManager.shared.getViewModel(for: project)
         )
     }
 
@@ -68,9 +69,6 @@ struct CategoryContentView: View {
         .task {
             await loadDataWithErrorHandling()
             setupDefaultSelections()
-        }
-        .onDisappear {
-            viewModel.clearCache()
         }
     }
 

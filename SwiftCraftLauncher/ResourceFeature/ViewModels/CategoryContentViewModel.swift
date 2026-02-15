@@ -2,7 +2,31 @@ import SwiftUI
 
 // MARK: - Constants
 private enum CategoryConstants {
-    static let cacheTimeout: TimeInterval = 300
+    static let cacheTimeout: TimeInterval = 600 // 增加到10分钟
+}
+
+// MARK: - Global Cache Manager
+/// 全局分类数据缓存管理器，按项目类型共享数据
+@MainActor
+final class CategoryDataCacheManager {
+    static let shared = CategoryDataCacheManager()
+    private var viewModels: [String: CategoryContentViewModel] = [:]
+    private init() {
+    }
+    func getViewModel(for project: String) -> CategoryContentViewModel {
+        if let existing = viewModels[project] {
+            return existing
+        }
+        let viewModel = CategoryContentViewModel(project: project)
+        viewModels[project] = viewModel
+        return viewModel
+    }
+    func clearAll() {
+        viewModels.removeAll()
+    }
+    func clear(for project: String) {
+        viewModels.removeValue(forKey: project)
+    }
 }
 
 // MARK: - ViewModel
@@ -37,6 +61,14 @@ final class CategoryContentViewModel: ObservableObject {
         guard shouldFetchData else { return }
 
         loadTask?.cancel()
+        loadTask = Task {
+            await fetchData()
+        }
+    }
+    /// 强制刷新数据，忽略缓存
+    func forceRefresh() async {
+        loadTask?.cancel()
+        lastFetchTime = nil
         loadTask = Task {
             await fetchData()
         }

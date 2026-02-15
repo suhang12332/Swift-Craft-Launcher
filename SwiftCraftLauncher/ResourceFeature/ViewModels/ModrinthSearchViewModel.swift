@@ -62,6 +62,7 @@ final class ModrinthSearchViewModel: ObservableObject {
     // MARK: - Private Properties
     private var searchTask: Task<Void, Never>?
     private let pageSize: Int = 20
+    private let cacheManager = ResourceSearchCacheManager.shared
 
     // MARK: - Initialization
     init() {}
@@ -90,6 +91,38 @@ final class ModrinthSearchViewModel: ObservableObject {
 
         searchTask = Task {
             do {
+                // 创建缓存键
+                let cacheKey = SearchCacheKey(
+                    query: query,
+                    projectType: projectType,
+                    versions: versions,
+                    categories: categories,
+                    features: features,
+                    resolutions: resolutions,
+                    performanceImpact: performanceImpact,
+                    loaders: loaders,
+                    page: page,
+                    dataSource: dataSource
+                )
+                // 尝试从缓存获取结果
+                if let cachedEntry = cacheManager.getCachedResult(for: cacheKey) {
+                    // 使用缓存结果
+                    if !Task.isCancelled {
+                        if append {
+                            results.append(contentsOf: cachedEntry.results)
+                        } else {
+                            results = cachedEntry.results
+                        }
+                        totalHits = cachedEntry.totalHits
+                        // 缓存命中后也要设置加载状态为false
+                        if append {
+                            isLoadingMore = false
+                        } else {
+                            isLoading = false
+                        }
+                    }
+                    return
+                }
                 if append {
                     isLoadingMore = true
                 } else {
@@ -157,6 +190,13 @@ final class ModrinthSearchViewModel: ObservableObject {
                 try Task.checkCancellation()
 
                 if !Task.isCancelled {
+                    // 缓存搜索结果
+                    cacheManager.cacheResult(
+                        for: cacheKey,
+                        results: result.hits,
+                        totalHits: result.totalHits,
+                        page: page
+                    )
                     if append {
                         results.append(contentsOf: result.hits)
                     } else {
