@@ -32,12 +32,12 @@ struct SearchCacheKey: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(query)
         hasher.combine(projectType)
-        hasher.combine(versions.joined(separator: ","))
-        hasher.combine(categories.joined(separator: ","))
-        hasher.combine(features.joined(separator: ","))
-        hasher.combine(resolutions.joined(separator: ","))
-        hasher.combine(performanceImpact.joined(separator: ","))
-        hasher.combine(loaders.joined(separator: ","))
+        hasher.combine(versions)
+        hasher.combine(categories)
+        hasher.combine(features)
+        hasher.combine(resolutions)
+        hasher.combine(performanceImpact)
+        hasher.combine(loaders)
         hasher.combine(page)
         hasher.combine(dataSource.rawValue)
     }
