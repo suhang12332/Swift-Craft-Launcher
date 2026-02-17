@@ -290,6 +290,7 @@ struct ModrinthDetailView: View {
                         EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
                     )
                     .listRowSeparator(.hidden)
+                    .contentShape(Rectangle())
                     .onTapGesture {
                         selectedProjectId = mod.projectId
                         if let type = ResourceType(rawValue: query) {

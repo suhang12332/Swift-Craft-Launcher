@@ -157,6 +157,7 @@ struct GameLocalResourceView: View {
                     EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
                 )
                 .listRowSeparator(.hidden)
+                .contentShape(Rectangle())
                 .onTapGesture {
                     // 本地资源不跳转详情页面（沿用原逻辑）
                     // 使用 id 前缀判断本地资源，更可靠

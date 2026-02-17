@@ -16,6 +16,18 @@ enum WindowStyleHelper {
         window.collectionBehavior.insert(.fullScreenNone)
         window.standardWindowButton(.zoomButton)?.isEnabled = false
     }
+
+    /// 从工具栏右键菜单中移除「仅文字」选项，只保留「仅图标」与「文字和图标」
+    static func disableToolbarTextOnlyMode(_ window: NSWindow) {
+        guard let toolbar = window.toolbar else { return }
+        // 使用 _toolbarView 访问工具栏视图以获取其上下文菜单（系统未公开允许的 display 模式 API）
+        guard let toolbarView = toolbar.value(forKey: "_toolbarView") as? NSView,
+              let menu = toolbarView.menu else { return }
+        let textOnlyTag = 3 // 系统菜单中「仅文字」对应的 tag
+        if let index = menu.items.firstIndex(where: { $0.action == NSSelectorFromString("changeToolbarDisplayMode:") && $0.tag == textOnlyTag }) {
+            menu.removeItem(at: index)
+        }
+    }
 }
 
 /// 窗口样式配置修饰符
