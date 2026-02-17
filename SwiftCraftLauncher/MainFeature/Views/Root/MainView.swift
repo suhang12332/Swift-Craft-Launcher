@@ -16,5 +16,10 @@ struct MainView: View {
     var body: some View {
         MainContentArea(interfaceLayoutStyle: general.interfaceLayoutStyle)
             .frame(minWidth: 900, minHeight: 500)
+            .background(
+                WindowAccessor(synchronous: false) { window in
+                    WindowStyleHelper.disableToolbarTextOnlyMode(window)
+                }
+            )
     }
 }
