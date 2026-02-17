@@ -30,6 +30,9 @@ import Combine
 
 @main
 struct SwiftCraftLauncherApp: App {
+    @Environment(\.scenePhase)
+    private var scenePhase
+
     // MARK: - StateObjects
     @StateObject var playerListViewModel = PlayerListViewModel()
     @StateObject var gameRepository = GameRepository()
@@ -39,6 +42,7 @@ struct SwiftCraftLauncherApp: App {
     @StateObject var generalSettingsManager = GeneralSettingsManager.shared
     @StateObject var themeManager = ThemeManager.shared
     @StateObject private var skinSelectionStore = SkinSelectionStore()
+    @StateObject private var appIdleManager = AppIdleManager.shared
 
     // MARK: - Notification Delegate
     private let notificationCenterDelegate = NotificationCenterDelegate()
@@ -71,6 +75,10 @@ struct SwiftCraftLauncherApp: App {
                     // 应用启动时清理所有窗口数据
                     WindowDataStore.shared.cleanup(for: .aiChat)
                     WindowDataStore.shared.cleanup(for: .skinPreview)
+                    appIdleManager.startMonitoring()
+                }
+                .onChange(of: scenePhase) { _, newPhase in
+                    appIdleManager.handleScenePhase(newPhase)
                 }
         }
         .windowStyle(.titleBar)

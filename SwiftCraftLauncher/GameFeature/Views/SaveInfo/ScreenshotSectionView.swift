@@ -50,6 +50,7 @@ struct ScreenshotThumbnail: View {
     let action: () -> Void
 
     @State private var image: NSImage?
+    @State private var loadTask: Task<Void, Never>?
 
     var body: some View {
         Button(action: action) {
@@ -74,19 +75,30 @@ struct ScreenshotThumbnail: View {
             )
         }
         .buttonStyle(.plain)
-        .task {
-            loadImage()
+        .task(id: screenshot.path) {
+            await loadImage()
+        }
+        .onDisappear {
+            loadTask?.cancel()
+            loadTask = nil
+            image = nil
         }
     }
 
-    private func loadImage() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            if let nsImage = NSImage(contentsOf: screenshot.path) {
-                DispatchQueue.main.async {
-                    self.image = nsImage
-                }
+    private func loadImage() async {
+        loadTask?.cancel()
+        loadTask = Task {
+            let loaded = await Task.detached(priority: .userInitiated) {
+                ImageLoadingUtil.downsampledImage(
+                    at: screenshot.path,
+                    maxPixelSize: ScreenshotSectionConstants.thumbnailSize
+                )
+            }.value
+            if !Task.isCancelled {
+                image = loaded
             }
         }
+        await loadTask?.value
     }
 }
 
@@ -154,6 +166,7 @@ struct ScreenshotImageView: View {
     @State private var image: NSImage?
     @State private var isLoading: Bool = true
     @State private var loadFailed: Bool = false
+    @State private var loadTask: Task<Void, Never>?
 
     var body: some View {
         Group {
@@ -173,24 +186,34 @@ struct ScreenshotImageView: View {
                     .aspectRatio(contentMode: .fit)
             }
         }
-        .task {
-            loadImage()
+        .task(id: path) {
+            await loadImage()
+        }
+        .onDisappear {
+            loadTask?.cancel()
+            loadTask = nil
+            image = nil
         }
     }
 
-    private func loadImage() {
-        DispatchQueue.global(qos: .userInitiated).async {
-            if let nsImage = NSImage(contentsOf: path) {
-                DispatchQueue.main.async {
-                    self.image = nsImage
-                    self.isLoading = false
-                }
-            } else {
-                DispatchQueue.main.async {
-                    self.loadFailed = true
-                    self.isLoading = false
-                }
+    private func loadImage() async {
+        isLoading = true
+        loadFailed = false
+        loadTask?.cancel()
+        loadTask = Task {
+            let loaded = await Task.detached(priority: .userInitiated) {
+                ImageLoadingUtil.downsampledImage(
+                    at: path,
+                    maxPixelSize: 1600
+                )
+            }.value
+            if Task.isCancelled {
+                return
             }
+            image = loaded
+            loadFailed = (loaded == nil)
+            isLoading = false
         }
+        await loadTask?.value
     }
 }

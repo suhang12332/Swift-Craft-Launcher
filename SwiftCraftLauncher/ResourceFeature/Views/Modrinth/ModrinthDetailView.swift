@@ -124,8 +124,7 @@ struct ModrinthDetailView: View {
         }
         .onChange(of: selectedProjectId) { oldValue, newValue in
             if oldValue != nil && newValue == nil {
-                // 关闭详情后重新刷新列表，确保最新状态
-                viewModel.clearResults()
+                // 关闭详情后保留当前列表，后台刷新数据
                 resetPagination()
                 triggerSearch()
             }
@@ -172,8 +171,8 @@ struct ModrinthDetailView: View {
             }
         }
         .onDisappear {
-            // 页面关闭后清除数据，但保留搜索文本
-            clearDataExceptSearchText()
+            searchTimer?.invalidate()
+            searchTimer = nil
         }
     }
 
@@ -210,6 +209,8 @@ struct ModrinthDetailView: View {
     ) async {
         do {
             try await performSearchThrowing(page: page, append: append)
+            // 搜索完成后预加载图片
+            preloadImages()
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("搜索失败: \(globalError.chineseMessage)")
@@ -328,34 +329,16 @@ struct ModrinthDetailView: View {
         lastSearchParams = ""
     }
 
-    // MARK: - 清除数据
-    /// 清除页面所有数据
-    private func clearAllData() {
-        // 清理搜索定时器，避免内存泄漏
-        searchTimer?.invalidate()
-        searchTimer = nil
-        // 清理 ViewModel 数据
-        viewModel.clearResults()
-        // 清理状态数据
-        searchText = ""
-        currentPage = 1
-        lastSearchParams = ""
-        error = nil
-        hasLoaded = false
-    }
+    /// 后台预加载可见的资源图片（只预加载前20个）
+    private func preloadImages() {
+        let imageUrls = viewModel.results
+            .prefix(20)  // 只预加载前 20 个可见的
+            .compactMap { $0.iconUrl }
+            .compactMap(URL.init(string:))
 
-    /// 清除数据但保留搜索文本（用于从详情页返回时）
-    private func clearDataExceptSearchText() {
-        // 清理搜索定时器，避免内存泄漏
-        searchTimer?.invalidate()
-        searchTimer = nil
-        // 清理 ViewModel 数据
-        viewModel.clearResults()
-        // 清理状态数据，但保留搜索文本
-        currentPage = 1
-        lastSearchParams = ""
-        error = nil
-        hasLoaded = false
+        if !imageUrls.isEmpty {
+            ResourceImageCacheManager.shared.preloadImages(urls: imageUrls)
+        }
     }
 
     private func buildSearchParamsKey(page: Int) -> String {
