@@ -19,12 +19,7 @@ struct DownloadProgressRow: View {
                         .foregroundColor(.secondary)
                 }
                 Spacer()
-                Text(
-                    String(
-                        format: "download.progress".localized(),
-                        Int(progress * 100)
-                    )
-                )
+                Text(progressPercentText)
                 .font(.headline)
                 .foregroundColor(.secondary)
             }
@@ -54,5 +49,10 @@ struct DownloadProgressRow: View {
                 .foregroundColor(.secondary)
             }
         }
+    }
+
+    private var progressPercentText: String {
+        let clampedProgress = min(max(progress, 0), 1)
+        return clampedProgress.formatted(.percent.precision(.fractionLength(0)))
     }
 }

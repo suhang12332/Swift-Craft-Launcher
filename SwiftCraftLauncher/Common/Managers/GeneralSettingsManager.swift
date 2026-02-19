@@ -68,6 +68,12 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
         didSet { objectWillChange.send() }
     }
 
+    /// 是否启用资源页面本地缓存（默认开启）
+    @AppStorage("enableResourcePageCache")
+    var enableResourcePageCache: Bool = true {
+        didSet { objectWillChange.send() }
+    }
+
     // MARK: - 应用设置属性
     @AppStorage("concurrentDownloads")
     var concurrentDownloads: Int = 64 {

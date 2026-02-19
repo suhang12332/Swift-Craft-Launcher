@@ -39,8 +39,8 @@ final class ContributorAvatarCache: @unchecked Sendable {
 
     /// 加载图片
     @MainActor
-    func loadImage(from url: URL) async throws -> NSImage {
-        let cacheKey = url.absoluteString as NSString
+    func loadImage(from url: URL, targetSize: CGFloat) async throws -> NSImage {
+        let cacheKey = "\(url.absoluteString)#\(Int(targetSize * 2))" as NSString
 
         // 先检查缓存
         if let cachedImage = imageCache.object(forKey: cacheKey) {
@@ -49,12 +49,15 @@ final class ContributorAvatarCache: @unchecked Sendable {
 
         // 从网络加载
         let (data, _) = try await urlSession.data(from: url)
-        guard let image = NSImage(data: data) else {
+        guard let image = ImageLoadingUtil.downsampledImage(
+            data: data,
+            maxPixelSize: targetSize
+        ) ?? NSImage(data: data) else {
             throw NSError(domain: "ContributorAvatarCache", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法解析图片数据"])
         }
 
         // 计算图片大小（用于缓存成本）
-        let cost = data.count
+        let cost = ImageLoadingUtil.imageMemoryCost(image)
         imageCache.setObject(image, forKey: cacheKey, cost: cost)
 
         return image
@@ -142,7 +145,7 @@ struct ContributorAvatarView: View {
             defer { isLoading = false }
 
             do {
-                let loadedImage = try await ContributorAvatarCache.shared.loadImage(from: url)
+                let loadedImage = try await ContributorAvatarCache.shared.loadImage(from: url, targetSize: size)
                 if !Task.isCancelled {
                     self.image = loadedImage
                 }
@@ -187,8 +190,8 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
 
     /// 加载图片
     @MainActor
-    func loadImage(from url: URL) async throws -> NSImage {
-        let cacheKey = url.absoluteString as NSString
+    func loadImage(from url: URL, targetSize: CGFloat) async throws -> NSImage {
+        let cacheKey = "\(url.absoluteString)#\(Int(targetSize * 2))" as NSString
 
         // 先检查缓存
         if let cachedImage = imageCache.object(forKey: cacheKey) {
@@ -197,12 +200,15 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
 
         // 从网络加载
         let (data, _) = try await urlSession.data(from: url)
-        guard let image = NSImage(data: data) else {
+        guard let image = ImageLoadingUtil.downsampledImage(
+            data: data,
+            maxPixelSize: targetSize
+        ) ?? NSImage(data: data) else {
             throw NSError(domain: "StaticContributorAvatarCache", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法解析图片数据"])
         }
 
         // 计算图片大小（用于缓存成本）
-        let cost = data.count
+        let cost = ImageLoadingUtil.imageMemoryCost(image)
         imageCache.setObject(image, forKey: cacheKey, cost: cost)
 
         return image
@@ -298,7 +304,7 @@ struct StaticContributorAvatarView: View {
             defer { isLoading = false }
 
             do {
-                let loadedImage = try await StaticContributorAvatarCache.shared.loadImage(from: url)
+                let loadedImage = try await StaticContributorAvatarCache.shared.loadImage(from: url, targetSize: size)
                 if !Task.isCancelled {
                     self.image = loadedImage
                 }

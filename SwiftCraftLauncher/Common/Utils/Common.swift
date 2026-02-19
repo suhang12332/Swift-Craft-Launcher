@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftUI
+import AppKit
+import ImageIO
 
 extension URL {
     func forceHTTPS() -> URL? {
@@ -101,5 +103,55 @@ enum CommonUtil {
         return versions.sorted { version1, version2 in
             compareMinecraftVersions(version1, version2) > 0
         }
+    }
+}
+
+enum ImageLoadingUtil {
+    static func downsampledImage(
+        at url: URL,
+        maxPixelSize: CGFloat,
+        scale: CGFloat = NSScreen.main?.backingScaleFactor ?? 2.0
+    ) -> NSImage? {
+        guard let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil) else {
+            return nil
+        }
+        return downsampledImage(from: imageSource, maxPixelSize: maxPixelSize, scale: scale)
+    }
+
+    static func downsampledImage(
+        data: Data,
+        maxPixelSize: CGFloat,
+        scale: CGFloat = NSScreen.main?.backingScaleFactor ?? 2.0
+    ) -> NSImage? {
+        guard let imageSource = CGImageSourceCreateWithData(data as CFData, nil) else {
+            return nil
+        }
+        return downsampledImage(from: imageSource, maxPixelSize: maxPixelSize, scale: scale)
+    }
+
+    static func imageMemoryCost(_ image: NSImage) -> Int {
+        if let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) {
+            return cgImage.bytesPerRow * cgImage.height
+        }
+        let size = image.size
+        return Int(size.width * size.height * 4)
+    }
+
+    private static func downsampledImage(
+        from imageSource: CGImageSource,
+        maxPixelSize: CGFloat,
+        scale: CGFloat
+    ) -> NSImage? {
+        let targetPixelSize = max(1, Int(maxPixelSize * max(1.0, scale)))
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceThumbnailMaxPixelSize: targetPixelSize,
+        ]
+        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(imageSource, 0, options as CFDictionary) else {
+            return nil
+        }
+        return NSImage(cgImage: cgImage, size: NSSize(width: cgImage.width, height: cgImage.height))
     }
 }

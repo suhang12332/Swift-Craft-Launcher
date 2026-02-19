@@ -137,6 +137,14 @@ public struct GeneralSettingsView: View {
                     }
                 }
             }.labeledContentStyle(.custom(alignment: .firstTextBaseline)).padding(.top, 10)
+
+            LabeledContent("settings.resource_cache.label".localized()) {
+                Toggle(
+                    "settings.resource_cache.enable".localized(),
+                    isOn: $generalSettings.enableResourcePageCache
+                )
+                .toggleStyle(.checkbox)
+            }.labeledContentStyle(.custom).padding(.top, 6)
         }
         .globalErrorHandler()
         .alert(
