@@ -46,28 +46,43 @@ struct DetailView: View {
 
     @ViewBuilder
     private func resourceDetailView(type: ResourceType) -> some View {
-        if detailState.selectedProjectId != nil {
-            List {
-                ModrinthProjectDetailView(
-                    projectDetail: detailState.loadedProjectDetail
+        GeometryReader { proxy in
+            let showDetail = detailState.selectedProjectId != nil
+            let width = proxy.size.width
+
+            ZStack {
+                ModrinthDetailView(
+                    query: type.rawValue,
+                    selectedVersions: filterState.selectedVersionsBinding,
+                    selectedCategories: filterState.selectedCategoriesBinding,
+                    selectedFeatures: filterState.selectedFeaturesBinding,
+                    selectedResolutions: filterState.selectedResolutionsBinding,
+                    selectedPerformanceImpact: filterState.selectedPerformanceImpactBinding,
+                    selectedProjectId: detailState.selectedProjectIdBinding,
+                    selectedLoader: filterState.selectedLoadersBinding,
+                    gameInfo: nil,
+                    selectedItem: detailState.selectedItemBinding,
+                    gameType: detailState.gameTypeBinding,
+                    dataSource: filterState.dataSourceBinding,
+                    searchText: filterState.searchTextBinding
                 )
+                .offset(x: showDetail ? -width : 0)
+                .opacity(showDetail ? 0.92 : 1.0)
+                .allowsHitTesting(!showDetail)
+                .zIndex(0)
+
+                List {
+                    ModrinthProjectDetailView(
+                        projectDetail: detailState.loadedProjectDetail
+                    )
+                }
+                .offset(x: showDetail ? 0 : width)
+                .opacity(showDetail ? 1.0 : 0.0)
+                .allowsHitTesting(showDetail)
+                .zIndex(1)
             }
-        } else {
-            ModrinthDetailView(
-                query: type.rawValue,
-                selectedVersions: filterState.selectedVersionsBinding,
-                selectedCategories: filterState.selectedCategoriesBinding,
-                selectedFeatures: filterState.selectedFeaturesBinding,
-                selectedResolutions: filterState.selectedResolutionsBinding,
-                selectedPerformanceImpact: filterState.selectedPerformanceImpactBinding,
-                selectedProjectId: detailState.selectedProjectIdBinding,
-                selectedLoader: filterState.selectedLoadersBinding,
-                gameInfo: nil,
-                selectedItem: detailState.selectedItemBinding,
-                gameType: detailState.gameTypeBinding,
-                dataSource: filterState.dataSourceBinding,
-                searchText: filterState.searchTextBinding
-            )
+            .clipped()
+            .animation(.easeInOut(duration: 0.28), value: showDetail)
         }
     }
 }
