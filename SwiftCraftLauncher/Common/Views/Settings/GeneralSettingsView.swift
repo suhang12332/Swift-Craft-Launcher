@@ -12,6 +12,8 @@ public struct GeneralSettingsView: View {
     @State private var isCancellingLanguageChange = false
     @State private var selectedLanguage = LanguageManager.shared.selectedLanguage
     @State private var error: GlobalError?
+    /// 数据库中所有工作路径及对应游戏数量（用于快速切换）
+    @State private var workingPathOptions: [(path: String, count: Int)] = []
 
     public init() {}
 
@@ -67,19 +69,50 @@ public struct GeneralSettingsView: View {
             }.labeledContentStyle(.custom).padding(.bottom, 10)
 
             LabeledContent("settings.launcher_working_directory".localized()) {
-                DirectorySettingRow(
-                    title: "settings.launcher_working_directory".localized(),
-                    path: generalSettings.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : generalSettings.launcherWorkingDirectory,
-                    description: "settings.working_directory.description".localized(),
-                    onChoose: { showDirectoryPicker = true },
-                    onReset: {
-                        resetWorkingDirectorySafely()
+                VStack(alignment: .leading, spacing: 8) {
+                    if !workingPathOptions.isEmpty {
+                        Picker("", selection: Binding(
+                            get: {
+                                generalSettings.launcherWorkingDirectory.isEmpty
+                                    ? AppPaths.launcherSupportDirectory.path
+                                    : generalSettings.launcherWorkingDirectory
+                            },
+                            set: { generalSettings.launcherWorkingDirectory = $0 }
+                        )) {
+                            ForEach(workingPathOptions, id: \.path) { item in
+                                Text(workingPathDisplayString(for: item))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .tag(item.path)
+                                    .help(item.path)
+                            }
+                        }
+                        .labelsHidden()
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: 320)
                     }
-                ).fixedSize()
-                    .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
-                        handleDirectoryImport(result)
-                    }
+                    DirectorySettingRow(
+                        title: "settings.launcher_working_directory".localized(),
+                        path: generalSettings.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : generalSettings.launcherWorkingDirectory,
+                        description: "settings.working_directory.description".localized(),
+                        onChoose: { showDirectoryPicker = true },
+                        onReset: {
+                            resetWorkingDirectorySafely()
+                        }
+                    ).fixedSize()
+                        .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
+                            handleDirectoryImport(result)
+                        }
+                }
             }.labeledContentStyle(.custom(alignment: .firstTextBaseline))
+            .task {
+                workingPathOptions = await gameRepository.fetchAllWorkingPathsWithCounts()
+            }
+            .onChange(of: generalSettings.launcherWorkingDirectory) { _, _ in
+                Task {
+                    workingPathOptions = await gameRepository.fetchAllWorkingPathsWithCounts()
+                }
+            }
 
             LabeledContent("settings.concurrent_downloads.label".localized()) {
                 HStack {
@@ -162,6 +195,13 @@ public struct GeneralSettingsView: View {
     }
 
     // MARK: - Private Methods
+
+    /// 工作路径选择框展示文案：路径最后一段 + 游戏个数
+    private func workingPathDisplayString(for item: (path: String, count: Int)) -> String {
+        let lastComponent = (item.path as NSString).lastPathComponent
+        let countStr = String(format: "settings.working_path.game_count".localized(), item.count)
+        return "\(lastComponent) (\(countStr))"
+    }
 
     /// 安全地重置工作目录
     private func resetWorkingDirectorySafely() {

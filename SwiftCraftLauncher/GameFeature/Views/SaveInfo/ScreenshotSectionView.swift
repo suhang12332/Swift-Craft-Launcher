@@ -87,15 +87,15 @@ struct ScreenshotThumbnail: View {
 
     private func loadImage() async {
         loadTask?.cancel()
-        loadTask = Task {
-            let loaded = await Task.detached(priority: .userInitiated) {
-                ImageLoadingUtil.downsampledImage(
-                    at: screenshot.path,
+        loadTask = Task { @MainActor in
+            let data = await Task.detached(priority: .userInitiated) {
+                try? Data(contentsOf: screenshot.path)
+            }.value
+            if !Task.isCancelled, let data = data {
+                image = ImageLoadingUtil.downsampledImage(
+                    data: data,
                     maxPixelSize: ScreenshotSectionConstants.thumbnailSize
                 )
-            }.value
-            if !Task.isCancelled {
-                image = loaded
             }
         }
         await loadTask?.value
@@ -200,15 +200,15 @@ struct ScreenshotImageView: View {
         isLoading = true
         loadFailed = false
         loadTask?.cancel()
-        loadTask = Task {
-            let loaded = await Task.detached(priority: .userInitiated) {
-                ImageLoadingUtil.downsampledImage(
-                    at: path,
-                    maxPixelSize: 1600
-                )
+        loadTask = Task { @MainActor in
+            let data = await Task.detached(priority: .userInitiated) {
+                try? Data(contentsOf: path)
             }.value
             if Task.isCancelled {
                 return
+            }
+            let loaded = data.flatMap {
+                ImageLoadingUtil.downsampledImage(data: $0, maxPixelSize: 1600)
             }
             image = loaded
             loadFailed = (loaded == nil)

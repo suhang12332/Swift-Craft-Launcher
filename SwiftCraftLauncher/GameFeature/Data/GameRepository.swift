@@ -374,6 +374,28 @@ class GameRepository: ObservableObject {
         Logger.shared.info("完成所有游戏的 mods 目录扫描")
     }
 
+    /// 获取数据库中所有工作路径及其游戏数量（用于设置页快速切换，SQL GROUP BY 实现）
+    func fetchAllWorkingPathsWithCounts() async -> [(path: String, count: Int)] {
+        let currentPath = currentWorkingPath
+        let dbPath = AppPaths.gameVersionDatabase.path
+        let rows: [(path: String, count: Int)]
+        do {
+            rows = try await Task.detached(priority: .userInitiated) {
+                let db = GameVersionDatabase(dbPath: dbPath)
+                try? db.initialize()
+                return try db.loadWorkingPathsWithCounts()
+            }.value
+        } catch {
+            return [(currentPath, 0)]
+        }
+        var result = rows
+        if !result.contains(where: { $0.path == currentPath }) {
+            result.append((currentPath, 0))
+        }
+        result.sort { $0.path.localizedStandardCompare($1.path) == .orderedAscending }
+        return result
+    }
+
     // 只加载当前工作路径的游戏（数据库与目录扫描在后台执行，避免主线程阻塞）
     func loadGamesThrowing() async throws {
         let workingPath = currentWorkingPath
