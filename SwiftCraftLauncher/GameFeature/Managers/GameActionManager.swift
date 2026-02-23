@@ -49,8 +49,8 @@ class GameActionManager: ObservableObject {
     ) {
         Task {
             do {
-                // 游戏运行中不允许删除
-                if GameProcessManager.shared.isGameRunning(gameId: game.id) {
+                // 游戏运行中不允许删除（任意玩家下该游戏在运行即不允许）
+                if GameProcessManager.shared.isGameRunningForAnyUser(gameId: game.id) {
                     let error = GlobalError.validation(
                         chineseMessage: "游戏运行中，无法删除",
                         i18nKey: "error.validation.game_running_cannot_delete",

@@ -19,8 +19,8 @@ public struct DetailToolbarView: ToolbarContent {
         return nil
     }
 
-    private func isGameRunning(gameId: String) -> Bool {
-        gameStatusManager.isGameRunning(gameId: gameId)
+    private func isGameRunning(gameId: String, userId: String) -> Bool {
+        gameStatusManager.isGameRunning(gameId: gameId, userId: userId)
     }
 
     /// 打开当前资源在浏览器中的项目页面
@@ -56,12 +56,13 @@ public struct DetailToolbarView: ToolbarContent {
 
                     Button {
                         Task {
-                            let isRunning = isGameRunning(gameId: game.id)
+                            let userId = playerListViewModel.currentPlayer?.id ?? ""
+                            let isRunning = isGameRunning(gameId: game.id, userId: userId)
                             if isRunning {
-                                await gameLaunchUseCase.stopGame(game: game)
+                                await gameLaunchUseCase.stopGame(player: playerListViewModel.currentPlayer, game: game)
                             } else {
-                                gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: true)
-                                defer { gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: false) }
+                                gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
+                                defer { gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false) }
                                 await gameLaunchUseCase.launchGame(
                                     player: playerListViewModel.currentPlayer,
                                     game: game
@@ -69,8 +70,9 @@ public struct DetailToolbarView: ToolbarContent {
                             }
                         }
                     } label: {
-                        let isRunning = isGameRunning(gameId: game.id)
-                        let isLaunchingGame = gameStatusManager.isGameLaunching(gameId: game.id)
+                        let userId = playerListViewModel.currentPlayer?.id ?? ""
+                        let isRunning = isGameRunning(gameId: game.id, userId: userId)
+                        let isLaunchingGame = gameStatusManager.isGameLaunching(gameId: game.id, userId: userId)
                         if isLaunchingGame && !isRunning {
                             ProgressView()
                                 .controlSize(.small)
@@ -85,11 +87,11 @@ public struct DetailToolbarView: ToolbarContent {
                         }
                     }
                     .help(
-                        isGameRunning(gameId: game.id)
+                        isGameRunning(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? "")
                         ? "stop.fill"
-                        : (gameStatusManager.isGameLaunching(gameId: game.id) ? "" : "play.fill")
+                        : (gameStatusManager.isGameLaunching(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? "") ? "" : "play.fill")
                     )
-                    .disabled(gameStatusManager.isGameLaunching(gameId: game.id))
+                    .disabled(gameStatusManager.isGameLaunching(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? ""))
                     .applyReplaceTransition()
 
                     Button {

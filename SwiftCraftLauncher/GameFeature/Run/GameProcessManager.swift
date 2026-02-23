@@ -4,6 +4,11 @@ import Foundation
 final class GameProcessManager: ObservableObject, @unchecked Sendable {
     static let shared = GameProcessManager()
 
+    /// 进程存储的 key：gameId + userId 拼接，同一游戏不同玩家分别追踪
+    static func processKey(gameId: String, userId: String) -> String {
+        "\(gameId)_\(userId)"
+    }
+
     private var gameProcesses: [String: Process] = [:]
 
     // 标记主动停止的游戏，用于区分用户主动关闭和真正的崩溃
@@ -12,24 +17,26 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
 
     private init() {}
 
-    func storeProcess(gameId: String, process: Process) {
+    func storeProcess(gameId: String, userId: String, process: Process) {
+        let key = Self.processKey(gameId: gameId, userId: userId)
         // 设置进程终止处理器（在启动前设置）
         // 不在主线程执行：数据库与文件扫描放到后台，仅 UI 状态更新回主线程
         process.terminationHandler = { [weak self] process in
             Task {
-                await self?.handleProcessTermination(gameId: gameId, process: process)
+                await self?.handleProcessTermination(gameId: gameId, userId: userId, process: process)
             }
         }
 
         queue.async { [weak self] in
-            self?.gameProcesses[gameId] = process
+            self?.gameProcesses[key] = process
         }
-        Logger.shared.debug("存储游戏进程: \(gameId)")
+        Logger.shared.debug("存储游戏进程: \(key)")
     }
 
     // 统一处理所有清理逻辑
-    private func handleProcessTermination(gameId: String, process: Process) async {
-        let wasManuallyStopped = queue.sync { manuallyStoppedGames.contains(gameId) }
+    private func handleProcessTermination(gameId: String, userId: String, process: Process) async {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        let wasManuallyStopped = queue.sync { manuallyStoppedGames.contains(key) }
 
         handleProcessExit(gameId: gameId, wasManuallyStopped: wasManuallyStopped)
 
@@ -48,11 +55,11 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
         }
 
         await MainActor.run {
-            GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
+            GameStatusManager.shared.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
         }
         queue.async { [weak self] in
-            self?.gameProcesses.removeValue(forKey: gameId)
-            self?.manuallyStoppedGames.remove(gameId)
+            self?.gameProcesses.removeValue(forKey: key)
+            self?.manuallyStoppedGames.remove(key)
         }
     }
 
@@ -171,19 +178,25 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
     }
 
     /// 获取游戏进程
-    /// - Parameter gameId: 游戏 ID
+    /// - Parameters:
+    ///   - gameId: 游戏 ID
+    ///   - userId: 玩家 ID
     /// - Returns: 进程对象，如果不存在则返回 nil
-    func getProcess(for gameId: String) -> Process? {
-        queue.sync { gameProcesses[gameId] }
+    func getProcess(for gameId: String, userId: String) -> Process? {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        return queue.sync { gameProcesses[key] }
     }
 
     /// 停止游戏进程（不在主线程等待进程退出，避免卡 UI）
-    /// - Parameter gameId: 游戏 ID
+    /// - Parameters:
+    ///   - gameId: 游戏 ID
+    ///   - userId: 玩家 ID
     /// - Returns: 是否成功发起停止
-    func stopProcess(for gameId: String) -> Bool {
+    func stopProcess(for gameId: String, userId: String) -> Bool {
+        let key = Self.processKey(gameId: gameId, userId: userId)
         let process: Process? = queue.sync {
-            guard let proc = gameProcesses[gameId] else { return nil }
-            manuallyStoppedGames.insert(gameId)
+            guard let proc = gameProcesses[key] else { return nil }
+            manuallyStoppedGames.insert(key)
             return proc
         }
         guard let process = process else { return false }
@@ -196,76 +209,106 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
             }
         }
 
-        Logger.shared.debug("停止游戏进程: \(gameId)")
+        Logger.shared.debug("停止游戏进程: \(key)")
         return true
     }
 
-    /// 检查游戏是否正在运行
-    /// - Parameter gameId: 游戏 ID
+    /// 检查指定 gameId+userId 是否正在运行
+    /// - Parameters:
+    ///   - gameId: 游戏 ID
+    ///   - userId: 玩家 ID
     /// - Returns: 是否正在运行
-    func isGameRunning(gameId: String) -> Bool {
-        queue.sync { gameProcesses[gameId]?.isRunning ?? false }
+    func isGameRunning(gameId: String, userId: String) -> Bool {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        return queue.sync { gameProcesses[key]?.isRunning ?? false }
+    }
+
+    /// 检查该游戏是否有任意玩家的实例正在运行（用于删除前校验）
+    /// - Parameter gameId: 游戏 ID
+    /// - Returns: 是否有任意 userId 下该游戏在运行
+    func isGameRunningForAnyUser(gameId: String) -> Bool {
+        let prefix = "\(gameId)_"
+        return queue.sync {
+            gameProcesses.contains { key, proc in key.hasPrefix(prefix) && proc.isRunning }
+        }
     }
 
     // 清理没有正确触发 terminationHandler 的进程
     func cleanupTerminatedProcesses() {
-        let terminatedGameIds: [String] = queue.sync {
-            let ids = gameProcesses.compactMap { gameId, process in
-                !process.isRunning ? gameId : nil
+        let terminatedKeys: [String] = queue.sync {
+            let keys = gameProcesses.compactMap { key, process in
+                !process.isRunning ? key : nil
             }
-            guard !ids.isEmpty else { return [] }
-            for gameId in ids {
-                gameProcesses.removeValue(forKey: gameId)
-                manuallyStoppedGames.remove(gameId)
+            guard !keys.isEmpty else { return [] }
+            for key in keys {
+                gameProcesses.removeValue(forKey: key)
+                manuallyStoppedGames.remove(key)
             }
-            return ids
+            return keys
         }
 
-        guard !terminatedGameIds.isEmpty else { return }
+        guard !terminatedKeys.isEmpty else { return }
 
-        for gameId in terminatedGameIds {
-            Logger.shared.debug("清理已终止的进程: \(gameId)")
+        for key in terminatedKeys {
+            Logger.shared.debug("清理已终止的进程: \(key)")
         }
 
         Task { @MainActor in
-            for gameId in terminatedGameIds {
-                GameStatusManager.shared.setGameRunning(gameId: gameId, isRunning: false)
+            for key in terminatedKeys {
+                // key 格式为 "gameId_userId"
+                if let idx = key.firstIndex(of: "_") {
+                    let gameId = String(key[..<idx])
+                    let userId = String(key[key.index(after: idx)...])
+                    GameStatusManager.shared.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
+                }
             }
         }
     }
 
     /// 检查游戏是否是被主动停止的
-    /// - Parameter gameId: 游戏 ID
+    /// - Parameters:
+    ///   - gameId: 游戏 ID
+    ///   - userId: 玩家 ID
     /// - Returns: 是否是被主动停止的
-    func isManuallyStopped(gameId: String) -> Bool {
-        queue.sync { manuallyStoppedGames.contains(gameId) }
+    func isManuallyStopped(gameId: String, userId: String) -> Bool {
+        let key = Self.processKey(gameId: gameId, userId: userId)
+        return queue.sync { manuallyStoppedGames.contains(key) }
     }
 
-    /// 移除指定游戏的进程与状态（删除游戏时调用）
-    /// 若游戏正在运行会先终止进程，在后台等待退出后从内存移除，不阻塞调用线程
-    /// - Parameter gameId: 游戏 ID
+    /// 移除指定游戏的所有进程与状态（删除游戏时调用）
+    /// 若某 (gameId, userId) 正在运行会先终止进程，在后台等待退出后从内存移除，不阻塞调用线程
+    /// - Parameter gameId: 游戏 ID（会移除该 gameId 下所有 userId 的进程）
     func removeGameState(gameId: String) {
-        let process: Process? = queue.sync {
-            let proc = gameProcesses[gameId]
-            if proc?.isRunning == true {
-                manuallyStoppedGames.insert(gameId)
+        let prefix = "\(gameId)_"
+        let toRemove: [(String, Process)] = queue.sync {
+            let pairs = gameProcesses.filter { key, _ in key.hasPrefix(prefix) }
+            for (key, proc) in pairs {
+                gameProcesses.removeValue(forKey: key)
+                if proc.isRunning {
+                    manuallyStoppedGames.insert(key)
+                }
             }
-            return proc
+            return pairs.map { ($0.key, $0.value) }
         }
 
-        if let process = process, process.isRunning {
+        for (key, process) in toRemove where process.isRunning {
             process.terminate()
             DispatchQueue.global(qos: .utility).async { [weak self] in
                 process.waitUntilExit()
                 self?.queue.async {
-                    self?.gameProcesses.removeValue(forKey: gameId)
-                    self?.manuallyStoppedGames.remove(gameId)
+                    self?.gameProcesses.removeValue(forKey: key)
+                    self?.manuallyStoppedGames.remove(key)
                 }
             }
-        } else {
-            queue.async { [weak self] in
-                self?.gameProcesses.removeValue(forKey: gameId)
-                self?.manuallyStoppedGames.remove(gameId)
+        }
+
+        Task { @MainActor in
+            for (key, process) in toRemove where !process.isRunning {
+                if let idx = key.firstIndex(of: "_") {
+                    let gameId = String(key[..<idx])
+                    let userId = String(key[key.index(after: idx)...])
+                    GameStatusManager.shared.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
+                }
             }
         }
     }

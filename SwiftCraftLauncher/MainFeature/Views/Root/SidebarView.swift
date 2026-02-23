@@ -219,9 +219,11 @@ private struct GameContextMenu: View {
     @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
 
     /// 使用缓存的游戏状态，避免每次渲染都检查进程
-    /// 这比调用 isGameRunning() 更高效，因为它直接读取已缓存的状态
+    /// key 为 processKey(gameId, userId)，当前选中的玩家决定 userId
     private var isRunning: Bool {
-        gameStatusManager.allGameStates[game.id] ?? false
+        let userId = playerListViewModel.currentPlayer?.id ?? ""
+        let key = GameProcessManager.processKey(gameId: game.id, userId: userId)
+        return gameStatusManager.allGameStates[key] ?? false
     }
 
     var body: some View {
@@ -261,13 +263,14 @@ private struct GameContextMenu: View {
     /// 启动或停止游戏
     private func toggleGameState() {
         Task {
-            // 使用缓存状态而不是重新检查，减少进程查询
-            let currentlyRunning = gameStatusManager.allGameStates[game.id] ?? false
+            let userId = playerListViewModel.currentPlayer?.id ?? ""
+            let key = GameProcessManager.processKey(gameId: game.id, userId: userId)
+            let currentlyRunning = gameStatusManager.allGameStates[key] ?? false
             if currentlyRunning {
-                await gameLaunchUseCase.stopGame(game: game)
+                await gameLaunchUseCase.stopGame(player: playerListViewModel.currentPlayer, game: game)
             } else {
-                gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: true)
-                defer { gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: false) }
+                gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
+                defer { gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false) }
                 await gameLaunchUseCase.launchGame(
                     player: playerListViewModel.currentPlayer,
                     game: game
