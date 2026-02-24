@@ -86,7 +86,7 @@ struct GameAdvancedSettingsView: View {
     var body: some View {
         Form {
             LabeledContent("settings.game.java.path".localized()) {
-                HStack {
+                HStack(alignment: .top) {
                     DirectorySettingRow(
                         title: "settings.game.java.path".localized(),
                         path: javaPath.isEmpty ? (currentGame?.javaPath ?? "") : javaPath,
