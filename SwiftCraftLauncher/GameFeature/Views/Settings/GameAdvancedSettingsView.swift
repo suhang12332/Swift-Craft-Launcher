@@ -29,6 +29,7 @@ struct GameAdvancedSettingsView: View {
     @State private var error: GlobalError?
     @State private var isLoadingSettings = false
     @State private var saveTask: Task<Void, Never>?
+    @State private var javaVersionInfo: String = ""
 
     private var currentGame: GameVersionInfo? {
         guard let gameId = selectedGameManager.selectedGameId else { return nil }
@@ -38,6 +39,24 @@ struct GameAdvancedSettingsView: View {
     /// 是否使用自定义JVM参数（与垃圾回收器和性能优化互斥）
     private var isUsingCustomArguments: Bool {
         !customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    /// 当前生效的 Java 路径（优先使用本地修改，其次为存储在游戏配置中的路径）
+    private var effectiveJavaPath: String {
+        if !javaPath.isEmpty {
+            return javaPath
+        }
+        return currentGame?.javaPath ?? ""
+    }
+
+    /// Java 详细信息说明，用于 InfoIconWithPopover 展示
+    private var javaDetailsDescription: String {
+        let versionPart = javaVersionInfo.trimmingCharacters(in: .whitespacesAndNewlines)
+        let pathPart = effectiveJavaPath.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return [pathPart, versionPart]
+            .filter { !$0.isEmpty }
+            .joined(separator: "\n")
     }
 
     /// 获取当前游戏的 Java 版本
@@ -67,22 +86,28 @@ struct GameAdvancedSettingsView: View {
     var body: some View {
         Form {
             LabeledContent("settings.game.java.path".localized()) {
-                DirectorySettingRow(
-                    title: "settings.game.java.path".localized(),
-                    path: javaPath.isEmpty ? (currentGame?.javaPath ?? "") : javaPath,
-                    description: "settings.game.java.path.description".localized(),
-                    onChoose: { showJavaPathPicker = true },
-                    onReset: {
-                        resetJavaPathSafely()
-                    }
-                ).fixedSize()
-                    .fileImporter(
-                        isPresented: $showJavaPathPicker,
-                        allowedContentTypes: [.item],
-                        allowsMultipleSelection: false
-                    ) { result in
-                        handleJavaPathSelection(result)
-                    }
+                HStack {
+                    DirectorySettingRow(
+                        title: "settings.game.java.path".localized(),
+                        path: javaPath.isEmpty ? (currentGame?.javaPath ?? "") : javaPath,
+                        description: "settings.game.java.path.description".localized(),
+                        onChoose: { showJavaPathPicker = true },
+                        onReset: {
+                            resetJavaPathSafely()
+                        }
+                    ).fixedSize()
+                        .fileImporter(
+                            isPresented: $showJavaPathPicker,
+                            allowedContentTypes: [.item],
+                            allowsMultipleSelection: false
+                        ) { result in
+                            handleJavaPathSelection(result)
+                        }
+                    InfoIconWithPopover(
+                        text: javaDetailsDescription,
+                        systemIconName: "info.circle"
+                    )
+                }
             }.labeledContentStyle(.custom(alignment: .firstTextBaseline))
 
             LabeledContent("settings.game.java.garbage_collector".localized()) {
@@ -188,8 +213,17 @@ struct GameAdvancedSettingsView: View {
             }
             .labeledContentStyle(.custom)
         }
-        .onAppear { loadCurrentSettings() }
-        .onChange(of: selectedGameManager.selectedGameId) { _, _ in loadCurrentSettings() }
+        .onAppear {
+            loadCurrentSettings()
+            loadJavaVersionInfo()
+        }
+        .onChange(of: selectedGameManager.selectedGameId) { _, _ in
+            loadCurrentSettings()
+            loadJavaVersionInfo()
+        }
+        .onChange(of: javaPath) { _, _ in
+            loadJavaVersionInfo()
+        }
         .globalErrorHandler()
         .alert(
             "settings.game.reset.confirm".localized(),
@@ -240,6 +274,28 @@ struct GameAdvancedSettingsView: View {
             if !selectedGarbageCollector.isSupported(by: currentJavaVersion) {
                 selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
                 applyOptimizationPreset(.balanced)
+            }
+        }
+        loadJavaVersionInfo()
+    }
+
+    /// 读取当前生效 Java 路径的 `java --version` 输出
+    private func loadJavaVersionInfo() {
+        let path = effectiveJavaPath
+
+        // 没有路径时直接清空
+        guard !path.isEmpty else {
+            javaVersionInfo = ""
+            return
+        }
+
+        Task {
+            let info = JavaManager.shared.getJavaVersionInfo(at: path) ?? ""
+            await MainActor.run {
+                // 只在路径仍然匹配时更新，避免竞态
+                if self.effectiveJavaPath == path {
+                    self.javaVersionInfo = info
+                }
             }
         }
     }

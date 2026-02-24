@@ -54,6 +54,33 @@ class JavaManager {
         }
     }
 
+    /// 获取指定 Java 可执行文件的 `java --version` 输出
+    /// - Parameter javaPath: Java 可执行文件路径
+    /// - Returns: 完整输出字符串（stdout + stderr），获取失败时返回 nil
+    func getJavaVersionInfo(at javaPath: String) -> String? {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: javaPath)
+        process.arguments = ["--version"]
+
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+
+        do {
+            try process.run()
+            process.waitUntilExit()
+
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            guard !data.isEmpty else { return nil }
+
+            return String(data: data, encoding: .utf8)?
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        } catch {
+            Logger.shared.error("获取 Java 版本信息失败: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
     // 检查Java是否存在，不存在则使用进度窗口下载
     func ensureJavaExists(version: String) async -> String {
         // 优先使用已经存在并且可运行的 Java
