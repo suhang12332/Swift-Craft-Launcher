@@ -29,10 +29,7 @@ public struct SidebarView: View {
                 ForEach(ResourceType.allCases, id: \.self) { type in
                     NavigationLink(value: SidebarItem.resource(type)) {
                         HStack(spacing: 6) {
-                            Image(systemName: type.systemImage)
-                                .frame(width: 16, height: 16)
-                                .foregroundColor(.secondary)
-                            Text(type.localizedName)
+                            Label(type.localizedName, systemImage: type.systemImage)
                         }
                     }
                 }
