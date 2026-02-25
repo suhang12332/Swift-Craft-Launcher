@@ -107,4 +107,41 @@ class GameActionManager: ObservableObject {
             }
         }
     }
+
+    /// 删除损坏游戏（只知道游戏名称，可能只有数据库记录或只有本地目录）
+    /// - Parameters:
+    ///   - name: 游戏名称
+    ///   - gameRepository: 游戏仓库
+    func deleteCorruptedGame(
+        name: String,
+        gameRepository: GameRepository
+    ) {
+        Task {
+            do {
+                // 删除目录（若存在）：可能是“只有目录”的损坏情况
+                let profileDir = AppPaths.profileDirectory(gameName: name)
+                if FileManager.default.fileExists(atPath: profileDir.path) {
+                    try FileManager.default.removeItem(at: profileDir)
+                }
+
+                // 清除缓存
+                GameIconCache.shared.invalidateCache(for: name)
+                AppPaths.invalidatePaths(forGameName: name)
+                await ModScanner.shared.clearModCache(for: name)
+
+                // 删除当前工作路径下该名称的所有数据库记录
+                try await gameRepository.deleteGamesByName(name)
+
+                Logger.shared.info("成功删除损坏游戏（目录 + 数据库）: \(name)")
+            } catch {
+                let globalError = GlobalError.fileSystem(
+                    chineseMessage: "删除损坏游戏失败: \(error.localizedDescription)",
+                    i18nKey: "error.filesystem.game_deletion_failed",
+                    level: .notification
+                )
+                Logger.shared.error("删除损坏游戏失败: \(globalError.chineseMessage)")
+                GlobalErrorHandler.shared.handle(globalError)
+            }
+        }
+    }
 }

@@ -61,6 +61,27 @@ public struct SidebarView: View {
                     }
                 }
             }
+
+            // 损坏游戏部分（数据库和文件夹不一致）
+            if !filteredCorruptedGames.isEmpty {
+                Section(header: Text("sidebar.corrupted_games.title".localized())) {
+                    ForEach(filteredCorruptedGames, id: \.self) { name in
+                        HStack(spacing: 6) {
+                            Label(name, systemImage: "exclamationmark.triangle")
+                        }
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                gameActionManager.deleteCorruptedGame(
+                                    name: name,
+                                    gameRepository: gameRepository
+                                )
+                            } label: {
+                                Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
+                            }
+                        }
+                    }
+                }
+            }
         }
         .searchable(text: $searchText, placement: .sidebar, prompt: Localized.Sidebar.Search.games)
         .safeAreaInset(edge: .bottom) {
@@ -136,6 +157,17 @@ public struct SidebarView: View {
         }
         let lower = searchText.lowercased()
         return gameRepository.games.filter { $0.gameName.lowercased().contains(lower) }
+    }
+
+    /// 损坏游戏名称的模糊搜索
+    private var filteredCorruptedGames: [String] {
+        let names = gameRepository.corruptedGames
+        let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            return names
+        }
+        let lower = trimmed.lowercased()
+        return names.filter { $0.lowercased().contains(lower) }
     }
 }
 
