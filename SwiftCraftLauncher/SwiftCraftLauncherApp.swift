@@ -124,8 +124,8 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
             }
-            CommandGroup(replacing: .newItem) { }
-            CommandGroup(replacing: .saveItem) { }
+//            CommandGroup(replacing: .newItem) { }
+//            CommandGroup(replacing: .saveItem) { }
         }
 
         Settings {

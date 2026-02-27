@@ -23,7 +23,6 @@ struct MainContentArea: View {
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
             SidebarView()
-                .navigationSplitViewColumnWidth(min: 168, ideal: 168, max: 168)
         } content: {
             if interfaceLayoutStyle == .classic {
                 middleColumnContentView
