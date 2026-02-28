@@ -145,17 +145,41 @@ struct WorldDetailSheetView: View {
                     }
                 }
 
-                HStack(alignment: .center, spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
+                    // 标签
                     Text("saveinfo.world.detail.label.world_path".localized() + ":")
                         .font(.headline)
-                    Button {
-                        // 在 Finder 中打开文件位置
-                        NSWorkspace.shared.selectFile(metadata.path.path, inFileViewerRootedAtPath: "")
-                    } label: {
-                        PathBreadcrumbView(path: metadata.path.path)
-                            .frame(maxWidth: .infinity, alignment: .leading).font(.caption)
+
+                    // 路径文字，自动换行
+                    Text(metadata.path.path)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .textSelection(.enabled)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(8)
+                        .background(Color.secondary.opacity(0.1))
+                        .cornerRadius(6)
+
+                    // 按钮组
+                    HStack(spacing: 8) {
+                        Button {
+                            NSPasteboard.general.clearContents()
+                            NSPasteboard.general.setString(metadata.path.path, forType: .string)
+                        } label: {
+                            Label("复制", systemImage: "doc.on.doc")
+                                .font(.caption)
+                        }
+                        .buttonStyle(.bordered)
+
+                        Button {
+                            NSWorkspace.shared.selectFile(metadata.path.path, inFileViewerRootedAtPath: "")
+                        } label: {
+                            Label("打开", systemImage: "folder")
+                                .font(.caption)
+                        }
+                        .buttonStyle(.bordered)
                     }
-                    .buttonStyle(.plain)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
