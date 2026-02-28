@@ -222,15 +222,15 @@ struct GameCreationView: View {
                 ForEach(AppConstants.modLoaders, id: \.self) { loader in
                     switch loader {
                     case "vanilla":
-                        Text("Vanilla").tag(loader)
+                        Text("modloader.vanilla.text".localized()).tag(loader)
                     case "fabric":
-                        Text("Fabric").tag(loader)
+                        Text("modloader.fabric.text".localized()).tag(loader)
                     case "forge":
-                        Text("Forge").tag(loader)
+                        Text("modloader.forge.text".localized()).tag(loader)
                     case "neoforge":
-                        Text("NeoForge").tag(loader)
+                        Text("modloader.neoforge.text".localized()).tag(loader)
                     case "quilt":
-                        Text("Quilt").tag(loader)
+                        Text("modloader.quilt.text".localized()).tag(loader)
                     default:
                         Text(loader.capitalized).tag(loader)
                     }
