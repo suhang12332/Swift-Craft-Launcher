@@ -2,7 +2,6 @@
 //  AISettingsManager.swift
 //  SwiftCraftLauncher
 //
-//  Created by AI Assistant
 //
 
 import Foundation

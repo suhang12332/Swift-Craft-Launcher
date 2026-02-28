@@ -2,7 +2,6 @@
 //  ResourceImageCacheManager.swift
 //  SwiftCraftLauncher
 //
-//  Created by AI Assistant on 2026/2/17.
 //
 
 import SwiftUI

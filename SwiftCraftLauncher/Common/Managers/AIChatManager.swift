@@ -2,7 +2,6 @@
 //  AIChatManager.swift
 //  SwiftCraftLauncher
 //
-//  Created by AI Assistant
 //
 
 import Foundation

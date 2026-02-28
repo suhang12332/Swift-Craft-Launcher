@@ -2,7 +2,6 @@
 //  AISettingsView.swift
 //  SwiftCraftLauncher
 //
-//  Created by AI Assistant
 //
 
 import SwiftUI
@@ -120,8 +119,4 @@ public struct AISettingsView: View {
             .labeledContentStyle(.custom(alignment: .lastTextBaseline))
         }
     }
-}
-
-#Preview {
-    AISettingsView()
 }
