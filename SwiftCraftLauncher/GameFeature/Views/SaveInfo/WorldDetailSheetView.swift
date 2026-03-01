@@ -11,7 +11,46 @@ private enum WorldDetailLoadError: Error {
     case levelDatNotFound
     case invalidStructure
 }
+// 优雅的世界种子复制动画
+struct CopyableValue: View {
+    let label: String
+    let value: String
+    @State private var isHovering = false
+    @State private var isCopied = false
 
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            Text(label + ":")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            HStack(spacing: 4) {
+                Text(value)
+                    .font(.subheadline)
+                    .fontDesign(.monospaced)
+                    .lineLimit(1)
+                    .foregroundColor(.primary)
+                    .opacity(isCopied ? 0 : 1)
+                Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
+                    .font(.system(size: 11))
+                    .foregroundColor(isCopied ? .green : .secondary)
+                    .opacity(isHovering || isCopied ? 1 : 0)
+                    .frame(width: 14, height: 14)
+            }
+            .animation(.easeInOut(duration: 0.12), value: isHovering)
+            .animation(.easeInOut(duration: 0.12), value: isCopied)
+            .onTapGesture {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(value, forType: .string)
+                isCopied = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    isCopied = false
+                }
+            }
+            .onHover { isHovering = $0 }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
 /// 世界详细信息视图（读取 level.dat）
 struct WorldDetailSheetView: View {
     // MARK: - Properties
@@ -19,7 +58,6 @@ struct WorldDetailSheetView: View {
     let gameName: String
     @Environment(\.dismiss)
     private var dismiss
-
     @State private var metadata: WorldDetailMetadata?
     @State private var rawDataTag: [String: Any]? // 原始 Data 标签，尽可能多展示数据
     @State private var isLoading = true
@@ -118,7 +156,10 @@ struct WorldDetailSheetView: View {
                         infoRow(label: "saveinfo.world.detail.label.hardcore".localized(), value: metadata.hardcore ? "common.yes".localized() : "common.no".localized())
                         infoRow(label: "saveinfo.world.detail.label.cheats".localized(), value: metadata.cheats ? "common.yes".localized() : "common.no".localized())
                         if let seed = metadata.seed {
-                            infoRow(label: "saveinfo.world.detail.label.seed".localized(), value: "\(seed)")
+                            CopyableValue(
+                                label: "saveinfo.world.detail.label.seed".localized(),
+                                value: "\(seed)"
+                            )
                         }
                     }
                 }
