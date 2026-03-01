@@ -339,6 +339,16 @@ enum URLConfig {
                 return "https://cdn.modrinth.com/data/\(projectId)/versions/\(versionId)/\(encodedFileName)"
             }
         }
+
+        // ChunkBase 种子地图
+        enum ChunkBase {
+            static let seedMapBase = "https://www.chunkbase.com/apps/seed-map"
+            /// 根据世界种子生成 ChunkBase 种子地图 URL
+            static func seedMap(seed: Int64) -> URL? {
+                URL(string: "\(seedMapBase)#seed=\(seed)")
+            }
+        }
+
         // FabricMC API
         enum Fabric {
             static let loader = URLConfig.url("https://meta.fabricmc.net/v2/versions/loader")

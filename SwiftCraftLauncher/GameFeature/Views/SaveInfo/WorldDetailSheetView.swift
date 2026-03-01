@@ -2,7 +2,7 @@
 //  WorldDetailSheetView.swift
 //  SwiftCraftLauncher
 //
-//  Created by su (via AI assistant) on 2025/1/29.
+//  Created by su on 2025/1/29.
 //
 
 import SwiftUI
@@ -11,46 +11,45 @@ private enum WorldDetailLoadError: Error {
     case levelDatNotFound
     case invalidStructure
 }
-// 优雅的世界种子复制动画
-struct CopyableValue: View {
-    let label: String
-    let value: String
-    @State private var isHovering = false
+
+private struct SeedCopySymbolTransition: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 15.0, *) {
+            content.contentTransition(.symbolEffect(.replace.magic(fallback: .offUp.byLayer), options: .nonRepeating))
+        } else {
+            content.contentTransition(.symbolEffect(.replace))
+        }
+    }
+}
+
+private struct SeedCopyRow: View {
+    let seed: Int64
     @State private var isCopied = false
 
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
-            Text(label + ":")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            HStack(spacing: 4) {
-                Text(value)
-                    .font(.subheadline)
-                    .fontDesign(.monospaced)
-                    .lineLimit(1)
-                    .foregroundColor(.primary)
-                    .opacity(isCopied ? 0 : 1)
-                Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
-                    .font(.system(size: 11))
-                    .foregroundColor(isCopied ? .green : .secondary)
-                    .opacity(isHovering || isCopied ? 1 : 0)
-                    .frame(width: 14, height: 14)
-            }
-            .animation(.easeInOut(duration: 0.12), value: isHovering)
-            .animation(.easeInOut(duration: 0.12), value: isCopied)
-            .onTapGesture {
+            Text("saveinfo.world.detail.label.seed".localized() + ":")
+                .font(.headline)
+            Text(seed, format: .number.grouping(.never))
+            Button {
                 NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(value, forType: .string)
+                NSPasteboard.general.setString("\(seed)", forType: .string)
                 isCopied = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    isCopied = false
-                }
+            } label: {
+                Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
+                    .font(.system(size: 12))
+                    .modifier(SeedCopySymbolTransition())
             }
-            .onHover { isHovering = $0 }
+            .task(id: isCopied) {
+                guard isCopied else { return }
+                try? await Task.sleep(for: .seconds(1.5))
+                isCopied = false
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
+
 /// 世界详细信息视图（读取 level.dat）
 struct WorldDetailSheetView: View {
     // MARK: - Properties
@@ -87,9 +86,20 @@ struct WorldDetailSheetView: View {
 
     // MARK: - Header View
     private var headerView: some View {
-        Text(world.name)
-            .font(.headline)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        HStack {
+            Text(world.name)
+                .font(.headline)
+            Spacer()
+            if let seed = metadata?.seed,
+               let url = URLConfig.API.ChunkBase.seedMap(seed: seed) {
+                Link(destination: url) {
+                    Image(systemName: "safari")
+                }
+                .controlSize(.large)
+                .foregroundStyle(.secondary)
+                .bold()
+            }
+        }
     }
 
     // MARK: - Body View
@@ -155,15 +165,11 @@ struct WorldDetailSheetView: View {
                         infoRow(label: "saveinfo.world.detail.label.difficulty".localized(), value: metadata.difficulty)
                         infoRow(label: "saveinfo.world.detail.label.hardcore".localized(), value: metadata.hardcore ? "common.yes".localized() : "common.no".localized())
                         infoRow(label: "saveinfo.world.detail.label.cheats".localized(), value: metadata.cheats ? "common.yes".localized() : "common.no".localized())
-                        if let seed = metadata.seed {
-                            CopyableValue(
-                                label: "saveinfo.world.detail.label.seed".localized(),
-                                value: "\(seed)"
-                            )
-                        }
                     }
                 }
-
+                if let seed = metadata.seed {
+                    SeedCopyRow(seed: seed)
+                }
                 // 其他信息
                 infoSection(title: "saveinfo.world.detail.section.other".localized()) {
                     if let lastPlayed = metadata.lastPlayed {
