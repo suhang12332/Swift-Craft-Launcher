@@ -44,6 +44,12 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
             let isCrash = await checkIfCrash(gameId: gameId, process: process)
 
             if isCrash {
+                // 游戏崩溃时弹窗提示用户
+                GlobalErrorHandler.shared.handle(GlobalError.gameLaunch(
+                    chineseMessage: "游戏已崩溃",
+                    i18nKey: "error.game_launch.game_crashed",
+                    level: .popup
+                ))
                 let gameSettings = GameSettingsManager.shared
                 if gameSettings.enableAICrashAnalysis {
                     Logger.shared.info("检测到游戏崩溃，启用AI分析: \(gameId)")
