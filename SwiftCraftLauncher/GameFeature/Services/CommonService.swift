@@ -50,7 +50,7 @@ enum CommonService {
                         ) == nil
                     }
                 }
-                .filter { isVersionAtLeast113($0) }
+                .filter { CommonUtil.isVersionAtLeast113($0) }
             result = CommonUtil.sortMinecraftVersions(filteredVersions)
         default:
             let gameVersions = await ModrinthService.fetchGameVersions(
@@ -70,18 +70,10 @@ enum CommonService {
                     )
                     return version.version
                 }
-                .filter { isVersionAtLeast113($0) }
+                .filter { CommonUtil.isVersionAtLeast113($0) }
             result = CommonUtil.sortMinecraftVersions(allVersions)
         }
         return result
-    }
-
-    private static func isVersionAtLeast113(_ version: String) -> Bool {
-        let components = version.components(separatedBy: ".").compactMap { Int($0) }
-        guard components.count >= 2 else { return false }
-        if components[0] > 1 { return true }
-        if components[0] < 1 { return false }
-        return components[1] >= 13
     }
 
     // forge 和 neoforge 通用的classpath生成

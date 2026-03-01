@@ -104,6 +104,15 @@ enum CommonUtil {
             compareMinecraftVersions(version1, version2) > 0
         }
     }
+
+    /// 判断 Minecraft 版本是否至少为 1.13
+    static func isVersionAtLeast113(_ version: String) -> Bool {
+        let components = version.components(separatedBy: ".").compactMap { Int($0) }
+        guard components.count >= 2 else { return false }
+        if components[0] > 1 { return true }
+        if components[0] < 1 { return false }
+        return components[1] >= 13
+    }
 }
 
 enum ImageLoadingUtil {
