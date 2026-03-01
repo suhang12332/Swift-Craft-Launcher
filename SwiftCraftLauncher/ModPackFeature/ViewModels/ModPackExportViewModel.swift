@@ -92,7 +92,7 @@ class ModPackExportViewModel: ObservableObject {
                 outputPath: tempPath,
                 modPackName: modPackName,
                 modPackVersion: modPackVersion,
-                summary: nil
+                summary: summary.isEmpty ? nil : summary
             ) { progress in
                 Task { @MainActor in
                     self.exportProgress = progress
