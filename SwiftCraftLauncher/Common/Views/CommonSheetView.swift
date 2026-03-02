@@ -35,12 +35,12 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
                 .padding(.horizontal)
                 .padding()
             Divider()
-
             // 主体区域
-            bodyContent
-                .padding(.horizontal)
-                .padding()
-
+            ScrollView {
+                bodyContent
+                    .padding(.horizontal)
+                    .padding()
+            }.frame(maxHeight: 400)
             // 底部区域
             Divider()
             footer
