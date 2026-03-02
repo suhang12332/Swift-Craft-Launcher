@@ -40,36 +40,65 @@ public struct DetailToolbarView: ToolbarContent {
 
     private func openInstallSheet() {
         guard let projectId = detailState.selectedProjectId else { return }
+        let resourceType = detailState.gameResourcesType
 
         Task {
-            let result = await ResourceDetailLoader.loadProjectDetail(
-                projectId: projectId,
-                gameRepository: gameRepository,
-                resourceType: detailState.gameResourcesType
-            )
-
-            await MainActor.run {
-                if let (detail, compatibleGames) = result {
-                    detailState.loadedProjectDetail = detail
-                    detailState.compatibleGames = compatibleGames
+            if resourceType == "modpack" {
+                guard let detail = await ResourceDetailLoader.loadModPackDetail(
+                    projectId: projectId
+                ) else {
+                    return
+                }
+                await MainActor.run {
                     detailState.currentProject = ModrinthProject(
                         projectId: detail.id,
-                        projectType: detail.projectType,
+                        projectType: "modpack",
                         slug: detail.slug,
                         author: "",
                         title: detail.title,
                         description: detail.description,
                         categories: detail.categories,
-                        displayCategories: detail.additionalCategories ?? [],
-                        versions: detail.versions,
+                        displayCategories: [],
+                        versions: [],
                         downloads: detail.downloads,
                         follows: detail.followers,
                         iconUrl: detail.iconUrl,
                         license: detail.license?.url ?? "",
-                        clientSide: detail.clientSide,
-                        serverSide: detail.serverSide,
-                        fileName: detail.fileName
+                        clientSide: "",
+                        serverSide: "",
+                        fileName: nil
                     )
+                    detailState.loadedProjectDetail = detail
+                    detailState.showInstallSheet = true
+                }
+            } else {
+                guard let result = await ResourceDetailLoader.loadProjectDetail(
+                    projectId: projectId,
+                    gameRepository: gameRepository,
+                    resourceType: resourceType
+                ) else {
+                    return
+                }
+                await MainActor.run {
+                    detailState.currentProject = ModrinthProject(
+                        projectId: result.detail.id,
+                        projectType: result.detail.projectType,
+                        slug: result.detail.slug,
+                        author: "",
+                        title: result.detail.title,
+                        description: result.detail.description,
+                        categories: result.detail.categories,
+                        displayCategories: [],
+                        versions: result.detail.versions,
+                        downloads: result.detail.downloads,
+                        follows: result.detail.followers,
+                        iconUrl: result.detail.iconUrl,
+                        license: result.detail.license?.url ?? "",
+                        clientSide: result.detail.clientSide,
+                        serverSide: result.detail.serverSide,
+                        fileName: nil
+                    )
+                    detailState.loadedProjectDetail = result.detail
                     detailState.showInstallSheet = true
                 }
             }
@@ -153,14 +182,13 @@ public struct DetailToolbarView: ToolbarContent {
                         Label("return".localized(), systemImage: "arrow.backward")
                     }
                     .help("return".localized())
-
+                    Spacer()
                     Button {
                         openInstallSheet()
                     } label: {
                         Label("resource.add".localized(), systemImage: "arrow.down.circle")
                     }
                     .help("resource.add".localized())
-                    Spacer()
                     Button {
                         openCurrentResourceInBrowser()
                     } label: {

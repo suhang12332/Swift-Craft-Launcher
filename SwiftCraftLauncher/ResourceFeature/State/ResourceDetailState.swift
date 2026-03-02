@@ -24,7 +24,6 @@ public final class ResourceDetailState: ObservableObject {
     @Published public var loadedProjectDetail: ModrinthProjectDetail?
     @Published public var showInstallSheet: Bool = false
     @Published public var currentProject: ModrinthProject?
-    @Published public var compatibleGames: [GameVersionInfo] = []
 
     public init(
         selectedItem: SidebarItem = .resource(.mod),
@@ -108,12 +107,6 @@ public final class ResourceDetailState: ObservableObject {
         Binding(get: { [weak self] in self?.showInstallSheet ?? false }, set: { [weak self] value in
             guard let self else { return }
             DispatchQueue.main.async { self.showInstallSheet = value }
-        })
-    }
-    public var compatibleGamesBinding: Binding<[GameVersionInfo]> {
-        Binding(get: { [weak self] in self?.compatibleGames ?? [] }, set: { [weak self] value in
-            guard let self else { return }
-            DispatchQueue.main.async { self.compatibleGames = value }
         })
     }
 }
