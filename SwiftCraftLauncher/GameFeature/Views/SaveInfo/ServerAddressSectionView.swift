@@ -507,7 +507,7 @@ struct ServerAddressEditView: View {
             .disabled(isSaving || isDeleting)
             if !isNewServer {
                 Button("common.delete".localized()) {
-                    saveServer()
+                    deleteServer()
                 }
                 .keyboardShortcut(.delete, modifiers: [])
                 .disabled(isSaving || isDeleting)
