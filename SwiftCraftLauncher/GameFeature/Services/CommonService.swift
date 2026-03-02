@@ -50,7 +50,7 @@ enum CommonService {
                         ) == nil
                     }
                 }
-                .filter { CommonUtil.isVersionAtLeast113($0) }
+                .filter { CommonUtil.isVersionAtLeast($0) }
             result = CommonUtil.sortMinecraftVersions(filteredVersions)
         default:
             let gameVersions = await ModrinthService.fetchGameVersions(
@@ -70,7 +70,7 @@ enum CommonService {
                     )
                     return version.version
                 }
-                .filter { CommonUtil.isVersionAtLeast113($0) }
+                .filter { CommonUtil.isVersionAtLeast($0) }
             result = CommonUtil.sortMinecraftVersions(allVersions)
         }
         return result
