@@ -78,6 +78,7 @@ struct ModPackDownloadSheet: View {
             }
         }
         .onDisappear {
+            // 页面关闭后清除所有数据
             clearAllData()
         }
     }
@@ -637,6 +638,7 @@ struct ModPackDownloadSheet: View {
             let fileManager = MinecraftFileManager()
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
+            // 不抛出错误，因为这是清理操作，不应该影响主流程
             Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
         }
     }
