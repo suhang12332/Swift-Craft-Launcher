@@ -39,34 +39,11 @@ struct ModPackDownloadSheet: View {
     }
 
     var body: some View {
-        Group {
-            if shouldShowProgress {
-                VStack(spacing: 0) {
-                    headerView
-                        .padding(.horizontal)
-                        .padding()
-                    Divider()
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 12) {
-                            bodyContentWithoutScroll
-                        }
-                        .padding(.horizontal)
-                        .padding()
-                    }
-                    Divider()
-                    footerView
-                        .padding(.horizontal)
-                        .padding()
-                }
-                .frame(height: 390)
-            } else {
-                CommonSheetView(
-                    header: { headerView },
-                    body: { bodyContentWithoutScroll },
-                    footer: { footerView }
-                )
-            }
-        }
+        CommonSheetView(
+            header: { headerView },
+            body: { bodyView },
+            footer: { footerView }
+        )
         .onAppear {
             viewModel.setGameRepository(gameRepository)
             if let preloadedDetail {
@@ -112,7 +89,7 @@ struct ModPackDownloadSheet: View {
         }
     }
 
-    private var bodyContentWithoutScroll: some View {
+    private var bodyView: some View {
         VStack(alignment: .leading, spacing: 12) {
             if isProcessing {
                 ProcessingView(
@@ -638,8 +615,8 @@ struct ModPackDownloadSheet: View {
             let fileManager = MinecraftFileManager()
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
-            // 不抛出错误，因为这是清理操作，不应该影响主流程
             Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
+            // 不抛出错误，因为这是清理操作，不应该影响主流程
         }
     }
 }
