@@ -13,39 +13,6 @@ struct DetailView: View {
     @EnvironmentObject var gameRepository: GameRepository
 
     @ViewBuilder var body: some View {
-        contentView
-            .sheet(isPresented: detailState.showInstallSheetBinding) {
-                if let project = detailState.currentProject,
-                   let detail = detailState.loadedProjectDetail {
-                    if detailState.gameResourcesType == "modpack" {
-                        ModPackDownloadSheet(
-                            projectId: project.projectId,
-                            gameInfo: nil,
-                            query: detailState.gameResourcesType,
-                            preloadedDetail: detail
-                        )
-                        .environmentObject(gameRepository)
-                    } else {
-                        GlobalResourceSheet(
-                            project: project,
-                            resourceType: detailState.gameResourcesType,
-                            isPresented: detailState.showInstallSheetBinding,
-                            preloadedDetail: detail,
-                            preloadedCompatibleGames: detailState.compatibleGames
-                        )
-                        .environmentObject(gameRepository)
-                    }
-                }
-            }
-            .onChange(of: detailState.showInstallSheet) { _, newValue in
-                if !newValue {
-                    detailState.compatibleGames = []
-                }
-            }
-    }
-
-    @ViewBuilder
-    private var contentView: some View {
         switch detailState.selectedItem {
         case .game(let gameId):
             gameDetailView(gameId: gameId).frame(maxWidth: .infinity, alignment: .leading)

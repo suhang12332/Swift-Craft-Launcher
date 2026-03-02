@@ -50,26 +50,13 @@ public struct DetailToolbarView: ToolbarContent {
                     return
                 }
                 await MainActor.run {
-                    detailState.currentProject = ModrinthProject(
-                        projectId: detail.id,
+                    applyProjectDetail(
+                        detail: detail,
                         projectType: "modpack",
-                        slug: detail.slug,
-                        author: "",
-                        title: detail.title,
-                        description: detail.description,
-                        categories: detail.categories,
-                        displayCategories: [],
                         versions: [],
-                        downloads: detail.downloads,
-                        follows: detail.followers,
-                        iconUrl: detail.iconUrl,
-                        license: detail.license?.url ?? "",
                         clientSide: "",
-                        serverSide: "",
-                        fileName: nil
+                        serverSide: ""
                     )
-                    detailState.loadedProjectDetail = detail
-                    detailState.showInstallSheet = true
                 }
             } else {
                 guard let result = await ResourceDetailLoader.loadProjectDetail(
@@ -80,30 +67,50 @@ public struct DetailToolbarView: ToolbarContent {
                     return
                 }
                 await MainActor.run {
-                    detailState.currentProject = ModrinthProject(
-                        projectId: result.detail.id,
+                    applyProjectDetail(
+                        detail: result.detail,
+                        compatibleGames: result.compatibleGames,
                         projectType: result.detail.projectType,
-                        slug: result.detail.slug,
-                        author: "",
-                        title: result.detail.title,
-                        description: result.detail.description,
-                        categories: result.detail.categories,
-                        displayCategories: [],
                         versions: result.detail.versions,
-                        downloads: result.detail.downloads,
-                        follows: result.detail.followers,
-                        iconUrl: result.detail.iconUrl,
-                        license: result.detail.license?.url ?? "",
                         clientSide: result.detail.clientSide,
-                        serverSide: result.detail.serverSide,
-                        fileName: nil
+                        serverSide: result.detail.serverSide
                     )
-                    detailState.loadedProjectDetail = result.detail
-                    detailState.compatibleGames = result.compatibleGames
-                    detailState.showInstallSheet = true
                 }
             }
         }
+    }
+
+    private func applyProjectDetail(
+        detail: ModrinthProjectDetail,
+        compatibleGames: [GameVersionInfo]? = nil,
+        projectType: String,
+        versions: [String],
+        clientSide: String,
+        serverSide: String
+    ) {
+        detailState.currentProject = ModrinthProject(
+            projectId: detail.id,
+            projectType: projectType,
+            slug: detail.slug,
+            author: "",
+            title: detail.title,
+            description: detail.description,
+            categories: detail.categories,
+            displayCategories: [],
+            versions: versions,
+            downloads: detail.downloads,
+            follows: detail.followers,
+            iconUrl: detail.iconUrl,
+            license: detail.license?.url ?? "",
+            clientSide: clientSide,
+            serverSide: serverSide,
+            fileName: nil
+        )
+        detailState.loadedProjectDetail = detail
+        if let compatibleGames {
+            detailState.compatibleGames = compatibleGames
+        }
+        detailState.showInstallSheet = true
     }
 
     public var body: some ToolbarContent {
@@ -190,6 +197,34 @@ public struct DetailToolbarView: ToolbarContent {
                         Label("resource.add".localized(), systemImage: "arrow.down.circle")
                     }
                     .help("resource.add".localized())
+                    .sheet(isPresented: detailState.showInstallSheetBinding) {
+                        if let project = detailState.currentProject,
+                            let detail = detailState.loadedProjectDetail {
+                            if detailState.gameResourcesType == "modpack" {
+                                ModPackDownloadSheet(
+                                    projectId: project.projectId,
+                                    gameInfo: nil,
+                                    query: detailState.gameResourcesType,
+                                    preloadedDetail: detail
+                                )
+                                .environmentObject(gameRepository)
+                            } else {
+                                GlobalResourceSheet(
+                                    project: project,
+                                    resourceType: detailState.gameResourcesType,
+                                    isPresented: detailState.showInstallSheetBinding,
+                                    preloadedDetail: detail,
+                                    preloadedCompatibleGames: detailState.compatibleGames
+                                )
+                                .environmentObject(gameRepository)
+                            }
+                        }
+                    }
+                    .onChange(of: detailState.showInstallSheet) { _, newValue in
+                        if !newValue {
+                            detailState.compatibleGames = []
+                        }
+                    }
                     Button {
                         openCurrentResourceInBrowser()
                     } label: {
