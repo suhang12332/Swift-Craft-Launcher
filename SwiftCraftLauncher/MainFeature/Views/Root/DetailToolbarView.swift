@@ -99,6 +99,7 @@ public struct DetailToolbarView: ToolbarContent {
                         fileName: nil
                     )
                     detailState.loadedProjectDetail = result.detail
+                    detailState.compatibleGames = result.compatibleGames
                     detailState.showInstallSheet = true
                 }
             }

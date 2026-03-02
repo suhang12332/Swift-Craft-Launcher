@@ -24,6 +24,7 @@ public final class ResourceDetailState: ObservableObject {
     @Published public var loadedProjectDetail: ModrinthProjectDetail?
     @Published public var showInstallSheet: Bool = false
     @Published public var currentProject: ModrinthProject?
+    @Published var compatibleGames: [GameVersionInfo] = []
 
     public init(
         selectedItem: SidebarItem = .resource(.mod),
