@@ -407,7 +407,7 @@ struct ServerAddressEditView: View {
         }
         .confirmationDialog("saveinfo.server.delete_title".localized(), isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
             Button("common.delete".localized(), role: .destructive) {
-                deleteServer()
+                confirmDeleteServer()
             }
             Button("common.cancel".localized(), role: .cancel) { }
         } message: {
@@ -621,6 +621,16 @@ struct ServerAddressEditView: View {
 
     /// 删除服务器
     private func deleteServer() {
+        guard server != nil else {
+            return
+        }
+
+        // 显示删除确认弹窗
+        showDeleteConfirmation = true
+    }
+
+    /// 确认删除服务器
+    private func confirmDeleteServer() {
         guard let serverToDelete = server else {
             return
         }
