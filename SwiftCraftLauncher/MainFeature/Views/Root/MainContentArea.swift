@@ -54,29 +54,6 @@ struct MainContentArea: View {
             .toolbar {
                 DetailToolbarView()
             }
-            .sheet(isPresented: detailState.showInstallSheetBinding) {
-                if let project = detailState.currentProject,
-                   let detail = detailState.loadedProjectDetail {
-                    if detailState.gameResourcesType == "modpack" {
-                        ModPackDownloadSheet(
-                            projectId: project.projectId,
-                            gameInfo: nil,
-                            query: detailState.gameResourcesType,
-                            preloadedDetail: detail
-                        )
-                        .environmentObject(gameRepository)
-                    } else {
-                        GlobalResourceSheet(
-                            project: project,
-                            resourceType: detailState.gameResourcesType,
-                            isPresented: detailState.showInstallSheetBinding,
-                            preloadedDetail: detail,
-                            preloadedCompatibleGames: gameRepository.games
-                        )
-                        .environmentObject(gameRepository)
-                    }
-                }
-            }
     }
 
     @ViewBuilder private var middleColumnContentView: some View {
