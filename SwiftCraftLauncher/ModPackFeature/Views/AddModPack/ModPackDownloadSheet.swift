@@ -58,7 +58,7 @@ struct ModPackDownloadSheet: View {
                         .padding(.horizontal)
                         .padding()
                 }
-                .frame(height: 380)
+                .frame(height: 390)
             } else {
                 CommonSheetView(
                     header: { headerView },
