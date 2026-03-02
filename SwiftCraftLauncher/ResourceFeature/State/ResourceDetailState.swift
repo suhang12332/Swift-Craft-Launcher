@@ -22,6 +22,8 @@ public final class ResourceDetailState: ObservableObject {
         }
     }
     @Published public var loadedProjectDetail: ModrinthProjectDetail?
+    @Published public var showInstallSheet: Bool = false
+    @Published public var currentProject: ModrinthProject?
 
     public init(
         selectedItem: SidebarItem = .resource(.mod),
@@ -99,6 +101,12 @@ public final class ResourceDetailState: ObservableObject {
         Binding(get: { [weak self] in self?.loadedProjectDetail }, set: { [weak self] value in
             guard let self else { return }
             DispatchQueue.main.async { self.loadedProjectDetail = value }
+        })
+    }
+    public var showInstallSheetBinding: Binding<Bool> {
+        Binding(get: { [weak self] in self?.showInstallSheet ?? false }, set: { [weak self] value in
+            guard let self else { return }
+            DispatchQueue.main.async { self.showInstallSheet = value }
         })
     }
 }
