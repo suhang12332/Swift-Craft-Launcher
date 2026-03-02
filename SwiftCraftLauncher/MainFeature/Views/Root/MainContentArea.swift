@@ -53,6 +53,19 @@ struct MainContentArea: View {
             .toolbar {
                 DetailToolbarView()
             }
+            .sheet(isPresented: detailState.showInstallSheetBinding) {
+                if let project = detailState.currentProject,
+                   let detail = detailState.loadedProjectDetail {
+                    GlobalResourceSheet(
+                        project: project,
+                        resourceType: detailState.gameResourcesType,
+                        isPresented: detailState.showInstallSheetBinding,
+                        preloadedDetail: detail,
+                        preloadedCompatibleGames: []
+                    )
+                    .environmentObject(gameRepository)
+                }
+            }
     }
 
     @ViewBuilder private var middleColumnContentView: some View {

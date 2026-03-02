@@ -38,6 +38,36 @@ public struct DetailToolbarView: ToolbarContent {
         openURL(url)
     }
 
+    private func openInstallSheet() {
+        guard let projectId = detailState.selectedProjectId else { return }
+
+        Task {
+            if let result = await ModrinthService.fetchProjectDetails(id: projectId) {
+                await MainActor.run {
+                    detailState.currentProject = ModrinthProject(
+                        projectId: result.id,
+                        projectType: result.projectType,
+                        slug: result.slug,
+                        author: "",
+                        title: result.title,
+                        description: result.description,
+                        categories: result.categories,
+                        displayCategories: result.additionalCategories ?? [],
+                        versions: result.versions,
+                        downloads: result.downloads,
+                        follows: result.followers,
+                        iconUrl: result.iconUrl,
+                        license: result.license?.url ?? "",
+                        clientSide: result.clientSide,
+                        serverSide: result.serverSide,
+                        fileName: result.fileName
+                    )
+                    detailState.showInstallSheet = true
+                }
+            }
+        }
+    }
+
     public var body: some ToolbarContent {
         ToolbarItemGroup(placement: .primaryAction) {
             switch detailState.selectedItem {
@@ -115,6 +145,13 @@ public struct DetailToolbarView: ToolbarContent {
                         Label("return".localized(), systemImage: "arrow.backward")
                     }
                     .help("return".localized())
+
+                    Button {
+                        openInstallSheet()
+                    } label: {
+                        Label("resource.add".localized(), systemImage: "arrow.down.circle")
+                    }
+                    .help("resource.add".localized())
                     Spacer()
                     Button {
                         openCurrentResourceInBrowser()
