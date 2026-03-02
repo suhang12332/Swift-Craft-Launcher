@@ -61,7 +61,7 @@ struct MainContentArea: View {
                         resourceType: detailState.gameResourcesType,
                         isPresented: detailState.showInstallSheetBinding,
                         preloadedDetail: detail,
-                        preloadedCompatibleGames: []
+                        preloadedCompatibleGames: detailState.compatibleGames
                     )
                     .environmentObject(gameRepository)
                 }

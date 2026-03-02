@@ -42,25 +42,33 @@ public struct DetailToolbarView: ToolbarContent {
         guard let projectId = detailState.selectedProjectId else { return }
 
         Task {
-            if let result = await ModrinthService.fetchProjectDetails(id: projectId) {
-                await MainActor.run {
+            let result = await ResourceDetailLoader.loadProjectDetail(
+                projectId: projectId,
+                gameRepository: gameRepository,
+                resourceType: detailState.gameResourcesType
+            )
+
+            await MainActor.run {
+                if let (detail, compatibleGames) = result {
+                    detailState.loadedProjectDetail = detail
+                    detailState.compatibleGames = compatibleGames
                     detailState.currentProject = ModrinthProject(
-                        projectId: result.id,
-                        projectType: result.projectType,
-                        slug: result.slug,
+                        projectId: detail.id,
+                        projectType: detail.projectType,
+                        slug: detail.slug,
                         author: "",
-                        title: result.title,
-                        description: result.description,
-                        categories: result.categories,
-                        displayCategories: result.additionalCategories ?? [],
-                        versions: result.versions,
-                        downloads: result.downloads,
-                        follows: result.followers,
-                        iconUrl: result.iconUrl,
-                        license: result.license?.url ?? "",
-                        clientSide: result.clientSide,
-                        serverSide: result.serverSide,
-                        fileName: result.fileName
+                        title: detail.title,
+                        description: detail.description,
+                        categories: detail.categories,
+                        displayCategories: detail.additionalCategories ?? [],
+                        versions: detail.versions,
+                        downloads: detail.downloads,
+                        follows: detail.followers,
+                        iconUrl: detail.iconUrl,
+                        license: detail.license?.url ?? "",
+                        clientSide: detail.clientSide,
+                        serverSide: detail.serverSide,
+                        fileName: detail.fileName
                     )
                     detailState.showInstallSheet = true
                 }
