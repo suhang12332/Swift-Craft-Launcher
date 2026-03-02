@@ -12,6 +12,7 @@ import SwiftUI
 struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
 
     // MARK: - Properties
+    @ObservedObject private var generalSettings = GeneralSettingsManager.shared
     let header: Header
     let bodyContent: BodyContent
     let footer: Footer
@@ -36,11 +37,18 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
                 .padding()
             Divider()
             // 主体区域
-            ScrollView {
+            if generalSettings.limitCommonSheetHeight {
+                ScrollView {
+                    bodyContent
+                        .padding(.horizontal)
+                        .padding()
+                }
+                .frame(maxHeight: 400)
+            } else {
                 bodyContent
                     .padding(.horizontal)
                     .padding()
-            }.frame(maxHeight: 400)
+            }
             // 底部区域
             Divider()
             footer

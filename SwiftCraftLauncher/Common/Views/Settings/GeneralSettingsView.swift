@@ -177,7 +177,15 @@ public struct GeneralSettingsView: View {
                     isOn: $generalSettings.enableResourcePageCache
                 )
                 .toggleStyle(.checkbox)
-            }.labeledContentStyle(.custom).padding(.top, 6)
+            }.labeledContentStyle(.custom).padding(.top, 10)
+
+            LabeledContent("settings.common_sheet_height_limit.label".localized()) {
+                Toggle(
+                    "settings.common_sheet_height_limit.enable".localized(),
+                    isOn: $generalSettings.limitCommonSheetHeight
+                )
+                .toggleStyle(.checkbox)
+            }.labeledContentStyle(.custom)
         }
         .globalErrorHandler()
         .alert(
