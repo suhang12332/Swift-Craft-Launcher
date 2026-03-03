@@ -72,8 +72,6 @@ struct ModPackImportView: View {
         if viewModel.isDownloading {
             viewModel.cancelDownloadIfNeeded()
         }
-        // ViewModel 的数据会在下次打开时重新初始化
-        // 不重置 ViewModel 状态，可能正在使用
     }
 
     // MARK: - View Components
@@ -81,7 +79,10 @@ struct ModPackImportView: View {
     private var formContentView: some View {
         VStack {
             modPackImportContentView.padding(.bottom, 10)
-            if viewModel.hasSelectedModPack && !viewModel.isProcessingModPack && viewModel.modPackIndexInfo != nil {
+            if viewModel.hasSelectedModPack
+                && !viewModel.isProcessingModPack
+                && viewModel.isGameVersionSupported
+                && viewModel.modPackIndexInfo != nil {
                 modPackGameNameInputSection
             }
 
@@ -91,10 +92,19 @@ struct ModPackImportView: View {
         }
     }
 
+    /// 整合包游戏版本不受支持时的提示
+    private var gameVersionUnsupportedHint: some View {
+        modPackErrorView(
+            message: String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline)
+        )
+    }
+
     private var modPackImportContentView: some View {
         VStack(alignment: .leading, spacing: 16) {
             if viewModel.isProcessingModPack {
                 modPackProcessingView
+            } else if !viewModel.isGameVersionSupported {
+                gameVersionUnsupportedHint
             } else {
                 selectedModPackView
             }
@@ -118,7 +128,13 @@ struct ModPackImportView: View {
     }
 
     private var modPackParseErrorView: some View {
-        VStack(spacing: 24) {
+        modPackErrorView(message: "error.resource.modpack_parse_failed".localized())
+    }
+
+    private func modPackErrorView(
+        message: String
+    ) -> some View {
+        return VStack(spacing: 24) {
             Image(systemName: "square.and.arrow.up.trianglebadge.exclamationmark")
                 .symbolRenderingMode(.multicolor)
                 .symbolVariant(.none)
@@ -128,7 +144,7 @@ struct ModPackImportView: View {
                 .font(.headline)
                 .bold()
 
-            Text("error.resource.modpack_parse_failed".localized())
+            Text(message)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }

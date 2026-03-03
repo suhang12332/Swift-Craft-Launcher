@@ -123,7 +123,8 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         let hasFile = selectedModPackFile != nil
         let hasInfo = modPackIndexInfo != nil
         let nameValid = gameNameValidator.isFormValid
-        return hasFile && hasInfo && nameValid
+        let gameVersionSupported = isGameVersionSupported
+        return hasFile && hasInfo && nameValid && gameVersionSupported
     }
 
     // MARK: - ModPack Processing
@@ -165,6 +166,11 @@ class ModPackImportViewModel: BaseGameFormViewModel {
               let extractedPath = extractedModPackPath,
               let indexInfo = modPackIndexInfo,
               let gameRepository = gameRepository else { return }
+
+        // 判断整合包游戏版本是否在支持范围内（与下载整合包一致，仅支持基线版本及以上）
+        if !CommonUtil.isVersionAtLeast(indexInfo.gameVersion) {
+            return
+        }
 
         isProcessingModPack = true
 
@@ -463,6 +469,12 @@ class ModPackImportViewModel: BaseGameFormViewModel {
 
     var gameVersion: String {
         modPackIndexInfo?.gameVersion ?? ""
+    }
+
+    /// 整合包游戏版本是否在支持范围内
+    var isGameVersionSupported: Bool {
+        let v = gameVersion
+        return v.isEmpty || CommonUtil.isVersionAtLeast(v)
     }
 
     var modPackVersion: String {

@@ -30,7 +30,7 @@ struct VersionSelectionView: View {
                 selection: $selectedGameVersion
             ) {
                 if availableGameVersions.isEmpty {
-                    Text("global_resource.no_version_available".localized())
+                    Text(String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline))
                         .tag("")
                 } else {
                     Text("modpack.game.version.placeholder".localized())
