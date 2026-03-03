@@ -24,8 +24,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
-          fetch-tags: false
+          fetch-depth: 0
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
@@ -56,7 +55,7 @@ jobs:
         run: |
           # 替换 AppConstants.swift 中的 CLIENTID 变量
           SAFE_CLIENTID=$(printf '%s' "$CLIENTID" | sed 's/[\/&]/\\&/g')
-          sed -i '' "s/\$(CLIENTID)/$SAFE_CLIENTID/g" "SwiftCraftLauncher/Common/Utils/AppConstants.swift"
+          sed -i '' "s/\$(CLIENTID)/$SAFE_CLIENTID/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
 
           echo "✅ CLIENTID 已替换到 AppConstants.swift"
 
@@ -64,7 +63,7 @@ jobs:
         run: |
           # 替换 AppConstants.swift 中的 CURSEFORGE_API_KEY 变量（GitHub Secret 中已经是加密后的值）
           SAFE_CURSEFORGE_KEY=$(printf '%s' "$CURSEFORGE_API_KEY" | sed 's/[\/&]/\\&/g')
-          sed -i '' "s/\$(CURSEFORGE_API_KEY)/$SAFE_CURSEFORGE_KEY/g" "SwiftCraftLauncher/Common/Utils/AppConstants.swift"
+          sed -i '' "s/\$(CURSEFORGE_API_KEY)/$SAFE_CURSEFORGE_KEY/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
 
           echo "✅ CURSEFORGE_API_KEY 已替换到 AppConstants.swift"
 
