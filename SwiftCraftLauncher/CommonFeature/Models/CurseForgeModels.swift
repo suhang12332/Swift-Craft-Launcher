@@ -104,6 +104,8 @@ struct CurseForgeModDetail: Codable {
             return "shader"
         case .datapacks:
             return "datapack"
+        case .modpacks:
+            return "modpack"
         default:
             return "mod"
         }
@@ -125,6 +127,7 @@ enum CurseForgeClassId: Int, CaseIterable {
     case resourcePacks = 12 // 资源包
     case shaders = 6552     // 光影
     case datapacks = 6945   // 数据包
+    case modpacks = 4471    // 整合包（Modpacks）
 
     var directoryName: String {
         switch self {
@@ -136,6 +139,9 @@ enum CurseForgeClassId: Int, CaseIterable {
             return AppConstants.DirectoryNames.shaderpacks
         case .datapacks:
             return AppConstants.DirectoryNames.datapacks
+        case .modpacks:
+            // 整合包不属于单一资源目录，这里仅提供一个占位目录名
+            return "modpacks"
         }
     }
 }

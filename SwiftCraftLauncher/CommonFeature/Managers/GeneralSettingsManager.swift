@@ -74,6 +74,12 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
         didSet { objectWillChange.send() }
     }
 
+    /// 是否限制通用 Sheet 高度（默认关闭）
+    @AppStorage("limitCommonSheetHeight")
+    var limitCommonSheetHeight: Bool = false {
+        didSet { objectWillChange.send() }
+    }
+
     // MARK: - 应用设置属性
     @AppStorage("concurrentDownloads")
     var concurrentDownloads: Int = 64 {

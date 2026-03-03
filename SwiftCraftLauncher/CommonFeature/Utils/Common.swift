@@ -104,6 +104,11 @@ enum CommonUtil {
             compareMinecraftVersions(version1, version2) > 0
         }
     }
+
+    /// 判断 Minecraft 版本是否至少为基线版本
+    static func isVersionAtLeast(_ version: String) -> Bool {
+        return compareMinecraftVersions(version, AppConstants.MinecraftVersions.featureBaseline) >= 0
+    }
 }
 
 enum ImageLoadingUtil {

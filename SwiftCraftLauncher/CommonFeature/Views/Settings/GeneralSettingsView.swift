@@ -12,8 +12,6 @@ public struct GeneralSettingsView: View {
     @State private var isCancellingLanguageChange = false
     @State private var selectedLanguage = LanguageManager.shared.selectedLanguage
     @State private var error: GlobalError?
-    /// 数据库中所有工作路径及对应游戏数量（用于快速切换）
-    @State private var workingPathOptions: [(path: String, count: Int)] = []
 
     public init() {}
 
@@ -70,7 +68,7 @@ public struct GeneralSettingsView: View {
 
             LabeledContent("settings.launcher_working_directory".localized()) {
                 VStack(alignment: .leading, spacing: 8) {
-                    if !workingPathOptions.isEmpty {
+                    if !gameRepository.workingPathOptions.isEmpty {
                         Picker("", selection: Binding(
                             get: {
                                 generalSettings.launcherWorkingDirectory.isEmpty
@@ -79,7 +77,7 @@ public struct GeneralSettingsView: View {
                             },
                             set: { generalSettings.launcherWorkingDirectory = $0 }
                         )) {
-                            ForEach(workingPathOptions, id: \.path) { item in
+                            ForEach(gameRepository.workingPathOptions, id: \.path) { item in
                                 Text(workingPathDisplayString(for: item))
                                     .lineLimit(1)
                                     .truncationMode(.middle)
@@ -105,12 +103,9 @@ public struct GeneralSettingsView: View {
                         }
                 }
             }.labeledContentStyle(.custom(alignment: .firstTextBaseline))
-            .task {
-                workingPathOptions = await gameRepository.fetchAllWorkingPathsWithCounts()
-            }
             .onChange(of: generalSettings.launcherWorkingDirectory) { _, _ in
                 Task {
-                    workingPathOptions = await gameRepository.fetchAllWorkingPathsWithCounts()
+                    await gameRepository.refreshWorkingPathOptions()
                 }
             }
 
@@ -177,7 +172,15 @@ public struct GeneralSettingsView: View {
                     isOn: $generalSettings.enableResourcePageCache
                 )
                 .toggleStyle(.checkbox)
-            }.labeledContentStyle(.custom).padding(.top, 6)
+            }.labeledContentStyle(.custom).padding(.top, 10)
+
+            LabeledContent("settings.common_sheet_height_limit.label".localized()) {
+                Toggle(
+                    "settings.common_sheet_height_limit.enable".localized(),
+                    isOn: $generalSettings.limitCommonSheetHeight
+                )
+                .toggleStyle(.checkbox)
+            }.labeledContentStyle(.custom)
         }
         .globalErrorHandler()
         .alert(

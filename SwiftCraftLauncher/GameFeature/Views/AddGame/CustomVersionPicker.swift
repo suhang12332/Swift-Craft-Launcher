@@ -49,22 +49,22 @@ struct CustomVersionPicker: View {
 
     private var versionInput: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 6)
-                .stroke(Color(.quaternaryLabelColor), lineWidth: 1)
-                .background(Color(.textBackgroundColor))
+            TextField("", text: .constant(""))
+                .textFieldStyle(.roundedBorder)
+                .allowsHitTesting(false)
+                .focusable(false)
             HStack {
-                if selected.isEmpty {
-                    Text("game.form.version.placeholder".localized())
-                        .foregroundColor(.primary)
-                        .padding(.horizontal, 8)
-                } else {
-                    Text(selected).foregroundColor(.primary)
-                        .padding(.horizontal, 8)
-                }
+                Text(
+                    selected.isEmpty
+                        ? "game.form.version.placeholder".localized()
+                        : selected
+                )
+                .foregroundColor(.primary)
+                .padding(.horizontal, 6)
                 Spacer()
             }
+            .contentShape(Rectangle())
         }
-        .frame(height: 22)
         .onTapGesture {
             if !availableVersions.isEmpty {
                 showMenu.toggle()

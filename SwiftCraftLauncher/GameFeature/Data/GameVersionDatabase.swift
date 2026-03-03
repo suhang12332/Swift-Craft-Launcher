@@ -335,6 +335,32 @@ class GameVersionDatabase {
         }
     }
 
+    /// 按工作路径和游戏名删除游戏（可能存在多个相同名称的记录）
+    /// - Parameters:
+    ///   - workingPath: 工作路径
+    ///   - gameName: 游戏名称
+    /// - Throws: GlobalError 当操作失败时
+    func deleteGames(workingPath: String, gameName: String) throws {
+        try db.transaction {
+            let sql = "DELETE FROM \(tableName) WHERE working_path = ? AND game_name = ?"
+            let statement = try db.prepare(sql)
+            defer { sqlite3_finalize(statement) }
+
+            SQLiteDatabase.bind(statement, index: 1, value: workingPath)
+            SQLiteDatabase.bind(statement, index: 2, value: gameName)
+
+            let result = sqlite3_step(statement)
+            guard result == SQLITE_DONE else {
+                let errorMessage = String(cString: sqlite3_errmsg(db.database))
+                throw GlobalError.validation(
+                    chineseMessage: "删除游戏失败: \(errorMessage)",
+                    i18nKey: "error.validation.game_delete_failed",
+                    level: .notification
+                )
+            }
+        }
+    }
+
     /// 更新游戏最后游玩时间
     /// - Parameters:
     ///   - id: 游戏 ID

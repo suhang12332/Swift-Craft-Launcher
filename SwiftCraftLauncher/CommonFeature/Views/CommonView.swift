@@ -215,16 +215,20 @@ struct InfoIconWithPopover<Content: View>: View {
     let iconSize: CGFloat
     /// 延迟显示时间（秒）
     let delay: Double
+    /// 可选自定义图标；为 nil 时使用系统问号图标
+    let icon: Image?
 
     @State private var isHovering = false
     @State private var showPopover = false
     @State private var hoverTask: Task<Void, Never>?
 
     init(
+        icon: Image? = nil,
         iconSize: CGFloat = 14,
         delay: Double = 0.5,
         @ViewBuilder content: () -> Content
     ) {
+        self.icon = icon
         self.iconSize = iconSize
         self.delay = delay
         self.content = content()
@@ -235,7 +239,7 @@ struct InfoIconWithPopover<Content: View>: View {
             // 点击时也显示 popover
             showPopover.toggle()
         } label: {
-            Image(systemName: "questionmark.circle")
+            (icon ?? Image(systemName: "questionmark.circle"))
                 .font(.system(size: iconSize))
                 .foregroundColor(.secondary)
         }
@@ -260,10 +264,11 @@ struct InfoIconWithPopover<Content: View>: View {
             }
         }
         .popover(isPresented: $showPopover, arrowEdge: .trailing) {
-            content
-                .padding()
-                .frame(maxWidth: 400, maxHeight: .infinity)
-                .fixedSize(horizontal: true, vertical: true)
+            ScrollView {
+                content
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+            }
         }
         .onDisappear {
             hoverTask?.cancel()
@@ -280,7 +285,25 @@ extension InfoIconWithPopover {
         iconSize: CGFloat = 14,
         delay: Double = 0.5
     ) where Content == AnyView {
-        self.init(iconSize: iconSize, delay: delay) {
+        self.init(icon: nil, iconSize: iconSize, delay: delay) {
+            AnyView(
+                Text(text)
+                    .font(.system(size: 12))
+                    .foregroundColor(.primary)
+                    .lineLimit(nil)
+                    .multilineTextAlignment(.leading)
+            )
+        }
+    }
+
+    /// 使用字符串文本和自定义 SF Symbol 图标的便捷初始化方法
+    init(
+        text: String,
+        systemIconName: String,
+        iconSize: CGFloat = 14,
+        delay: Double = 0.5
+    ) where Content == AnyView {
+        self.init(icon: Image(systemName: systemIconName), iconSize: iconSize, delay: delay) {
             AnyView(
                 Text(text)
                     .font(.system(size: 12))

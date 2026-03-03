@@ -29,14 +29,21 @@ struct VersionSelectionView: View {
                 "",
                 selection: $selectedGameVersion
             ) {
-                Text("modpack.game.version.placeholder".localized()).tag("")
-                ForEach(availableGameVersions, id: \.self) { version in
-                    Text(version).tag(version)
+                if availableGameVersions.isEmpty {
+                    Text(String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline))
+                        .tag("")
+                } else {
+                    Text("modpack.game.version.placeholder".localized())
+                        .tag("")
+                    ForEach(availableGameVersions, id: \.self) { version in
+                        Text(version).tag(version)
+                    }
                 }
             }
             .pickerStyle(MenuPickerStyle())
             .font(.subheadline)
             .labelsHidden()
+            .disabled(availableGameVersions.isEmpty) // 没有版本时禁用
             .onChange(of: selectedGameVersion) { _, newValue in
                 onGameVersionChange(newValue)
             }

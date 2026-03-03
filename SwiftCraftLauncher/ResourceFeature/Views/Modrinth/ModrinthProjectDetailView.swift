@@ -57,6 +57,8 @@ struct ModrinthProjectDetailView: View {
                     switch phase {
                     case .empty:
                         ProgressView()
+                            .controlSize(.small)
+                            .frame(width: 80, height: 80)
                     case .success(let image):
                         image
                             .resizable()

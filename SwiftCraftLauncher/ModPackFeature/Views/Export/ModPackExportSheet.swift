@@ -155,6 +155,15 @@ struct ModPackExportSheet: View {
                 TextField("modpack.export.version.placeholder".localized(), text: $viewModel.modPackVersion)
                     .textFieldStyle(.roundedBorder)
             }
+
+            // 整合包描述（Summary）
+            VStack(alignment: .leading, spacing: 8) {
+                Text("modpack.export.summary".localized())
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                TextField("modpack.export.summary.placeholder".localized(), text: $viewModel.summary)
+                    .textFieldStyle(.roundedBorder)
+            }
         }
     }
 
