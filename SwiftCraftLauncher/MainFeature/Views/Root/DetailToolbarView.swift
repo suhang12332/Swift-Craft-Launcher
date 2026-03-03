@@ -173,7 +173,6 @@ public struct DetailToolbarView: ToolbarContent {
                         gameActionManager.showInFinder(game: game)
                     } label: {
                         Label("game.path".localized(), systemImage: "folder")
-                            .foregroundStyle(.primary)
                     }
                     .help("game.path".localized())
                 }
@@ -292,8 +291,7 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Label(filterState.dataSource.localizedName, systemImage: "network")
-                .labelStyle(.titleOnly)
+            Text(filterState.dataSource.localizedName)
         }
     }
 

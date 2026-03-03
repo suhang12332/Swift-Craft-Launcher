@@ -86,8 +86,7 @@ public struct GeneralSettingsView: View {
                             }
                         }
                         .labelsHidden()
-                        .fixedSize(horizontal: false, vertical: true)
-                        .frame(maxWidth: 320)
+                        .fixedSize()
                     }
                     DirectorySettingRow(
                         title: "settings.launcher_working_directory".localized(),
