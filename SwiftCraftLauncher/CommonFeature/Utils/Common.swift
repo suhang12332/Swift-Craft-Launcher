@@ -105,9 +105,9 @@ enum CommonUtil {
         }
     }
 
-    /// 判断 Minecraft 版本是否至少为某个版本
+    /// 判断 Minecraft 版本是否至少为基线版本
     static func isVersionAtLeast(_ version: String) -> Bool {
-        return compareMinecraftVersions(version, "1.13") >= 0
+        return compareMinecraftVersions(version, AppConstants.MinecraftVersions.featureBaseline) >= 0
     }
 }
 
