@@ -74561,139 +74561,139 @@
         }
       }
     },
-    "settings.concurrent_downloads.label" : {
+    "settings.common_sheet_height_limit.enable" : {
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "التحميلات المتزامنة"
+            "value" : "تقييد الارتفاع على الأجهزة الصغيرة"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Samtidige Downloads"
+            "value" : "Begræns højde på små skærme"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gleichzeitige Downloads"
+            "value" : "Höhe auf kleinen Bildschirmen begrenzen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Concurrent Downloads"
+            "value" : "Limit height on small screens"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Descargas Concurrentes"
+            "value" : "Limitar altura en pantallas pequeñas"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Samanaikaiset Lataukset"
+            "value" : "Rajoita korkeus pienillä näytöillä"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Téléchargements Simultanés"
+            "value" : "Limiter la hauteur sur les petits écrans"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "समानांतर डाउनलोड"
+            "value" : "छोटी स्क्रीन पर ऊंचाई सीमित करें"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Download Simultanei"
+            "value" : "Limita l’altezza sui piccoli schermi"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "同時ダウンロード数"
+            "value" : "小さい画面で高さを制限する"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "동시 다운로드"
+            "value" : "작은 화면에서 높이 제한"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Samtidige Nedlastinger"
+            "value" : "Begrens høyde på små skjermer"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gelijktijdige Downloads"
+            "value" : "Hoogte beperken op kleine schermen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Równoległe Pobierania"
+            "value" : "Ogranicz wysokość na małych ekranach"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Downloads Simultâneos"
+            "value" : "Limitar altura em telas pequenas"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Одновременные Загрузки"
+            "value" : "Ограничить высоту на маленьких экранах"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Samtidiga Nedladdningar"
+            "value" : "Begränsa höjd på små skärmar"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "การดาวน์โหลดพร้อมกัน"
+            "value" : "จำกัดความสูงบนหน้าจอขนาดเล็ก"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eşzamanlı İndirmeler"
+            "value" : "Küçük ekranlarda yüksekliği sınırla"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tải Xuống Đồng Thời"
+            "value" : "Giới hạn chiều cao trên màn hình nhỏ"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下载并发数"
+            "value" : "在小屏设备上限制高度"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "下載並發數"
+            "value" : "在小螢幕裝置上限制高度"
           }
         }
       }
@@ -74835,139 +74835,139 @@
         }
       }
     },
-    "settings.common_sheet_height_limit.enable" : {
+    "settings.concurrent_downloads.label" : {
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تقييد الارتفاع على الأجهزة الصغيرة"
+            "value" : "التحميلات المتزامنة"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Begræns højde på små skærme"
+            "value" : "Samtidige Downloads"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Höhe auf kleinen Bildschirmen begrenzen"
+            "value" : "Gleichzeitige Downloads"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limit height on small screens"
+            "value" : "Concurrent Downloads"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limitar altura en pantallas pequeñas"
+            "value" : "Descargas Concurrentes"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rajoita korkeus pienillä näytöillä"
+            "value" : "Samanaikaiset Lataukset"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limiter la hauteur sur les petits écrans"
+            "value" : "Téléchargements Simultanés"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "छोटी स्क्रीन पर ऊंचाई सीमित करें"
+            "value" : "समानांतर डाउनलोड"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limita l’altezza sui piccoli schermi"
+            "value" : "Download Simultanei"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "小さい画面で高さを制限する"
+            "value" : "同時ダウンロード数"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "작은 화면에서 높이 제한"
+            "value" : "동시 다운로드"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Begrens høyde på små skjermer"
+            "value" : "Samtidige Nedlastinger"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hoogte beperken op kleine schermen"
+            "value" : "Gelijktijdige Downloads"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ogranicz wysokość na małych ekranach"
+            "value" : "Równoległe Pobierania"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limitar altura em telas pequenas"
+            "value" : "Downloads Simultâneos"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ограничить высоту на маленьких экранах"
+            "value" : "Одновременные Загрузки"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Begränsa höjd på små skärmar"
+            "value" : "Samtidiga Nedladdningar"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "จำกัดความสูงบนหน้าจอขนาดเล็ก"
+            "value" : "การดาวน์โหลดพร้อมกัน"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Küçük ekranlarda yüksekliği sınırla"
+            "value" : "Eşzamanlı İndirmeler"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Giới hạn chiều cao trên màn hình nhỏ"
+            "value" : "Tải Xuống Đồng Thời"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在小屏设备上限制高度"
+            "value" : "下载并发数"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在小螢幕裝置上限制高度"
+            "value" : "下載並發數"
           }
         }
       }
