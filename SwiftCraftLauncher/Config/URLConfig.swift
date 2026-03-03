@@ -364,7 +364,7 @@ enum URLConfig {
             static let mirrorBaseURL = URLConfig.url("https://api.curseforge.com/v1")
             static let fallbackDownloadBaseURL = URLConfig.url("https://edge.forgecdn.net/files")
             /// CurseForge 项目详情基础 URL，例如：https://www.curseforge.com/minecraft/mc-mods/geckolib
-            static let webProjectBase = "https://www.curseforge.com/minecraft/mc-mods/"
+            static let webProjectBase = "https://www.curseforge.com/minecraft/"
 
             static func fileDetail(projectId: Int, fileId: Int) -> URL {
                 mirrorBaseURL.appendingPathComponent("mods/\(projectId)/files/\(fileId)")

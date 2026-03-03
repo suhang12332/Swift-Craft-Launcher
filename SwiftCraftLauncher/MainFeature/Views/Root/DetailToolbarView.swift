@@ -23,6 +23,25 @@ public struct DetailToolbarView: ToolbarContent {
         gameStatusManager.isGameRunning(gameId: gameId, userId: userId)
     }
 
+    static func webProjectURL(projectType: String) -> String {
+        let type = projectType.lowercased()
+        let pathPrefix: String = switch type {
+        case "mod":
+            "mc-mods/"
+        case "resourcepack":
+            "texture-packs/"
+        case "datapack":
+            "data-packs/"
+        case "shader":
+            "shaders/"
+        case "modpack":
+            "modpacks/"
+        default:
+            "mc-mods/"
+        }
+        return "\(URLConfig.API.CurseForge.webProjectBase)\(pathPrefix)"
+    }
+
     /// 打开当前资源在浏览器中的项目页面
     private func openCurrentResourceInBrowser() {
         guard let slug = detailState.loadedProjectDetail?.slug else { return }
@@ -31,7 +50,7 @@ public struct DetailToolbarView: ToolbarContent {
         case .modrinth:
             URLConfig.API.Modrinth.webProjectBase
         case .curseforge:
-            URLConfig.API.CurseForge.webProjectBase
+            Self.webProjectURL(projectType: detailState.gameResourcesType)
         }
 
         guard let url = URL(string: baseURL + slug) else { return }
