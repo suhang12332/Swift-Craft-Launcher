@@ -11,6 +11,9 @@ class GameRepository: ObservableObject {
     /// 按工作路径分组的损坏游戏名称列表（数据库或文件夹缺失）
     @Published private(set) var corruptedGamesByWorkingPath: [String: [String]] = [:]
 
+    /// 数据库中所有工作路径及对应游戏数量（用于设置页快速切换）
+    @Published private(set) var workingPathOptions: [(path: String, count: Int)] = []
+
     var games: [GameVersionInfo] {
         gamesByWorkingPath[currentWorkingPath] ?? []
     }
@@ -45,6 +48,7 @@ class GameRepository: ObservableObject {
             do {
                 try await initializeDatabase()
                 loadGamesSafely()
+                await refreshWorkingPathOptions()
             } catch {
                 GlobalErrorHandler.shared.handle(error)
             }
@@ -103,6 +107,14 @@ class GameRepository: ObservableObject {
     }
 
     // MARK: - Public Methods
+
+    /// 重新加载所有工作路径及其游戏数量
+    func refreshWorkingPathOptions() async {
+        let options = await fetchAllWorkingPathsWithCounts()
+        await MainActor.run {
+            self.workingPathOptions = options
+        }
+    }
 
     func addGame(_ game: GameVersionInfo) async throws {
         let workingPath = currentWorkingPath
