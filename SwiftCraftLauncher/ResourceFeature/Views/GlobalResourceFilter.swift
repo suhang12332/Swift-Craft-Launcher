@@ -34,37 +34,22 @@ func filterCompatibleGames(
         return match ? game : nil
     }
 
-    // 对于mod，需要检查hash是否已安装
-    guard resourceTypeLowercased == "mod" else {
-        // 对于其他资源类型，暂时不检查是否已安装，返回所有兼容的游戏
-        return compatibleGames
-    }
-
-    // 第二步和第三步：使用兼容的游戏列表的版本信息和资源信息查询该资源的版本信息，判断每个版本的hash是否安装
+    // 第二步和第三步：使用兼容的游戏列表的版本信息和资源信息查询该资源的版本信息，
+    // 判断该资源在对应游戏下是否已安装（基于所有兼容版本的哈希）
     return await withTaskGroup(of: GameVersionInfo?.self) { group in
         for game in compatibleGames {
             group.addTask {
-                // 使用兼容的游戏列表的版本信息和资源信息查询该资源的版本信息
-                guard let versions = try? await ModrinthService.fetchProjectVersionsFilter(
-                    id: projectId,
+                // 判断该资源在该游戏下是否已安装（使用统一的哈希检测逻辑）
+                let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
+                let isInstalled = await ModrinthService.isProjectInstalledByAnyCompatibleVersion(
+                    projectId: projectId,
                     selectedVersions: [game.gameVersion],
                     selectedLoaders: [game.modLoader],
-                    type: resourceType
-                ), let firstVersion = versions.first else {
-                    // 如果无法获取版本信息，返回该游戏（认为未安装）
-                    return game
-                }
+                    type: resourceType,
+                    modsDir: modsDir
+                )
 
-                // 获取主文件的hash
-                guard let primaryFile = ModrinthService.filterPrimaryFiles(from: firstVersion.files) else {
-                    // 如果没有主文件，返回该游戏（认为未安装）
-                    return game
-                }
-
-                // 判断该版本的hash是否安装
-                let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
-                let resourceHash = primaryFile.hashes.sha1
-                if ModScanner.shared.isModInstalledSync(hash: resourceHash, in: modsDir) {
+                if isInstalled {
                     // 已安装，不返回
                     return nil
                 }

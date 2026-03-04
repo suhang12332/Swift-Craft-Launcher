@@ -23,8 +23,7 @@ struct DependencySectionView: View {
                         Text(dep.title).font(.headline).bold()
                         if let versions = state.versions[dep.id],
                             !versions.isEmpty {
-                            Picker(
-                                "global_resource.dependency_version".localized(),
+                            CommonMenuPicker(
                                 selection:
                                     Binding(
                                     get: {
@@ -33,11 +32,12 @@ struct DependencySectionView: View {
                                     set: { state.selected[dep.id] = $0 }
                                 )
                             ) {
+                                Text("global_resource.dependency_version".localized())
+                            } content: {
                                 ForEach(versions, id: \.id) { v in
                                     Text(v.name).tag(Optional(v))
                                 }
                             }
-                            .pickerStyle(.menu)
                         } else {
                             Text("global_resource.no_version".localized())
                                 .foregroundColor(.secondary)

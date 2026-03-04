@@ -21,10 +21,11 @@ struct VersionPickerForSheet: View {
                     maxWidth: .infinity,
                     alignment: .leading
                 )
-                Picker(
-                    "global_resource.select_version".localized(),
+                CommonMenuPicker(
                     selection: $selectedVersion
                 ) {
+                    Text("global_resource.select_version".localized())
+                } content: {
                     ForEach(availableVersions, id: \.id) { version in
                         if resourceType == "shader" {
                             let loaders = version.loaders.joined(
@@ -38,7 +39,6 @@ struct VersionPickerForSheet: View {
                         }
                     }
                 }
-                .pickerStyle(.menu)
             } else {
                 Text("global_resource.no_version_available".localized())
                     .foregroundColor(.secondary)

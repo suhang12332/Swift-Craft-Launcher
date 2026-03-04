@@ -33,8 +33,7 @@ struct DependencySheetView: View {
                                             .font(.headline)
                                         Spacer()
                                     }
-                                    Picker(
-                                        "dependency.version.picker".localized(),
+                                    CommonMenuPicker(
                                         selection: Binding(
                                             get: {
                                                 viewModel
@@ -51,11 +50,12 @@ struct DependencySheetView: View {
                                             }
                                         )
                                     ) {
+                                        Text("dependency.version.picker".localized())
+                                    } content: {
                                         ForEach(versions, id: \.id) { v in
                                             Text(v.name).tag(v.id)
                                         }
                                     }
-                                    .pickerStyle(.menu)
                                     .font(.subheadline)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 }
