@@ -106,7 +106,7 @@ struct AddOrDeleteResourceButton: View {
                 buttonLabel
             }
             .buttonStyle(.borderedProminent)
-            .tint(.accentColor) 
+            .tint(.accentColor)
             .font(.caption2)
             .controlSize(.small)
             .disabled(
