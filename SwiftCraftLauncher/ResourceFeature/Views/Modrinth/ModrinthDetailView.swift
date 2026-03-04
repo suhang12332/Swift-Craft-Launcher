@@ -122,13 +122,6 @@ struct ModrinthDetailView: View {
             resetPagination()
             triggerSearch()
         }
-        .onChange(of: selectedProjectId) { oldValue, newValue in
-            if oldValue != nil && newValue == nil {
-                // 关闭详情后保留当前列表，后台刷新数据
-                resetPagination()
-                triggerSearch()
-            }
-        }
         .onChange(of: dataSource) { _, _ in
             // 清理之前的旧数据
             viewModel.clearResults()
