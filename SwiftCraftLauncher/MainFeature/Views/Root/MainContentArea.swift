@@ -45,7 +45,6 @@ struct MainContentArea: View {
         .onChange(of: gameRepository.workingPathChanged) { _, _ in
             detailState.selectedItem = .resource(.mod)
             detailState.gameType = true
-            scanAllGamesModsDirectory()
         }
     }
 

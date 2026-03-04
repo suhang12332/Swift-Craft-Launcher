@@ -90,10 +90,11 @@ class GameRepository: ObservableObject {
                     self.lastWorkingPath = newPath
                     // 通知工作路径已改变（用于触发UI切换）
                     self.workingPathChanged = true
-                    // 当工作路径改变时，重新加载当前工作路径的游戏
+                    // 当工作路径改变时，重新加载当前工作路径的游戏并扫描 mods 目录
                     Task { @MainActor in
                         do {
                             try await self.loadGamesThrowing()
+                            await self.scanAllGamesModsDirectory()
                             // 重置通知标志
                             self.workingPathChanged = false
                         } catch {
