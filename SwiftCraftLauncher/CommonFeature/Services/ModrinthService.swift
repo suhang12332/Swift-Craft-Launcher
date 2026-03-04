@@ -458,17 +458,73 @@ enum ModrinthService {
             allDependencyVersions.append(contentsOf: batchResults)
         }
 
-        // 3. 使用hash检查是否已安装，过滤出缺失的依赖
-        let missingDependencyVersions = allDependencyVersions.filter { version in
-            // 获取主文件的hash
-            guard let primaryFile = Self.filterPrimaryFiles(from: version.files) else {
-                return true // 如果没有主文件，认为缺失
+        // 3. 使用统一的哈希检测逻辑，基于「所有兼容版本」判断依赖是否已安装
+        var missingDependencyVersions: [ModrinthProjectDetailVersion] = []
+
+        for version in allDependencyVersions {
+            let isInstalled = await isProjectInstalledByAnyCompatibleVersion(
+                projectId: version.projectId,
+                selectedVersions: selectedVersions,
+                selectedLoaders: selectedLoaders,
+                type: type,
+                modsDir: cachePath
+            )
+
+            if !isInstalled {
+                missingDependencyVersions.append(version)
             }
-            // 使用hash检查是否已安装
-            return !ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: cachePath)
         }
 
         return ModrinthProjectDependency(projects: missingDependencyVersions)
+    }
+
+    /// 使用统一逻辑判断某个项目是否已安装：
+    /// 根据给定的版本 / 加载器过滤条件，获取该项目所有兼容版本，
+    /// 然后检查这些版本的主文件哈希是否出现在本地缓存的哈希集合中。
+    static func isProjectInstalledByAnyCompatibleVersion(
+        projectId: String,
+        selectedVersions: [String],
+        selectedLoaders: [String],
+        type: String,
+        modsDir: URL
+    ) async -> Bool {
+        do {
+            let versions: [ModrinthProjectDetailVersion]
+
+            if projectId.hasPrefix("cf-") {
+                // CurseForge 项目，使用适配后的版本列表
+                versions = try await CurseForgeService.fetchProjectVersionsFilterAsModrinth(
+                    id: projectId,
+                    selectedVersions: selectedVersions,
+                    selectedLoaders: selectedLoaders,
+                    type: type
+                )
+            } else {
+                // Modrinth 项目
+                versions = try await fetchProjectVersionsFilter(
+                    id: projectId,
+                    selectedVersions: selectedVersions,
+                    selectedLoaders: selectedLoaders,
+                    type: type
+                )
+            }
+
+            for version in versions {
+                guard let primaryFile = filterPrimaryFiles(from: version.files) else {
+                    continue
+                }
+                let hash = primaryFile.hashes.sha1
+                if ModScanner.shared.isModInstalledSync(hash: hash, in: modsDir) {
+                    return true
+                }
+            }
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("检查项目安装状态失败 (ID: \(projectId)): \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+        }
+
+        return false
     }
 
     static func fetchProjectVersionThrowing(id: String) async throws -> ModrinthProjectDetailVersion {
