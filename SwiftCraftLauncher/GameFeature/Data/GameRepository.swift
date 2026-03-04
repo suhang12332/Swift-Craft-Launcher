@@ -8,8 +8,19 @@ class GameRepository: ObservableObject {
     /// 按工作路径分组的游戏列表，键为工作路径，值为游戏数组
     @Published private(set) var gamesByWorkingPath: [String: [GameVersionInfo]] = [:]
 
+    /// 按工作路径分组的损坏游戏名称列表（数据库或文件夹缺失）
+    @Published private(set) var corruptedGamesByWorkingPath: [String: [String]] = [:]
+
+    /// 数据库中所有工作路径及对应游戏数量（用于设置页快速切换）
+    @Published private(set) var workingPathOptions: [(path: String, count: Int)] = []
+
     var games: [GameVersionInfo] {
         gamesByWorkingPath[currentWorkingPath] ?? []
+    }
+
+    /// 当前工作路径下的损坏游戏名称列表
+    var corruptedGames: [String] {
+        corruptedGamesByWorkingPath[currentWorkingPath] ?? []
     }
 
     private var currentWorkingPath: String {
@@ -37,6 +48,7 @@ class GameRepository: ObservableObject {
             do {
                 try await initializeDatabase()
                 loadGamesSafely()
+                await refreshWorkingPathOptions()
             } catch {
                 GlobalErrorHandler.shared.handle(error)
             }
@@ -95,6 +107,14 @@ class GameRepository: ObservableObject {
     }
 
     // MARK: - Public Methods
+
+    /// 重新加载所有工作路径及其游戏数量
+    func refreshWorkingPathOptions() async {
+        let options = await fetchAllWorkingPathsWithCounts()
+        await MainActor.run {
+            self.workingPathOptions = options
+        }
+    }
 
     func addGame(_ game: GameVersionInfo) async throws {
         let workingPath = currentWorkingPath
@@ -163,6 +183,25 @@ class GameRepository: ObservableObject {
                 GlobalErrorHandler.shared.handle(error)
             }
         }
+    }
+
+    /// 删除当前工作路径下指定名称的所有游戏（用于删除损坏游戏）
+    func deleteGamesByName(_ gameName: String) async throws {
+        let workingPath = currentWorkingPath
+        let dbPath = AppPaths.gameVersionDatabase.path
+
+        try await Task.detached(priority: .userInitiated) {
+            let db = GameVersionDatabase(dbPath: dbPath)
+            try? db.initialize()
+            try db.deleteGames(workingPath: workingPath, gameName: gameName)
+        }.value
+
+        await MainActor.run {
+            gamesByWorkingPath[workingPath]?.removeAll { $0.gameName == gameName }
+            corruptedGamesByWorkingPath[workingPath]?.removeAll { $0 == gameName }
+        }
+
+        Logger.shared.info("成功删除名称为 \(gameName) 的游戏记录（工作路径: \(workingPath)）")
     }
 
     func getGame(by id: String) -> GameVersionInfo? {
@@ -374,12 +413,34 @@ class GameRepository: ObservableObject {
         Logger.shared.info("完成所有游戏的 mods 目录扫描")
     }
 
+    /// 获取数据库中所有工作路径及其游戏数量（用于设置页快速切换，SQL GROUP BY 实现）
+    func fetchAllWorkingPathsWithCounts() async -> [(path: String, count: Int)] {
+        let currentPath = currentWorkingPath
+        let dbPath = AppPaths.gameVersionDatabase.path
+        let rows: [(path: String, count: Int)]
+        do {
+            rows = try await Task.detached(priority: .userInitiated) {
+                let db = GameVersionDatabase(dbPath: dbPath)
+                try? db.initialize()
+                return try db.loadWorkingPathsWithCounts()
+            }.value
+        } catch {
+            return [(currentPath, 0)]
+        }
+        var result = rows
+        if !result.contains(where: { $0.path == currentPath }) {
+            result.append((currentPath, 0))
+        }
+        result.sort { $0.path.localizedStandardCompare($1.path) == .orderedAscending }
+        return result
+    }
+
     // 只加载当前工作路径的游戏（数据库与目录扫描在后台执行，避免主线程阻塞）
     func loadGamesThrowing() async throws {
         let workingPath = currentWorkingPath
         let dbPath = AppPaths.gameVersionDatabase.path
 
-        let (validGames, pathForLog): ([GameVersionInfo], String) = try await Task.detached(priority: .userInitiated) {
+        let (validGames, corruptedNames, pathForLog): ([GameVersionInfo], [String], String) = try await Task.detached(priority: .userInitiated) {
             let db = GameVersionDatabase(dbPath: dbPath)
             try? db.initialize()
             let games = try db.loadGames(workingPath: workingPath)
@@ -390,7 +451,9 @@ class GameRepository: ObservableObject {
             do {
                 if fm.fileExists(atPath: profileRootDir.path) {
                     let contents = try fm.contentsOfDirectory(atPath: profileRootDir.path)
-                    localGameNames = Set(contents)
+                    // 过滤掉 .DS_Store 等隐藏文件，避免被当成游戏目录
+                    let filtered = contents.filter { !$0.hasPrefix(".") }
+                    localGameNames = Set(filtered)
                 } else {
                     localGameNames = []
                 }
@@ -399,11 +462,18 @@ class GameRepository: ObservableObject {
                 localGameNames = []
             }
             let valid = games.filter { localGameNames.contains($0.gameName) }
-            return (valid, workingPath)
+            let dbGameNames = Set(games.map { $0.gameName })
+            // 数据库存在但文件夹不存在
+            let missingFolders = dbGameNames.subtracting(localGameNames)
+            // 文件夹存在但数据库不存在
+            let missingDatabase = localGameNames.subtracting(dbGameNames)
+            let corrupted = Array(missingFolders.union(missingDatabase)).sorted()
+            return (valid, corrupted, workingPath)
         }.value
 
         await MainActor.run {
-            gamesByWorkingPath = [workingPath: validGames]
+            gamesByWorkingPath[workingPath] = validGames
+            corruptedGamesByWorkingPath[workingPath] = corruptedNames
         }
 
         Logger.shared.info("成功加载 \(validGames.count) 个游戏（工作路径: \(pathForLog)）")

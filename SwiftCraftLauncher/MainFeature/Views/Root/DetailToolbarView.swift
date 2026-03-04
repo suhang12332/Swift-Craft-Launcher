@@ -19,8 +19,8 @@ public struct DetailToolbarView: ToolbarContent {
         return nil
     }
 
-    private func isGameRunning(gameId: String) -> Bool {
-        gameStatusManager.isGameRunning(gameId: gameId)
+    private func isGameRunning(gameId: String, userId: String) -> Bool {
+        gameStatusManager.isGameRunning(gameId: gameId, userId: userId)
     }
 
     /// 打开当前资源在浏览器中的项目页面
@@ -31,11 +31,86 @@ public struct DetailToolbarView: ToolbarContent {
         case .modrinth:
             URLConfig.API.Modrinth.webProjectBase
         case .curseforge:
-            URLConfig.API.CurseForge.webProjectBase
+            URLConfig.API.CurseForge.webProjectURL(projectType: detailState.gameResourcesType)
         }
 
         guard let url = URL(string: baseURL + slug) else { return }
         openURL(url)
+    }
+
+    private func openInstallSheet() {
+        guard let projectId = detailState.selectedProjectId else { return }
+        let resourceType = detailState.gameResourcesType
+
+        Task {
+            if resourceType == "modpack" {
+                guard let detail = await ResourceDetailLoader.loadModPackDetail(
+                    projectId: projectId
+                ) else {
+                    return
+                }
+                await MainActor.run {
+                    applyProjectDetail(
+                        detail: detail,
+                        projectType: "modpack",
+                        versions: [],
+                        clientSide: "",
+                        serverSide: ""
+                    )
+                }
+            } else {
+                guard let result = await ResourceDetailLoader.loadProjectDetail(
+                    projectId: projectId,
+                    gameRepository: gameRepository,
+                    resourceType: resourceType
+                ) else {
+                    return
+                }
+                await MainActor.run {
+                    applyProjectDetail(
+                        detail: result.detail,
+                        compatibleGames: result.compatibleGames,
+                        projectType: result.detail.projectType,
+                        versions: result.detail.versions,
+                        clientSide: result.detail.clientSide,
+                        serverSide: result.detail.serverSide
+                    )
+                }
+            }
+        }
+    }
+
+    private func applyProjectDetail(
+        detail: ModrinthProjectDetail,
+        compatibleGames: [GameVersionInfo]? = nil,
+        projectType: String,
+        versions: [String],
+        clientSide: String,
+        serverSide: String
+    ) {
+        detailState.currentProject = ModrinthProject(
+            projectId: detail.id,
+            projectType: projectType,
+            slug: detail.slug,
+            author: "",
+            title: detail.title,
+            description: detail.description,
+            categories: detail.categories,
+            displayCategories: [],
+            versions: versions,
+            downloads: detail.downloads,
+            follows: detail.followers,
+            iconUrl: detail.iconUrl,
+            license: detail.license?.url ?? "",
+            clientSide: clientSide,
+            serverSide: serverSide,
+            fileName: nil
+        )
+        detailState.loadedProjectDetail = detail
+        if let compatibleGames {
+            detailState.compatibleGames = compatibleGames
+        }
+        detailState.showInstallSheet = true
     }
 
     public var body: some ToolbarContent {
@@ -56,12 +131,13 @@ public struct DetailToolbarView: ToolbarContent {
 
                     Button {
                         Task {
-                            let isRunning = isGameRunning(gameId: game.id)
+                            let userId = playerListViewModel.currentPlayer?.id ?? ""
+                            let isRunning = isGameRunning(gameId: game.id, userId: userId)
                             if isRunning {
-                                await gameLaunchUseCase.stopGame(game: game)
+                                await gameLaunchUseCase.stopGame(player: playerListViewModel.currentPlayer, game: game)
                             } else {
-                                gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: true)
-                                defer { gameStatusManager.setGameLaunching(gameId: game.id, isLaunching: false) }
+                                gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
+                                defer { gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false) }
                                 await gameLaunchUseCase.launchGame(
                                     player: playerListViewModel.currentPlayer,
                                     game: game
@@ -69,8 +145,9 @@ public struct DetailToolbarView: ToolbarContent {
                             }
                         }
                     } label: {
-                        let isRunning = isGameRunning(gameId: game.id)
-                        let isLaunchingGame = gameStatusManager.isGameLaunching(gameId: game.id)
+                        let userId = playerListViewModel.currentPlayer?.id ?? ""
+                        let isRunning = isGameRunning(gameId: game.id, userId: userId)
+                        let isLaunchingGame = gameStatusManager.isGameLaunching(gameId: game.id, userId: userId)
                         if isLaunchingGame && !isRunning {
                             ProgressView()
                                 .controlSize(.small)
@@ -85,18 +162,17 @@ public struct DetailToolbarView: ToolbarContent {
                         }
                     }
                     .help(
-                        isGameRunning(gameId: game.id)
+                        isGameRunning(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? "")
                         ? "stop.fill"
-                        : (gameStatusManager.isGameLaunching(gameId: game.id) ? "" : "play.fill")
+                        : (gameStatusManager.isGameLaunching(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? "") ? "" : "play.fill")
                     )
-                    .disabled(gameStatusManager.isGameLaunching(gameId: game.id))
+                    .disabled(gameStatusManager.isGameLaunching(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? ""))
                     .applyReplaceTransition()
 
                     Button {
                         gameActionManager.showInFinder(game: game)
                     } label: {
                         Label("game.path".localized(), systemImage: "folder")
-                            .foregroundStyle(.primary)
                     }
                     .help("game.path".localized())
                 }
@@ -114,6 +190,40 @@ public struct DetailToolbarView: ToolbarContent {
                     }
                     .help("return".localized())
                     Spacer()
+                    Button {
+                        openInstallSheet()
+                    } label: {
+                        Label("resource.add".localized(), systemImage: "arrow.down.circle")
+                    }
+                    .help("resource.add".localized())
+                    .sheet(isPresented: detailState.showInstallSheetBinding) {
+                        if let project = detailState.currentProject,
+                            let detail = detailState.loadedProjectDetail {
+                            if detailState.gameResourcesType == "modpack" {
+                                ModPackDownloadSheet(
+                                    projectId: project.projectId,
+                                    gameInfo: nil,
+                                    query: detailState.gameResourcesType,
+                                    preloadedDetail: detail
+                                )
+                                .environmentObject(gameRepository)
+                            } else {
+                                GlobalResourceSheet(
+                                    project: project,
+                                    resourceType: detailState.gameResourcesType,
+                                    isPresented: detailState.showInstallSheetBinding,
+                                    preloadedDetail: detail,
+                                    preloadedCompatibleGames: detailState.compatibleGames
+                                )
+                                .environmentObject(gameRepository)
+                            }
+                        }
+                    }
+                    .onChange(of: detailState.showInstallSheet) { _, newValue in
+                        if !newValue {
+                            detailState.compatibleGames = []
+                        }
+                    }
                     Button {
                         openCurrentResourceInBrowser()
                     } label: {
@@ -181,8 +291,7 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Label(filterState.dataSource.localizedName, systemImage: "network")
-                .labelStyle(.titleOnly)
+            Text(filterState.dataSource.localizedName)
         }
     }
 

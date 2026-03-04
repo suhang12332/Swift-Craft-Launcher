@@ -106,149 +106,16 @@ enum CurseForgeService {
         gameVersion: String? = nil,
         modLoaderType: Int? = nil,
     ) async throws -> [CurseForgeModFileDetail] {
-        // 从 modDetail 中解析文件信息，无需调用 projectFiles API
-        let modDetailToUse = try await fetchModDetailThrowing(modId: projectId)
+        let url = URLConfig.API.CurseForge.projectFiles(
+            projectId: projectId,
+            gameVersion: gameVersion,
+            modLoaderType: modLoaderType
+        )
 
-        var files: [CurseForgeModFileDetail] = []
-
-        // 优先从 latestFiles 获取文件列表
-        if let latestFilesIndexes = modDetailToUse.latestFilesIndexes, !latestFilesIndexes.isEmpty {
-            // 如果 latestFiles 不存在，从 latestFilesIndexes 构造文件详情
-            // 按 fileId 分组，收集所有游戏版本
-            var fileIndexMap: [Int: [CurseForgeFileIndex]] = [:]
-            for index in latestFilesIndexes {
-                fileIndexMap[index.fileId, default: []].append(index)
-            }
-
-            // 为每个唯一的 fileId 构造文件详情
-            for (fileId, indexes) in fileIndexMap {
-                guard let firstIndex = indexes.first else { continue }
-
-                // 收集所有匹配的游戏版本
-                let gameVersions = indexes.map { $0.gameVersion }
-
-                // 使用 fileId 和 fileName 构建下载链接
-                let downloadUrl = URLConfig.API.CurseForge.fallbackDownloadUrl(
-                    fileId: fileId,
-                    fileName: firstIndex.filename
-                ).absoluteString
-
-                // 构造文件详情
-                let fileDetail = CurseForgeModFileDetail(
-                    id: fileId,
-                    displayName: firstIndex.filename,
-                    fileName: firstIndex.filename,
-                    downloadUrl: downloadUrl,
-                    fileDate: "", // latestFilesIndexes 中没有日期信息
-                    releaseType: firstIndex.releaseType,
-                    gameVersions: gameVersions,
-                    dependencies: nil,
-                    changelog: nil,
-                    fileLength: nil,
-                    hash: nil,
-                    hashes: nil,
-                    modules: nil,
-                    projectId: projectId,
-                    projectName: modDetailToUse.name,
-                    authors: modDetailToUse.authors
-                )
-                files.append(fileDetail)
-            }
-        }
-
-        // 根据 gameVersion 和 modLoaderType 进行过滤
-        var filteredFiles = files
-
-        if let gameVersion = gameVersion {
-            filteredFiles = filteredFiles.filter { file in
-                file.gameVersions.contains(gameVersion)
-            }
-        }
-
-        // 如果指定了 modLoaderType，需要从 latestFilesIndexes 中获取 modLoader 信息进行过滤
-        if let modLoaderType = modLoaderType {
-            if let latestFilesIndexes = modDetailToUse.latestFilesIndexes {
-                // 获取匹配 modLoaderType 的 fileId 集合
-                let matchingFileIds = Set(latestFilesIndexes
-                    .filter { $0.modLoader == modLoaderType }
-                    .map { $0.fileId })
-
-                // 只保留匹配的文件
-                filteredFiles = filteredFiles.filter { file in
-                    matchingFileIds.contains(file.id)
-                }
-            }
-            // latestFilesIndexes 不存在时无法按 modLoaderType 过滤
-            // 这种情况下返回所有文件（可能包含不匹配的加载器）
-        }
-
-        // 为每个文件获取完整的文件详情（包括 hashes）
-        // 使用批处理限制并发数量，避免内存占用过高
-        let maxConcurrentTasks = 20 // 限制最大并发任务数
-        var filesWithHashes: [CurseForgeModFileDetail] = []
-        // 分批处理文件，每批最多 maxConcurrentTasks 个
-        var currentIndex = 0
-        while currentIndex < filteredFiles.count {
-            let endIndex = min(currentIndex + maxConcurrentTasks, filteredFiles.count)
-            let batch = Array(filteredFiles[currentIndex..<endIndex])
-            currentIndex = endIndex
-
-            await withTaskGroup(of: (Int, CurseForgeModFileDetail?).self) { group in
-                for file in batch {
-                    group.addTask {
-                        do {
-                            let fileDetail = try await fetchFileDetailThrowing(projectId: projectId, fileId: file.id)
-                            return (file.id, fileDetail)
-                        } catch {
-                            Logger.shared.warning("获取文件详情失败 (fileId: \(file.id)): \(error.localizedDescription)")
-                            return (file.id, nil)
-                        }
-                    }
-                }
-
-                // 创建 fileId 到文件详情的映射
-                var fileDetailMap: [Int: CurseForgeModFileDetail] = [:]
-                for await (fileId, fileDetail) in group {
-                    if let detail = fileDetail {
-                        fileDetailMap[fileId] = detail
-                    }
-                }
-
-                // 更新文件列表，使用获取到的文件详情（包含 hashes）
-                for file in batch {
-                    if let detailedFile = fileDetailMap[file.id] {
-                        // 从 hashes 数组中提取 algo 为 1 的 hash
-                        let sha1Hash = detailedFile.hashes?.first { $0.algo == 1 }
-
-                        // 创建更新后的文件详情，保留原有信息但更新 hash
-                        let updatedFile = CurseForgeModFileDetail(
-                            id: file.id,
-                            displayName: file.displayName,
-                            fileName: file.fileName,
-                            downloadUrl: file.downloadUrl ?? detailedFile.downloadUrl,
-                            fileDate: file.fileDate.isEmpty ? detailedFile.fileDate : file.fileDate,
-                            releaseType: file.releaseType,
-                            gameVersions: file.gameVersions,
-                            dependencies: file.dependencies ?? detailedFile.dependencies,
-                            changelog: file.changelog ?? detailedFile.changelog,
-                            fileLength: file.fileLength ?? detailedFile.fileLength,
-                            hash: sha1Hash ?? file.hash ?? detailedFile.hash,
-                            hashes: detailedFile.hashes,
-                            modules: file.modules ?? detailedFile.modules,
-                            projectId: file.projectId,
-                            projectName: file.projectName,
-                            authors: file.authors
-                        )
-                        filesWithHashes.append(updatedFile)
-                    } else {
-                        // 如果获取详情失败，保留原文件
-                        filesWithHashes.append(file)
-                    }
-                }
-            }
-        }
-
-        return filesWithHashes
+        let headers = getHeaders()
+        let data = try await APIClient.get(url: url, headers: headers)
+        let result = try JSONDecoder().decode(CurseForgeFilesResult.self, from: data)
+        return result.data
     }
 
     // MARK: - Search Methods
@@ -803,14 +670,21 @@ enum CurseForgeService {
             allDependencyVersions.append(contentsOf: batchResults)
         }
 
-        // 3. 使用hash检查是否已安装，过滤出缺失的依赖
-        let missingDependencyVersions = allDependencyVersions.filter { version in
-            // 获取主文件的hash
-            guard let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) else {
-                return true // 如果没有主文件，认为缺失
+        // 3. 使用统一的哈希检测逻辑，基于「所有兼容版本」判断依赖是否已安装
+        var missingDependencyVersions: [ModrinthProjectDetailVersion] = []
+
+        for version in allDependencyVersions {
+            let isInstalled = await ModrinthService.isProjectInstalledByAnyCompatibleVersion(
+                projectId: version.projectId,
+                selectedVersions: selectedVersions,
+                selectedLoaders: selectedLoaders,
+                type: type,
+                modsDir: cachePath
+            )
+
+            if !isInstalled {
+                missingDependencyVersions.append(version)
             }
-            // 使用hash检查是否已安装
-            return !ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: cachePath)
         }
 
         return ModrinthProjectDependency(projects: missingDependencyVersions)

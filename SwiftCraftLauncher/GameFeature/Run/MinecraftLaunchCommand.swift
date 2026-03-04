@@ -14,10 +14,10 @@ struct MinecraftLaunchCommand {
         }
     }
 
-    /// 停止游戏
+    /// 停止游戏（使用当前 command 的 player+game 定位进程）
     func stopGame() async {
-        // 停止进程，terminationHandler 会自动处理错误监控停止和状态更新
-        _ = GameProcessManager.shared.stopProcess(for: game.id)
+        let userId = player?.id ?? ""
+        _ = GameProcessManager.shared.stopProcess(for: game.id, userId: userId)
     }
 
     /// 启动游戏（抛出异常版本）
@@ -212,22 +212,23 @@ struct MinecraftLaunchCommand {
         }
 
         // 存储进程到管理器（会自动设置终止处理器）
-        GameProcessManager.shared.storeProcess(gameId: game.id, process: process)
+        let userId = player?.id ?? ""
+        GameProcessManager.shared.storeProcess(gameId: game.id, userId: userId, process: process)
 
         do {
             try process.run()
 
             // 进程启动后立即设置状态为运行中
             _ = await MainActor.run {
-                GameStatusManager.shared.setGameRunning(gameId: game.id, isRunning: true)
+                GameStatusManager.shared.setGameRunning(gameId: game.id, userId: userId, isRunning: true)
             }
         } catch {
             Logger.shared.error("启动进程失败: \(error.localizedDescription)")
 
             // 启动失败时清理进程并重置状态
-            _ = GameProcessManager.shared.stopProcess(for: game.id)
+            _ = GameProcessManager.shared.stopProcess(for: game.id, userId: userId)
             _ = await MainActor.run {
-                GameStatusManager.shared.setGameRunning(gameId: game.id, isRunning: false)
+                GameStatusManager.shared.setGameRunning(gameId: game.id, userId: userId, isRunning: false)
             }
 
             throw GlobalError.gameLaunch(

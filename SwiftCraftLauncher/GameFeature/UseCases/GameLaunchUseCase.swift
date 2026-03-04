@@ -14,9 +14,11 @@ final class GameLaunchUseCase: ObservableObject {
     }
 
     /// 停止游戏
-    /// - Parameter game: 要停止的游戏
-    func stopGame(game: GameVersionInfo) async {
-        let command = MinecraftLaunchCommand(player: nil, game: game)
+    /// - Parameters:
+    ///   - player: 当前玩家（与启动时一致，用于定位要停止的进程；nil 则用空 userId）
+    ///   - game: 要停止的游戏
+    func stopGame(player: Player?, game: GameVersionInfo) async {
+        let command = MinecraftLaunchCommand(player: player, game: game)
         await command.stopGame()
     }
 }

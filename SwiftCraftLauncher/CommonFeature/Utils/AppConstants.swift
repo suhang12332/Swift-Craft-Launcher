@@ -87,6 +87,13 @@ enum AppConstants {
         static let gameVersions = "game_versions"
         static let modCache = "mod_cache"
     }
+
+    // MARK: - Minecraft Versions
+    /// Minecraft 版本相关常量
+    enum MinecraftVersions {
+        /// 启用部分特性的最低 Minecraft 版本
+        static let featureBaseline = "1.13"
+    }
 }
 
 // MARK: - Bundle Extension

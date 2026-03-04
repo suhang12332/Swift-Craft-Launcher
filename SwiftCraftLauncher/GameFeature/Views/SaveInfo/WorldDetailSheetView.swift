@@ -2,7 +2,7 @@
 //  WorldDetailSheetView.swift
 //  SwiftCraftLauncher
 //
-//  Created by su (via AI assistant) on 2025/1/29.
+//  Created by su on 2025/1/29.
 //
 
 import SwiftUI
@@ -12,6 +12,44 @@ private enum WorldDetailLoadError: Error {
     case invalidStructure
 }
 
+private struct SeedCopySymbolTransition: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(macOS 15.0, *) {
+            content.contentTransition(.symbolEffect(.replace.magic(fallback: .offUp.byLayer), options: .nonRepeating))
+        } else {
+            content.contentTransition(.symbolEffect(.replace))
+        }
+    }
+}
+
+private struct SeedCopyRow: View {
+    let seed: Int64
+    @State private var isCopied = false
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            Text("saveinfo.world.detail.label.seed".localized() + ":")
+                .font(.headline)
+            Text(seed, format: .number.grouping(.never))
+            Button {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString("\(seed)", forType: .string)
+                isCopied = true
+            } label: {
+                Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
+                    .font(.system(size: 12))
+                    .modifier(SeedCopySymbolTransition())
+            }
+            .task(id: isCopied) {
+                guard isCopied else { return }
+                try? await Task.sleep(for: .seconds(1.5))
+                isCopied = false
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
 /// 世界详细信息视图（读取 level.dat）
 struct WorldDetailSheetView: View {
     // MARK: - Properties
@@ -19,7 +57,6 @@ struct WorldDetailSheetView: View {
     let gameName: String
     @Environment(\.dismiss)
     private var dismiss
-
     @State private var metadata: WorldDetailMetadata?
     @State private var rawDataTag: [String: Any]? // 原始 Data 标签，尽可能多展示数据
     @State private var isLoading = true
@@ -49,9 +86,20 @@ struct WorldDetailSheetView: View {
 
     // MARK: - Header View
     private var headerView: some View {
-        Text(world.name)
-            .font(.headline)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        HStack {
+            Text(world.name)
+                .font(.headline)
+            Spacer()
+            if let seed = metadata?.seed,
+               let url = URLConfig.API.ChunkBase.seedMap(seed: seed) {
+                Link(destination: url) {
+                    Image(systemName: "safari")
+                }
+                .controlSize(.large)
+                .foregroundStyle(.secondary)
+                .bold()
+            }
+        }
     }
 
     // MARK: - Body View
@@ -117,12 +165,11 @@ struct WorldDetailSheetView: View {
                         infoRow(label: "saveinfo.world.detail.label.difficulty".localized(), value: metadata.difficulty)
                         infoRow(label: "saveinfo.world.detail.label.hardcore".localized(), value: metadata.hardcore ? "common.yes".localized() : "common.no".localized())
                         infoRow(label: "saveinfo.world.detail.label.cheats".localized(), value: metadata.cheats ? "common.yes".localized() : "common.no".localized())
-                        if let seed = metadata.seed {
-                            infoRow(label: "saveinfo.world.detail.label.seed".localized(), value: "\(seed)")
-                        }
                     }
                 }
-
+                if let seed = metadata.seed {
+                    SeedCopyRow(seed: seed)
+                }
                 // 其他信息
                 infoSection(title: "saveinfo.world.detail.section.other".localized()) {
                     if let lastPlayed = metadata.lastPlayed {
@@ -149,13 +196,11 @@ struct WorldDetailSheetView: View {
                     Text("saveinfo.world.detail.label.world_path".localized() + ":")
                         .font(.headline)
                     Button {
-                        // 在 Finder 中打开文件位置
                         NSWorkspace.shared.selectFile(metadata.path.path, inFileViewerRootedAtPath: "")
                     } label: {
                         PathBreadcrumbView(path: metadata.path.path)
                             .frame(maxWidth: .infinity, alignment: .leading).font(.caption)
-                    }
-                    .buttonStyle(.plain)
+                    }.buttonStyle(.plain)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 

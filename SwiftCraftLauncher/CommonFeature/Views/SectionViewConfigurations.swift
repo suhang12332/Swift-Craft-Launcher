@@ -2,7 +2,6 @@
 //  SectionViewConfigurations.swift
 //  SwiftCraftLauncher
 //
-//  Created by AI Assistant
 //
 import SwiftUI
 

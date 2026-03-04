@@ -2,7 +2,6 @@
 //  ResourceImageCacheManager.swift
 //  SwiftCraftLauncher
 //
-//  Created by AI Assistant on 2026/2/17.
 //
 
 import SwiftUI
@@ -74,10 +73,9 @@ final class ResourceImageCacheManager: @unchecked Sendable {
         return image
     }
 
-    /// 预加载图片列表（后台批量加载）
     /// - Parameter urls: 图片 URL 列表
     func preloadImages(urls: [URL]) {
-        Task.detached(priority: .utility) {
+        Task(priority: .utility) { @MainActor in
             for url in urls {
                 let cacheKey = url.absoluteString as NSString
 
@@ -86,7 +84,6 @@ final class ResourceImageCacheManager: @unchecked Sendable {
                     continue
                 }
 
-                // 后台加载
                 do {
                     _ = try await self.loadImage(from: url)
                 } catch {

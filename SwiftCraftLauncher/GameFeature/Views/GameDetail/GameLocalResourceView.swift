@@ -238,9 +238,8 @@ struct GameLocalResourceView: View {
                 // 本地资源：目录已经筛选，直接显示
                 return true
             } else {
-                // 从 API 获取的资源：根据 projectType 筛选
                 // 只显示与 query 匹配的资源类型
-                return detail.projectType.lowercased() == queryLower
+                return detail.type?.lowercased() == queryLower
             }
         }
 

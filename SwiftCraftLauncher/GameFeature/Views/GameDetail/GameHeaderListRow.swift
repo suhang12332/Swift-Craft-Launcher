@@ -80,7 +80,7 @@ struct GameHeaderListRow: View {
                     switch phase {
                     case .empty:
                         ProgressView()
-                            .controlSize(.regular)
+                            .controlSize(.small)
                             .frame(width: 80, height: 80)
                     case .success(let image):
                         styledIcon(image, size: 80)

@@ -67,19 +67,46 @@ public struct GeneralSettingsView: View {
             }.labeledContentStyle(.custom).padding(.bottom, 10)
 
             LabeledContent("settings.launcher_working_directory".localized()) {
-                DirectorySettingRow(
-                    title: "settings.launcher_working_directory".localized(),
-                    path: generalSettings.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : generalSettings.launcherWorkingDirectory,
-                    description: "settings.working_directory.description".localized(),
-                    onChoose: { showDirectoryPicker = true },
-                    onReset: {
-                        resetWorkingDirectorySafely()
+                VStack(alignment: .leading, spacing: 8) {
+                    if !gameRepository.workingPathOptions.isEmpty {
+                        Picker("", selection: Binding(
+                            get: {
+                                generalSettings.launcherWorkingDirectory.isEmpty
+                                    ? AppPaths.launcherSupportDirectory.path
+                                    : generalSettings.launcherWorkingDirectory
+                            },
+                            set: { generalSettings.launcherWorkingDirectory = $0 }
+                        )) {
+                            ForEach(gameRepository.workingPathOptions, id: \.path) { item in
+                                Text(workingPathDisplayString(for: item))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .tag(item.path)
+                                    .help(item.path)
+                            }
+                        }
+                        .labelsHidden()
+                        .fixedSize()
                     }
-                ).fixedSize()
-                    .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
-                        handleDirectoryImport(result)
-                    }
+                    DirectorySettingRow(
+                        title: "settings.launcher_working_directory".localized(),
+                        path: generalSettings.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : generalSettings.launcherWorkingDirectory,
+                        description: "settings.working_directory.description".localized(),
+                        onChoose: { showDirectoryPicker = true },
+                        onReset: {
+                            resetWorkingDirectorySafely()
+                        }
+                    ).fixedSize()
+                        .fileImporter(isPresented: $showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
+                            handleDirectoryImport(result)
+                        }
+                }
             }.labeledContentStyle(.custom(alignment: .firstTextBaseline))
+            .onChange(of: generalSettings.launcherWorkingDirectory) { _, _ in
+                Task {
+                    await gameRepository.refreshWorkingPathOptions()
+                }
+            }
 
             LabeledContent("settings.concurrent_downloads.label".localized()) {
                 HStack {
@@ -144,7 +171,15 @@ public struct GeneralSettingsView: View {
                     isOn: $generalSettings.enableResourcePageCache
                 )
                 .toggleStyle(.checkbox)
-            }.labeledContentStyle(.custom).padding(.top, 6)
+            }.labeledContentStyle(.custom).padding(.top, 10)
+
+            LabeledContent("settings.common_sheet_height_limit.label".localized()) {
+                Toggle(
+                    "settings.common_sheet_height_limit.enable".localized(),
+                    isOn: $generalSettings.limitCommonSheetHeight
+                )
+                .toggleStyle(.checkbox)
+            }.labeledContentStyle(.custom)
         }
         .globalErrorHandler()
         .alert(
@@ -162,6 +197,13 @@ public struct GeneralSettingsView: View {
     }
 
     // MARK: - Private Methods
+
+    /// 工作路径选择框展示文案：路径最后一段 + 游戏个数
+    private func workingPathDisplayString(for item: (path: String, count: Int)) -> String {
+        let lastComponent = (item.path as NSString).lastPathComponent
+        let countStr = String(format: "settings.working_path.game_count".localized(), item.count)
+        return "\(lastComponent) (\(countStr))"
+    }
 
     /// 安全地重置工作目录
     private func resetWorkingDirectorySafely() {

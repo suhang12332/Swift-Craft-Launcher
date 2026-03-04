@@ -245,6 +245,26 @@ class GameVersionDatabase {
         return gamesByPath
     }
 
+    /// 按工作路径统计游戏数量（仅查 working_path + COUNT，不加载 JSON）
+    /// - Returns: [(工作路径, 游戏数量)]，按路径排序
+    /// - Throws: GlobalError 当操作失败时
+    func loadWorkingPathsWithCounts() throws -> [(path: String, count: Int)] {
+        let sql = """
+        SELECT working_path, COUNT(*) FROM \(tableName)
+        GROUP BY working_path
+        ORDER BY working_path
+        """
+        let statement = try db.prepare(sql)
+        defer { sqlite3_finalize(statement) }
+        var result: [(String, Int)] = []
+        while sqlite3_step(statement) == SQLITE_ROW {
+            guard let path = SQLiteDatabase.stringColumn(statement, index: 0) else { continue }
+            let count = Int(SQLiteDatabase.intColumn(statement, index: 1))
+            result.append((path, count))
+        }
+        return result
+    }
+
     /// 根据 ID 获取游戏
     /// - Parameter id: 游戏 ID
     /// - Returns: 游戏版本信息，如果不存在则返回 nil
@@ -309,6 +329,32 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "删除工作路径游戏失败: \(errorMessage)",
                     i18nKey: "error.validation.games_delete_failed",
+                    level: .notification
+                )
+            }
+        }
+    }
+
+    /// 按工作路径和游戏名删除游戏（可能存在多个相同名称的记录）
+    /// - Parameters:
+    ///   - workingPath: 工作路径
+    ///   - gameName: 游戏名称
+    /// - Throws: GlobalError 当操作失败时
+    func deleteGames(workingPath: String, gameName: String) throws {
+        try db.transaction {
+            let sql = "DELETE FROM \(tableName) WHERE working_path = ? AND game_name = ?"
+            let statement = try db.prepare(sql)
+            defer { sqlite3_finalize(statement) }
+
+            SQLiteDatabase.bind(statement, index: 1, value: workingPath)
+            SQLiteDatabase.bind(statement, index: 2, value: gameName)
+
+            let result = sqlite3_step(statement)
+            guard result == SQLITE_DONE else {
+                let errorMessage = String(cString: sqlite3_errmsg(db.database))
+                throw GlobalError.validation(
+                    chineseMessage: "删除游戏失败: \(errorMessage)",
+                    i18nKey: "error.validation.game_delete_failed",
                     level: .notification
                 )
             }

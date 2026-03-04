@@ -23,12 +23,18 @@ enum Obfuscator {
         var parts: [String] = []
 
         for i in 0..<6 {
-            let startIndex = encryptedString.index(encryptedString.startIndex, offsetBy: i * partLength)
-            let endIndex = encryptedString.index(startIndex, offsetBy: partLength)
+            let startOffset = i * partLength
+            // 添加了越界保护
+            // clientid和cf的key是加密的，将在github action期间替换到代码中的
+            guard startOffset < encryptedString.count else {
+                parts.append("")
+                continue
+            }
+            let startIndex = encryptedString.index(encryptedString.startIndex, offsetBy: startOffset)
+            let endIndex = encryptedString.index(startIndex, offsetBy: partLength, limitedBy: encryptedString.endIndex) ?? encryptedString.endIndex
             let part = String(encryptedString[startIndex..<endIndex])
             parts.append(part)
         }
-
         // 按照indexOrder还原原始顺序
         var restoredParts = Array(repeating: "", count: parts.count)
         for (j, part) in parts.enumerated() {

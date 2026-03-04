@@ -339,6 +339,16 @@ enum URLConfig {
                 return "https://cdn.modrinth.com/data/\(projectId)/versions/\(versionId)/\(encodedFileName)"
             }
         }
+
+        // ChunkBase 种子地图
+        enum ChunkBase {
+            static let seedMapBase = "https://www.chunkbase.com/apps/seed-map"
+            /// 根据世界种子生成 ChunkBase 种子地图 URL
+            static func seedMap(seed: Int64) -> URL? {
+                URL(string: "\(seedMapBase)#seed=\(seed)")
+            }
+        }
+
         // FabricMC API
         enum Fabric {
             static let loader = URLConfig.url("https://meta.fabricmc.net/v2/versions/loader")
@@ -354,7 +364,29 @@ enum URLConfig {
             static let mirrorBaseURL = URLConfig.url("https://api.curseforge.com/v1")
             static let fallbackDownloadBaseURL = URLConfig.url("https://edge.forgecdn.net/files")
             /// CurseForge 项目详情基础 URL，例如：https://www.curseforge.com/minecraft/mc-mods/geckolib
-            static let webProjectBase = "https://www.curseforge.com/minecraft/mc-mods/"
+            static let webProjectBase = "https://www.curseforge.com/minecraft/"
+
+            /// 根据项目类型获取 CurseForge 项目网页基础 URL
+            /// - Parameter projectType: 项目类型，如 "mod"、"resourcepack"、"datapack"、"shader"、"modpack"
+            /// - Returns: 对应类型的项目列表基础 URL
+            static func webProjectURL(projectType: String) -> String {
+                let type = projectType.lowercased()
+                let pathPrefix: String = switch type {
+                case "mod":
+                    "mc-mods/"
+                case "resourcepack":
+                    "texture-packs/"
+                case "datapack":
+                    "data-packs/"
+                case "shader":
+                    "shaders/"
+                case "modpack":
+                    "modpacks/"
+                default:
+                    "mc-mods/"
+                }
+                return "\(webProjectBase)\(pathPrefix)"
+            }
 
             static func fileDetail(projectId: Int, fileId: Int) -> URL {
                 mirrorBaseURL.appendingPathComponent("mods/\(projectId)/files/\(fileId)")

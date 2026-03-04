@@ -219,8 +219,21 @@ struct GameCreationView: View {
                 .font(.subheadline)
                 .foregroundColor(.primary)
             Picker("", selection: $viewModel.selectedModLoader) {
-                ForEach(AppConstants.modLoaders, id: \.self) {
-                    Text($0).tag($0)
+                ForEach(AppConstants.modLoaders, id: \.self) { loader in
+                    switch loader {
+                    case "vanilla":
+                        Text("modloader.vanilla.text".localized()).tag(loader)
+                    case "fabric":
+                        Text("modloader.fabric.text".localized()).tag(loader)
+                    case "forge":
+                        Text("modloader.forge.text".localized()).tag(loader)
+                    case "neoforge":
+                        Text("modloader.neoforge.text".localized()).tag(loader)
+                    case "quilt":
+                        Text("modloader.quilt.text".localized()).tag(loader)
+                    default:
+                        Text(loader.capitalized).tag(loader)
+                    }
                 }
             }
             .labelsHidden()
