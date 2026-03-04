@@ -90,10 +90,11 @@ class GameRepository: ObservableObject {
                     self.lastWorkingPath = newPath
                     // 通知工作路径已改变（用于触发UI切换）
                     self.workingPathChanged = true
-                    // 当工作路径改变时，重新加载当前工作路径的游戏
+                    // 当工作路径改变时，重新加载当前工作路径的游戏并扫描 mods 目录
                     Task { @MainActor in
                         do {
                             try await self.loadGamesThrowing()
+                            await self.scanAllGamesModsDirectory()
                             // 重置通知标志
                             self.workingPathChanged = false
                         } catch {
@@ -118,13 +119,11 @@ class GameRepository: ObservableObject {
 
     func addGame(_ game: GameVersionInfo) async throws {
         let workingPath = currentWorkingPath
-        let dbPath = AppPaths.gameVersionDatabase.path
         let gameToSave = game
 
         try await Task.detached(priority: .userInitiated) {
-            let db = GameVersionDatabase(dbPath: dbPath)
-            try? db.initialize()
-            try db.saveGame(gameToSave, workingPath: workingPath)
+            try? self.database.initialize()
+            try self.database.saveGame(gameToSave, workingPath: workingPath)
         }.value
 
         await MainActor.run {
@@ -160,12 +159,9 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
-        let dbPath = AppPaths.gameVersionDatabase.path
-
         try await Task.detached(priority: .userInitiated) {
-            let db = GameVersionDatabase(dbPath: dbPath)
-            try? db.initialize()
-            try db.deleteGame(id: id)
+            try? self.database.initialize()
+            try self.database.deleteGame(id: id)
         }.value
 
         await MainActor.run {
@@ -188,12 +184,9 @@ class GameRepository: ObservableObject {
     /// 删除当前工作路径下指定名称的所有游戏（用于删除损坏游戏）
     func deleteGamesByName(_ gameName: String) async throws {
         let workingPath = currentWorkingPath
-        let dbPath = AppPaths.gameVersionDatabase.path
-
         try await Task.detached(priority: .userInitiated) {
-            let db = GameVersionDatabase(dbPath: dbPath)
-            try? db.initialize()
-            try db.deleteGames(workingPath: workingPath, gameName: gameName)
+            try? self.database.initialize()
+            try self.database.deleteGames(workingPath: workingPath, gameName: gameName)
         }.value
 
         await MainActor.run {
@@ -214,13 +207,11 @@ class GameRepository: ObservableObject {
 
     func updateGame(_ game: GameVersionInfo) async throws {
         let workingPath = currentWorkingPath
-        let dbPath = AppPaths.gameVersionDatabase.path
         let gameToSave = game
 
         try await Task.detached(priority: .userInitiated) {
-            let db = GameVersionDatabase(dbPath: dbPath)
-            try? db.initialize()
-            try db.saveGame(gameToSave, workingPath: workingPath)
+            try? self.database.initialize()
+            try self.database.saveGame(gameToSave, workingPath: workingPath)
         }.value
 
         await MainActor.run {
@@ -257,12 +248,9 @@ class GameRepository: ObservableObject {
                 level: .notification
             )
         }
-        let dbPath = AppPaths.gameVersionDatabase.path
-
         try await Task.detached(priority: .userInitiated) {
-            let db = GameVersionDatabase(dbPath: dbPath)
-            try? db.initialize()
-            try db.updateLastPlayed(id: id, lastPlayed: lastPlayed)
+            try? self.database.initialize()
+            try self.database.updateLastPlayed(id: id, lastPlayed: lastPlayed)
         }.value
 
         game.lastPlayed = lastPlayed
@@ -416,13 +404,11 @@ class GameRepository: ObservableObject {
     /// 获取数据库中所有工作路径及其游戏数量（用于设置页快速切换，SQL GROUP BY 实现）
     func fetchAllWorkingPathsWithCounts() async -> [(path: String, count: Int)] {
         let currentPath = currentWorkingPath
-        let dbPath = AppPaths.gameVersionDatabase.path
         let rows: [(path: String, count: Int)]
         do {
             rows = try await Task.detached(priority: .userInitiated) {
-                let db = GameVersionDatabase(dbPath: dbPath)
-                try? db.initialize()
-                return try db.loadWorkingPathsWithCounts()
+                try? self.database.initialize()
+                return try self.database.loadWorkingPathsWithCounts()
             }.value
         } catch {
             return [(currentPath, 0)]
@@ -438,12 +424,10 @@ class GameRepository: ObservableObject {
     // 只加载当前工作路径的游戏（数据库与目录扫描在后台执行，避免主线程阻塞）
     func loadGamesThrowing() async throws {
         let workingPath = currentWorkingPath
-        let dbPath = AppPaths.gameVersionDatabase.path
 
         let (validGames, corruptedNames, pathForLog): ([GameVersionInfo], [String], String) = try await Task.detached(priority: .userInitiated) {
-            let db = GameVersionDatabase(dbPath: dbPath)
-            try? db.initialize()
-            let games = try db.loadGames(workingPath: workingPath)
+            try? self.database.initialize()
+            let games = try self.database.loadGames(workingPath: workingPath)
             let fm = FileManager.default
             let baseURL = URL(fileURLWithPath: workingPath, isDirectory: true)
             let profileRootDir = baseURL.appendingPathComponent(AppConstants.DirectoryNames.profiles, isDirectory: true)

@@ -14,6 +14,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
     // 标记主动停止的游戏，用于区分用户主动关闭和真正的崩溃
     private var manuallyStoppedGames: Set<String> = []
     private let queue = DispatchQueue(label: "com.swiftcraftlauncher.gameprocessmanager")
+    private let gameDatabase = GameVersionDatabase(dbPath: AppPaths.gameVersionDatabase.path)
 
     private init() {}
 
@@ -82,14 +83,9 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
             return true
         }
 
-        // 2. 检查是否有崩溃报告文件生成（更准确的判断）
-        // 从数据库查询游戏信息以获取游戏名称
-        let dbPath = AppPaths.gameVersionDatabase.path
-        let database = GameVersionDatabase(dbPath: dbPath)
-
         do {
-            try? database.initialize()
-            guard let game = try database.getGame(by: gameId) else {
+            try? gameDatabase.initialize()
+            guard let game = try gameDatabase.getGame(by: gameId) else {
                 Logger.shared.warning("无法从数据库找到游戏，无法检查崩溃报告: \(gameId)")
                 // 如果无法查询游戏信息，且退出码非0，则认为是崩溃
                 return exitCode != 0
@@ -146,16 +142,12 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
     /// 为游戏收集日志（可用于基于进程的崩溃检测）
     /// - Parameter gameId: 游戏 ID
     func collectLogsForGameImmediately(gameId: String) async {
-        // 从 SQL 数据库查询游戏信息
-        let dbPath = AppPaths.gameVersionDatabase.path
-        let database = GameVersionDatabase(dbPath: dbPath)
-
         do {
             // 初始化数据库（如果尚未初始化，可能会失败，可以继续尝试查询）
-            try? database.initialize()
+            try? gameDatabase.initialize()
 
             // 从数据库查询游戏
-            guard let game = try database.getGame(by: gameId) else {
+            guard let game = try gameDatabase.getGame(by: gameId) else {
                 Logger.shared.warning("无法从数据库找到游戏: \(gameId)")
                 return
             }

@@ -14,6 +14,14 @@ final class ResourceImageCacheManager: @unchecked Sendable {
     static let shared = ResourceImageCacheManager()
 
     // MARK: - Properties
+    /// 磁盘缓存目录（位于系统 Caches 目录下，避免使用根目录）
+    private static let diskCachePath: String = {
+        let fm = FileManager.default
+        let dir = AppPaths.appCache.appendingPathComponent("ResourceImageCache", isDirectory: true)
+        try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir.path
+    }()
+
     /// 图片内存缓存：key 为 URL 字符串，value 为 NSImage
     private let imageCache: NSCache<NSString, NSImage>
 
@@ -35,7 +43,7 @@ final class ResourceImageCacheManager: @unchecked Sendable {
         config.urlCache = URLCache(
             memoryCapacity: 2 * 1024 * 1024,   // 2MB 内存缓存
             diskCapacity: 20 * 1024 * 1024,    // 20MB 磁盘缓存
-            diskPath: "ResourceImageCache"
+            diskPath: Self.diskCachePath
         )
         config.timeoutIntervalForRequest = 30
         self.urlSession = URLSession(configuration: config)
