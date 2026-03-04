@@ -15,6 +15,14 @@ final class ContributorAvatarCache: @unchecked Sendable {
     /// 图片缓存：key 为 URL 字符串，value 为 NSImage
     private let imageCache: NSCache<NSString, NSImage>
 
+    /// 磁盘缓存目录（位于系统 Caches 目录下）
+    private static let diskCachePath: String = {
+        let fm = FileManager.default
+        let dir = AppPaths.appCache.appendingPathComponent("ContributorAvatarCache", isDirectory: true)
+        try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir.path
+    }()
+
     /// 共享的 URLSession，启用缓存以减少内存占用
     private let urlSession: URLSession
 
@@ -32,7 +40,7 @@ final class ContributorAvatarCache: @unchecked Sendable {
         config.urlCache = URLCache(
             memoryCapacity: 1 * 1024 * 1024,  // 1MB 内存缓存
             diskCapacity: 5 * 1024 * 1024,    // 5MB 磁盘缓存
-            diskPath: "ContributorAvatarCache"
+            diskPath: Self.diskCachePath
         )
         self.urlSession = URLSession(configuration: config)
     }
@@ -166,6 +174,14 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
     /// 图片缓存：key 为 URL 字符串，value 为 NSImage
     private let imageCache: NSCache<NSString, NSImage>
 
+    /// 磁盘缓存目录（位于系统 Caches 目录下）
+    private static let diskCachePath: String = {
+        let fm = FileManager.default
+        let dir = AppPaths.appCache.appendingPathComponent("StaticContributorAvatarCache", isDirectory: true)
+        try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        return dir.path
+    }()
+
     /// 共享的 URLSession，启用缓存以减少内存占用
     private let urlSession: URLSession
 
@@ -183,7 +199,7 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
         config.urlCache = URLCache(
             memoryCapacity: 1 * 1024 * 1024,  // 1MB 内存缓存
             diskCapacity: 5 * 1024 * 1024,    // 5MB 磁盘缓存
-            diskPath: "StaticContributorAvatarCache"
+            diskPath: Self.diskCachePath
         )
         self.urlSession = URLSession(configuration: config)
     }
