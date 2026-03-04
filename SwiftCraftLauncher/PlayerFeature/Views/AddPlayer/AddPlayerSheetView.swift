@@ -46,12 +46,16 @@ struct AddPlayerSheetView: View {
                             .frame(height: 20.5) // 设置固定高度，与 Picker 保持一致
                             .padding(.trailing, 10)
                     } else {
-                        Picker("", selection: $selectedAuthType) {
+                        CommonMenuPicker(
+                            selection: $selectedAuthType,
+                            hidesLabel: true
+                        ) {
+                            Text("")
+                        } content: {
                             ForEach(availableAuthTypes) { type in
                                 Text(type.displayName).tag(type)
                             }
                         }
-                        .pickerStyle(.menu)  // 用下拉菜单样式
                         .labelStyle(.titleOnly)
                         .fixedSize()
                     }

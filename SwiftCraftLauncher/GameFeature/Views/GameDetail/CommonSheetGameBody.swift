@@ -6,10 +6,11 @@ struct CommonSheetGameBody: View {
     @Binding var selectedGame: GameVersionInfo?
 
     var body: some View {
-        Picker(
-            "global_resource.select_game".localized(),
+        CommonMenuPicker(
             selection: $selectedGame
         ) {
+            Text("global_resource.select_game".localized())
+        } content: {
             Text("global_resource.please_select_game".localized()).tag(
                 GameVersionInfo?(nil)
             )
@@ -21,6 +22,5 @@ struct CommonSheetGameBody: View {
                     .tag(Optional(game))
             }
         }
-        .pickerStyle(.menu)
     }
 }

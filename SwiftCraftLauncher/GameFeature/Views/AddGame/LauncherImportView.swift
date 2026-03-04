@@ -96,14 +96,17 @@ struct LauncherImportView: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                Picker("", selection: $viewModel.selectedLauncherType) {
+                CommonMenuPicker(
+                    selection: $viewModel.selectedLauncherType,
+                    hidesLabel: true
+                ) {
+                    Text("")
+                } content: {
                     ForEach(ImportLauncherType.allCases, id: \.self) { launcherType in
                         Text(launcherType.rawValue)
                             .tag(launcherType)
                     }
                 }
-                .labelsHidden()
-                .pickerStyle(.menu)
             }
         }
     }
