@@ -19,12 +19,20 @@ private enum Constants {
 // MARK: - ModrinthProjectDetailView
 struct ModrinthProjectDetailView: View {
     let projectDetail: ModrinthProjectDetail?
+    var suppressAnimations: Bool = false
 
     var body: some View {
-        if let project = projectDetail {
-            projectDetailView(project)
-        } else {
-            loadingView
+        Group {
+            if let project = projectDetail {
+                projectDetailView(project)
+            } else {
+                loadingView
+            }
+        }
+        .transaction { transaction in
+            if suppressAnimations {
+                transaction.animation = nil
+            }
         }
     }
 
@@ -32,7 +40,11 @@ struct ModrinthProjectDetailView: View {
     private func projectDetailView(_ project: ModrinthProjectDetail) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             projectHeader(project)
-            projectContent(project)
+            if suppressAnimations {
+                transitionPlaceholder
+            } else {
+                projectContent(project)
+            }
         }
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
@@ -115,6 +127,22 @@ struct ModrinthProjectDetailView: View {
 
     private func descriptionView(_ project: ModrinthProjectDetail) -> some View {
         MixedMarkdownView(project.body)
+    }
+
+    private var transitionPlaceholder: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.secondary.opacity(0.14))
+                .frame(height: 16)
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.secondary.opacity(0.12))
+                .frame(height: 16)
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.secondary.opacity(0.1))
+                .frame(height: 120)
+        }
+        .padding(.horizontal, Constants.padding)
+        .padding(.bottom, Constants.spacing)
     }
 
     // MARK: - Loading View

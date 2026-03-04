@@ -11,6 +11,8 @@ struct DetailView: View {
     @EnvironmentObject var filterState: ResourceFilterState
     @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
+    @State private var isResourceTransitioning = false
+    @State private var transitionTask: Task<Void, Never>?
 
     @ViewBuilder var body: some View {
         switch detailState.selectedItem {
@@ -49,8 +51,7 @@ struct DetailView: View {
         GeometryReader { proxy in
             let showDetail = detailState.selectedProjectId != nil
             let width = proxy.size.width
-
-            ZStack {
+            ZStack(alignment: .leading) {
                 ModrinthDetailView(
                     query: type.rawValue,
                     selectedVersions: filterState.selectedVersionsBinding,
@@ -66,23 +67,34 @@ struct DetailView: View {
                     dataSource: filterState.dataSourceBinding,
                     searchText: filterState.searchTextBinding
                 )
-                .offset(x: showDetail ? -width : 0)
-                .opacity(showDetail ? 0.92 : 1.0)
-                .allowsHitTesting(!showDetail)
-                .zIndex(0)
+                .frame(width: width, height: proxy.size.height)
+                // 列表层保持基本静止，仅做轻微位移来保留“左滑切换”感
+                .offset(x: showDetail ? -24 : 0)
+                .opacity(showDetail ? 0.96 : 1.0)
 
                 List {
                     ModrinthProjectDetailView(
-                        projectDetail: detailState.loadedProjectDetail
+                        projectDetail: detailState.loadedProjectDetail,
+                        suppressAnimations: isResourceTransitioning
                     )
                 }
+                .frame(width: width, height: proxy.size.height)
                 .offset(x: showDetail ? 0 : width)
-                .opacity(showDetail ? 1.0 : 0.0)
                 .allowsHitTesting(showDetail)
-                .zIndex(1)
             }
             .clipped()
-            .animation(.easeInOut(duration: 0.28), value: showDetail)
+            .animation(.easeOut(duration: 0.2), value: showDetail)
+            .onChange(of: showDetail) { _, _ in
+                transitionTask?.cancel()
+                isResourceTransitioning = true
+                transitionTask = Task {
+                    try? await Task.sleep(nanoseconds: 260_000_000)
+                    guard !Task.isCancelled else { return }
+                    await MainActor.run {
+                        isResourceTransitioning = false
+                    }
+                }
+            }
         }
     }
 }
