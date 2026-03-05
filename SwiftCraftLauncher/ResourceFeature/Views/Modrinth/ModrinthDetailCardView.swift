@@ -32,17 +32,19 @@ struct ModrinthDetailCardView: View {
     // MARK: - Body
     var body: some View {
         HStack(spacing: ModrinthConstants.UIConstants.contentSpacing) {
-            iconView
-            VStack(alignment: .leading, spacing: ModrinthConstants.UIConstants.spacing) {
-                titleView
-                descriptionView
-                tagsView
+            Group {
+                iconView
+                VStack(alignment: .leading, spacing: ModrinthConstants.UIConstants.spacing) {
+                    titleView
+                    descriptionView
+                    tagsView
+                }
             }
+            .opacity(isResourceDisabled ? 0.5 : 1.0)  // 禁用时置灰
             Spacer(minLength: 8)
             infoView
         }
         .frame(maxWidth: .infinity)
-        .opacity(isResourceDisabled ? 0.5 : 1.0)  // 禁用时置灰
         .onAppear {
             // 从数据源同步禁用状态，避免列表滚动复用行时显示错误
             isResourceDisabled = ResourceEnableDisableManager.isDisabled(fileName: project.fileName)

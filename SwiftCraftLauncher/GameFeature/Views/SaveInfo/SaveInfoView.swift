@@ -5,11 +5,24 @@ struct SaveInfoView: View {
     let gameId: String
     let gameName: String
     @StateObject private var manager: SaveInfoManager
+    @ObservedObject private var gameStatusManager = GameStatusManager.shared
+
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
 
     init(gameId: String, gameName: String) {
         self.gameId = gameId
         self.gameName = gameName
         _manager = StateObject(wrappedValue: SaveInfoManager(gameName: gameName))
+    }
+    /// 当前游戏的运行状态
+    private var currentGameRunningState: Bool {
+        let userId = playerListViewModel.currentPlayer?.id ?? ""
+        let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
+        if let isRunning = gameStatusManager.allGameStates[key] {
+            return isRunning
+        } else {
+            return false
+        }
     }
 
     var body: some View {
@@ -77,6 +90,13 @@ struct SaveInfoView: View {
         }
         .task {
             await manager.loadData()
+        }
+        .onChange(of: currentGameRunningState) { oldValue, newValue in
+            if oldValue == true && newValue == false {
+                Task {
+                    await manager.loadData()
+                }
+            }
         }
         .onDisappear {
             manager.clearCache()
