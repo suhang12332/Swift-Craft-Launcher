@@ -39,12 +39,9 @@ class ModScanner {
             let standardizedDir = modsDir.standardizedFileURL
             Task.detached(priority: .utility) {
                 do {
-                    let hashes = try await self.rebuildDirectoryHashes(
+                    _ = try await self.rebuildDirectoryHashes(
                         dir: standardizedDir,
                         gameNameHint: gameName
-                    )
-                    Logger.shared.debug(
-                        "FSEvents 检测到游戏 \(gameName) 的 mods 目录变化，已重新扫描 \(hashes.count) 个文件 hash"
                     )
                 } catch {
                     let globalError = GlobalError.from(error)
