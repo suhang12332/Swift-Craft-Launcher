@@ -656,7 +656,7 @@ struct AddOrDeleteResourceButton: View {
 
             // 通知外部本地资源的启用/禁用状态已变更
             onToggleDisableState?(isDisabled)
-            
+
             // 如果是从禁用切换到启用状态，检查更新
             if !isDisabled && type == false {
                 checkForUpdate()
