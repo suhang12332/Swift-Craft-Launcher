@@ -173,7 +173,8 @@ struct MinecraftLaunchCommand {
     /// - Parameter command: 启动命令数组
     /// - Throws: GlobalError 当启动失败时
     private func launchGameProcess(command: [String]) async throws {
-        if game.modLoader != "vanilla" {
+        if game.modLoader != "vanilla",
+           AVCaptureDevice.authorizationStatus(for: .audio) == .notDetermined {
             AVCaptureDevice.requestAccess(for: .audio) { _ in }
         }
         // 直接使用游戏指定的Java路径
