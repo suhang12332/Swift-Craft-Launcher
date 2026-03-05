@@ -46550,7 +46550,7 @@
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "遊戲版本不受支援（需要 %d 或更高）"
+            "value" : "遊戲版本不受支援（需要 %@ 或更高）"
           }
         }
       }
