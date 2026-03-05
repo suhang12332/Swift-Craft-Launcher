@@ -112,7 +112,6 @@ struct AddOrDeleteResourceButton: View {
             .disabled(
                 addButtonState == .loading
                     || (addButtonState == .installed && type)
-                    || isDisabled
             )  // type = true (server mode) disables deletion；禁用状态与置灰条件一致
             .onAppear {
                 if type == false {
