@@ -169,12 +169,14 @@ private struct LinksSection: View {
             url.map { (text, $0) }
         }
 
-        GenericSectionView(
-            title: "project.info.links",
-            items: links.map { IdentifiableLink(id: $0.0, text: $0.0, url: $0.1) },
-            isLoading: false
-        ) { item in
-            ProjectLink(text: item.text, url: item.url)
+        if !links.isEmpty {
+            GenericSectionView(
+                title: "project.info.links",
+                items: links.map { IdentifiableLink(id: $0.0, text: $0.0, url: $0.1) },
+                isLoading: false
+            ) { item in
+                ProjectLink(text: item.text, url: item.url)
+            }
         }
     }
 }
