@@ -411,6 +411,7 @@ jobs:
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
           NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
+          NOTES_HTML_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/$VERSION.html"
           
           echo "检查 Release Notes 是否存在: $NOTES_URL"
           if ! curl -fsSI "$NOTES_URL" >/dev/null; then
@@ -418,6 +419,13 @@ jobs:
             exit 1
           fi
           echo "✅ Release Notes 可访问"
+          
+          echo "检查 Release Notes HTML 页面是否存在: $NOTES_HTML_URL"
+          if ! curl -fsSI "$NOTES_HTML_URL" >/dev/null; then
+            echo "❌ Release Notes HTML 页面不存在或不可访问: $NOTES_HTML_URL"
+            exit 1
+          fi
+          echo "✅ Release Notes HTML 页面可访问"
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -493,7 +501,7 @@ jobs:
           # 生成arm64 appcast条目
           ./bin/generate_appcast \
             --ed-key-file ed25519_priv.pem \
-            --release-notes-url-prefix "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/$VERSION.html" \
+            --full-release-notes-url "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/${VERSION}.html" \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
             -o appcast-arm64.xml \
             "$(dirname $ARM64_DMG)"
@@ -527,7 +535,7 @@ jobs:
           # 生成x86_64 appcast条目
           ./bin/generate_appcast \
             --ed-key-file ed25519_priv.pem \
-            --release-notes-url-prefix "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/$VERSION.html" \
+            --full-release-notes-url "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/${VERSION}.html" \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
             -o appcast-x86_64.xml \
             "$(dirname $X86_64_DMG)"
