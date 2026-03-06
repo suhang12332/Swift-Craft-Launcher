@@ -87,7 +87,13 @@ struct SwiftCraftLauncherApp: App {
         .windowResizability(.contentMinSize)
         .conditionalRestorationBehavior()
         .commands {
-
+            if sparkleUpdateService.updateAvailable {
+                CommandMenu(String(format: "menu.update.released.title".localized(), sparkleUpdateService.versionString)) {
+                    Link("menu.view.release.details".localized(), destination: URLConfig.API.GitHub.releaseTag(
+                        version: sparkleUpdateService.versionString
+                    ))
+                }
+            }
             CommandGroup(after: .appInfo) {
                 Button("menu.check.updates".localized()) {
                     sparkleUpdateService.checkForUpdatesWithUI()
@@ -114,7 +120,7 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
 
-                Link("license.view".localized(), destination: URLConfig.API.GitHub.licenseWebPage())
+                Link("license.view".localized(), destination: URLConfig.API.GitHub.license())
                     .keyboardShortcut("l", modifiers: [.command, .option])
 
                 Divider()
