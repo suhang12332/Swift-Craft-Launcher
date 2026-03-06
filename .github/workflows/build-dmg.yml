@@ -542,6 +542,17 @@ jobs:
           
           echo "✅ x86_64 appcast generated successfully"
 
+      - name: Fix appcast release notes link
+        run: |
+          for FILE in appcast-arm64.xml appcast-x86_64.xml; do
+            if [[ -f "$FILE" ]]; then
+              echo "🔧 修正 $FILE 中的 release notes 链接字段..."
+              sed -i '' 's/fullReleaseNotesLink/releaseNotesLink/g' "$FILE"
+            else
+              echo "⚠️ 未找到文件: $FILE"
+            fi
+          done
+
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
