@@ -50978,133 +50978,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 تم إصدار %@"
+            "value" : "🎉 تم إصدار %@"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ er udgivet"
+            "value" : "🎉 %@ er udgivet"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ wurde veröffentlicht"
+            "value" : "🎉 %@ wurde veröffentlicht"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ is now available"
+            "value" : "🎉 %@ is now available"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ ya está disponible"
+            "value" : "🎉 %@ ya está disponible"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ on julkaistu"
+            "value" : "🎉 %@ on julkaistu"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ est disponible"
+            "value" : "🎉 %@ est disponible"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ जारी हो गया है"
+            "value" : "🎉 %@ जारी हो गया है"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ è disponibile"
+            "value" : "🎉 %@ è disponibile"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ がリリースされました"
+            "value" : "🎉 %@ がリリースされました"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@가 출시되었습니다"
+            "value" : "🎉 %@가 출시되었습니다"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ er lansert"
+            "value" : "🎉 %@ er lansert"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ is uitgebracht"
+            "value" : "🎉 %@ is uitgebracht"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 Wydano %@"
+            "value" : "🎉 Wydano %@"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ já está disponível"
+            "value" : "🎉 %@ já está disponível"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ вышел"
+            "value" : "🎉 %@ вышел"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ är släppt"
+            "value" : "🎉 %@ är släppt"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ เปิดตัวแล้ว"
+            "value" : "🎉 %@ เปิดตัวแล้ว"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ yayınlandı"
+            "value" : "🎉 %@ yayınlandı"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@ đã phát hành"
+            "value" : "🎉 %@ đã phát hành"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@已发布"
+            "value" : "🎉 %@已发布"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "🎊 %@已發佈"
+            "value" : "🎉 %@已發佈"
           }
         }
       }
