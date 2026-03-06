@@ -471,6 +471,13 @@ jobs:
           # 获取版本信息
           VERSION=${GITHUB_REF#refs/tags/}
           echo "版本: $VERSION"
+
+          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
+          echo "检查 Release Notes 是否存在: $NOTES_URL"
+          if ! curl -fsSI "$NOTES_URL" >/dev/null; then
+            echo "❌ Release Notes 不存在或不可访问: $NOTES_URL"
+            exit 1
+          fi
           
           # 查找arm64 DMG文件
           echo "查找 arm64 DMG 文件..."
@@ -498,6 +505,13 @@ jobs:
           # 获取版本信息
           VERSION=${GITHUB_REF#refs/tags/}
           echo "版本: $VERSION"
+
+          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
+          echo "检查 Release Notes 是否存在: $NOTES_URL"
+          if ! curl -fsSI "$NOTES_URL" >/dev/null; then
+            echo "❌ Release Notes 不存在或不可访问: $NOTES_URL"
+            exit 1
+          fi
           
           # 查找x86_64 DMG文件
           echo "查找 x86_64 DMG 文件..."
