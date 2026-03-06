@@ -407,6 +407,18 @@ jobs:
     runs-on: macos-15
 
     steps:
+      - name: Verify remote release notes exists
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
+          
+          echo "检查 Release Notes 是否存在: $NOTES_URL"
+          if ! curl -fsSI "$NOTES_URL" >/dev/null; then
+            echo "❌ Release Notes 不存在或不可访问: $NOTES_URL"
+            exit 1
+          fi
+          echo "✅ Release Notes 可访问"
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -443,6 +455,17 @@ jobs:
           echo '${{ secrets.SPARKLE_PRIVATE_KEY }}' > ed25519_priv.pem
           chmod 600 ed25519_priv.pem
 
+      - name: Fetch release notes (remote markdown)
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "版本: $VERSION"
+          
+          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
+          echo "拉取 Release Notes: $NOTES_URL"
+          
+          curl -fsSL "$NOTES_URL" -o release-notes.md
+          echo "✅ Release Notes 已保存到 release-notes.md"
+
       - name: Generate appcast for arm64
         run: |
           # 获取版本信息
@@ -463,6 +486,7 @@ jobs:
           # 生成arm64 appcast条目
           ./bin/generate_appcast \
             --ed-key-file ed25519_priv.pem \
+            --release-notes-url-prefix "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/$VERSION.html" \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
             -o appcast-arm64.xml \
             "$(dirname $ARM64_DMG)"
@@ -489,6 +513,7 @@ jobs:
           # 生成x86_64 appcast条目
           ./bin/generate_appcast \
             --ed-key-file ed25519_priv.pem \
+            --release-notes-url-prefix "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/$VERSION.html" \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
             -o appcast-x86_64.xml \
             "$(dirname $X86_64_DMG)"
@@ -502,5 +527,6 @@ jobs:
             release-artifacts/**/*.dmg
             appcast-arm64.xml
             appcast-x86_64.xml
+          body_path: release-notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
