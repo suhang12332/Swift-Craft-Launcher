@@ -27,11 +27,6 @@ public struct ContentToolbarView: ToolbarContent {
         playerListViewModel.currentPlayer
     }
 
-    /// 是否为在线账户（计算属性）
-    private var isCurrentPlayerOnline: Bool {
-        currentPlayer?.isOnlineAccount ?? false
-    }
-
     public var body: some ToolbarContent {
         ToolbarItemGroup(placement: .primaryAction) {
             Button {
@@ -90,21 +85,22 @@ public struct ContentToolbarView: ToolbarContent {
                         // 延迟清理认证状态，避免影响对话框关闭动画
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             MinecraftAuthService.shared.clearAuthenticationData()
+                            LittleSkinAuthService.shared.clearAuthenticationData()
                         }
                     },
-                    onLogin: { profile in
-                        // 处理正版登录成功，使用Minecraft用户资料
-                        Logger.shared.debug("正版登录成功，用户: \(profile.name)")
-                        // 添加正版玩家
-                        _ = playerListViewModel.addOnlinePlayer(profile: profile)
+                    onLogin: { payload in
+                        Logger.shared.debug("账号登录成功，用户: \(payload.playerName)，来源: \(payload.provider.rawValue)")
+                        _ = playerListViewModel.addAuthenticatedPlayer(payload)
 
-                        // 设置正版账户添加标记
-                        PremiumAccountFlagManager.shared.setPremiumAccountAdded()
+                        if payload.provider == .microsoft {
+                            PremiumAccountFlagManager.shared.setPremiumAccountAdded()
+                        }
 
                         showingAddPlayerSheet = false
                         // 延迟清理认证状态，让用户能看到成功状态
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             MinecraftAuthService.shared.clearAuthenticationData()
+                            LittleSkinAuthService.shared.clearAuthenticationData()
                         }
                     },
 
@@ -119,8 +115,8 @@ public struct ContentToolbarView: ToolbarContent {
                 )
             }
 
-            // 皮肤管理按钮 - 仅在线账户显示
-            if isCurrentPlayerOnline {
+            // 皮肤管理按钮 - 仅 Microsoft 账号显示
+            if currentPlayer?.supportsSkinManagement == true {
                 Button {
                     Task {
                         await openSkinManager()
@@ -169,25 +165,16 @@ public struct ContentToolbarView: ToolbarContent {
     /// 打开皮肤管理器（先加载数据，再显示sheet）
     private func openSkinManager() async {
         guard let player = currentPlayer else { return }
+        guard player.supportsSkinManagement else {
+            NotificationManager.sendSilently(
+                title: "皮肤管理暂不可用",
+                body: "仅 Microsoft 账号支持皮肤管理，LittleSkin 将在后续版本支持。"
+            )
+            return
+        }
 
         await MainActor.run {
             isLoadingSkin = true
-        }
-
-        // 如果是离线账户，直接使用，无需刷新token
-        guard player.isOnlineAccount else {
-            // 预加载皮肤数据
-            async let skinInfo = PlayerSkinService.fetchCurrentPlayerSkinFromServices(player: player)
-            async let profile = PlayerSkinService.fetchPlayerProfile(player: player)
-            let (loadedSkinInfo, loadedProfile) = await (skinInfo, profile)
-
-            await MainActor.run {
-                preloadedSkinInfo = loadedSkinInfo
-                preloadedProfile = loadedProfile
-                isLoadingSkin = false
-                showEditSkin = true
-            }
-            return
         }
 
         Logger.shared.info("打开皮肤管理器前验证玩家 \(player.name) 的Token")
@@ -208,7 +195,7 @@ public struct ContentToolbarView: ToolbarContent {
             validatedPlayer = try await authService.validateAndRefreshPlayerTokenThrowing(for: playerWithCredential)
 
             // 如果Token被更新了，需要保存到PlayerDataManager
-            if validatedPlayer.authAccessToken != player.authAccessToken {
+            if validatedPlayer.credential != playerWithCredential.credential {
                 Logger.shared.info("玩家 \(player.name) 的Token已更新，保存到数据管理器")
                 let dataManager = PlayerDataManager()
                 let success = dataManager.updatePlayerSilently(validatedPlayer)

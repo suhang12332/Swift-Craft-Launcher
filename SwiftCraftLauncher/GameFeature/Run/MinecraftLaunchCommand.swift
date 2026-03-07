@@ -27,7 +27,12 @@ struct MinecraftLaunchCommand {
         let validatedPlayer = try await validatePlayerTokenBeforeLaunch()
 
         let command = game.launchCommand
-        try await launchGameProcess(command: replaceAuthParameters(command: command, with: validatedPlayer))
+        let replacedCommand = replaceAuthParameters(command: command, with: validatedPlayer)
+        let finalCommand = try await injectProviderSpecificArguments(
+            into: replacedCommand,
+            player: validatedPlayer
+        )
+        try await launchGameProcess(command: finalCommand)
     }
 
     /// 在启动游戏前验证玩家Token
@@ -60,7 +65,8 @@ struct MinecraftLaunchCommand {
         let validatedPlayer = try await authService.validateAndRefreshPlayerTokenThrowing(for: playerWithCredential)
 
         // 如果Token被更新了，需要保存到PlayerDataManager
-        if validatedPlayer.authAccessToken != player.authAccessToken {
+        if validatedPlayer.credential != playerWithCredential.credential
+            || validatedPlayer.profile != playerWithCredential.profile {
             Logger.shared.info("玩家 \(player.name) 的Token已更新，保存到数据管理器")
             await updatePlayerInDataManager(validatedPlayer)
         }
@@ -121,6 +127,31 @@ struct MinecraftLaunchCommand {
         }
 
         return replaceGameParameters(command: authReplacedCommand)
+    }
+
+    private func injectProviderSpecificArguments(
+        into command: [String],
+        player: Player?
+    ) async throws -> [String] {
+        guard let player else {
+            return command
+        }
+
+        guard player.accountProvider == .littleskin else {
+            return command
+        }
+
+        let jarURL = try await AuthlibInjectorService.shared.ensureJarDownloaded()
+        let javaAgentArgument = "-javaagent:\(jarURL.path)=littleskin.cn"
+        var updatedCommand = command
+        if !updatedCommand.contains(where: { $0 == javaAgentArgument || ($0.hasPrefix("-javaagent:") && $0.contains("=littleskin.cn")) }) {
+            updatedCommand.insert(javaAgentArgument, at: 0)
+        }
+        let sideArgument = "-Dauthlibinjector.side=client"
+        if !updatedCommand.contains(sideArgument) {
+            updatedCommand.insert(sideArgument, at: 0)
+        }
+        return updatedCommand
     }
 
     private func replaceGameParameters(command: [String]) -> [String] {

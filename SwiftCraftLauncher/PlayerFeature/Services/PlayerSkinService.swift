@@ -103,7 +103,8 @@ enum PlayerSkinService {
                 name: player.profile.name,
                 avatar: skinInfo.skinURL?.httpToHttps() ?? player.avatarName,
                 lastPlayed: player.lastPlayed,
-                isCurrent: player.isCurrent
+                isCurrent: player.isCurrent,
+                provider: player.accountProvider
             )
 
             let updatedCredential = player.credential

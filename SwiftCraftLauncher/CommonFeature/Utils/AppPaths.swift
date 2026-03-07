@@ -162,4 +162,14 @@ extension AppPaths {
     static var gameVersionDatabase: URL {
         dataDirectory.appendingPathComponent("data.db")
     }
+
+    static var authlibInjectorDirectory: URL {
+        cachedURL(key: "authlibInjectorDirectory") {
+            launcherSupportDirectory.appendingPathComponent("authlib-injector", isDirectory: true)
+        }
+    }
+
+    static var authlibInjectorJar: URL {
+        authlibInjectorDirectory.appendingPathComponent("authlib-injector.jar")
+    }
 }

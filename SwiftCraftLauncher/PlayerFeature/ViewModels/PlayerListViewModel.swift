@@ -77,7 +77,12 @@ class PlayerListViewModel: ObservableObject {
     /// - Parameter name: 要添加的玩家名称
     /// - Throws: GlobalError 当操作失败时
     func addPlayerThrowing(name: String) throws {
-        try dataManager.addPlayer(name: name, isOnline: false, avatarName: "")
+        try dataManager.addPlayer(
+            name: name,
+            isOnline: false,
+            avatarName: "",
+            provider: .offline
+        )
         try loadPlayersThrowing()
         Logger.shared.debug("玩家 \(name) 添加成功，列表已更新。")
         Logger.shared.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
@@ -102,19 +107,25 @@ class PlayerListViewModel: ObservableObject {
     /// - Parameter profile: Minecraft 配置文件
     /// - Throws: GlobalError 当操作失败时
     func addOnlinePlayerThrowing(profile: MinecraftProfileResponse) throws {
-        let avatarUrl =
-            profile.skins.isEmpty ? "" : profile.skins[0].url.httpToHttps()
-        try dataManager.addPlayer(
-            name: profile.name,
-            uuid: profile.id,
-            isOnline: true,
-            avatarName: avatarUrl,
-            accToken: profile.accessToken,
-            refreshToken: profile.refreshToken,
-            xuid: profile.authXuid
-        )
+        try addAuthenticatedPlayerThrowing(.microsoft(from: profile))
+    }
+
+    func addAuthenticatedPlayer(_ payload: AuthenticatedPlayerPayload) -> Bool {
+        do {
+            try addAuthenticatedPlayerThrowing(payload)
+            return true
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("添加在线玩家失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return false
+        }
+    }
+
+    func addAuthenticatedPlayerThrowing(_ payload: AuthenticatedPlayerPayload) throws {
+        try dataManager.addAuthenticatedPlayer(payload)
         try loadPlayersThrowing()
-        Logger.shared.debug("玩家 \(profile.name) 添加成功，列表已更新。")
+        Logger.shared.debug("玩家 \(payload.playerName) 添加成功，列表已更新。")
         Logger.shared.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
     }
 

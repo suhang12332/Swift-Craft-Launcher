@@ -21,6 +21,9 @@ struct Player: Identifiable, Equatable {
     /// 玩家头像路径或URL
     var avatarName: String { profile.avatar }
 
+    /// 账户提供方
+    var accountProvider: AccountProvider { credential?.provider ?? profile.provider }
+
     /// 最后游玩时间
     var lastPlayed: Date {
         get { profile.lastPlayed }
@@ -34,17 +37,18 @@ struct Player: Identifiable, Equatable {
     }
 
     /// 是否为在线账号
-    /// 优先依据认证凭据；在尚未从 Keychain 加载凭据时，
-    /// 通过头像是否为远程 URL（http/https）来近似判断是否为正版账号
     var isOnlineAccount: Bool {
-        if credential != nil {
-            return true
-        }
-        return profile.avatar.hasPrefix("http://") || profile.avatar.hasPrefix("https://")
+        accountProvider.isOnline
     }
+
+    /// 是否支持皮肤管理
+    var supportsSkinManagement: Bool { accountProvider == .microsoft }
 
     /// 访问令牌
     var authAccessToken: String { credential?.accessToken ?? "" }
+
+    /// Client Token
+    var authClientToken: String { credential?.clientToken ?? "" }
 
     /// 刷新令牌
     var authRefreshToken: String { credential?.refreshToken ?? "" }
@@ -54,6 +58,9 @@ struct Player: Identifiable, Equatable {
 
     /// 令牌过期时间
     var expiresAt: Date? { credential?.expiresAt }
+
+    /// 认证服务器地址
+    var authServerBaseURL: String { credential?.authServerBaseURL ?? accountProvider.defaultAuthServerBaseURL }
 
     /// 初始化玩家信息
     /// - Parameters:
@@ -77,6 +84,7 @@ struct Player: Identifiable, Equatable {
         name: String,
         uuid: String? = nil,
         avatar: String? = nil,
+        provider: AccountProvider = .offline,
         credential: AuthCredential? = nil,
         lastPlayed: Date = Date(),
         isCurrent: Bool = false
@@ -101,12 +109,15 @@ struct Player: Identifiable, Equatable {
             avatarName = PlayerUtils.avatarName(for: playerId) ?? "steve"
         }
 
+        let resolvedProvider = credential?.provider ?? provider
+
         let profile = UserProfile(
             id: playerId,
             name: name,
             avatar: avatarName,
             lastPlayed: lastPlayed,
-            isCurrent: isCurrent
+            isCurrent: isCurrent,
+            provider: resolvedProvider
         )
 
         self.profile = profile
