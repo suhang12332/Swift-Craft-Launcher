@@ -256,13 +256,9 @@ struct ModrinthDetailView: View {
                 newErrorView(error)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .listRowSeparator(.hidden)
-            } else if viewModel.isLoading {
-                HStack {
-                    ProgressView()
-                        .controlSize(.small)
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-                .listRowSeparator(.hidden)
+            } else if viewModel.isLoading && viewModel.results.isEmpty {
+                // 显示骨架占位符
+                skeletonPlaceholders
             } else if hasLoaded && viewModel.results.isEmpty {
                 emptyResultView()
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -359,5 +355,111 @@ struct ModrinthDetailView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(16)
+    }
+
+    // MARK: - Skeleton Placeholders
+    /// 骨架占位符视图（加载时显示）
+    private var skeletonPlaceholders: some View {
+        ForEach(0..<10, id: \.self) { index in
+            SkeletonResourceCard()
+                .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
+                .listRowInsets(
+                    EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
+                )
+                .listRowSeparator(.hidden)
+        }
+    }
+}
+
+// MARK: - Skeleton Card View
+/// 骨架占位符卡片
+private struct SkeletonResourceCard: View {
+    var body: some View {
+        HStack(spacing: ModrinthConstants.UIConstants.contentSpacing) {
+            // 图标占位符
+            RoundedRectangle(cornerRadius: ModrinthConstants.UIConstants.cornerRadius)
+                .fill(Color.gray.opacity(0.2))
+                .frame(
+                    width: ModrinthConstants.UIConstants.iconSize,
+                    height: ModrinthConstants.UIConstants.iconSize
+                )
+
+            VStack(alignment: .leading, spacing: ModrinthConstants.UIConstants.spacing) {
+                // 标题占位符
+                Text("Loading Resource Title")
+                    .font(.headline)
+                    .lineLimit(1)
+
+                // 描述占位符
+                Text("Loading description text for this resource item")
+                    .font(.subheadline)
+                    .lineLimit(ModrinthConstants.UIConstants.descriptionLineLimit)
+
+                // 标签占位符
+                HStack(spacing: ModrinthConstants.UIConstants.spacing) {
+                    ForEach(0..<3) { _ in
+                        Text("Tag")
+                            .font(.caption2)
+                            .padding(
+                                EdgeInsets(
+                                    top: ModrinthConstants.UIConstants.tagVerticalPadding,
+                                    leading: ModrinthConstants.UIConstants.tagHorizontalPadding,
+                                    bottom: ModrinthConstants.UIConstants.tagVerticalPadding,
+                                    trailing: ModrinthConstants.UIConstants.tagHorizontalPadding
+                                )
+                            )
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(ModrinthConstants.UIConstants.tagCornerRadius)
+                    }
+                }
+            }
+
+            Spacer(minLength: 8)
+
+            // 按钮占位符
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.gray.opacity(0.2))
+                .frame(width: 80, height: 24)
+        }
+        .frame(maxWidth: .infinity)
+        .redacted(reason: .placeholder)
+        .shimmer()
+    }
+}
+
+// MARK: - Shimmer Effect
+/// 为骨架屏添加闪烁动画效果
+private struct ShimmerModifier: ViewModifier {
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                LinearGradient(
+                    colors: [
+                        Color.clear,
+                        Color.white.opacity(0.3),
+                        Color.clear
+                    ],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .offset(x: phase)
+                .mask(content)
+            )
+            .onAppear {
+                withAnimation(
+                    Animation.linear(duration: 1.5)
+                        .repeatForever(autoreverses: false)
+                ) {
+                    phase = 300
+                }
+            }
+    }
+}
+
+private extension View {
+    func shimmer() -> some View {
+        modifier(ShimmerModifier())
     }
 }
