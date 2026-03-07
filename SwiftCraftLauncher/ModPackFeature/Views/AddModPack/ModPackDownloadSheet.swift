@@ -616,7 +616,6 @@ struct ModPackDownloadSheet: View {
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
             Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
-            // 不抛出错误，因为这是清理操作，不应该影响主流程
         }
     }
 }
