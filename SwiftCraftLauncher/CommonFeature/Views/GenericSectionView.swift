@@ -88,7 +88,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
 
     // MARK: - Loading Placeholder
     private var loadingPlaceholder: some View {
-        LoadingPlaceholder(
+        CategorySectionSkeletonView(
             count: SectionViewConstants.defaultPlaceholderCount,
             iconName: iconName,
             maxHeight: SectionViewConstants.defaultMaxHeight,
