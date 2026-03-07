@@ -68,9 +68,7 @@ struct DetailView: View {
                     searchText: filterState.searchTextBinding
                 )
                 .frame(width: width, height: proxy.size.height)
-                // 列表层保持基本静止，仅做轻微位移来保留“左滑切换”感
-                .offset(x: showDetail ? -24 : 0)
-                .opacity(showDetail ? 0.96 : 1.0)
+                .opacity(showDetail ? 0 : 1.0)
 
                 List {
                     ModrinthProjectDetailView(
@@ -79,11 +77,13 @@ struct DetailView: View {
                     )
                 }
                 .frame(width: width, height: proxy.size.height)
-                .offset(x: showDetail ? 0 : width)
+                .opacity(showDetail ? 1.0 : 0)
                 .allowsHitTesting(showDetail)
             }
             .clipped()
-            .animation(.easeOut(duration: 0.2), value: showDetail)
+            .transaction { transaction in
+                transaction.animation = nil
+            }
             .onChange(of: showDetail) { _, _ in
                 transitionTask?.cancel()
                 isResourceTransitioning = true

@@ -282,11 +282,10 @@ struct ModrinthDetailView: View {
                     .listRowSeparator(.hidden)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.28)) {
-                            selectedProjectId = mod.projectId
-                            if let type = ResourceType(rawValue: query) {
-                                selectedItem = .resource(type)
-                            }
+                        // 禁用动画以优化性能
+                        selectedProjectId = mod.projectId
+                        if let type = ResourceType(rawValue: query) {
+                            selectedItem = .resource(type)
                         }
                     }
                     .onAppear {
@@ -349,18 +348,19 @@ struct ModrinthDetailView: View {
     }
 
     private var loadingMoreIndicator: some View {
-        VStack(spacing: 12) {
+        HStack {
+            Spacer()
             ProgressView()
                 .controlSize(.small)
+                .padding(.vertical, 12)
+            Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(16)
     }
 
     // MARK: - Skeleton Placeholders
     /// 骨架占位符视图（加载时显示）
     private var skeletonPlaceholders: some View {
-        ForEach(0..<10, id: \.self) { index in
+        ForEach(0..<10, id: \.self) { _ in
             SkeletonResourceCard()
                 .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                 .listRowInsets(
@@ -439,7 +439,7 @@ private struct ShimmerModifier: ViewModifier {
                     colors: [
                         Color.clear,
                         Color.white.opacity(0.3),
-                        Color.clear
+                        Color.clear,
                     ],
                     startPoint: .leading,
                     endPoint: .trailing

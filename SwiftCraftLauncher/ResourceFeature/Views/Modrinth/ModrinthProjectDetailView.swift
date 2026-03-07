@@ -199,7 +199,7 @@ private struct SkeletonDetailView: View {
                     RoundedRectangle(cornerRadius: 6)
                         .fill(Color.secondary.opacity(0.12))
                         .frame(height: index == 2 ? 80 : 16)
-                        .frame(maxWidth: index % 2 == 0 ? .infinity : .infinity * 0.85)
+                        .frame(maxWidth: index.isMultiple(of: 2) ? .infinity : .infinity * 0.85)
                 }
             }
             .padding(.horizontal, Constants.padding)
@@ -222,7 +222,7 @@ private struct ShimmerModifier: ViewModifier {
                     gradient: Gradient(colors: [
                         Color.clear,
                         Color.white.opacity(0.3),
-                        Color.clear
+                        Color.clear,
                     ]),
                     startPoint: .leading,
                     endPoint: .trailing
