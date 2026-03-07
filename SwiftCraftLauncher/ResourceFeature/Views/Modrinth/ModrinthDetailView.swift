@@ -2,6 +2,10 @@ import SwiftUI
 
 // MARK: - Main View
 struct ModrinthDetailView: View {
+    private enum UIConstants {
+        static let emptyStateDelayNanoseconds: UInt64 = 1_200_000_000
+    }
+
     // MARK: - Properties
     let query: String
     @Binding var selectedVersions: [String]
@@ -25,6 +29,8 @@ struct ModrinthDetailView: View {
     @State private var currentPage: Int = 1
     @State private var lastSearchParams: String = ""
     @State private var error: GlobalError?
+    @State private var canShowEmptyResult = false
+    @State private var emptyResultDelayTask: Task<Void, Never>?
 
     init(
         query: String,
@@ -166,6 +172,8 @@ struct ModrinthDetailView: View {
         .onDisappear {
             searchTimer?.invalidate()
             searchTimer = nil
+            emptyResultDelayTask?.cancel()
+            emptyResultDelayTask = nil
         }
     }
 
@@ -209,6 +217,8 @@ struct ModrinthDetailView: View {
             Logger.shared.error("搜索失败: \(globalError.chineseMessage)")
             GlobalErrorHandler.shared.handle(globalError)
             await MainActor.run {
+                self.emptyResultDelayTask?.cancel()
+                self.emptyResultDelayTask = nil
                 self.error = globalError
             }
         }
@@ -232,6 +242,7 @@ struct ModrinthDetailView: View {
 
         lastSearchParams = params
         if !append {
+            startEmptyResultDelay()
             viewModel.beginNewSearch()
         }
         await viewModel.search(
@@ -247,6 +258,28 @@ struct ModrinthDetailView: View {
             append: append,
             dataSource: dataSource
         )
+
+        await MainActor.run {
+            if !viewModel.results.isEmpty {
+                canShowEmptyResult = true
+                emptyResultDelayTask?.cancel()
+                emptyResultDelayTask = nil
+            }
+        }
+    }
+
+    private func startEmptyResultDelay() {
+        emptyResultDelayTask?.cancel()
+        canShowEmptyResult = false
+        emptyResultDelayTask = Task {
+            try? await Task.sleep(nanoseconds: UIConstants.emptyStateDelayNanoseconds)
+            guard !Task.isCancelled else { return }
+            await MainActor.run {
+                if viewModel.results.isEmpty {
+                    canShowEmptyResult = true
+                }
+            }
+        }
     }
 
     // MARK: - Result List
@@ -258,6 +291,9 @@ struct ModrinthDetailView: View {
                     .listRowSeparator(.hidden)
             } else if viewModel.isLoading && viewModel.results.isEmpty {
                 // 显示骨架占位符
+                skeletonPlaceholders
+            } else if hasLoaded && viewModel.results.isEmpty && !canShowEmptyResult {
+                // 空状态延迟期间继续显示骨架，避免过早提示“无结果”
                 skeletonPlaceholders
             } else if hasLoaded && viewModel.results.isEmpty {
                 emptyResultView()
@@ -285,7 +321,10 @@ struct ModrinthDetailView: View {
                         // 禁用动画以优化性能
                         selectedProjectId = mod.projectId
                         if let type = ResourceType(rawValue: query) {
-                            selectedItem = .resource(type)
+                            let nextItem = SidebarItem.resource(type)
+                            if selectedItem != nextItem {
+                                selectedItem = nextItem
+                            }
                         }
                     }
                     .onAppear {
@@ -362,6 +401,7 @@ struct ModrinthDetailView: View {
     private var skeletonPlaceholders: some View {
         ForEach(0..<10, id: \.self) { _ in
             SkeletonResourceCard()
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                 .listRowInsets(
                     EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
@@ -413,15 +453,8 @@ private struct SkeletonResourceCard: View {
                     }
                 }
             }
-
-            Spacer(minLength: 8)
-
-            // 按钮占位符
-            RoundedRectangle(cornerRadius: 6)
-                .fill(Color.gray.opacity(0.2))
-                .frame(width: 80, height: 24)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .redacted(reason: .placeholder)
         .shimmer()
     }
@@ -460,6 +493,6 @@ private struct ShimmerModifier: ViewModifier {
 
 private extension View {
     func shimmer() -> some View {
-        modifier(ShimmerModifier())
+        self
     }
 }

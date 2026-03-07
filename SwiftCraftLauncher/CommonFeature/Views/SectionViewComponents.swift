@@ -221,6 +221,6 @@ private struct ShimmerModifier: ViewModifier {
 private extension View {
 
     func shimmer() -> some View {
-        modifier(ShimmerModifier())
+        self
     }
 }

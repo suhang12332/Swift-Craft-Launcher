@@ -63,7 +63,13 @@ public final class ResourceDetailState: ObservableObject {
     public var selectedItemBinding: Binding<SidebarItem> {
         Binding(get: { [weak self] in self?.selectedItem ?? .resource(.mod) }, set: { [weak self] value in
             guard let self else { return }
-            DispatchQueue.main.async { self.selectedItem = value }
+            if Thread.isMainThread {
+                self.selectedItem = value
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.selectedItem = value
+                }
+            }
         })
     }
 
@@ -71,43 +77,93 @@ public final class ResourceDetailState: ObservableObject {
     public var selectedItemOptionalBinding: Binding<SidebarItem?> {
         Binding(get: { [weak self] in self?.selectedItem }, set: { [weak self] value in
             guard let self else { return }
-            DispatchQueue.main.async { if let v = value { self.selectedItem = v } }
+            if let v = value {
+                if Thread.isMainThread {
+                    self.selectedItem = v
+                } else {
+                    DispatchQueue.main.async { [weak self] in
+                        self?.selectedItem = v
+                    }
+                }
+            }
         })
     }
     public var gameTypeBinding: Binding<Bool> {
         Binding(get: { [weak self] in self?.gameType ?? true }, set: { [weak self] value in
             guard let self else { return }
-            DispatchQueue.main.async { self.gameType = value }
+            if Thread.isMainThread {
+                self.gameType = value
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.gameType = value
+                }
+            }
         })
     }
     public var gameIdBinding: Binding<String?> {
         Binding(get: { [weak self] in self?.gameId }, set: { [weak self] value in
             guard let self else { return }
-            DispatchQueue.main.async { self.gameId = value }
+            if Thread.isMainThread {
+                self.gameId = value
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.gameId = value
+                }
+            }
         })
     }
     public var gameResourcesTypeBinding: Binding<String> {
         Binding(get: { [weak self] in self?.gameResourcesType ?? "mod" }, set: { [weak self] value in
             guard let self else { return }
-            DispatchQueue.main.async { self.gameResourcesType = value }
+            if Thread.isMainThread {
+                self.gameResourcesType = value
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.gameResourcesType = value
+                }
+            }
         })
     }
     public var selectedProjectIdBinding: Binding<String?> {
         Binding(get: { [weak self] in self?.selectedProjectId }, set: { [weak self] value in
             guard let self else { return }
-            DispatchQueue.main.async { self.selectedProjectId = value }
+            guard self.selectedProjectId != value else { return }
+            if Thread.isMainThread {
+                self.selectedProjectId = value
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    guard self.selectedProjectId != value else { return }
+                    self.selectedProjectId = value
+                }
+            }
         })
     }
     public var loadedProjectDetailBinding: Binding<ModrinthProjectDetail?> {
         Binding(get: { [weak self] in self?.loadedProjectDetail }, set: { [weak self] value in
             guard let self else { return }
-            DispatchQueue.main.async { self.loadedProjectDetail = value }
+            guard self.loadedProjectDetail?.id != value?.id else { return }
+            if Thread.isMainThread {
+                self.loadedProjectDetail = value
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    guard self.loadedProjectDetail?.id != value?.id else { return }
+                    self.loadedProjectDetail = value
+                }
+            }
         })
     }
     public var showInstallSheetBinding: Binding<Bool> {
         Binding(get: { [weak self] in self?.showInstallSheet ?? false }, set: { [weak self] value in
             guard let self else { return }
-            DispatchQueue.main.async { self.showInstallSheet = value }
+            if Thread.isMainThread {
+                self.showInstallSheet = value
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    self?.showInstallSheet = value
+                }
+            }
         })
     }
 }
