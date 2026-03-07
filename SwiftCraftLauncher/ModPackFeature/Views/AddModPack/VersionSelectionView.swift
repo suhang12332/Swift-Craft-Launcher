@@ -23,12 +23,12 @@ struct VersionSelectionView: View {
 
     private var gameVersionPicker: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("modpack.game.version".localized())
-                .foregroundColor(.primary)
-            Picker(
-                "",
+            CommonMenuPicker(
                 selection: $selectedGameVersion
             ) {
+                Text("modpack.game.version".localized())
+                    .foregroundColor(.primary)
+            } content: {
                 if availableGameVersions.isEmpty {
                     Text(String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline))
                         .tag("")
@@ -40,9 +40,6 @@ struct VersionSelectionView: View {
                     }
                 }
             }
-            .pickerStyle(MenuPickerStyle())
-            .font(.subheadline)
-            .labelsHidden()
             .disabled(availableGameVersions.isEmpty) // 没有版本时禁用
             .onChange(of: selectedGameVersion) { _, newValue in
                 onGameVersionChange(newValue)
@@ -57,24 +54,23 @@ struct VersionSelectionView: View {
                     .foregroundColor(.primary)
                 HStack {
                     ProgressView()
-                        .controlSize(.small).frame(maxWidth: .infinity)
+                        .controlSize(.small)
+                        .frame(maxWidth: .infinity)
                 }
             } else if !selectedGameVersion.isEmpty {
-                Text("modpack.version".localized())
-                    .foregroundColor(.primary)
-                Picker(
-                    "",
+                CommonMenuPicker(
                     selection: $selectedModPackVersion
                 ) {
+                    Text("modpack.version".localized())
+                        .foregroundColor(.primary)
+                } content: {
                     ForEach(filteredModPackVersions, id: \.id) { version in
                         Text(version.name).tag(
                             version as ModrinthProjectDetailVersion?
                         )
                     }
                 }
-                .labelsHidden()
                 .font(.subheadline)
-                .pickerStyle(MenuPickerStyle())
                 .onAppear {
                     onModPackVersionAppear()
                 }

@@ -12,6 +12,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     @Published var currentVersion = ""
     @Published var latestVersion = ""
     @Published var updateDescription = ""
+    @Published var versionString = ""
 
     // 配置选项
     private let startupCheckDelay: TimeInterval = 2.0 // 启动后延迟检查时间（秒）
@@ -81,6 +82,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         isCheckingForUpdates = false
         updateAvailable = true
         latestVersion = item.versionString
+        versionString = item.displayVersionString
         updateDescription = item.itemDescription ?? ""
     }
 

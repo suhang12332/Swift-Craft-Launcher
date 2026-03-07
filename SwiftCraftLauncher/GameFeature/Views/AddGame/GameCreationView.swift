@@ -218,7 +218,12 @@ struct GameCreationView: View {
             Text("game.form.modloader".localized())
                 .font(.subheadline)
                 .foregroundColor(.primary)
-            Picker("", selection: $viewModel.selectedModLoader) {
+            CommonMenuPicker(
+                selection: $viewModel.selectedModLoader,
+                hidesLabel: true
+            ) {
+                Text("")
+            } content: {
                 ForEach(AppConstants.modLoaders, id: \.self) { loader in
                     switch loader {
                     case "vanilla":
@@ -236,8 +241,6 @@ struct GameCreationView: View {
                     }
                 }
             }
-            .labelsHidden()
-            .pickerStyle(MenuPickerStyle())
             .disabled(viewModel.gameSetupService.downloadState.isDownloading)
         }
     }
@@ -247,13 +250,16 @@ struct GameCreationView: View {
             Text("game.form.loader.version".localized())
                 .font(.subheadline)
                 .foregroundColor(.primary)
-            Picker("", selection: $viewModel.selectedLoaderVersion) {
+            CommonMenuPicker(
+                selection: $viewModel.selectedLoaderVersion,
+                hidesLabel: true
+            ) {
+                Text("")
+            } content: {
                 ForEach(viewModel.availableLoaderVersions, id: \.self) { version in
                     Text(version).tag(version)
                 }
             }
-            .labelsHidden()
-            .pickerStyle(MenuPickerStyle())
             .disabled(viewModel.gameSetupService.downloadState.isDownloading || viewModel.availableLoaderVersions.isEmpty)
         }
     }

@@ -514,8 +514,20 @@ enum ModrinthService {
                     continue
                 }
                 let hash = primaryFile.hashes.sha1
-                if ModScanner.shared.isModInstalledSync(hash: hash, in: modsDir) {
-                    return true
+                let lowercasedType = type.lowercased()
+
+                if lowercasedType == "mod" {
+                    if ModScanner.shared.isModInstalledSync(hash: hash, in: modsDir) {
+                        return true
+                    }
+                } else {
+                    let isInstalled = await ModScanner.shared.isResourceInstalledByHash(
+                        hash,
+                        in: modsDir
+                    )
+                    if isInstalled {
+                        return true
+                    }
                 }
             }
         } catch {

@@ -39,14 +39,18 @@ func filterCompatibleGames(
     return await withTaskGroup(of: GameVersionInfo?.self) { group in
         for game in compatibleGames {
             group.addTask {
+                // 获取当前资源类型在该游戏下的安装目录（mods/datapacks/resourcepacks/shaderpacks）
+                let resourceDir =
+                    AppPaths.resourceDirectory(for: resourceType, gameName: game.gameName)
+                    ?? AppPaths.modsDirectory(gameName: game.gameName)
+
                 // 判断该资源在该游戏下是否已安装（使用统一的哈希检测逻辑）
-                let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
                 let isInstalled = await ModrinthService.isProjectInstalledByAnyCompatibleVersion(
                     projectId: projectId,
                     selectedVersions: [game.gameVersion],
                     selectedLoaders: [game.modLoader],
                     type: resourceType,
-                    modsDir: modsDir
+                    modsDir: resourceDir
                 )
 
                 if isInstalled {

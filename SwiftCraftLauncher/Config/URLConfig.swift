@@ -174,9 +174,19 @@ enum URLConfig {
 
             // GitHub 仓库主页 URL
             static func repositoryURL() -> URL {
-                return gitHubBase
+                gitHubBase
                     .appendingPathComponent(repositoryOwner)
                     .appendingPathComponent(repositoryName)
+            }
+
+            /// 指定版本的 Release 页面（tag）
+            static func releaseTag(version: String) -> URL {
+                gitHubBase
+                    .appendingPathComponent(repositoryOwner)
+                    .appendingPathComponent(repositoryName)
+                    .appendingPathComponent("releases")
+                    .appendingPathComponent("tag")
+                    .appendingPathComponent(version)
             }
 
             // Appcast 相关
@@ -230,25 +240,13 @@ enum URLConfig {
 
             // LICENSE 文件（API）
             static func license(ref: String = "main") -> URL {
-                let url = repositoryBaseURL
-                    .appendingPathComponent("contents")
-                    .appendingPathComponent("LICENSE")
-                    .appending(queryItems: [
-                        URLQueryItem(name: "ref", value: ref)
-                    ])
-                return URLConfig.applyGitProxyIfNeeded(url)
-            }
-
-            // LICENSE 文件（网页）
-            static func licenseWebPage(ref: String = "main") -> URL {
-                let url = gitHubBase
+                gitHubBase
                     .appendingPathComponent(repositoryOwner)
                     .appendingPathComponent(repositoryName)
                     .appendingPathComponent("blob")
                     .appendingPathComponent(ref)
                     .appendingPathComponent("LICENSE")
                 // License 网页不走 GitHub 代理，直接打开原始 github.com 链接
-                return url
             }
 
             // Announcement API

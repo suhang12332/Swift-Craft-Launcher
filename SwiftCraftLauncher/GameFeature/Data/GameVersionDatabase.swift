@@ -8,6 +8,7 @@ class GameVersionDatabase {
 
     private let db: SQLiteDatabase
     private let tableName = AppConstants.DatabaseTables.gameVersions
+    private var isInitialized = false
 
     // MARK: - Initialization
 
@@ -22,8 +23,12 @@ class GameVersionDatabase {
     /// 打开数据库并初始化表结构
     /// - Throws: GlobalError 当操作失败时
     func initialize() throws {
+        if isInitialized {
+            return
+        }
         try db.open()
         try createTable()
+        isInitialized = true
     }
 
     /// 创建游戏版本表
