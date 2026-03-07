@@ -65,6 +65,13 @@ enum AppPaths {
         }
     }
 
+    /// 某个游戏实例的 options.txt 路径
+    static func optionsFile(gameName: String) -> URL {
+        cachedURL(key: "optionsFile:\(gameName)") {
+            profileDirectory(gameName: gameName).appendingPathComponent("options.txt")
+        }
+    }
+
     static func modsDirectory(gameName: String) -> URL {
         cachedURL(key: "modsDirectory:\(gameName)") {
             profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.mods)

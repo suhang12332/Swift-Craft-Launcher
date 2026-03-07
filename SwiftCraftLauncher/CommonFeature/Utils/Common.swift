@@ -109,6 +109,102 @@ enum CommonUtil {
     static func isVersionAtLeast(_ version: String) -> Bool {
         return compareMinecraftVersions(version, AppConstants.MinecraftVersions.featureBaseline) >= 0
     }
+
+    // MARK: - Minecraft Language Mapping
+
+    /// 将启动器语言代码（如 zh-Hans / en / ja）映射为 Minecraft 语言码（如 zh_cn / en_us / ja_jp）
+    /// - Parameter launcherLang: 启动器语言代码
+    /// - Returns: Minecraft 语言码，默认为 en_us
+    static func minecraftLanguageCode(from launcherLang: String) -> String {
+        let code = launcherLang.lowercased()
+
+        switch code {
+        case "zh-hans", "zh_cn", "zh-cn":
+            return "zh_cn"      // 简体中文
+        case "zh-hant", "zh_tw", "zh-tw", "zh-hk":
+            return "zh_tw"      // 繁体中文
+
+        case "en", "en_us", "en-us", "en-gb":
+            return "en_us"      // 英文（默认美式）
+
+        case "de", "de_de", "de-de":
+            return "de_de"      // 德语
+        case "es", "es_es", "es-es":
+            return "es_es"      // 西班牙语
+        case "fr", "fr_fr", "fr-fr":
+            return "fr_fr"      // 法语
+        case "fi", "fi_fi", "fi-fi":
+            return "fi_fi"      // 芬兰语
+        case "it", "it_it", "it-it":
+            return "it_it"      // 意大利语
+        case "ja", "ja_jp", "ja-jp":
+            return "ja_jp"      // 日语
+        case "ko", "ko_kr", "ko-kr":
+            return "ko_kr"      // 韩语
+        case "nb", "no", "nb_no", "nb-no", "no_no", "no-no":
+            return "nb_no"      // 挪威语
+        case "nl", "nl_nl", "nl-nl":
+            return "nl_nl"      // 荷兰语
+        case "pl", "pl_pl", "pl-pl":
+            return "pl_pl"      // 波兰语
+        case "pt", "pt_br", "pt-br":
+            return "pt_br"      // 葡萄牙语（默认巴西葡语）
+        case "ru", "ru_ru", "ru-ru":
+            return "ru_ru"      // 俄语
+        case "sv", "sv_se", "sv-se":
+            return "sv_se"      // 瑞典语
+        case "th", "th_th", "th-th":
+            return "th_th"      // 泰语
+        case "tr", "tr_tr", "tr-tr":
+            return "tr_tr"      // 土耳其语
+        case "vi", "vi_vn", "vi-vn":
+            return "vi_vn"      // 越南语
+
+        default:
+            // 兜底：用英文
+            return "en_us"
+        }
+    }
+
+    // MARK: - Minecraft Options.txt Helper
+
+    /// 在指定游戏实例的 options.txt 中插入或更新一行 `key:value`
+    static func upsertOptionsEntry(gameName: String, key: String, value: String) {
+        let optionsURL = AppPaths.optionsFile(gameName: gameName)
+        let gameDirectory = optionsURL.deletingLastPathComponent()
+
+        do {
+            try FileManager.default.createDirectory(at: gameDirectory, withIntermediateDirectories: true)
+
+            let fileManager = FileManager.default
+            var lines: [String] = []
+
+            if fileManager.fileExists(atPath: optionsURL.path) {
+                let content = try String(contentsOf: optionsURL, encoding: .utf8)
+                lines = content.components(separatedBy: .newlines)
+
+                var hasKeyLine = false
+                lines = lines.map { line in
+                    if line.hasPrefix("\(key):") {
+                        hasKeyLine = true
+                        return "\(key):\(value)"
+                    }
+                    return line
+                }
+
+                if !hasKeyLine {
+                    lines.append("\(key):\(value)")
+                }
+            } else {
+                lines = ["\(key):\(value)"]
+            }
+
+            let newContent = lines.joined(separator: "\n")
+            try newContent.write(to: optionsURL, atomically: true, encoding: .utf8)
+        } catch {
+            Logger.shared.warning("更新 options.txt 失败（游戏: \(gameName), key: \(key)）: \(error.localizedDescription)")
+        }
+    }
 }
 
 enum ImageLoadingUtil {
