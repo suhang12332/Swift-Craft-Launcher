@@ -15,6 +15,7 @@ class PlayerDataManager {
     ///   - isOnline: 是否为在线账户
     ///   - avatarName: 头像名称
     ///   - accToken: 访问令牌，默认为空字符串
+    ///   - clientToken: Client Token，默认为空字符串
     ///   - refreshToken: 刷新令牌，默认为空字符串
     ///   - xuid: Xbox用户ID，默认为空字符串
     ///   - expiresAt: 令牌过期时间，可选
@@ -24,14 +25,18 @@ class PlayerDataManager {
         uuid: String? = nil,
         isOnline: Bool,
         avatarName: String,
+        provider: AccountProvider = .offline,
         accToken: String = "",
+        clientToken: String = "",
         refreshToken: String = "",
         xuid: String = "",
-        expiresAt: Date? = nil
+        expiresAt: Date? = nil,
+        authServerBaseURL: String = ""
     ) throws {
         let players = try loadPlayersThrowing()
 
-        if playerExists(name: name) {
+        // 离线账号继续按名称去重；在线账号允许与离线同名（由 UUID 保证唯一）
+        if !isOnline, playerExists(name: name) {
             throw GlobalError.player(
                 chineseMessage: "玩家已存在: \(name)",
                 i18nKey: "error.player.already_exists",
@@ -52,10 +57,13 @@ class PlayerDataManager {
                 }
                 credential = AuthCredential(
                     userId: tempId,
+                    provider: provider,
                     accessToken: accToken,
+                    clientToken: clientToken,
                     refreshToken: refreshToken,
                     expiresAt: expiresAt,
-                    xuid: xuid
+                    xuid: xuid,
+                    authServerBaseURL: authServerBaseURL
                 )
             } else {
                 credential = nil
@@ -65,6 +73,7 @@ class PlayerDataManager {
                 name: name,
                 uuid: uuid,
                 avatar: avatarName.isEmpty ? nil : avatarName,
+                provider: isOnline ? provider : .offline,
                 credential: credential,
                 isCurrent: players.isEmpty
             )
@@ -102,6 +111,7 @@ class PlayerDataManager {
     ///   - isOnline: 是否为在线账户
     ///   - avatarName: 头像名称
     ///   - accToken: 访问令牌，默认为空字符串
+    ///   - clientToken: Client Token，默认为空字符串
     ///   - refreshToken: 刷新令牌，默认为空字符串
     ///   - xuid: Xbox用户ID，默认为空字符串
     ///   - expiresAt: 令牌过期时间，可选
@@ -111,10 +121,13 @@ class PlayerDataManager {
         uuid: String? = nil,
         isOnline: Bool,
         avatarName: String,
+        provider: AccountProvider = .offline,
         accToken: String = "",
+        clientToken: String = "",
         refreshToken: String = "",
         xuid: String = "",
-        expiresAt: Date? = nil
+        expiresAt: Date? = nil,
+        authServerBaseURL: String = ""
     ) -> Bool {
         do {
             try addPlayer(
@@ -122,10 +135,13 @@ class PlayerDataManager {
                 uuid: uuid,
                 isOnline: isOnline,
                 avatarName: avatarName,
+                provider: provider,
                 accToken: accToken,
+                clientToken: clientToken,
                 refreshToken: refreshToken,
                 xuid: xuid,
-                expiresAt: expiresAt
+                expiresAt: expiresAt,
+                authServerBaseURL: authServerBaseURL
             )
             return true
         } catch {
@@ -134,6 +150,21 @@ class PlayerDataManager {
             GlobalErrorHandler.shared.handle(globalError)
             return false
         }
+    }
+
+    func addAuthenticatedPlayer(_ payload: AuthenticatedPlayerPayload) throws {
+        try addPlayer(
+            name: payload.playerName,
+            uuid: payload.playerId,
+            isOnline: payload.provider.isOnline,
+            avatarName: payload.avatarURL,
+            provider: payload.provider,
+            accToken: payload.accessToken,
+            clientToken: payload.clientToken,
+            refreshToken: payload.refreshToken,
+            xuid: payload.xuid,
+            authServerBaseURL: payload.authServerBaseURL
+        )
     }
 
     /// 加载所有保存的玩家（静默版本）

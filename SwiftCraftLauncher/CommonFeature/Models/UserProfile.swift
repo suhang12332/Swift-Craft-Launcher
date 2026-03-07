@@ -18,6 +18,9 @@ struct UserProfile: Identifiable, Codable, Equatable {
     /// 是否为当前选中的用户
     var isCurrent: Bool
 
+    /// 账户提供方
+    let provider: AccountProvider
+
     /// 初始化用户基本信息
     /// - Parameters:
     ///   - id: 用户唯一标识符
@@ -30,12 +33,34 @@ struct UserProfile: Identifiable, Codable, Equatable {
         name: String,
         avatar: String,
         lastPlayed: Date = Date(),
-        isCurrent: Bool = false
+        isCurrent: Bool = false,
+        provider: AccountProvider = .offline
     ) {
         self.id = id
         self.name = name
         self.avatar = avatar
         self.lastPlayed = lastPlayed
         self.isCurrent = isCurrent
+        self.provider = provider
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case avatar
+        case lastPlayed
+        case isCurrent
+        case provider
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        avatar = try container.decode(String.self, forKey: .avatar)
+        lastPlayed = try container.decode(Date.self, forKey: .lastPlayed)
+        isCurrent = try container.decode(Bool.self, forKey: .isCurrent)
+        provider = try container.decodeIfPresent(AccountProvider.self, forKey: .provider)
+            ?? AccountProvider.inferFromLegacyAvatar(avatar)
     }
 }

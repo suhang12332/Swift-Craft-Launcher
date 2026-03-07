@@ -5,17 +5,12 @@ struct AddPlayerSheetView: View {
     @Binding var isPlayerNameValid: Bool
     var onAdd: () -> Void
     var onCancel: () -> Void
-    var onLogin: (MinecraftProfileResponse) -> Void
-
-    enum PlayerProfile {
-        case minecraft(MinecraftProfileResponse)
-    }
+    var onLogin: (AuthenticatedPlayerPayload) -> Void
 
     @ObservedObject var playerListViewModel: PlayerListViewModel
 
-    @State private var isPremium: Bool = false
-    @State private var authenticatedProfile: MinecraftProfileResponse?
     @StateObject private var authService = MinecraftAuthService.shared
+    @StateObject private var littleSkinAuthService = LittleSkinAuthService.shared
 
     @Environment(\.openURL)
     private var openURL
@@ -64,7 +59,9 @@ struct AddPlayerSheetView: View {
             body: {
                 switch selectedAuthType {
                 case .premium:
-                    MinecraftAuthView(onLoginSuccess: onLogin)
+                    MinecraftAuthView()
+                case .littleskin:
+                    LittleSkinAuthView()
                 case .offline:
                     VStack(alignment: .leading) {
                         playerInfoSection
@@ -79,11 +76,12 @@ struct AddPlayerSheetView: View {
                         "common.cancel".localized()
                     ) {
                         authService.isLoading = false
+                        littleSkinAuthService.clearAuthenticationData()
                         onCancel()
                     }
                     Spacer()
-                    if selectedAuthType == .premium {
-                        // 根据认证状态显示不同的按钮
+                    switch selectedAuthType {
+                    case .premium:
                         switch authService.authState {
                         case .notAuthenticated:
                             Button("addplayer.auth.start_login".localized()) {
@@ -94,9 +92,8 @@ struct AddPlayerSheetView: View {
                             .keyboardShortcut(.defaultAction)
 
                         case .authenticated(let profile):
-
                             Button("addplayer.auth.add".localized()) {
-                                onLogin(profile)
+                                onLogin(.microsoft(from: profile))
                             }
                             .keyboardShortcut(.defaultAction)
 
@@ -111,7 +108,44 @@ struct AddPlayerSheetView: View {
                         default:
                             ProgressView().controlSize(.small)
                         }
-                    } else {
+                    case .littleskin:
+                        switch littleSkinAuthService.authState {
+                        case .idle:
+                            Button("addplayer.auth.start_login".localized()) {
+                                Task {
+                                    await littleSkinAuthService.login()
+                                }
+                            }
+                            .keyboardShortcut(.defaultAction)
+                            .disabled(littleSkinAuthService.email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || littleSkinAuthService.password.isEmpty)
+
+                        case .authenticating:
+                            ProgressView().controlSize(.small)
+
+                        case .selectingProfiles:
+                            Button("addplayer.auth.add".localized()) {
+                                if let payload = littleSkinAuthService.finalizeSelectedProfile() {
+                                    onLogin(payload)
+                                }
+                            }
+                            .keyboardShortcut(.defaultAction)
+                            .disabled(littleSkinAuthService.selectedProfileId.isEmpty)
+
+                        case .authenticated(let payload):
+                            Button("addplayer.auth.add".localized()) {
+                                onLogin(payload)
+                            }
+                            .keyboardShortcut(.defaultAction)
+
+                        case .error:
+                            Button("addplayer.auth.retry".localized()) {
+                                Task {
+                                    await littleSkinAuthService.login()
+                                }
+                            }
+                            .keyboardShortcut(.defaultAction)
+                        }
+                    case .offline:
                         Button(
                             "addplayer.purchase.minecraft".localized()
                         ) {
@@ -193,8 +227,8 @@ struct AddPlayerSheetView: View {
             return AccountAuthType.allCases
         }
 
-        // 如果是国外IP且列表中没有正版账户，只显示正版选项
-        return [.premium]
+        // 国外IP下不允许新增离线账户，但仍允许使用外置登录
+        return [.premium, .littleskin]
     }
 
     // MARK: - 清除数据
@@ -203,11 +237,12 @@ struct AddPlayerSheetView: View {
         // 清理玩家名称
         playerName = ""
         isPlayerNameValid = false
-        // 清理认证状态
-        authenticatedProfile = nil
-        isPremium = false
         // 重置认证服务状态
         authService.isLoading = false
+        Task { @MainActor in
+            authService.clearAuthenticationData()
+            littleSkinAuthService.clearAuthenticationData()
+        }
         // 重置焦点状态
         isTextFieldFocused = false
         showErrorPopover = false
@@ -301,14 +336,17 @@ struct AddPlayerSheetView: View {
 enum AccountAuthType: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
-    case offline
     case premium
+    case littleskin
+    case offline
 
     var displayName: String {
         switch self {
         case .premium:
             return "addplayer.auth.microsoft".localized()
-        default:
+        case .littleskin:
+            return "LittleSkin"
+        case .offline:
             return "addplayer.auth.offline".localized()
         }
     }
@@ -320,7 +358,9 @@ extension AccountAuthType {
         switch self {
         case .premium:
             return ("person.crop.circle.badge.plus", .multicolor)
-        default:
+        case .littleskin:
+            return ("person.crop.circle.badge.questionmark", .multicolor)
+        case .offline:
             return ("person.crop.circle.badge.minus", .multicolor)
         }
     }

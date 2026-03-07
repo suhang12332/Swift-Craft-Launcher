@@ -538,7 +538,17 @@ extension MinecraftAuthService {
     /// - Returns: 验证/刷新后的玩家对象
     /// - Throws: GlobalError 当操作失败时
     func validateAndRefreshPlayerTokenThrowing(for player: Player) async throws -> Player {
+        switch player.accountProvider {
+        case .offline:
+            return player
+        case .microsoft:
+            return try await validateAndRefreshMicrosoftPlayerTokenThrowing(for: player)
+        case .littleskin:
+            return try await validateAndRefreshLittleSkinPlayerTokenThrowing(for: player)
+        }
+    }
 
+    private func validateAndRefreshMicrosoftPlayerTokenThrowing(for player: Player) async throws -> Player {
         // 如果没有访问令牌，抛出错误要求重新登录
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
@@ -599,6 +609,88 @@ extension MinecraftAuthService {
         let updatedPlayer = Player(profile: updatedProfile, credential: updatedCredential)
 
         return updatedPlayer
+    }
+
+    private func validateAndRefreshLittleSkinPlayerTokenThrowing(for player: Player) async throws -> Player {
+        guard !player.authAccessToken.isEmpty else {
+            throw GlobalError.authentication(
+                chineseMessage: "LittleSkin 访问令牌缺失，请重新登录",
+                i18nKey: "error.authentication.missing_token",
+                level: .notification
+            )
+        }
+
+        guard !player.authClientToken.isEmpty else {
+            throw GlobalError.authentication(
+                chineseMessage: "LittleSkin Client Token 缺失，请重新登录",
+                i18nKey: "error.authentication.token_expired_relogin_required",
+                level: .popup
+            )
+        }
+
+        let littleSkinAuthService = LittleSkinAuthService.shared
+        do {
+            try await littleSkinAuthService.validateTokenThrowing(
+                accessToken: player.authAccessToken,
+                clientToken: player.authClientToken,
+                authServerBaseURL: player.authServerBaseURL
+            )
+            Logger.shared.debug("玩家 \(player.name) 的 LittleSkin Token 校验通过")
+            return player
+        } catch {
+            Logger.shared.warning("玩家 \(player.name) 的 LittleSkin Token 校验失败，尝试刷新: \(error.localizedDescription)")
+        }
+
+        do {
+            let refreshed = try await littleSkinAuthService.refreshTokenThrowing(
+                accessToken: player.authAccessToken,
+                clientToken: player.authClientToken,
+                profile: LittleSkinProfileSummary(id: player.id, name: player.name),
+                authServerBaseURL: player.authServerBaseURL
+            )
+
+            var updatedProfile = player.profile
+            let updatedCredential: AuthCredential
+            if var credential = player.credential {
+                credential.provider = .littleskin
+                credential.accessToken = refreshed.accessToken
+                credential.clientToken = refreshed.clientToken
+                credential.authServerBaseURL = player.authServerBaseURL.isEmpty
+                    ? AccountProvider.littleskin.defaultAuthServerBaseURL
+                    : player.authServerBaseURL
+                updatedCredential = credential
+            } else {
+                updatedCredential = AuthCredential(
+                    userId: player.id,
+                    provider: .littleskin,
+                    accessToken: refreshed.accessToken,
+                    clientToken: refreshed.clientToken,
+                    refreshToken: "",
+                    expiresAt: nil,
+                    xuid: "",
+                    authServerBaseURL: player.authServerBaseURL.isEmpty
+                        ? AccountProvider.littleskin.defaultAuthServerBaseURL
+                        : player.authServerBaseURL
+                )
+            }
+
+            updatedProfile = UserProfile(
+                id: updatedProfile.id,
+                name: updatedProfile.name,
+                avatar: updatedProfile.avatar,
+                lastPlayed: updatedProfile.lastPlayed,
+                isCurrent: updatedProfile.isCurrent,
+                provider: .littleskin
+            )
+
+            return Player(profile: updatedProfile, credential: updatedCredential)
+        } catch {
+            throw GlobalError.authentication(
+                chineseMessage: "LittleSkin 登录已失效，请重新登录该账户",
+                i18nKey: "error.authentication.token_expired_relogin_required",
+                level: .popup
+            )
+        }
     }
 
     /// 使用refresh token刷新访问令牌（抛出异常版本）
@@ -663,8 +755,14 @@ extension MinecraftAuthService {
     /// - Parameter player: 玩家对象
     /// - Returns: 是否过期
     func isTokenExpiredBasedOnTime(for player: Player) async -> Bool {
-        // 正常逻辑：根据 JWT 中的 exp 字段判断是否即将过期（含 5 分钟缓冲）
-        return JWTDecoder.isTokenExpiringSoon(player.authAccessToken)
+        switch player.accountProvider {
+        case .offline:
+            return false
+        case .microsoft:
+            return JWTDecoder.isTokenExpiringSoon(player.authAccessToken)
+        case .littleskin:
+            return false
+        }
     }
 
     /// 提示用户重新登录指定玩家

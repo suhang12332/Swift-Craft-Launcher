@@ -106,6 +106,17 @@ enum URLConfig {
             static let minecraftProfileActiveCape = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/capes/active")
         }
 
+        enum LittleSkin {
+            static let yggdrasilBase = URLConfig.url("https://littleskin.cn/api/yggdrasil")
+            static let authenticate = yggdrasilBase.appendingPathComponent("authserver/authenticate")
+            static let validate = yggdrasilBase.appendingPathComponent("authserver/validate")
+            static let refresh = yggdrasilBase.appendingPathComponent("authserver/refresh")
+        }
+
+        enum AuthlibInjector {
+            static let latestMetadata = URLConfig.url("https://authlib-injector.yushi.moe/artifact/latest.json")
+        }
+
         // Minecraft API
         enum Minecraft {
             static let versionList = URLConfig.url("https://launchermeta.mojang.com/mc/game/version_manifest.json")
