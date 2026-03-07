@@ -291,12 +291,9 @@ struct ModrinthProjectContentView: View {
 
     // MARK: - Loading View
     private var loadingView: some View {
-        VStack(spacing: 8) {
-            ProgressView()
-                .controlSize(.small)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-        .padding(Constants.padding)
+        SkeletonProjectContentView()
+            .redacted(reason: .placeholder)
+            .shimmer()
     }
 
     private func loadProjectDetailsThrowing() async throws {
@@ -349,5 +346,102 @@ private struct DetailRow: View, Equatable {
     // 实现 Equatable，避免不必要的重新渲染
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.label == rhs.label && lhs.value == rhs.value
+    }
+}
+
+// MARK: - Skeleton Content View
+private struct SkeletonProjectContentView: View {
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // 版本和平台骨架
+            VStack(alignment: .leading, spacing: 12) {
+                Text("project.info.versions".localized())
+                    .font(.headline)
+
+                FlowLayout {
+                    ForEach(0..<5) { _ in
+                        FilterChip(title: "1.20.1", isSelected: false) {}
+                    }
+                }
+            }
+
+            // 加载器骨架
+            VStack(alignment: .leading, spacing: 12) {
+                Text("project.info.platforms".localized())
+                    .font(.headline)
+
+                FlowLayout {
+                    ForEach(0..<3) { _ in
+                        FilterChip(title: "Fabric", isSelected: false) {}
+                    }
+                }
+            }
+
+            // 平台支持骨架
+            VStack(alignment: .leading, spacing: 12) {
+                Text("platform.support".localized())
+                    .font(.headline)
+
+                FlowLayout {
+                    ForEach(0..<2) { _ in
+                        FilterChip(title: "Required", isSelected: false, action: {}, iconName: "laptopcomputer")
+                    }
+                }
+            }
+
+            // 详情骨架
+            VStack(alignment: .leading, spacing: 12) {
+                Text("project.info.details".localized())
+                    .font(.headline)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(0..<3) { _ in
+                        HStack {
+                            Text("Loading")
+                                .font(.callout.bold())
+                            Spacer()
+                            FilterChip(title: "Loading", isSelected: false) {}
+                        }
+                    }
+                }
+            }
+        }
+        .padding(Constants.padding)
+    }
+}
+
+// MARK: - Shimmer Modifier
+private struct ShimmerModifier: ViewModifier {
+
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.clear,
+                        Color.white.opacity(0.3),
+                        Color.clear,
+                    ]),
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .offset(x: phase)
+                .mask(content)
+            )
+            .onAppear {
+                withAnimation(Animation.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                    phase = 400
+                }
+            }
+    }
+}
+
+private extension View {
+
+    func shimmer() -> some View {
+        self
     }
 }

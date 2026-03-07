@@ -11,6 +11,8 @@ struct DetailView: View {
     @EnvironmentObject var filterState: ResourceFilterState
     @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
+    @State private var isResourceTransitioning = false
+    @State private var transitionTask: Task<Void, Never>?
 
     @ViewBuilder var body: some View {
         switch detailState.selectedItem {
@@ -46,28 +48,53 @@ struct DetailView: View {
 
     @ViewBuilder
     private func resourceDetailView(type: ResourceType) -> some View {
-        if detailState.selectedProjectId != nil {
-            List {
-                ModrinthProjectDetailView(
-                    projectDetail: detailState.loadedProjectDetail
+        GeometryReader { proxy in
+            let showDetail = detailState.selectedProjectId != nil
+            let width = proxy.size.width
+            ZStack(alignment: .leading) {
+                ModrinthDetailView(
+                    query: type.rawValue,
+                    selectedVersions: filterState.selectedVersionsBinding,
+                    selectedCategories: filterState.selectedCategoriesBinding,
+                    selectedFeatures: filterState.selectedFeaturesBinding,
+                    selectedResolutions: filterState.selectedResolutionsBinding,
+                    selectedPerformanceImpact: filterState.selectedPerformanceImpactBinding,
+                    selectedProjectId: detailState.selectedProjectIdBinding,
+                    selectedLoader: filterState.selectedLoadersBinding,
+                    gameInfo: nil,
+                    selectedItem: detailState.selectedItemBinding,
+                    gameType: detailState.gameTypeBinding,
+                    dataSource: filterState.dataSourceBinding,
+                    searchText: filterState.searchTextBinding
                 )
+                .frame(width: width, height: proxy.size.height)
+                .opacity(showDetail ? 0 : 1.0)
+
+                List {
+                    ModrinthProjectDetailView(
+                        projectDetail: detailState.loadedProjectDetail,
+                        suppressAnimations: isResourceTransitioning
+                    )
+                }
+                .frame(width: width, height: proxy.size.height)
+                .opacity(showDetail ? 1.0 : 0)
+                .allowsHitTesting(showDetail)
             }
-        } else {
-            ModrinthDetailView(
-                query: type.rawValue,
-                selectedVersions: filterState.selectedVersionsBinding,
-                selectedCategories: filterState.selectedCategoriesBinding,
-                selectedFeatures: filterState.selectedFeaturesBinding,
-                selectedResolutions: filterState.selectedResolutionsBinding,
-                selectedPerformanceImpact: filterState.selectedPerformanceImpactBinding,
-                selectedProjectId: detailState.selectedProjectIdBinding,
-                selectedLoader: filterState.selectedLoadersBinding,
-                gameInfo: nil,
-                selectedItem: detailState.selectedItemBinding,
-                gameType: detailState.gameTypeBinding,
-                dataSource: filterState.dataSourceBinding,
-                searchText: filterState.searchTextBinding
-            )
+            .clipped()
+            .transaction { transaction in
+                transaction.animation = nil
+            }
+            .onChange(of: showDetail) { _, _ in
+                transitionTask?.cancel()
+                isResourceTransitioning = true
+                transitionTask = Task {
+                    try? await Task.sleep(nanoseconds: 260_000_000)
+                    guard !Task.isCancelled else { return }
+                    await MainActor.run {
+                        isResourceTransitioning = false
+                    }
+                }
+            }
         }
     }
 }

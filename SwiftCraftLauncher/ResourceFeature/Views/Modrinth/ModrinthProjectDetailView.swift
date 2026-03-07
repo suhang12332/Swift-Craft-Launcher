@@ -19,12 +19,20 @@ private enum Constants {
 // MARK: - ModrinthProjectDetailView
 struct ModrinthProjectDetailView: View {
     let projectDetail: ModrinthProjectDetail?
+    var suppressAnimations: Bool = false
 
     var body: some View {
-        if let project = projectDetail {
-            projectDetailView(project)
-        } else {
-            loadingView
+        Group {
+            if let project = projectDetail {
+                projectDetailView(project)
+            } else {
+                loadingView
+            }
+        }
+        .transaction { transaction in
+            if suppressAnimations {
+                transaction.animation = nil
+            }
         }
     }
 
@@ -32,7 +40,11 @@ struct ModrinthProjectDetailView: View {
     private func projectDetailView(_ project: ModrinthProjectDetail) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             projectHeader(project)
-            projectContent(project)
+            if suppressAnimations {
+                transitionPlaceholder
+            } else {
+                projectContent(project)
+            }
         }
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
@@ -119,14 +131,117 @@ struct ModrinthProjectDetailView: View {
         MixedMarkdownView(project.body)
     }
 
+    private var transitionPlaceholder: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.secondary.opacity(0.14))
+                .frame(height: 16)
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.secondary.opacity(0.12))
+                .frame(height: 16)
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.secondary.opacity(0.1))
+                .frame(height: 120)
+        }
+        .padding(.horizontal, Constants.padding)
+        .padding(.bottom, Constants.spacing)
+    }
+
     // MARK: - Loading View
     private var loadingView: some View {
-        VStack(spacing: Constants.spacing) {
-            ProgressView()
-                .controlSize(.small)
+        SkeletonDetailView()
+            .redacted(reason: .placeholder)
+            .shimmer()
+    }
+}
+
+// MARK: - Skeleton Detail View
+private struct SkeletonDetailView: View {
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Constants.spacing) {
+            HStack(alignment: .top, spacing: Constants.spacing) {
+                // 图标骨架
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                    .fill(Color.secondary.opacity(0.2))
+                    .frame(width: Constants.iconSize, height: Constants.iconSize)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    // 标题骨架
+                    Text("Loading Project Title")
+                        .font(.title2.bold())
+
+                    // 描述骨架
+                    Text("Loading project description that would normally appear here with some details about the resource")
+                        .font(.body)
+                        .lineLimit(2)
+
+                    // 统计数据骨架
+                    HStack(spacing: Constants.spacing) {
+                        Label("1234", systemImage: "arrow.down.circle")
+                        Label("567", systemImage: "heart")
+
+                        HStack(spacing: Constants.categorySpacing) {
+                            CategoryTag(text: "Category1")
+                            CategoryTag(text: "Category2")
+                            CategoryTag(text: "Tag1")
+                        }
+                    }
+                    .font(.caption)
+                }
+            }
+            .padding(.horizontal, Constants.padding)
+            .padding(.vertical, Constants.spacing)
+
+            // 内容骨架
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(0..<5, id: \.self) { index in
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(Color.secondary.opacity(0.12))
+                        .frame(height: index == 2 ? 80 : 16)
+                        .frame(maxWidth: index.isMultiple(of: 2) ? .infinity : .infinity * 0.85)
+                }
+            }
+            .padding(.horizontal, Constants.padding)
+            .padding(.bottom, Constants.spacing)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(Constants.padding)
+        .listRowInsets(EdgeInsets())
+        .listRowBackground(Color.clear)
+    }
+}
+
+// MARK: - Shimmer Modifier
+private struct ShimmerModifier: ViewModifier {
+
+    @State private var phase: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        content
+            .overlay(
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.clear,
+                        Color.white.opacity(0.3),
+                        Color.clear,
+                    ]),
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+                .offset(x: phase)
+                .mask(content)
+            )
+            .onAppear {
+                withAnimation(Animation.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                    phase = 400
+                }
+            }
+    }
+}
+
+private extension View {
+
+    func shimmer() -> some View {
+        self
     }
 }
 
