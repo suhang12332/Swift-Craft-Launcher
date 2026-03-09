@@ -238,8 +238,11 @@ struct GameLocalResourceView: View {
                 // 本地资源：目录已经筛选，直接显示
                 return true
             } else {
-                // 只显示与 query 匹配的资源类型
-                return detail.type?.lowercased() == queryLower
+                // 只显示与 query 匹配的资源类型：
+                // 优先使用 type，若为空则回退到 projectType
+                let effectiveType = detail.type?.lowercased()
+                    ?? detail.projectType.lowercased()
+                return effectiveType == queryLower
             }
         }
 
