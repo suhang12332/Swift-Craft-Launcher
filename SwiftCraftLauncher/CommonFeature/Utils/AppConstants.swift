@@ -46,6 +46,7 @@ enum AppConstants {
         static let meta = "meta"
         static let cache = "cache"
         static let data = "data"
+        static let auth = "auth"
     }
 
     // MARK: - File Extensions
@@ -56,6 +57,12 @@ enum AppConstants {
         static let zip = "zip"
         static let json = "json"
         static let log = "log"
+    }
+
+    // MARK: - Authlib Injector
+    enum AuthlibInjector {
+        static let version = "1.2.7"
+        static let jarFileName = "authlib-injector-\(version).jar"
     }
 
     // MARK: - Environment Types

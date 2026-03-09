@@ -35,11 +35,15 @@ struct Player: Identifiable, Equatable {
 
     /// 是否为在线账号
     /// 优先依据认证凭据；在尚未从 Keychain 加载凭据时，
-    /// 通过头像是否为远程 URL（http/https）来近似判断是否为正版账号
+    /// 通过头像是否为 `textures.minecraft.net` 域名的远程纹理来近似判断是否为正版账号
     var isOnlineAccount: Bool {
         if credential != nil {
             return true
         }
+        return profile.avatar.contains("textures.minecraft.net")
+    }
+
+    var isRemote: Bool {
         return profile.avatar.hasPrefix("http://") || profile.avatar.hasPrefix("https://")
     }
 

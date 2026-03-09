@@ -6,6 +6,7 @@ struct AddPlayerSheetView: View {
     var onAdd: () -> Void
     var onCancel: () -> Void
     var onLogin: (MinecraftProfileResponse) -> Void
+    var onYggdrasilLogin: ((YggdrasilProfile) -> Void)?
 
     enum PlayerProfile {
         case minecraft(MinecraftProfileResponse)
@@ -16,6 +17,8 @@ struct AddPlayerSheetView: View {
     @State private var isPremium: Bool = false
     @State private var authenticatedProfile: MinecraftProfileResponse?
     @StateObject private var authService = MinecraftAuthService.shared
+    @StateObject private var yggdrasilAuthService = YggdrasilAuthService.shared
+    @StateObject private var playerSettings = PlayerSettingsManager.shared
 
     @Environment(\.openURL)
     private var openURL
@@ -65,6 +68,8 @@ struct AddPlayerSheetView: View {
                 switch selectedAuthType {
                 case .premium:
                     MinecraftAuthView(onLoginSuccess: onLogin)
+                case .yggdrasil:
+                    YggdrasilAuthView(onLoginSuccess: onYggdrasilLogin)
                 case .offline:
                     VStack(alignment: .leading) {
                         playerInfoSection
@@ -79,6 +84,7 @@ struct AddPlayerSheetView: View {
                         "common.cancel".localized()
                     ) {
                         authService.isLoading = false
+                        yggdrasilAuthService.logout()
                         onCancel()
                     }
                     Spacer()
@@ -109,6 +115,24 @@ struct AddPlayerSheetView: View {
                             .keyboardShortcut(.defaultAction)
 
                         default:
+                            ProgressView().controlSize(.small)
+                        }
+                    } else if selectedAuthType == .yggdrasil {
+                        switch yggdrasilAuthService.authState {
+                        case .idle, .failed:
+                            Button("addplayer.auth.start_login".localized()) {
+                                Task {
+                                    await yggdrasilAuthService.startAuthentication()
+                                }
+                            }
+                            .keyboardShortcut(.defaultAction)
+                            .disabled(yggdrasilAuthService.currentServer == nil)
+                        case .authenticated(let profile):
+                            Button("addplayer.auth.add".localized()) {
+                                onYggdrasilLogin?(profile)
+                            }
+                            .keyboardShortcut(.defaultAction)
+                        case .waitingForBrowser, .exchangingCode:
                             ProgressView().controlSize(.small)
                         }
                     } else {
@@ -188,13 +212,19 @@ struct AddPlayerSheetView: View {
 
     /// 获取可用的认证类型列表
     private var availableAuthTypes: [AccountAuthType] {
-        // 如果可以添加离线账户，显示所有选项
-        if canAddOfflineAccount() {
-            return AccountAuthType.allCases
+        var types: [AccountAuthType] = [.premium]
+
+        // 启用三方登录时才显示 Yggdrasil
+        if playerSettings.enableOfflineLogin {
+            types.append(.yggdrasil)
         }
 
-        // 如果是国外IP且列表中没有正版账户，只显示正版选项
-        return [.premium]
+        // 满足条件时再允许离线账号
+        if canAddOfflineAccount() {
+            types.append(.offline)
+        }
+
+        return types
     }
 
     // MARK: - 清除数据
@@ -213,6 +243,7 @@ struct AddPlayerSheetView: View {
         showErrorPopover = false
         // 重置认证类型
         selectedAuthType = .premium
+        yggdrasilAuthService.logout()
         // 重置标记检查状态
         isCheckingFlag = true
         // 重置IP检查结果
@@ -297,30 +328,33 @@ struct AddPlayerSheetView: View {
     }
 }
 
-// Assuming AccountAuthType is defined as:
 enum AccountAuthType: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
-    case offline
     case premium
+    case yggdrasil
+    case offline
 
     var displayName: String {
         switch self {
         case .premium:
             return "addplayer.auth.microsoft".localized()
-        default:
+        case .yggdrasil:
+            return "addplayer.auth.yggdrasil".localized()
+        case .offline:
             return "addplayer.auth.offline".localized()
         }
     }
 }
 
-// 1. 给 AccountAuthType 扩展一个 symbol 配置
 extension AccountAuthType {
     var symbol: (name: String, mode: SymbolRenderingMode) {
         switch self {
         case .premium:
             return ("person.crop.circle.badge.plus", .multicolor)
-        default:
+        case .yggdrasil:
+            return ("person.crop.circle.badge.questionmark.fill", .multicolor)
+        case .offline:
             return ("person.crop.circle.badge.minus", .multicolor)
         }
     }

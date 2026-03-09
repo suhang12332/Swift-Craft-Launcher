@@ -139,7 +139,7 @@ struct AIChatWindowView: View {
         if let player = playerListViewModel.currentPlayer {
             cachedUserAvatar = AnyView(
                 MinecraftSkinUtils(
-                    type: player.isOnlineAccount ? .url : .asset,
+                    type: player.isRemote ? .url : .asset,
                     src: player.avatarName,
                     size: Constants.avatarSize
                 )

@@ -95,11 +95,14 @@ enum URLConfig {
             // Xbox Live
             static let xboxLiveAuth = URLConfig.url("https://user.auth.xboxlive.com/user/authenticate")
             static let xstsAuth = URLConfig.url("https://xsts.auth.xboxlive.com/xsts/authorize")
+            static let xboxLiveSiteName = "user.auth.xboxlive.com"
+            static let xboxLiveRelyingParty = "http://auth.xboxlive.com"
 
             // Minecraft Services
             static let minecraftLogin = URLConfig.url("https://api.minecraftservices.com/authentication/login_with_xbox")
             static let minecraftProfile = URLConfig.url("https://api.minecraftservices.com/minecraft/profile")
             static let minecraftEntitlements = URLConfig.url("https://api.minecraftservices.com/entitlements/mcstore")
+            static let minecraftRelyingParty = "rp://api.minecraftservices.com/"
             // Player skin / cape operations
             static let minecraftProfileSkins = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins")
             static let minecraftProfileActiveSkin = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins/active")
@@ -136,6 +139,13 @@ enum URLConfig {
             static let jreLegacy = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu8.88.0.19-ca-jre8.0.462-macosx_x64.zip")
             static let javaRuntimeAlpha = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu16.32.15-ca-jre16.0.2-macosx_x64.zip")
             static let javaRuntimeBeta = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu17.60.17-ca-jre17.0.16-macosx_x64.zip")
+        }
+
+        // 第三方认证相关
+        enum AuthlibInjector {
+            static let download = URLConfig.applyGitProxyIfNeeded(
+                URLConfig.url("https://github.com/yushijinhun/authlib-injector/releases/download/v\(AppConstants.AuthlibInjector.version)/\(AppConstants.AuthlibInjector.jarFileName)")
+            )
         }
 
         // GitHub API

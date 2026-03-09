@@ -9,5 +9,11 @@ class PlayerSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    /// 是否允许在启动器中使用离线登录
+    @AppStorage("enableOfflineLogin")
+    var enableOfflineLogin: Bool = false {
+        didSet { objectWillChange.send() }
+    }
+
     private init() {}
 }

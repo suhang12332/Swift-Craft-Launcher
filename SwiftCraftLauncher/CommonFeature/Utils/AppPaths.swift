@@ -27,6 +27,14 @@ enum AppPaths {
             .applicationSupportDirectory.appendingPathComponent(Bundle.main.appName)
         }
     }
+
+    /// 认证相关文件根目录（Application Support/.../auth）
+    static var authDirectory: URL {
+        cachedURL(key: "authDirectory") {
+            launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.auth, isDirectory: true)
+        }
+    }
+
     static var runtimeDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.runtime)
     }
