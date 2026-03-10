@@ -11,6 +11,7 @@ on:
 env:
   CLIENTID: ${{ secrets.CLIENTID }}
   CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+  LITTLESKIN_CLIENT_SECRET: ${{ secrets.LITTLESKIN_CLIENT_SECRET }}
   SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
 
 jobs:
@@ -66,6 +67,14 @@ jobs:
           sed -i '' "s/\$(CURSEFORGE_API_KEY)/$SAFE_CURSEFORGE_KEY/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
 
           echo "✅ CURSEFORGE_API_KEY 已替换到 AppConstants.swift"
+
+      - name: Replace LITTLESKIN_CLIENT_SECRET
+        run: |
+          # 替换 AppConstants.swift 中的 LITTLESKIN_CLIENT_SECRET 变量（GitHub Secret 中应存放加密后的值）
+          SAFE_LITTLESKIN_SECRET=$(printf '%s' "$LITTLESKIN_CLIENT_SECRET" | sed 's/[\/&]/\\&/g')
+          sed -i '' "s/\$(LITTLESKIN_CLIENT_SECRET)/$SAFE_LITTLESKIN_SECRET/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
+
+          echo "✅ LITTLESKIN_CLIENT_SECRET 已替换到 AppConstants.swift"
 
       - name: Build app for ${{ matrix.arch }}
         run: |

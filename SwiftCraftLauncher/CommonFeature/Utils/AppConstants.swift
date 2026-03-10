@@ -74,6 +74,12 @@ enum AppConstants {
         let encrypted = "$(CURSEFORGE_API_KEY)"
         return Obfuscator.decryptAPIKey(encrypted)
     }()
+
+    // LittleSkin OAuth Client Secret - 构建时注入
+    static let littleSkinClientSecret: String? = {
+        let encrypted = "${LITTLESKIN_CLIENT_SECRET}"
+        return Obfuscator.decryptAPIKey(encrypted)
+    }()
     // 缓存资源类型
     static let cacheResourceTypes = [DirectoryNames.libraries, DirectoryNames.natives, DirectoryNames.assets, DirectoryNames.versions]
 
