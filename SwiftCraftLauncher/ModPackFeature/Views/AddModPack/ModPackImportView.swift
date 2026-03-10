@@ -80,7 +80,6 @@ struct ModPackImportView: View {
         VStack {
             modPackImportContentView.padding(.bottom, 10)
             if viewModel.hasSelectedModPack
-                && !viewModel.isProcessingModPack
                 && viewModel.isGameVersionSupported
                 && viewModel.modPackIndexInfo != nil {
                 modPackGameNameInputSection
