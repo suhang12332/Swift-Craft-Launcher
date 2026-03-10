@@ -157,6 +157,26 @@ extension AppPaths {
         default: return nil
         }
     }
+
+    /// 根据本地文件所在目录名推断资源类型（mod / shader / resourcepack / datapack）
+    /// - Parameter fileURL: 本地资源文件路径
+    /// - Returns: 资源类型字符串，或 nil 表示无法推断
+    static func resourceType(for fileURL: URL) -> String? {
+        let parentDirName = fileURL.deletingLastPathComponent().lastPathComponent.lowercased()
+
+        switch parentDirName {
+        case AppConstants.DirectoryNames.mods.lowercased():
+            return "mod"
+        case AppConstants.DirectoryNames.shaderpacks.lowercased():
+            return "shader"
+        case AppConstants.DirectoryNames.resourcepacks.lowercased():
+            return "resourcepack"
+        case AppConstants.DirectoryNames.datapacks.lowercased():
+            return "datapack"
+        default:
+            return nil
+        }
+    }
     /// 全局缓存文件路径 - 使用系统标准缓存目录，异常时回退到应用支持目录下的 Cache
     static var appCache: URL {
         if let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {

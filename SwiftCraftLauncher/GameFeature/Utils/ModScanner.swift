@@ -101,35 +101,20 @@ class ModScanner {
             }
         }
 
-        if let detail = detail {
+        if var detail = detail {
+            let inferredType = AppPaths.resourceType(for: fileURL)
+            detail.type = inferredType
             // 设置本地文件名
             var detailWithFileName = detail
             detailWithFileName.fileName = fileURL.lastPathComponent
             saveToCache(hash: hash, detail: detailWithFileName)
             return detailWithFileName
         } else {
-            // 尝试本地解析
-            let (modid, version) =
-                try ModMetadataParser.parseModMetadataThrowing(fileURL: fileURL)
-
-            // 如果 CF 查询失败或没有解析到 modid，则回退到本地兜底逻辑
-            if let modid = modid, let version = version {
-                // 使用解析到的元数据创建兜底对象
-                let fallbackDetail = createFallbackDetail(
-                    fileURL: fileURL,
-                    modid: modid,
-                    version: version
-                )
-                saveToCache(hash: hash, detail: fallbackDetail)
-                return fallbackDetail
-            } else {
-                // 最终兜底策略：使用文件名创建基础信息
-                let fallbackDetail = createFallbackDetailFromFileName(
-                    fileURL: fileURL
-                )
-                saveToCache(hash: hash, detail: fallbackDetail)
-                return fallbackDetail
-            }
+            let fallbackDetail = createFallbackDetailFromFileName(
+                fileURL: fileURL
+            )
+            saveToCache(hash: hash, detail: fallbackDetail)
+            return fallbackDetail
         }
     }
 
@@ -233,45 +218,6 @@ class ModScanner {
             gameVersions: [],
             loaders: [],
             type: nil
-        )
-    }
-
-    /// 使用解析到的元数据创建兜底 ModrinthProjectDetail
-    private func createFallbackDetail(
-        fileURL: URL,
-        modid: String,
-        version: String
-    ) -> ModrinthProjectDetail {
-        let (fileName, baseFileName) = createBaseFallbackDetail(fileURL: fileURL)
-        let common = createCommonFallbackFields(fileName: fileName, baseFileName: baseFileName)
-
-        return ModrinthProjectDetail(
-            slug: modid,
-            title: baseFileName,
-            description: common.description,
-            categories: common.categories,
-            clientSide: common.clientSide,
-            serverSide: common.serverSide,
-            body: common.body,
-            additionalCategories: common.additionalCategories,
-            issuesUrl: common.issuesUrl,
-            sourceUrl: common.sourceUrl,
-            wikiUrl: common.wikiUrl,
-            discordUrl: common.discordUrl,
-            projectType: common.projectType,
-            downloads: common.downloads,
-            iconUrl: common.iconUrl,
-            id: "local_\(modid)_\(UUID().uuidString.prefix(8))",
-            team: common.team,
-            published: common.published,
-            updated: common.updated,
-            followers: common.followers,
-            license: common.license,
-            versions: [version],
-            gameVersions: common.gameVersions,
-            loaders: common.loaders,
-            type: common.type,
-            fileName: fileName
         )
     }
 
