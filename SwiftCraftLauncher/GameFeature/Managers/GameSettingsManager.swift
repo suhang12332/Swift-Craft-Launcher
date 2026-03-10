@@ -24,28 +24,28 @@ class GameSettingsManager: ObservableObject {
     // MARK: - 单例实例
     static let shared = GameSettingsManager()
 
-    @AppStorage("globalXms")
+    @AppStorage(AppConstants.UserDefaultsKeys.globalXms)
     var globalXms: Int = 512 {
         didSet { objectWillChange.send() }
     }
 
-    @AppStorage("globalXmx")
+    @AppStorage(AppConstants.UserDefaultsKeys.globalXmx)
     var globalXmx: Int = 4096 {
         didSet { objectWillChange.send() }
     }
 
-    @AppStorage("enableAICrashAnalysis")
+    @AppStorage(AppConstants.UserDefaultsKeys.enableAICrashAnalysis)
     var enableAICrashAnalysis: Bool = false {
         didSet { objectWillChange.send() }
     }
 
-    @AppStorage("defaultAPISource")
+    @AppStorage(AppConstants.UserDefaultsKeys.defaultAPISource)
     var defaultAPISource: DataSource = .modrinth {
         didSet { objectWillChange.send() }
     }
 
     /// 是否在游戏版本选择中包含快照版（全局设置）
-    @AppStorage("includeSnapshotsForGameVersions")
+    @AppStorage(AppConstants.UserDefaultsKeys.includeSnapshotsForGameVersions)
     var includeSnapshotsForGameVersions: Bool = false {
         didSet { objectWillChange.send() }
     }

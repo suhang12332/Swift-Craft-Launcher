@@ -92,7 +92,7 @@ struct YggdrasilAuthView: View {
     private var exchangingCodeView: some View {
         VStack(spacing: 16) {
             ProgressView()
-                .controlSize(.regular)
+                .controlSize(.small)
             Text("yggdrasil.auth.processing".localized())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -206,8 +206,4 @@ struct YggdrasilAuthView: View {
                 .multilineTextAlignment(.center)
         }
     }
-}
-
-#Preview {
-    YggdrasilAuthView()
 }

@@ -6,6 +6,60 @@ enum AppConstants {
     static let modrinthIndex = "relevance"
     static let modrinthIndexFileName = "modrinth.index.json"
 
+    // MARK: - UserDefaults Keys
+    enum UserDefaultsKeys {
+        // Player profiles
+        static let userProfiles = "userProfiles"
+
+        // Player settings
+        static let currentPlayerId = "currentPlayerId"
+        static let enableOfflineLogin = "enableOfflineLogin"
+        static let hasAddedPremiumAccount = "hasAddedPremiumAccount"
+        static let offlineUserServerMap = "offlineUserServerMap"
+
+        // AI settings
+        static let aiProvider = "aiProvider"
+        static let aiOllamaBaseURL = "aiOllamaBaseURL"
+        static let aiOpenAIBaseURL = "aiOpenAIBaseURL"
+        static let aiModelOverride = "aiModelOverride"
+        static let aiAvatarURL = "aiAvatarURL"
+
+        // Game settings
+        static let globalXms = "globalXms"
+        static let globalXmx = "globalXmx"
+        static let enableAICrashAnalysis = "enableAICrashAnalysis"
+        static let defaultAPISource = "defaultAPISource"
+        static let includeSnapshotsForGameVersions = "includeSnapshotsForGameVersions"
+
+        // General settings
+        static let enableGitHubProxy = "enableGitHubProxy"
+        static let gitProxyURL = "gitProxyURL"
+        static let enableResourcePageCache = "enableResourcePageCache"
+        static let limitCommonSheetHeight = "limitCommonSheetHeight"
+        static let concurrentDownloads = "concurrentDownloads"
+        static let launcherWorkingDirectory = "launcherWorkingDirectory"
+        static let interfaceLayoutStyle = "interfaceLayoutStyle"
+
+        // Theme
+        static let themeMode = "themeMode"
+    }
+
+    // MARK: - System UserDefaults Keys
+    /// 系统（Apple）预定义的 UserDefaults key
+    enum SystemUserDefaultsKeys {
+        static let appleLanguages = "AppleLanguages"
+    }
+
+    // MARK: - Keychain Keys
+    enum KeychainAccounts {
+        static let aiSettings = "aiSettings"
+    }
+
+    enum KeychainKeys {
+        static let apiKey = "apiKey"
+        static let authCredential = "authCredential"
+    }
+
     // Minecraft 客户端ID - 构建时会被替换
     // Minecraft/Xbox认证
     static let minecraftClientId: String = {
@@ -63,6 +117,18 @@ enum AppConstants {
     enum AuthlibInjector {
         static let version = "1.2.7"
         static let jarFileName = "authlib-injector-\(version).jar"
+        static let agentPrefix = "-javaagent:"
+
+        /// authlib-injector.jar 的完整路径
+        static var jarPath: String {
+            AppPaths.authDirectory.appendingPathComponent(jarFileName).path
+        }
+
+        /// 构建 authlib-injector 的 -javaagent 参数（使用内部 jarPath）
+        /// 形如：-javaagent:/path/to/jar=SERVER_API_ROOT
+        static func agentArgument(serverApiRoot: String) -> String {
+            "\(agentPrefix)\(jarPath)=\(serverApiRoot)"
+        }
     }
 
     // MARK: - Environment Types
@@ -80,12 +146,6 @@ enum AppConstants {
         static let versionName = "{VERSION_NAME}"
         static let libraryDir = "{LIBRARY_DIR}"
         static let workingDir = "{WORKING_DIR}"
-    }
-
-    // MARK: - UserDefaults Keys
-    /// UserDefaults 存储键常量
-    enum UserDefaultsKeys {
-        static let savedGames = "savedGames"
     }
 
     // MARK: - Database Tables

@@ -3,14 +3,12 @@ import Foundation
 /// 用户基本信息存储管理器
 /// 使用 UserDefaults (plist) 存储用户基本信息
 class UserProfileStore {
-    private let profilesKey = "userProfiles"
-
     // MARK: - Public Methods
 
     /// 加载所有用户基本信息
     /// - Returns: 用户基本信息数组
     func loadProfiles() -> [UserProfile] {
-        guard let profilesData = UserDefaults.standard.data(forKey: profilesKey) else {
+        guard let profilesData = UserDefaults.standard.data(forKey: AppConstants.UserDefaultsKeys.userProfiles) else {
             return []
         }
 
@@ -27,7 +25,7 @@ class UserProfileStore {
     /// - Returns: 用户基本信息数组
     /// - Throws: GlobalError 当操作失败时
     func loadProfilesThrowing() throws -> [UserProfile] {
-        guard let profilesData = UserDefaults.standard.data(forKey: profilesKey) else {
+        guard let profilesData = UserDefaults.standard.data(forKey: AppConstants.UserDefaultsKeys.userProfiles) else {
             return []
         }
 
@@ -62,7 +60,7 @@ class UserProfileStore {
         do {
             let encoder = JSONEncoder()
             let encodedData = try encoder.encode(profiles)
-            UserDefaults.standard.set(encodedData, forKey: profilesKey)
+            UserDefaults.standard.set(encodedData, forKey: AppConstants.UserDefaultsKeys.userProfiles)
             Logger.shared.debug("用户基本信息已保存")
         } catch {
             throw GlobalError.validation(

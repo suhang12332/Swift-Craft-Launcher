@@ -18,18 +18,16 @@ enum URLConfig {
     /// GitHub 代理设置（从 UserDefaults 读取，避免 UI 依赖）
     private enum GitHubProxySettings {
         static let defaultProxy = "https://gh-proxy.com"
-        static let enableKey = "enableGitHubProxy"
-        static let urlKey = "gitProxyURL"
 
         static var isEnabled: Bool {
             let defaults = UserDefaults.standard
             // 未写入时默认开启
-            return (defaults.object(forKey: enableKey) as? Bool) ?? true
+            return (defaults.object(forKey: AppConstants.UserDefaultsKeys.enableGitHubProxy) as? Bool) ?? true
         }
 
         static var proxyString: String {
             let defaults = UserDefaults.standard
-            return (defaults.string(forKey: urlKey) ?? defaultProxy)
+            return (defaults.string(forKey: AppConstants.UserDefaultsKeys.gitProxyURL) ?? defaultProxy)
                 .trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
@@ -146,6 +144,16 @@ enum URLConfig {
             static let download = URLConfig.applyGitProxyIfNeeded(
                 URLConfig.url("https://github.com/yushijinhun/authlib-injector/releases/download/v\(AppConstants.AuthlibInjector.version)/\(AppConstants.AuthlibInjector.jarFileName)")
             )
+
+            /// 根据 Yggdrasil 服务器 baseURL 生成 Authlib Injector 期望的 API 根地址
+            /// 例如 baseURL = https://littleskin.cn/ -> https://littleskin.cn
+            static func serverApiRoot(for baseURL: String) -> String {
+                var normalizedBaseURL = baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
+                while normalizedBaseURL.hasSuffix("/") {
+                    normalizedBaseURL.removeLast()
+                }
+                return normalizedBaseURL
+            }
         }
 
         // GitHub API

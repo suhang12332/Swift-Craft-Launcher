@@ -120,7 +120,10 @@ struct MinecraftLaunchCommand {
             return mutableArg as String
         }
 
-        return replaceGameParameters(command: authReplacedCommand)
+        var commandWithAuth = authReplacedCommand
+        commandWithAuth = injectAuthlibAgentIfNeeded(command: commandWithAuth, player: player)
+
+        return replaceGameParameters(command: commandWithAuth)
     }
 
     private func replaceGameParameters(command: [String]) -> [String] {
@@ -167,6 +170,37 @@ struct MinecraftLaunchCommand {
         }
 
         return replacedCommand
+    }
+
+    /// 为第三方（Yggdrasil）玩家按需注入 authlib-injector 的 -javaagent 启动参数
+    /// 条件：头像为远程 URL（isRemote == true）且非微软正版在线账号（isOnlineAccount == false）
+    private func injectAuthlibAgentIfNeeded(command: [String], player: Player) -> [String] {
+        // 非三方用户直接返回原命令
+        guard player.isRemote, !player.isOnlineAccount else {
+            return command
+        }
+
+        // 如果 authlib-injector.jar 不存在，则不注入参数，避免启动失败
+        let jarPath = AppConstants.AuthlibInjector.jarPath
+        if !FileManager.default.fileExists(atPath: jarPath) {
+            Logger.shared.warning("Authlib Injector JAR 不存在，跳过 -javaagent 参数: \(jarPath)")
+            return command
+        }
+
+        // 仅使用为该用户绑定的服务器标识（通常为某个 YggdrasilServerConfig.baseURL）
+        let userId = player.id
+        guard let rawBaseURL = OfflineUserServerMap.serverKey(for: userId) else {
+            Logger.shared.warning("离线用户未绑定 Yggdrasil 服务器基地址，跳过 -javaagent 参数 - userId: \(userId)")
+            return command
+        }
+
+        let serverApiRoot = URLConfig.API.AuthlibInjector.serverApiRoot(for: rawBaseURL)
+        let agentArg = AppConstants.AuthlibInjector.agentArgument(serverApiRoot: serverApiRoot)
+
+        // 在最开头拼接 javaagent 参数
+        var newCommand = command
+        newCommand.insert(agentArg, at: 0)
+        return newCommand
     }
 
     /// 启动游戏进程

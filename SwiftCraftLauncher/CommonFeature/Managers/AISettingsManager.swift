@@ -7,10 +7,6 @@
 import Foundation
 import SwiftUI
 
-// MARK: - Keychain 存储常量
-private let aiSettingsAccount = "aiSettings"
-private let aiApiKeyKeychainKey = "apiKey"
-
 /// AI 提供商枚举
 enum AIProvider: String, CaseIterable, Identifiable {
     case openai = "openai"
@@ -77,7 +73,7 @@ enum APIFormat {
 class AISettingsManager: ObservableObject {
     static let shared = AISettingsManager()
 
-    @AppStorage("aiProvider")
+    @AppStorage(AppConstants.UserDefaultsKeys.aiProvider)
     private var _selectedProviderRawValue: String = "openai"
 
     var selectedProvider: AIProvider {
@@ -101,7 +97,7 @@ class AISettingsManager: ObservableObject {
             }
 
             // 从 Keychain 读取并缓存
-            if let data = KeychainManager.load(account: aiSettingsAccount, key: aiApiKeyKeychainKey),
+            if let data = KeychainManager.load(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey),
                let key = String(data: data, encoding: .utf8) {
                 _cachedApiKey = key
                 return key
@@ -118,39 +114,39 @@ class AISettingsManager: ObservableObject {
             // 保存到 Keychain
             if newValue.isEmpty {
                 // 如果为空，删除 Keychain 中的项
-                _ = KeychainManager.delete(account: aiSettingsAccount, key: aiApiKeyKeychainKey)
+                _ = KeychainManager.delete(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
             } else {
                 // 保存到 Keychain
                 if let data = newValue.data(using: .utf8) {
-                    _ = KeychainManager.save(data: data, account: aiSettingsAccount, key: aiApiKeyKeychainKey)
+                    _ = KeychainManager.save(data: data, account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
                 }
             }
             objectWillChange.send()
         }
     }
 
-    @AppStorage("aiOllamaBaseURL")
+    @AppStorage(AppConstants.UserDefaultsKeys.aiOllamaBaseURL)
     var ollamaBaseURL: String = "http://localhost:11434" {
         didSet {
             objectWillChange.send()
         }
     }
 
-    @AppStorage("aiOpenAIBaseURL")
+    @AppStorage(AppConstants.UserDefaultsKeys.aiOpenAIBaseURL)
     var openAIBaseURL: String = "" {
         didSet {
             objectWillChange.send()
         }
     }
 
-    @AppStorage("aiModelOverride")
+    @AppStorage(AppConstants.UserDefaultsKeys.aiModelOverride)
     var modelOverride: String = "" {
         didSet {
             objectWillChange.send()
         }
     }
 
-    @AppStorage("aiAvatarURL")
+    @AppStorage(AppConstants.UserDefaultsKeys.aiAvatarURL)
     var aiAvatarURL: String = "https://mcskins.top/assets/snippets/download/skin.php?n=7050" {
         didSet {
             objectWillChange.send()
