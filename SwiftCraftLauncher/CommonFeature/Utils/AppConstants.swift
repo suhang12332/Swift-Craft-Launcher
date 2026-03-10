@@ -77,7 +77,7 @@ enum AppConstants {
 
     // LittleSkin OAuth Client Secret - 构建时注入
     static let littleSkinClientSecret: String? = {
-        let encrypted = "${LITTLESKIN_CLIENT_SECRET}"
+        let encrypted = "$(LITTLESKIN_CLIENT_SECRET)"
         return Obfuscator.decryptAPIKey(encrypted)
     }()
     // 缓存资源类型
