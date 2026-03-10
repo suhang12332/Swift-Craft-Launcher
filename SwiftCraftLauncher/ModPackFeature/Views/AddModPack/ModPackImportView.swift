@@ -101,7 +101,7 @@ struct ModPackImportView: View {
 
     private var modPackImportContentView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if viewModel.isProcessingModPack {
+            if viewModel.isProcessingModPack && !viewModel.shouldShowProgress {
                 modPackProcessingView
             } else if !viewModel.isGameVersionSupported {
                 gameVersionUnsupportedHint
