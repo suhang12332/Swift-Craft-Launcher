@@ -11,6 +11,9 @@ public struct DetailToolbarView: ToolbarContent {
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @StateObject private var gameActionManager = GameActionManager.shared
+    @State private var showDeleteAlert: Bool = false
+    @State private var showExportSheet: Bool = false
+    @State private var activeGame: GameVersionInfo?
 
     private var currentGame: GameVersionInfo? {
         if case .game(let gameId) = detailState.selectedItem {
@@ -175,6 +178,51 @@ public struct DetailToolbarView: ToolbarContent {
                         Label("game.path".localized(), systemImage: "folder")
                     }
                     .help("game.path".localized())
+
+                    Button {
+                        activeGame = game
+                        showExportSheet = true
+                    } label: {
+                        Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
+                    }
+                    .help("modpack.export.button".localized())
+                    .sheet(isPresented: $showExportSheet) {
+                        if let exportGame = activeGame {
+                            ModPackExportSheet(gameInfo: exportGame)
+                        }
+                    }
+
+                    Button(role: .destructive) {
+                        activeGame = game
+                        showDeleteAlert = true
+                    } label: {
+                        Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
+                    }
+                    .help("sidebar.context_menu.delete_game".localized())
+                    .confirmationDialog(
+                        "delete.title".localized(),
+                        isPresented: $showDeleteAlert,
+                        titleVisibility: .visible
+                    ) {
+                        Button("common.delete".localized(), role: .destructive) {
+                            if let deletingGame = activeGame {
+                                gameActionManager.deleteGame(
+                                    game: deletingGame,
+                                    gameRepository: gameRepository,
+                                    selectedItem: detailState.selectedItemBinding,
+                                    gameType: detailState.gameTypeBinding
+                                )
+                            }
+                        }
+                        .keyboardShortcut(.defaultAction)
+                        Button("common.cancel".localized(), role: .cancel) {}
+                    } message: {
+                        if let deletingGame = activeGame {
+                            Text(
+                                String(format: "delete.game.confirm".localized(), deletingGame.gameName)
+                            )
+                        }
+                    }
                 }
             case .resource:
                 if detailState.selectedProjectId != nil {

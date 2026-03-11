@@ -145,6 +145,7 @@ struct ModPackExportSheet: View {
                     .foregroundColor(.secondary)
                 TextField("modpack.export.name.placeholder".localized(), text: $viewModel.modPackName)
                     .textFieldStyle(.roundedBorder)
+                    .focusable(false)
             }
 
             // 整合包版本
@@ -154,6 +155,7 @@ struct ModPackExportSheet: View {
                     .foregroundColor(.secondary)
                 TextField("modpack.export.version.placeholder".localized(), text: $viewModel.modPackVersion)
                     .textFieldStyle(.roundedBorder)
+                    .focusable(false)
             }
 
             // 整合包描述（Summary）
@@ -170,14 +172,13 @@ struct ModPackExportSheet: View {
                 Text("version.directory.tree".localized())
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-
                 FileTreeView(
                     rootURL: AppPaths.profileDirectory(gameName: gameInfo.gameName)
                 ) { urls in
                     viewModel.selectedFileURLs = urls
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: 260)
+                .frame(height: 300)
             }
         }
     }
