@@ -257,7 +257,6 @@ enum ImageLoadingUtil {
     }
 }
 
-
 extension ResourceType {
     var overridesSubdirectory: String {
         switch self {
