@@ -118,6 +118,39 @@ class PlayerListViewModel: ObservableObject {
         Logger.shared.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
     }
 
+    /// 添加 Yggdrasil 在线玩家（静默版本）
+    /// - Parameter profile: Yggdrasil 玩家资料
+    /// - Returns: 是否成功添加
+    func addOnlinePlayer(profile: YggdrasilProfile) -> Bool {
+        do {
+            try addOnlinePlayerThrowing(profile: profile)
+            return true
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("添加 Yggdrasil 玩家失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return false
+        }
+    }
+
+    /// 添加 Yggdrasil 在线玩家（抛出异常版本）
+    /// - Parameter profile: Yggdrasil 玩家资料
+    /// - Throws: GlobalError 当操作失败时
+    func addOnlinePlayerThrowing(profile: YggdrasilProfile) throws {
+        let avatarUrl = profile.skins.isEmpty ? "" : profile.skins[0].url.httpToHttps()
+        try dataManager.addPlayer(
+            name: profile.name,
+            uuid: profile.id,
+            isOnline: false,
+            avatarName: avatarUrl,
+            accToken: profile.accessToken,
+            refreshToken: profile.refreshToken,
+            xuid: ""
+        )
+        try loadPlayersThrowing()
+        Logger.shared.debug("Yggdrasil 玩家 \(profile.name) 添加成功，列表已更新。")
+    }
+
     /// 删除玩家（静默版本）
     /// - Parameter id: 要删除的玩家ID
     /// - Returns: 是否成功删除

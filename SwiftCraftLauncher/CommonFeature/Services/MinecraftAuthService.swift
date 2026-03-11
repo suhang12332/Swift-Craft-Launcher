@@ -217,10 +217,10 @@ class MinecraftAuthService: NSObject, ObservableObject {
         let body: [String: Any] = [
             "Properties": [
                 "AuthMethod": "RPS",
-                "SiteName": "user.auth.xboxlive.com",
+                "SiteName": URLConfig.API.Authentication.xboxLiveSiteName,
                 "RpsTicket": "d=\(accessToken)",
             ],
-            "RelyingParty": "http://auth.xboxlive.com",
+            "RelyingParty": URLConfig.API.Authentication.xboxLiveRelyingParty,
             "TokenType": "JWT",
         ]
 
@@ -275,7 +275,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
                 "SandboxId": "RETAIL",
                 "UserTokens": [xboxToken],
             ],
-            "RelyingParty": "rp://api.minecraftservices.com/",
+            "RelyingParty": URLConfig.API.Authentication.minecraftRelyingParty,
             "TokenType": "JWT",
         ]
 

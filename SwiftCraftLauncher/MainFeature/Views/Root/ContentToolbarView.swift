@@ -93,21 +93,24 @@ public struct ContentToolbarView: ToolbarContent {
                         }
                     },
                     onLogin: { profile in
-                        // 处理正版登录成功，使用Minecraft用户资料
                         Logger.shared.debug("正版登录成功，用户: \(profile.name)")
-                        // 添加正版玩家
                         _ = playerListViewModel.addOnlinePlayer(profile: profile)
-
-                        // 设置正版账户添加标记
                         PremiumAccountFlagManager.shared.setPremiumAccountAdded()
-
                         showingAddPlayerSheet = false
-                        // 延迟清理认证状态，让用户能看到成功状态
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             MinecraftAuthService.shared.clearAuthenticationData()
                         }
                     },
-
+                    onYggdrasilLogin: { profile in
+                        Logger.shared.debug("Yggdrasil 登录成功，用户: \(profile.name)")
+                        // 绑定该三方账号的认证/皮肤服务器基地址，供启动时注入 authlib-injector 使用
+                        OfflineUserServerMap.setServer(profile.serverBaseURL, for: profile.id)
+                        _ = playerListViewModel.addOnlinePlayer(profile: profile)
+                        showingAddPlayerSheet = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            YggdrasilAuthService.shared.logout()
+                        }
+                    },
                     playerListViewModel: playerListViewModel
                 )
             }

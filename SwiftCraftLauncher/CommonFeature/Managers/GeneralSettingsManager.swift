@@ -58,30 +58,30 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     static let shared = GeneralSettingsManager()
 
     /// 是否启用 GitHub 代理（默认开启）
-    @AppStorage("enableGitHubProxy")
+    @AppStorage(AppConstants.UserDefaultsKeys.enableGitHubProxy)
     var enableGitHubProxy: Bool = true {
         didSet { objectWillChange.send() }
     }
 
-    @AppStorage("gitProxyURL")
+    @AppStorage(AppConstants.UserDefaultsKeys.gitProxyURL)
     var gitProxyURL: String = "https://gh-proxy.com" {
         didSet { objectWillChange.send() }
     }
 
     /// 是否启用资源页面本地缓存（默认关闭）
-    @AppStorage("enableResourcePageCache")
+    @AppStorage(AppConstants.UserDefaultsKeys.enableResourcePageCache)
     var enableResourcePageCache: Bool = false {
         didSet { objectWillChange.send() }
     }
 
     /// 是否限制通用 Sheet 高度（默认关闭）
-    @AppStorage("limitCommonSheetHeight")
+    @AppStorage(AppConstants.UserDefaultsKeys.limitCommonSheetHeight)
     var limitCommonSheetHeight: Bool = false {
         didSet { objectWillChange.send() }
     }
 
     // MARK: - 应用设置属性
-    @AppStorage("concurrentDownloads")
+    @AppStorage(AppConstants.UserDefaultsKeys.concurrentDownloads)
     var concurrentDownloads: Int = 64 {
         didSet {
             if concurrentDownloads < 1 {
@@ -92,13 +92,13 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     }
 
     // 新增：启动器工作目录
-    @AppStorage("launcherWorkingDirectory")
+    @AppStorage(AppConstants.UserDefaultsKeys.launcherWorkingDirectory)
     var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
         didSet { objectWillChange.send() }
     }
 
     /// 界面风格：经典（列表 | 内容）/ 聚焦（内容 | 列表）
-    @AppStorage("interfaceLayoutStyle")
+    @AppStorage(AppConstants.UserDefaultsKeys.interfaceLayoutStyle)
     var interfaceLayoutStyle: InterfaceLayoutStyle = .classic {
         didSet { objectWillChange.send() }
     }

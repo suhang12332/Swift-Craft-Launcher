@@ -35,11 +35,16 @@ struct Player: Identifiable, Equatable {
 
     /// 是否为在线账号
     /// 优先依据认证凭据；在尚未从 Keychain 加载凭据时，
-    /// 通过头像是否为远程 URL（http/https）来近似判断是否为正版账号
+    /// 若头像为远程 URL 且不在 `OfflineUserServerMap`（离线第三方服映射）中，则近似认为是正版在线账号
     var isOnlineAccount: Bool {
         if credential != nil {
             return true
         }
+        guard isRemote else { return false }
+        return OfflineUserServerMap.serverKey(for: id) == nil
+    }
+
+    var isRemote: Bool {
         return profile.avatar.hasPrefix("http://") || profile.avatar.hasPrefix("https://")
     }
 

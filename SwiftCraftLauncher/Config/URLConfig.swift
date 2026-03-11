@@ -18,18 +18,16 @@ enum URLConfig {
     /// GitHub 代理设置（从 UserDefaults 读取，避免 UI 依赖）
     private enum GitHubProxySettings {
         static let defaultProxy = "https://gh-proxy.com"
-        static let enableKey = "enableGitHubProxy"
-        static let urlKey = "gitProxyURL"
 
         static var isEnabled: Bool {
             let defaults = UserDefaults.standard
             // 未写入时默认开启
-            return (defaults.object(forKey: enableKey) as? Bool) ?? true
+            return (defaults.object(forKey: AppConstants.UserDefaultsKeys.enableGitHubProxy) as? Bool) ?? true
         }
 
         static var proxyString: String {
             let defaults = UserDefaults.standard
-            return (defaults.string(forKey: urlKey) ?? defaultProxy)
+            return (defaults.string(forKey: AppConstants.UserDefaultsKeys.gitProxyURL) ?? defaultProxy)
                 .trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
@@ -95,11 +93,14 @@ enum URLConfig {
             // Xbox Live
             static let xboxLiveAuth = URLConfig.url("https://user.auth.xboxlive.com/user/authenticate")
             static let xstsAuth = URLConfig.url("https://xsts.auth.xboxlive.com/xsts/authorize")
+            static let xboxLiveSiteName = "user.auth.xboxlive.com"
+            static let xboxLiveRelyingParty = "http://auth.xboxlive.com"
 
             // Minecraft Services
             static let minecraftLogin = URLConfig.url("https://api.minecraftservices.com/authentication/login_with_xbox")
             static let minecraftProfile = URLConfig.url("https://api.minecraftservices.com/minecraft/profile")
             static let minecraftEntitlements = URLConfig.url("https://api.minecraftservices.com/entitlements/mcstore")
+            static let minecraftRelyingParty = "rp://api.minecraftservices.com/"
             // Player skin / cape operations
             static let minecraftProfileSkins = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins")
             static let minecraftProfileActiveSkin = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/skins/active")
@@ -138,6 +139,23 @@ enum URLConfig {
             static let javaRuntimeBeta = URLConfig.url("https://cdn.azul.com/zulu/bin/zulu17.60.17-ca-jre17.0.16-macosx_x64.zip")
         }
 
+        // 第三方认证相关
+        enum AuthlibInjector {
+            static let download = URLConfig.applyGitProxyIfNeeded(
+                URLConfig.url("https://github.com/yushijinhun/authlib-injector/releases/download/v\(AppConstants.AuthlibInjector.version)/\(AppConstants.AuthlibInjector.jarFileName)")
+            )
+
+            /// 根据 Yggdrasil 服务器 baseURL 生成 Authlib Injector 期望的 API 根地址
+            /// 例如 baseURL = https://littleskin.cn/ -> https://littleskin.cn
+            static func serverApiRoot(for baseURL: String) -> String {
+                var normalizedBaseURL = baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
+                while normalizedBaseURL.hasSuffix("/") {
+                    normalizedBaseURL.removeLast()
+                }
+                return normalizedBaseURL
+            }
+        }
+
         // GitHub API
         enum GitHub {
             static let gitHubBase = URLConfig.url("https://github.com")
@@ -174,9 +192,19 @@ enum URLConfig {
 
             // GitHub 仓库主页 URL
             static func repositoryURL() -> URL {
-                return gitHubBase
+                gitHubBase
                     .appendingPathComponent(repositoryOwner)
                     .appendingPathComponent(repositoryName)
+            }
+
+            /// 指定版本的 Release 页面（tag）
+            static func releaseTag(version: String) -> URL {
+                gitHubBase
+                    .appendingPathComponent(repositoryOwner)
+                    .appendingPathComponent(repositoryName)
+                    .appendingPathComponent("releases")
+                    .appendingPathComponent("tag")
+                    .appendingPathComponent(version)
             }
 
             // Appcast 相关
@@ -230,25 +258,13 @@ enum URLConfig {
 
             // LICENSE 文件（API）
             static func license(ref: String = "main") -> URL {
-                let url = repositoryBaseURL
-                    .appendingPathComponent("contents")
-                    .appendingPathComponent("LICENSE")
-                    .appending(queryItems: [
-                        URLQueryItem(name: "ref", value: ref)
-                    ])
-                return URLConfig.applyGitProxyIfNeeded(url)
-            }
-
-            // LICENSE 文件（网页）
-            static func licenseWebPage(ref: String = "main") -> URL {
-                let url = gitHubBase
+                gitHubBase
                     .appendingPathComponent(repositoryOwner)
                     .appendingPathComponent(repositoryName)
                     .appendingPathComponent("blob")
                     .appendingPathComponent(ref)
                     .appendingPathComponent("LICENSE")
                 // License 网页不走 GitHub 代理，直接打开原始 github.com 链接
-                return url
             }
 
             // Announcement API

@@ -12,7 +12,7 @@ class AuthCredentialStore {
         do {
             let encoder = JSONEncoder()
             let data = try encoder.encode(credential)
-            return KeychainManager.save(data: data, account: credential.userId, key: "authCredential")
+            return KeychainManager.save(data: data, account: credential.userId, key: AppConstants.KeychainKeys.authCredential)
         } catch {
             Logger.shared.error("编码认证凭据失败: \(error.localizedDescription)")
             return false
@@ -23,7 +23,7 @@ class AuthCredentialStore {
     /// - Parameter userId: 用户ID
     /// - Returns: 认证凭据，如果不存在或加载失败则返回 nil
     func loadCredential(userId: String) -> AuthCredential? {
-        guard let data = KeychainManager.load(account: userId, key: "authCredential") else {
+        guard let data = KeychainManager.load(account: userId, key: AppConstants.KeychainKeys.authCredential) else {
             return nil
         }
 
@@ -40,7 +40,7 @@ class AuthCredentialStore {
     /// - Parameter userId: 用户ID
     /// - Returns: 是否删除成功
     func deleteCredential(userId: String) -> Bool {
-        return KeychainManager.delete(account: userId, key: "authCredential")
+        return KeychainManager.delete(account: userId, key: AppConstants.KeychainKeys.authCredential)
     }
 
     /// 删除用户的所有认证凭据

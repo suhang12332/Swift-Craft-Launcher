@@ -203,6 +203,9 @@ class PlayerDataManager {
         // 删除 credential（如果存在）
         _ = credentialStore.deleteCredential(userId: id)
 
+        // 删除该用户对应的三方服务器映射（如存在）
+        OfflineUserServerMap.removeServer(for: id)
+
         if initialCount > 0 {
             // 如果删除的是当前玩家，需要设置新的当前玩家
             if isDeletingCurrentPlayer {

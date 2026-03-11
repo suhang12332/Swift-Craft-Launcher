@@ -11,6 +11,7 @@ on:
 env:
   CLIENTID: ${{ secrets.CLIENTID }}
   CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+  LITTLESKIN_CLIENT_SECRET: ${{ secrets.LITTLESKIN_CLIENT_SECRET }}
   SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
 
 jobs:
@@ -66,6 +67,14 @@ jobs:
           sed -i '' "s/\$(CURSEFORGE_API_KEY)/$SAFE_CURSEFORGE_KEY/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
 
           echo "✅ CURSEFORGE_API_KEY 已替换到 AppConstants.swift"
+
+      - name: Replace LITTLESKIN_CLIENT_SECRET
+        run: |
+          # 替换 AppConstants.swift 中的 LITTLESKIN_CLIENT_SECRET 变量（GitHub Secret 中应存放加密后的值）
+          SAFE_LITTLESKIN_SECRET=$(printf '%s' "$LITTLESKIN_CLIENT_SECRET" | sed 's/[\/&]/\\&/g')
+          sed -i '' "s/\$(LITTLESKIN_CLIENT_SECRET)/$SAFE_LITTLESKIN_SECRET/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
+
+          echo "✅ LITTLESKIN_CLIENT_SECRET 已替换到 AppConstants.swift"
 
       - name: Build app for ${{ matrix.arch }}
         run: |
@@ -407,6 +416,26 @@ jobs:
     runs-on: macos-15
 
     steps:
+      - name: Verify remote release notes exists
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
+          NOTES_HTML_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/$VERSION.html"
+          
+          echo "检查 Release Notes 是否存在: $NOTES_URL"
+          if ! curl -fsSI "$NOTES_URL" >/dev/null; then
+            echo "❌ Release Notes 不存在或不可访问: $NOTES_URL"
+            exit 1
+          fi
+          echo "✅ Release Notes 可访问"
+          
+          echo "检查 Release Notes HTML 页面是否存在: $NOTES_HTML_URL"
+          if ! curl -fsSI "$NOTES_HTML_URL" >/dev/null; then
+            echo "❌ Release Notes HTML 页面不存在或不可访问: $NOTES_HTML_URL"
+            exit 1
+          fi
+          echo "✅ Release Notes HTML 页面可访问"
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -443,11 +472,29 @@ jobs:
           echo '${{ secrets.SPARKLE_PRIVATE_KEY }}' > ed25519_priv.pem
           chmod 600 ed25519_priv.pem
 
+      - name: Fetch release notes (remote markdown)
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "版本: $VERSION"
+          
+          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
+          echo "拉取 Release Notes: $NOTES_URL"
+          
+          curl -fsSL "$NOTES_URL" -o release-notes.md
+          echo "✅ Release Notes 已保存到 release-notes.md"
+
       - name: Generate appcast for arm64
         run: |
           # 获取版本信息
           VERSION=${GITHUB_REF#refs/tags/}
           echo "版本: $VERSION"
+
+          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
+          echo "检查 Release Notes 是否存在: $NOTES_URL"
+          if ! curl -fsSI "$NOTES_URL" >/dev/null; then
+            echo "❌ Release Notes 不存在或不可访问: $NOTES_URL"
+            exit 1
+          fi
           
           # 查找arm64 DMG文件
           echo "查找 arm64 DMG 文件..."
@@ -463,6 +510,7 @@ jobs:
           # 生成arm64 appcast条目
           ./bin/generate_appcast \
             --ed-key-file ed25519_priv.pem \
+            --full-release-notes-url "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/${VERSION}.html" \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
             -o appcast-arm64.xml \
             "$(dirname $ARM64_DMG)"
@@ -474,6 +522,13 @@ jobs:
           # 获取版本信息
           VERSION=${GITHUB_REF#refs/tags/}
           echo "版本: $VERSION"
+
+          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
+          echo "检查 Release Notes 是否存在: $NOTES_URL"
+          if ! curl -fsSI "$NOTES_URL" >/dev/null; then
+            echo "❌ Release Notes 不存在或不可访问: $NOTES_URL"
+            exit 1
+          fi
           
           # 查找x86_64 DMG文件
           echo "查找 x86_64 DMG 文件..."
@@ -489,11 +544,23 @@ jobs:
           # 生成x86_64 appcast条目
           ./bin/generate_appcast \
             --ed-key-file ed25519_priv.pem \
+            --full-release-notes-url "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/${VERSION}.html" \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
             -o appcast-x86_64.xml \
             "$(dirname $X86_64_DMG)"
           
           echo "✅ x86_64 appcast generated successfully"
+
+      - name: Fix appcast release notes link
+        run: |
+          for FILE in appcast-arm64.xml appcast-x86_64.xml; do
+            if [[ -f "$FILE" ]]; then
+              echo "🔧 修正 $FILE 中的 release notes 链接字段..."
+              sed -i '' 's/fullReleaseNotesLink/releaseNotesLink/g' "$FILE"
+            else
+              echo "⚠️ 未找到文件: $FILE"
+            fi
+          done
 
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v1
@@ -502,5 +569,6 @@ jobs:
             release-artifacts/**/*.dmg
             appcast-arm64.xml
             appcast-x86_64.xml
+          body_path: release-notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

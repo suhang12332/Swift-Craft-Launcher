@@ -136,8 +136,10 @@ class GameSetupUtil: ObservableObject {
             // 使用 ensureJavaExists 返回的结果，避免再次触发 Java 校验
             gameInfo.javaPath = javaPath
             // 保存游戏配置
-
             gameRepository.addGameSilently(gameInfo)
+
+            // 根据当前启动器语言，为新创建的游戏写入/更新 options.txt 的语言设置
+            configureGameLanguage(for: gameInfo.gameName)
 
             // 扫描游戏的 mods 目录（同步阻塞）
             ModScanner.shared.scanGameModsDirectorySync(game: gameInfo)
@@ -456,5 +458,12 @@ class GameSetupUtil: ObservableObject {
         let fileManager = FileManager.default
         let gameDir = AppPaths.profileRootDirectory.appendingPathComponent(name)
         return fileManager.fileExists(atPath: gameDir.path)
+    }
+
+    /// 根据启动器当前语言，为指定游戏实例写入/更新 Minecraft 的 options.txt 语言设置
+    private func configureGameLanguage(for gameName: String) {
+        let launcherLang = LanguageManager.shared.selectedLanguage
+        let mcLang = CommonUtil.minecraftLanguageCode(from: launcherLang)
+        CommonUtil.upsertOptionsEntry(gameName: gameName, key: "lang", value: mcLang)
     }
 }

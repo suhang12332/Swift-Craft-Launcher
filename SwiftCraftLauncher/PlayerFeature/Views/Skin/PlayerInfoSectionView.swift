@@ -10,7 +10,7 @@ struct PlayerInfoSectionView: View {
             if let player = player {
                 VStack(spacing: 12) {
                     MinecraftSkinUtils(
-                        type: player.isOnlineAccount ? .url : .asset,
+                        type: player.isRemote ? .url : .asset,
                         src: player.avatarName,
                         size: 88
                     )

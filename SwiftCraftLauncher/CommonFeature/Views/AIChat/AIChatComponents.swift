@@ -133,7 +133,7 @@ struct MessageBubble: View {
             cachedAvatar
         } else if let player = currentPlayer {
             MinecraftSkinUtils(
-                type: player.isOnlineAccount ? .url : .asset,
+                type: player.isRemote ? .url : .asset,
                 src: player.avatarName,
                 size: Constants.avatarSize
             )

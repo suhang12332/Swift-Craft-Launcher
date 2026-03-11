@@ -10,6 +10,9 @@ import Foundation
 /// 整合包依赖安装服务
 /// 负责安装整合包中定义的所有必需依赖
 enum ModPackDependencyInstaller {
+    private static var downloadSemaphoreValue: Int {
+        max(1, GeneralSettingsManager.shared.concurrentDownloads / 4)
+    }
 
     // MARK: - Download Type
     enum DownloadType {
@@ -90,7 +93,7 @@ enum ModPackDependencyInstaller {
         onProgressUpdate?("modpack.progress.files_download_started".localized(), 0, filesToDownload.count, .files)
 
         // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GeneralSettingsManager.shared.concurrentDownloads)
+        let semaphore = AsyncSemaphore(value: downloadSemaphoreValue)
 
         // 使用计数器跟踪完成的文件数量
         let completedCount = ModPackCounter()
@@ -184,86 +187,18 @@ enum ModPackDependencyInstaller {
     /// - Returns: 是否下载成功
     private static func downloadCurseForgeFile(projectId: Int, fileId: Int, resourceDir: URL, gameInfo: GameVersionInfo? = nil) async -> Bool {
         // 并发获取文件详情与模组详情，减少重复请求
-        async let fileDetailTask = CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId)
-        async let modDetailTask: CurseForgeModDetail? = try? await CurseForgeService.fetchModDetailThrowing(modId: projectId)
-
-        let fileDetail = await fileDetailTask
-        let modDetail = await modDetailTask
+        let fileDetail = await CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId)
 
         // 首选指定文件（若详情存在）
         if let fileDetail = fileDetail {
             if await downloadCurseForgeFileWithDetail(
                 fileDetail: fileDetail,
                 projectId: projectId,
-                resourceDir: resourceDir,
-                modDetail: modDetail
+                resourceDir: resourceDir
             ) {
                 return true
             }
         }
-
-        // 主策略失败或下载失败，回退按版本/加载器匹配
-        return await downloadCurseForgeFileWithFallback(
-            projectId: projectId,
-            resourceDir: resourceDir,
-            gameInfo: gameInfo,
-            modDetail: modDetail
-        )
-    }
-
-    /// 使用备用策略下载 CurseForge 文件（精确匹配游戏版本和加载器）
-    /// - Parameters:
-    ///   - projectId: 项目ID
-    ///   - resourceDir: 资源目录
-    ///   - gameInfo: 游戏信息（可选，用于兼容性检查）
-    /// - Returns: 是否下载成功
-    private static func downloadCurseForgeFileWithFallback(projectId: Int, resourceDir: URL, gameInfo: GameVersionInfo?, modDetail: CurseForgeModDetail? = nil) async -> Bool {
-        // 必须有游戏信息才能进行精确匹配
-        guard let gameInfo = gameInfo else {
-            Logger.shared.error("缺少游戏信息，无法进行文件过滤: \(projectId)")
-            return false
-        }
-
-        // 精确匹配游戏版本和加载器
-        let modLoaderTypeValue = CurseForgeModLoaderType.from(gameInfo.modLoader)?.rawValue
-        let filteredFiles: [CurseForgeModFileDetail]
-
-        if let modDetail = modDetail {
-            // 复用已获取的模组详情，避免重复网络请求
-            filteredFiles = filterFiles(
-                from: modDetail,
-                projectId: projectId,
-                gameVersion: gameInfo.gameVersion,
-                modLoaderType: modLoaderTypeValue
-            )
-        } else {
-            // 仍需网络请求时退回原有逻辑
-            guard let files = await CurseForgeService.fetchProjectFiles(
-                projectId: projectId,
-                gameVersion: gameInfo.gameVersion,
-                modLoaderType: modLoaderTypeValue
-            ) else {
-                Logger.shared.error("精确匹配失败，未找到兼容文件: \(projectId)")
-                return false
-            }
-            filteredFiles = files
-        }
-
-        guard !filteredFiles.isEmpty else {
-            Logger.shared.error("精确匹配失败，未找到兼容文件: \(projectId)")
-            return false
-        }
-
-        if let fileToDownload = filteredFiles.first {
-            return await downloadCurseForgeFileWithDetail(
-                fileDetail: fileToDownload,
-                projectId: projectId,
-                resourceDir: resourceDir,
-                modDetail: modDetail
-            )
-        }
-
-        Logger.shared.error("未找到可下载的文件: \(projectId)")
         return false
     }
 
@@ -276,8 +211,7 @@ enum ModPackDependencyInstaller {
     private static func downloadCurseForgeFileWithDetail(
         fileDetail: CurseForgeModFileDetail,
         projectId: Int,
-        resourceDir: URL,
-        modDetail: CurseForgeModDetail? = nil
+        resourceDir: URL
     ) async -> Bool {
         do {
             // 确定下载URL
@@ -290,13 +224,7 @@ enum ModPackDependencyInstaller {
             }
 
             // 根据文件详情确定子目录（优先使用已获取的模组详情，避免重复请求）
-            let effectiveModDetail: CurseForgeModDetail
-            if let modDetail = modDetail {
-                effectiveModDetail = modDetail
-            } else {
-                effectiveModDetail = try await CurseForgeService.fetchModDetailThrowing(modId: projectId)
-            }
-
+            let effectiveModDetail = try await CurseForgeService.fetchModDetailThrowing(modId: projectId)
             let subDirectory = effectiveModDetail.directoryName
             let destinationPath = resourceDir.appendingPathComponent(subDirectory).appendingPathComponent(fileDetail.fileName)
 
@@ -319,7 +247,7 @@ enum ModPackDependencyInstaller {
                 if let cfAsModrinth = CurseForgeToModrinthAdapter.convert(effectiveModDetail) {
                     var detailWithFile = cfAsModrinth
                     detailWithFile.fileName = fileDetail.fileName
-                    detailWithFile.type = "mod"
+                    detailWithFile.type = detailWithFile.projectType
                     ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
                 }
             }
@@ -470,7 +398,7 @@ enum ModPackDependencyInstaller {
         onProgressUpdate?("modpack.progress.dependencies_installation_started".localized(), 0, requiredDependencies.count, .dependencies)
 
         // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GeneralSettingsManager.shared.concurrentDownloads)
+        let semaphore = AsyncSemaphore(value: downloadSemaphoreValue)
 
         // 使用计数器跟踪完成的依赖数量
         let completedCount = ModPackCounter()

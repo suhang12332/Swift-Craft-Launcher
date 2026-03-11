@@ -16,7 +16,7 @@ import SwiftUI
 final class ThemeManager: ObservableObject {
     static let shared = ThemeManager()
 
-    @AppStorage("themeMode")
+    @AppStorage(AppConstants.UserDefaultsKeys.themeMode)
     var themeMode: ThemeMode = .system {
         didSet {
             applyAppAppearance()

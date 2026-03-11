@@ -4,21 +4,19 @@ import SwiftUI
 /// 语言管理器
 /// 只负责语言列表和 bundle
 public class LanguageManager {
-    private static let appleLanguagesKey = "AppleLanguages"
-
     /// 当前选中的语言（取 AppleLanguages 数组的第一个）
     public var selectedLanguage: String {
         get {
-            UserDefaults.standard.stringArray(forKey: Self.appleLanguagesKey)?.first ?? ""
+            UserDefaults.standard.stringArray(forKey: AppConstants.SystemUserDefaultsKeys.appleLanguages)?.first ?? ""
         }
         set {
             if newValue.isEmpty {
-                UserDefaults.standard.set([String](), forKey: Self.appleLanguagesKey)
+                UserDefaults.standard.set([String](), forKey: AppConstants.SystemUserDefaultsKeys.appleLanguages)
             } else {
-                var langs = UserDefaults.standard.stringArray(forKey: Self.appleLanguagesKey) ?? []
+                var langs = UserDefaults.standard.stringArray(forKey: AppConstants.SystemUserDefaultsKeys.appleLanguages) ?? []
                 langs.removeAll { $0 == newValue }
                 langs.insert(newValue, at: 0)
-                UserDefaults.standard.set(langs, forKey: Self.appleLanguagesKey)
+                UserDefaults.standard.set(langs, forKey: AppConstants.SystemUserDefaultsKeys.appleLanguages)
             }
         }
     }

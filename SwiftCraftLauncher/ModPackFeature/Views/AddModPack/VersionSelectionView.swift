@@ -23,11 +23,13 @@ struct VersionSelectionView: View {
 
     private var gameVersionPicker: some View {
         VStack(alignment: .leading, spacing: 8) {
+            Text("modpack.game.version".localized())
+                .foregroundColor(.primary)
             CommonMenuPicker(
-                selection: $selectedGameVersion
+                selection: $selectedGameVersion,
+                hidesLabel: true
             ) {
-                Text("modpack.game.version".localized())
-                    .foregroundColor(.primary)
+                Text("")
             } content: {
                 if availableGameVersions.isEmpty {
                     Text(String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline))
@@ -58,11 +60,13 @@ struct VersionSelectionView: View {
                         .frame(maxWidth: .infinity)
                 }
             } else if !selectedGameVersion.isEmpty {
+                Text("modpack.version".localized())
+                    .foregroundColor(.primary)
                 CommonMenuPicker(
-                    selection: $selectedModPackVersion
+                    selection: $selectedModPackVersion,
+                    hidesLabel: true
                 ) {
-                    Text("modpack.version".localized())
-                        .foregroundColor(.primary)
+                    Text("")
                 } content: {
                     ForEach(filteredModPackVersions, id: \.id) { version in
                         Text(version.name).tag(
@@ -70,7 +74,6 @@ struct VersionSelectionView: View {
                         )
                     }
                 }
-                .font(.subheadline)
                 .onAppear {
                     onModPackVersionAppear()
                 }

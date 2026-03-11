@@ -74,7 +74,7 @@ struct AddOrDeleteResourceButton: View {
 
         HStack(spacing: 8) {
             // 更新按钮（仅在 local 模式且有更新时显示）
-            if type == false && addButtonState == .update {
+            if type == false && addButtonState == .update && !isResourceDisabled {
                 Button(action: handleUpdateAction) {
                     if isUpdateButtonLoading {
                         ProgressView()
@@ -112,7 +112,6 @@ struct AddOrDeleteResourceButton: View {
             .disabled(
                 addButtonState == .loading
                     || (addButtonState == .installed && type)
-                    || isDisabled
             )  // type = true (server mode) disables deletion；禁用状态与置灰条件一致
             .onAppear {
                 if type == false {
@@ -657,6 +656,11 @@ struct AddOrDeleteResourceButton: View {
 
             // 通知外部本地资源的启用/禁用状态已变更
             onToggleDisableState?(isDisabled)
+
+            // 如果是从禁用切换到启用状态，检查更新
+            if !isDisabled && type == false {
+                checkForUpdate()
+            }
         } catch {
             Logger.shared.error("切换资源启用状态失败: \(error.localizedDescription)")
         }

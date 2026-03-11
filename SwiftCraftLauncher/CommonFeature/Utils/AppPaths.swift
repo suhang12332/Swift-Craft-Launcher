@@ -27,6 +27,14 @@ enum AppPaths {
             .applicationSupportDirectory.appendingPathComponent(Bundle.main.appName)
         }
     }
+
+    /// 认证相关文件根目录（Application Support/.../auth）
+    static var authDirectory: URL {
+        cachedURL(key: "authDirectory") {
+            launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.auth, isDirectory: true)
+        }
+    }
+
     static var runtimeDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.runtime)
     }
@@ -62,6 +70,13 @@ enum AppPaths {
     static func profileDirectory(gameName: String) -> URL {
         cachedURL(key: "profileDirectory:\(gameName)") {
             profileRootDirectory.appendingPathComponent(gameName)
+        }
+    }
+
+    /// 某个游戏实例的 options.txt 路径
+    static func optionsFile(gameName: String) -> URL {
+        cachedURL(key: "optionsFile:\(gameName)") {
+            profileDirectory(gameName: gameName).appendingPathComponent("options.txt")
         }
     }
 
@@ -140,6 +155,26 @@ extension AppPaths {
         case "shader": return shaderpacksDirectory(gameName: gameName)
         case "resourcepack": return resourcepacksDirectory(gameName: gameName)
         default: return nil
+        }
+    }
+
+    /// 根据本地文件所在目录名推断资源类型（mod / shader / resourcepack / datapack）
+    /// - Parameter fileURL: 本地资源文件路径
+    /// - Returns: 资源类型字符串，或 nil 表示无法推断
+    static func resourceType(for fileURL: URL) -> String? {
+        let parentDirName = fileURL.deletingLastPathComponent().lastPathComponent.lowercased()
+
+        switch parentDirName {
+        case AppConstants.DirectoryNames.mods.lowercased():
+            return "mod"
+        case AppConstants.DirectoryNames.shaderpacks.lowercased():
+            return "shader"
+        case AppConstants.DirectoryNames.resourcepacks.lowercased():
+            return "resourcepack"
+        case AppConstants.DirectoryNames.datapacks.lowercased():
+            return "datapack"
+        default:
+            return nil
         }
     }
     /// 全局缓存文件路径 - 使用系统标准缓存目录，异常时回退到应用支持目录下的 Cache

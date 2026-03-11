@@ -12,6 +12,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     @Published var currentVersion = ""
     @Published var latestVersion = ""
     @Published var updateDescription = ""
+    @Published var versionString = ""
 
     // 配置选项
     private let startupCheckDelay: TimeInterval = 2.0 // 启动后延迟检查时间（秒）
@@ -50,13 +51,13 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     /// 设置 Sparkle 的语言
     private func setSparkleLanguage() {
         let selectedLanguage = LanguageManager.shared.selectedLanguage
-        UserDefaults.standard.set([selectedLanguage], forKey: "AppleLanguages")
+        UserDefaults.standard.set([selectedLanguage], forKey: AppConstants.SystemUserDefaultsKeys.appleLanguages)
     }
 
     /// 公共方法：设置 Sparkle 的语言
     /// - Parameter language: 语言代码
     func updateSparkleLanguage(_ language: String) {
-        UserDefaults.standard.set([language], forKey: "AppleLanguages")
+        UserDefaults.standard.set([language], forKey: AppConstants.SystemUserDefaultsKeys.appleLanguages)
     }
 
     // MARK: - SPUUpdaterDelegate
@@ -81,6 +82,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         isCheckingForUpdates = false
         updateAvailable = true
         latestVersion = item.versionString
+        versionString = item.displayVersionString
         updateDescription = item.itemDescription ?? ""
     }
 
