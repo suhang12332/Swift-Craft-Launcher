@@ -203,11 +203,18 @@ struct ModPackExportSheet: View {
 
             Spacer()
 
-            Button("modpack.export.button".localized()) {
+            Button {
                 if viewModel.exportState == .completed, let tempPath = viewModel.tempExportPath {
                     handleExportCompleted(tempFilePath: tempPath)
                 } else {
                     viewModel.startExport(gameInfo: gameInfo)
+                }
+            } label: {
+                if viewModel.isExporting {
+                    ProgressView()
+                        .controlSize(.small)
+                } else {
+                    Text("modpack.export.button".localized())
                 }
             }
             .keyboardShortcut(.defaultAction)
