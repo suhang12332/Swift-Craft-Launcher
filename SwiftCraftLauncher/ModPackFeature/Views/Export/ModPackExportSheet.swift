@@ -164,14 +164,31 @@ struct ModPackExportSheet: View {
                 TextField("modpack.export.summary.placeholder".localized(), text: $viewModel.summary)
                     .textFieldStyle(.roundedBorder)
             }
+
+            // 版本目录
+            VStack(alignment: .leading, spacing: 8) {
+                Text("version.directory.tree".localized())
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+
+                FileTreeView(
+                    rootURL: AppPaths.profileDirectory(gameName: gameInfo.gameName)
+                ) { urls in
+                    viewModel.selectedFileURLs = urls
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 260)
+            }
         }
     }
 
     private var exportProgressView: some View {
         VStack(alignment: .leading, spacing: 16) {
             exportFormView
-            progressItemsView
-                .padding(.top, 8)
+            if viewModel.exportProgress.scanProgress != nil || viewModel.exportProgress.copyProgress != nil {
+                progressItemsView
+                    .padding(.top, 8)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .topLeading)
     }
@@ -179,9 +196,7 @@ struct ModPackExportSheet: View {
     private var footerView: some View {
         HStack {
             Button("common.cancel".localized()) {
-                if viewModel.isExporting {
-                    viewModel.cancelExport()
-                }
+                viewModel.cleanupAllData()
                 dismiss()
             }
             .keyboardShortcut(.cancelAction)
@@ -204,13 +219,13 @@ struct ModPackExportSheet: View {
 
     private var progressItemsView: some View {
         VStack(spacing: 16) {
-            // 扫描资源进度条（总是显示，因为扫描是必然的）
+            // 扫描资源进度条
             if let scanProgress = viewModel.exportProgress.scanProgress {
                 progressRow(progress: scanProgress)
                     .id("scan-\(scanProgress.completed)-\(scanProgress.total)")
             }
 
-            // 复制文件进度条（只在有复制任务时显示，不显示占位符）
+            // 复制文件进度条
             if let copyProgress = viewModel.exportProgress.copyProgress {
                 progressRow(progress: copyProgress)
                     .id("copy-\(copyProgress.completed)-\(copyProgress.total)")

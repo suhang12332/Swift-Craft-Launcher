@@ -256,3 +256,21 @@ enum ImageLoadingUtil {
         return NSImage(cgImage: cgImage, size: NSSize(width: cgImage.width, height: cgImage.height))
     }
 }
+
+
+extension ResourceType {
+    var overridesSubdirectory: String {
+        switch self {
+        case .mod:
+            return AppConstants.DirectoryNames.mods
+        case .datapack:
+            return AppConstants.DirectoryNames.datapacks
+        case .shader:
+            return AppConstants.DirectoryNames.shaderpacks
+        case .resourcepack:
+            return AppConstants.DirectoryNames.resourcepacks
+        case .modpack:
+            return rawValue
+        }
+    }
+}

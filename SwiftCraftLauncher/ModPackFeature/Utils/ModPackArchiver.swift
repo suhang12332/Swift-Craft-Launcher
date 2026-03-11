@@ -71,7 +71,6 @@ enum ModPackArchiver {
                 if let isRegularFile = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
                    isRegularFile {
                     // 计算相对路径（相对于 overridesDir），添加 overrides/ 前缀
-                    // 使用标准化的路径来避免路径中包含 "private" 等词导致的问题
                     let filePath = (fileURL.path as NSString).standardizingPath
 
                     // 确保文件路径以 overridesDir 路径开头

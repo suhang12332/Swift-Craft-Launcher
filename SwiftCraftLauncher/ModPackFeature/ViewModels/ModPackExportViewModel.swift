@@ -18,7 +18,7 @@ class ModPackExportViewModel: ObservableObject {
     enum ExportState: Equatable {
         case idle              // 空闲状态，显示表单
         case exporting         // 正在导出，显示进度
-        case completed         // 导出完成，等待保存，显示进度（100%）
+        case completed         // 导出完成，等待保存
     }
 
     // MARK: - Published Properties
@@ -46,6 +46,9 @@ class ModPackExportViewModel: ObservableObject {
 
     /// 保存文件时的错误信息
     @Published var saveError: String?
+
+    /// 在文件树里选择的文件（用于后续导出过滤）
+    @Published var selectedFileURLs: [URL] = []
 
     // MARK: - Private Properties
 
@@ -92,7 +95,8 @@ class ModPackExportViewModel: ObservableObject {
                 outputPath: tempPath,
                 modPackName: modPackName,
                 modPackVersion: modPackVersion,
-                summary: summary.isEmpty ? nil : summary
+                summary: summary.isEmpty ? nil : summary,
+                selectedFiles: selectedFileURLs
             ) { progress in
                 Task { @MainActor in
                     self.exportProgress = progress
