@@ -10,6 +10,9 @@ import Foundation
 /// 整合包依赖安装服务
 /// 负责安装整合包中定义的所有必需依赖
 enum ModPackDependencyInstaller {
+    private static var downloadSemaphoreValue: Int {
+        max(1, GeneralSettingsManager.shared.concurrentDownloads / 4)
+    }
 
     // MARK: - Download Type
     enum DownloadType {
@@ -90,7 +93,7 @@ enum ModPackDependencyInstaller {
         onProgressUpdate?("modpack.progress.files_download_started".localized(), 0, filesToDownload.count, .files)
 
         // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GeneralSettingsManager.shared.concurrentDownloads)
+        let semaphore = AsyncSemaphore(value: downloadSemaphoreValue)
 
         // 使用计数器跟踪完成的文件数量
         let completedCount = ModPackCounter()
@@ -185,7 +188,7 @@ enum ModPackDependencyInstaller {
     private static func downloadCurseForgeFile(projectId: Int, fileId: Int, resourceDir: URL, gameInfo: GameVersionInfo? = nil) async -> Bool {
         // 并发获取文件详情与模组详情，减少重复请求
         let fileDetail = await CurseForgeService.fetchFileDetail(projectId: projectId, fileId: fileId)
-        
+
         // 首选指定文件（若详情存在）
         if let fileDetail = fileDetail {
             if await downloadCurseForgeFileWithDetail(
@@ -395,7 +398,7 @@ enum ModPackDependencyInstaller {
         onProgressUpdate?("modpack.progress.dependencies_installation_started".localized(), 0, requiredDependencies.count, .dependencies)
 
         // 创建信号量控制并发数量
-        let semaphore = AsyncSemaphore(value: GeneralSettingsManager.shared.concurrentDownloads)
+        let semaphore = AsyncSemaphore(value: downloadSemaphoreValue)
 
         // 使用计数器跟踪完成的依赖数量
         let completedCount = ModPackCounter()
