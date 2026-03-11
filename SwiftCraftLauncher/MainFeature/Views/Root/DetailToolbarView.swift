@@ -4,11 +4,14 @@ import SwiftUI
 public struct DetailToolbarView: ToolbarContent {
     @Environment(\.openURL)
     private var openURL
+    @Environment(\.openSettings)
+    private var openSettings
     @EnvironmentObject var filterState: ResourceFilterState
     @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @StateObject private var gameActionManager = GameActionManager.shared
     @State private var showDeleteAlert: Bool = false
@@ -123,11 +126,10 @@ public struct DetailToolbarView: ToolbarContent {
                 if let game = currentGame {
                     resourcesTypeMenu
                     resourcesMenu
-                    if !detailState.gameType {
-                        localResourceFilterMenu
-                    }
                     if detailState.gameType {
                         dataSourceMenu
+                    } else {
+                        localResourceFilterMenu
                     }
 
                     Spacer()
@@ -171,6 +173,17 @@ public struct DetailToolbarView: ToolbarContent {
                     )
                     .disabled(gameStatusManager.isGameLaunching(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? ""))
                     .applyReplaceTransition()
+
+                    Button {
+                        selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
+                        openSettings()
+                    } label: {
+                        Label(
+                            "settings.game.advanced.tab".localized(),
+                            systemImage: "gearshape"
+                        )
+                    }
+                    .help("settings.game.advanced.tab".localized())
 
                     Button {
                         gameActionManager.showInFinder(game: game)
@@ -304,8 +317,9 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Label(currentResourceTitle, systemImage: "").labelStyle(.titleOnly)
-        }.help("resource.content.type.help".localized())
+            Label(currentResourceTitle, systemImage: "")
+                .labelStyle(.titleOnly)
+        }
     }
 
     private var resourcesTypeMenu: some View {
@@ -339,25 +353,21 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Text(filterState.dataSource.localizedName)
+            Label(filterState.dataSource.localizedName, systemImage: "")
+                .labelStyle(.titleOnly)
         }
     }
 
     private var localResourceFilterMenu: some View {
         Menu {
             ForEach(LocalResourceFilter.allCases) { filter in
-                Button {
+                Button(filter.title) {
                     filterState.localResourceFilter = filter
-                } label: {
-                    if filterState.localResourceFilter == filter {
-                        Label(filter.title, systemImage: "checkmark")
-                    } else {
-                        Text(filter.title)
-                    }
                 }
             }
         } label: {
-            Text(filterState.localResourceFilter.title)
+            Label(filterState.localResourceFilter.title, systemImage: "")
+                .labelStyle(.titleOnly)
         }
     }
 }
