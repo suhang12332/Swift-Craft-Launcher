@@ -13234,6 +13234,143 @@
         }
       }
     },
+    "error.download.authlib_injector_failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فشل تنزيل Authlib Injector"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector-download mislykkedes"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector-Download fehlgeschlagen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector Download Failed"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error al descargar Authlib Injector"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector -lataus epäonnistui"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Échec du téléchargement d'Authlib Injector"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector डाउनलोड विफल"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Download di Authlib Injector non riuscito"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector のダウンロードに失敗しました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector 다운로드에 실패했습니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector-nedlasting mislyktes"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector-download mislukt"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pobieranie Authlib Injector nie powiodło się"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha no download do Authlib Injector"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось загрузить Authlib Injector"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector-nedladdning misslyckades"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การดาวน์โหลด Authlib Injector ล้มเหลว"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector indirme başarısız"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tải xuống Authlib Injector thất bại"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下载 Authlib Injector 失败"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下載 Authlib Injector 失敗"
+          }
+        }
+      }
+    },
     "error.download.cancelled" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -17069,33 +17206,6 @@
             "value" : "皮膚下載失敗"
           }
         }
-      }
-    },
-    "error.download.authlib_injector_failed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : { "stringUnit" : { "state" : "translated", "value" : "فشل تنزيل Authlib Injector" } },
-        "da" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector-download mislykkedes" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector-Download fehlgeschlagen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector Download Failed" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Error al descargar Authlib Injector" } },
-        "fi" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector -lataus epäonnistui" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Échec du téléchargement d'Authlib Injector" } },
-        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector डाउनलोड विफल" } },
-        "it" : { "stringUnit" : { "state" : "translated", "value" : "Download di Authlib Injector non riuscito" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector のダウンロードに失敗しました" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector 다운로드에 실패했습니다" } },
-        "nb" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector-nedlasting mislyktes" } },
-        "nl" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector-download mislukt" } },
-        "pl" : { "stringUnit" : { "state" : "translated", "value" : "Pobieranie Authlib Injector nie powiodło się" } },
-        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Falha no download do Authlib Injector" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не удалось загрузить Authlib Injector" } },
-        "sv" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector-nedladdning misslyckades" } },
-        "th" : { "stringUnit" : { "state" : "translated", "value" : "การดาวน์โหลด Authlib Injector ล้มเหลว" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector indirme başarısız" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Tải xuống Authlib Injector thất bại" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下载 Authlib Injector 失败" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "下載 Authlib Injector 失敗" } }
       }
     },
     "error.filesystem.cache_clear_failed" : {
@@ -57032,6 +57142,10 @@
         }
       }
     },
+    "Name" : {
+      "comment" : "File tree name column title",
+      "shouldTranslate" : false
+    },
     "neoforge.loader.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -62105,143 +62219,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "數據包"
-          }
-        }
-      }
-    },
-    "resource.content.type.help" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "نوع المورد"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ressourcetype"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ressourcentyp"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resource Type"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tipo de recurso"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resurssin tyyppi"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Type de ressource"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "संसाधन प्रकार"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tipo di risorsa"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "リソースタイプ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "리소스 유형"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ressurstype"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brontype"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Typ zasobu"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tipo de recurso"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Тип ресурса"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resurstyp"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ประเภททรัพยากร"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kaynak türü"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Loại tài nguyên"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "资源类型"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資源類型"
           }
         }
       }
@@ -81867,6 +81844,417 @@
         }
       }
     },
+    "settings.player.authlib_injector" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector"
+          }
+        }
+      }
+    },
+    "settings.player.offline_login" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تسجيل دخول طرف ثالث"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tredjepartslogin"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmeldung über Drittanbieter"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Third-Party Login"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicio de sesión de terceros"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kolmannen osapuolen kirjautuminen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connexion via un tiers"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "थर्ड-पार्टी लॉगिन"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accesso di terze parti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サードパーティログイン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서드파티 로그인"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Innlogging via tredjepart"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inloggen via derde partij"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Logowanie przez stronę trzecią"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Login de terceiros"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вход через сторонний сервис"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inloggning via tredje part"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เข้าสู่ระบบของบุคคลที่สาม"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Üçüncü taraf girişi"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đăng nhập bên thứ ba"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "三方登录"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "三方登入"
+          }
+        }
+      }
+    },
+    "settings.player.offline_login.toggle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تمكين تسجيل دخول الطرف الثالث"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivér tredjepartslogin"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drittanbieter-Anmeldung aktivieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Third-Party Login"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Habilitar inicio de sesión de terceros"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ota kolmannen osapuolen kirjautuminen käyttöön"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer la connexion via un tiers"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "थर्ड-पार्टी लॉगिन सक्षम करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abilita l'accesso di terze parti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サードパーティログインを有効にする"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서드파티 로그인을 활성화"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiver innlogging via tredjepart"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Derdepartij-aanmelden inschakelen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Włącz logowanie przez stronę trzecią"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativar login de terceiros"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включить вход через сторонний сервис"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera inloggning via tredje part"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เปิดใช้งานการเข้าสู่ระบบของบุคคลที่สาม"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Üçüncü taraf girişini etkinleştir"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bật đăng nhập bên thứ ba"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "启用三方登录"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "啟用三方登入"
+          }
+        }
+      }
+    },
     "settings.player.placeholder" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -82139,87 +82527,6 @@
             "value" : "玩家設定"
           }
         }
-      }
-    },
-    "settings.player.offline_login" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : { "stringUnit" : { "state" : "translated", "value" : "تسجيل دخول طرف ثالث" } },
-        "da" : { "stringUnit" : { "state" : "translated", "value" : "Tredjepartslogin" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Anmeldung über Drittanbieter" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Third-Party Login" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Inicio de sesión de terceros" } },
-        "fi" : { "stringUnit" : { "state" : "translated", "value" : "Kolmannen osapuolen kirjautuminen" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Connexion via un tiers" } },
-        "hi" : { "stringUnit" : { "state" : "translated", "value" : "थर्ड-पार्टी लॉगिन" } },
-        "it" : { "stringUnit" : { "state" : "translated", "value" : "Accesso di terze parti" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "サードパーティログイン" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "서드파티 로그인" } },
-        "nb" : { "stringUnit" : { "state" : "translated", "value" : "Innlogging via tredjepart" } },
-        "nl" : { "stringUnit" : { "state" : "translated", "value" : "Inloggen via derde partij" } },
-        "pl" : { "stringUnit" : { "state" : "translated", "value" : "Logowanie przez stronę trzecią" } },
-        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Login de terceiros" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вход через сторонний сервис" } },
-        "sv" : { "stringUnit" : { "state" : "translated", "value" : "Inloggning via tredje part" } },
-        "th" : { "stringUnit" : { "state" : "translated", "value" : "เข้าสู่ระบบของบุคคลที่สาม" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Üçüncü taraf girişi" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Đăng nhập bên thứ ba" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "三方登录" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "三方登入" } }
-      }
-    },
-    "settings.player.offline_login.toggle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : { "stringUnit" : { "state" : "translated", "value" : "تمكين تسجيل دخول الطرف الثالث" } },
-        "da" : { "stringUnit" : { "state" : "translated", "value" : "Aktivér tredjepartslogin" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Drittanbieter-Anmeldung aktivieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable Third-Party Login" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Habilitar inicio de sesión de terceros" } },
-        "fi" : { "stringUnit" : { "state" : "translated", "value" : "Ota kolmannen osapuolen kirjautuminen käyttöön" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Activer la connexion via un tiers" } },
-        "hi" : { "stringUnit" : { "state" : "translated", "value" : "थर्ड-पार्टी लॉगिन सक्षम करें" } },
-        "it" : { "stringUnit" : { "state" : "translated", "value" : "Abilita l'accesso di terze parti" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "サードパーティログインを有効にする" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "서드파티 로그인을 활성화" } },
-        "nb" : { "stringUnit" : { "state" : "translated", "value" : "Aktiver innlogging via tredjepart" } },
-        "nl" : { "stringUnit" : { "state" : "translated", "value" : "Derdepartij-aanmelden inschakelen" } },
-        "pl" : { "stringUnit" : { "state" : "translated", "value" : "Włącz logowanie przez stronę trzecią" } },
-        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Ativar login de terceiros" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включить вход через сторонний сервис" } },
-        "sv" : { "stringUnit" : { "state" : "translated", "value" : "Aktivera inloggning via tredje part" } },
-        "th" : { "stringUnit" : { "state" : "translated", "value" : "เปิดใช้งานการเข้าสู่ระบบของบุคคลที่สาม" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Üçüncü taraf girişini etkinleştir" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Bật đăng nhập bên thứ ba" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "启用三方登录" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "啟用三方登入" } }
-      }
-    },
-    "settings.player.authlib_injector" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "da" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "fi" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "hi" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "it" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "nb" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "nl" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "pl" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "sv" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "th" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Authlib Injector" } }
       }
     },
     "settings.resource_cache.description" : {
@@ -86618,6 +86925,143 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "停止"
+          }
+        }
+      }
+    },
+    "version.directory.tree" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شجرة مجلد الإصدارات"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versionsmappetræ"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versionsordnerstruktur"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versions directory tree"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Árbol del directorio de versiones"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versiohakemiston puu"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arborescence du dossier des versions"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "संस्करण निर्देशिका वृक्ष"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Struttura della cartella delle versioni"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バージョンディレクトリツリー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버전 디렉터리 트리"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versjonsmappetre"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versiemappenstructuur"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drzewo katalogu wersji"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Árvore do diretório de versões"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дерево каталога версий"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versionsmappträd"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "แผนผังโฟลเดอร์เวอร์ชัน"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sürüm dizini ağacı"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cây thư mục phiên bản"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本目录树"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本目錄樹"
           }
         }
       }

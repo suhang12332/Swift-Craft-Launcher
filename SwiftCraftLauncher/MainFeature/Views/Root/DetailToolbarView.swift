@@ -4,13 +4,19 @@ import SwiftUI
 public struct DetailToolbarView: ToolbarContent {
     @Environment(\.openURL)
     private var openURL
+    @Environment(\.openSettings)
+    private var openSettings
     @EnvironmentObject var filterState: ResourceFilterState
     @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @StateObject private var gameActionManager = GameActionManager.shared
+    @State private var showDeleteAlert: Bool = false
+    @State private var showExportSheet: Bool = false
+    @State private var activeGame: GameVersionInfo?
 
     private var currentGame: GameVersionInfo? {
         if case .game(let gameId) = detailState.selectedItem {
@@ -120,11 +126,10 @@ public struct DetailToolbarView: ToolbarContent {
                 if let game = currentGame {
                     resourcesTypeMenu
                     resourcesMenu
-                    if !detailState.gameType {
-                        localResourceFilterMenu
-                    }
                     if detailState.gameType {
                         dataSourceMenu
+                    } else {
+                        localResourceFilterMenu
                     }
 
                     Spacer()
@@ -170,11 +175,67 @@ public struct DetailToolbarView: ToolbarContent {
                     .applyReplaceTransition()
 
                     Button {
+                        selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
+                        openSettings()
+                    } label: {
+                        Label(
+                            "settings.game.advanced.tab".localized(),
+                            systemImage: "gearshape"
+                        )
+                    }
+                    .help("settings.game.advanced.tab".localized())
+
+                    Button {
                         gameActionManager.showInFinder(game: game)
                     } label: {
                         Label("game.path".localized(), systemImage: "folder")
                     }
                     .help("game.path".localized())
+
+                    Button {
+                        activeGame = game
+                        showExportSheet = true
+                    } label: {
+                        Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
+                    }
+                    .help("modpack.export.button".localized())
+                    .sheet(isPresented: $showExportSheet) {
+                        if let exportGame = activeGame {
+                            ModPackExportSheet(gameInfo: exportGame)
+                        }
+                    }
+
+                    Button(role: .destructive) {
+                        activeGame = game
+                        showDeleteAlert = true
+                    } label: {
+                        Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
+                    }
+                    .help("sidebar.context_menu.delete_game".localized())
+                    .confirmationDialog(
+                        "delete.title".localized(),
+                        isPresented: $showDeleteAlert,
+                        titleVisibility: .visible
+                    ) {
+                        Button("common.delete".localized(), role: .destructive) {
+                            if let deletingGame = activeGame {
+                                gameActionManager.deleteGame(
+                                    game: deletingGame,
+                                    gameRepository: gameRepository,
+                                    selectedItem: detailState.selectedItemBinding,
+                                    gameType: detailState.gameTypeBinding
+                                )
+                            }
+                        }
+                        .keyboardShortcut(.defaultAction)
+                        Button("common.cancel".localized(), role: .cancel) {}
+                    } message: {
+                        if let deletingGame = activeGame {
+                            Text(
+                                String(format: "delete.game.confirm".localized(), deletingGame.gameName)
+                            )
+                        }
+                    }
                 }
             case .resource:
                 if detailState.selectedProjectId != nil {
@@ -256,8 +317,9 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Label(currentResourceTitle, systemImage: "").labelStyle(.titleOnly)
-        }.help("resource.content.type.help".localized())
+            Label(currentResourceTitle, systemImage: "")
+                .labelStyle(.titleOnly)
+        }
     }
 
     private var resourcesTypeMenu: some View {
@@ -291,25 +353,21 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         } label: {
-            Text(filterState.dataSource.localizedName)
+            Label(filterState.dataSource.localizedName, systemImage: "")
+                .labelStyle(.titleOnly)
         }
     }
 
     private var localResourceFilterMenu: some View {
         Menu {
             ForEach(LocalResourceFilter.allCases) { filter in
-                Button {
+                Button(filter.title) {
                     filterState.localResourceFilter = filter
-                } label: {
-                    if filterState.localResourceFilter == filter {
-                        Label(filter.title, systemImage: "checkmark")
-                    } else {
-                        Text(filter.title)
-                    }
                 }
             }
         } label: {
-            Text(filterState.localResourceFilter.title)
+            Label(filterState.localResourceFilter.title, systemImage: "")
+                .labelStyle(.titleOnly)
         }
     }
 }
