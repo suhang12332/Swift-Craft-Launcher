@@ -92,10 +92,11 @@ struct ModPackDownloadSheet: View {
     private var bodyView: some View {
         VStack(alignment: .leading, spacing: 12) {
             if isProcessing {
-                ProcessingView(
-                    downloadedBytes: viewModel.modPackDownloadProgress,
-                    totalBytes: viewModel.modPackTotalSize
+                ProgressView(
+                    value: Double(viewModel.modPackDownloadProgress),
+                    total: Double(viewModel.modPackTotalSize)
                 )
+                .progressViewStyle(.circular)
             } else if viewModel.isLoadingProjectDetails {
                 ProgressView().controlSize(.small)
                     .frame(maxWidth: .infinity, minHeight: 130)
