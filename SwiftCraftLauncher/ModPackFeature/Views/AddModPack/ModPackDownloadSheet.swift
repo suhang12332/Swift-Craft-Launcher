@@ -89,14 +89,30 @@ struct ModPackDownloadSheet: View {
         }
     }
 
+    private var processView: some View {
+        VStack(spacing: 24) {
+            ProgressView(
+                value: Double(max(viewModel.modPackDownloadProgress, 0)),
+                total: Double(max(viewModel.modPackTotalSize, 100))
+            )
+            .progressViewStyle(.circular)
+            .controlSize(.extraLarge)
+
+            Text("modpack.processing.title".localized())
+                .font(.headline)
+                .foregroundColor(.primary)
+
+            Text("modpack.processing.subtitle".localized())
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }.padding()
+    }
+
     private var bodyView: some View {
         VStack(alignment: .leading, spacing: 12) {
             if isProcessing {
-                ProgressView(
-                    value: Double(viewModel.modPackDownloadProgress),
-                    total: Double(viewModel.modPackTotalSize)
-                )
-                .progressViewStyle(.circular)
+                processView
             } else if viewModel.isLoadingProjectDetails {
                 ProgressView().controlSize(.small)
                     .frame(maxWidth: .infinity, minHeight: 130)
