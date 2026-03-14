@@ -224,7 +224,6 @@ struct MinecraftLaunchCommand {
         // 获取游戏工作目录
         let gameWorkingDirectory = AppPaths.profileDirectory(gameName: game.gameName)
 
-//        Logger.shared.info("启动游戏进程: \(javaExecutable) \(command.joined(separator: " "))")
         Logger.shared.info("游戏工作目录: \(gameWorkingDirectory.path)")
 
         let process = Process()
