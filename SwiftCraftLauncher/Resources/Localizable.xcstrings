@@ -22007,6 +22007,144 @@
         }
       }
     },
+    "error.game_launch.game_crashed.description" : {
+      "comment" : "Game Launch Errors",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعطلّت اللعبة. يُرجى التحقق من سجل المشغّل للحصول على مزيد من التفاصيل ومعلومات استكشاف الأخطاء وإصلاحها."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spillet er gået ned. Tjek venligst launcher-loggen for flere detaljer og fejlfinding."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Spiel ist abgestürzt. Bitte überprüfe das Launcher-Protokoll für weitere Details und Hinweise zur Fehlerbehebung."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The game has crashed. Please check the launcher log for more details and troubleshooting information."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El juego se ha bloqueado. Consulta el registro del launcher para obtener más detalles e información de diagnóstico."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peli on kaatunut. Tarkista launcher-loki lisätietoja ja vianmääritystä varten."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le jeu a planté. Veuillez consulter le journal du lanceur pour plus de détails et d’informations de dépannage."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "गेम क्रैश हो गया है। अधिक विवरण और समस्या निवारण जानकारी के लिए कृपया लॉन्चर लॉग देखें।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il gioco è andato in crash. Controlla il log del launcher per maggiori dettagli e informazioni di risoluzione dei problemi."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゲームがクラッシュしました。詳しい情報やトラブルシューティングのために、ランチャーのログを確認してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "게임이 크래시되었습니다. 자세한 내용과 문제 해결 정보를 보려면 런처 로그를 확인하세요."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spillet har krasjet. Sjekk launcher-loggen for flere detaljer og feilsøkingsinformasjon."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het spel is gecrasht. Controleer de launcher-log voor meer details en informatie voor probleemoplossing."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gra uległa awarii. Sprawdź dziennik launchera, aby uzyskać więcej szczegółów i informacji diagnostycznych."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O jogo travou. Verifique o log do launcher para mais detalhes e informações de solução de problemas."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Игра завершилась сбоем. Пожалуйста, проверьте журнал лаунчера для получения дополнительных сведений и информации по устранению неполадок."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spelet har kraschat. Kontrollera launcher-loggen för fler detaljer och felsökningsinformation."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เกมขัดข้อง เกมได้ปิดตัวลง กรุณาตรวจสอบบันทึกล็อกของตัวเรียกใช้งานเพื่อดูรายละเอียดเพิ่มเติมและข้อมูลสำหรับแก้ไขปัญหา"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyun çöktü. Daha fazla ayrıntı ve sorun giderme bilgisi için lütfen başlatıcı günlüğünü kontrol edin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trò chơi đã bị treo. Vui lòng kiểm tra nhật ký của trình khởi chạy để biết thêm chi tiết và thông tin khắc phục sự cố."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "游戏已崩溃。请查看启动器日志以获取更多详细信息并进行排查。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "遊戲已崩潰。請查看啟動器日誌以取得更多詳細資訊並進行排查。"
+          }
+        }
+      }
+    },
     "error.game_launch.process_failed" : {
       "comment" : "Game Launch Errors",
       "extractionState" : "manual",

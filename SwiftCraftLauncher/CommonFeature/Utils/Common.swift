@@ -166,6 +166,23 @@ enum CommonUtil {
         }
     }
 
+    // MARK: - Game Directory Helpers
+    /// 根据 gameId 查询游戏并返回对应的实例目录（如果失败则返回 nil）
+    static func gameDirectory(for gameId: String) -> URL? {
+        let gameDatabase = GameVersionDatabase(dbPath: AppPaths.gameVersionDatabase.path)
+        do {
+            try? gameDatabase.initialize()
+            guard let game = try gameDatabase.getGame(by: gameId) else {
+                Logger.shared.warning("无法从数据库找到游戏，无法获取游戏目录: \(gameId)")
+                return nil
+            }
+            return AppPaths.profileDirectory(gameName: game.gameName)
+        } catch {
+            Logger.shared.error("从数据库查询游戏失败，无法获取游戏目录: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
     // MARK: - Minecraft Options.txt Helper
 
     /// 在指定游戏实例的 options.txt 中插入或更新一行 `key:value`
@@ -205,6 +222,10 @@ enum CommonUtil {
             Logger.shared.warning("更新 options.txt 失败（游戏: \(gameName), key: \(key)）: \(error.localizedDescription)")
         }
     }
+}
+
+extension Notification.Name {
+    static let gameCrashed = Notification.Name("SwiftCraftLauncher.GameCrashed")
 }
 
 enum ImageLoadingUtil {

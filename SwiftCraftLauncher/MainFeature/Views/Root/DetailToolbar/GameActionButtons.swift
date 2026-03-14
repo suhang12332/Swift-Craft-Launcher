@@ -4,6 +4,7 @@
 //
 
 import SwiftUI
+import AppKit
 
 /// 详情工具栏中与当前游戏相关的操作按钮（启动/停止、设置、在访达中显示、导出、删除）
 struct GameActionButtons: View {
@@ -20,6 +21,8 @@ struct GameActionButtons: View {
     @StateObject private var gameActionManager = GameActionManager.shared
     @State private var showDeleteAlert = false
     @State private var showExportSheet = false
+    @State private var showCrashAlert = false
+    @State private var crashDirectory: URL?
 
     private func isGameRunning(gameId: String, userId: String) -> Bool {
         gameStatusManager.isGameRunning(gameId: gameId, userId: userId)
@@ -120,6 +123,26 @@ struct GameActionButtons: View {
                 Text(
                     String(format: "delete.game.confirm".localized(), game.gameName)
                 )
+            }
+            .alert(
+                "error.game_launch.game_crashed".localized(),
+                isPresented: $showCrashAlert
+            ) {
+                Button("menu.open.log".localized()) {
+                    if let directory = crashDirectory {
+                        NSWorkspace.shared.open(directory)
+                    } else {
+                        Logger.shared.error("无法打开游戏目录：directory 为空")
+                    }
+                }
+                Button("common.close".localized(), role: .cancel) {}
+            } message: {
+                Text("error.game_launch.game_crashed.description".localized())
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .gameCrashed)) { notification in
+                let directory = notification.userInfo?["directory"] as? URL
+                crashDirectory = directory
+                showCrashAlert = true
             }
         }
     }

@@ -49,12 +49,15 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
                     Logger.shared.info("检测到游戏崩溃，启用AI分析: \(gameId)")
                     await collectLogsForGameImmediately(gameId: gameId)
                 } else {
-                    // 游戏崩溃时弹窗提示用户
-                    GlobalErrorHandler.shared.handle(GlobalError.gameLaunch(
-                        chineseMessage: "游戏已崩溃",
-                        i18nKey: "error.game_launch.game_crashed",
-                        level: .popup
-                    ))
+                    // 游戏崩溃时通过通知告知前端，由 SwiftUI 视图决定如何展示
+                    let gameDirectory = CommonUtil.gameDirectory(for: gameId)
+                    await MainActor.run {
+                        NotificationCenter.default.post(
+                            name: .gameCrashed,
+                            object: nil,
+                            userInfo: ["directory": gameDirectory as Any]
+                        )
+                    }
                 }
             } else {
                 Logger.shared.debug("游戏正常退出，不触发AI分析: \(gameId)")
