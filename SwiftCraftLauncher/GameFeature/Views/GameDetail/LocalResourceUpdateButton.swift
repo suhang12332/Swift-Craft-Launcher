@@ -32,4 +32,3 @@ struct LocalResourceUpdateButton: View {
         }
     }
 }
-

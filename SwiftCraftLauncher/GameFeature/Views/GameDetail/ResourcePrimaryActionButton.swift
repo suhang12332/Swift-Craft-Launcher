@@ -22,8 +22,7 @@ struct ResourcePrimaryActionButton: View {
         .disabled(isDisabled)
     }
 
-    @ViewBuilder
-    private var label: some View {
+    @ViewBuilder private var label: some View {
         switch addButtonState {
         case .idle:
             Text("resource.add".localized())
@@ -43,4 +42,3 @@ struct ResourcePrimaryActionButton: View {
         }
     }
 }
-
