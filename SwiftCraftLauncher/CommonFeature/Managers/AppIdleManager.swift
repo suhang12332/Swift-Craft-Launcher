@@ -2,11 +2,6 @@ import Foundation
 import SwiftUI
 import AppKit
 
-extension Notification.Name {
-    static let appDidEnterIdleFreeze = Notification.Name("app.didEnterIdleFreeze")
-    static let appDidExitIdleFreeze = Notification.Name("app.didExitIdleFreeze")
-}
-
 @MainActor
 final class AppIdleManager: ObservableObject {
     static let shared = AppIdleManager()

@@ -43,7 +43,7 @@ class WindowManager {
         } else {
             // 如果没有设置，通过通知中心通知主视图
             NotificationCenter.default.post(
-                name: NSNotification.Name("OpenWindow"),
+                name: .openWindow,
                 object: nil,
                 userInfo: ["windowID": id.rawValue]
             )
@@ -71,7 +71,7 @@ struct WindowOpener: ViewModifier {
                     openWindow(id: windowID)
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("OpenWindow"))) { notification in
+            .onReceive(NotificationCenter.default.publisher(for: .openWindow)) { notification in
                 // 监听通知并打开窗口（备用方案）
                 if let windowIDString = notification.userInfo?["windowID"] as? String {
                     openWindow(id: windowIDString)

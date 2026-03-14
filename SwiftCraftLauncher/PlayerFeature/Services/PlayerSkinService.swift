@@ -4,11 +4,9 @@ enum PlayerSkinService {
 
     // MARK: - Notification System
 
-    static let playerUpdatedNotification = Notification.Name("PlayerUpdated")
-
     private static func notifyPlayerUpdated(_ updatedPlayer: Player) {
         NotificationCenter.default.post(
-            name: playerUpdatedNotification,
+            name: .playerUpdated,
             object: nil,
             userInfo: ["updatedPlayer": updatedPlayer]
         )

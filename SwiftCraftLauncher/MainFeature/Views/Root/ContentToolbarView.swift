@@ -219,7 +219,7 @@ public struct ContentToolbarView: ToolbarContent {
                     Logger.shared.debug("已更新玩家数据管理器中的Token信息")
                     // 同步更新内存中的玩家列表（避免下次启动仍使用旧 token）
                     NotificationCenter.default.post(
-                        name: PlayerSkinService.playerUpdatedNotification,
+                        name: .playerUpdated,
                         object: nil,
                         userInfo: ["updatedPlayer": validatedPlayer]
                     )

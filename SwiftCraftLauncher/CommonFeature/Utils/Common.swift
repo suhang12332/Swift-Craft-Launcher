@@ -224,10 +224,6 @@ enum CommonUtil {
     }
 }
 
-extension Notification.Name {
-    static let gameCrashed = Notification.Name("SwiftCraftLauncher.GameCrashed")
-}
-
 enum ImageLoadingUtil {
     static func downsampledImage(
         at url: URL,
