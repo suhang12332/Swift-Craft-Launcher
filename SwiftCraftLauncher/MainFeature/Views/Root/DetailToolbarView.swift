@@ -1,11 +1,13 @@
 import SwiftUI
 
-/// 详情区域工具栏内容
-public struct DetailToolbarView: ToolbarContent {
+/// 详情区域工具栏按钮视图
+public struct DetailToolbarButtons: View {
     @Environment(\.openURL)
     private var openURL
     @Environment(\.openSettings)
     private var openSettings
+    @Environment(\.controlActiveState)
+    private var controlActiveState
     @EnvironmentObject var filterState: ResourceFilterState
     @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
@@ -119,8 +121,8 @@ public struct DetailToolbarView: ToolbarContent {
         detailState.showInstallSheet = true
     }
 
-    public var body: some ToolbarContent {
-        ToolbarItemGroup(placement: .primaryAction) {
+    public var body: some View {
+        Group {
             switch detailState.selectedItem {
             case .game:
                 if let game = currentGame {
@@ -298,6 +300,7 @@ public struct DetailToolbarView: ToolbarContent {
                 }
             }
         }
+        .id(controlActiveState)
     }
 
     private var currentResourceTitle: String {
@@ -368,6 +371,17 @@ public struct DetailToolbarView: ToolbarContent {
         } label: {
             Label(filterState.localResourceFilter.title, systemImage: "")
                 .labelStyle(.titleOnly)
+        }
+    }
+}
+
+/// 详情区域工具栏内容
+public struct DetailToolbarView: ToolbarContent {
+    @EnvironmentObject var detailState: ResourceDetailState
+
+    public var body: some ToolbarContent {
+        ToolbarItemGroup(placement: .primaryAction) {
+            DetailToolbarButtons()
         }
     }
 }
