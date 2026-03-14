@@ -19,6 +19,7 @@ struct LocalResourceUpdateButton: View {
                     if isUpdateButtonLoading {
                         ProgressView()
                             .controlSize(.mini)
+                            .scaleEffect(1.3)
                     } else {
                         Text("resource.update".localized())
                     }

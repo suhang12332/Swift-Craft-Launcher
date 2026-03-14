@@ -29,7 +29,7 @@ struct ResourcePrimaryActionButton: View {
         case .loading:
             ProgressView()
                 .controlSize(.mini)
-                .font(.body)
+                .scaleEffect(1.3)
         case .installed:
             Text(
                 (!type
