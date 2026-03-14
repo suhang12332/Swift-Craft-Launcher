@@ -16,7 +16,11 @@ class GameCreationViewModel: BaseGameFormViewModel {
     @Published var selectedGameVersion = ""
     @Published var versionTime = ""
     @Published var selectedModLoader = "vanilla"
-    @Published var selectedLoaderVersion = ""
+    @Published var selectedLoaderVersion = "" {
+        didSet {
+            updateDefaultGameName()
+        }
+    }
     @Published var availableLoaderVersions: [String] = []
     @Published var availableVersions: [String] = []
 
@@ -144,6 +148,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
             let targetVersion = versions.contains(self.selectedGameVersion) ? self.selectedGameVersion : (versions.first ?? "")
             let timeString = await ModrinthService.queryVersionTime(from: targetVersion)
             self.versionTime = timeString
+            updateDefaultGameName()
         }
     }
 
@@ -164,6 +169,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
                 await MainActor.run {
                     availableLoaderVersions = []
                     selectedLoaderVersion = ""
+                    updateDefaultGameName()
                 }
             }
         }
@@ -181,6 +187,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
         guard loader != "vanilla" && !gameVersion.isEmpty else {
             availableLoaderVersions = []
             selectedLoaderVersion = ""
+            updateDefaultGameName()
             return
         }
 
@@ -220,6 +227,23 @@ class GameCreationViewModel: BaseGameFormViewModel {
         } else if versions.isEmpty {
             selectedLoaderVersion = ""
         }
+        updateDefaultGameName()
+    }
+
+    /// 根据当前选择的版本和加载器自动生成默认游戏名称
+    /// 加载器、游戏版本或加载器版本任意一个变化时，都重新生成
+    private func updateDefaultGameName() {
+        guard !selectedGameVersion.isEmpty else { return }
+
+        let loaderVersion = selectedModLoader == "vanilla" ? selectedModLoader : selectedLoaderVersion
+        guard !loaderVersion.isEmpty else { return }
+
+        let generatedName = GameNameGenerator.generateGameName(
+            gameVersion: selectedGameVersion,
+            loaderVersion: loaderVersion,
+            modLoader: selectedModLoader
+        )
+        gameNameValidator.gameName = generatedName
     }
 
     // MARK: - Image Handling
@@ -333,8 +357,18 @@ class GameCreationViewModel: BaseGameFormViewModel {
         // 对于非vanilla加载器，如果没有选择版本，则不允许保存
         let loaderVersion = selectedModLoader == "vanilla" ? selectedModLoader : selectedLoaderVersion
 
+        var finalGameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
+        if finalGameName.isEmpty {
+            finalGameName = GameNameGenerator.generateGameName(
+                gameVersion: selectedGameVersion,
+                loaderVersion: loaderVersion,
+                modLoader: selectedModLoader
+            )
+            gameNameValidator.gameName = finalGameName
+        }
+
         await gameSetupService.saveGame(
-            gameName: gameNameValidator.gameName,
+            gameName: finalGameName,
             gameIcon: gameIcon,
             selectedGameVersion: selectedGameVersion,
             selectedModLoader: selectedModLoader,
