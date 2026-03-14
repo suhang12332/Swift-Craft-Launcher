@@ -73,46 +73,27 @@ struct AddOrDeleteResourceButton: View {
     var body: some View {
 
         HStack(spacing: 8) {
-            // 更新按钮（仅在 local 模式且有更新时显示）
-            if type == false && addButtonState == .update && !isResourceDisabled {
-                Button(action: handleUpdateAction) {
-                    if isUpdateButtonLoading {
-                        ProgressView()
-                            .controlSize(.mini)
-                    } else {
-                        Text("resource.update".localized())
-                    }
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.accentColor)
-                .font(.caption2)
-                .controlSize(.small)
-                .disabled(addButtonState == .loading || isUpdateButtonLoading)
-            }
+            LocalResourceUpdateButton(
+                isVisible: type == false && addButtonState == .update && !isResourceDisabled,
+                isUpdateButtonLoading: $isUpdateButtonLoading,
+                addButtonState: addButtonState,
+                onTap: handleUpdateAction
+            )
 
-            // 禁用/启用按钮（仅本地资源显示）
-            if type == false {
-                Toggle("", isOn: Binding(
-                    get: { !isDisabled },
-                    set: { _ in toggleDisableState() }
-                ))
-                .toggleStyle(.switch)
-                .labelsHidden()
-                .controlSize(.mini)
-            }
+            LocalResourceToggle(
+                isVisible: type == false,
+                isDisabled: $isDisabled,
+                onToggle: toggleDisableState
+            )
 
             // 安装/删除按钮
-            Button(action: handleButtonAction) {
-                buttonLabel
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(.accentColor)
-            .font(.caption2)
-            .controlSize(.small)
-            .disabled(
-                addButtonState == .loading
-                    || (addButtonState == .installed && type)
-            )  // type = true (server mode) disables deletion；禁用状态与置灰条件一致
+            ResourcePrimaryActionButton(
+                addButtonState: addButtonState,
+                type: type,
+                isDisabled: addButtonState == .loading
+                    || (addButtonState == .installed && type),
+                onTap: handleButtonAction
+            )
             .onAppear {
                 if type == false {
                     // local 区直接显示为已安装
@@ -268,31 +249,6 @@ struct AddOrDeleteResourceButton: View {
         }
         .alert(item: $activeAlert) { alertType in
             alertType.alert
-        }
-    }
-
-    // MARK: - UI Components
-    private var buttonLabel: some View {
-        switch addButtonState {
-        case .idle:
-            AnyView(Text("resource.add".localized()))
-        case .loading:
-            AnyView(
-                ProgressView()
-                    .controlSize(.mini)
-                    .font(.body)  // 设置字体大小
-            )
-        case .installed:
-            AnyView(
-                Text(
-                    (!type
-                        ? "common.delete".localized()
-                        : "resource.installed".localized())
-                )
-            )
-        case .update:
-            // 当有更新时，主按钮显示删除（更新按钮已单独显示在左边）
-            AnyView(Text("common.delete".localized()))
         }
     }
 

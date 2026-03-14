@@ -136,8 +136,8 @@ enum ModUpdateChecker {
                 return ModScanner.sha1Hash(of: fileURL)
             }
 
-            // 也检查 .disabled 版本
-            let disabledFileName = fileName + ".disabled"
+            // 也检查 .disable 版本
+            let disabledFileName = fileName + ".disable"
             let disabledFileURL = resourceDir.appendingPathComponent(disabledFileName)
             if FileManager.default.fileExists(atPath: disabledFileURL.path) {
                 return ModScanner.sha1Hash(of: disabledFileURL)
