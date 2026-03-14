@@ -113,6 +113,7 @@ struct GameHeaderListRow: View {
         .onDisappear {
             cancellable?.cancel()
         }
+        .applyPointerHandIfAvailable()
     }
 
     private var profileDir: URL {

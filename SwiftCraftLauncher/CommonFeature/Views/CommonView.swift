@@ -55,13 +55,7 @@ struct DirectorySettingRow: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.primary)
-                .onHover { hovering in
-                    if hovering {
-                        NSCursor.pointingHand.push()
-                    } else {
-                        NSCursor.pop()
-                    }
-                }
+                .applyPointerHandIfAvailable()
 
                 Button("common.reset".localized(), action: onReset)
                     .padding(.leading, 8)
@@ -175,6 +169,17 @@ extension View {
             self.contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
         }
     }
+
+    /// 在支持的系统上应用手型指针样式，低版本自动降级为原样
+    @ViewBuilder
+    func applyPointerHandIfAvailable() -> some View {
+        if #available(macOS 15.0, *) {
+            self.pointerStyle(.link)
+        } else {
+            self
+        }
+    }
+
     @ViewBuilder
     func `if`<Content: View>(
         _ condition: Bool,

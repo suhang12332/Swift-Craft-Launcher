@@ -199,8 +199,11 @@ struct WorldDetailSheetView: View {
                         NSWorkspace.shared.selectFile(metadata.path.path, inFileViewerRootedAtPath: "")
                     } label: {
                         PathBreadcrumbView(path: metadata.path.path)
-                            .frame(maxWidth: .infinity, alignment: .leading).font(.caption)
-                    }.buttonStyle(.plain)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.caption)
+                            .applyPointerHandIfAvailable()
+                    }
+                    .buttonStyle(.plain)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -235,9 +238,6 @@ struct WorldDetailSheetView: View {
 
                             if showRawData {
                                 NBTStructureView(data: filteredRaw)
-//                                infoSection(title: "saveinfo.world.detail.section.detailed_info".localized()) {
-//
-//                                }
                             }
                         }
                     }
@@ -326,16 +326,12 @@ struct WorldDetailSheetView: View {
                 // 26+ 新版存档：seed 拆到 data/minecraft/world_gen_settings.dat
                 var seed: Int64?
                 if FileManager.default.fileExists(atPath: worldGenSettingsPath.path) {
-                    do {
-                        let wgsData = try Data(contentsOf: worldGenSettingsPath)
-                        let wgsParser = NBTParser(data: wgsData)
-                        let wgsNBT = try wgsParser.parse()
-                        if let dataTag = wgsNBT["data"] as? [String: Any],
-                           let s = WorldNBTMapper.readInt64(dataTag["seed"]) {
-                            seed = s
-                        }
-                    } catch {
-                        // 读取失败不影响 level.dat 的展示
+                    let wgsData = try Data(contentsOf: worldGenSettingsPath)
+                    let wgsParser = NBTParser(data: wgsData)
+                    let wgsNBT = try wgsParser.parse()
+                    if let dataTag = wgsNBT["data"] as? [String: Any],
+                       let s = WorldNBTMapper.readInt64(dataTag["seed"]) {
+                        seed = s
                     }
                 }
 
@@ -711,11 +707,7 @@ struct NBTDisclosureButton: View {
             )
         }
         .buttonStyle(.plain)
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.15)) {
-                isHovered = hovering
-            }
-        }
+        .applyPointerHandIfAvailable()
     }
 }
 
@@ -748,10 +740,6 @@ struct NBTValueRow: View {
             RoundedRectangle(cornerRadius: 4)
                 .fill(isHovered ? Color.secondary.opacity(0.08) : Color.clear)
         )
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.15)) {
-                isHovered = hovering
-            }
-        }
+        .applyPointerHandIfAvailable()
     }
 }
