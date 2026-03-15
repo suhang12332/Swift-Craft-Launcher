@@ -388,15 +388,15 @@ enum URLConfig {
             static func webProjectURL(projectType: String) -> String {
                 let type = projectType.lowercased()
                 let pathPrefix: String = switch type {
-                case "mod":
+                case ResourceType.mod.rawValue:
                     "mc-mods/"
-                case "resourcepack":
+                case ResourceType.resourcepack.rawValue:
                     "texture-packs/"
-                case "datapack":
+                case ResourceType.datapack.rawValue:
                     "data-packs/"
-                case "shader":
+                case ResourceType.shader.rawValue:
                     "shaders/"
-                case "modpack":
+                case ResourceType.modpack.rawValue:
                     "modpacks/"
                 default:
                     "mc-mods/"

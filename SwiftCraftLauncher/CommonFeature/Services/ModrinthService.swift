@@ -325,9 +325,9 @@ enum ModrinthService {
 
             let versions = try await fetchProjectVersionsThrowing(id: id)
             var loaders = selectedLoaders
-            if type == "datapack" {
-                loaders = ["datapack"]
-            } else if type == "resourcepack" {
+            if type == ResourceType.datapack.rawValue {
+                loaders = [ResourceType.datapack.rawValue]
+            } else if type == ResourceType.resourcepack.rawValue {
                 loaders = ["minecraft"]
             }
             return versions.filter { version in
@@ -336,7 +336,7 @@ enum ModrinthService {
 
                 // 对于shader和resourcepack，不检查loader匹配
                 let loaderMatch: Bool
-                if type == "shader" || type == "resourcepack" {
+                if type == ResourceType.shader.rawValue || type == ResourceType.resourcepack.rawValue {
                     loaderMatch = true
                 } else {
                     loaderMatch = loaders.isEmpty || !Set(version.loaders).isDisjoint(with: loaders)
@@ -516,7 +516,7 @@ enum ModrinthService {
                 let hash = primaryFile.hashes.sha1
                 let lowercasedType = type.lowercased()
 
-                if lowercasedType == "mod" {
+                if lowercasedType == ResourceType.mod.rawValue {
                     if ModScanner.shared.isModInstalledSync(hash: hash, in: modsDir) {
                         return true
                     }

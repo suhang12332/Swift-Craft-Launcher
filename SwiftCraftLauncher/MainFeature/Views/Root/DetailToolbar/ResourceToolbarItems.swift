@@ -35,7 +35,7 @@ struct ResourceToolbarItems: View {
         let resourceType = detailState.gameResourcesType
 
         Task {
-            if resourceType == "modpack" {
+            if resourceType == ResourceType.modpack.rawValue {
                 guard let detail = await ResourceDetailLoader.loadModPackDetail(
                     projectId: projectId
                 ) else {
@@ -44,7 +44,7 @@ struct ResourceToolbarItems: View {
                 await MainActor.run {
                     applyProjectDetail(
                         detail: detail,
-                        projectType: "modpack",
+                        projectType: ResourceType.modpack.rawValue,
                         versions: [],
                         clientSide: "",
                         serverSide: ""
@@ -129,7 +129,7 @@ struct ResourceToolbarItems: View {
                 .sheet(isPresented: detailState.showInstallSheetBinding) {
                     if let project = detailState.currentProject,
                         let detail = detailState.loadedProjectDetail {
-                        if detailState.gameResourcesType == "modpack" {
+                        if detailState.gameResourcesType == ResourceType.modpack.rawValue {
                             ModPackDownloadSheet(
                                 projectId: project.projectId,
                                 gameInfo: nil,

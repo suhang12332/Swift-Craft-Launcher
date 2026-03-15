@@ -142,22 +142,22 @@ final class CategoryContentViewModel: ObservableObject {
             Loader(
                 name: "fabric",
                 icon: "fabric",
-                supported_project_types: ["mod", "modpack"]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
             Loader(
                 name: "forge",
                 icon: "forge",
-                supported_project_types: ["mod", "modpack"]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
             Loader(
                 name: "quilt",
                 icon: "quilt",
-                supported_project_types: ["mod", "modpack"]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
             Loader(
                 name: "neoforge",
                 icon: "neoforge",
-                supported_project_types: ["mod", "modpack"]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
         ]
     }

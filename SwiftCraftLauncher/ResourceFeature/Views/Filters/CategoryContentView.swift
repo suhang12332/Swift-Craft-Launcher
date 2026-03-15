@@ -77,7 +77,7 @@ struct CategoryContentView: View {
             selectedVersions = [gameVersion]
         }
         if let gameLoader = gameLoader {
-            if project != "shader" {
+            if project != ResourceType.shader.rawValue {
                 selectedLoaders = [gameLoader]
             } else {
                 selectedLoaders = []

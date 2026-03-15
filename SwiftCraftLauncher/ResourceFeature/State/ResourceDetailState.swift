@@ -30,7 +30,7 @@ public final class ResourceDetailState: ObservableObject {
         selectedItem: SidebarItem = .resource(.mod),
         gameType: Bool = true,
         gameId: String? = nil,
-        gameResourcesType: String = "mod",
+        gameResourcesType: String = ResourceType.mod.rawValue,
         selectedProjectId: String? = nil,
         loadedProjectDetail: ModrinthProjectDetail? = nil
     ) {
@@ -87,7 +87,7 @@ public final class ResourceDetailState: ObservableObject {
         })
     }
     public var gameResourcesTypeBinding: Binding<String> {
-        Binding(get: { [weak self] in self?.gameResourcesType ?? "mod" }, set: { [weak self] value in
+        Binding(get: { [weak self] in self?.gameResourcesType ?? ResourceType.mod.rawValue }, set: { [weak self] value in
             guard let self else { return }
             DispatchQueue.main.async { self.gameResourcesType = value }
         })
