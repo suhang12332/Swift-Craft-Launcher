@@ -216,39 +216,28 @@ extension Scene {
 struct InfoIconWithPopover<Content: View>: View {
     /// Popover 中显示的内容
     let content: Content
-    /// 图标大小
-    let iconSize: CGFloat
     /// 延迟显示时间（秒）
     let delay: Double
-    /// 可选自定义图标；为 nil 时使用系统问号图标
-    let icon: Image?
 
     @State private var isHovering = false
     @State private var showPopover = false
     @State private var hoverTask: Task<Void, Never>?
 
     init(
-        icon: Image? = nil,
         iconSize: CGFloat = 14,
         delay: Double = 0.5,
         @ViewBuilder content: () -> Content
     ) {
-        self.icon = icon
-        self.iconSize = iconSize
         self.delay = delay
         self.content = content()
     }
 
     var body: some View {
-        Button {
-            // 点击时也显示 popover
-            showPopover.toggle()
-        } label: {
-            (icon ?? Image(systemName: "questionmark.circle"))
-                .font(.system(size: iconSize))
-                .foregroundColor(.secondary)
+        Group {
+            HelpButton {
+                showPopover.toggle()
+            }
         }
-        .buttonStyle(.plain)
         .onHover { hovering in
             isHovering = hovering
             // 取消之前的任务
@@ -287,10 +276,9 @@ extension InfoIconWithPopover {
     /// 使用字符串文本创建 InfoIconWithPopover 的便捷初始化方法
     init(
         text: String,
-        iconSize: CGFloat = 14,
         delay: Double = 0.5
     ) where Content == AnyView {
-        self.init(icon: nil, iconSize: iconSize, delay: delay) {
+        self.init(delay: delay) {
             AnyView(
                 Text(text)
                     .font(.system(size: 12))
@@ -304,11 +292,10 @@ extension InfoIconWithPopover {
     /// 使用字符串文本和自定义 SF Symbol 图标的便捷初始化方法
     init(
         text: String,
-        systemIconName: String,
         iconSize: CGFloat = 14,
         delay: Double = 0.5
     ) where Content == AnyView {
-        self.init(icon: Image(systemName: systemIconName), iconSize: iconSize, delay: delay) {
+        self.init(delay: delay) {
             AnyView(
                 Text(text)
                     .font(.system(size: 12))
