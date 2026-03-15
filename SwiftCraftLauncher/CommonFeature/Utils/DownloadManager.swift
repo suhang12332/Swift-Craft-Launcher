@@ -18,10 +18,10 @@ enum DownloadManager {
             // 优化：使用 caseInsensitiveCompare 避免创建临时小写字符串
             let lowercased = string.lowercased()
             switch lowercased {
-            case ResourceType.mod.rawValue: self = .mod
-            case ResourceType.datapack.rawValue: self = .datapack
-            case ResourceType.shader.rawValue: self = .shader
-            case ResourceType.resourcepack.rawValue: self = .resourcepack
+            case Self.mod.rawValue: self = .mod
+            case Self.datapack.rawValue: self = .datapack
+            case Self.shader.rawValue: self = .shader
+            case Self.resourcepack.rawValue: self = .resourcepack
             default: return nil
             }
         }
@@ -138,11 +138,11 @@ enum DownloadManager {
             // 优化：直接使用 URL 的 host 属性检查，避免转换为 String
             let needsProxy: Bool
             if let host = url.host {
-                needsProxy = host == githubHost || host == rawGithubHost
+                needsProxy = host == Self.githubHost || host == Self.rawGithubHost
             } else {
                 // 如果没有 host，检查 absoluteString（可能是相对路径）
                 let absoluteString = url.absoluteString
-                needsProxy = absoluteString.hasPrefix(githubPrefix) || absoluteString.hasPrefix(rawGithubPrefix)
+                needsProxy = absoluteString.hasPrefix(Self.githubPrefix) || absoluteString.hasPrefix(Self.rawGithubPrefix)
             }
 
             if needsProxy {
@@ -174,7 +174,7 @@ enum DownloadManager {
                 // 优化：使用 autoreleasepool 释放 SHA1 计算过程中的临时对象
                 do {
                     let actualSha1 = try autoreleasepool {
-                        try calculateFileSHA1(at: destinationURL)
+                        try Self.calculateFileSHA1(at: destinationURL)
                     }
                     if actualSha1 == expectedSha1 {
                         return destinationURL
@@ -209,7 +209,7 @@ enum DownloadManager {
             // SHA1 校验（优化：使用 autoreleasepool）
             if shouldCheckSha1, let expectedSha1 = expectedSha1 {
                 try autoreleasepool {
-                    let actualSha1 = try calculateFileSHA1(at: tempFileURL)
+                    let actualSha1 = try Self.calculateFileSHA1(at: tempFileURL)
                     if actualSha1 != expectedSha1 {
                         throw GlobalError.validation(
                             chineseMessage: "SHA1 校验失败",
