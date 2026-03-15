@@ -7,6 +7,8 @@ import SwiftUI
 
 /// 选中资源/项目时的详情工具栏内容：返回、安装、在浏览器打开，或仅数据源菜单
 struct ResourceToolbarItems: View {
+    @Environment(\.controlActiveState)
+    private var controlActiveState
     @Environment(\.openURL)
     private var openURL
     @EnvironmentObject var filterState: ResourceFilterState
@@ -164,5 +166,6 @@ struct ResourceToolbarItems: View {
                 }
             }
         }
+        .id(controlActiveState)
     }
 }
