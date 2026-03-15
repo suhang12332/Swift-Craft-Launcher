@@ -370,8 +370,8 @@ final class ModrinthSearchViewModel: ObservableObject {
         }
 
         // Add loaders if any (as categories)
-        if !filterOptions.loaders.isEmpty && projectType != "resourcepack"
-            && projectType != "datapack" {
+        if !filterOptions.loaders.isEmpty && projectType != ResourceType.resourcepack.rawValue
+            && projectType != ResourceType.datapack.rawValue {
             var loadersToUse = filterOptions.loaders
             if let first = filterOptions.loaders.first, first.lowercased() == "vanilla" {
                 loadersToUse = ["minecraft"]
@@ -409,16 +409,16 @@ final class ModrinthSearchViewModel: ObservableObject {
     /// 根据项目类型获取 CurseForge 的 classId
     private func classIdForProjectType(_ projectType: String) -> Int? {
         switch projectType.lowercased() {
-        case "mod":
+        case ResourceType.mod.rawValue:
             return 6
-        case "modpack":
+        case ResourceType.modpack.rawValue:
             // CurseForge Minecraft Modpacks 的 classId
             return 4471
-        case "resourcepack":
+        case ResourceType.resourcepack.rawValue:
             return 12
-        case "shader":
+        case ResourceType.shader.rawValue:
             return 6552
-        case "datapack":
+        case ResourceType.datapack.rawValue:
             return 6945
         default:
             return nil
@@ -468,7 +468,7 @@ final class ModrinthSearchViewModel: ObservableObject {
         // API 限制：最多 10 个分类 ID
         let categoryIds: [Int]?
         let allCategoryNames: [String]
-        if projectType.lowercased() == "resourcepack" {
+        if projectType.lowercased() == ResourceType.resourcepack.rawValue {
             // 行为标签 + 分辨率标签 一起参与映射
             allCategoryNames = categories + resolutions
         } else {
@@ -491,7 +491,7 @@ final class ModrinthSearchViewModel: ObservableObject {
 
         let modLoaderTypes: [Int]?
 
-        if projectType == "resourcepack" || projectType == "shaderpack" || projectType == "datapack" {
+        if projectType == ResourceType.resourcepack.rawValue || projectType == ResourceType.shader.rawValue || projectType == ResourceType.datapack.rawValue {
             modLoaderTypes = nil
         } else {
             if !loaders.isEmpty {

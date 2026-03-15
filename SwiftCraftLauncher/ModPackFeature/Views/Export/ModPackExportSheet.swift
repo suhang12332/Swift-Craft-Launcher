@@ -83,7 +83,7 @@ struct ModPackExportSheet: View {
             isPresented: $isExporting,
             document: exportDocument,
             contentType: UTType(filenameExtension: "mrpack") ?? UTType.zip,
-            defaultFilename: viewModel.modPackName.isEmpty ? "modpack" : viewModel.modPackName
+            defaultFilename: viewModel.modPackName.isEmpty ? ResourceType.modpack.rawValue : viewModel.modPackName
         ) { result in
             switch result {
             case .success(let url):

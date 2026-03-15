@@ -13,13 +13,13 @@ enum ModrinthToCurseForgeCategoryMapper {
         let key = modrinthCategoryName.lowercased()
         // 根据项目类型选择映射表
         switch projectType.lowercased() {
-        case "mod", "modpack":
+        case ResourceType.mod.rawValue, ResourceType.modpack.rawValue:
             return modCategoryMap[key]
-        case "resourcepack":
+        case ResourceType.resourcepack.rawValue:
             return resourcepackCategoryMap[key]
-        case "shader":
+        case ResourceType.shader.rawValue:
             return shaderCategoryMap[key]
-        case "datapack":
+        case ResourceType.datapack.rawValue:
             // 数据包：采用 Modrinth 的 mod 分类 key，映射到 CurseForge Data Packs（classId=6945）
             return datapackCategoryMap[key]
         default:

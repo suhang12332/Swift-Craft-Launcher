@@ -359,7 +359,7 @@ enum ModPackDependencyInstaller {
                             // 添加文件信息到detail
                             var detailWithFile = detail
                             detailWithFile.fileName = (file.path as NSString).lastPathComponent
-                            detailWithFile.type = "mod"
+                            detailWithFile.type = ResourceType.mod.rawValue
 
                             // 存入缓存
                             ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
@@ -488,7 +488,7 @@ enum ModPackDependencyInstaller {
                     id: projectId,
                     selectedVersions: [gameInfo.gameVersion],
                     selectedLoaders: [gameInfo.modLoader],
-                    type: "mod"
+                    type: ResourceType.mod.rawValue
                 )
                 if let version = versions?.first,
                    let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) {
@@ -716,7 +716,7 @@ enum ModPackDependencyInstaller {
             let downloadedFile = try await DownloadManager.downloadResource(
                 for: gameInfo,
                 urlString: primaryFile.url,
-                resourceType: "mod",
+                resourceType: ResourceType.mod.rawValue,
                 expectedSha1: primaryFile.hashes.sha1
             )
 
@@ -725,7 +725,7 @@ enum ModPackDependencyInstaller {
                 // 使用传入的项目详情创建缓存
                 var detailWithFile = projectDetail
                 detailWithFile.fileName = primaryFile.filename
-                detailWithFile.type = "mod"
+                detailWithFile.type = ResourceType.mod.rawValue
                 ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
             }
 

@@ -54,14 +54,14 @@ struct GlobalResourceSheet: View {
                                     availableVersions: $availableVersions,
                                     mainVersionId: $mainVersionId
                                 ) { version in
-                                    if resourceType == "mod",
+                                    if resourceType == ResourceType.mod.rawValue,
                                         let v = version {
                                         loadDependencies(for: v, game: game)
                                     } else {
                                         dependencyState = DependencyState()
                                     }
                                 }
-                                if resourceType == "mod" {
+                                if resourceType == ResourceType.mod.rawValue {
                                     if dependencyState.isLoading || !dependencyState.dependencies.isEmpty {
                                         spacerView()
                                         DependencySectionView(state: $dependencyState)

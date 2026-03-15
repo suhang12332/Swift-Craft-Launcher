@@ -18,10 +18,10 @@ enum DownloadManager {
             // 优化：使用 caseInsensitiveCompare 避免创建临时小写字符串
             let lowercased = string.lowercased()
             switch lowercased {
-            case "mod": self = .mod
-            case "datapack": self = .datapack
-            case "shader": self = .shader
-            case "resourcepack": self = .resourcepack
+            case ResourceType.mod.rawValue: self = .mod
+            case ResourceType.datapack.rawValue: self = .datapack
+            case ResourceType.shader.rawValue: self = .shader
+            case ResourceType.resourcepack.rawValue: self = .resourcepack
             default: return nil
             }
         }

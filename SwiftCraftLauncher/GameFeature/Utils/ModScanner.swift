@@ -207,7 +207,7 @@ class ModScanner {
             sourceUrl: nil,
             wikiUrl: nil,
             discordUrl: nil,
-            projectType: "mod",
+            projectType: ResourceType.mod.rawValue,
             downloads: 0,
             iconUrl: nil,
             team: "local",

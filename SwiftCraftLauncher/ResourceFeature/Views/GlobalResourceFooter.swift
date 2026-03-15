@@ -29,7 +29,7 @@ struct GlobalResourceFooter: View {
                     HStack {
                         Button("common.close".localized()) { isPresented = false }
                         Spacer()
-                        if resourceType == "mod" {
+                        if resourceType == ResourceType.mod.rawValue {
                             if !dependencyState.isLoading {
                                 if selectedVersion != nil {
                                     Button(action: downloadAllManual) {

@@ -293,7 +293,7 @@ struct GameLocalResourceView: View {
     // MARK: - 文件列表
     private func refreshAllFiles() {
         // Modpacks don't have a local directory to scan
-        if query.lowercased() == "modpack" {
+        if query.lowercased() == ResourceType.modpack.rawValue {
             allFiles = []
             return
         }
@@ -314,7 +314,7 @@ struct GameLocalResourceView: View {
         guard !isLoadingResources, !isLoadingMore else { return }
 
         // Modpacks don't have a local directory to scan, skip scanning
-        if query.lowercased() == "modpack" {
+        if query.lowercased() == ResourceType.modpack.rawValue {
             scannedResources = []
             isLoadingResources = false
             isLoadingMore = false

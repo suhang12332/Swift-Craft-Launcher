@@ -97,17 +97,17 @@ struct CurseForgeModDetail: Codable {
     var projectType: String {
         switch contentType {
         case .mods:
-            return "mod"
+            return ResourceType.mod.rawValue
         case .resourcePacks:
-            return "resourcepack"
+            return ResourceType.resourcepack.rawValue
         case .shaders:
-            return "shader"
+            return ResourceType.shader.rawValue
         case .datapacks:
-            return "datapack"
+            return ResourceType.datapack.rawValue
         case .modpacks:
-            return "modpack"
+            return ResourceType.modpack.rawValue
         default:
-            return "mod"
+            return ResourceType.mod.rawValue
         }
     }
 }

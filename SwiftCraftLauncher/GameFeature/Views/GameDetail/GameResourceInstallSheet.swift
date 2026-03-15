@@ -44,7 +44,7 @@ struct GameResourceInstallSheet: View {
                             availableVersions: $availableVersions,
                             mainVersionId: $mainVersionId
                         ) { version in
-                            if resourceType == "mod",
+                            if resourceType == ResourceType.mod.rawValue,
                                !isUpdateMode,
                                let v = version {
                                 loadDependencies(for: v, game: gameInfo)
@@ -52,7 +52,7 @@ struct GameResourceInstallSheet: View {
                                 dependencyState = DependencyState()
                             }
                         }
-                        if resourceType == "mod", !isUpdateMode {
+                        if resourceType == ResourceType.mod.rawValue, !isUpdateMode {
                             if dependencyState.isLoading || !dependencyState.dependencies.isEmpty {
                                 spacerView()
                                 DependencySectionView(state: $dependencyState)
@@ -173,7 +173,7 @@ struct GameResourceInstallFooter: View {
                 HStack {
                     Button("common.close".localized()) { isPresented = false }
                     Spacer()
-                    if resourceType == "mod", !isUpdateMode {
+                    if resourceType == ResourceType.mod.rawValue, !isUpdateMode {
                         // 安装模式下的 mod：显示「下载全部」（含依赖）
                         if !dependencyState.isLoading {
                             if selectedVersion != nil {

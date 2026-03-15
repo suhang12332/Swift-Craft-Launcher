@@ -90,12 +90,12 @@ struct MainView: View {
         if let loader = game?.modLoader.lowercased() {
             let currentType = detailState.gameResourcesType.lowercased()
             if loader == "vanilla" {
-                if currentType == "mod" || currentType == "shader" || currentType == "modpack" {
-                    detailState.gameResourcesType = "datapack"
+                if currentType == ResourceType.mod.rawValue || currentType == ResourceType.shader.rawValue || currentType == ResourceType.modpack.rawValue {
+                    detailState.gameResourcesType = ResourceType.datapack.rawValue
                 }
             } else {
                 if detailState.selectedProjectId == nil {
-                    detailState.gameResourcesType = "mod"
+                    detailState.gameResourcesType = ResourceType.mod.rawValue
                 }
             }
         }
@@ -114,7 +114,7 @@ struct MainView: View {
 
         let game = gameRepository.getGame(by: newId)
         if let loader = game?.modLoader.lowercased() {
-            detailState.gameResourcesType = (loader == "vanilla") ? "datapack" : "mod"
+            detailState.gameResourcesType = (loader == "vanilla") ? ResourceType.datapack.rawValue : ResourceType.mod.rawValue
         }
         detailState.gameId = newId
         SelectedGameManager.shared.setSelectedGame(newId)

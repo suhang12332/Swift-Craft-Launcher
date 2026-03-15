@@ -16,15 +16,15 @@ func filterCompatibleGames(
         let localLoader = game.modLoader.lowercased()
         let match: Bool = {
             switch (resourceTypeLowercased, localLoader) {
-            case ("datapack", "vanilla"):
+            case (ResourceType.datapack.rawValue, "vanilla"):
                 return supportedVersions.contains(game.gameVersion)
-                    && supportedLoaders.contains("datapack")
-            case ("shader", let loader) where loader != "vanilla":
+                    && supportedLoaders.contains(ResourceType.datapack.rawValue)
+            case (ResourceType.shader.rawValue, let loader) where loader != "vanilla":
                 return supportedVersions.contains(game.gameVersion)
-            case ("resourcepack", "vanilla"):
+            case (ResourceType.resourcepack.rawValue, "vanilla"):
                 return supportedVersions.contains(game.gameVersion)
                     && supportedLoaders.contains("minecraft")
-            case ("resourcepack", _):
+            case (ResourceType.resourcepack.rawValue, _):
                 return supportedVersions.contains(game.gameVersion)
             default:
                 return supportedVersions.contains(game.gameVersion)

@@ -52,12 +52,12 @@ enum CurseForgeToModrinthAdapter {
         // 根据项目类型处理加载器
         let projectType = cf.projectType
         if loaders.isEmpty {
-            if projectType == "resourcepack" {
+            if projectType == ResourceType.resourcepack.rawValue {
                 // 资源包使用 "minecraft" loader
                 loaders = ["minecraft"]
-            } else if projectType == "datapack" {
+            } else if projectType == ResourceType.datapack.rawValue {
                 // 数据包使用 "datapack" loader
-                loaders = ["datapack"]
+                loaders = [ResourceType.datapack.rawValue]
             }
         }
 
@@ -235,15 +235,15 @@ enum CurseForgeToModrinthAdapter {
             let projectType: String
             if let classId = cfMod.classId {
                 switch classId {
-                case 6: projectType = "mod"
-                case 12: projectType = "resourcepack"
-                case 6552: projectType = "shader"
-                case 6945: projectType = "datapack"
-                case 4471: projectType = "modpack"   // CurseForge 整合包
-                default: projectType = "mod"
+                case 6: projectType = ResourceType.mod.rawValue
+                case 12: projectType = ResourceType.resourcepack.rawValue
+                case 6552: projectType = ResourceType.shader.rawValue
+                case 6945: projectType = ResourceType.datapack.rawValue
+                case 4471: projectType = ResourceType.modpack.rawValue   // CurseForge 整合包
+                default: projectType = ResourceType.mod.rawValue
                 }
             } else {
-                projectType = "mod"
+                projectType = ResourceType.mod.rawValue
             }
 
             // 提取版本 ID 列表

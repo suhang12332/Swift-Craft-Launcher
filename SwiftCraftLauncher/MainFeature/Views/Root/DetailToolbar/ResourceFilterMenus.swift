@@ -9,10 +9,10 @@ import SwiftUI
 enum ResourceFilterMenus {
 
     private static func resourceTypesForCurrentGame(currentGame: GameVersionInfo?) -> [String] {
-        var types = ["datapack", "resourcepack"]
+        var types = [ResourceType.datapack.rawValue, ResourceType.resourcepack.rawValue]
         if let game = currentGame, game.modLoader.lowercased() != "vanilla" {
-            types.insert("mod", at: 0)
-            types.insert("shader", at: 2)
+            types.insert(ResourceType.mod.rawValue, at: 0)
+            types.insert(ResourceType.shader.rawValue, at: 2)
         }
         return types
     }

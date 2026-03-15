@@ -262,11 +262,10 @@ struct AddOrDeleteResourceButton: View {
     // - Parameter isUpdate: 若为 true 表示来自更新流程（删除旧文件），不调用 onResourceChanged
     private func deleteFile(fileName: String?, isUpdate: Bool = false) {
         // 检查 query 是否是有效的资源类型
-        let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
         let queryLowercased = query.lowercased()
 
         // 如果 query 是 modpack 或无效的资源类型，显示错误
-        if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
+        if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
             let globalError = GlobalError.configuration(
                 chineseMessage: "无法删除文件：不支持删除此类型的资源",
                 i18nKey: "error.configuration.delete_file_failed",
@@ -333,7 +332,7 @@ struct AddOrDeleteResourceButton: View {
             switch addButtonState {
             case .idle:
                 // 新增：对整合包的特殊处理
-                if query == "modpack" {
+                if query == ResourceType.modpack.rawValue {
                             addButtonState = .loading
                             Task {
                                 await loadModPackDetailBeforeOpeningSheet()
@@ -360,7 +359,7 @@ struct AddOrDeleteResourceButton: View {
                 // 当 type 是 true (server mode) 时的特殊处理
                 if type {
                     // 对整合包的特殊处理：只需要判断有没有玩家
-                    if query == "modpack" {
+                    if query == ResourceType.modpack.rawValue {
                         if playerListViewModel.currentPlayer == nil {
                             activeAlert = .noPlayer
                             return
@@ -379,7 +378,7 @@ struct AddOrDeleteResourceButton: View {
                     }
                 } else {
                     // type 为 false (local mode) 时的原有逻辑
-                    if query == "modpack" {
+                    if query == ResourceType.modpack.rawValue {
                         addButtonState = .loading
                         Task {
                             await loadModPackDetailBeforeOpeningSheet()
@@ -410,12 +409,11 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
         let queryLowercased = query.lowercased()
 
         // modpack 目前不支持安装状态检测
-        guard queryLowercased != "modpack",
-              validResourceTypes.contains(queryLowercased)
+        guard queryLowercased != ResourceType.modpack.rawValue,
+              AppConstants.validResourceTypes.contains(queryLowercased)
         else {
             addButtonState = .idle
             return

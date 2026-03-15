@@ -442,9 +442,9 @@ enum CurseForgeService {
 
         // 对于光影包、资源包、数据包，CurseForge API 不支持 modLoaderType 过滤
         let resourceTypeLowercased = type.lowercased()
-        let shouldFilterByLoader = !(resourceTypeLowercased == "shader" ||
-                                     resourceTypeLowercased == "resourcepack" ||
-                                     resourceTypeLowercased == "datapack")
+        let shouldFilterByLoader = !(resourceTypeLowercased == ResourceType.shader.rawValue ||
+                                     resourceTypeLowercased == ResourceType.resourcepack.rawValue ||
+                                     resourceTypeLowercased == ResourceType.datapack.rawValue)
 
         // 转换加载器名称到 CurseForge ModLoaderType（仅对需要过滤加载器的资源类型）
         var modLoaderTypes: [Int] = []
