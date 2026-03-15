@@ -1,9 +1,7 @@
 import SwiftUI
 
-/// 内容区域工具栏按钮视图
-public struct ContentToolbarButtons: View {
-    @Environment(\.controlActiveState)
-    private var controlActiveState
+/// 内容区域工具栏内容
+public struct ContentToolbarView: ToolbarContent {
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var showingAddPlayerSheet = false
     @State private var playerName = ""
@@ -34,8 +32,8 @@ public struct ContentToolbarButtons: View {
         currentPlayer?.isOnlineAccount ?? false
     }
 
-    public var body: some View {
-        Group {
+    public var body: some ToolbarContent {
+        ToolbarItemGroup(placement: .primaryAction) {
             Button {
                 if currentPlayer == nil {
                     showPlayerAlert = true
@@ -167,7 +165,6 @@ public struct ContentToolbarButtons: View {
                 }
             }
         }
-        .id(controlActiveState)
     }
 
     // MARK: - Private Methods
@@ -275,15 +272,6 @@ public struct ContentToolbarButtons: View {
                 self.hasAnnouncement = false
                 self.announcementData = nil
             }
-        }
-    }
-}
-
-/// 内容区域工具栏内容
-public struct ContentToolbarView: ToolbarContent {
-    public var body: some ToolbarContent {
-        ToolbarItemGroup(placement: .primaryAction) {
-            ContentToolbarButtons()
         }
     }
 }

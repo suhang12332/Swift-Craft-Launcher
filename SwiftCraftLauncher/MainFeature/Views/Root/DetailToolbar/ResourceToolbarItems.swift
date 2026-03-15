@@ -159,6 +159,7 @@ struct ResourceToolbarItems: View {
                 } label: {
                     Label("common.browser".localized(), systemImage: "safari")
                 }
+                .id(controlActiveState)
                 .help("resource.open_in_browser".localized())
             } else {
                 if detailState.gameType {
@@ -166,6 +167,5 @@ struct ResourceToolbarItems: View {
                 }
             }
         }
-        .id(controlActiveState)
     }
 }

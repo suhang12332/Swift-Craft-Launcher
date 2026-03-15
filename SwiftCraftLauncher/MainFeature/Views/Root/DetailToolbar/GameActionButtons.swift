@@ -9,6 +9,8 @@ import AppKit
 /// 详情工具栏中与当前游戏相关的操作按钮（启动/停止、设置、在访达中显示、导出、删除）
 struct GameActionButtons: View {
     let game: GameVersionInfo
+    @Environment(\.controlActiveState)
+    private var controlActiveState
 
     @Environment(\.openSettings)
     private var openSettings
@@ -62,6 +64,7 @@ struct GameActionButtons: View {
                     )
                 }
             }
+            .id(controlActiveState)
             .help(
                 isGameRunning(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? "")
                 ? "stop.fill"
@@ -79,6 +82,7 @@ struct GameActionButtons: View {
                     systemImage: "gearshape"
                 )
             }
+            .id(controlActiveState)
             .help("settings.game.advanced.tab".localized())
 
             Button {
@@ -86,6 +90,7 @@ struct GameActionButtons: View {
             } label: {
                 Label("game.path".localized(), systemImage: "folder")
             }
+            .id(controlActiveState)
             .help("game.path".localized())
 
             Button {

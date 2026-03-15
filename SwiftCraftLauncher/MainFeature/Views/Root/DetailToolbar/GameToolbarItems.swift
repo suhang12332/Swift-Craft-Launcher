@@ -9,25 +9,20 @@ import SwiftUI
 struct GameToolbarItems: View {
     let game: GameVersionInfo
 
-    @Environment(\.controlActiveState)
-    private var controlActiveState
     @EnvironmentObject var filterState: ResourceFilterState
     @EnvironmentObject var detailState: ResourceDetailState
 
     var body: some View {
-        Group {
-            ResourceFilterMenus.resourcesTypeMenu(detailState: detailState)
-            ResourceFilterMenus.resourcesMenu(currentGame: game, detailState: detailState)
-            if detailState.gameType {
-                ResourceFilterMenus.dataSourceMenu(filterState: filterState)
-            } else {
-                ResourceFilterMenus.localResourceFilterMenu(filterState: filterState)
-            }
-
-            Spacer()
-
-            GameActionButtons(game: game)
+        ResourceFilterMenus.resourcesTypeMenu(detailState: detailState)
+        ResourceFilterMenus.resourcesMenu(currentGame: game, detailState: detailState)
+        if detailState.gameType {
+            ResourceFilterMenus.dataSourceMenu(filterState: filterState)
+        } else {
+            ResourceFilterMenus.localResourceFilterMenu(filterState: filterState)
         }
-        .id(controlActiveState)
+
+        Spacer()
+
+        GameActionButtons(game: game)
     }
 }
