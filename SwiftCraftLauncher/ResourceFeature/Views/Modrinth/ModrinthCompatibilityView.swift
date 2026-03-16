@@ -134,6 +134,8 @@ private struct ServerInfoSection: View {
                 iconName: "server.rack",
                 iconColor: connectionStatus.statusColor
             )
+            .frame(maxWidth: 160, alignment: .leading)
+            .lineLimit(1)
         }
         .task(id: displayAddress) {
             await CommonUtil.updateServerConnectionStatus(
