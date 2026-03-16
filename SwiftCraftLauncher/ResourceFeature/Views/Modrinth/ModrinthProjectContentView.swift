@@ -62,7 +62,13 @@ struct ModrinthProjectContentView: View {
         // Minecraft 服务器：使用 v3 接口并转换为通用的 ModrinthProjectDetail
         let result: ModrinthProjectDetail?
         if resourceType == ProjectType.minecraftJavaServer {
-            let detailV3 = try await ModrinthService.fetchProjectDetailsV3Throwing(id: projectId)
+            guard let detailV3 = await ModrinthService.fetchProjectDetailsV3(id: projectId) else {
+                throw GlobalError.resource(
+                    chineseMessage: "无法获取服务器项目详情",
+                    i18nKey: "error.resource.server_project_details_not_found",
+                    level: .notification
+                )
+            }
             result = ModrinthProjectDetail.fromV3(detailV3)
         } else {
             result = await ModrinthService.fetchProjectDetails(id: projectId)

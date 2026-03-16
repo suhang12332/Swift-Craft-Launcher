@@ -420,6 +420,17 @@ public struct ModrinthProjectGalleryItem: Codable, Hashable, Equatable {
         case created
         case ordering
     }
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        url = try container.decode(String.self, forKey: .url)
+        rawUrl = try container.decode(String.self, forKey: .rawUrl)
+        featured = try container.decode(Bool.self, forKey: .featured)
+        name = try container.decodeIfPresent(String.self, forKey: .name) ?? ""
+        description = try container.decodeIfPresent(String.self, forKey: .description)
+        created = try container.decode(Date.self, forKey: .created)
+        ordering = try container.decode(Int.self, forKey: .ordering)
+    }
 }
 
 public struct ModrinthMinecraftServerInfo: Codable, Hashable, Equatable {
