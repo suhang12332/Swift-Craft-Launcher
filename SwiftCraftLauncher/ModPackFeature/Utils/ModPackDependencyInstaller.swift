@@ -241,10 +241,8 @@ enum ModPackDependencyInstaller {
                 expectedSha1: fileDetail.hash?.value
             )
 
-            // 写入 Modrinth 风格缓存（使用已有的 CF→Modrinth 转换接口）
             if let hash = ModScanner.sha1Hash(of: downloadedFile) {
-                // 将 CurseForge 项目详情转换为 ModrinthProjectDetail
-                if let cfAsModrinth = CurseForgeToModrinthAdapter.convert(effectiveModDetail) {
+                if let cfAsModrinth = CFToModrinthAdapter.convertProjectDetail(effectiveModDetail) {
                     var detailWithFile = cfAsModrinth
                     detailWithFile.fileName = fileDetail.fileName
                     detailWithFile.type = detailWithFile.projectType

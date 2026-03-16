@@ -101,15 +101,15 @@ enum ModrinthService {
         limit: Int,
         query: String?
     ) async -> ModrinthResult {
-        return await Task {
-            try await searchProjectsThrowing(
+        do {
+            return try await searchProjectsThrowing(
                 facets: facets,
                 index: AppConstants.modrinthIndex,
                 offset: offset,
                 limit: limit,
                 query: query
             )
-        }.catching { error in
+        } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("搜索 Modrinth 项目失败: \(globalError.chineseMessage)")
             GlobalErrorHandler.shared.handle(globalError)
@@ -610,16 +610,5 @@ enum ModrinthService {
             }
         }
         task.resume()
-    }
-}
-
-// Extension to support catching errors in async function returning a value.
-private extension Task where Success == ModrinthResult, Failure == Error {
-    func catching(_ handler: @escaping (Error) -> ModrinthResult) async -> ModrinthResult {
-        do {
-            return try await value
-        } catch {
-            return handler(error)
-        }
     }
 }

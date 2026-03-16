@@ -389,7 +389,7 @@ enum CurseForgeService {
         let cfDetail = try await cfDetailTask
         let description = try await descriptionTask
 
-        guard let modrinthDetail = CurseForgeToModrinthAdapter.convert(cfDetail, description: description) else {
+        guard let modrinthDetail = CFToModrinthAdapter.convertProjectDetail(cfDetail, descriptionHTML: description) else {
             throw GlobalError.validation(
                 chineseMessage: "转换项目详情失败",
                 i18nKey: "error.validation.project_detail_convert_failed",
@@ -421,7 +421,7 @@ enum CurseForgeService {
         let (modId, normalizedId) = try parseCurseForgeId(id)
 
         let cfFiles = try await fetchProjectFilesThrowing(projectId: modId)
-        return cfFiles.compactMap { CurseForgeToModrinthAdapter.convertVersion($0, projectId: normalizedId) }
+        return cfFiles.compactMap { CFToModrinthAdapter.convertFile($0, projectId: normalizedId) }
     }
 
     /// 获取项目版本列表（过滤版本，映射为 Modrinth 格式）
@@ -503,7 +503,7 @@ enum CurseForgeService {
         }
 
         // 转换为 Modrinth 格式，确保 projectId 包含 "cf-" 前缀
-        return filteredFiles.compactMap { CurseForgeToModrinthAdapter.convertVersion($0, projectId: normalizedId) }
+        return filteredFiles.compactMap { CFToModrinthAdapter.convertFile($0, projectId: normalizedId) }
     }
 
     /// 过滤出主要文件
@@ -610,7 +610,7 @@ enum CurseForgeService {
                                     // 需要从 projectId 获取 modId
                                     let (modId, _) = try parseCurseForgeId(normalizedProjectId)
                                     let cfFile = try await fetchFileDetailThrowing(projectId: modId, fileId: fileId)
-                                    guard let convertedVersion = CurseForgeToModrinthAdapter.convertVersion(cfFile, projectId: normalizedProjectId) else {
+                                    guard let convertedVersion = CFToModrinthAdapter.convertFile(cfFile, projectId: normalizedProjectId) else {
                                         return nil
                                     }
                                     depVersion = convertedVersion

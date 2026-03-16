@@ -151,6 +151,9 @@ struct MainView: View {
             detailState.loadedProjectDetail = nil
             detailState.selectedProjectId = nil
         }
+        if detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue {
+            filterState.dataSource = .modrinth
+        }
     }
 
     private func scanAllGamesModsDirectory() {
