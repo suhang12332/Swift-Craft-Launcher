@@ -4,8 +4,8 @@ public extension ModrinthProjectDetail {
     static func fromV3(_ v3: ModrinthProjectDetailV3) -> ModrinthProjectDetail {
         let serverInfo = v3.minecraftJavaServer
         let address = serverInfo?.address ?? ""
-        let online = serverInfo?.ping?.data.playersOnline
-        let max = serverInfo?.ping?.data.playersMax
+        let online = serverInfo?.ping?.data?.playersOnline
+        let max = serverInfo?.ping?.data?.playersMax
 
         let fileName: String? = {
             guard !address.isEmpty else { return nil }

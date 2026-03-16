@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91B2E313A67005A53F1 /* ZIPFoundation */; };
 		9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9049FDB02F1151B50070A9E3 /* SkinRenderKit */; };
-		908886682F6876D900027384 /* CFModrinthAdapterKit in Frameworks */ = {isa = PBXBuildFile; productRef = 908886672F6876D900027384 /* CFModrinthAdapterKit */; };
+		9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9098463E2F688B0400D7876B /* CFModrinthAdapterKit */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 		90E387022F28FB8100F5D101 /* SwiftMarkDownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 90E387012F28FB8100F5D101 /* SwiftMarkDownUI */; };
 /* End PBXBuildFile section */
@@ -32,7 +32,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
-				908886682F6876D900027384 /* CFModrinthAdapterKit in Frameworks */,
+				9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */,
 				90E387022F28FB8100F5D101 /* SwiftMarkDownUI in Frameworks */,
 				90E123456789ABCD0001 /* Sparkle in Frameworks */,
 				9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */,
@@ -75,7 +75,7 @@
 				90E123456789ABCD0002 /* Sparkle */,
 				9049FDB02F1151B50070A9E3 /* SkinRenderKit */,
 				90E387012F28FB8100F5D101 /* SwiftMarkDownUI */,
-				908886672F6876D900027384 /* CFModrinthAdapterKit */,
+				9098463E2F688B0400D7876B /* CFModrinthAdapterKit */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */;
@@ -132,7 +132,7 @@
 				033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 				9049FDAF2F1151B50070A9E3 /* XCRemoteSwiftPackageReference "NSSkinRender" */,
 				90E387002F28FB8100F5D101 /* XCRemoteSwiftPackageReference "SwiftMarkDownUI" */,
-				908886662F6876D900027384 /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */,
+				9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -416,11 +416,11 @@
 				kind = branch;
 			};
 		};
-		908886662F6876D900027384 /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */ = {
+		9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/suhang12332/CFModrinthAdapterKit.git";
 			requirement = {
-				branch = main;
+				branch = release;
 				kind = branch;
 			};
 		};
@@ -458,9 +458,9 @@
 			package = 9049FDAF2F1151B50070A9E3 /* XCRemoteSwiftPackageReference "NSSkinRender" */;
 			productName = SkinRenderKit;
 		};
-		908886672F6876D900027384 /* CFModrinthAdapterKit */ = {
+		9098463E2F688B0400D7876B /* CFModrinthAdapterKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 908886662F6876D900027384 /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */;
+			package = 9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */;
 			productName = CFModrinthAdapterKit;
 		};
 		90E123456789ABCD0002 /* Sparkle */ = {
