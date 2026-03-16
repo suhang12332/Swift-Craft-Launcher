@@ -11,6 +11,8 @@ struct ResourcePrimaryActionButton: View {
     /// 点击回调
     let onTap: () -> Void
 
+    let query: String
+
     var body: some View {
         Button(action: onTap) {
             label
@@ -25,7 +27,9 @@ struct ResourcePrimaryActionButton: View {
     @ViewBuilder private var label: some View {
         switch addButtonState {
         case .idle:
-            Text("resource.add".localized())
+            Text((
+                query == ResourceType.minecraftJavaServer.rawValue ? "addplayer.auth.add" : "resource.add"
+            ).localized())
         case .loading:
             ProgressView()
                 .controlSize(.mini)

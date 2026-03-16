@@ -92,7 +92,8 @@ struct AddOrDeleteResourceButton: View {
                 type: type,
                 isDisabled: addButtonState == .loading
                     || (addButtonState == .installed && type),
-                onTap: handleButtonAction
+                onTap: handleButtonAction,
+                query: query
             )
             .onAppear {
                 if type == false {
