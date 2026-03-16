@@ -90,7 +90,13 @@ struct MainView: View {
         if let loader = game?.modLoader.lowercased() {
             let currentType = detailState.gameResourcesType.lowercased()
             if loader == "vanilla" {
-                if currentType == ResourceType.mod.rawValue || currentType == ResourceType.shader.rawValue || currentType == ResourceType.modpack.rawValue {
+                let modifiableTypes: [String] = [
+                    ResourceType.mod.rawValue,
+                    ResourceType.shader.rawValue,
+                    ResourceType.modpack.rawValue,
+                    ResourceType.minecraftJavaServer.rawValue,
+                ]
+                if modifiableTypes.contains(currentType) {
                     detailState.gameResourcesType = ResourceType.datapack.rawValue
                 }
             } else {
