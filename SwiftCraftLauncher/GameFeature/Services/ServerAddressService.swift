@@ -16,6 +16,54 @@ class ServerAddressService {
 
     private init() {}
 
+    /// 从 `ModrinthProjectDetail.fileName` 解析服务器地址（复用 CommonUtil）
+    nonisolated func parseServerAddress(from detail: ModrinthProjectDetail) -> String {
+        let rawFileName = detail.fileName ?? ""
+        return CommonUtil.parseMinecraftJavaServerInfo(from: rawFileName).address
+    }
+
+    /// 将服务器添加到指定游戏的服务器列表（避免重复添加）
+    func addServerIfNeeded(
+        for gameName: String,
+        address: String,
+        name: String
+    ) async throws {
+        let trimmedAddress = address.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedAddress.isEmpty else {
+            throw GlobalError.validation(
+                chineseMessage: "服务器地址不能为空",
+                i18nKey: "error.server.address_empty",
+                level: .notification
+            )
+        }
+
+        var currentServers = try await loadServerAddresses(for: gameName)
+
+        let exists = currentServers.contains {
+            $0.address.caseInsensitiveCompare(trimmedAddress) == .orderedSame
+        }
+        guard !exists else {
+            throw GlobalError.validation(
+                chineseMessage: "该服务器已添加到列表中",
+                i18nKey: "error.server.already_added",
+                level: .notification
+            )
+        }
+
+        let serverName = name.isEmpty ? trimmedAddress : name
+        let newServer = ServerAddress(
+            name: serverName,
+            address: trimmedAddress,
+            port: 0,
+            hidden: false,
+            icon: nil,
+            acceptTextures: false
+        )
+
+        currentServers.append(newServer)
+        try await saveServerAddresses(currentServers, for: gameName)
+    }
+
     /// 从游戏目录读取服务器地址列表（仅从 servers.dat 读取）
     /// - Parameter gameName: 游戏名称
     /// - Returns: 服务器地址列表
@@ -176,10 +224,7 @@ class ServerAddressService {
         detail: ModrinthProjectDetail,
         games: [GameVersionInfo]
     ) async -> [GameVersionInfo] {
-        // 从 fileName 中解析服务器地址（格式可能为 "address" 或 "address | online | max"）
-        let rawFileName = detail.fileName ?? ""
-        let address = rawFileName.split(separator: "|").first?
-            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let address = parseServerAddress(from: detail)
 
         // 如果无法解析出地址，则不做额外过滤
         guard !address.isEmpty else {
