@@ -15,6 +15,10 @@ final class CategoryContentViewModel: ObservableObject {
         let performanceImpacts: [Category]
         let versions: [GameVersion]
         let loaders: [Loader]
+        let plays: [Category]
+        let metas: [Category]
+        let serverFeatures: [Category]
+        let communitys: [Category]
         let updatedAt: Date
     }
 
@@ -27,6 +31,10 @@ final class CategoryContentViewModel: ObservableObject {
     @Published private(set) var isLoading: Bool = true
     @Published private(set) var error: GlobalError?
     @Published private(set) var loaders: [Loader] = []
+    @Published private(set) var plays: [Category] = []
+    @Published private(set) var metas: [Category] = []
+    @Published private(set) var serverFeatures: [Category] = []
+    @Published private(set) var communitys: [Category] = []
 
     // MARK: - Private Properties
     private let project: String
@@ -142,22 +150,22 @@ final class CategoryContentViewModel: ObservableObject {
             Loader(
                 name: "fabric",
                 icon: "fabric",
-                supported_project_types: ["mod", "modpack"]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
             Loader(
                 name: "forge",
                 icon: "forge",
-                supported_project_types: ["mod", "modpack"]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
             Loader(
                 name: "quilt",
                 icon: "quilt",
-                supported_project_types: ["mod", "modpack"]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
             Loader(
                 name: "neoforge",
                 icon: "neoforge",
-                supported_project_types: ["mod", "modpack"]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
         ]
     }
@@ -186,6 +194,18 @@ final class CategoryContentViewModel: ObservableObject {
             }
             self.performanceImpacts = filteredCategories.filter {
                 $0.header == CategoryHeader.performanceImpact
+            }
+            self.metas = filteredCategories.filter {
+                 $0.header == CategoryHeader.minecraftServerMeta
+            }
+            self.serverFeatures = filteredCategories.filter {
+                $0.header == CategoryHeader.minecraftServerFeatures
+            }
+            self.plays = filteredCategories.filter {
+                $0.header == CategoryHeader.minecraftServerGameplay
+            }
+            self.communitys = filteredCategories.filter {
+                $0.header == CategoryHeader.minecraftServerCommunity
             }
             self.loaders = loaders
         }
@@ -241,6 +261,10 @@ final class CategoryContentViewModel: ObservableObject {
             performanceImpacts: performanceImpacts,
             versions: versions,
             loaders: loaders,
+            plays: plays,
+            metas: metas,
+            serverFeatures: serverFeatures,
+            communitys: communitys,
             updatedAt: Date()
         )
         AppCacheManager.shared.setSilently(

@@ -4,7 +4,7 @@ import SwiftUI
 
 /// 工具类：负责将本地 jar/zip 文件导入到指定资源目录
 enum LocalResourceInstaller {
-    enum ResourceType {
+    enum LocalResourceType {
         case mod, datapack, resourcepack
 
         var directoryName: String {
@@ -27,7 +27,7 @@ enum LocalResourceInstaller {
     ///   - resourceType: 资源类型（mods/datapacks/resourcepacks）
     ///   - gameRoot: 游戏根目录（如 .minecraft）
     /// - Throws: GlobalError
-    static func install(fileURL: URL, resourceType: ResourceType, gameRoot: URL) throws {
+    static func install(fileURL: URL, resourceType: LocalResourceType, gameRoot: URL) throws {
         // 检查扩展名
         guard let ext = fileURL.pathExtension.lowercased() as String?,
               resourceType.allowedExtensions.contains(ext) else {
@@ -117,11 +117,10 @@ extension LocalResourceInstaller {
                         guard let fileURL = urls.first else { return }
 
                         // 检查 query 是否是有效的资源类型
-                        let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
                         let queryLowercased = query.lowercased()
 
                         // 如果 query 是 modpack 或无效的资源类型，显示错误
-                        if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
+                        if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
                             errorHandler.handle(GlobalError.configuration(
                                 chineseMessage: "不支持导入此类型的资源",
                                 i18nKey: "error.configuration.resource_directory_not_found",

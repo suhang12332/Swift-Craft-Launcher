@@ -202,25 +202,19 @@ struct ServerAddressSectionView: View {
     /// 并发检测所有服务器的连接状态
     private func checkAllServers() {
         guard !servers.isEmpty else { return }
-
-        // 初始化所有服务器状态为检测中
-        var initialStatuses: [String: ServerConnectionStatus] = [:]
-        for server in servers {
-            initialStatuses[server.id] = .checking
-        }
-        serverStatuses = initialStatuses
-
-        // 并发检测所有服务器
         Task {
             await withTaskGroup(of: (String, ServerConnectionStatus).self) { group in
                 for server in servers {
                     group.addTask {
-                        let status = await NetworkUtils.checkServerConnectionStatus(
-                            address: server.address,
+                        var latestStatus: ServerConnectionStatus = .unknown
+                        await CommonUtil.updateServerConnectionStatus(
+                            for: server.address,
                             port: server.port,
                             timeout: 5.0
-                        )
-                        return (server.id, status)
+                        ) { newStatus in
+                            latestStatus = newStatus
+                        }
+                        return (server.id, latestStatus)
                     }
                 }
 
@@ -265,7 +259,7 @@ struct ServerAddressChip: View {
                 HStack(spacing: 4) {
                     Image(systemName: "server.rack")
                         .font(.caption)
-                        .foregroundColor(iconColor)
+                        .foregroundColor(connectionStatus.statusColor)
                     Text(title)
                         .font(.subheadline)
                         .fontWeight(.medium)
@@ -302,52 +296,8 @@ struct ServerAddressChip: View {
         }
         .buttonStyle(.plain)
         .disabled(isLoading)
-    }
-
-    /// 根据连接状态返回图标颜色
-    private var iconColor: Color {
-        switch connectionStatus {
-        case .success:
-            return .green
-        case .timeout:
-            return .yellow
-        case .failed:
-            return .red
-        case .checking:
-            return .blue.opacity(0.5)
-        case .unknown:
-            return .secondary
-        }
-    }
-}
-
-// MARK: - Server Address Row
-struct ServerAddressRow: View {
-    let server: ServerAddress
-
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(server.name)
-                    .font(.headline)
-
-                Text(server.fullAddress)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-
-            Spacer()
-
-            Button {
-                let pasteboard = NSPasteboard.general
-                pasteboard.clearContents()
-                pasteboard.setString(server.fullAddress, forType: .string)
-            } label: {
-                Image(systemName: "doc.on.doc")
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.vertical, 4)
+        .frame(maxWidth: 160, alignment: .leading)
+        .lineLimit(1)
     }
 }
 

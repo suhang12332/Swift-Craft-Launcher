@@ -27,7 +27,7 @@ struct VersionPickerForSheet: View {
                     Text("global_resource.select_version".localized())
                 } content: {
                     ForEach(availableVersions, id: \.id) { version in
-                        if resourceType == "shader" {
+                        if resourceType == ResourceType.shader.rawValue {
                             let loaders = version.loaders.joined(
                                 separator: ", "
                             )

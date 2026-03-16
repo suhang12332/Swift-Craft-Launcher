@@ -67,9 +67,21 @@ enum GameNameGenerator {
     /// - Returns: 生成的游戏名称
     static func generateGameName(
         gameVersion: String,
-        modLoader: String
+        loaderVersion: String,
+        modLoader: String,
+        includeTimestamp: Bool = true
     ) -> String {
-        let loaderName = modLoader.lowercased() == "vanilla" ? "" : "-\(modLoader)"
-        return "\(gameVersion)\(loaderName)"
+        let baseName: String
+        if modLoader.lowercased() == "vanilla" {
+            // 原版不拼接 loaderVersion
+            baseName = "\(gameVersion)-\(modLoader.lowercased())"
+        } else {
+            baseName = "\(gameVersion)-\(modLoader.lowercased())-\(loaderVersion)"
+        }
+        if includeTimestamp {
+            let timestamp = DateFormatter.timestampFormatter.string(from: Date())
+            return "\(baseName)-\(timestamp)"
+        }
+        return baseName
     }
 }

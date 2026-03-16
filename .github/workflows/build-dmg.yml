@@ -13,6 +13,7 @@ env:
   CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
   LITTLESKIN_CLIENT_SECRET: ${{ secrets.LITTLESKIN_CLIENT_SECRET }}
   SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
+  SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -468,11 +469,6 @@ jobs:
             exit 1
           fi
 
-      - name: Create private key file
-        run: |
-          echo '${{ secrets.SPARKLE_PRIVATE_KEY }}' > ed25519_priv.pem
-          chmod 600 ed25519_priv.pem
-
       - name: Fetch release notes (remote markdown)
         run: |
           VERSION=${GITHUB_REF#refs/tags/}
@@ -510,7 +506,7 @@ jobs:
           
           # 生成arm64 appcast条目
           ./bin/generate_appcast \
-            --ed-key-file ed25519_priv.pem \
+            --ed-key-file <(printf '%s' "$SPARKLE_PRIVATE_KEY") \
             --full-release-notes-url "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/${VERSION}.html" \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
             -o appcast-arm64.xml \
@@ -544,7 +540,7 @@ jobs:
           
           # 生成x86_64 appcast条目
           ./bin/generate_appcast \
-            --ed-key-file ed25519_priv.pem \
+            --ed-key-file <(printf '%s' "$SPARKLE_PRIVATE_KEY") \
             --full-release-notes-url "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/${VERSION}.html" \
             --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
             -o appcast-x86_64.xml \

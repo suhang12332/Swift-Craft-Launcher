@@ -185,7 +185,7 @@ enum GameResourceHandler {
             gameInfo: gameInfo,
             query: query,
             gameRepository: gameRepository,
-            filterLoader: query != "shader"
+            filterLoader: query != ResourceType.shader.rawValue
         )
     }
 
@@ -252,7 +252,7 @@ enum GameResourceHandler {
                     id: dep.id,
                     selectedVersions: [gameInfo.gameVersion],
                     selectedLoaders: [gameInfo.modLoader],
-                    type: "mod"
+                    type: ResourceType.mod.rawValue
                 )
 
                 versionDict[dep.id] = filteredVersions
@@ -500,7 +500,7 @@ enum GameResourceHandler {
             resourceToAdd.type = query
 
             // 如果是 mod，添加到安装缓存
-            if query.lowercased() == "mod" {
+            if query.lowercased() == ResourceType.mod.rawValue {
                 // 获取下载文件的hash
                 if let hash = ModScanner.sha1Hash(of: fileURL) {
                     ModScanner.shared.addModHash(

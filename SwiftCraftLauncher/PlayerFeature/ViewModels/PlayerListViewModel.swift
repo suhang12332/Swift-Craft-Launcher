@@ -20,7 +20,7 @@ class PlayerListViewModel: ObservableObject {
     }
     private func setupNotifications() {
         notificationObserver = NotificationCenter.default.addObserver(
-            forName: PlayerSkinService.playerUpdatedNotification,
+            forName: .playerUpdated,
             object: nil,
             queue: .main
         ) { [weak self] notification in

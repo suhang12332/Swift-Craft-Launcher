@@ -288,12 +288,18 @@ enum URLConfig {
         // Modrinth API
         enum Modrinth {
             static let baseURL = URLConfig.url("https://api.modrinth.com/v2")
+            static let baseURLV3 = URLConfig.url("https://api.modrinth.com/v3")
             /// Modrinth 项目详情基础 URL，例如：https://modrinth.com/mod/fabric-api
             static let webProjectBase = "https://modrinth.com/mod/"
 
             // 项目相关
             static func project(id: String) -> URL {
                 baseURL.appendingPathComponent("project/\(id)")
+            }
+
+            // 项目相关（v3，包含服务器信息等新字段）
+            static func projectV3(id: String) -> URL {
+                baseURLV3.appendingPathComponent("project/\(id)")
             }
 
             // 版本相关
@@ -388,15 +394,15 @@ enum URLConfig {
             static func webProjectURL(projectType: String) -> String {
                 let type = projectType.lowercased()
                 let pathPrefix: String = switch type {
-                case "mod":
+                case ResourceType.mod.rawValue:
                     "mc-mods/"
-                case "resourcepack":
+                case ResourceType.resourcepack.rawValue:
                     "texture-packs/"
-                case "datapack":
+                case ResourceType.datapack.rawValue:
                     "data-packs/"
-                case "shader":
+                case ResourceType.shader.rawValue:
                     "shaders/"
-                case "modpack":
+                case ResourceType.modpack.rawValue:
                     "modpacks/"
                 default:
                     "mc-mods/"

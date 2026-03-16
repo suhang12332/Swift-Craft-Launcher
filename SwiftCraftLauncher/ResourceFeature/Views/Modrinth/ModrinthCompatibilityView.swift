@@ -4,6 +4,7 @@
 //
 //  Created by su on 2025/6/2.
 //
+import Foundation
 import SwiftUI
 
 // MARK: - Constants
@@ -17,6 +18,7 @@ private enum Constants {
 struct ModrinthCompatibilitySection: View {
     let project: ModrinthProjectDetail?
     let isLoading: Bool
+    let resourceType: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -30,10 +32,17 @@ struct ModrinthCompatibilitySection: View {
                 if !project.loaders.isEmpty {
                     LoadersSection(loaders: project.loaders, isLoading: false)
                 }
-                PlatformSupportSection(
-                    clientSide: project.clientSide,
-                    serverSide: project.serverSide
-                )
+                if resourceType == ProjectType.minecraftJavaServer,
+                   let fileName = project.fileName {
+                    ServerInfoSection(fileName: fileName)
+                    PlayerInfoSection(fileName: fileName)
+                }
+                if resourceType != ProjectType.minecraftJavaServer {
+                    PlatformSupportSection(
+                        clientSide: project.clientSide,
+                        serverSide: project.serverSide
+                    )
+                }
             }
         }
     }
@@ -46,7 +55,7 @@ private struct GameVersionsSection: View {
 
     var body: some View {
         GenericSectionView(
-            title: "project.info.versions",
+            title: "game.version",
             items: versions.map { IdentifiableString(id: $0) },
             isLoading: isLoading,
             maxItems: Constants.maxVisibleVersions
@@ -99,6 +108,70 @@ private struct LoadersSection: View {
             isLoading: isLoading
         ) { item in
             VersionTag(version: item.id)
+        }
+    }
+}
+
+// MARK: - Server Info Section
+private struct ServerInfoSection: View {
+    let fileName: String
+    @State private var connectionStatus: ServerConnectionStatus = .unknown
+
+    var body: some View {
+        let parsed = CommonUtil.parseMinecraftJavaServerInfo(from: fileName)
+        let displayAddress = parsed.address
+        let items = displayAddress.isEmpty ? [] : [IdentifiableString(id: displayAddress)]
+
+        GenericSectionView(
+            title: "project.info.server",
+            items: items,
+            isLoading: false
+        ) { item in
+            FilterChip(
+                title: item.id,
+                isSelected: false,
+                action: {},
+                iconName: "server.rack",
+                iconColor: connectionStatus.statusColor
+            )
+            .frame(maxWidth: 160, alignment: .leading)
+            .lineLimit(1)
+        }
+        .task(id: displayAddress) {
+            await CommonUtil.updateServerConnectionStatus(
+                for: displayAddress
+            ) { newStatus in
+                connectionStatus = newStatus
+            }
+        }
+    }
+}
+
+// MARK: - Player Info Section
+private struct PlayerInfoSection: View {
+    let fileName: String
+
+    var body: some View {
+        let parsed = CommonUtil.parseMinecraftJavaServerInfo(from: fileName)
+        let items: [IdentifiableString] = {
+            guard let playersText = parsed.playersText, !playersText.isEmpty else {
+                return []
+            }
+            return [IdentifiableString(id: playersText)]
+        }()
+
+        return GenericSectionView(
+            title: "project.info.players",
+            items: items,
+            isLoading: false
+        ) { item in
+            FilterChip(
+                title: item.id,
+                isSelected: false,
+                action: {},
+                iconName: "person.2",
+                iconColor: .secondary
+            )
         }
     }
 }

@@ -73,46 +73,28 @@ struct AddOrDeleteResourceButton: View {
     var body: some View {
 
         HStack(spacing: 8) {
-            // 更新按钮（仅在 local 模式且有更新时显示）
-            if type == false && addButtonState == .update && !isResourceDisabled {
-                Button(action: handleUpdateAction) {
-                    if isUpdateButtonLoading {
-                        ProgressView()
-                            .controlSize(.mini)
-                    } else {
-                        Text("resource.update".localized())
-                    }
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.accentColor)
-                .font(.caption2)
-                .controlSize(.small)
-                .disabled(addButtonState == .loading || isUpdateButtonLoading)
-            }
+            LocalResourceUpdateButton(
+                isVisible: type == false && addButtonState == .update && !isResourceDisabled,
+                isUpdateButtonLoading: $isUpdateButtonLoading,
+                addButtonState: addButtonState,
+                onTap: handleUpdateAction
+            )
 
-            // 禁用/启用按钮（仅本地资源显示）
-            if type == false {
-                Toggle("", isOn: Binding(
-                    get: { !isDisabled },
-                    set: { _ in toggleDisableState() }
-                ))
-                .toggleStyle(.switch)
-                .labelsHidden()
-                .controlSize(.mini)
-            }
+            LocalResourceToggle(
+                isVisible: type == false,
+                isDisabled: $isDisabled,
+                onToggle: toggleDisableState
+            )
 
             // 安装/删除按钮
-            Button(action: handleButtonAction) {
-                buttonLabel
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(.accentColor)
-            .font(.caption2)
-            .controlSize(.small)
-            .disabled(
-                addButtonState == .loading
-                    || (addButtonState == .installed && type)
-            )  // type = true (server mode) disables deletion；禁用状态与置灰条件一致
+            ResourcePrimaryActionButton(
+                addButtonState: addButtonState,
+                type: type,
+                isDisabled: addButtonState == .loading
+                    || (addButtonState == .installed && type),
+                onTap: handleButtonAction,
+                query: query
+            )
             .onAppear {
                 if type == false {
                     // local 区直接显示为已安装
@@ -271,31 +253,6 @@ struct AddOrDeleteResourceButton: View {
         }
     }
 
-    // MARK: - UI Components
-    private var buttonLabel: some View {
-        switch addButtonState {
-        case .idle:
-            AnyView(Text("resource.add".localized()))
-        case .loading:
-            AnyView(
-                ProgressView()
-                    .controlSize(.mini)
-                    .font(.body)  // 设置字体大小
-            )
-        case .installed:
-            AnyView(
-                Text(
-                    (!type
-                        ? "common.delete".localized()
-                        : "resource.installed".localized())
-                )
-            )
-        case .update:
-            // 当有更新时，主按钮显示删除（更新按钮已单独显示在左边）
-            AnyView(Text("common.delete".localized()))
-        }
-    }
-
     // 根据文件名删除文件
     private func deleteFile() {
         // 使用 project.fileName 删除
@@ -306,11 +263,10 @@ struct AddOrDeleteResourceButton: View {
     // - Parameter isUpdate: 若为 true 表示来自更新流程（删除旧文件），不调用 onResourceChanged
     private func deleteFile(fileName: String?, isUpdate: Bool = false) {
         // 检查 query 是否是有效的资源类型
-        let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
         let queryLowercased = query.lowercased()
 
         // 如果 query 是 modpack 或无效的资源类型，显示错误
-        if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
+        if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
             let globalError = GlobalError.configuration(
                 chineseMessage: "无法删除文件：不支持删除此类型的资源",
                 i18nKey: "error.configuration.delete_file_failed",
@@ -377,7 +333,7 @@ struct AddOrDeleteResourceButton: View {
             switch addButtonState {
             case .idle:
                 // 新增：对整合包的特殊处理
-                if query == "modpack" {
+                if query == ResourceType.modpack.rawValue {
                             addButtonState = .loading
                             Task {
                                 await loadModPackDetailBeforeOpeningSheet()
@@ -404,7 +360,7 @@ struct AddOrDeleteResourceButton: View {
                 // 当 type 是 true (server mode) 时的特殊处理
                 if type {
                     // 对整合包的特殊处理：只需要判断有没有玩家
-                    if query == "modpack" {
+                    if query == ResourceType.modpack.rawValue {
                         if playerListViewModel.currentPlayer == nil {
                             activeAlert = .noPlayer
                             return
@@ -423,7 +379,7 @@ struct AddOrDeleteResourceButton: View {
                     }
                 } else {
                     // type 为 false (local mode) 时的原有逻辑
-                    if query == "modpack" {
+                    if query == ResourceType.modpack.rawValue {
                         addButtonState = .loading
                         Task {
                             await loadModPackDetailBeforeOpeningSheet()
@@ -454,12 +410,11 @@ struct AddOrDeleteResourceButton: View {
             return
         }
 
-        let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
         let queryLowercased = query.lowercased()
 
         // modpack 目前不支持安装状态检测
-        guard queryLowercased != "modpack",
-              validResourceTypes.contains(queryLowercased)
+        guard queryLowercased != ResourceType.modpack.rawValue,
+              AppConstants.validResourceTypes.contains(queryLowercased)
         else {
             addButtonState = .idle
             return
@@ -497,17 +452,29 @@ struct AddOrDeleteResourceButton: View {
             }
         }
 
-        guard let result = await ResourceDetailLoader.loadProjectDetail(
-            projectId: project.projectId,
-            gameRepository: gameRepository,
-            resourceType: query
-        ) else {
+        let result: (detail: ModrinthProjectDetail, compatibleGames: [GameVersionInfo])?
+
+        if query == ResourceType.minecraftJavaServer.rawValue {
+            result = await ResourceDetailLoader.loadMinecraftJavaServerDetail(
+                projectId: project.projectId,
+                gameRepository: gameRepository,
+                resourceType: query
+            )
+        } else {
+            result = await ResourceDetailLoader.loadProjectDetail(
+                projectId: project.projectId,
+                gameRepository: gameRepository,
+                resourceType: query
+            )
+        }
+
+        guard let unwrappedResult = result else {
             return
         }
 
         await MainActor.run {
-            preloadedDetail = result.detail
-            preloadedCompatibleGames = result.compatibleGames
+            preloadedDetail = unwrappedResult.detail
+            preloadedCompatibleGames = unwrappedResult.compatibleGames
             showGlobalResourceSheet = true
         }
     }

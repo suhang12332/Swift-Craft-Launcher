@@ -150,10 +150,10 @@ enum AppPaths {
 extension AppPaths {
     static func resourceDirectory(for type: String, gameName: String) -> URL? {
         switch type.lowercased() {
-        case "mod": return modsDirectory(gameName: gameName)
-        case "datapack": return datapacksDirectory(gameName: gameName)
-        case "shader": return shaderpacksDirectory(gameName: gameName)
-        case "resourcepack": return resourcepacksDirectory(gameName: gameName)
+        case ResourceType.mod.rawValue: return modsDirectory(gameName: gameName)
+        case ResourceType.datapack.rawValue: return datapacksDirectory(gameName: gameName)
+        case ResourceType.shader.rawValue: return shaderpacksDirectory(gameName: gameName)
+        case ResourceType.resourcepack.rawValue: return resourcepacksDirectory(gameName: gameName)
         default: return nil
         }
     }
@@ -166,13 +166,13 @@ extension AppPaths {
 
         switch parentDirName {
         case AppConstants.DirectoryNames.mods.lowercased():
-            return "mod"
+            return ResourceType.mod.rawValue
         case AppConstants.DirectoryNames.shaderpacks.lowercased():
-            return "shader"
+            return ResourceType.shader.rawValue
         case AppConstants.DirectoryNames.resourcepacks.lowercased():
-            return "resourcepack"
+            return ResourceType.resourcepack.rawValue
         case AppConstants.DirectoryNames.datapacks.lowercased():
-            return "datapack"
+            return ResourceType.datapack.rawValue
         default:
             return nil
         }

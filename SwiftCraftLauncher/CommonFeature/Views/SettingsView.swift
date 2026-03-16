@@ -29,7 +29,7 @@ public struct SettingsView: View {
                 .tag(SettingsTab.general)
             PlayerSettingsView()
                 .tabItem {
-                    Label("settings.game.player".localized(), systemImage: "person")
+                    Label("settings.player.tab".localized(), systemImage: "person")
                 }
                 .tag(SettingsTab.player)
             GameSettingsView()

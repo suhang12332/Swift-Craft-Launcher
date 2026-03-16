@@ -77,7 +77,7 @@ struct MinecraftLaunchCommand {
             Logger.shared.debug("已更新玩家数据管理器中的Token信息")
             // 同步更新内存中的玩家列表（避免下次启动仍使用旧 token）
             NotificationCenter.default.post(
-                name: PlayerSkinService.playerUpdatedNotification,
+                name: .playerUpdated,
                 object: nil,
                 userInfo: ["updatedPlayer": updatedPlayer]
             )
@@ -224,7 +224,6 @@ struct MinecraftLaunchCommand {
         // 获取游戏工作目录
         let gameWorkingDirectory = AppPaths.profileDirectory(gameName: game.gameName)
 
-        Logger.shared.info("启动游戏进程: \(javaExecutable) \(command.joined(separator: " "))")
         Logger.shared.info("游戏工作目录: \(gameWorkingDirectory.path)")
 
         let process = Process()

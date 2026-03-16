@@ -104,8 +104,7 @@ struct GameAdvancedSettingsView: View {
                             handleJavaPathSelection(result)
                         }
                     InfoIconWithPopover(
-                        text: javaDetailsDescription,
-                        systemIconName: "info.circle"
+                        text: javaDetailsDescription
                     )
                 }
             }.labeledContentStyle(.custom(alignment: .firstTextBaseline))

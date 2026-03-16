@@ -12,11 +12,10 @@ enum ModrinthDependencyDownloader {
         visited: inout Set<String>
     ) async {
         // 检查 query 是否是有效的资源类型
-        let validResourceTypes = ["mod", "datapack", "shader", "resourcepack"]
         let queryLowercased = query.lowercased()
 
         // 如果 query 是 modpack 或无效的资源类型，直接返回
-        if queryLowercased == "modpack" || !validResourceTypes.contains(queryLowercased) {
+        if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
             Logger.shared.error("不支持下载此类型的资源: \(query)")
             return
         }
@@ -102,7 +101,7 @@ enum ModrinthDependencyDownloader {
                                     detail: detailWithFile
                                 )
                                 // 如果是 mod，添加到安装缓存
-                                if query.lowercased() == "mod" {
+                                if query.lowercased() == ResourceType.mod.rawValue {
                                     ModScanner.shared.addModHash(
                                         hash,
                                         to: gameInfo.gameName
@@ -157,7 +156,7 @@ enum ModrinthDependencyDownloader {
                                     detail: mainProjectDetail
                                 )
                                 // 如果是 mod，添加到安装缓存
-                                if query.lowercased() == "mod" {
+                                if query.lowercased() == ResourceType.mod.rawValue {
                                     ModScanner.shared.addModHash(
                                         hash,
                                         to: gameInfo.gameName
@@ -197,7 +196,7 @@ enum ModrinthDependencyDownloader {
     ) async -> [(
         detail: ModrinthProjectDetail, versions: [ModrinthProjectDetailVersion]
     )] {
-        let query = "mod"
+        let query = ResourceType.mod.rawValue
         let resourceDir = AppPaths.modsDirectory(
             gameName: gameInfo.gameName
         )
@@ -235,7 +234,7 @@ enum ModrinthDependencyDownloader {
                             id: depVersion.projectId,
                             selectedVersions: [gameInfo.gameVersion],
                             selectedLoaders: [gameInfo.modLoader],
-                            type: "mod"
+                            type: ResourceType.mod.rawValue
                         )
                     } catch {
                         // 如果版本获取失败，返回空列表
@@ -267,7 +266,7 @@ enum ModrinthDependencyDownloader {
         for projectId: String,
         gameInfo: GameVersionInfo
     ) async -> [ModrinthProjectDetail] {
-        let query = "mod"
+        let query = ResourceType.mod.rawValue
         let resourceDir = AppPaths.modsDirectory(
             gameName: gameInfo.gameName
         )
@@ -355,7 +354,7 @@ enum ModrinthDependencyDownloader {
                                 detail: depCopy
                             )
                             // 如果是 mod，添加到安装缓存
-                            if query.lowercased() == "mod" {
+                            if query.lowercased() == ResourceType.mod.rawValue {
                                 ModScanner.shared.addModHash(
                                     hash,
                                     to: gameInfo.gameName
@@ -449,7 +448,7 @@ enum ModrinthDependencyDownloader {
                     detail: mainProjectDetail
                 )
                 // 如果是 mod，添加到安装缓存
-                if query.lowercased() == "mod" {
+                if query.lowercased() == ResourceType.mod.rawValue {
                     ModScanner.shared.addModHash(
                         hash,
                         to: gameInfo.gameName
@@ -517,7 +516,7 @@ enum ModrinthDependencyDownloader {
                     detail: mainProjectDetail
                 )
                 // 如果是 mod，添加到安装缓存
-                if query.lowercased() == "mod" {
+                if query.lowercased() == ResourceType.mod.rawValue {
                     ModScanner.shared.addModHash(
                         h,
                         to: gameInfo.gameName

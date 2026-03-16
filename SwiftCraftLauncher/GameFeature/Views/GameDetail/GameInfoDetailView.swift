@@ -197,7 +197,7 @@ struct GameInfoDetailView: View {
     /// 异步扫描所有资源，收集 detailId（不阻塞视图渲染）
     private func scanAllResources() {
         // Modpacks don't have a local directory to scan
-        if query.lowercased() == "modpack" {
+        if query.lowercased() == ResourceType.modpack.rawValue {
             scannedResources = []
             return
         }

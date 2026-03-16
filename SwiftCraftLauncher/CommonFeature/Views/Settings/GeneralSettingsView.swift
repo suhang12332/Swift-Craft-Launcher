@@ -12,6 +12,8 @@ public struct GeneralSettingsView: View {
     @State private var isCancellingLanguageChange = false
     @State private var selectedLanguage = LanguageManager.shared.selectedLanguage
     @State private var error: GlobalError?
+    @State private var concurrentDownloadsDraft: Double = 0
+    @State private var isEditingConcurrentDownloads = false
 
     public init() {}
 
@@ -111,21 +113,17 @@ public struct GeneralSettingsView: View {
             LabeledContent("settings.concurrent_downloads.label".localized()) {
                 HStack {
                     Slider(
-                        value: Binding(
-                            get: {
-                                Double(generalSettings.concurrentDownloads)
-                            },
-                            set: {
-                                generalSettings.concurrentDownloads = Int(
-                                    $0
-                                )
-                            }
-                        ),
+                        value: $concurrentDownloadsDraft,
                         in: 1...64
-                    ).controlSize(.mini)
-                        .animation(.easeOut(duration: 0.5), value: generalSettings.concurrentDownloads)
+                    ) { isEditing in
+                        isEditingConcurrentDownloads = isEditing
+                        if !isEditing {
+                            generalSettings.concurrentDownloads = Int(concurrentDownloadsDraft.rounded())
+                        }
+                    }
+                    .controlSize(.mini)
                     // 当前内存值显示（右对齐，固定宽度）
-                    Text("\(generalSettings.concurrentDownloads)").font(
+                    Text("\(Int(concurrentDownloadsDraft.rounded()))").font(
                         .subheadline
                     )
                     .foregroundColor(.secondary)
@@ -182,6 +180,13 @@ public struct GeneralSettingsView: View {
             }.labeledContentStyle(.custom)
         }
         .globalErrorHandler()
+        .onAppear {
+            concurrentDownloadsDraft = Double(generalSettings.concurrentDownloads)
+        }
+        .onChange(of: generalSettings.concurrentDownloads) { _, newValue in
+            guard !isEditingConcurrentDownloads else { return }
+            concurrentDownloadsDraft = Double(newValue)
+        }
         .alert(
             "error.notification.validation.title".localized(),
             isPresented: .constant(error != nil && error?.level == .popup)

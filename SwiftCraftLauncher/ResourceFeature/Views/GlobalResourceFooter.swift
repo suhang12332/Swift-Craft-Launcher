@@ -29,7 +29,7 @@ struct GlobalResourceFooter: View {
                     HStack {
                         Button("common.close".localized()) { isPresented = false }
                         Spacer()
-                        if resourceType == "mod" {
+                        if resourceType == ResourceType.mod.rawValue {
                             if !dependencyState.isLoading {
                                 if selectedVersion != nil {
                                     Button(action: downloadAllManual) {
@@ -45,6 +45,18 @@ struct GlobalResourceFooter: View {
                                     .disabled(isDownloadingAll)
                                     .keyboardShortcut(.defaultAction)
                                 }
+                            }
+                        } else if resourceType == ResourceType.minecraftJavaServer.rawValue {
+                            if selectedGame != nil {
+                                Button(action: addServerResource) {
+                                    if isDownloadingAll {
+                                        ProgressView().controlSize(.small)
+                                    } else {
+                                        Text("saveinfo.server.add".localized())
+                                    }
+                                }
+                                .disabled(isDownloadingAll)
+                                .keyboardShortcut(.defaultAction)
                             }
                         } else {
                             if selectedVersion != nil {
@@ -167,6 +179,31 @@ struct GlobalResourceFooter: View {
                 i18nKey: "error.download.manual_dependencies_failed",
                 level: .notification
             )
+        }
+    }
+
+    /// 将当前服务器资源添加到选中游戏的服务器列表
+    private func addServerResource() {
+        guard let game = selectedGame, let detail = projectDetail else { return }
+
+        isDownloadingAll = true
+
+        Task {
+            do {
+                try await MinecraftJavaServerResourceUtils.addServerToGameIfNeeded(
+                    game: game,
+                    detail: detail
+                )
+            } catch {
+                let globalError = GlobalError.from(error)
+                Logger.shared.error("添加服务器失败: \(globalError.chineseMessage)")
+                GlobalErrorHandler.shared.handle(globalError)
+            }
+
+            _ = await MainActor.run {
+                isDownloadingAll = false
+                isPresented = false
+            }
         }
     }
 

@@ -31,6 +31,7 @@ public enum ResourceType: String, CaseIterable {
     case shader = "shader"
     case resourcepack = "resourcepack"
     case modpack = "modpack"
+    case minecraftJavaServer = "minecraft_java_server"
 
     public var localizedName: String {
         "resource.content.type.\(rawValue)".localized()
@@ -49,6 +50,8 @@ public enum ResourceType: String, CaseIterable {
             return "photo.stack"
         case .modpack:
             return "cube.box"
+        case .minecraftJavaServer:
+            return "server.rack"
         }
     }
 }

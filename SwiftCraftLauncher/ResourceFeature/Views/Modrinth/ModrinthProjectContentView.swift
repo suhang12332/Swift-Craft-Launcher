@@ -11,13 +11,18 @@ struct ModrinthProjectContentView: View {
     @State private var error: GlobalError?
     @Binding var projectDetail: ModrinthProjectDetail?
     let projectId: String
+    let resourceType: String
 
     var body: some View {
         VStack {
             if let error = error {
                 newErrorView(error)
             } else {
-                ModrinthCompatibilitySection(project: projectDetail, isLoading: isLoading)
+                ModrinthCompatibilitySection(
+                    project: projectDetail,
+                    isLoading: isLoading,
+                    resourceType: resourceType
+                )
                 ModrinthLinksSection(project: projectDetail, isLoading: isLoading)
                 ModrinthDetailsSection(project: projectDetail, isLoading: isLoading)
             }
@@ -54,20 +59,22 @@ struct ModrinthProjectContentView: View {
             )
         }
 
-        guard
-            let fetchedProject = await ModrinthService.fetchProjectDetails(
-                id: projectId
-            )
-        else {
-            throw GlobalError.resource(
-                chineseMessage: "无法获取项目详情",
-                i18nKey: "error.resource.project_details_not_found",
-                level: .notification
-            )
+        // Minecraft 服务器：使用 v3 接口并转换为通用的 ModrinthProjectDetail
+        let result: ModrinthProjectDetail?
+        if resourceType == ProjectType.minecraftJavaServer {
+            guard let detailV3 = await ModrinthService.fetchProjectDetailsV3(id: projectId) else {
+                throw GlobalError.resource(
+                    chineseMessage: "无法获取服务器项目详情",
+                    i18nKey: "error.resource.server_project_details_not_found",
+                    level: .notification
+                )
+            }
+            result = ModrinthProjectDetail.fromV3(detailV3)
+        } else {
+            result = await ModrinthService.fetchProjectDetails(id: projectId)
         }
-
         await MainActor.run {
-            projectDetail = fetchedProject
+            projectDetail = result
         }
     }
 }
