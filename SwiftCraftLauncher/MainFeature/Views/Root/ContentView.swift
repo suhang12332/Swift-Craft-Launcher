@@ -63,7 +63,8 @@ struct ContentView: View {
         if let projectId = detailState.selectedProjectId {
             ModrinthProjectContentView(
                 projectDetail: detailState.loadedProjectDetailBinding,
-                projectId: projectId
+                projectId: projectId,
+                resourceType: type.rawValue
             )
         } else {
             CategoryContentView(

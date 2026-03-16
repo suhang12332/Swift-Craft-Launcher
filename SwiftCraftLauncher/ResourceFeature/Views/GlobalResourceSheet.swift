@@ -16,19 +16,25 @@ struct GlobalResourceSheet: View {
     @State private var isDownloadingMainOnly = false
     @State private var mainVersionId = ""
 
+    /// Sheet 标题（根据资源类型与是否选中游戏动态变化）
+    private var headerTitle: String {
+        let isServer = resourceType == ResourceType.minecraftJavaServer.rawValue
+        let baseKey = isServer ? "saveinfo.server.add" : "global_resource.add"
+        let forGameKey = isServer ? "saveinfo.server.add_for_game" : "global_resource.add_for_game"
+
+        if let game = selectedGame {
+            return String(format: forGameKey.localized(), game.gameName)
+        } else {
+            return baseKey.localized()
+        }
+    }
+
     var body: some View {
         CommonSheetView(
             header: {
-                Text(
-                    selectedGame.map {
-                        String(
-                            format: "global_resource.add_for_game".localized(),
-                            $0.gameName
-                        )
-                    } ?? "global_resource.add".localized()
-                )
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                Text(headerTitle)
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             },
             body: {
                 if let detail = preloadedDetail {
@@ -45,26 +51,28 @@ struct GlobalResourceSheet: View {
                                 selectedGame: $selectedGame
                             )
                             if let game = selectedGame {
-                                spacerView()
-                                VersionPickerForSheet(
-                                    project: project,
-                                    resourceType: resourceType,
-                                    selectedGame: $selectedGame,
-                                    selectedVersion: $selectedVersion,
-                                    availableVersions: $availableVersions,
-                                    mainVersionId: $mainVersionId
-                                ) { version in
-                                    if resourceType == ResourceType.mod.rawValue,
-                                        let v = version {
-                                        loadDependencies(for: v, game: game)
-                                    } else {
-                                        dependencyState = DependencyState()
+                                if resourceType != ResourceType.minecraftJavaServer.rawValue {
+                                    spacerView()
+                                    VersionPickerForSheet(
+                                        project: project,
+                                        resourceType: resourceType,
+                                        selectedGame: $selectedGame,
+                                        selectedVersion: $selectedVersion,
+                                        availableVersions: $availableVersions,
+                                        mainVersionId: $mainVersionId
+                                    ) { version in
+                                        if resourceType == ResourceType.mod.rawValue,
+                                           let v = version {
+                                            loadDependencies(for: v, game: game)
+                                        } else {
+                                            dependencyState = DependencyState()
+                                        }
                                     }
-                                }
-                                if resourceType == ResourceType.mod.rawValue {
-                                    if dependencyState.isLoading || !dependencyState.dependencies.isEmpty {
-                                        spacerView()
-                                        DependencySectionView(state: $dependencyState)
+                                    if resourceType == ResourceType.mod.rawValue {
+                                        if dependencyState.isLoading || !dependencyState.dependencies.isEmpty {
+                                            spacerView()
+                                            DependencySectionView(state: $dependencyState)
+                                        }
                                     }
                                 }
                             }

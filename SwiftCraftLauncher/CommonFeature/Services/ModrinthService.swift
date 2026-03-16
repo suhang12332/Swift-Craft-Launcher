@@ -275,6 +275,28 @@ enum ModrinthService {
         return detail
     }
 
+    // MARK: - v3 服务器项目详情（包含服务器信息等新字段）
+    static func fetchProjectDetailsV3(id: String) async -> ModrinthProjectDetailV3? {
+        do {
+            return try await fetchProjectDetailsV3Throwing(id: id)
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("获取 v3 项目详情失败 (ID: \(id)): \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+            return nil
+        }
+    }
+
+    /// 抛出错误的 v3 项目详情获取方法
+    static func fetchProjectDetailsV3Throwing(id: String) async throws -> ModrinthProjectDetailV3 {
+        let url = URLConfig.API.Modrinth.projectV3(id: id)
+        let data = try await APIClient.get(url: url)
+
+        let decoder = JSONDecoder()
+        decoder.configureForModrinth()
+        return try decoder.decode(ModrinthProjectDetailV3.self, from: data)
+    }
+
     static func fetchProjectVersions(id: String) async -> [ModrinthProjectDetailVersion] {
         // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
         if id.hasPrefix("cf-") {

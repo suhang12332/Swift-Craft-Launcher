@@ -41,19 +41,7 @@ struct ModrinthProjectTitleView: View {
                         Text(projectDetail.title)
                             .font(.headline)
                         Spacer()
-                        HStack {
-                            Label(
-                                "\(projectDetail.downloads)",
-                                systemImage: "arrow.down.circle"
-                            )
-                            Divider().frame(height: 12)
-                            Label(
-                                "\(projectDetail.followers)",
-                                systemImage: "heart"
-                            )
-                        }
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        infoRow
                     }
                     Text(projectDetail.description)
                         .font(.subheadline)
@@ -86,5 +74,39 @@ struct ModrinthProjectTitleView: View {
             }
         }
         .cornerRadius(12)
+    }
+
+    private var infoRow: some View {
+        Group {
+            if let serverInfo = projectDetail.fileName, !serverInfo.isEmpty {
+                let parsed = CommonUtil.parseMinecraftJavaServerInfo(from: serverInfo)
+                let items: [(String, String)] = [
+                    ("\(parsed.address)", "server.rack"),
+                ] + (parsed.playersText.flatMap { $0.isEmpty ? nil : [("\($0)", "person.2")] } ?? [])
+                InfoRow(items: items)
+            } else {
+                InfoRow(items: [
+                    ("\(projectDetail.downloads)", "arrow.down.circle"),
+                    ("\(projectDetail.followers)", "heart"),
+                ])
+            }
+        }
+    }
+}
+
+private struct InfoRow: View {
+    let items: [(String, String)]
+
+    var body: some View {
+        HStack {
+            ForEach(Array(items.enumerated()), id: \.offset) { index, item in
+                if index > 0 {
+                    Divider().frame(height: 12)
+                }
+                Label(item.0, systemImage: item.1)
+            }
+        }
+        .font(.caption)
+        .foregroundColor(.secondary)
     }
 }

@@ -451,17 +451,29 @@ struct AddOrDeleteResourceButton: View {
             }
         }
 
-        guard let result = await ResourceDetailLoader.loadProjectDetail(
-            projectId: project.projectId,
-            gameRepository: gameRepository,
-            resourceType: query
-        ) else {
+        let result: (detail: ModrinthProjectDetail, compatibleGames: [GameVersionInfo])?
+
+        if query == ResourceType.minecraftJavaServer.rawValue {
+            result = await ResourceDetailLoader.loadMinecraftJavaServerDetail(
+                projectId: project.projectId,
+                gameRepository: gameRepository,
+                resourceType: query
+            )
+        } else {
+            result = await ResourceDetailLoader.loadProjectDetail(
+                projectId: project.projectId,
+                gameRepository: gameRepository,
+                resourceType: query
+            )
+        }
+
+        guard let unwrappedResult = result else {
             return
         }
 
         await MainActor.run {
-            preloadedDetail = result.detail
-            preloadedCompatibleGames = result.compatibleGames
+            preloadedDetail = unwrappedResult.detail
+            preloadedCompatibleGames = unwrappedResult.compatibleGames
             showGlobalResourceSheet = true
         }
     }

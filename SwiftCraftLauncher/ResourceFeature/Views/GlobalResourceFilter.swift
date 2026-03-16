@@ -24,7 +24,8 @@ func filterCompatibleGames(
             case (ResourceType.resourcepack.rawValue, "vanilla"):
                 return supportedVersions.contains(game.gameVersion)
                     && supportedLoaders.contains("minecraft")
-            case (ResourceType.resourcepack.rawValue, _):
+            case (ResourceType.resourcepack.rawValue, _),
+                 (ResourceType.minecraftJavaServer.rawValue, _):
                 return supportedVersions.contains(game.gameVersion)
             default:
                 return supportedVersions.contains(game.gameVersion)

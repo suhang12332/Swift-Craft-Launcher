@@ -10,6 +10,23 @@ import SwiftUI
 import AppKit
 import ImageIO
 
+extension ServerConnectionStatus {
+    var statusColor: Color {
+        switch self {
+        case .unknown:
+            return .secondary
+        case .checking:
+            return .blue.opacity(0.5)
+        case .success:
+            return .green
+        case .timeout:
+            return .yellow
+        case .failed:
+            return .red
+        }
+    }
+}
+
 extension URL {
     func forceHTTPS() -> URL? {
         guard
@@ -73,6 +90,44 @@ enum CommonUtil {
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 
+    /// 解析 `ModrinthProjectDetail.fileName` 中的服务器信息
+    static func parseMinecraftJavaServerInfo(from raw: String) -> (address: String, playersText: String?) {
+        // 按 `|` 分割并去掉首尾空白
+        let parts = raw
+            .split(separator: "|")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+
+        guard let address = parts.first, !address.isEmpty else {
+            return ("", nil)
+        }
+
+        // 只有地址
+        if parts.count == 1 {
+            return (address, nil)
+        }
+
+        // 地址 + 在线
+        if parts.count == 2 {
+            let online = parts[1]
+            guard !online.isEmpty else {
+                return (address, nil)
+            }
+            return (address, "\(online)")
+        }
+
+        // 地址 + 在线 + 最大
+        let online = parts[1]
+        let max = parts[2]
+
+        if !online.isEmpty, !max.isEmpty {
+            return (address, "\(online) / \(max)")
+        } else if !online.isEmpty {
+            return (address, "\(online)")
+        } else {
+            return (address, nil)
+        }
+    }
+
     // MARK: - Minecraft 版本比较和排序
 
     /// - Returns: -1 表示 version1 < version2，0 相等，1 表示 version1 > version2
@@ -108,6 +163,30 @@ enum CommonUtil {
     /// 判断 Minecraft 版本是否至少为基线版本
     static func isVersionAtLeast(_ version: String) -> Bool {
         return compareMinecraftVersions(version, AppConstants.MinecraftVersions.featureBaseline) >= 0
+    }
+
+    /// 更新服务器连通性状态（在主线程上设置状态，避免 View 里重复逻辑）
+    static func updateServerConnectionStatus(
+        for address: String,
+        port: Int = 25565,
+        timeout: TimeInterval = 5.0,
+        setStatus: @escaping (ServerConnectionStatus) -> Void
+    ) async {
+        guard !address.isEmpty else { return }
+
+        await MainActor.run {
+            setStatus(.checking)
+        }
+
+        let status = await NetworkUtils.checkServerConnectionStatus(
+            address: address,
+            port: port,
+            timeout: timeout
+        )
+
+        await MainActor.run {
+            setStatus(status)
+        }
     }
 
     // MARK: - Minecraft Language Mapping
@@ -286,6 +365,8 @@ extension ResourceType {
         case .resourcepack:
             return AppConstants.DirectoryNames.resourcepacks
         case .modpack:
+            return rawValue
+        case .minecraftJavaServer:
             return rawValue
         }
     }

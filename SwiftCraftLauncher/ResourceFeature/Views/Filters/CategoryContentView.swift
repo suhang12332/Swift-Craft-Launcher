@@ -61,7 +61,9 @@ struct CategoryContentView: View {
                 if type == "resource" {
                     versionSection
                 }
-                categorySection
+                if project != ProjectType.minecraftJavaServer {
+                    categorySection
+                }
                 projectSpecificSections
             }
         }
@@ -154,6 +156,11 @@ struct CategoryContentView: View {
                     loaderSection
                 }
                 environmentSection
+            case ProjectType.minecraftJavaServer:
+                serverMetaSection
+                serverGameplaySection
+                serverFeaturesSection
+                serverCommunitySection
             case ProjectType.resourcepack:
                 resourcePackSections
             case ProjectType.shader:
@@ -220,6 +227,51 @@ struct CategoryContentView: View {
                 )
             }
         }
+    }
+
+    // MARK: - Minecraft Server Specific Sections
+    private var serverMetaSection: some View {
+        CategorySectionView(
+            title: "filter.server.meta",
+            items: viewModel.metas.map {
+                FilterItem(id: $0.name, name: $0.name)
+            },
+            selectedItems: $selectedCategories,
+            isLoading: viewModel.isLoading
+        )
+    }
+
+    private var serverGameplaySection: some View {
+        CategorySectionView(
+            title: "filter.server.gameplay",
+            items: viewModel.plays.map {
+                FilterItem(id: $0.name, name: $0.name)
+            },
+            selectedItems: $selectedFeatures,
+            isLoading: viewModel.isLoading
+        )
+    }
+
+    private var serverFeaturesSection: some View {
+        CategorySectionView(
+            title: "filter.server.features",
+            items: viewModel.serverFeatures.map {
+                FilterItem(id: $0.name, name: $0.name)
+            },
+            selectedItems: $selectedResolutions,
+            isLoading: viewModel.isLoading
+        )
+    }
+
+    private var serverCommunitySection: some View {
+        CategorySectionView(
+            title: "filter.server.community",
+            items: viewModel.communitys.map {
+                FilterItem(id: $0.name, name: $0.name)
+            },
+            selectedItems: $selectedPerformanceImpacts,
+            isLoading: viewModel.isLoading
+        )
     }
 
     // MARK: - Computed Properties

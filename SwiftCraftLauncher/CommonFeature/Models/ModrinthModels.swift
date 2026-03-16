@@ -133,10 +133,10 @@ struct Category: Codable, Identifiable, Hashable {
 }
 
 // 许可证
-struct License: Codable, Equatable, Hashable {
-    let id: String
-    let name: String
-    let url: String?
+public struct License: Codable, Equatable, Hashable {
+    public let id: String
+    public let name: String
+    public let url: String?
 }
 
 /// Modrinth version model
@@ -274,58 +274,236 @@ public struct ModrinthProjectDependency: Codable, Hashable, Equatable {
     public let projects: [ModrinthProjectDetailVersion]
 }
 
-extension ModrinthProject {
-    /// 从 ModrinthProjectDetail 构建 ModrinthProject
-    public static func from(detail: ModrinthProjectDetail) -> ModrinthProject {
-        ModrinthProject(
-            projectId: detail.id,
-            projectType: detail.projectType,
-            slug: detail.slug,
-            author: detail.team,
-            title: detail.title,
-            description: detail.description,
-            categories: detail.categories,
-            displayCategories: detail.additionalCategories ?? [],
-            versions: detail.versions,
-            downloads: detail.downloads,
-            follows: detail.followers,
-            iconUrl: detail.iconUrl,
-            license: detail.license?.name ?? "",
-            clientSide: detail.clientSide,
-            serverSide: detail.serverSide,
-            fileName: detail.fileName
-        )
+// MARK: - Modrinth Project Detail V3
+
+public struct ModrinthProjectDetailV3: Codable, Hashable, Equatable {
+    public let id: String
+    public let slug: String
+    public let projectTypes: [String]
+    public let games: [String]
+    public let gameVersions: [String]
+    public let teamId: String
+    public let organization: String?
+    public let name: String
+    public let summary: String
+    public let description: String
+    public let published: Date
+    public let updated: Date
+    public let approved: Date?
+    public let queued: Date?
+    public let status: String
+    public let requestedStatus: String
+    public let moderatorMessage: String?
+    public let license: License
+    public let downloads: Int
+    public let followers: Int
+    public let categories: [String]
+    public let additionalCategories: [String]
+    public let loaders: [String]
+    public let versions: [String]
+    public let iconUrl: String?
+    public let linkUrls: ModrinthProjectLinkUrls?
+    public let gallery: [ModrinthProjectGalleryItem]
+    public let color: Int?
+    public let threadId: String?
+    public let monetizationStatus: String?
+    public let sideTypesMigrationReviewStatus: String?
+    public let minecraftServer: ModrinthMinecraftServerInfo?
+    public let minecraftJavaServer: ModrinthMinecraftJavaServerInfo?
+    public let minecraftBedrockServer: ModrinthMinecraftBedrockServerInfo?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case slug
+        case projectTypes = "project_types"
+        case games
+        case gameVersions = "game_versions"
+        case teamId = "team_id"
+        case organization
+        case name
+        case summary
+        case description
+        case published
+        case updated
+        case approved
+        case queued
+        case status
+        case requestedStatus = "requested_status"
+        case moderatorMessage = "moderator_message"
+        case license
+        case downloads
+        case followers
+        case categories
+        case additionalCategories = "additional_categories"
+        case loaders
+        case versions
+        case iconUrl = "icon_url"
+        case linkUrls = "link_urls"
+        case gallery
+        case color
+        case threadId = "thread_id"
+        case monetizationStatus = "monetization_status"
+        case sideTypesMigrationReviewStatus = "side_types_migration_review_status"
+        case minecraftServer = "minecraft_server"
+        case minecraftJavaServer = "minecraft_java_server"
+        case minecraftBedrockServer = "minecraft_bedrock_server"
     }
 
-    /// 从 ModrinthProject 构建 ModrinthProjectDetail
-    public func toDetail() -> ModrinthProjectDetail {
-        ModrinthProjectDetail(
-            slug: self.slug,
-            title: self.title,
-            description: self.description,
-            categories: self.categories,
-            clientSide: self.clientSide,
-            serverSide: self.serverSide,
-            body: "",
-            additionalCategories: self.displayCategories,
-            issuesUrl: nil,
-            sourceUrl: nil,
-            wikiUrl: nil,
-            discordUrl: nil,
-            projectType: self.projectType,
-            downloads: self.downloads,
-            iconUrl: self.iconUrl,
-            id: self.projectId,
-            team: self.author,
-            published: Date(),
-            updated: Date(),
-            followers: self.follows,
-            license: License(id: "", name: self.license, url: nil),
-            versions: self.versions,
-            gameVersions: [],
-            loaders: [],
-            type: nil,
-            fileName: self.fileName
-        )
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        id = try container.decode(String.self, forKey: .id)
+        slug = try container.decode(String.self, forKey: .slug)
+        projectTypes = try container.decode([String].self, forKey: .projectTypes)
+        games = try container.decode([String].self, forKey: .games)
+        gameVersions = try container.decodeIfPresent([String].self, forKey: .gameVersions) ?? []
+        teamId = try container.decode(String.self, forKey: .teamId)
+        organization = try container.decodeIfPresent(String.self, forKey: .organization)
+        name = try container.decode(String.self, forKey: .name)
+        summary = try container.decode(String.self, forKey: .summary)
+        description = try container.decode(String.self, forKey: .description)
+        published = try container.decode(Date.self, forKey: .published)
+        updated = try container.decode(Date.self, forKey: .updated)
+        approved = try container.decodeIfPresent(Date.self, forKey: .approved)
+        queued = try container.decodeIfPresent(Date.self, forKey: .queued)
+        status = try container.decode(String.self, forKey: .status)
+        requestedStatus = try container.decode(String.self, forKey: .requestedStatus)
+        moderatorMessage = try container.decodeIfPresent(String.self, forKey: .moderatorMessage)
+        license = try container.decode(License.self, forKey: .license)
+        downloads = try container.decode(Int.self, forKey: .downloads)
+        followers = try container.decode(Int.self, forKey: .followers)
+        categories = try container.decode([String].self, forKey: .categories)
+        additionalCategories = try container.decode([String].self, forKey: .additionalCategories)
+        loaders = try container.decode([String].self, forKey: .loaders)
+        versions = try container.decode([String].self, forKey: .versions)
+        iconUrl = try container.decodeIfPresent(String.self, forKey: .iconUrl)
+        linkUrls = try container.decodeIfPresent(ModrinthProjectLinkUrls.self, forKey: .linkUrls)
+        gallery = try container.decode([ModrinthProjectGalleryItem].self, forKey: .gallery)
+        color = try container.decodeIfPresent(Int.self, forKey: .color)
+        threadId = try container.decodeIfPresent(String.self, forKey: .threadId)
+        monetizationStatus = try container.decodeIfPresent(String.self, forKey: .monetizationStatus)
+        sideTypesMigrationReviewStatus = try container.decodeIfPresent(String.self, forKey: .sideTypesMigrationReviewStatus)
+        minecraftServer = try container.decodeIfPresent(ModrinthMinecraftServerInfo.self, forKey: .minecraftServer)
+        minecraftJavaServer = try container.decodeIfPresent(ModrinthMinecraftJavaServerInfo.self, forKey: .minecraftJavaServer)
+        minecraftBedrockServer = try container.decodeIfPresent(ModrinthMinecraftBedrockServerInfo.self, forKey: .minecraftBedrockServer)
     }
+}
+
+public struct ModrinthProjectLinkUrls: Codable, Hashable, Equatable {
+    public let store: ModrinthProjectLinkUrl?
+    public let wiki: ModrinthProjectLinkUrl?
+    public let discord: ModrinthProjectLinkUrl?
+    public let site: ModrinthProjectLinkUrl?
+}
+
+public struct ModrinthProjectLinkUrl: Codable, Hashable, Equatable {
+    public let platform: String
+    public let donation: Bool
+    public let url: String
+}
+
+public struct ModrinthProjectGalleryItem: Codable, Hashable, Equatable {
+    public let url: String
+    public let rawUrl: String
+    public let featured: Bool
+    public let name: String
+    public let description: String?
+    public let created: Date
+    public let ordering: Int
+
+    enum CodingKeys: String, CodingKey {
+        case url
+        case rawUrl = "raw_url"
+        case featured
+        case name
+        case description
+        case created
+        case ordering
+    }
+}
+
+public struct ModrinthMinecraftServerInfo: Codable, Hashable, Equatable {
+    public let maxPlayers: Int?
+    public let country: String?
+    public let region: String?
+    public let languages: [String]
+    public let activeVersion: String?
+
+    enum CodingKeys: String, CodingKey {
+        case maxPlayers = "max_players"
+        case country
+        case region
+        case languages
+        case activeVersion = "active_version"
+    }
+}
+
+public struct ModrinthMinecraftJavaServerInfo: Codable, Hashable, Equatable {
+    public let address: String
+    public let content: ModrinthMinecraftJavaServerContent?
+    public let ping: ModrinthMinecraftJavaServerPing?
+    public let verifiedPlays2w: Int?
+    public let verifiedPlays4w: Int?
+
+    enum CodingKeys: String, CodingKey {
+        case address
+        case content
+        case ping
+        case verifiedPlays2w = "verified_plays_2w"
+        case verifiedPlays4w = "verified_plays_4w"
+    }
+}
+
+public struct ModrinthMinecraftJavaServerContent: Codable, Hashable, Equatable {
+    public let kind: String
+
+    public let versionId: String?
+    public let projectId: String?
+    public let projectName: String?
+    public let projectIcon: String?
+    public let supportedGameVersions: [String]?
+    public let recommendedGameVersion: String?
+
+    enum CodingKeys: String, CodingKey {
+        case kind
+        case versionId = "version_id"
+        case projectId = "project_id"
+        case projectName = "project_name"
+        case projectIcon = "project_icon"
+        case supportedGameVersions = "supported_game_versions"
+        case recommendedGameVersion = "recommended_game_version"
+    }
+}
+
+public struct ModrinthMinecraftJavaServerPing: Codable, Hashable, Equatable {
+    public let when: Date
+    public let address: String
+    public let data: ModrinthMinecraftJavaServerPingData
+}
+
+public struct ModrinthMinecraftJavaServerPingData: Codable, Hashable, Equatable {
+    public let latency: ModrinthLatency
+    public let versionName: String
+    public let versionProtocol: Int
+    public let description: String
+    public let playersOnline: Int
+    public let playersMax: Int
+
+    enum CodingKeys: String, CodingKey {
+        case latency
+        case versionName = "version_name"
+        case versionProtocol = "version_protocol"
+        case description
+        case playersOnline = "players_online"
+        case playersMax = "players_max"
+    }
+}
+
+public struct ModrinthLatency: Codable, Hashable, Equatable {
+    public let secs: Int
+    public let nanos: Int
+}
+
+public struct ModrinthMinecraftBedrockServerInfo: Codable, Hashable, Equatable {
+    public let address: String
 }

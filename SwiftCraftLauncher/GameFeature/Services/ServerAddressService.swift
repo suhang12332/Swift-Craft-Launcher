@@ -167,6 +167,47 @@ class ServerAddressService {
         return uuid.uuidString
     }
 
+    /// 过滤掉已经包含指定服务器地址的游戏列表
+    /// - Parameters:
+    ///   - detail: 当前服务器资源的 Modrinth 项目详情（用于解析服务器地址）
+    ///   - games: 待过滤的游戏列表
+    /// - Returns: 不包含该服务器地址的游戏列表
+    func filterGamesWithoutExistingServer(
+        detail: ModrinthProjectDetail,
+        games: [GameVersionInfo]
+    ) async -> [GameVersionInfo] {
+        // 从 fileName 中解析服务器地址（格式可能为 "address" 或 "address | online | max"）
+        let rawFileName = detail.fileName ?? ""
+        let address = rawFileName.split(separator: "|").first?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        // 如果无法解析出地址，则不做额外过滤
+        guard !address.isEmpty else {
+            return games
+        }
+
+        let normalizedAddress = address.lowercased()
+        var result: [GameVersionInfo] = []
+
+        for game in games {
+            // 读取当前游戏的服务器列表，解析失败时视为没有服务器
+            let currentServers =
+                (try? await loadServerAddresses(
+                    for: game.gameName
+                )) ?? []
+
+            // 如果已经存在相同地址的服务器，则跳过该游戏
+            let hasSameServer = currentServers.contains {
+                $0.address.lowercased() == normalizedAddress
+            }
+
+            if !hasSameServer {
+                result.append(game)
+            }
+        }
+        return result
+    }
+
     /// 保存服务器地址列表到游戏目录（保存为 servers.dat，NBT 格式）
     /// - Parameters:
     ///   - servers: 服务器地址列表

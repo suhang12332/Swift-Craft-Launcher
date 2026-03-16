@@ -164,6 +164,9 @@ struct ResourceToolbarItems: View {
             } else {
                 if detailState.gameType {
                     ResourceFilterMenus.dataSourceMenu(filterState: filterState)
+                        .disabled(
+                            detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue
+                        )
                 }
             }
         }
