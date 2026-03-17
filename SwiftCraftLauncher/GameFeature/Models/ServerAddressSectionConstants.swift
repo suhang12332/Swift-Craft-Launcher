@@ -12,4 +12,3 @@ enum ServerAddressSectionConstants {
     static let maxItems: Int = 4  // 最多显示4个
     static let maxWidth: CGFloat = 320
 }
-

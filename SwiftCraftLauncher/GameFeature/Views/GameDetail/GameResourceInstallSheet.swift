@@ -70,8 +70,7 @@ struct GameResourceInstallSheet: View {
                         }
                         if resourceType == ResourceType.mod.rawValue, !isUpdateMode {
                             if viewModel.dependencyState.isLoading
-                                || !viewModel.dependencyState.dependencies.isEmpty
-                            {
+                                || !viewModel.dependencyState.dependencies.isEmpty {
                                 spacerView()
                                 DependencySectionView(state: $viewModel.dependencyState)
                             }
@@ -108,8 +107,7 @@ struct GameResourceInstallFooter: View {
                     Button("common.close".localized()) { isPresented = false }
                     Spacer()
                     if viewModel.resourceType == ResourceType.mod.rawValue,
-                        !viewModel.isUpdateMode
-                    {
+                        !viewModel.isUpdateMode {
                         // 安装模式下的 mod：显示「下载全部」（含依赖）
                         if !viewModel.dependencyState.isLoading {
                             if viewModel.selectedVersion != nil {

@@ -86,4 +86,3 @@ enum ModPackIndexParser {
         return ("vanilla", "unknown")
     }
 }
-

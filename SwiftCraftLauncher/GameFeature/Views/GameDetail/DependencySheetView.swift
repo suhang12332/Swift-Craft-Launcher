@@ -5,10 +5,32 @@ struct DependencySheetView: View {
     @Binding var isDownloadingAllDependencies: Bool
     @Binding var isDownloadingMainResourceOnly: Bool
     let projectDetail: ModrinthProjectDetail
-    @State private var error: GlobalError?
+    @StateObject private var actionViewModel: DependencySheetActionViewModel
 
     let onDownloadAll: () async -> Void
     let onDownloadMainOnly: () async -> Void
+
+    init(
+        viewModel: DependencySheetViewModel,
+        isDownloadingAllDependencies: Binding<Bool>,
+        isDownloadingMainResourceOnly: Binding<Bool>,
+        projectDetail: ModrinthProjectDetail,
+        onDownloadAll: @escaping () async -> Void,
+        onDownloadMainOnly: @escaping () async -> Void
+    ) {
+        self.viewModel = viewModel
+        self._isDownloadingAllDependencies = isDownloadingAllDependencies
+        self._isDownloadingMainResourceOnly = isDownloadingMainResourceOnly
+        self.projectDetail = projectDetail
+        self.onDownloadAll = onDownloadAll
+        self.onDownloadMainOnly = onDownloadMainOnly
+        self._actionViewModel = StateObject(
+            wrappedValue: DependencySheetActionViewModel(
+                isDownloadingAllDependencies: isDownloadingAllDependencies,
+                isDownloadingMainResourceOnly: isDownloadingMainResourceOnly
+            )
+        )
+    }
 
     var body: some View {
         CommonSheetView(
@@ -85,9 +107,7 @@ struct DependencySheetView: View {
                                     == .downloading
                             }
                         Button {
-                            Task {
-                                await onDownloadMainOnly()
-                            }
+                            actionViewModel.downloadMainOnly(onDownloadMainOnly: onDownloadMainOnly)
                         } label: {
                             if isDownloadingMainResourceOnly {
                                 ProgressView().controlSize(.small)
@@ -105,11 +125,7 @@ struct DependencySheetView: View {
                         switch viewModel.overallDownloadState {
                         case .idle:
                             Button {
-                                isDownloadingAllDependencies = true
-                                Task {
-                                    await onDownloadAll()
-                                    isDownloadingAllDependencies = false
-                                }
+                                actionViewModel.downloadAll(onDownloadAll: onDownloadAll)
                             } label: {
                                 if isDownloadingAllDependencies || hasDownloading {
                                     ProgressView().controlSize(.small)
@@ -127,11 +143,7 @@ struct DependencySheetView: View {
 
                         case .failed:
                             Button {
-                                isDownloadingAllDependencies = true
-                                Task {
-                                    await onDownloadAll()
-                                    isDownloadingAllDependencies = false
-                                }
+                                actionViewModel.downloadAll(onDownloadAll: onDownloadAll)
                             } label: {
                                 if isDownloadingAllDependencies || hasDownloading {
                                     ProgressView().controlSize(.small)
@@ -161,24 +173,18 @@ struct DependencySheetView: View {
         )
         .alert(
             "error.notification.download.title".localized(),
-            isPresented: .constant(error != nil)
+            isPresented: Binding(
+                get: { actionViewModel.error != nil },
+                set: { if !$0 { actionViewModel.error = nil } }
+            )
         ) {
             Button("common.close".localized()) {
-                error = nil
+                actionViewModel.error = nil
             }
         } message: {
-            if let error = error {
+            if let error = actionViewModel.error {
                 Text(error.chineseMessage)
             }
-        }
-    }
-
-    private func handleDownloadError(_ error: Error) {
-        let globalError = GlobalError.from(error)
-        Logger.shared.error("依赖下载错误: \(globalError.chineseMessage)")
-        GlobalErrorHandler.shared.handle(globalError)
-        Task { @MainActor in
-            self.error = globalError
         }
     }
 }

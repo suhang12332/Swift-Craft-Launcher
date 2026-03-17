@@ -33,4 +33,3 @@ final class FileNode: NSObject {
         return result
     }
 }
-

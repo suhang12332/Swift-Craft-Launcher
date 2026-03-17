@@ -12,4 +12,3 @@ extension NSView {
         return nil
     }
 }
-

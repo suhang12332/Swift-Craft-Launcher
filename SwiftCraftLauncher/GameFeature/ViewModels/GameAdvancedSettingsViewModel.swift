@@ -457,4 +457,3 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
         }
     }
 }
-

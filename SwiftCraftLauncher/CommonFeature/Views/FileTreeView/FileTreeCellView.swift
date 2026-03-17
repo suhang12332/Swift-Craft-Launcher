@@ -53,4 +53,3 @@ final class FileTreeCellView: NSTableCellView {
         fatalError("init(coder:) has not been implemented")
     }
 }
-

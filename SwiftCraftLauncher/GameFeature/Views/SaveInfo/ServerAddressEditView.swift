@@ -13,11 +13,8 @@ struct ServerAddressEditView: View {
     @State private var serverPort: String
     @State private var isHidden: Bool
     @State private var acceptTextures: Bool
-    @State private var isSaving: Bool = false
-    @State private var isDeleting: Bool = false
-    @State private var showError: Bool = false
+    @StateObject private var actionViewModel = ServerAddressEditActionViewModel()
     @State private var showDeleteConfirmation: Bool = false
-    @State private var errorMessage: String = ""
 
     var isNewServer: Bool {
         server == nil
@@ -49,10 +46,10 @@ struct ServerAddressEditView: View {
             body: { bodyView },
             footer: { footerView }
         )
-        .alert("common.error".localized(), isPresented: $showError) {
+        .alert("common.error".localized(), isPresented: $actionViewModel.showError) {
             Button("common.ok".localized(), role: .cancel) { }
         } message: {
-            Text(errorMessage)
+            Text(actionViewModel.errorMessage)
         }
         .confirmationDialog("saveinfo.server.delete_title".localized(), isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
             Button("common.delete".localized(), role: .destructive) {
@@ -152,20 +149,20 @@ struct ServerAddressEditView: View {
                 dismiss()
             }
             .keyboardShortcut(.cancelAction)
-            .disabled(isSaving || isDeleting)
+            .disabled(actionViewModel.isSaving || actionViewModel.isDeleting)
             if !isNewServer {
                 Button("common.delete".localized()) {
                     deleteServer()
                 }
                 .keyboardShortcut(.delete, modifiers: [])
-                .disabled(isSaving || isDeleting)
+                .disabled(actionViewModel.isSaving || actionViewModel.isDeleting)
             }
             Spacer()
             Button("common.save".localized()) {
                 saveServer()
             }
             .keyboardShortcut(.defaultAction)
-            .disabled(isSaving || isDeleting || !isFormValid)
+            .disabled(actionViewModel.isSaving || actionViewModel.isDeleting || !isFormValid)
         }
     }
 
@@ -197,74 +194,18 @@ struct ServerAddressEditView: View {
     }
 
     private func saveServer() {
-        let trimmedName = serverName.trimmingCharacters(in: .whitespaces)
-        let trimmedAddress = serverAddress.trimmingCharacters(in: .whitespaces)
-
-        guard !trimmedName.isEmpty && !trimmedAddress.isEmpty else {
-            errorMessage = "saveinfo.server.invalid_fields".localized()
-            showError = true
-            return
-        }
-
-        // 端口可选，如果为空则不保存端口（保存为0，表示未设置）
         let port = portValue ?? 0
+        let request = ServerAddressEditActionViewModel.SaveRequest(
+            existing: server,
+            gameName: gameName,
+            name: serverName,
+            address: serverAddress,
+            port: port,
+            hidden: isHidden,
+            acceptTextures: acceptTextures
+        )
 
-        isSaving = true
-
-        Task {
-            do {
-                // 获取当前服务器列表
-                var currentServers = try await ServerAddressService.shared.loadServerAddresses(for: gameName)
-
-                if let existingServer = server {
-                    // 编辑模式：更新现有服务器
-                    let updatedServer = ServerAddress(
-                        id: existingServer.id,
-                        name: trimmedName,
-                        address: trimmedAddress,
-                        port: port,
-                        hidden: isHidden,
-                        icon: existingServer.icon,
-                        acceptTextures: acceptTextures
-                    )
-
-                    // 找到并更新服务器
-                    if let index = currentServers.firstIndex(where: { $0.id == existingServer.id }) {
-                        currentServers[index] = updatedServer
-                    } else {
-                        // 如果找不到，添加新的
-                        currentServers.append(updatedServer)
-                    }
-                } else {
-                    // 新增模式：添加新服务器
-                    let newServer = ServerAddress(
-                        name: trimmedName,
-                        address: trimmedAddress,
-                        port: port,
-                        hidden: isHidden,
-                        icon: nil,
-                        acceptTextures: acceptTextures
-                    )
-                    currentServers.append(newServer)
-                }
-
-                // 保存服务器列表
-                try await ServerAddressService.shared.saveServerAddresses(currentServers, for: gameName)
-
-                await MainActor.run {
-                    isSaving = false
-                    dismiss()
-                    // 刷新服务器列表
-                    onRefresh?()
-                }
-            } catch {
-                await MainActor.run {
-                    isSaving = false
-                    errorMessage = error.localizedDescription
-                    showError = true
-                }
-            }
-        }
+        actionViewModel.saveServer(request: request, dismiss: { dismiss() }, onRefresh: onRefresh)
     }
 
     /// 删除服务器
@@ -279,37 +220,11 @@ struct ServerAddressEditView: View {
 
     /// 确认删除服务器
     private func confirmDeleteServer() {
-        guard let serverToDelete = server else {
-            return
-        }
-
-        isDeleting = true
-
-        Task {
-            do {
-                // 获取当前服务器列表
-                var currentServers = try await ServerAddressService.shared.loadServerAddresses(for: gameName)
-
-                // 移除要删除的服务器
-                currentServers.removeAll { $0.id == serverToDelete.id }
-
-                // 保存服务器列表
-                try await ServerAddressService.shared.saveServerAddresses(currentServers, for: gameName)
-
-                await MainActor.run {
-                    isDeleting = false
-                    dismiss()
-                    // 刷新服务器列表
-                    onRefresh?()
-                }
-            } catch {
-                await MainActor.run {
-                    isDeleting = false
-                    errorMessage = error.localizedDescription
-                    showError = true
-                }
-            }
-        }
+        actionViewModel.deleteServer(
+            serverToDelete: server,
+            gameName: gameName,
+            dismiss: { dismiss() },
+            onRefresh: onRefresh
+        )
     }
 }
-

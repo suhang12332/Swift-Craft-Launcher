@@ -72,4 +72,3 @@ struct ServerAddressChip: View {
         .lineLimit(1)
     }
 }
-

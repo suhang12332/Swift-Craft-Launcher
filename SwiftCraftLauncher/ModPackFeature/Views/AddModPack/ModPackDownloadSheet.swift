@@ -17,6 +17,7 @@ struct ModPackDownloadSheet: View {
     private var dismiss
 
     @StateObject private var viewModel = ModPackDownloadSheetViewModel()
+    @StateObject private var coordinator = ModPackDownloadSheetCoordinatorViewModel()
     @State private var selectedGameVersion: String = ""
     @State private var selectedModPackVersion: ModrinthProjectDetailVersion?
     @StateObject private var gameSetupService = GameSetupUtil()
@@ -43,14 +44,12 @@ struct ModPackDownloadSheet: View {
             footer: { footerView }
         )
         .onAppear {
-            viewModel.setGameRepository(gameRepository)
-            if let preloadedDetail {
-                viewModel.applyPreloadedDetail(preloadedDetail)
-            } else {
-                Task {
-                    await viewModel.loadProjectDetails(projectId: projectId)
-                }
-            }
+            coordinator.onAppear(
+                sheetViewModel: viewModel,
+                gameRepository: gameRepository,
+                projectId: projectId,
+                preloadedDetail: preloadedDetail
+            )
         }
         .onDisappear {
             // 页面关闭后清除所有数据
@@ -65,8 +64,10 @@ struct ModPackDownloadSheet: View {
         selectedGameVersion = ""
         selectedModPackVersion = nil
         // 清理 ViewModel 所有数据和临时文件 + 停止下载/安装状态
-        viewModel.cancelDownloadAndResetStates(gameSetupService: gameSetupService)
-        viewModel.cleanupAllData()
+        coordinator.onDisappear(
+            sheetViewModel: viewModel,
+            gameSetupService: gameSetupService
+        )
     }
 
     // MARK: - View Components

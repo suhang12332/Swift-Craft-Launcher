@@ -289,4 +289,3 @@ final class ModPackDownloadService {
         return tempDir
     }
 }
-

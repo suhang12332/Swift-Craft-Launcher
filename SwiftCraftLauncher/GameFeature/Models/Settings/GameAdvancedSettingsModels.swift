@@ -77,4 +77,3 @@ enum OptimizationPreset: String, CaseIterable {
         }
     }
 }
-

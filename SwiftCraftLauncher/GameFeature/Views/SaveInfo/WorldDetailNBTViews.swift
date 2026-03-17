@@ -213,4 +213,3 @@ struct NBTValueRow: View {
         .applyPointerHandIfAvailable()
     }
 }
-

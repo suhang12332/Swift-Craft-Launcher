@@ -173,5 +173,4 @@ struct ServerAddressSectionView: View {
             }
         }
     }
-
 }

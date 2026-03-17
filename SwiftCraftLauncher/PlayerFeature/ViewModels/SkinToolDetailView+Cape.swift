@@ -4,8 +4,10 @@ import SkinRenderKit
 
 extension SkinToolDetailViewModel {
     /// 加载当前激活的披风（如果存在）
-    func loadCurrentActiveCapeIfNeeded(from profile: MinecraftProfileResponse,
-                                       resolvedPlayer: Player?) async {
+    func loadCurrentActiveCapeIfNeeded(
+        from profile: MinecraftProfileResponse,
+        resolvedPlayer: Player?
+    ) async {
         do {
             try Task.checkCancellation()
 
@@ -111,8 +113,10 @@ extension SkinToolDetailViewModel {
     }
 
     /// 下载披风纹理并设置图片
-    func downloadCapeTextureAndSetImage(from urlString: String,
-                                        resolvedPlayer: Player?) async {
+    func downloadCapeTextureAndSetImage(
+        from urlString: String,
+        resolvedPlayer: Player?
+    ) async {
         // 检查是否已经下载过相同的URL
         if let currentURL = selectedCapeImageURL,
            currentURL == urlString,

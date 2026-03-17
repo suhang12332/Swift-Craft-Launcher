@@ -75,13 +75,18 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     init() {
         downloadService.progressHandler = { [weak self] downloaded, total in
             guard let self else { return }
-            self.modPackDownloadProgress = downloaded
-            if total > 0 {
-                self.modPackTotalSize = total
+            Task { @MainActor in
+                self.modPackDownloadProgress = downloaded
+                if total > 0 {
+                    self.modPackTotalSize = total
+                }
             }
         }
         downloadService.errorHandler = { [weak self] message, i18nKey in
-            self?.handleDownloadError(message, i18nKey)
+            guard let self else { return }
+            Task { @MainActor in
+                self.handleDownloadError(message, i18nKey)
+            }
         }
     }
 
@@ -105,7 +110,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 selectedGameVersion: selectedGameVersion,
                 gameSetupService: gameSetupService
             )
-            await onFinished(success)
+            onFinished(success)
         }
     }
 
@@ -265,5 +270,4 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         )
         GlobalErrorHandler.shared.handle(globalError)
     }
-
 }

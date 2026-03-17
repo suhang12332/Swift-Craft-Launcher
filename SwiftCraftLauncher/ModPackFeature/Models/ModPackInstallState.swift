@@ -99,4 +99,3 @@ class ModPackInstallState: ObservableObject {
         return max(0.0, min(1.0, Double(completed) / Double(total)))
     }
 }
-

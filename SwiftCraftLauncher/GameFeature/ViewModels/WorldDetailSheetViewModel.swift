@@ -283,4 +283,3 @@ final class WorldDetailSheetViewModel: ObservableObject {
         return String(describing: value)
     }
 }
-

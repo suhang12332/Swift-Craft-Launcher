@@ -206,4 +206,3 @@ struct WorldDetailRawDataToggleView: View {
         }
     }
 }
-

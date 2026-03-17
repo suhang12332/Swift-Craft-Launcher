@@ -44,4 +44,3 @@ final class ModPackDownloadProgressTracker: NSObject, URLSessionDownloadDelegate
         }
     }
 }
-

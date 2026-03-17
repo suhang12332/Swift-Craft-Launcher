@@ -307,4 +307,3 @@ final class GameLocalResourceViewModel: ObservableObject {
         }
     }
 }
-

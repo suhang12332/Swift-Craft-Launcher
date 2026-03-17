@@ -219,7 +219,8 @@ final class SkinToolDetailViewModel: ObservableObject {
 
         provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in
             guard let data = data else { return }
-            Task {
+            Task { @MainActor [weak self] in
+                guard let self else { return }
                 let tempURL = await Task.detached(priority: .userInitiated) { () -> URL? in
                     let tempDir = FileManager.default.temporaryDirectory
                     let fileName = "temp_skin_\(UUID().uuidString).png"
@@ -524,4 +525,3 @@ final class SkinToolDetailViewModel: ObservableObject {
         }
     }
 }
-

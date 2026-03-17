@@ -31,6 +31,7 @@ struct GameInfoDetailView: View {
     @Binding var localResourceFilter: LocalResourceFilter
     @StateObject private var cacheManager = CacheManager()
     @State private var localRefreshToken = UUID()
+    @StateObject private var ioViewModel = GameInfoDetailIOViewModel()
 
     // 扫描结果：detailId Set，用于快速查找（O(1)）
     @State private var scannedResources: Set<String> = []
@@ -196,106 +197,24 @@ struct GameInfoDetailView: View {
     // MARK: - 扫描所有资源
     /// 异步扫描所有资源，收集 detailId（不阻塞视图渲染）
     private func scanAllResources() {
-        // Modpacks don't have a local directory to scan
-        if query.lowercased() == ResourceType.modpack.rawValue {
-            scannedResources = []
-            return
-        }
-
-        guard let resourceDir = AppPaths.resourceDirectory(
-            for: query,
-            gameName: game.gameName
-        ) else {
-            scannedResources = []
-            return
-        }
-
-        // 检查目录是否存在且可访问
-        guard FileManager.default.fileExists(atPath: resourceDir.path) else {
-            // 目录不存在，直接返回
-            scannedResources = []
-            return
-        }
-
-        // 使用 Task 创建异步任务，确保不阻塞视图渲染
-        // 所有耗时操作在后台线程执行，只有更新状态时才回到主线程
         Task {
-            do {
-                // 调用新的异步接口，只获取 detailId（直接返回 Set）
-                let detailIds = try await ModScanner.shared.scanAllDetailIdsThrowing(in: resourceDir)
-
-                // 回到主线程更新状态
-                await MainActor.run {
-                    scannedResources = detailIds
-                }
-            } catch {
-                let globalError = GlobalError.from(error)
-                Logger.shared.error("扫描所有资源失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
-
-                // 回到主线程更新状态
-                await MainActor.run {
-                    scannedResources = []
-                }
-            }
+            scannedResources = await ioViewModel.scanAllDetailIds(
+                query: query,
+                gameName: game.gameName
+            )
         }
     }
 
     // MARK: - 处理图标文件选择
     /// 处理用户选择的图标文件
     private func handleIconFileSelection(_ result: Result<[URL], Error>) {
-        switch result {
-        case .success(let urls):
-            guard let url = urls.first else {
-                let globalError = GlobalError.validation(
-                    chineseMessage: "未选择文件",
-                    i18nKey: "error.validation.no_file_selected",
-                    level: .notification
-                )
-                GlobalErrorHandler.shared.handle(globalError)
-                return
+        let gameName = game.gameName
+        Task {
+            let success = await ioViewModel.saveGameIcon(from: result, gameName: gameName)
+            if success {
+                IconRefreshNotifier.shared.notifyRefresh(for: gameName)
+                updateHeaders()
             }
-
-            guard url.startAccessingSecurityScopedResource() else {
-                let globalError = GlobalError.fileSystem(
-                    chineseMessage: "无法访问所选文件",
-                    i18nKey: "error.filesystem.file_access_failed",
-                    level: .notification
-                )
-                GlobalErrorHandler.shared.handle(globalError)
-                return
-            }
-            defer { url.stopAccessingSecurityScopedResource() }
-
-            let gameName = game.gameName
-            Task {
-                do {
-                    try await Task.detached(priority: .userInitiated) {
-                        let imageData = try Data(contentsOf: url)
-                        let profileDir = AppPaths.profileDirectory(gameName: gameName)
-                        let iconFileName = AppConstants.defaultGameIcon
-                        let iconURL = profileDir.appendingPathComponent(iconFileName)
-                        try FileManager.default.createDirectory(
-                            at: profileDir,
-                            withIntermediateDirectories: true
-                        )
-                        try imageData.write(to: iconURL)
-                    }.value
-
-                    await MainActor.run {
-                        IconRefreshNotifier.shared.notifyRefresh(for: gameName)
-                        updateHeaders()
-                    }
-                    Logger.shared.info("成功更新游戏图标: \(gameName)")
-                } catch {
-                    let globalError = GlobalError.from(error)
-                    Logger.shared.error("更新游戏图标失败: \(globalError.chineseMessage)")
-                    GlobalErrorHandler.shared.handle(globalError)
-                }
-            }
-        case .failure(let error):
-            let globalError = GlobalError.from(error)
-            GlobalErrorHandler.shared.handle(globalError)
         }
     }
 }

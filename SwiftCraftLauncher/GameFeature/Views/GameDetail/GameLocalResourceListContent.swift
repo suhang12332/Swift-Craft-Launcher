@@ -73,4 +73,3 @@ struct GameLocalResourceListContent: View {
         }
     }
 }
-

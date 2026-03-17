@@ -231,4 +231,3 @@ struct ModrinthIndexInfo {
         self.source = source
     }
 }
-

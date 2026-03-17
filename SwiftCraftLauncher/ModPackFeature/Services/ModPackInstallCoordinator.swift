@@ -376,4 +376,3 @@ final class ModPackInstallCoordinator {
         }
     }
 }
-

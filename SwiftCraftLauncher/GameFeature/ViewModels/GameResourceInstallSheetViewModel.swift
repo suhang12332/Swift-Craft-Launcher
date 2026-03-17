@@ -221,4 +221,3 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         mainVersionId = ""
     }
 }
-

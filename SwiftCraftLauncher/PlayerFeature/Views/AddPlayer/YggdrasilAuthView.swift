@@ -2,9 +2,9 @@ import SwiftUI
 
 struct YggdrasilAuthView: View {
     @StateObject private var authService = YggdrasilAuthService.shared
+    @StateObject private var viewModel = YggdrasilAuthViewModel()
     var onLoginSuccess: ((YggdrasilProfile) -> Void)?
 
-    @State private var selectedOption: YggdrasilServerConfig?
     private let servers = LittleSkinServerPresets.servers
 
     init(onLoginSuccess: ((YggdrasilProfile) -> Void)? = nil) {
@@ -22,15 +22,11 @@ struct YggdrasilAuthView: View {
             }
         }
         .padding(.vertical, 20)
-        .onChange(of: selectedOption) { _, newValue in
-            if let option = newValue {
-                authService.setServer(option)
-            }
+        .onChange(of: viewModel.selectedOption) { _, newValue in
+            viewModel.onSelectedOptionChanged(newValue, authService: authService)
         }
         .onDisappear {
-            if case .idle = authService.authState {
-                authService.logout()
-            }
+            viewModel.onDisappear(authService: authService)
         }
     }
 
@@ -38,7 +34,7 @@ struct YggdrasilAuthView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("yggdrasil.server.select".localized())
                 .font(.headline)
-            Picker("yggdrasil.server.picker".localized(), selection: $selectedOption) {
+            Picker("yggdrasil.server.picker".localized(), selection: $viewModel.selectedOption) {
                 Text("yggdrasil.server.please_select".localized())
                     .tag(nil as YggdrasilServerConfig?)
 
@@ -48,7 +44,7 @@ struct YggdrasilAuthView: View {
             }
             .pickerStyle(.menu)
 
-            if let server = selectedOption {
+            if let server = viewModel.selectedOption {
                 Text(server.baseURL)
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -104,9 +100,7 @@ struct YggdrasilAuthView: View {
         let selection = Binding<String>(
             get: { profile.id },
             set: { newId in
-                Task { @MainActor in
-                    authService.selectAuthenticatedProfile(id: newId)
-                }
+                viewModel.selectAuthenticatedProfile(id: newId, authService: authService)
             }
         )
 
