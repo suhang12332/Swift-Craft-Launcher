@@ -199,7 +199,7 @@ final class AddOrDeleteResourceButtonViewModel: ObservableObject {
         }
 
         let fileURL = resourceDir.appendingPathComponent(fileName)
-        GameResourceHandler.performDelete(fileURL: fileURL)
+        performDelete(fileURL: fileURL)
         if !isUpdate { onResourceChanged?() }
     }
 
@@ -413,6 +413,49 @@ final class AddOrDeleteResourceButtonViewModel: ObservableObject {
             } else {
                 addButtonState = .installed
             }
+        }
+    }
+
+    // MARK: - 文件删除（迁移自 GameResourceHandler）
+
+    private func performDelete(fileURL: URL) {
+        do {
+            try performDeleteThrowing(fileURL: fileURL)
+        } catch {
+            let globalError = GlobalError.from(error)
+            Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
+            GlobalErrorHandler.shared.handle(globalError)
+        }
+    }
+
+    private func performDeleteThrowing(fileURL: URL) throws {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            throw GlobalError.resource(
+                chineseMessage: "文件不存在: \(fileURL.lastPathComponent)",
+                i18nKey: "error.resource.file_not_found",
+                level: .notification
+            )
+        }
+
+        var hash: String?
+        var gameName: String?
+        if fileURL.deletingLastPathComponent().lastPathComponent.lowercased() == "mods" {
+            gameName = fileURL.deletingLastPathComponent().deletingLastPathComponent().lastPathComponent
+            hash = ModScanner.sha1Hash(of: fileURL)
+        }
+
+        do {
+            try FileManager.default.removeItem(at: fileURL)
+            if let hash, let gameName {
+                ModScanner.shared.removeModHash(hash, from: gameName)
+            }
+        } catch {
+            throw GlobalError.fileSystem(
+                chineseMessage:
+                    "删除文件失败: \(fileURL.lastPathComponent), 错误: \(error.localizedDescription)",
+                i18nKey: "error.filesystem.file_deletion_failed",
+                level: .notification
+            )
         }
     }
 }
