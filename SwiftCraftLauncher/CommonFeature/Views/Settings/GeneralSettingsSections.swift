@@ -108,6 +108,9 @@ struct GeneralSettingsWorkingDirectoryRow: View {
             }
         }
         .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+        .onAppear {
+            Task { await gameRepository.refreshWorkingPathOptions() }
+        }
         .onChange(of: generalSettings.launcherWorkingDirectory) { _, _ in
             viewModel.onWorkingDirectoryChanged()
         }
