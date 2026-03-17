@@ -11,7 +11,7 @@ extension SkinToolDetailViewModel {
         resetSkinTask?.cancel()
         resetSkinTask = Task {
             do {
-                let success = await PlayerSkinService.resetSkinAndRefresh(player: player)
+                _ = await PlayerSkinService.resetSkinAndRefresh(player: player)
                 try Task.checkCancellation()
 
                 self.operationInProgress = false
