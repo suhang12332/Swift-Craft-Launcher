@@ -128,10 +128,10 @@ class GameSetupUtil: ObservableObject {
                 selectedModLoader: selectedModLoader,
                 selectedGameVersion: selectedGameVersion,
                 specifiedLoaderVersion: specifiedLoaderVersion,
-                fabricResult: selectedModLoader.lowercased() == "fabric" ? modLoaderResult : nil,
-                forgeResult: selectedModLoader.lowercased() == "forge" ? modLoaderResult : nil,
-                neoForgeResult: selectedModLoader.lowercased() == "neoforge" ? modLoaderResult : nil,
-                quiltResult: selectedModLoader.lowercased() == "quilt" ? modLoaderResult : nil
+                fabricResult: selectedModLoader.lowercased() == GameLoader.fabric.displayName ? modLoaderResult : nil,
+                forgeResult: selectedModLoader.lowercased() == GameLoader.forge.displayName ? modLoaderResult : nil,
+                neoForgeResult: selectedModLoader.lowercased() == GameLoader.neoforge.displayName ? modLoaderResult : nil,
+                quiltResult: selectedModLoader.lowercased() == GameLoader.quilt.rawValue ? modLoaderResult : nil
             )
             // 使用 ensureJavaExists 返回的结果，避免再次触发 Java 校验
             gameInfo.javaPath = javaPath
@@ -286,13 +286,13 @@ class GameSetupUtil: ObservableObject {
         let handler: (any ModLoaderHandler.Type)?
 
         switch loaderType {
-        case "fabric":
+        case GameLoader.fabric.displayName:
             handler = FabricLoaderService.self
-        case "forge":
+        case GameLoader.forge.displayName:
             handler = ForgeLoaderService.self
-        case "neoforge":
+        case GameLoader.neoforge.displayName:
             handler = NeoForgeLoaderService.self
-        case "quilt":
+        case GameLoader.quilt.rawValue:
             handler = QuiltLoaderService.self
         default:
             handler = nil
@@ -315,13 +315,13 @@ class GameSetupUtil: ObservableObject {
                 guard let self = self else { return }
                 self.objectWillChange.send()
                 switch loaderType {
-                case "fabric":
+                case GameLoader.fabric.displayName:
                     self.fabricDownloadState.updateProgress(fileName: fileName, completed: completed, total: total, type: .core)
-                case "forge":
+                case GameLoader.forge.displayName:
                     self.forgeDownloadState.updateProgress(fileName: fileName, completed: completed, total: total, type: .core)
-                case "neoforge":
+                case GameLoader.neoforge.displayName:
                     self.neoForgeDownloadState.updateProgress(fileName: fileName, completed: completed, total: total, type: .core)
-                case "quilt":
+                case GameLoader.quilt.rawValue:
                     self.fabricDownloadState.updateProgress(fileName: fileName, completed: completed, total: total, type: .core)
                 default:
                     break
@@ -353,13 +353,13 @@ class GameSetupUtil: ObservableObject {
         updatedGameInfo.javaVersion = manifest.javaVersion.majorVersion
 
         switch selectedModLoader.lowercased() {
-        case "fabric", "quilt":
-            if let result = selectedModLoader.lowercased() == "fabric" ? fabricResult : quiltResult {
+        case GameLoader.fabric.displayName, GameLoader.quilt.rawValue:
+            if let result = selectedModLoader.lowercased() == GameLoader.fabric.displayName ? fabricResult : quiltResult {
                 updatedGameInfo.modVersion = result.loaderVersion
                 updatedGameInfo.modClassPath = result.classpath
                 updatedGameInfo.mainClass = result.mainClass
 
-                if selectedModLoader.lowercased() == "fabric" {
+                if selectedModLoader.lowercased() == GameLoader.fabric.displayName {
                     if let fabricLoader = try? await FabricLoaderService.fetchSpecificLoaderVersion(for: selectedGameVersion, loaderVersion: specifiedLoaderVersion) {
                         let jvmArgs = fabricLoader.arguments.jvm ?? []
                         updatedGameInfo.modJvm = jvmArgs
@@ -376,7 +376,7 @@ class GameSetupUtil: ObservableObject {
                 }
             }
 
-        case "forge":
+        case GameLoader.forge.displayName:
             if let result = forgeResult {
                 updatedGameInfo.modVersion = result.loaderVersion
                 updatedGameInfo.modClassPath = result.classpath
@@ -394,7 +394,7 @@ class GameSetupUtil: ObservableObject {
                 }
             }
 
-        case "neoforge":
+        case GameLoader.neoforge.displayName:
             if let result = neoForgeResult {
                 updatedGameInfo.modVersion = result.loaderVersion
                 updatedGameInfo.modClassPath = result.classpath

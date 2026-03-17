@@ -207,7 +207,7 @@ struct MinecraftLaunchCommand {
     /// - Parameter command: 启动命令数组
     /// - Throws: GlobalError 当启动失败时
     private func launchGameProcess(command: [String]) async throws {
-        if game.modLoader != "vanilla",
+        if game.modLoader != GameLoader.vanilla.displayName,
            AVCaptureDevice.authorizationStatus(for: .audio) == .notDetermined {
             AVCaptureDevice.requestAccess(for: .audio) { _ in }
         }

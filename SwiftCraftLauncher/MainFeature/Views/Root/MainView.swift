@@ -89,7 +89,7 @@ struct MainView: View {
         let game = gameRepository.getGame(by: gameId)
         if let loader = game?.modLoader.lowercased() {
             let currentType = detailState.gameResourcesType.lowercased()
-            if loader == "vanilla" {
+            if loader == GameLoader.vanilla.displayName {
                 let modifiableTypes: [String] = [
                     ResourceType.mod.rawValue,
                     ResourceType.shader.rawValue,
@@ -120,7 +120,7 @@ struct MainView: View {
 
         let game = gameRepository.getGame(by: newId)
         if let loader = game?.modLoader.lowercased() {
-            detailState.gameResourcesType = (loader == "vanilla") ? ResourceType.datapack.rawValue : ResourceType.mod.rawValue
+            detailState.gameResourcesType = (loader == GameLoader.vanilla.displayName) ? ResourceType.datapack.rawValue : ResourceType.mod.rawValue
         }
         detailState.gameId = newId
         SelectedGameManager.shared.setSelectedGame(newId)

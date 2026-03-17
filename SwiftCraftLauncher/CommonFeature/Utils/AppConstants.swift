@@ -2,7 +2,7 @@ import Foundation
 
 enum AppConstants {
     static let defaultGameIcon = "default_game_icon.png"
-    static let modLoaders = ["vanilla", "fabric", "forge", "neoforge", "quilt"]
+    static let modLoaders = GameLoader.allCases.map(\.rawValue)
     static let modrinthIndex = "relevance"
     static let modrinthIndexFileName = "modrinth.index.json"
 

@@ -101,18 +101,18 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
         for component in pack.components {
             switch component.uid {
             case "net.fabricmc.fabric-loader":
-                return ("fabric", component.version)
+                return (GameLoader.fabric.displayName, component.version)
             case "net.minecraftforge":
-                return ("forge", component.version)
+                return (GameLoader.forge.displayName, component.version)
             case "net.neoforged":
-                return ("neoforge", component.version)
+                return (GameLoader.neoforge.displayName, component.version)
             case "org.quiltmc.quilt-loader":
-                return ("quilt", component.version)
+                return (GameLoader.quilt.rawValue, component.version)
             default:
                 continue
             }
         }
-        return ("vanilla", "")
+        return (GameLoader.vanilla.displayName, "")
     }
 }
 

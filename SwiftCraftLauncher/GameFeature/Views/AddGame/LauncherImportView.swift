@@ -166,7 +166,7 @@ struct LauncherImportView: View {
                         }
 
                         // Mod 加载器
-                        if !info.modLoader.isEmpty && info.modLoader != "vanilla" {
+                        if !info.modLoader.isEmpty && info.modLoader != GameLoader.vanilla.displayName {
                             HStack {
                                 Text("game.form.modloader".localized())
                                     .font(.subheadline)
@@ -208,12 +208,12 @@ struct LauncherImportView: View {
     }
 
     private var downloadProgressSection: some View {
-        // 获取选中实例的 modLoader，如果没有则使用 "vanilla"
+        // 获取选中实例的 modLoader，如果没有则使用 GameLoader.vanilla.displayName
         let selectedModLoader: String = {
             if let info = viewModel.currentInstanceInfo {
                 return info.modLoader
             }
-            return "vanilla"
+            return GameLoader.vanilla.displayName
         }()
 
         return DownloadProgressSection(

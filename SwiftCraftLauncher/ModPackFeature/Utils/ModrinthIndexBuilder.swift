@@ -114,7 +114,7 @@ enum ModrinthIndexBuilder {
         loaderVersion: String?
     ) -> ModrinthIndexDependencies {
         switch loaderType {
-        case "forge":
+        case GameLoader.forge.displayName:
             return ModrinthIndexDependencies(
                 minecraft: gameVersion,
                 forgeLoader: loaderVersion,
@@ -127,7 +127,7 @@ enum ModrinthIndexBuilder {
                 neoforge: nil,
                 dependencies: nil
             )
-        case "fabric":
+        case GameLoader.fabric.displayName:
             return ModrinthIndexDependencies(
                 minecraft: gameVersion,
                 forgeLoader: nil,
@@ -140,7 +140,7 @@ enum ModrinthIndexBuilder {
                 neoforge: nil,
                 dependencies: nil
             )
-        case "quilt":
+        case GameLoader.quilt.rawValue:
             return ModrinthIndexDependencies(
                 minecraft: gameVersion,
                 forgeLoader: nil,
@@ -153,7 +153,7 @@ enum ModrinthIndexBuilder {
                 neoforge: nil,
                 dependencies: nil
             )
-        case "neoforge":
+        case GameLoader.neoforge.displayName:
             return ModrinthIndexDependencies(
                 minecraft: gameVersion,
                 forgeLoader: nil,

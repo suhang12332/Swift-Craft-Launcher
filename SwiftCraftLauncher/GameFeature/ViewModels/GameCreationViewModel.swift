@@ -15,7 +15,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
     @Published var iconImage: Image?
     @Published var selectedGameVersion = ""
     @Published var versionTime = ""
-    @Published var selectedModLoader = "vanilla"
+    @Published var selectedModLoader = GameLoader.vanilla.displayName
     @Published var selectedLoaderVersion = "" {
         didSet {
             updateDefaultGameName()
@@ -120,7 +120,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
     }
 
     override func computeIsFormValid() -> Bool {
-        let isLoaderVersionValid = selectedModLoader == "vanilla" || !selectedLoaderVersion.isEmpty
+        let isLoaderVersionValid = selectedModLoader == GameLoader.vanilla.displayName || !selectedLoaderVersion.isEmpty
         return gameNameValidator.isFormValid && isLoaderVersionValid
     }
 

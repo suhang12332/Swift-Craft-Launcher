@@ -80,7 +80,7 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
         // 提取信息
         let gameName = sjmclInstance.name.isEmpty ? instancePath.lastPathComponent : sjmclInstance.name
         let gameVersion = sjmclInstance.version
-        var modLoader = "vanilla"
+        var modLoader = GameLoader.vanilla.displayName
         var modLoaderVersion = ""
 
         // 提取 Mod Loader 信息
@@ -88,16 +88,10 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
             let loaderType = modLoaderInfo.loaderType.lowercased()
             // 标准化 loader 类型名称
             switch loaderType {
-            case "fabric":
-                modLoader = "fabric"
-            case "forge":
-                modLoader = "forge"
-            case "neoforge", "neoforged":
-                modLoader = "neoforge"
-            case "quilt":
-                modLoader = "quilt"
+            case GameLoader.fabric.displayName, GameLoader.forge.displayName, GameLoader.neoforge.displayName, GameLoader.quilt.rawValue:
+                modLoader = loaderType
             default:
-                modLoader = "vanilla"
+                modLoader = GameLoader.vanilla.displayName
             }
             modLoaderVersion = modLoaderInfo.version
         }
@@ -138,7 +132,7 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
         // 从版本 JSON 文件获取信息
         let gameName = versionInfo.id ?? instancePath.lastPathComponent
         let gameVersion = versionInfo.mcVersion ?? ""
-        let modLoader = versionInfo.modLoader ?? "vanilla"
+        let modLoader = versionInfo.modLoader ?? GameLoader.vanilla.displayName
         let modLoaderVersion = versionInfo.modLoaderVersion ?? ""
 
         return ImportInstanceInfo(
@@ -163,7 +157,7 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
         let id = json["id"] as? String
 
         // 从 arguments.game 中提取 Mod Loader 信息
-        var modLoader = "vanilla"
+        var modLoader = GameLoader.vanilla.displayName
         var modLoaderVersion = ""
         var mcVersion = ""
 
@@ -178,14 +172,14 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
                         if index + 1 < gameArgs.count,
                            let launchTarget = gameArgs[index + 1] as? String {
                             switch launchTarget.lowercased() {
-                            case "forgeclient", "forge":
-                                modLoader = "forge"
-                            case "fabricclient", "fabric":
-                                modLoader = "fabric"
-                            case "quiltclient", "quilt":
-                                modLoader = "quilt"
-                            case "neoforgeclient", "neoforge":
-                                modLoader = "neoforge"
+                            case "forgeclient", GameLoader.forge.displayName:
+                                modLoader = GameLoader.forge.displayName
+                            case "fabricclient", GameLoader.fabric.displayName:
+                                modLoader = GameLoader.fabric.displayName
+                            case "quiltclient", GameLoader.quilt.rawValue:
+                                modLoader = GameLoader.quilt.rawValue
+                            case "neoforgeclient", GameLoader.neoforge.displayName:
+                                modLoader = GameLoader.neoforge.displayName
                             default:
                                 break
                             }
@@ -197,8 +191,8 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
                         if index + 1 < gameArgs.count,
                            let version = gameArgs[index + 1] as? String {
                             modLoaderVersion = version
-                            if modLoader == "vanilla" {
-                                modLoader = "forge"
+                            if modLoader == GameLoader.vanilla.displayName {
+                                modLoader = GameLoader.forge.displayName
                             }
                         }
                     }
@@ -216,7 +210,7 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
                         if index + 1 < gameArgs.count,
                            let version = gameArgs[index + 1] as? String {
                             modLoaderVersion = version
-                            modLoader = "neoforge"
+                            modLoader = GameLoader.neoforge.displayName
                         }
                     }
 
@@ -225,8 +219,8 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
                         if index + 1 < gameArgs.count,
                            let version = gameArgs[index + 1] as? String {
                             // Fabric/Quilt 版本格式通常是 "fabric-loader-0.14.0-1.20.1"
-                            if version.contains("fabric") {
-                                modLoader = "fabric"
+                            if version.contains(GameLoader.fabric.displayName) {
+                                modLoader = GameLoader.fabric.displayName
                                 let components = version.components(separatedBy: "-")
                                 if components.count >= 3 {
                                     modLoaderVersion = components[2] // 提取 loader 版本
@@ -234,8 +228,8 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
                                         mcVersion = components[3] // 提取 MC 版本
                                     }
                                 }
-                            } else if version.contains("quilt") {
-                                modLoader = "quilt"
+                            } else if version.contains(GameLoader.quilt.rawValue) {
+                                modLoader = GameLoader.quilt.rawValue
                                 let components = version.components(separatedBy: "-")
                                 if components.count >= 3 {
                                     modLoaderVersion = components[2]
@@ -253,7 +247,7 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
         return HMCLVersionInfo(
             id: id,
             mcVersion: mcVersion.isEmpty ? nil : mcVersion,
-            modLoader: modLoader == "vanilla" ? nil : modLoader,
+            modLoader: modLoader == GameLoader.vanilla.displayName ? nil : modLoader,
             modLoaderVersion: modLoaderVersion.isEmpty ? nil : modLoaderVersion
         )
     }

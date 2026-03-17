@@ -11,7 +11,7 @@ extension GameCreationViewModel {
         }
 
         // 对于非vanilla加载器，如果没有选择版本，则不允许保存
-        let loaderVersion = selectedModLoader == "vanilla" ? selectedModLoader : selectedLoaderVersion
+        let loaderVersion = selectedModLoader == GameLoader.vanilla.displayName ? selectedModLoader : selectedLoaderVersion
 
         var finalGameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
         if finalGameName.isEmpty {

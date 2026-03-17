@@ -41,7 +41,7 @@ extension GameCreationViewModel {
             await updateAvailableVersions(compatibleVersions)
 
             // 更新加载器版本列表
-            if newLoader != "vanilla" && !selectedGameVersion.isEmpty {
+            if newLoader != GameLoader.vanilla.displayName && !selectedGameVersion.isEmpty {
                 await updateLoaderVersions(for: newLoader, gameVersion: selectedGameVersion)
             } else {
                 await MainActor.run {
@@ -62,7 +62,7 @@ extension GameCreationViewModel {
 
     /// 更新加载器版本列表
     func updateLoaderVersions(for loader: String, gameVersion: String) async {
-        guard loader != "vanilla" && !gameVersion.isEmpty else {
+        guard loader != GameLoader.vanilla.displayName && !gameVersion.isEmpty else {
             availableLoaderVersions = []
             selectedLoaderVersion = ""
             updateDefaultGameName()
@@ -72,10 +72,10 @@ extension GameCreationViewModel {
         var versions: [String] = []
 
         switch loader.lowercased() {
-        case "fabric":
+        case GameLoader.fabric.displayName:
             let fabricVersions = await FabricLoaderService.fetchAllLoaderVersions(for: gameVersion)
             versions = fabricVersions.map { $0.loader.version }
-        case "forge":
+        case GameLoader.forge.displayName:
             do {
                 let forgeVersions = try await ForgeLoaderService.fetchAllForgeVersions(for: gameVersion)
                 versions = forgeVersions.loaders.map { $0.id }
@@ -83,7 +83,7 @@ extension GameCreationViewModel {
                 Logger.shared.error("获取 Forge 版本失败: \(error.localizedDescription)")
                 versions = []
             }
-        case "neoforge":
+        case GameLoader.neoforge.displayName:
             do {
                 let neoforgeVersions = try await NeoForgeLoaderService.fetchAllNeoForgeVersions(for: gameVersion)
                 versions = neoforgeVersions.loaders.map { $0.id }
@@ -91,7 +91,7 @@ extension GameCreationViewModel {
                 Logger.shared.error("获取 NeoForge 版本失败: \(error.localizedDescription)")
                 versions = []
             }
-        case "quilt":
+        case GameLoader.quilt.rawValue:
             let quiltVersions = await QuiltLoaderService.fetchAllQuiltLoaders(for: gameVersion)
             versions = quiltVersions.map { $0.loader.version }
         default:
@@ -113,7 +113,7 @@ extension GameCreationViewModel {
     func updateDefaultGameName() {
         guard !selectedGameVersion.isEmpty else { return }
 
-        let loaderVersion = selectedModLoader == "vanilla" ? selectedModLoader : selectedLoaderVersion
+        let loaderVersion = selectedModLoader == GameLoader.vanilla.displayName ? selectedModLoader : selectedLoaderVersion
         guard !loaderVersion.isEmpty else { return }
 
         let generatedName = GameNameGenerator.generateGameName(

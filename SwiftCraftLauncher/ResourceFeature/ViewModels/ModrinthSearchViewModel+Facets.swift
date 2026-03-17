@@ -57,7 +57,7 @@ extension ModrinthSearchViewModel {
         if !filterOptions.loaders.isEmpty && projectType != ResourceType.resourcepack.rawValue
             && projectType != ResourceType.datapack.rawValue {
             var loadersToUse = filterOptions.loaders
-            if let first = filterOptions.loaders.first, first.lowercased() == "vanilla" {
+            if let first = filterOptions.loaders.first, first.lowercased() == GameLoader.vanilla.displayName {
                 loadersToUse = ["minecraft"]
             }
             facets.append(loadersToUse.map { "categories:\($0)" })

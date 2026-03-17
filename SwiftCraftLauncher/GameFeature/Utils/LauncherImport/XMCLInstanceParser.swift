@@ -66,15 +66,15 @@ struct XMCLInstanceParser: LauncherInstanceParser {
 
         // 按优先级检查：Forge -> NeoForged -> Fabric -> Quilt -> Vanilla
         if !runtime.forge.isEmpty {
-            return ("forge", runtime.forge)
+            return (GameLoader.forge.displayName, runtime.forge)
         } else if !runtime.neoForged.isEmpty {
-            return ("neoforge", runtime.neoForged)
+            return (GameLoader.neoforge.displayName, runtime.neoForged)
         } else if !runtime.fabricLoader.isEmpty {
-            return ("fabric", runtime.fabricLoader)
+            return (GameLoader.fabric.displayName, runtime.fabricLoader)
         } else if !runtime.quiltLoader.isEmpty {
-            return ("quilt", runtime.quiltLoader)
+            return (GameLoader.quilt.rawValue, runtime.quiltLoader)
         } else {
-            return ("vanilla", "")
+            return (GameLoader.vanilla.displayName, "")
         }
     }
 }

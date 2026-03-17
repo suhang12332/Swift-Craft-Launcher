@@ -64,25 +64,25 @@ enum ModPackIndexParser {
         from dependencies: ModrinthIndexDependencies
     ) -> (type: String, version: String) {
         if let forgeVersion = dependencies.forgeLoader {
-            return ("forge", forgeVersion)
+            return (GameLoader.forge.displayName, forgeVersion)
         } else if let fabricVersion = dependencies.fabricLoader {
-            return ("fabric", fabricVersion)
+            return (GameLoader.fabric.displayName, fabricVersion)
         } else if let quiltVersion = dependencies.quiltLoader {
-            return ("quilt", quiltVersion)
+            return (GameLoader.quilt.rawValue, quiltVersion)
         } else if let neoforgeVersion = dependencies.neoforgeLoader {
-            return ("neoforge", neoforgeVersion)
+            return (GameLoader.neoforge.displayName, neoforgeVersion)
         }
 
         if let forgeVersion = dependencies.forge {
-            return ("forge", forgeVersion)
+            return (GameLoader.forge.displayName, forgeVersion)
         } else if let fabricVersion = dependencies.fabric {
-            return ("fabric", fabricVersion)
+            return (GameLoader.fabric.displayName, fabricVersion)
         } else if let quiltVersion = dependencies.quilt {
-            return ("quilt", quiltVersion)
+            return (GameLoader.quilt.rawValue, quiltVersion)
         } else if let neoforgeVersion = dependencies.neoforge {
-            return ("neoforge", neoforgeVersion)
+            return (GameLoader.neoforge.displayName, neoforgeVersion)
         }
 
-        return ("vanilla", "unknown")
+        return (GameLoader.vanilla.displayName, "unknown")
     }
 }

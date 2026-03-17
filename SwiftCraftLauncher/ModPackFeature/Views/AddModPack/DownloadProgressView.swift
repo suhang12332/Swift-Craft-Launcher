@@ -34,21 +34,21 @@ struct DownloadProgressView: View {
                 let loaderType = indexInfo.loaderType.lowercased()
                 let title = getLoaderTitle(for: indexInfo.loaderType)
 
-                if loaderType == "fabric" || loaderType == "quilt" {
+                if loaderType == GameLoader.fabric.displayName || loaderType == GameLoader.quilt.rawValue {
                     progressRow(
                         title: title,
                         state: gameSetupService.fabricDownloadState,
                         type: .core,
                         version: indexInfo.loaderVersion
                     )
-                } else if loaderType == "forge" {
+                } else if loaderType == GameLoader.forge.displayName {
                     progressRow(
                         title: title,
                         state: gameSetupService.forgeDownloadState,
                         type: .core,
                         version: indexInfo.loaderVersion
                     )
-                } else if loaderType == "neoforge" {
+                } else if loaderType == GameLoader.neoforge.displayName {
                     progressRow(
                         title: title,
                         state: gameSetupService.neoForgeDownloadState,
@@ -160,13 +160,13 @@ struct DownloadProgressView: View {
 
     private func getLoaderTitle(for loaderType: String) -> String {
         switch loaderType.lowercased() {
-        case "fabric":
+        case GameLoader.fabric.displayName:
             return "fabric.loader.title".localized()
-        case "quilt":
+        case GameLoader.quilt.rawValue:
             return "quilt.loader.title".localized()
-        case "forge":
+        case GameLoader.forge.displayName:
             return "forge.loader.title".localized()
-        case "neoforge":
+        case GameLoader.neoforge.displayName:
             return "neoforge.loader.title".localized()
         default:
             return ""

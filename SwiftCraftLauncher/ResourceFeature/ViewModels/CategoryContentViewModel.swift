@@ -148,23 +148,23 @@ final class CategoryContentViewModel: ObservableObject {
     private static func getStaticLoaders() -> [Loader] {
         return [
             Loader(
-                name: "fabric",
-                icon: "fabric",
+                name: GameLoader.fabric.displayName,
+                icon: GameLoader.fabric.displayName,
                 supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
             Loader(
-                name: "forge",
-                icon: "forge",
+                name: GameLoader.forge.displayName,
+                icon: GameLoader.forge.displayName,
                 supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
             Loader(
-                name: "quilt",
-                icon: "quilt",
+                name: GameLoader.quilt.rawValue,
+                icon: GameLoader.quilt.rawValue,
                 supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
             Loader(
-                name: "neoforge",
-                icon: "neoforge",
+                name: GameLoader.neoforge.displayName,
+                icon: GameLoader.neoforge.displayName,
                 supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
             ),
         ]

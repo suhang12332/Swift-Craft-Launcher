@@ -3,7 +3,7 @@ import Foundation
 enum ForgeLoaderService {
     /// 通过Modrinth API获取所有可用Forge版本详细信息
     static func fetchAllForgeVersions(for minecraftVersion: String) async throws -> LoaderVersion {
-        guard let result = await CommonService.fetchAllLoaderVersions(type: "forge", minecraftVersion: minecraftVersion) else {
+        guard let result = await CommonService.fetchAllLoaderVersions(type: GameLoader.forge.displayName, minecraftVersion: minecraftVersion) else {
             throw GlobalError.resource(
                 chineseMessage: "未找到 Minecraft \(minecraftVersion) 的 Forge 加载器版本",
                 i18nKey: "error.resource.forge_loader_version_not_found",
@@ -23,20 +23,20 @@ enum ForgeLoaderService {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
 
         // 1. 查全局缓存
-        if let cached = AppCacheManager.shared.get(namespace: "forge", key: cacheKey, as: ModrinthLoader.self) {
+        if let cached = AppCacheManager.shared.get(namespace: GameLoader.forge.displayName, key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
 
         // 2. 直接下载指定版本的 version.json
         // 使用统一的 API 客户端
-        let url = URLConfig.API.Modrinth.loaderProfile(loader: "forge", version: loaderVersion)
+        let url = URLConfig.API.Modrinth.loaderProfile(loader: GameLoader.forge.displayName, version: loaderVersion)
         let data = try await APIClient.get(url: url)
 
         var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
         result.version = loaderVersion
         // 3. 存入缓存
-        AppCacheManager.shared.setSilently(namespace: "forge", key: cacheKey, value: result)
+        AppCacheManager.shared.setSilently(namespace: GameLoader.forge.displayName, key: cacheKey, value: result)
 
         return result
     }

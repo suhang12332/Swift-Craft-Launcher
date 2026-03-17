@@ -23,7 +23,7 @@ enum NeoForgeLoaderService {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
 
         // 1. 查全局缓存
-        if let cached = AppCacheManager.shared.get(namespace: "neoforge", key: cacheKey, as: ModrinthLoader.self) {
+        if let cached = AppCacheManager.shared.get(namespace: GameLoader.neoforge.displayName, key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
 
@@ -36,7 +36,7 @@ enum NeoForgeLoaderService {
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
         // 3. 存入缓存
         result.version = loaderVersion
-        AppCacheManager.shared.setSilently(namespace: "neoforge", key: cacheKey, value: result)
+        AppCacheManager.shared.setSilently(namespace: GameLoader.neoforge.displayName, key: cacheKey, value: result)
 
         return result
     }

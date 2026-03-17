@@ -465,7 +465,7 @@ enum ModPackDependencyInstaller {
         resourceDir: URL
     ) async -> Bool {
         // 跳过 Fabric API 在 Quilt 上的安装
-        if dep.projectId == "P7dR8mSH" && gameInfo.modLoader.lowercased() == "quilt" {
+        if dep.projectId == "P7dR8mSH" && gameInfo.modLoader.lowercased() == GameLoader.quilt.rawValue {
             return true
         }
 
