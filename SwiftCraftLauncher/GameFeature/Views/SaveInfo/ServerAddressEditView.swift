@@ -80,7 +80,6 @@ struct ServerAddressEditView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// 当前服务器的分享文本（优先使用正在编辑的地址和端口）
     private var shareTextForServer: String? {
         let address = serverAddress.trimmingCharacters(in: .whitespaces)
         let port = serverPort.trimmingCharacters(in: .whitespaces)

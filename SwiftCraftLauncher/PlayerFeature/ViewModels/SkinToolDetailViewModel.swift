@@ -6,7 +6,6 @@ import SkinRenderKit
 @MainActor
 final class SkinToolDetailViewModel: ObservableObject {
 
-    // MARK: - Init Inputs
     private let preloadedSkinInfo: PlayerSkinService.PublicSkinInfo?
     private let preloadedProfile: MinecraftProfileResponse?
 
@@ -18,7 +17,6 @@ final class SkinToolDetailViewModel: ObservableObject {
         self.preloadedProfile = preloadedProfile
     }
 
-    // MARK: - Published States (原来的 @State)
     @Published var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
     @Published var showingFileImporter = false
     @Published var operationInProgress = false
@@ -64,8 +62,6 @@ final class SkinToolDetailViewModel: ObservableObject {
     }
 
     // MARK: - Lifecycle (给 View 调用)
-
-    /// 返回 false 代表需要 dismiss
     func onAppear(resolvedPlayer: Player?) -> Bool {
         guard let skinInfo = preloadedSkinInfo, let profile = preloadedProfile else {
             return false
