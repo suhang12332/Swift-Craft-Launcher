@@ -21,7 +21,7 @@ final class CapeSelectionViewModel: ObservableObject {
         guard let imageURL else { return }
 
         loadTask?.cancel()
-        loadTask = Task { [weak self] in
+        loadTask = Task { @MainActor [weak self] in
             guard let self else { return }
 
             let https = imageURL.httpToHttps()
@@ -32,6 +32,8 @@ final class CapeSelectionViewModel: ObservableObject {
                 guard !Task.isCancelled else { return }
                 self.selectedCapeImageURL.wrappedValue = imageURL
                 self.selectedCapeImage.wrappedValue = NSImage(data: data)
+            } catch {
+                return
             }
         }
     }
