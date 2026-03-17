@@ -93,14 +93,16 @@ struct GameActionButtons: View {
             .id(controlActiveState)
             .help("game.path".localized())
 
-            Button {
-                showExportSheet = true
-            } label: {
-                Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
-            }
-            .help("modpack.export.button".localized())
-            .sheet(isPresented: $showExportSheet) {
-                ModPackExportSheet(gameInfo: game)
+            if game.modLoader != GameLoader.vanilla.displayName {
+                Button {
+                    showExportSheet = true
+                } label: {
+                    Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
+                }
+                .help("modpack.export.button".localized())
+                .sheet(isPresented: $showExportSheet) {
+                    ModPackExportSheet(gameInfo: game)
+                }
             }
 
             Button(role: .destructive) {

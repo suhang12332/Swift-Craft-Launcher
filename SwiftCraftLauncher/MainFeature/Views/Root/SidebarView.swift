@@ -262,8 +262,10 @@ private struct GameContextMenu: View {
 
         Divider()
 
-        Button(action: onExport) {
-            Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
+        if game.modLoader != GameLoader.vanilla.displayName {
+            Button(action: onExport) {
+                Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
+            }
         }
 
         Button(action: onDelete) {
