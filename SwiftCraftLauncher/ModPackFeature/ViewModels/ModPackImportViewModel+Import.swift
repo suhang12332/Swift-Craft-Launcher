@@ -18,7 +18,8 @@ extension ModPackImportViewModel {
         let coordinator = ModPackInstallCoordinator(downloadService: ModPackDownloadService())
         let success = await coordinator.run(
             .init(
-                source: .localArchive(archiveURL),
+                archivePath: archiveURL,
+                projectDetailForIcon: nil,
                 gameName: gameNameValidator.gameName,
                 selectedGameVersion: indexInfo.gameVersion,
                 gameSetupService: gameSetupService,

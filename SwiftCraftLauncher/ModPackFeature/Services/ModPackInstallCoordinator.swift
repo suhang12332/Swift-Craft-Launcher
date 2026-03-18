@@ -2,14 +2,6 @@ import Foundation
 
 @MainActor
 final class ModPackInstallCoordinator {
-    enum ArchiveSource {
-        case remote(
-            selectedVersion: ModrinthProjectDetailVersion,
-            projectDetail: ModrinthProjectDetail
-        )
-        case localArchive(URL)
-    }
-
     struct PreparedModPack {
         let extractedPath: URL
         let indexInfo: ModrinthIndexInfo
@@ -17,7 +9,8 @@ final class ModPackInstallCoordinator {
     }
 
     struct RunInput {
-        let source: ArchiveSource
+        let archivePath: URL
+        let projectDetailForIcon: ModrinthProjectDetail?
         let gameName: String
         let selectedGameVersion: String
         let gameSetupService: GameSetupUtil
@@ -34,25 +27,10 @@ final class ModPackInstallCoordinator {
         self.downloadService = downloadService
     }
 
-    func prepare(source: ArchiveSource) async -> PreparedModPack? {
-        let archivePath: URL
-        let projectDetailForIcon: ModrinthProjectDetail?
-
-        switch source {
-        case let .remote(selectedVersion, projectDetail):
-            guard let downloadedPath = await downloadModPackFileFromVersion(
-                selectedVersion: selectedVersion,
-                projectDetail: projectDetail
-            ) else {
-                return nil
-            }
-            archivePath = downloadedPath
-            projectDetailForIcon = projectDetail
-        case .localArchive(let localURL):
-            archivePath = localURL
-            projectDetailForIcon = nil
-        }
-
+    func prepare(
+        archivePath: URL,
+        projectDetailForIcon: ModrinthProjectDetail? = nil
+    ) async -> PreparedModPack? {
         guard let extractedPath = await downloadService.extractModPack(modPackPath: archivePath) else {
             return nil
         }
@@ -88,7 +66,10 @@ final class ModPackInstallCoordinator {
             projectDetailForIcon = prepared.projectDetailForIcon
             input.setLastParsedIndexInfo(indexInfo)
         } else {
-            guard let prepared = await prepare(source: input.source) else {
+            guard let prepared = await prepare(
+                archivePath: input.archivePath,
+                projectDetailForIcon: input.projectDetailForIcon
+            ) else {
                 input.setProcessing(false)
                 return false
             }
@@ -271,28 +252,6 @@ final class ModPackInstallCoordinator {
     }
 
     // MARK: - Helpers
-
-    private func downloadModPackFileFromVersion(
-        selectedVersion: ModrinthProjectDetailVersion,
-        projectDetail: ModrinthProjectDetail
-    ) async -> URL? {
-        let primaryFile =
-            selectedVersion.files.first { $0.primary }
-            ?? selectedVersion.files.first
-
-        guard let fileToDownload = primaryFile else {
-            GlobalErrorHandler.shared.handle(
-                GlobalError.resource(
-                    chineseMessage: "没有找到可下载的文件",
-                    i18nKey: "error.resource.no_downloadable_file",
-                    level: .notification
-                )
-            )
-            return nil
-        }
-
-        return await downloadService.downloadModPackFile(file: fileToDownload, projectDetail: projectDetail)
-    }
 
     private func calculateOverridesTotal(extractedPath: URL) async -> Int {
         var overridesPath = extractedPath.appendingPathComponent("overrides")

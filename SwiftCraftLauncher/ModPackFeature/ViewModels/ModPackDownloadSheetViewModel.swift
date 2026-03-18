@@ -148,12 +148,36 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             return false
         }
 
+        isProcessing = true
+
+        let primaryFile =
+            selectedVersion.files.first { $0.primary }
+            ?? selectedVersion.files.first
+
+        guard let fileToDownload = primaryFile else {
+            isProcessing = false
+            GlobalErrorHandler.shared.handle(
+                GlobalError.resource(
+                    chineseMessage: "没有找到可下载的文件",
+                    i18nKey: "error.resource.no_downloadable_file",
+                    level: .notification
+                )
+            )
+            return false
+        }
+
+        guard let archivePath = await downloadService.downloadModPackFile(
+            file: fileToDownload,
+            projectDetail: projectDetail
+        ) else {
+            isProcessing = false
+            return false
+        }
+
         let success = await installCoordinator.run(
             .init(
-                source: .remote(
-                    selectedVersion: selectedVersion,
-                    projectDetail: projectDetail
-                ),
+                archivePath: archivePath,
+                projectDetailForIcon: projectDetail,
                 gameName: gameName,
                 selectedGameVersion: selectedGameVersion,
                 gameSetupService: gameSetupService,

@@ -159,10 +159,22 @@ private struct GameIconView: View {
     let game: GameVersionInfo
     let refreshTrigger: UUID
 
+    private var iconFileURL: URL? {
+        let trimmed = game.gameIcon.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        let url = profileDir.appendingPathComponent(trimmed)
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory),
+              !isDirectory.boolValue
+        else { return nil }
+
+        return url
+    }
+
     /// 获取图标URL（添加刷新触发器作为查询参数，强制AsyncImage重新加载）
     private var iconURL: URL {
-        let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
-        let baseURL = profileDir.appendingPathComponent(game.gameIcon)
+        guard let baseURL = iconFileURL else { return profileDir }
         // 添加刷新触发器作为查询参数，确保文件更新后能重新加载
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
         components?.queryItems = [URLQueryItem(name: "refresh", value: refreshTrigger.uuidString)]
@@ -171,7 +183,7 @@ private struct GameIconView: View {
 
     var body: some View {
         Group {
-            if FileManager.default.fileExists(atPath: profileDir.appendingPathComponent(game.gameIcon).path) {
+            if iconFileURL != nil {
                 AsyncImage(url: iconURL) { phase in
                     switch phase {
                     case .empty:

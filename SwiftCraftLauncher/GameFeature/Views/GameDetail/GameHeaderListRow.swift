@@ -69,13 +69,21 @@ struct GameHeaderListRow: View {
     }
 
     /// 图标文件 URL（路径固定不变；刷新仅依赖通知触发 .id 重建）
-    private var iconURL: URL {
-        profileDir.appendingPathComponent(game.gameIcon)
+    private var iconFileURL: URL? {
+        let trimmed = game.gameIcon.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        let url = profileDir.appendingPathComponent(trimmed)
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory),
+              !isDirectory.boolValue
+        else { return nil }
+        return url
     }
 
     private var gameIcon: some View {
         Group {
-            if FileManager.default.fileExists(atPath: profileDir.appendingPathComponent(game.gameIcon).path) {
+            if let iconURL = iconFileURL {
                 AsyncImage(url: iconURL) { phase in
                     switch phase {
                     case .empty:

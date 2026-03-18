@@ -10,7 +10,7 @@ extension ModPackImportViewModel {
 
         let downloadService = ModPackDownloadService()
         let coordinator = ModPackInstallCoordinator(downloadService: downloadService)
-        guard let prepared = await coordinator.prepare(source: .localArchive(selectedFile)) else {
+        guard let prepared = await coordinator.prepare(archivePath: selectedFile) else {
             isProcessingModPack = false
             onProcessingStateChanged(false)
             return
