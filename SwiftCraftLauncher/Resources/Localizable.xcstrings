@@ -56049,7 +56049,7 @@
         }
       }
     },
-    "modpack.processing.subtitle" : {
+    "modpack.processing.subtitle.remote" : {
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
@@ -56182,6 +56182,143 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載整合包檔案並解析配置"
+          }
+        }
+      }
+    },
+    "modpack.processing.subtitle.local" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استخراج ملفات حزمة التعديلات وتحليل الإعدادات"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udpakker modpack-filer og analyserer konfigurationen"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entpackt Modpack-Dateien und analysiert die Konfiguration"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extracting modpack files and parsing configuration"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extrayendo archivos del modpack y analizando la configuración"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puretaan modpack-tiedostoja ja jäsennetään kokoonpanoa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extraction des fichiers du modpack et analyse de la configuration"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मॉडपैक फ़ाइलें निकाल रहा है और कॉन्फ़िगरेशन पार्स कर रहा है"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estraendo i file del modpack e analizzando la configurazione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モッドパックのファイルを展開し、設定を解析しています"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모드팩 파일을 압축 해제하고 설정을 파싱하는 중입니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pakker ut modpack-filer og analyserer konfigurasjonen"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pakt modpack-bestanden uit en analyseert de configuratie"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozpakowywanie plików paczki modów i analizowanie konfiguracji"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extraindo os arquivos do modpack e analisando a configuração"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Извлечение файлов модпака и анализ конфигурации"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Packar upp modpack-filer och analyserar konfigurationen"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กำลังแตกไฟล์ม็อดแพ็กและวิเคราะห์การตั้งค่า"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpaket dosyaları çıkarılıyor ve yapılandırma ayrıştırılıyor"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đang giải nén các tệp modpack và phân tích cấu hình"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解压整合包文件并解析配置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解壓整合包檔案並解析配置"
           }
         }
       }

@@ -93,7 +93,7 @@ struct ModPackDownloadSheet: View {
                 .font(.headline)
                 .foregroundColor(.primary)
 
-            Text("modpack.processing.subtitle".localized())
+            Text("modpack.processing.subtitle.remote".localized())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -123,16 +123,16 @@ struct ModPackDownloadSheet: View {
                 )
 
                 if !selectedGameVersion.isEmpty && selectedModPackVersion != nil {
-                    gameNameInputSection
-                }
-
-                if shouldShowProgress {
-                    DownloadProgressView(
+                    ModPackInstallSharedSections(
+                        gameName: $gameNameValidator.gameName,
+                        isGameNameDuplicate: $gameNameValidator.isGameNameDuplicate,
+                        isGameNameInputDisabled: viewModel.isProcessing,
+                        showGameNameInput: true,
                         gameSetupService: gameSetupService,
                         modPackInstallState: viewModel.modPackInstallState,
-                        lastParsedIndexInfo: viewModel.lastParsedIndexInfo
+                        lastParsedIndexInfo: viewModel.lastParsedIndexInfo,
+                        shouldShowProgress: shouldShowProgress
                     )
-                    .padding(.top, 18)
                 }
             }
         }
@@ -160,21 +160,6 @@ struct ModPackDownloadSheet: View {
     private var isDownloading: Bool {
         viewModel.isProcessing || gameSetupService.downloadState.isDownloading
             || viewModel.modPackInstallState.isInstalling
-    }
-
-    // MARK: - UI Components
-
-    private var gameNameInputSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            if !selectedGameVersion.isEmpty && selectedModPackVersion != nil {
-                GameNameInputView(
-                    gameName: $gameNameValidator.gameName,
-                    isGameNameDuplicate: $gameNameValidator.isGameNameDuplicate,
-                    isDisabled: viewModel.isProcessing,
-                    gameSetupService: gameSetupService
-                )
-            }
-        }
     }
 
     private var cancelButton: some View {

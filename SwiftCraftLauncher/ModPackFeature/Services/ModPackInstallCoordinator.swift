@@ -2,9 +2,22 @@ import Foundation
 
 @MainActor
 final class ModPackInstallCoordinator {
+    enum ArchiveSource {
+        case remote(
+            selectedVersion: ModrinthProjectDetailVersion,
+            projectDetail: ModrinthProjectDetail
+        )
+        case localArchive(URL)
+    }
+
+    struct PreparedModPack {
+        let extractedPath: URL
+        let indexInfo: ModrinthIndexInfo
+        let projectDetailForIcon: ModrinthProjectDetail?
+    }
+
     struct RunInput {
-        let selectedVersion: ModrinthProjectDetailVersion
-        let projectDetail: ModrinthProjectDetail
+        let source: ArchiveSource
         let gameName: String
         let selectedGameVersion: String
         let gameSetupService: GameSetupUtil
@@ -12,6 +25,7 @@ final class ModPackInstallCoordinator {
         let modPackInstallState: ModPackInstallState
         let setProcessing: (Bool) -> Void
         let setLastParsedIndexInfo: (ModrinthIndexInfo?) -> Void
+        let prepared: PreparedModPack?
     }
 
     private let downloadService: ModPackDownloadService
@@ -20,25 +34,29 @@ final class ModPackInstallCoordinator {
         self.downloadService = downloadService
     }
 
-    func run(_ input: RunInput) async -> Bool {
-        input.setProcessing(true)
+    func prepare(source: ArchiveSource) async -> PreparedModPack? {
+        let archivePath: URL
+        let projectDetailForIcon: ModrinthProjectDetail?
 
-        // 1. 下载整合包
-        guard let downloadedPath = await downloadModPackFileFromVersion(
-            selectedVersion: input.selectedVersion,
-            projectDetail: input.projectDetail
-        ) else {
-            input.setProcessing(false)
-            return false
+        switch source {
+        case let .remote(selectedVersion, projectDetail):
+            guard let downloadedPath = await downloadModPackFileFromVersion(
+                selectedVersion: selectedVersion,
+                projectDetail: projectDetail
+            ) else {
+                return nil
+            }
+            archivePath = downloadedPath
+            projectDetailForIcon = projectDetail
+        case .localArchive(let localURL):
+            archivePath = localURL
+            projectDetailForIcon = nil
         }
 
-        // 2. 解压整合包
-        guard let extractedPath = await downloadService.extractModPack(modPackPath: downloadedPath) else {
-            input.setProcessing(false)
-            return false
+        guard let extractedPath = await downloadService.extractModPack(modPackPath: archivePath) else {
+            return nil
         }
 
-        // 3. 解析 index
         guard let indexInfo = await ModPackIndexParser.parseIndex(extractedPath: extractedPath) else {
             GlobalErrorHandler.shared.handle(
                 GlobalError.resource(
@@ -47,16 +65,49 @@ final class ModPackInstallCoordinator {
                     level: .notification
                 )
             )
-            input.setProcessing(false)
-            return false
+            return nil
         }
-        input.setLastParsedIndexInfo(indexInfo)
+
+        return .init(
+            extractedPath: extractedPath,
+            indexInfo: indexInfo,
+            projectDetailForIcon: projectDetailForIcon
+        )
+    }
+
+    func run(_ input: RunInput) async -> Bool {
+        input.setProcessing(true)
+
+        let extractedPath: URL
+        let indexInfo: ModrinthIndexInfo
+        let projectDetailForIcon: ModrinthProjectDetail?
+
+        if let prepared = input.prepared {
+            extractedPath = prepared.extractedPath
+            indexInfo = prepared.indexInfo
+            projectDetailForIcon = prepared.projectDetailForIcon
+            input.setLastParsedIndexInfo(indexInfo)
+        } else {
+            guard let prepared = await prepare(source: input.source) else {
+                input.setProcessing(false)
+                return false
+            }
+            extractedPath = prepared.extractedPath
+            indexInfo = prepared.indexInfo
+            projectDetailForIcon = prepared.projectDetailForIcon
+            input.setLastParsedIndexInfo(indexInfo)
+        }
 
         // 4. 下载游戏图标（可选）
-        let iconPath = await downloadService.downloadGameIcon(
-            projectDetail: input.projectDetail,
-            gameName: input.gameName
-        )
+        let iconPath: String?
+        if let projectDetailForIcon {
+            iconPath = await downloadService.downloadGameIcon(
+                projectDetail: projectDetailForIcon,
+                gameName: input.gameName
+            )
+        } else {
+            iconPath = nil
+        }
 
         // 5. 创建 profile 文件夹
         let profileCreated = await createProfileDirectories(for: input.gameName)

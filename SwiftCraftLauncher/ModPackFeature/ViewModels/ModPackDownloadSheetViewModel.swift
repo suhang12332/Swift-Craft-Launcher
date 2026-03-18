@@ -150,8 +150,10 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
         let success = await installCoordinator.run(
             .init(
-                selectedVersion: selectedVersion,
-                projectDetail: projectDetail,
+                source: .remote(
+                    selectedVersion: selectedVersion,
+                    projectDetail: projectDetail
+                ),
                 gameName: gameName,
                 selectedGameVersion: selectedGameVersion,
                 gameSetupService: gameSetupService,
@@ -162,7 +164,8 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 },
                 setLastParsedIndexInfo: { [weak self] info in
                     self?.lastParsedIndexInfo = info
-                }
+                },
+                prepared: nil
             )
         )
 
@@ -248,18 +251,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
     func extractModPack(modPackPath: URL) async -> URL? {
         await downloadService.extractModPack(modPackPath: modPackPath)
-    }
-
-    func parseModrinthIndex(extractedPath: URL) async -> ModrinthIndexInfo? {
-        if let info = await ModPackIndexParser.parseIndex(extractedPath: extractedPath) {
-            lastParsedIndexInfo = info
-            return info
-        }
-        handleDownloadError(
-            "不支持的整合包格式，请使用 Modrinth (.mrpack) 或 CurseForge (.zip) 格式的整合包",
-            "error.resource.unsupported_modpack_format"
-        )
-        return nil
     }
 
     private func handleDownloadError(_ message: String, _ i18nKey: String) {

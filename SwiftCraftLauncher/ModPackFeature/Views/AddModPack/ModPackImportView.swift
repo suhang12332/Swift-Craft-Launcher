@@ -118,7 +118,7 @@ struct ModPackImportView: View {
                 .font(.headline)
                 .foregroundColor(.primary)
 
-            Text("modpack.processing.subtitle".localized())
+            Text("modpack.processing.subtitle.local".localized())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -198,27 +198,26 @@ struct ModPackImportView: View {
     }
 
     private var modPackGameNameInputSection: some View {
-        FormSection {
-            GameNameInputView(
-                gameName: Binding(
-                    get: { viewModel.gameNameValidator.gameName },
-                    set: { viewModel.gameNameValidator.gameName = $0 }
-                ),
-                isGameNameDuplicate: Binding(
-                    get: { viewModel.gameNameValidator.isGameNameDuplicate },
-                    set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 }
-                ),
-                isDisabled: viewModel.isProcessingModPack || viewModel.isDownloading,
-                gameSetupService: viewModel.gameSetupService
-            )
-        }
+        ModPackInstallSharedSections(
+            gameName: Binding(
+                get: { viewModel.gameNameValidator.gameName },
+                set: { viewModel.gameNameValidator.gameName = $0 }
+            ),
+            isGameNameDuplicate: Binding(
+                get: { viewModel.gameNameValidator.isGameNameDuplicate },
+                set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 }
+            ),
+            isGameNameInputDisabled: viewModel.isProcessingModPack || viewModel.isDownloading,
+            showGameNameInput: true,
+            gameSetupService: viewModel.gameSetupService,
+            modPackInstallState: viewModel.modPackViewModelForProgress.modPackInstallState,
+            lastParsedIndexInfo: viewModel.modPackIndexInfo,
+            shouldShowProgress: viewModel.shouldShowProgress
+        )
     }
 
     private var downloadProgressSection: some View {
-        DownloadProgressSection(
-            gameSetupService: viewModel.gameSetupService,
-            modPackViewModel: viewModel.modPackViewModelForProgress,
-            modPackIndexInfo: viewModel.modPackIndexInfo
-        )
+        // progress 已包含在 ModPackInstallSharedSections 中
+        EmptyView()
     }
 }

@@ -2,37 +2,6 @@ import Foundation
 
 extension ModPackImportViewModel {
     // MARK: - Helper Methods
-    func calculateOverridesTotal(extractedPath: URL) async -> Int {
-        // 优先检查 Modrinth 格式的 overrides
-        var overridesPath = extractedPath.appendingPathComponent("overrides")
-
-        // 如果不存在，检查 CurseForge 格式的 overrides 文件夹
-        if !FileManager.default.fileExists(atPath: overridesPath.path) {
-            let possiblePaths = ["overrides", "Override", "override"]
-            for pathName in possiblePaths {
-                let testPath = extractedPath.appendingPathComponent(pathName)
-                if FileManager.default.fileExists(atPath: testPath.path) {
-                    overridesPath = testPath
-                    break
-                }
-            }
-        }
-
-        // 如果 overrides 文件夹不存在，返回 0
-        guard FileManager.default.fileExists(atPath: overridesPath.path) else {
-            return 0
-        }
-
-        // 计算文件总数
-        do {
-            let allFiles = try InstanceFileCopier.getAllFiles(in: overridesPath)
-            return allFiles.count
-        } catch {
-            Logger.shared.error("计算 overrides 文件总数失败: \(error.localizedDescription)")
-            return 0
-        }
-    }
-
     func createProfileDirectories(for gameName: String) async -> Bool {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
 
@@ -77,34 +46,6 @@ extension ModPackImportViewModel {
         }
 
         return (filesToDownload, requiredDependencies)
-    }
-
-    func updateModPackInstallProgress(
-        fileName: String,
-        completed: Int,
-        total: Int,
-        type: ModPackDependencyInstaller.DownloadType
-    ) {
-        switch type {
-        case .files:
-            modPackViewModel.modPackInstallState.updateFilesProgress(
-                fileName: fileName,
-                completed: completed,
-                total: total
-            )
-        case .dependencies:
-            modPackViewModel.modPackInstallState.updateDependenciesProgress(
-                dependencyName: fileName,
-                completed: completed,
-                total: total
-            )
-        case .overrides:
-            modPackViewModel.modPackInstallState.updateOverridesProgress(
-                overrideName: fileName,
-                completed: completed,
-                total: total
-            )
-        }
     }
 
     // MARK: - Computed Properties for UI Updates
