@@ -157,6 +157,9 @@ struct MainView: View {
             detailState.loadedProjectDetail = nil
             detailState.selectedProjectId = nil
         }
+        if !detailState.gameType && detailState.selectedProjectId == nil {
+            detailState.gameType = true
+        }
         if detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue {
             filterState.dataSource = .modrinth
         }
