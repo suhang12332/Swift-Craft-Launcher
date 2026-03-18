@@ -38,7 +38,6 @@ struct ModPackImportView: View {
             viewModel.setup(gameRepository: gameRepository)
         }
         .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
-        // 优化：使用 Task 批量处理多个状态变化，减少不必要的视图更新
         .onChange(of: viewModel.selectedModPackFile) { oldValue, newValue in
             if oldValue != newValue {
                 viewModel.updateParentState()

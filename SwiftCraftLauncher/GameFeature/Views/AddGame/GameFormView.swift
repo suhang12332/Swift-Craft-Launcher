@@ -87,6 +87,7 @@ struct GameFormView: View {
                                 isModPackParsed = true
                             }
                         }
+                        .id(file)
                     case .launcherImport:
                         LauncherImportView(
                             configuration: GameFormConfiguration(
