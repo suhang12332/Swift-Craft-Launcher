@@ -102,7 +102,7 @@ final class ModPackInstallCoordinator {
             return false
         }
 
-        // 进入安装阶段（复制 overrides / 下载文件 / 安装依赖），不再视为“解析中”
+        // 进入安装阶段（复制 overrides / 下载文件 / 安装依赖）
         input.setProcessing(false)
 
         // 6. 复制 overrides
