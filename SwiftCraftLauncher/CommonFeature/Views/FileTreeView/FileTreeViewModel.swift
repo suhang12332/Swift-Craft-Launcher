@@ -9,6 +9,7 @@ final class FileTreeViewModel {
     private(set) var showHiddenFiles: Bool
 
     private let fm: FileManager
+    private var didAttemptApplyDefaultSelection = false
 
     init(rootURL: URL, showHiddenFiles: Bool, fileManager: FileManager = .default) {
         self.root = FileNode(url: rootURL)
@@ -24,6 +25,7 @@ final class FileTreeViewModel {
         self.showHiddenFiles = showHiddenFiles
         if needsRootReload {
             root = FileNode(url: rootURL)
+            didAttemptApplyDefaultSelection = false
         }
         return needsRootReload
     }
@@ -158,5 +160,33 @@ final class FileTreeViewModel {
         if node.selection == .all {
             result.append(node.url)
         }
+    }
+}
+
+// MARK: - Default selection
+
+extension FileTreeViewModel {
+    /// - Returns: 是否实际变更了选择状态（便于调用方刷新 UI / 回调）。
+    @discardableResult
+    func applyDefaultSelectionIfNeeded() -> Bool {
+        guard didAttemptApplyDefaultSelection == false else { return false }
+        didAttemptApplyDefaultSelection = true
+        ensureChildrenLoaded(for: root)
+        guard let topLevelNodes = root.children, topLevelNodes.isEmpty == false else { return false }
+
+        // 仅匹配根目录下的“顶级目录/文件名”，忽略大小写。
+        var didChange = false
+        let defaultSet = Set(AppConstants.defaultFileTreeTopLevelSelections.map { $0.lowercased() })
+
+        for node in topLevelNodes {
+            let name = node.url.lastPathComponent.lowercased()
+            guard defaultSet.contains(name) else { continue }
+            guard node.selection != .all else { continue }
+
+            applySelection(to: node, isOn: true)
+            didChange = true
+        }
+
+        return didChange
     }
 }

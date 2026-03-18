@@ -33,6 +33,12 @@ extension FileTreeView {
         func reload() {
             viewModel.reload()
             outlineView?.reloadData()
+
+            // 默认预选：仅首次加载时，对常见目录/文件自动勾选（若存在）。
+            if viewModel.applyDefaultSelectionIfNeeded() {
+                outlineView?.reloadData()
+                onSelectionChange?(viewModel.selectedFileURLs())
+            }
         }
 
         // MARK: NSOutlineViewDataSource

@@ -172,7 +172,11 @@ struct ModPackExportSheet: View {
                 FileTreeView(
                     rootURL: AppPaths.profileDirectory(gameName: gameInfo.gameName)
                 ) { urls in
-                    viewModel.selectedFileURLs = urls
+                    if viewModel.selectedFileURLs != urls {
+                        DispatchQueue.main.async {
+                            viewModel.selectedFileURLs = urls
+                        }
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 300)

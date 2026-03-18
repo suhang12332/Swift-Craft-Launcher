@@ -107,7 +107,20 @@ enum AppConstants {
         static let cache = "cache"
         static let data = "data"
         static let auth = "auth"
+        static let config = "config"
+        static let option = "options.txt"
     }
+
+    // MARK: - Default Selections
+    /// 文件树默认预选中的顶级目录/文件名
+    static let defaultFileTreeTopLevelSelections: [String] = [
+        DirectoryNames.config,
+        DirectoryNames.datapacks,
+        DirectoryNames.mods,
+        DirectoryNames.resourcepacks,
+        DirectoryNames.shaderpacks,
+        DirectoryNames.option,
+    ]
 
     // MARK: - File Extensions
     /// 文件扩展名常量（不包含点号）
