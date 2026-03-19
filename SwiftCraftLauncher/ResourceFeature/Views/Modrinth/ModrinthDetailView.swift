@@ -192,10 +192,6 @@ struct ModrinthDetailView: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .listRowSeparator(.hidden)
-            } else if coordinator.hasLoaded && viewModel.results.isEmpty {
-                emptyResultView()
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
             } else {
                 ForEach(viewModel.results, id: \.projectId) { mod in
                     ModrinthDetailCardView(

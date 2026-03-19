@@ -14,15 +14,6 @@ func newErrorView(_ error: GlobalError) -> some View {
     }
 }
 
-func emptyResultView() -> some View {
-    ContentUnavailableView {
-        Label(
-            "result.empty".localized(),
-            systemImage: "magnifyingglass"
-        )
-    }
-}
-
 func emptyDropBackground() -> some View {
     RoundedRectangle(cornerRadius: 12)
         .fill(Color.gray.opacity(0.05))
