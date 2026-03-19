@@ -1,6 +1,5 @@
 import SwiftUI
 
-
 // MARK: - ViewModel
 @MainActor
 final class CategoryContentViewModel: ObservableObject {

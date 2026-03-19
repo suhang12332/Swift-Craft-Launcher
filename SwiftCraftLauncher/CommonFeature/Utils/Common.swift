@@ -311,7 +311,7 @@ extension ResourceType {
             return AppConstants.DirectoryNames.shaderpacks
         case .resourcepack:
             return AppConstants.DirectoryNames.resourcepacks
-        case .modpack,.minecraftJavaServer:
+        case .modpack, .minecraftJavaServer:
             return rawValue
         }
     }

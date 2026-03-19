@@ -200,7 +200,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
     }
 
     private func preloadImages(searchViewModel: ModrinthSearchViewModel) {
-        let _ = searchViewModel.results
+        _ = searchViewModel.results
             .prefix(20)
             .compactMap { $0.iconUrl }
             .compactMap(URL.init(string:))
