@@ -6,11 +6,11 @@
 //
 import SwiftUI
 
-func newErrorView(_ error: GlobalError) -> some View {
+func errorView(_ error: GlobalError) -> some View {
     ContentUnavailableView {
-        Label("result.error".localized(), systemImage: "xmark.icloud")
+        Label(error.notificationTitle, systemImage: "exclamationmark.triangle")
     } description: {
-        Text(error.notificationTitle)
+        Text(error.localizedDescription)
     }
 }
 

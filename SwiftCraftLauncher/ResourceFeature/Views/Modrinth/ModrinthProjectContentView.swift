@@ -16,7 +16,7 @@ struct ModrinthProjectContentView: View {
     var body: some View {
         VStack {
             if let error = error {
-                newErrorView(error)
+                errorView(error)
             } else {
                 ModrinthCompatibilitySection(
                     project: projectDetail,

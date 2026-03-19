@@ -181,11 +181,7 @@ struct ModrinthDetailView: View {
     // MARK: - Result List
     @ViewBuilder private var listContent: some View {
         Group {
-            if let error = coordinator.error {
-                newErrorView(error)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
-            } else if viewModel.isLoading {
+            if viewModel.isLoading {
                 HStack {
                     ProgressView()
                         .controlSize(.small)
