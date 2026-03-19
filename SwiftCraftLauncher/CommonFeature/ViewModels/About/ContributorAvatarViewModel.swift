@@ -18,7 +18,7 @@ final class ContributorAvatarViewModel: ObservableObject {
             defer { self.isLoading = false }
 
             do {
-                let loadedImage = try await ContributorAvatarCache.shared.loadImage(from: url, targetSize: size)
+                let loadedImage = try await ContributorAvatarCache.shared.loadImage(from: url)
                 if !Task.isCancelled {
                     self.image = loadedImage
                 }
@@ -66,7 +66,7 @@ final class StaticContributorAvatarViewModel: ObservableObject {
             defer { self.isLoading = false }
 
             do {
-                let loadedImage = try await StaticContributorAvatarCache.shared.loadImage(from: url, targetSize: size)
+                let loadedImage = try await StaticContributorAvatarCache.shared.loadImage(from: url)
                 if !Task.isCancelled {
                     self.image = loadedImage
                 }

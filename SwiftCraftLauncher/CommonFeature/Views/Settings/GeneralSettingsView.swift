@@ -24,7 +24,6 @@ public struct GeneralSettingsView: View {
                 viewModel: viewModel
             )
             GeneralSettingsGitHubProxyRow(generalSettings: generalSettings)
-            GeneralSettingsResourceCacheRow(generalSettings: generalSettings)
             GeneralSettingsCommonSheetHeightLimitRow(generalSettings: generalSettings)
         }
         .globalErrorHandler()

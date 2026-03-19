@@ -200,13 +200,9 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
     }
 
     private func preloadImages(searchViewModel: ModrinthSearchViewModel) {
-        let imageUrls = searchViewModel.results
+        let _ = searchViewModel.results
             .prefix(20)
             .compactMap { $0.iconUrl }
             .compactMap(URL.init(string:))
-
-        if !imageUrls.isEmpty {
-            ResourceImageCacheManager.shared.preloadImages(urls: imageUrls)
-        }
     }
 }

@@ -47,8 +47,8 @@ final class ContributorAvatarCache: @unchecked Sendable {
 
     /// 加载图片
     @MainActor
-    func loadImage(from url: URL, targetSize: CGFloat) async throws -> NSImage {
-        let cacheKey = "\(url.absoluteString)#\(Int(targetSize * 2))" as NSString
+    func loadImage(from url: URL) async throws -> NSImage {
+        let cacheKey = url.absoluteString as NSString
 
         // 先检查缓存
         if let cachedImage = imageCache.object(forKey: cacheKey) {
@@ -57,15 +57,12 @@ final class ContributorAvatarCache: @unchecked Sendable {
 
         // 从网络加载
         let (data, _) = try await urlSession.data(from: url)
-        guard let image = ImageLoadingUtil.downsampledImage(
-            data: data,
-            maxPixelSize: targetSize
-        ) ?? NSImage(data: data) else {
+        guard let image = NSImage(data: data) else {
             throw NSError(domain: "ContributorAvatarCache", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法解析图片数据"])
         }
 
         // 计算图片大小（用于缓存成本）
-        let cost = ImageLoadingUtil.imageMemoryCost(image)
+        let cost = data.count
         imageCache.setObject(image, forKey: cacheKey, cost: cost)
 
         return image
@@ -162,8 +159,8 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
 
     /// 加载图片
     @MainActor
-    func loadImage(from url: URL, targetSize: CGFloat) async throws -> NSImage {
-        let cacheKey = "\(url.absoluteString)#\(Int(targetSize * 2))" as NSString
+    func loadImage(from url: URL) async throws -> NSImage {
+        let cacheKey = url.absoluteString as NSString
 
         // 先检查缓存
         if let cachedImage = imageCache.object(forKey: cacheKey) {
@@ -172,15 +169,12 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
 
         // 从网络加载
         let (data, _) = try await urlSession.data(from: url)
-        guard let image = ImageLoadingUtil.downsampledImage(
-            data: data,
-            maxPixelSize: targetSize
-        ) ?? NSImage(data: data) else {
+        guard let image = NSImage(data: data) else {
             throw NSError(domain: "StaticContributorAvatarCache", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法解析图片数据"])
         }
 
         // 计算图片大小（用于缓存成本）
-        let cost = ImageLoadingUtil.imageMemoryCost(image)
+        let cost = data.count
         imageCache.setObject(image, forKey: cacheKey, cost: cost)
 
         return image

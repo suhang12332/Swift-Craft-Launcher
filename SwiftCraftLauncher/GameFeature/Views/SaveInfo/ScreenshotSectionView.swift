@@ -74,11 +74,8 @@ struct ScreenshotThumbnail: View {
             )
         }
         .buttonStyle(.plain)
-        .task(id: screenshot.path) {
-            viewModel.load(
-                path: screenshot.path,
-                thumbnailSize: ScreenshotSectionConstants.thumbnailSize
-            )
+        .task {
+            viewModel.load(path: screenshot.path)
         }
         .onDisappear {
             viewModel.reset()
@@ -167,8 +164,8 @@ struct ScreenshotImageView: View {
                     .aspectRatio(contentMode: .fit)
             }
         }
-        .task(id: path) {
-            viewModel.load(path: path, maxPixelSize: 1600)
+        .task {
+            viewModel.load(path: path)
         }
         .onDisappear {
             viewModel.reset()

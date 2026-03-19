@@ -13,19 +13,13 @@ final class ModrinthSearchViewModel: ObservableObject {
 
     // MARK: - Private Properties
     var searchTask: Task<Void, Never>?
-    var cacheTask: Task<Void, Never>?
     let pageSize: Int = 20
-    let maxRetainedResults: Int = 60  // 最多保留 3 页（60 条）
-    let settings = GeneralSettingsManager.shared
-    let cacheNamespace = "resource_search_results"
-    var activeSearchCacheKey: String?
 
     // MARK: - Initialization
     init() {}
 
     deinit {
         searchTask?.cancel()
-        cacheTask?.cancel()
     }
 
     // MARK: - Public Methods
@@ -45,44 +39,13 @@ final class ModrinthSearchViewModel: ObservableObject {
     ) async {
         // Cancel any existing search task
         searchTask?.cancel()
-        let isFirstPage = !append && page == 1
-        let cacheContext = SearchCacheContext(
-            query: query,
-            projectType: projectType,
-            versions: versions,
-            categories: categories,
-            features: features,
-            resolutions: resolutions,
-            performanceImpact: performanceImpact,
-            loaders: loaders,
-            dataSource: dataSource,
-        )
-        let searchCacheKey = cacheKey(context: cacheContext)
-        activeSearchCacheKey = searchCacheKey
-
-        if isFirstPage, settings.enableResourcePageCache {
-            cacheTask?.cancel()
-            cacheTask = Task {
-                guard let cached = await loadCachedFirstPageAsync(cacheKey: searchCacheKey) else {
-                    return
-                }
-                guard !Task.isCancelled, activeSearchCacheKey == searchCacheKey else {
-                    return
-                }
-                if results.isEmpty {
-                    results = Array(cached.hits.prefix(maxRetainedResults))
-                    totalHits = cached.totalHits
-                    isLoading = false
-                }
-            }
-        }
 
         searchTask = Task {
             do {
                 if append {
                     isLoadingMore = true
                 } else {
-                    isLoading = results.isEmpty
+                    isLoading = true
                 }
                 error = nil
 
@@ -145,16 +108,8 @@ final class ModrinthSearchViewModel: ObservableObject {
                 if !Task.isCancelled {
                     if append {
                         results.append(contentsOf: result.hits)
-                        trimResultsIfNeeded()
                     } else {
-                        results = Array(result.hits.prefix(maxRetainedResults))
-                        if settings.enableResourcePageCache {
-                            saveFirstPageCache(
-                                cacheKey: searchCacheKey,
-                                hits: result.hits,
-                                totalHits: result.totalHits
-                            )
-                        }
+                        results = result.hits
                     }
                     totalHits = result.totalHits
                 }
@@ -186,7 +141,6 @@ final class ModrinthSearchViewModel: ObservableObject {
 
     func clearResults() {
         searchTask?.cancel()
-        cacheTask?.cancel()
         results.removeAll()
         totalHits = 0
         error = nil
@@ -198,11 +152,5 @@ final class ModrinthSearchViewModel: ObservableObject {
     func beginNewSearch() {
         isLoading = true
         results.removeAll()
-    }
-
-    private func trimResultsIfNeeded() {
-        if results.count > maxRetainedResults {
-            results.removeFirst(results.count - maxRetainedResults)
-        }
     }
 }

@@ -182,22 +182,6 @@ struct GeneralSettingsGitHubProxyRow: View {
     }
 }
 
-struct GeneralSettingsResourceCacheRow: View {
-    @ObservedObject var generalSettings: GeneralSettingsManager
-
-    var body: some View {
-        LabeledContent("settings.resource_cache.label".localized()) {
-            Toggle(
-                "settings.resource_cache.enable".localized(),
-                isOn: $generalSettings.enableResourcePageCache
-            )
-            .toggleStyle(.checkbox)
-        }
-        .labeledContentStyle(.custom)
-        .padding(.top, 10)
-    }
-}
-
 struct GeneralSettingsCommonSheetHeightLimitRow: View {
     @ObservedObject var generalSettings: GeneralSettingsManager
 

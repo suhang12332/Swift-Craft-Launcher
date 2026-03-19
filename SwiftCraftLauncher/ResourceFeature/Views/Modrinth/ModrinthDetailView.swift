@@ -165,8 +165,17 @@ struct ModrinthDetailView: View {
             }
         }
         .onDisappear {
-            coordinator.cancelDebounce()
+            cleanupOnDisappear()
         }
+    }
+
+    private func cleanupOnDisappear() {
+        coordinator.cancelDebounce()
+        coordinator.resetPagination()
+        coordinator.clearError()
+        coordinator.hasLoaded = false
+        viewModel.clearResults()
+        searchText = ""
     }
 
     // MARK: - Result List

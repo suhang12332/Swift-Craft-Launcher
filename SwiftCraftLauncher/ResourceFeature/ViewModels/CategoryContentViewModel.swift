@@ -1,9 +1,5 @@
 import SwiftUI
 
-// MARK: - Constants
-private enum CategoryConstants {
-    static let diskCacheNamespace = "resource_category_content"
-}
 
 // MARK: - ViewModel
 @MainActor
@@ -39,8 +35,6 @@ final class CategoryContentViewModel: ObservableObject {
     // MARK: - Private Properties
     private let project: String
     private var loadTask: Task<Void, Never>?
-    private var cacheTask: Task<Void, Never>?
-    private let settings = GeneralSettingsManager.shared
 
     // MARK: - Initialization
     init(project: String) {
@@ -49,38 +43,21 @@ final class CategoryContentViewModel: ObservableObject {
 
     deinit {
         loadTask?.cancel()
-        cacheTask?.cancel()
     }
 
     // MARK: - Public Methods
     func loadData() async {
-        cacheTask?.cancel()
-        if settings.enableResourcePageCache {
-            cacheTask = Task {
-                guard let cached = await loadFromDiskCacheAsync() else {
-                    return
-                }
-                guard !Task.isCancelled else { return }
-                if categories.isEmpty && versions.isEmpty {
-                    categories = cached.categories
-                    features = cached.features
-                    resolutions = cached.resolutions
-                    performanceImpacts = cached.performanceImpacts
-                    versions = cached.versions
-                    loaders = cached.loaders
-                    isLoading = false
-                }
-            }
-        }
         loadTask?.cancel()
-        loadTask = Task {
-            await fetchData()
+        loadTask = nil
+        loadTask = Task { [weak self] in
+            guard let self else { return }
+            await self.fetchData()
         }
     }
 
     func clearCache() {
         loadTask?.cancel()
-        cacheTask?.cancel()
+        loadTask = nil
         resetData()
     }
 
@@ -114,6 +91,8 @@ final class CategoryContentViewModel: ObservableObject {
                 categoriesTask, versionsTask, loadersTask.value
             )
 
+            try Task.checkCancellation()
+
             // 验证返回的数据
             guard !categoriesResult.isEmpty else {
                 throw GlobalError.resource(
@@ -136,6 +115,9 @@ final class CategoryContentViewModel: ObservableObject {
                 versions: versionsResult,
                 loaders: loadersResult
             )
+        } catch is CancellationError {
+            isLoading = false
+            return
         } catch {
             handleError(error)
         }
@@ -209,10 +191,6 @@ final class CategoryContentViewModel: ObservableObject {
             }
             self.loaders = loaders
         }
-
-        if settings.enableResourcePageCache {
-            saveToDiskCache()
-        }
     }
 
     private func handleError(_ error: Error) {
@@ -233,44 +211,5 @@ final class CategoryContentViewModel: ObservableObject {
         loaders.removeAll(keepingCapacity: false)
         error = nil
         isLoading = false
-    }
-
-    private var cacheKey: String {
-        "project_\(project)"
-    }
-
-    private func loadFromDiskCacheAsync() async -> CategoryContentCachePayload? {
-        let key = cacheKey
-        return await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .utility).async {
-                let cached: CategoryContentCachePayload? = AppCacheManager.shared.get(
-                    namespace: CategoryConstants.diskCacheNamespace,
-                    key: key,
-                    as: CategoryContentCachePayload.self
-                )
-                continuation.resume(returning: cached)
-            }
-        }
-    }
-
-    private func saveToDiskCache() {
-        let payload = CategoryContentCachePayload(
-            categories: categories,
-            features: features,
-            resolutions: resolutions,
-            performanceImpacts: performanceImpacts,
-            versions: versions,
-            loaders: loaders,
-            plays: plays,
-            metas: metas,
-            serverFeatures: serverFeatures,
-            communitys: communitys,
-            updatedAt: Date()
-        )
-        AppCacheManager.shared.setSilently(
-            namespace: CategoryConstants.diskCacheNamespace,
-            key: cacheKey,
-            value: payload
-        )
     }
 }

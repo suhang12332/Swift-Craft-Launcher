@@ -34,7 +34,6 @@ enum AppConstants {
         // General settings
         static let enableGitHubProxy = "enableGitHubProxy"
         static let gitProxyURL = "gitProxyURL"
-        static let enableResourcePageCache = "enableResourcePageCache"
         static let limitCommonSheetHeight = "limitCommonSheetHeight"
         static let concurrentDownloads = "concurrentDownloads"
         static let launcherWorkingDirectory = "launcherWorkingDirectory"
