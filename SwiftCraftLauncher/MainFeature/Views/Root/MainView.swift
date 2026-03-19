@@ -103,6 +103,13 @@ struct MainView: View {
                 if detailState.selectedProjectId == nil {
                     detailState.gameResourcesType = ResourceType.mod.rawValue
                 }
+                if detailState.selectedProjectId != nil && detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue {
+                    detailState.gameResourcesType = ResourceType.mod.rawValue
+                }
+                if gameId != detailState.gameId {
+                    detailState.gameResourcesType = ResourceType.mod.rawValue
+                    detailState.gameType = false
+                }
             }
         }
 

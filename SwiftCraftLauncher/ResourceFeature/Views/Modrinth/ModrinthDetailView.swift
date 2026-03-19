@@ -175,7 +175,6 @@ struct ModrinthDetailView: View {
         coordinator.clearError()
         coordinator.hasLoaded = false
         viewModel.clearResults()
-        searchText = ""
     }
 
     // MARK: - Result List
