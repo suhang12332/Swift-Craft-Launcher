@@ -356,8 +356,9 @@ enum ModPackDependencyInstaller {
                         if let detail = projectDetail {
                             // 添加文件信息到detail
                             var detailWithFile = detail
-                            detailWithFile.fileName = (file.path as NSString).lastPathComponent
-                            detailWithFile.type = ResourceType.mod.rawValue
+                            let fileUrl = URL(fileURLWithPath: file.path)
+                            detailWithFile.fileName = fileUrl.lastPathComponent
+                            detailWithFile.type = AppPaths.resourceType(for: fileUrl)
 
                             // 存入缓存
                             ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
@@ -465,7 +466,7 @@ enum ModPackDependencyInstaller {
         resourceDir: URL
     ) async -> Bool {
         // 跳过 Fabric API 在 Quilt 上的安装
-        if dep.projectId == "P7dR8mSH" && gameInfo.modLoader.lowercased() == "quilt" {
+        if dep.projectId == "P7dR8mSH" && gameInfo.modLoader.lowercased() == GameLoader.quilt.rawValue {
             return true
         }
 

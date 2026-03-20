@@ -72,7 +72,7 @@ enum GameNameGenerator {
         includeTimestamp: Bool = true
     ) -> String {
         let baseName: String
-        if modLoader.lowercased() == "vanilla" {
+        if modLoader.lowercased() == GameLoader.vanilla.displayName {
             // 原版不拼接 loaderVersion
             baseName = "\(gameVersion)-\(modLoader.lowercased())"
         } else {

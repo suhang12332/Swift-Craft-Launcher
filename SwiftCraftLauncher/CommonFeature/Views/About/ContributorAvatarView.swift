@@ -47,8 +47,8 @@ final class ContributorAvatarCache: @unchecked Sendable {
 
     /// 加载图片
     @MainActor
-    func loadImage(from url: URL, targetSize: CGFloat) async throws -> NSImage {
-        let cacheKey = "\(url.absoluteString)#\(Int(targetSize * 2))" as NSString
+    func loadImage(from url: URL) async throws -> NSImage {
+        let cacheKey = url.absoluteString as NSString
 
         // 先检查缓存
         if let cachedImage = imageCache.object(forKey: cacheKey) {
@@ -57,15 +57,12 @@ final class ContributorAvatarCache: @unchecked Sendable {
 
         // 从网络加载
         let (data, _) = try await urlSession.data(from: url)
-        guard let image = ImageLoadingUtil.downsampledImage(
-            data: data,
-            maxPixelSize: targetSize
-        ) ?? NSImage(data: data) else {
+        guard let image = NSImage(data: data) else {
             throw NSError(domain: "ContributorAvatarCache", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法解析图片数据"])
         }
 
         // 计算图片大小（用于缓存成本）
-        let cost = ImageLoadingUtil.imageMemoryCost(image)
+        let cost = data.count
         imageCache.setObject(image, forKey: cacheKey, cost: cost)
 
         return image
@@ -82,41 +79,20 @@ struct ContributorAvatarView: View {
     let avatarUrl: String
     let size: CGFloat
 
-    @State private var image: NSImage?
-    @State private var isLoading = false
-    @State private var loadTask: Task<Void, Never>?
+    @StateObject private var viewModel = ContributorAvatarViewModel()
 
     init(avatarUrl: String, size: CGFloat = 32) {
         self.avatarUrl = avatarUrl
         self.size = size
     }
 
-    /// 获取优化后的头像 URL（使用 GitHub 的缩略图参数）
-    /// GitHub 支持 ?s=size 参数来获取指定大小的图片，减少下载大小
-    private var optimizedAvatarURL: URL? {
-        guard let url = URL(string: avatarUrl.httpToHttps()) else { return nil }
-
-        // 如果已经是 GitHub 头像 URL，添加大小参数
-        // GitHub 头像 URL 格式: https://avatars.githubusercontent.com/u/xxx 或 https://github.com/identicons/xxx.png
-        if url.host?.contains("github.com") == true || url.host?.contains("avatars.githubusercontent.com") == true {
-            // 计算需要的像素大小（@2x 屏幕需要 2 倍）
-            let pixelSize = Int(size * 2)
-            // 移除现有的查询参数（如果有）
-            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            components?.queryItems = [URLQueryItem(name: "s", value: "\(pixelSize)")]
-            return components?.url
-        }
-
-        return url
-    }
-
     var body: some View {
         Group {
-            if let image = image {
+            if let image = viewModel.image {
                 Image(nsImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-            } else if isLoading {
+            } else if viewModel.isLoading {
                 Rectangle()
                     .foregroundColor(.gray.opacity(0.3))
                     .overlay(
@@ -136,33 +112,10 @@ struct ContributorAvatarView: View {
         .frame(width: size, height: size)
         .clipShape(Circle())
         .onAppear {
-            loadImage()
+            viewModel.load(avatarUrl: avatarUrl, size: size)
         }
         .onDisappear {
-            loadTask?.cancel()
-            loadTask = nil
-        }
-    }
-
-    private func loadImage() {
-        guard let url = optimizedAvatarURL else { return }
-
-        loadTask?.cancel()
-        loadTask = Task { @MainActor in
-            isLoading = true
-            defer { isLoading = false }
-
-            do {
-                let loadedImage = try await ContributorAvatarCache.shared.loadImage(from: url, targetSize: size)
-                if !Task.isCancelled {
-                    self.image = loadedImage
-                }
-            } catch {
-                // 静默处理错误，显示占位符
-                if !Task.isCancelled {
-                    self.image = nil
-                }
-            }
+            viewModel.cancel()
         }
     }
 }
@@ -206,8 +159,8 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
 
     /// 加载图片
     @MainActor
-    func loadImage(from url: URL, targetSize: CGFloat) async throws -> NSImage {
-        let cacheKey = "\(url.absoluteString)#\(Int(targetSize * 2))" as NSString
+    func loadImage(from url: URL) async throws -> NSImage {
+        let cacheKey = url.absoluteString as NSString
 
         // 先检查缓存
         if let cachedImage = imageCache.object(forKey: cacheKey) {
@@ -216,15 +169,12 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
 
         // 从网络加载
         let (data, _) = try await urlSession.data(from: url)
-        guard let image = ImageLoadingUtil.downsampledImage(
-            data: data,
-            maxPixelSize: targetSize
-        ) ?? NSImage(data: data) else {
+        guard let image = NSImage(data: data) else {
             throw NSError(domain: "StaticContributorAvatarCache", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法解析图片数据"])
         }
 
         // 计算图片大小（用于缓存成本）
-        let cost = ImageLoadingUtil.imageMemoryCost(image)
+        let cost = data.count
         imageCache.setObject(image, forKey: cacheKey, cost: cost)
 
         return image
@@ -241,41 +191,22 @@ struct StaticContributorAvatarView: View {
     let avatar: String
     let size: CGFloat
 
-    @State private var image: NSImage?
-    @State private var isLoading = false
-    @State private var loadTask: Task<Void, Never>?
+    @StateObject private var viewModel = StaticContributorAvatarViewModel()
 
     init(avatar: String, size: CGFloat = 32) {
         self.avatar = avatar
         self.size = size
     }
 
-    /// 获取优化后的头像 URL（使用 GitHub 的缩略图参数）
-    private var optimizedAvatarURL: URL? {
-        guard avatar.starts(with: "http"), let url = URL(string: avatar) else { return nil }
-
-        // 如果已经是 GitHub 头像 URL，添加大小参数
-        if url.host?.contains("github.com") == true || url.host?.contains("avatars.githubusercontent.com") == true {
-            // 计算需要的像素大小（@2x 屏幕需要 2 倍）
-            let pixelSize = Int(size * 2)
-            // 移除现有的查询参数（如果有）
-            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            components?.queryItems = [URLQueryItem(name: "s", value: "\(pixelSize)")]
-            return components?.url
-        }
-
-        return url
-    }
-
     var body: some View {
         Group {
             if avatar.starts(with: "http") {
                 Group {
-                    if let image = image {
+                    if let image = viewModel.image {
                         Image(nsImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                    } else if isLoading {
+                    } else if viewModel.isLoading {
                         Rectangle()
                             .foregroundColor(.gray.opacity(0.3))
                             .overlay(
@@ -295,11 +226,10 @@ struct StaticContributorAvatarView: View {
                 .frame(width: size, height: size)
                 .clipShape(Circle())
                 .onAppear {
-                    loadImage()
+                    viewModel.load(avatar: avatar, size: size)
                 }
                 .onDisappear {
-                    loadTask?.cancel()
-                    loadTask = nil
+                    viewModel.cancel()
                 }
             } else {
                 Text(avatar)
@@ -307,28 +237,6 @@ struct StaticContributorAvatarView: View {
                     .frame(width: size, height: size)
                     .background(Color.gray.opacity(0.1))
                     .clipShape(Circle())
-            }
-        }
-    }
-
-    private func loadImage() {
-        guard let url = optimizedAvatarURL else { return }
-
-        loadTask?.cancel()
-        loadTask = Task { @MainActor in
-            isLoading = true
-            defer { isLoading = false }
-
-            do {
-                let loadedImage = try await StaticContributorAvatarCache.shared.loadImage(from: url, targetSize: size)
-                if !Task.isCancelled {
-                    self.image = loadedImage
-                }
-            } catch {
-                // 静默处理错误，显示占位符
-                if !Task.isCancelled {
-                    self.image = nil
-                }
             }
         }
     }

@@ -103,7 +103,7 @@ struct GameCreationView: View {
     private var formContentView: some View {
         VStack {
             gameIconAndVersionSection
-            if viewModel.selectedModLoader != "vanilla" {
+            if viewModel.selectedModLoader != GameLoader.vanilla.displayName {
                 loaderVersionPicker
             }
             gameNameSection
@@ -226,15 +226,15 @@ struct GameCreationView: View {
             } content: {
                 ForEach(AppConstants.modLoaders, id: \.self) { loader in
                     switch loader {
-                    case "vanilla":
+                    case GameLoader.vanilla.displayName:
                         Text("modloader.vanilla.text".localized()).tag(loader)
-                    case "fabric":
+                    case GameLoader.fabric.displayName:
                         Text("modloader.fabric.text".localized()).tag(loader)
-                    case "forge":
+                    case GameLoader.forge.displayName:
                         Text("modloader.forge.text".localized()).tag(loader)
-                    case "neoforge":
+                    case GameLoader.neoforge.displayName:
                         Text("modloader.neoforge.text".localized()).tag(loader)
-                    case "quilt":
+                    case GameLoader.quilt.rawValue:
                         Text("modloader.quilt.text".localized()).tag(loader)
                     default:
                         Text(loader.capitalized).tag(loader)

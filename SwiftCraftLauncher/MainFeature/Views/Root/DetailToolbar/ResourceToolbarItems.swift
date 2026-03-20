@@ -18,14 +18,13 @@ struct ResourceToolbarItems: View {
     /// 打开当前资源在浏览器中的项目页面
     private func openCurrentResourceInBrowser() {
         guard let slug = detailState.loadedProjectDetail?.slug else { return }
-
-        let baseURL: String = switch filterState.dataSource {
-        case .modrinth:
-            URLConfig.API.Modrinth.webProjectBase
-        case .curseforge:
-            URLConfig.API.CurseForge.webProjectURL(projectType: detailState.gameResourcesType)
-        }
-
+        guard let id = detailState.loadedProjectDetail?.id else { return }
+        let useCurseForge = detailState.gameId != nil
+            ? id.starts(with: "cf-")
+            : filterState.dataSource == .curseforge
+        let baseURL = useCurseForge
+            ? URLConfig.API.CurseForge.webProjectURL(projectType: detailState.gameResourcesType)
+            : URLConfig.API.Modrinth.webProjectBase
         guard let url = URL(string: baseURL + slug) else { return }
         openURL(url)
     }

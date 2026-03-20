@@ -10,6 +10,7 @@ import UniformTypeIdentifiers
 // MARK: - LauncherImportView
 struct LauncherImportView: View {
     @StateObject private var viewModel: LauncherImportViewModel
+    @StateObject private var folderPickerViewModel = LauncherImportFolderPickerViewModel()
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
 
@@ -165,7 +166,7 @@ struct LauncherImportView: View {
                         }
 
                         // Mod 加载器
-                        if !info.modLoader.isEmpty && info.modLoader != "vanilla" {
+                        if !info.modLoader.isEmpty && info.modLoader != GameLoader.vanilla.displayName {
                             HStack {
                                 Text("game.form.modloader".localized())
                                     .font(.subheadline)
@@ -207,12 +208,12 @@ struct LauncherImportView: View {
     }
 
     private var downloadProgressSection: some View {
-        // 获取选中实例的 modLoader，如果没有则使用 "vanilla"
+        // 获取选中实例的 modLoader，如果没有则使用 GameLoader.vanilla.displayName
         let selectedModLoader: String = {
             if let info = viewModel.currentInstanceInfo {
                 return info.modLoader
             }
-            return "vanilla"
+            return GameLoader.vanilla.displayName
         }()
 
         return DownloadProgressSection(
@@ -244,49 +245,14 @@ struct LauncherImportView: View {
 
     /// 处理通过 fileImporter 选择的文件夹
     private func handleFolderSelection(_ result: Result<[URL], Error>) {
-        switch result {
-        case .success(let urls):
-            guard let url = urls.first else { return }
-
-            // 保持安全作用域资源访问权限
-            guard url.startAccessingSecurityScopedResource() else {
-                GlobalErrorHandler.shared.handle(
-                    GlobalError.fileSystem(
-                        chineseMessage: "无法访问所选文件夹",
-                        i18nKey: "error.filesystem.file_access_failed",
-                        level: .notification
-                    )
-                )
-                return
-            }
-
-            defer { url.stopAccessingSecurityScopedResource() }
-
-            // 验证选择的文件夹是否为有效实例
-            guard viewModel.validateInstance(at: url) else {
-                let launcherName = viewModel.selectedLauncherType.rawValue
-                GlobalErrorHandler.shared.handle(
-                    GlobalError.fileSystem(
-                        chineseMessage: "选择的文件夹不是有效的 \(launcherName) 实例",
-                        i18nKey: "error.filesystem.invalid_instance_path",
-                        level: .notification
-                    )
-                )
-                return
-            }
-
-            // 直接使用选择的实例路径
-            viewModel.selectedInstancePath = url
-
-            // 自动填充游戏名到输入框
-            viewModel.autoFillGameNameIfNeeded()
-
-            Logger.shared.info("成功选择 \(viewModel.selectedLauncherType.rawValue) 实例路径: \(url.path)")
-
-        case .failure(let error):
-            let globalError = GlobalError.from(error)
-            GlobalErrorHandler.shared.handle(globalError)
-        }
+        let launcherName = viewModel.selectedLauncherType.rawValue
+        folderPickerViewModel.handleFolderSelection(
+            result,
+            launcherName: launcherName,
+            validateInstance: { url in viewModel.validateInstance(at: url) },
+            setSelectedInstancePath: { url in viewModel.selectedInstancePath = url },
+            autoFillGameNameIfNeeded: { viewModel.autoFillGameNameIfNeeded() }
+        )
     }
 
     #Preview {

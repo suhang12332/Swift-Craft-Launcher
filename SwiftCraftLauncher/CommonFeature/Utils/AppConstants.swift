@@ -2,7 +2,7 @@ import Foundation
 
 enum AppConstants {
     static let defaultGameIcon = "default_game_icon.png"
-    static let modLoaders = ["vanilla", "fabric", "forge", "neoforge", "quilt"]
+    static let modLoaders = GameLoader.allCases.map(\.rawValue)
     static let modrinthIndex = "relevance"
     static let modrinthIndexFileName = "modrinth.index.json"
 
@@ -34,7 +34,6 @@ enum AppConstants {
         // General settings
         static let enableGitHubProxy = "enableGitHubProxy"
         static let gitProxyURL = "gitProxyURL"
-        static let enableResourcePageCache = "enableResourcePageCache"
         static let limitCommonSheetHeight = "limitCommonSheetHeight"
         static let concurrentDownloads = "concurrentDownloads"
         static let launcherWorkingDirectory = "launcherWorkingDirectory"
@@ -107,7 +106,20 @@ enum AppConstants {
         static let cache = "cache"
         static let data = "data"
         static let auth = "auth"
+        static let config = "config"
+        static let option = "options.txt"
     }
+
+    // MARK: - Default Selections
+    /// 文件树默认预选中的顶级目录/文件名
+    static let defaultFileTreeTopLevelSelections: [String] = [
+        DirectoryNames.config,
+        DirectoryNames.datapacks,
+        DirectoryNames.mods,
+        DirectoryNames.resourcepacks,
+        DirectoryNames.shaderpacks,
+        DirectoryNames.option,
+    ]
 
     // MARK: - File Extensions
     /// 文件扩展名常量（不包含点号）

@@ -96,7 +96,7 @@ enum CurseForgeManifestParser {
     private static func determineLoaderInfo(from modLoaders: [CurseForgeModLoader]) -> (type: String, version: String) {
         // 查找主要的模组加载器
         guard let primaryLoader = modLoaders.first(where: { $0.primary }) ?? modLoaders.first else {
-            return ("vanilla", "unknown")
+            return (GameLoader.vanilla.displayName, "unknown")
         }
 
         let loaderId = primaryLoader.id.lowercased()
@@ -114,16 +114,16 @@ enum CurseForgeManifestParser {
             return (normalizedType, loaderVersion)
         } else {
             // 如果格式不标准，尝试从 ID 中提取类型
-            if loaderId.contains("forge") {
-                return ("forge", "unknown")
-            } else if loaderId.contains("fabric") {
-                return ("fabric", "unknown")
-            } else if loaderId.contains("quilt") {
-                return ("quilt", "unknown")
-            } else if loaderId.contains("neoforge") {
-                return ("neoforge", "unknown")
+            if loaderId.contains(GameLoader.forge.displayName) {
+                return (GameLoader.forge.displayName, "unknown")
+            } else if loaderId.contains(GameLoader.fabric.displayName) {
+                return (GameLoader.fabric.displayName, "unknown")
+            } else if loaderId.contains(GameLoader.quilt.rawValue) {
+                return (GameLoader.quilt.rawValue, "unknown")
+            } else if loaderId.contains(GameLoader.neoforge.displayName) {
+                return (GameLoader.neoforge.displayName, "unknown")
             } else {
-                return ("vanilla", "unknown")
+                return (GameLoader.vanilla.displayName, "unknown")
             }
         }
     }
@@ -133,14 +133,14 @@ enum CurseForgeManifestParser {
     /// - Returns: 标准化后的加载器类型
     private static func normalizeLoaderType(_ loaderType: String) -> String {
         switch loaderType.lowercased() {
-        case "forge":
-            return "forge"
-        case "fabric":
-            return "fabric"
-        case "quilt":
-            return "quilt"
-        case "neoforge":
-            return "neoforge"
+        case GameLoader.forge.displayName:
+            return GameLoader.forge.displayName
+        case GameLoader.fabric.displayName:
+            return GameLoader.fabric.displayName
+        case GameLoader.quilt.rawValue:
+            return GameLoader.quilt.rawValue
+        case GameLoader.neoforge.displayName:
+            return GameLoader.neoforge.displayName
         default:
             return loaderType.lowercased()
         }

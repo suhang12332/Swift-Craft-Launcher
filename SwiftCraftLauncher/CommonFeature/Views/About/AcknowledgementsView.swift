@@ -1,18 +1,14 @@
 import SwiftUI
 
 public struct AcknowledgementsView: View {
-    @State private var libraries: [OpenSourceLibrary] = []
-    @State private var isLoading = true
-    @State private var loadFailed = false
-    @State private var loadTask: Task<Void, Never>?
-    private let gitHubService = GitHubService.shared
+    @StateObject private var viewModel = AcknowledgementsViewModel()
 
     public init() {}
 
     public var body: some View {
         ScrollView {
             LazyVStack(spacing: 16) {
-                if isLoading {
+                if viewModel.isLoading {
                     loadingView
                 } else {
                     librariesContent
@@ -22,10 +18,10 @@ public struct AcknowledgementsView: View {
         }
         .onAppear {
             // 每次打开都重新加载数据
-            loadLibraries()
+            viewModel.load()
         }
         .onDisappear {
-            clearAllData()
+            viewModel.clearAllData()
         }
     }
 
@@ -40,9 +36,9 @@ public struct AcknowledgementsView: View {
     // MARK: - Libraries Content
     private var librariesContent: some View {
         LazyVStack(spacing: 0) {
-            if !libraries.isEmpty {
+            if !viewModel.libraries.isEmpty {
                 librariesList
-            } else if loadFailed {
+            } else if viewModel.loadFailed {
                 errorView
             }
         }
@@ -51,11 +47,10 @@ public struct AcknowledgementsView: View {
     // MARK: - Libraries List
     private var librariesList: some View {
         VStack(spacing: 0) {
-            ForEach(libraries.indices, id: \.self) { index in
-                libraryRow(libraries[index])
-                    .id("library-\(index)")
+            ForEach(viewModel.libraries) { library in
+                libraryRow(library)
 
-                if index < libraries.count - 1 {
+                if library.id != viewModel.libraries.last?.id {
                     Divider()
                         .padding(.horizontal, 16)
                 }
@@ -195,88 +190,6 @@ public struct AcknowledgementsView: View {
         }
         .frame(maxWidth: .infinity, minHeight: 100)
         .padding()
-    }
-
-    // MARK: - Load Libraries
-    private func loadLibraries() {
-        // 取消之前的任务（如果存在）
-        loadTask?.cancel()
-
-        // 重置状态
-        isLoading = true
-        loadFailed = false
-
-        loadTask = Task {
-            do {
-                // 在异步操作开始前检查取消状态
-                try Task.checkCancellation()
-
-                let decodedLibraries: [OpenSourceLibrary] = try await gitHubService.fetchAcknowledgements()
-
-                // 在更新 UI 前再次检查取消状态
-                try Task.checkCancellation()
-
-                await MainActor.run {
-                    // 最后一次检查取消状态（因为可能在 await 期间被取消）
-                    guard !Task.isCancelled else { return }
-
-                    libraries = decodedLibraries
-                    isLoading = false
-                    loadFailed = false
-                    Logger.shared.info(
-                        "Successfully loaded",
-                        libraries.count,
-                        "libraries from GitHubService"
-                    )
-                }
-            } catch is CancellationError {
-                // 任务被取消，静默处理（不需要日志，这是正常的清理行为）
-            } catch {
-                // 检查任务是否已被取消（避免在取消后更新状态）
-                guard !Task.isCancelled else { return }
-
-                Logger.shared.error("Failed to load libraries from GitHubService:", error)
-                await MainActor.run {
-                    // 最后一次检查取消状态
-                    guard !Task.isCancelled else { return }
-
-                    loadFailed = true
-                    isLoading = false
-                }
-            }
-        }
-    }
-
-    // MARK: - Clear Libraries Data
-    private func clearLibrariesData() {
-        // 取消正在运行的加载任务
-        loadTask?.cancel()
-        loadTask = nil
-
-        libraries = []
-        isLoading = true
-        loadFailed = false
-        Logger.shared.info("Libraries data cleared")
-    }
-
-    /// 清理所有数据
-    private func clearAllData() {
-        clearLibrariesData()
-    }
-
-    // MARK: - JSON Data Models
-    private struct OpenSourceLibrary: Codable {
-        let name: String
-        let url: String
-        let avatar: String?
-        let description: String?
-
-        enum CodingKeys: String, CodingKey {
-            case name
-            case url
-            case avatar
-            case description
-        }
     }
 }
 

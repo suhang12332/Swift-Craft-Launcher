@@ -160,15 +160,20 @@ enum URLConfig {
         enum GitHub {
             static let gitHubBase = URLConfig.url("https://github.com")
             static let baseURL = URLConfig.url("https://api.github.com")
+            static let assetBaseURL = URLConfig.url("https://suhang12332.github.io/Swift-Craft-Launcher-Assets")
+
             static let repositoryOwner = "suhang12332"
-            static let assetsRepositoryName = "Swift-Craft-Launcher-Assets"
             static let repositoryName = "Swift-Craft-Launcher"
             /// 公告基础地址：
-            /// 例如：https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-Assets/refs/heads/main/news/api/announcements/0.3.1-beta/ar.json
-            static let announcementBaseURL = URLConfig.url("https://raw.githubusercontent.com/\(repositoryOwner)/\(assetsRepositoryName)/refs/heads/main/news/api/announcements")
+            private static var announcementBaseURL: URL {
+                assetBaseURL
+                    .appendingPathComponent("news")
+                    .appendingPathComponent("api")
+                    .appendingPathComponent("announcements")
+            }
 
-            // 私有方法：构建仓库基础路径
-            private static var repositoryBaseURL: URL {
+            // 私有方法：构建仓库基础路径 api
+            private static var repositoryApiBaseURL: URL {
                 baseURL
                     .appendingPathComponent("repos")
                     .appendingPathComponent(repositoryOwner)
@@ -177,12 +182,12 @@ enum URLConfig {
 
             static func latestRelease() -> URL {
                 URLConfig.applyGitProxyIfNeeded(
-                    repositoryBaseURL.appendingPathComponent("releases/latest")
+                    repositoryApiBaseURL.appendingPathComponent("releases/latest")
                 )
             }
 
             static func contributors(perPage: Int = 50) -> URL {
-                let url = repositoryBaseURL
+                let url = repositoryApiBaseURL
                     .appendingPathComponent("contributors")
                     .appending(queryItems: [
                         URLQueryItem(name: "per_page", value: "\(perPage)")
@@ -224,35 +229,17 @@ enum URLConfig {
 
             // 静态贡献者数据
             static func staticContributors() -> URL {
-                let timestamp = Int(Date().timeIntervalSince1970)
-                let url = URLConfig.url("https://raw.githubusercontent.com")
-                    .appendingPathComponent(repositoryOwner)
-                    .appendingPathComponent(assetsRepositoryName)
-                    .appendingPathComponent("refs")
-                    .appendingPathComponent("heads")
-                    .appendingPathComponent("main")
+                let url = assetBaseURL
                     .appendingPathComponent("contributors")
                     .appendingPathComponent("contributors.json")
-                    .appending(queryItems: [
-                        URLQueryItem(name: "timestamp", value: "\(timestamp)")
-                    ])
                 return URLConfig.applyGitProxyIfNeeded(url)
             }
 
             // 致谢数据
             static func acknowledgements() -> URL {
-                let timestamp = Int(Date().timeIntervalSince1970)
-                let url = URLConfig.url("https://raw.githubusercontent.com")
-                    .appendingPathComponent(repositoryOwner)
-                    .appendingPathComponent(assetsRepositoryName)
-                    .appendingPathComponent("refs")
-                    .appendingPathComponent("heads")
-                    .appendingPathComponent("main")
+                let url = assetBaseURL
                     .appendingPathComponent("contributors")
                     .appendingPathComponent("acknowledgements.json")
-                    .appending(queryItems: [
-                        URLQueryItem(name: "timestamp", value: "\(timestamp)")
-                    ])
                 return URLConfig.applyGitProxyIfNeeded(url)
             }
 
@@ -274,13 +261,9 @@ enum URLConfig {
             ///   - language: 语言代码，如 "zh-Hans"
             /// - Returns: 公告URL（带时间戳，避免缓存）
             static func announcement(version: String, language: String) -> URL {
-                let timestamp = Int(Date().timeIntervalSince1970)
                 let url = announcementBaseURL
                     .appendingPathComponent(version)
                     .appendingPathComponent("\(language).json")
-                    .appending(queryItems: [
-                        URLQueryItem(name: "timestamp", value: "\(timestamp)")
-                    ])
                 return URLConfig.applyGitProxyIfNeeded(url)
             }
         }
@@ -464,6 +447,11 @@ enum URLConfig {
             // 游戏版本相关
             static var gameVersions: URL {
                 mirrorBaseURL.appendingPathComponent("minecraft/version")
+            }
+
+            // Fingerprints (按文件指纹匹配文件/模组)
+            static var fingerprints: URL {
+                mirrorBaseURL.appendingPathComponent("fingerprints/432")
             }
         }
 

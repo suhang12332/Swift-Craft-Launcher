@@ -45,8 +45,7 @@ struct ModPackExportSheet: View {
     private var dismiss
     @StateObject private var viewModel: ModPackExportViewModel
     @State private var showSaveErrorAlert = false
-    @State private var isExporting = false
-    @State private var exportDocument: ModPackDocument?
+    @StateObject private var coordinator = ModPackExportSheetCoordinatorViewModel()
 
     // MARK: - Initialization
     init(gameInfo: GameVersionInfo) {
@@ -74,14 +73,12 @@ struct ModPackExportSheet: View {
                 handleExportCompleted(tempFilePath: tempPath)
             }
         }
-        .onChange(of: isExporting) { oldValue, newValue in
-            if oldValue && !newValue && exportDocument != nil {
-                exportDocument = nil
-            }
+        .onChange(of: coordinator.isExporting) { oldValue, newValue in
+            coordinator.cleanupExporterStateIfNeeded(oldValue: oldValue, newValue: newValue)
         }
         .fileExporter(
-            isPresented: $isExporting,
-            document: exportDocument,
+            isPresented: $coordinator.isExporting,
+            document: coordinator.exportDocument,
             contentType: UTType(filenameExtension: "mrpack") ?? UTType.zip,
             defaultFilename: viewModel.modPackName.isEmpty ? ResourceType.modpack.rawValue : viewModel.modPackName
         ) { result in
@@ -94,7 +91,7 @@ struct ModPackExportSheet: View {
                 Logger.shared.error("保存文件失败: \(error.localizedDescription)")
                 viewModel.handleSaveFailure(error: error.localizedDescription)
             }
-            exportDocument = nil
+            coordinator.reset()
         }
         .alert("common.error".localized(), isPresented: $showSaveErrorAlert) {
             Button("common.ok".localized(), role: .cancel) {
@@ -175,7 +172,11 @@ struct ModPackExportSheet: View {
                 FileTreeView(
                     rootURL: AppPaths.profileDirectory(gameName: gameInfo.gameName)
                 ) { urls in
-                    viewModel.selectedFileURLs = urls
+                    if viewModel.selectedFileURLs != urls {
+                        DispatchQueue.main.async {
+                            viewModel.selectedFileURLs = urls
+                        }
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .frame(height: 300)
@@ -280,20 +281,9 @@ struct ModPackExportSheet: View {
         if viewModel.shouldShowSaveDialog {
             viewModel.markSaveDialogShown()
         }
-
-        Task {
-            do {
-                let fileData = try await Task.detached(priority: .userInitiated) {
-                    try Data(contentsOf: tempFilePath)
-                }.value
-                await MainActor.run {
-                    self.exportDocument = ModPackDocument(data: fileData)
-                    self.isExporting = true
-                }
-            } catch {
-                Logger.shared.error("读取临时文件失败: \(error.localizedDescription)")
-                viewModel.handleSaveFailure(error: error.localizedDescription)
-            }
+        coordinator.prepareExportDocument(from: tempFilePath) { errorMessage in
+            Logger.shared.error("读取临时文件失败: \(errorMessage)")
+            viewModel.handleSaveFailure(error: errorMessage)
         }
     }
 }

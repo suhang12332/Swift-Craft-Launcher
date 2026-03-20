@@ -19,12 +19,8 @@ struct ModrinthDetailView: View {
     @Binding var dataSource: DataSource
 
     @StateObject private var viewModel = ModrinthSearchViewModel()
-    @State private var hasLoaded = false
     @Binding var searchText: String
-    @State private var searchTimer: Timer?
-    @State private var currentPage: Int = 1
-    @State private var lastSearchParams: String = ""
-    @State private var error: GlobalError?
+    @StateObject private var coordinator = ModrinthDetailCoordinatorViewModel()
 
     init(
         query: String,
@@ -74,10 +70,6 @@ struct ModrinthDetailView: View {
         ].joined(separator: "|")
     }
 
-    private var hasMoreResults: Bool {
-        viewModel.results.count < viewModel.totalHits
-    }
-
     // MARK: - Body
     var body: some View {
         List {
@@ -94,48 +86,51 @@ struct ModrinthDetailView: View {
         .listStyle(.plain)
         .task {
             if gameType {
-                await initialLoadIfNeeded()
+                await coordinator.initialLoadIfNeeded(
+                    gameType: gameType,
+                    searchViewModel: viewModel,
+                    context: currentSearchContext
+                )
             }
         }
         // 当筛选条件变化时，重新搜索
         .onChange(of: selectedVersions) { _, _ in
-            resetPagination()
-            triggerSearch()
+            coordinator.resetPagination()
+            coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
         }
         .onChange(of: selectedCategories) { _, _ in
-            resetPagination()
-            triggerSearch()
+            coordinator.resetPagination()
+            coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
         }
         .onChange(of: selectedFeatures) { _, _ in
-            resetPagination()
-            triggerSearch()
+            coordinator.resetPagination()
+            coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
         }
         .onChange(of: selectedResolutions) { _, _ in
-            resetPagination()
-            triggerSearch()
+            coordinator.resetPagination()
+            coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
         }
         .onChange(of: selectedPerformanceImpact) { _, _ in
-            resetPagination()
-            triggerSearch()
+            coordinator.resetPagination()
+            coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
         }
         .onChange(of: selectedLoader) { _, _ in
-            resetPagination()
-            triggerSearch()
+            coordinator.resetPagination()
+            coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
         }
         .onChange(of: dataSource) { _, _ in
             // 清理之前的旧数据
             viewModel.clearResults()
-            resetPagination()
+            coordinator.resetPagination()
 //            searchText = ""
-            lastSearchParams = ""
-            error = nil
-            hasLoaded = false
-            triggerSearch()
+            coordinator.clearError()
+            coordinator.hasLoaded = false
+            coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
         }
         .onChange(of: query) { _, _ in
             // 清理之前的旧数据
             viewModel.clearResults()
-            triggerSearch()
+            coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
             searchText = ""
         }
         .searchable(
@@ -147,126 +142,51 @@ struct ModrinthDetailView: View {
         .onChange(of: searchText) { oldValue, newValue in
             // 优化：仅在搜索文本实际变化时触发防抖搜索
             if oldValue != newValue {
-                resetPagination()
-                debounceSearch()
+                coordinator.resetPagination()
+                coordinator.debounceSearch(
+                    searchViewModel: viewModel,
+                    context: currentSearchContext
+                )
             }
         }
         .alert(
             "error.notification.search.title".localized(),
-            isPresented: .constant(error != nil)
+            isPresented: Binding(
+                get: { coordinator.error != nil },
+                set: { if !$0 { coordinator.clearError() } }
+            )
         ) {
             Button("common.close".localized()) {
-                error = nil
+                coordinator.clearError()
             }
         } message: {
-            if let error = error {
+            if let error = coordinator.error {
                 Text(error.chineseMessage)
             }
         }
         .onDisappear {
-            searchTimer?.invalidate()
-            searchTimer = nil
+            cleanupOnDisappear()
         }
     }
 
-    // MARK: - Private Methods
-    private func initialLoadIfNeeded() async {
-        if !hasLoaded {
-            hasLoaded = true
-            resetPagination()
-            await performSearchWithErrorHandling(page: 1, append: false)
-        }
-    }
-
-    private func triggerSearch() {
-        Task {
-            await performSearchWithErrorHandling(page: 1, append: false)
-        }
-    }
-
-    private func debounceSearch() {
-        searchTimer?.invalidate()
-        searchTimer = Timer.scheduledTimer(
-            withTimeInterval: 0.5,
-            repeats: false
-        ) { _ in
-            Task {
-                await performSearchWithErrorHandling(page: 1, append: false)
-            }
-        }
-    }
-
-    private func performSearchWithErrorHandling(
-        page: Int,
-        append: Bool
-    ) async {
-        do {
-            try await performSearchThrowing(page: page, append: append)
-            // 搜索完成后预加载图片
-            preloadImages()
-        } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error("搜索失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
-            await MainActor.run {
-                self.error = globalError
-            }
-        }
-    }
-
-    private func performSearchThrowing(page: Int, append: Bool) async throws {
-        let params = buildSearchParamsKey(page: page)
-
-        if params == lastSearchParams {
-            // 完全重复，不请求
-            return
-        }
-
-        guard !query.isEmpty else {
-            throw GlobalError.validation(
-                chineseMessage: "查询类型不能为空",
-                i18nKey: "error.validation.query_type_empty",
-                level: .notification
-            )
-        }
-
-        lastSearchParams = params
-        if !append {
-            viewModel.beginNewSearch()
-        }
-        await viewModel.search(
-            query: searchText,
-            projectType: query,
-            versions: selectedVersions,
-            categories: selectedCategories,
-            features: selectedFeatures,
-            resolutions: selectedResolutions,
-            performanceImpact: selectedPerformanceImpact,
-            loaders: selectedLoader,
-            page: page,
-            append: append,
-            dataSource: dataSource
-        )
+    private func cleanupOnDisappear() {
+        coordinator.cancelDebounce()
+        coordinator.resetPagination()
+        coordinator.clearError()
+        coordinator.hasLoaded = false
+        viewModel.clearResults()
     }
 
     // MARK: - Result List
     @ViewBuilder private var listContent: some View {
         Group {
-            if let error = error {
-                newErrorView(error)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
-            } else if viewModel.isLoading {
+            if viewModel.isLoading {
                 HStack {
                     ProgressView()
                         .controlSize(.small)
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .listRowSeparator(.hidden)
-            } else if hasLoaded && viewModel.results.isEmpty {
-                emptyResultView()
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
             } else {
                 ForEach(viewModel.results, id: \.projectId) { mod in
                     ModrinthDetailCardView(
@@ -292,62 +212,30 @@ struct ModrinthDetailView: View {
                         }
                     }
                     .onAppear {
-                        loadNextPageIfNeeded(currentItem: mod)
+                        coordinator.loadNextPageIfNeeded(
+                            currentItem: mod,
+                            searchViewModel: viewModel,
+                            context: currentSearchContext
+                        )
                     }
                 }
             }
         }
     }
 
-    private func loadNextPageIfNeeded(currentItem mod: ModrinthProject) {
-        guard hasMoreResults, !viewModel.isLoading, !viewModel.isLoadingMore else {
-            return
-        }
-        guard
-            let index = viewModel.results.firstIndex(where: { $0.projectId == mod.projectId })
-        else { return }
-
-        let thresholdIndex = max(viewModel.results.count - 5, 0)
-        if index >= thresholdIndex {
-            currentPage += 1
-            let nextPage = currentPage
-            Task {
-                await performSearchWithErrorHandling(page: nextPage, append: true)
-            }
-        }
-    }
-
-    private func resetPagination() {
-        currentPage = 1
-        lastSearchParams = ""
-    }
-
-    /// 后台预加载可见的资源图片（只预加载前20个）
-    private func preloadImages() {
-        let imageUrls = viewModel.results
-            .prefix(20)  // 只预加载前 20 个可见的
-            .compactMap { $0.iconUrl }
-            .compactMap(URL.init(string:))
-
-        if !imageUrls.isEmpty {
-            ResourceImageCacheManager.shared.preloadImages(urls: imageUrls)
-        }
-    }
-
-    private func buildSearchParamsKey(page: Int) -> String {
-        [
-            query,
-            selectedVersions.joined(separator: ","),
-            selectedCategories.joined(separator: ","),
-            selectedFeatures.joined(separator: ","),
-            selectedResolutions.joined(separator: ","),
-            selectedPerformanceImpact.joined(separator: ","),
-            selectedLoader.joined(separator: ","),
-            String(gameType),
-            searchText,
-            "page:\(page)",
-            dataSource.rawValue,
-        ].joined(separator: "|")
+    private var currentSearchContext: ModrinthSearchContext {
+        ModrinthSearchContext(
+            query: query,
+            selectedVersions: selectedVersions,
+            selectedCategories: selectedCategories,
+            selectedFeatures: selectedFeatures,
+            selectedResolutions: selectedResolutions,
+            selectedPerformanceImpact: selectedPerformanceImpact,
+            selectedLoader: selectedLoader,
+            gameType: gameType,
+            dataSource: dataSource,
+            searchText: searchText
+        )
     }
 
     private var loadingMoreIndicator: some View {

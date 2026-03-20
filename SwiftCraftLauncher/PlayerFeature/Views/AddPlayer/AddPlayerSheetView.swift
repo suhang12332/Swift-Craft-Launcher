@@ -19,17 +19,12 @@ struct AddPlayerSheetView: View {
     @StateObject private var authService = MinecraftAuthService.shared
     @StateObject private var yggdrasilAuthService = YggdrasilAuthService.shared
     @StateObject private var playerSettings = PlayerSettingsManager.shared
+    @StateObject private var viewModel = AddPlayerSheetViewModel()
 
     @Environment(\.openURL)
     private var openURL
-    @State private var selectedAuthType: AccountAuthType = .premium
     @FocusState private var isTextFieldFocused: Bool
     @State private var showErrorPopover: Bool = false
-
-    // 标记检查状态
-    @State private var isCheckingFlag: Bool = true  // 初始为true，进入页面时直接显示loading
-    // IP检查结果（仅在列表中没有正版账户且没有标记时使用）
-    @State private var isForeignIP: Bool = false
 
     var body: some View {
         CommonSheetView(
@@ -37,25 +32,25 @@ struct AddPlayerSheetView: View {
                 HStack {
                     Text("addplayer.title".localized())
                         .font(.headline)
-                    Image(systemName: selectedAuthType.symbol.name)
+                    Image(systemName: viewModel.selectedAuthType.symbol.name)
                         .font(.headline)
                         .foregroundStyle(.secondary)
-                        .symbolRenderingMode(selectedAuthType.symbol.mode)
+                        .symbolRenderingMode(viewModel.selectedAuthType.symbol.mode)
                         .symbolVariant(.none)
                     Spacer()
-                    if isCheckingFlag {
+                    if viewModel.isCheckingFlag {
                         ProgressView()
                             .controlSize(.small)
                             .frame(height: 20.5) // 设置固定高度，与 Picker 保持一致
                             .padding(.trailing, 10)
                     } else {
                         CommonMenuPicker(
-                            selection: $selectedAuthType,
+                            selection: $viewModel.selectedAuthType,
                             hidesLabel: true
                         ) {
                             Text("")
                         } content: {
-                            ForEach(availableAuthTypes) { type in
+                            ForEach(viewModel.availableAuthTypes) { type in
                                 Text(type.displayName).tag(type)
                             }
                         }
@@ -65,7 +60,7 @@ struct AddPlayerSheetView: View {
                 }
             },
             body: {
-                switch selectedAuthType {
+                switch viewModel.selectedAuthType {
                 case .premium:
                     MinecraftAuthView(onLoginSuccess: onLogin)
                 case .yggdrasil:
@@ -88,13 +83,13 @@ struct AddPlayerSheetView: View {
                         onCancel()
                     }
                     Spacer()
-                    if selectedAuthType == .premium {
+                    if viewModel.selectedAuthType == .premium {
                         // 根据认证状态显示不同的按钮
                         switch authService.authState {
                         case .notAuthenticated:
                             Button("addplayer.auth.start_login".localized()) {
                                 Task {
-                                    await authService.startAuthentication()
+                                    await viewModel.startPremiumAuthentication(authService: authService)
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
@@ -109,7 +104,7 @@ struct AddPlayerSheetView: View {
                         case .error:
                             Button("addplayer.auth.retry".localized()) {
                                 Task {
-                                    await authService.startAuthentication()
+                                    await viewModel.startPremiumAuthentication(authService: authService)
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
@@ -117,12 +112,14 @@ struct AddPlayerSheetView: View {
                         default:
                             ProgressView().controlSize(.small)
                         }
-                    } else if selectedAuthType == .yggdrasil {
+                    } else if viewModel.selectedAuthType == .yggdrasil {
                         switch yggdrasilAuthService.authState {
                         case .idle, .failed:
                             Button("addplayer.auth.start_login".localized()) {
                                 Task {
-                                    await yggdrasilAuthService.startAuthentication()
+                                    await viewModel.startYggdrasilAuthentication(
+                                        yggdrasilAuthService: yggdrasilAuthService
+                                    )
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
@@ -158,73 +155,12 @@ struct AddPlayerSheetView: View {
         )
         .task {
             // 检查标记
-            await checkPremiumAccountFlag()
+            await viewModel.checkPremiumAccountFlag()
         }
         .onDisappear {
             // 页面关闭后清除所有数据
             clearAllData()
         }
-    }
-
-    // MARK: - 检查逻辑
-
-    /// 检查是否可以添加离线账户
-    private func canAddOfflineAccount() -> Bool {
-        // 检查标记：如果曾经添加过正版账户（标记存在），则可以添加离线账户
-        let flagManager = PremiumAccountFlagManager.shared
-        if flagManager.hasAddedPremiumAccount() {
-            return true
-        }
-
-        // 如果没有标记，需要检查IP地理位置
-        // 如果是国外IP，不允许添加离线账户
-        // 如果是国内IP（或检查失败），允许添加离线账户
-        return !isForeignIP
-    }
-
-    /// 检查正版账户标记
-    private func checkPremiumAccountFlag() async {
-        // 检查标记
-        let flagManager = PremiumAccountFlagManager.shared
-        let hasFlag = flagManager.hasAddedPremiumAccount()
-        // 如果没有标记，同步检查IP地理位置
-        if !hasFlag {
-            // loading状态已经显示，继续显示直到IP检查完成
-            let locationService = IPLocationService.shared
-            let foreign = await locationService.isForeignIP()
-
-            await MainActor.run {
-                isForeignIP = foreign
-                isCheckingFlag = false
-
-                // selectedAuthType 落在可用选项中
-                if !availableAuthTypes.contains(selectedAuthType) {
-                    selectedAuthType = .premium
-                }
-            }
-        } else {
-            // 如果有标记，允许添加离线账户
-            await MainActor.run {
-                isCheckingFlag = false
-            }
-        }
-    }
-
-    /// 获取可用的认证类型列表
-    private var availableAuthTypes: [AccountAuthType] {
-        var types: [AccountAuthType] = [.premium]
-
-        // 启用三方登录时才显示 Yggdrasil
-        if playerSettings.enableOfflineLogin {
-            types.append(.yggdrasil)
-        }
-
-        // 满足条件时再允许离线账号
-        if canAddOfflineAccount() {
-            types.append(.offline)
-        }
-
-        return types
     }
 
     // MARK: - 清除数据
@@ -241,13 +177,8 @@ struct AddPlayerSheetView: View {
         // 重置焦点状态
         isTextFieldFocused = false
         showErrorPopover = false
-        // 重置认证类型
-        selectedAuthType = .premium
         yggdrasilAuthService.logout()
-        // 重置标记检查状态
-        isCheckingFlag = true
-        // 重置IP检查结果
-        isForeignIP = false
+        viewModel.reset()
     }
 
     // 说明区

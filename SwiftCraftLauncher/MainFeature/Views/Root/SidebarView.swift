@@ -14,8 +14,7 @@ public struct SidebarView: View {
     @StateObject private var gameActionManager = GameActionManager.shared
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @ObservedObject private var selectedGameManager = SelectedGameManager.shared
-    @State private var iconRefreshTriggers: [String: UUID] = [:]
-    @State private var cancellable: AnyCancellable?
+    @StateObject private var viewModel = SidebarViewModel()
 
     @Environment(\.openSettings)
     private var openSettings
@@ -42,7 +41,7 @@ public struct SidebarView: View {
                         HStack(spacing: 6) {
                             GameIconView(
                                 game: game,
-                                refreshTrigger: iconRefreshTriggers[game.gameName] ?? UUID()
+                                refreshTrigger: viewModel.refreshTrigger(for: game.gameName)
                             )
                             Text(game.gameName)
                                 .lineLimit(1)
@@ -94,32 +93,14 @@ public struct SidebarView: View {
         }
         .listStyle(.sidebar)
         .onAppear {
-            // 初始化所有游戏的刷新触发器
-            for game in gameRepository.games where iconRefreshTriggers[game.gameName] == nil {
-                iconRefreshTriggers[game.gameName] = UUID()
-            }
-            // 监听图标刷新通知
-            cancellable = IconRefreshNotifier.shared.refreshPublisher
-                .sink { refreshedGameName in
-                    if let gameName = refreshedGameName {
-                        // 刷新特定游戏的图标
-                        iconRefreshTriggers[gameName] = UUID()
-                    } else {
-                        // 刷新所有游戏的图标
-                        for game in gameRepository.games {
-                            iconRefreshTriggers[game.gameName] = UUID()
-                        }
-                    }
-                }
+            viewModel.onAppear(games: gameRepository.games)
         }
         .onDisappear {
-            cancellable?.cancel()
+            viewModel.onDisappear()
         }
         .onChange(of: gameRepository.games) { _, newGames in
             // 当游戏列表变化时，为新游戏初始化刷新触发器
-            for game in newGames where iconRefreshTriggers[game.gameName] == nil {
-                iconRefreshTriggers[game.gameName] = UUID()
-            }
+            viewModel.onGamesChanged(newGames)
         }
         .confirmationDialog(
             "delete.title".localized(),
@@ -178,10 +159,22 @@ private struct GameIconView: View {
     let game: GameVersionInfo
     let refreshTrigger: UUID
 
+    private var iconFileURL: URL? {
+        let trimmed = game.gameIcon.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+
+        let url = profileDir.appendingPathComponent(trimmed)
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory),
+              !isDirectory.boolValue
+        else { return nil }
+
+        return url
+    }
+
     /// 获取图标URL（添加刷新触发器作为查询参数，强制AsyncImage重新加载）
     private var iconURL: URL {
-        let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
-        let baseURL = profileDir.appendingPathComponent(game.gameIcon)
+        guard let baseURL = iconFileURL else { return profileDir }
         // 添加刷新触发器作为查询参数，确保文件更新后能重新加载
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
         components?.queryItems = [URLQueryItem(name: "refresh", value: refreshTrigger.uuidString)]
@@ -190,7 +183,7 @@ private struct GameIconView: View {
 
     var body: some View {
         Group {
-            if FileManager.default.fileExists(atPath: profileDir.appendingPathComponent(game.gameIcon).path) {
+            if iconFileURL != nil {
                 AsyncImage(url: iconURL) { phase in
                     switch phase {
                     case .empty:
@@ -246,6 +239,7 @@ private struct GameContextMenu: View {
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
+    @StateObject private var actionViewModel = GameContextMenuActionViewModel()
 
     /// 使用缓存的游戏状态，避免每次渲染都检查进程
     /// key 为 processKey(gameId, userId)，当前选中的玩家决定 userId
@@ -280,8 +274,10 @@ private struct GameContextMenu: View {
 
         Divider()
 
-        Button(action: onExport) {
-            Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
+        if game.modLoader != GameLoader.vanilla.displayName {
+            Button(action: onExport) {
+                Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
+            }
         }
 
         Button(action: onDelete) {
@@ -291,20 +287,11 @@ private struct GameContextMenu: View {
 
     /// 启动或停止游戏
     private func toggleGameState() {
-        Task {
-            let userId = playerListViewModel.currentPlayer?.id ?? ""
-            let key = GameProcessManager.processKey(gameId: game.id, userId: userId)
-            let currentlyRunning = gameStatusManager.allGameStates[key] ?? false
-            if currentlyRunning {
-                await gameLaunchUseCase.stopGame(player: playerListViewModel.currentPlayer, game: game)
-            } else {
-                gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
-                defer { gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false) }
-                await gameLaunchUseCase.launchGame(
-                    player: playerListViewModel.currentPlayer,
-                    game: game
-                )
-            }
-        }
+        actionViewModel.toggleGameState(
+            isRunning: isRunning,
+            player: playerListViewModel.currentPlayer,
+            game: game,
+            gameLaunchUseCase: gameLaunchUseCase
+        )
     }
 }

@@ -11861,143 +11861,6 @@
         }
       }
     },
-    "error.configuration.app_path_not_found" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ملف التطبيق التنفيذي غير موجود"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App eksekverbar fil ikke fundet"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App-Ausführungsdatei nicht gefunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App Executable Not Found"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ejecutable de la aplicación no encontrado"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sovelluksen suoritettavaa tiedostoa ei löytynyt"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exécutable de l'application introuvable"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ऐप एक्जीक्यूटेबल नहीं मिला"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eseguibile dell'app non trovato"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アプリ実行ファイルが見つかりません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "앱 실행 파일을 찾을 수 없습니다"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App kjørbar fil ikke funnet"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App uitvoerbaar bestand niet gevonden"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nie znaleziono pliku wykonywalnego aplikacji"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Executável do aplicativo não encontrado"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Исполняемый файл приложения не найден"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "App körbar fil hittades inte"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ไม่พบไฟล์ปฏิบัติการของแอป"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uygulama yürütülebilir dosyası bulunamadı"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Không tìm thấy tệp thực thi ứng dụng"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法获取应用资源路径"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "無法獲取應用資源路徑"
-          }
-        }
-      }
-    },
     "error.configuration.app_support_directory_not_found" : {
       "comment" : "General Settings View Errors",
       "extractionState" : "manual",
@@ -13641,281 +13504,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下載客戶端JAR檔案失敗"
-          }
-        }
-      }
-    },
-    "error.download.dependencies_failed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "فشل في تحميل التبعيات"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download af afhængigheder mislykkedes"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download der Abhängigkeiten fehlgeschlagen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dependencies Failed"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falló la descarga de dependencias"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Riippuvuuksien lataus epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec du téléchargement des dépendances"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "निर्भरताओं को डाउनलोड करने में विफल"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download delle dipendenze fallito"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "依存関係のダウンロードに失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "의존성 다운로드에 실패했습니다"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nedlasting av avhengigheter mislyktes"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download van afhankelijkheden mislukt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pobieranie zależności nie powiodło się"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha no download das dependências"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не удалось загрузить зависимости"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nedladdning av beroenden misslyckades"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "การดาวน์โหลดการพึ่งพาล้มเหลว"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bağımlılıkları indirme başarısız"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tải xuống các phụ thuộc thất bại"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下载依赖项失败"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下載依賴項失敗"
-          }
-        }
-      }
-    },
-    "error.download.dependency_download_failed" : {
-      "comment" : "Modrinth Dependency Downloader Errors",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "فشل في تحميل التبعية"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afhængighed download mislykkedes"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abhängigkeits-Download fehlgeschlagen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dependency Download Failed"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falló la descarga de la dependencia"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Riippuvuuden lataus epäonnistui"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Échec du téléchargement de la dépendance"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "निर्भरता डाउनलोड करने में विफल"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Download della dipendenza fallito"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "依存関係のダウンロードに失敗しました"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "의존성 다운로드에 실패했습니다"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avhengighet nedlasting mislyktes"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afhankelijkheid download mislukt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pobieranie zależności nie powiodło się"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Falha no download da dependência"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не удалось загрузить зависимость"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Beroende nedladdning misslyckades"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "การดาวน์โหลดการพึ่งพาล้มเหลว"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bağımlılık indirme başarısız"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tải xuống phụ thuộc thất bại"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "依赖下载失败"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "依賴下載失敗"
           }
         }
       }
@@ -29416,143 +29004,6 @@
         }
       }
     },
-    "error.resource.primary_file_not_found" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "الملف الأساسي غير موجود"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Primær fil ikke fundet"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Primärdatei nicht gefunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Primary File Not Found"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Archivo principal no encontrado"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ensisijaista tiedostoa ei löytynyt"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fichier principal introuvable"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "मुख्य फ़ाइल नहीं मिली"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "File primario non trovato"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プライマリファイルが見つかりません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기본 파일을 찾을 수 없음"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Primærfil ikke funnet"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Primaire bestand niet gevonden"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plik podstawowy nie został znaleziony"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Arquivo principal não encontrado"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Основной файл не найден"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Primär fil inte hittad"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ไม่พบไฟล์หลัก"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Birincil dosya bulunamadı"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Không tìm thấy tệp chính"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到主文件"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "找不到主檔案"
-          }
-        }
-      }
-    },
     "error.resource.processor_jar_not_found" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -32564,144 +32015,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "刪除遊戲失敗: %@"
-          }
-        }
-      }
-    },
-    "error.validation.game_info_missing" : {
-      "comment" : "Validation Errors",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "معلومات اللعبة مفقودة"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spiloplysninger mangler"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spielinformationen fehlen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Game Info Missing"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Información del juego faltante"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pelitiedot puuttuvat"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Informations de jeu manquantes"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "गेम की जानकारी गुम है"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Informazioni di gioco mancanti"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ゲーム情報が不足しています"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "게임 정보 누락"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spillinformasjon mangler"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spelinformatie ontbreekt"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brakuje informacji o grze"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Informações do jogo ausentes"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Информация об игре отсутствует"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spelinformation saknas"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ข้อมูลเกมขาดหายไป"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oyun bilgileri eksik"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Thông tin trò chơi bị thiếu"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "游戏信息缺失"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "遊戲資訊缺失"
           }
         }
       }
@@ -56736,7 +56049,144 @@
         }
       }
     },
-    "modpack.processing.subtitle" : {
+    "modpack.processing.subtitle.local" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استخراج ملفات حزمة التعديلات وتحليل الإعدادات"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udpakker modpack-filer og analyserer konfigurationen"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entpackt Modpack-Dateien und analysiert die Konfiguration"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extracting modpack files and parsing configuration"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extrayendo archivos del modpack y analizando la configuración"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puretaan modpack-tiedostoja ja jäsennetään kokoonpanoa"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extraction des fichiers du modpack et analyse de la configuration"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मॉडपैक फ़ाइलें निकाल रहा है और कॉन्फ़िगरेशन पार्स कर रहा है"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estraendo i file del modpack e analizzando la configurazione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モッドパックのファイルを展開し、設定を解析しています"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모드팩 파일을 압축 해제하고 설정을 파싱하는 중입니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pakker ut modpack-filer og analyserer konfigurasjonen"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pakt modpack-bestanden uit en analyseert de configuratie"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rozpakowywanie plików paczki modów i analizowanie konfiguracji"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Extraindo os arquivos do modpack e analisando a configuração"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Извлечение файлов модпака и анализ конфигурации"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Packar upp modpack-filer och analyserar konfigurationen"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "กำลังแตกไฟล์ม็อดแพ็กและวิเคราะห์การตั้งค่า"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpaket dosyaları çıkarılıyor ve yapılandırma ayrıştırılıyor"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đang giải nén các tệp modpack và phân tích cấu hình"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解压整合包文件并解析配置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解壓整合包檔案並解析配置"
+          }
+        }
+      }
+    },
+    "modpack.processing.subtitle.remote" : {
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
@@ -61816,6 +61266,280 @@
         }
       }
     },
+    "project.info.players" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "معلومات اللاعبين"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spilleroplysninger"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spielerinformationen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Player Info"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Información de jugadores"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pelaajatiedot"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Infos des joueurs"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "खिलाड़ी जानकारी"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info giocatori"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレイヤー情報"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "플레이어 정보"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spillerinformasjon"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spelerinformatie"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informacje o graczach"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informações dos jogadores"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Информация об игроках"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spelarinformation"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ข้อมูลผู้เล่น"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oyuncu bilgisi"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thông tin người chơi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玩家信息"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玩家資訊"
+          }
+        }
+      }
+    },
+    "project.info.server" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "معلومات الخادم"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serveroplysninger"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serverinformationen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server Info"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Información del servidor"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palvelintiedot"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Infos du serveur"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्वर जानकारी"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info server"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバー情報"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버 정보"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serverinformasjon"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serverinformatie"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informacje o serwerze"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informações do servidor"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Информация о сервере"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serverinformation"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ข้อมูลเซิร์ฟเวอร์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu bilgisi"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thông tin máy chủ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器信息"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "伺服器資訊"
+          }
+        }
+      }
+    },
     "quilt.loader.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -62639,6 +62363,143 @@
         }
       }
     },
+    "resource.content.type.minecraft_java_server" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خادم"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Palvelin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serveur"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्वर"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serwer"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сервер"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เซิร์ฟเวอร์"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunucu"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Máy chủ"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "伺服器"
+          }
+        }
+      }
+    },
     "resource.content.type.mod" : {
       "comment" : "Resource Content",
       "extractionState" : "manual",
@@ -63184,143 +63045,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "資源庫"
-          }
-        }
-      }
-    },
-    "resource.content.type.minecraft_java_server" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "خادم"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Servidor"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Palvelin"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serveur"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "सर्वर"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サーバー"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "서버"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Serwer"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Servidor"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сервер"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "เซิร์ฟเวอร์"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sunucu"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Máy chủ"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "伺服器"
           }
         }
       }
@@ -64280,281 +64004,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更新"
-          }
-        }
-      }
-    },
-    "result.empty" : {
-      "comment" : "Common",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لم يتم العثور على نتائج"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingen Resultater Fundet"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Ergebnisse Gefunden"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Results Found"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Se Encontraron Resultados"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ei Tuloksia Löytynyt"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucun Résultat Trouvé"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "कोई परिणाम नहीं मिला"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nessun Risultato Trovato"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "結果が見つかりません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "결과를 찾을 수 없습니다"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ingen Resultater Funnet"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Geen Resultaten Gevonden"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nie Znaleziono Wyników"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nenhum Resultado Encontrado"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Результатов Не Найдено"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inga Resultat Hittades"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ไม่พบผลลัพธ์"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sonuç Bulunamadı"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Không Tìm Thấy Kết Quả"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "查询结果为空"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "查詢結果為空"
-          }
-        }
-      }
-    },
-    "result.error" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 خطأ في الاستعلام، يرجى المحاولة لاحقاً!"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Forespørgselsfejl, prøv igen senere!"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Abfragefehler, bitte später erneut versuchen!"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Query error, please try again later!"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Error de consulta, ¡inténtalo de nuevo más tarde!"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Kyselyvirhe, yritä myöhemmin uudelleen!"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Erreur de requête, veuillez réessayer plus tard !"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 क्वेरी की त्रुटि, कृपया बाद में पुनः प्रयास करें!"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Errore di query, riprova più tardi!"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 クエリエラーです。後で再度お試しください！"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 쿼리 오류, 나중에 다시 시도해주세요!"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Spørringsfeil, prøv igjen senere!"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Queryfout, probeer het later opnieuw!"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Błąd zapytania, spróbuj ponownie później!"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Erro de consulta, tente novamente mais tarde!"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Ошибка запроса, попробуйте позже!"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Frågefel, försök igen senare!"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 ข้อผิดพลาดในการค้นหา กรุณาลองใหม่อีกครั้ง!"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Sorgu hatası, lütfen daha sonra tekrar deneyin!"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩 Lỗi truy vấn, vui lòng thử lại sau!"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩查询错误，请稍后再试!"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "😩查詢錯誤，請稍後再試！"
           }
         }
       }
@@ -80066,143 +79515,6 @@
         }
       }
     },
-    "settings.game.reset.confirm" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "هل أنت متأكد من أنك تريد استعادة الإعدادات الافتراضية؟"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Er du sikker på, at du vil gendanne standardindstillinger?"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sind Sie sicher, dass Sie die Standardeinstellungen wiederherstellen möchten?"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Are you sure you want to restore default settings?"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Estás seguro de que quieres restaurar la configuración predeterminada?"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Haluatko varmasti palauttaa oletusasetukset?"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Êtes-vous sûr de vouloir restaurer les paramètres par défaut ?"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "क्या आप वाकई डिफ़ॉल्ट सेटिंग्स पुनर्स्थापित करना चाहते हैं?"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sei sicuro di voler ripristinare le impostazioni predefinite?"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デフォルト設定に復元してもよろしいですか？"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기본 설정으로 복원하시겠습니까?"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Er du sikker på at du vil gjenopprette standardinnstillinger?"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Weet je zeker dat je de standaardinstellingen wilt herstellen?"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Czy na pewno chcesz przywrócić ustawienia domyślne?"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tem certeza de que deseja restaurar as configurações padrão?"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Вы уверены, что хотите восстановить настройки по умолчанию?"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Är du säker på att du vill återställa standardinställningar?"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "คุณแน่ใจหรือไม่ว่าต้องการคืนค่าการตั้งค่าเริ่มต้น?"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Varsayılan ayarları geri yüklemek istediğinizden emin misiniz?"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bạn có chắc chắn muốn khôi phục cài đặt mặc định không?"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "确定要恢复默认设置吗？"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "確定要恢復預設設置嗎？"
-          }
-        }
-      }
-    },
     "settings.game.tab" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -82667,280 +81979,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "玩家"
-          }
-        }
-      }
-    },
-    "settings.resource_cache.enable" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تمكين التخزين المؤقت المحلي (اعرض الكاش أولًا ثم حدّث بالخلفية)"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktivér lokal cache (vis cache først, opdater i baggrunden)"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lokalen Cache aktivieren (zuerst Cache anzeigen, dann im Hintergrund aktualisieren)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enable local cache (show cache first, update in background)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Habilitar caché local (mostrar caché primero y actualizar en segundo plano)"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ota paikallinen välimuisti käyttöön (näytä välimuisti ensin, päivitä taustalla)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activer le cache local (afficher d'abord le cache, mettre à jour en arrière-plan)"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "लोकल कैश सक्षम करें (पहले कैश दिखाएँ, फिर बैकग्राउंड में अपडेट करें)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abilita cache locale (mostra prima la cache, aggiorna in background)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ローカルキャッシュを有効化（先にキャッシュを表示し、バックグラウンド更新）"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "로컬 캐시 사용 (캐시를 먼저 표시하고 백그라운드에서 업데이트)"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktiver lokal cache (vis cache først, oppdater i bakgrunnen)"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lokale cache inschakelen (toon eerst cache, werk op achtergrond bij)"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Włącz lokalną pamięć podręczną (najpierw pokaż cache, potem aktualizuj w tle)"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ativar cache local (mostrar cache primeiro e atualizar em segundo plano)"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Включить локальный кэш (сначала показать кэш, затем обновить в фоне)"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktivera lokal cache (visa cache först, uppdatera i bakgrunden)"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "เปิดใช้แคชภายในเครื่อง (แสดงแคชก่อน แล้วอัปเดตเบื้องหลัง)"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Yerel önbelleği etkinleştir (önce önbelleği göster, arka planda güncelle)"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bật bộ nhớ đệm cục bộ (hiển thị cache trước, cập nhật nền)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "启用本地缓存（先显示缓存，再后台刷新）"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "啟用本地快取（先顯示快取，再背景刷新）"
-          }
-        }
-      }
-    },
-    "settings.resource_cache.label" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تخزين صفحات الموارد مؤقتًا"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ressourceside-cache"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ressourcenseiten-Cache"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resource Page Cache"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Caché de páginas de recursos"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resurssisivun välimuisti"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cache des pages de ressources"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "रिसोर्स पेज कैश"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cache pagine risorse"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "リソースページキャッシュ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "리소스 페이지 캐시"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cache for ressurssider"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resourcepagina-cache"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pamięć podręczna stron zasobów"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cache de página de recursos"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Кэш страниц ресурсов"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cache för resurssidor"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "แคชหน้ารีซอร์ส"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kaynak sayfası önbelleği"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bộ nhớ đệm trang tài nguyên"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "缓存"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "快取"
           }
         }
       }
@@ -88850,60 +87888,6 @@
             "value" : "選擇 Yggdrasil 登入皮膚站"
           }
         }
-      }
-    },
-    "project.info.server" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : { "stringUnit" : { "state" : "translated", "value" : "معلومات الخادم" } },
-        "da" : { "stringUnit" : { "state" : "translated", "value" : "Serveroplysninger" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Serverinformationen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Server Info" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Información del servidor" } },
-        "fi" : { "stringUnit" : { "state" : "translated", "value" : "Palvelintiedot" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Infos du serveur" } },
-        "hi" : { "stringUnit" : { "state" : "translated", "value" : "सर्वर जानकारी" } },
-        "it" : { "stringUnit" : { "state" : "translated", "value" : "Info server" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "サーバー情報" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "서버 정보" } },
-        "nb" : { "stringUnit" : { "state" : "translated", "value" : "Serverinformasjon" } },
-        "nl" : { "stringUnit" : { "state" : "translated", "value" : "Serverinformatie" } },
-        "pl" : { "stringUnit" : { "state" : "translated", "value" : "Informacje o serwerze" } },
-        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Informações do servidor" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Информация о сервере" } },
-        "sv" : { "stringUnit" : { "state" : "translated", "value" : "Serverinformation" } },
-        "th" : { "stringUnit" : { "state" : "translated", "value" : "ข้อมูลเซิร์ฟเวอร์" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Sunucu bilgisi" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Thông tin máy chủ" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "服务器信息" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "伺服器資訊" } }
-      }
-    },
-    "project.info.players" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : { "stringUnit" : { "state" : "translated", "value" : "معلومات اللاعبين" } },
-        "da" : { "stringUnit" : { "state" : "translated", "value" : "Spilleroplysninger" } },
-        "de" : { "stringUnit" : { "state" : "translated", "value" : "Spielerinformationen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Player Info" } },
-        "es" : { "stringUnit" : { "state" : "translated", "value" : "Información de jugadores" } },
-        "fi" : { "stringUnit" : { "state" : "translated", "value" : "Pelaajatiedot" } },
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Infos des joueurs" } },
-        "hi" : { "stringUnit" : { "state" : "translated", "value" : "खिलाड़ी जानकारी" } },
-        "it" : { "stringUnit" : { "state" : "translated", "value" : "Info giocatori" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プレイヤー情報" } },
-        "ko" : { "stringUnit" : { "state" : "translated", "value" : "플레이어 정보" } },
-        "nb" : { "stringUnit" : { "state" : "translated", "value" : "Spillerinformasjon" } },
-        "nl" : { "stringUnit" : { "state" : "translated", "value" : "Spelerinformatie" } },
-        "pl" : { "stringUnit" : { "state" : "translated", "value" : "Informacje o graczach" } },
-        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Informações dos jogadores" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Информация об игроках" } },
-        "sv" : { "stringUnit" : { "state" : "translated", "value" : "Spelarinformation" } },
-        "th" : { "stringUnit" : { "state" : "translated", "value" : "ข้อมูลผู้เล่น" } },
-        "tr" : { "stringUnit" : { "state" : "translated", "value" : "Oyuncu bilgisi" } },
-        "vi" : { "stringUnit" : { "state" : "translated", "value" : "Thông tin người chơi" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "玩家信息" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "玩家資訊" } }
       }
     }
   },

@@ -41,6 +41,7 @@ struct GameFormView: View {
     @State private var isModPackParsed = false
     @State private var imagePickerHandler: ((Result<[URL], Error>) -> Void)?
     @State private var showImportPicker = false
+    @StateObject private var importViewModel = GameFormImportViewModel()
 
     // MARK: - Body
     @ViewBuilder var body: some View {
@@ -86,6 +87,7 @@ struct GameFormView: View {
                                 isModPackParsed = true
                             }
                         }
+                        .id(file)
                     case .launcherImport:
                         LauncherImportView(
                             configuration: GameFormConfiguration(
@@ -127,7 +129,12 @@ struct GameFormView: View {
                 ) { result in
                     switch filePickerType {
                     case .modPack:
-                        handleModPackFileSelection(result)
+                        Task {
+                            if let newMode = await importViewModel.prepareModPackImportMode(from: result) {
+                                mode = newMode
+                                isModPackParsed = false
+                            }
+                        }
                     case .gameIcon:
                         imagePickerHandler?(result)
                     }
@@ -243,58 +250,6 @@ struct GameFormView: View {
     }
 
     // MARK: - Helper Methods
-
-    private func handleModPackFileSelection(_ result: Result<[URL], Error>) {
-        switch result {
-        case .success(let urls):
-            guard let url = urls.first else { return }
-
-            guard url.startAccessingSecurityScopedResource() else {
-                let globalError = GlobalError.fileSystem(
-                    chineseMessage: "无法访问所选文件",
-                    i18nKey: "error.filesystem.file_access_failed",
-                    level: .notification
-                )
-                GlobalErrorHandler.shared.handle(globalError)
-                return
-            }
-
-            let urlForBackground = url
-            Task {
-                let tempFileResult: Result<URL, Error> = await Task.detached(priority: .userInitiated) {
-                    do {
-                        let tempDir = FileManager.default.temporaryDirectory
-                            .appendingPathComponent("modpack_import")
-                            .appendingPathComponent(UUID().uuidString)
-                        try FileManager.default.createDirectory(
-                            at: tempDir,
-                            withIntermediateDirectories: true
-                        )
-                        let tempFile = tempDir.appendingPathComponent(urlForBackground.lastPathComponent)
-                        try FileManager.default.copyItem(at: urlForBackground, to: tempFile)
-                        return .success(tempFile)
-                    } catch {
-                        return .failure(error)
-                    }
-                }.value
-                urlForBackground.stopAccessingSecurityScopedResource()
-
-                await MainActor.run {
-                    switch tempFileResult {
-                    case .success(let tempFile):
-                        mode = .modPackImport(file: tempFile, shouldProcess: true)
-                        isModPackParsed = false
-                    case .failure(let error):
-                        GlobalErrorHandler.shared.handle(GlobalError.from(error))
-                    }
-                }
-            }
-
-        case .failure(let error):
-            let globalError = GlobalError.from(error)
-            GlobalErrorHandler.shared.handle(globalError)
-        }
-    }
 }
 
 #Preview {

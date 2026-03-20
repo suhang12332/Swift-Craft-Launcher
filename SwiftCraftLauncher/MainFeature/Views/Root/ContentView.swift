@@ -47,7 +47,7 @@ struct ContentView: View {
             selectedVersions: filterState.selectedVersionsBinding,
             selectedLoaders: filterState.selectedLoadersBinding,
             gameVersion: game.gameVersion,
-            gameLoader: game.modLoader == "Vanilla" ? nil : game.modLoader,
+            gameLoader: game.modLoader.lowercased() == GameLoader.vanilla.displayName ? nil : game.modLoader,
             dataSource: filterState.dataSource
         )
         .id(detailState.gameResourcesType)

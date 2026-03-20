@@ -2,10 +2,7 @@ import SwiftUI
 
 public struct ContributorsView: View {
     @StateObject private var viewModel = ContributorsViewModel()
-    @State private var staticContributors: [StaticContributor] = []
-    @State private var staticContributorsLoaded = false
-    @State private var staticContributorsLoadFailed = false
-    private let gitHubService = GitHubService.shared
+    @StateObject private var staticViewModel = ContributorsStaticViewModel()
 
     public init() {}
 
@@ -22,11 +19,9 @@ public struct ContributorsView: View {
         }
         .onAppear {
             // 每次打开都重新获取GitHub贡献者数据
-            Task {
-                await viewModel.fetchContributors()
-            }
+            Task { await viewModel.fetchContributors() }
             // 每次打开都重新加载静态贡献者数据
-            loadStaticContributors()
+            staticViewModel.load()
         }
         .onDisappear {
             clearAllData()
@@ -49,7 +44,7 @@ public struct ContributorsView: View {
                 contributorsList
             }
             // 静态贡献者列表（只有成功加载时才显示）
-            if staticContributorsLoaded && !staticContributorsLoadFailed {
+            if staticViewModel.loaded && !staticViewModel.loadFailed {
                 staticContributorsList
             }
         }
@@ -65,11 +60,11 @@ public struct ContributorsView: View {
                 .padding(.bottom, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            ForEach(staticContributors.indices, id: \.self) { index in
-                staticContributorRow(staticContributors[index])
+            ForEach(staticViewModel.contributors.indices, id: \.self) { index in
+                staticContributorRow(staticViewModel.contributors[index])
                     .id("static-\(index)")
 
-                if index < staticContributors.count - 1 {
+                if index < staticViewModel.contributors.count - 1 {
                     Divider()
                         .padding(.horizontal, 16)
                 }
@@ -153,54 +148,9 @@ public struct ContributorsView: View {
     ) -> some View {
         StaticContributorCardView(contributor: contributor)
     }
-    // MARK: - Load Static Contributors
-    private func loadStaticContributors() {
-        // 重置状态
-        staticContributorsLoaded = false
-        staticContributorsLoadFailed = false
-        Task {
-            do {
-                let contributorsData: ContributorsData = try await gitHubService.fetchStaticContributors()
-
-                await MainActor.run {
-                    staticContributors = contributorsData.contributors.map { contributorData in
-                        StaticContributor(
-                            name: contributorData.name,
-                            url: contributorData.url,
-                            avatar: contributorData.avatar,
-                            contributions: contributorData.contributions.compactMap {
-                                Contribution(rawValue: "contributor.contribution.\($0)")
-                            }
-                        )
-                    }
-                    staticContributorsLoaded = true
-                    staticContributorsLoadFailed = false
-                    Logger.shared.info(
-                        "Successfully loaded",
-                        staticContributors.count,
-                        "contributors from GitHubService"
-                    )
-                }
-            } catch {
-                Logger.shared.error("Failed to load contributors from GitHubService:", error)
-                await MainActor.run {
-                    staticContributorsLoadFailed = true
-                }
-            }
-        }
-    }
-
-    // MARK: - Clear Static Contributors Data
-    private func clearStaticContributorsData() {
-        staticContributors = []
-        staticContributorsLoaded = false
-        staticContributorsLoadFailed = false
-        Logger.shared.info("Static contributors data cleared")
-    }
-
     /// 清理所有数据
     private func clearAllData() {
-        clearStaticContributorsData()
+        staticViewModel.clearAllData()
         // 清理 ViewModel 的贡献者数据，释放内存
         viewModel.clearContributors()
         // 清理图片缓存，释放内存

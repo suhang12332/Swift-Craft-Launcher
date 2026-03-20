@@ -15,7 +15,7 @@ struct DownloadProgressSection: View {
 
     init(
         gameSetupService: GameSetupUtil,
-        selectedModLoader: String = "vanilla",
+        selectedModLoader: String = GameLoader.vanilla.displayName,
         modPackViewModel: ModPackDownloadSheetViewModel? = nil,
         modPackIndexInfo: ModrinthIndexInfo? = nil
     ) {
@@ -131,11 +131,11 @@ struct DownloadProgressSection: View {
 
     private func getLoaderDownloadState(for loaderType: String) -> DownloadState? {
         switch loaderType.lowercased() {
-        case "fabric", "quilt":
+        case GameLoader.fabric.displayName, GameLoader.quilt.rawValue:
             return gameSetupService.fabricDownloadState
-        case "forge":
+        case GameLoader.forge.displayName:
             return gameSetupService.forgeDownloadState
-        case "neoforge":
+        case GameLoader.neoforge.displayName:
             return gameSetupService.neoForgeDownloadState
         default:
             return nil
@@ -144,13 +144,13 @@ struct DownloadProgressSection: View {
 
     private func getLoaderTitle(for loaderType: String) -> String {
         switch loaderType.lowercased() {
-        case "fabric":
+        case GameLoader.fabric.displayName:
             return "fabric.loader.title".localized()
-        case "quilt":
+        case GameLoader.quilt.rawValue:
             return "quilt.loader.title".localized()
-        case "forge":
+        case GameLoader.forge.displayName:
             return "forge.loader.title".localized()
-        case "neoforge":
+        case GameLoader.neoforge.displayName:
             return "neoforge.loader.title".localized()
         default:
             return ""

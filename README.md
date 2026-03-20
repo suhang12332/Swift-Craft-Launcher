@@ -29,10 +29,10 @@
 Swift Craft Launcher is a native macOS Minecraft launcher 🍎 built with SwiftUI, offering a streamlined and efficient gaming experience. Designed for modern macOS systems, it provides comprehensive mod loader support, Microsoft account authentication, and intuitive game management.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-Assets/refs/heads/main/imagebed/readme/screenshot2026-01-29-01.17.31.gif" alt="SwiftCraftLauncher Screenshot" width="800">
+  <img src="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/imagebed/readme/screenshot2026-01-29-01.17.31.gif" alt="SwiftCraftLauncher Screenshot" width="800">
 </div>
 <div align="center">
-  <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-Assets/refs/heads/main/imagebed/readme/screenshot2026-01-29-01.14.06.gif" alt="SwiftCraftLauncher Screenshot" width="800">
+  <img src="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/imagebed/readme/screenshot2026-01-29-01.14.06.gif" alt="SwiftCraftLauncher Screenshot" width="800">
 </div>
 
 ## ✨ Key Features
@@ -136,6 +136,8 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 Special thanks to the following projects that have contributed to this launcher:
 
 - **[Archify](https://github.com/Oct4Pie/archify)** - Universal binary optimization tool for macOS applications
+
+- **[curseforge-fingerprint](https://github.com/meza/curseforge-fingerprint)** - CurseForge mod file fingerprinting algorithm binding
 
 ---
 

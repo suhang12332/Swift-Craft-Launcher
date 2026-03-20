@@ -34,9 +34,9 @@ enum CommonService {
     ) async throws -> [String] {
         var result: [String] = []
         switch loader.lowercased() {
-        case "fabric", "forge", "quilt", "neoforge":
+        case GameLoader.fabric.displayName, GameLoader.forge.displayName, GameLoader.quilt.rawValue, GameLoader.neoforge.displayName:
             let loaderType =
-                loader.lowercased() == "neoforge" ? "neo" : loader.lowercased()
+                loader.lowercased() == GameLoader.neoforge.displayName ? "neo" : loader.lowercased()
             let loaderVersions = try await fetchAllVersionThrowing(
                 type: loaderType
             )

@@ -78,6 +78,28 @@ struct CapeSelectionView: View {
     @Binding var selectedCapeImage: NSImage?
     let onCapeSelected: (String?, String?) -> Void
 
+    @StateObject private var viewModel: CapeSelectionViewModel
+
+    init(
+        playerProfile: MinecraftProfileResponse?,
+        selectedCapeId: Binding<String?>,
+        selectedCapeImageURL: Binding<String?>,
+        selectedCapeImage: Binding<NSImage?>,
+        onCapeSelected: @escaping (String?, String?) -> Void
+    ) {
+        self.playerProfile = playerProfile
+        self._selectedCapeId = selectedCapeId
+        self._selectedCapeImageURL = selectedCapeImageURL
+        self._selectedCapeImage = selectedCapeImage
+        self.onCapeSelected = onCapeSelected
+        self._viewModel = StateObject(
+            wrappedValue: CapeSelectionViewModel(
+                selectedCapeImageURL: selectedCapeImageURL,
+                selectedCapeImage: selectedCapeImage
+            )
+        )
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("skin.cape".localized()).font(.headline)
@@ -98,6 +120,9 @@ struct CapeSelectionView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .onDisappear {
+            viewModel.cancel()
+        }
     }
 
     private func capeOption(id: String?, name: String, imageURL: String? = nil, isSystemOption: Bool = false) -> some View {
@@ -108,19 +133,7 @@ struct CapeSelectionView: View {
             guard !isSelected else { return }
 
             selectedCapeId = id
-            if let imageURL = imageURL {
-                // 异步加载 NSImage
-                DispatchQueue.global(qos: .userInitiated).async {
-                    if let url = URL(string: imageURL.httpToHttps()),
-                        let data = try? Data(contentsOf: url),
-                        let nsImage = NSImage(data: data) {
-                        DispatchQueue.main.async {
-                            selectedCapeImageURL = imageURL
-                            selectedCapeImage = nsImage
-                        }
-                    }
-                }
-            }
+            viewModel.loadCapeImageIfNeeded(imageURL: imageURL)
             onCapeSelected(id, imageURL)
         } label: {
             VStack(spacing: 6) {

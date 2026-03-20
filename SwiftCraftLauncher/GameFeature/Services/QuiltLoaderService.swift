@@ -36,20 +36,20 @@ enum QuiltLoaderService {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
 
         // 1. 查全局缓存
-        if let cached = AppCacheManager.shared.get(namespace: "quilt", key: cacheKey, as: ModrinthLoader.self) {
+        if let cached = AppCacheManager.shared.get(namespace: GameLoader.quilt.rawValue, key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
 
         // 2. 直接下载指定版本的 version.json
         // 使用统一的 API 客户端
-        let url = URLConfig.API.Modrinth.loaderProfile(loader: "quilt", version: loaderVersion)
+        let url = URLConfig.API.Modrinth.loaderProfile(loader: GameLoader.quilt.rawValue, version: loaderVersion)
         let data = try await APIClient.get(url: url)
 
         var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         result.version = loaderVersion
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
         // 3. 存入缓存
-        AppCacheManager.shared.setSilently(namespace: "quilt", key: cacheKey, value: result)
+        AppCacheManager.shared.setSilently(namespace: GameLoader.quilt.rawValue, key: cacheKey, value: result)
 
         return result
     }

@@ -49,13 +49,12 @@ struct ScreenshotThumbnail: View {
     let screenshot: ScreenshotInfo
     let action: () -> Void
 
-    @State private var image: NSImage?
-    @State private var loadTask: Task<Void, Never>?
+    @StateObject private var viewModel = ScreenshotThumbnailViewModel()
 
     var body: some View {
         Button(action: action) {
             Group {
-                if let image = image {
+                if let image = viewModel.image {
                     Image(nsImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -75,30 +74,12 @@ struct ScreenshotThumbnail: View {
             )
         }
         .buttonStyle(.plain)
-        .task(id: screenshot.path) {
-            await loadImage()
+        .task {
+            viewModel.load(path: screenshot.path)
         }
         .onDisappear {
-            loadTask?.cancel()
-            loadTask = nil
-            image = nil
+            viewModel.reset()
         }
-    }
-
-    private func loadImage() async {
-        loadTask?.cancel()
-        loadTask = Task { @MainActor in
-            let data = await Task.detached(priority: .userInitiated) {
-                try? Data(contentsOf: screenshot.path)
-            }.value
-            if !Task.isCancelled, let data = data {
-                image = ImageLoadingUtil.downsampledImage(
-                    data: data,
-                    maxPixelSize: ScreenshotSectionConstants.thumbnailSize
-                )
-            }
-        }
-        await loadTask?.value
     }
 }
 
@@ -163,16 +144,13 @@ struct ScreenshotDetailView: View {
 // MARK: - Screenshot Image View
 struct ScreenshotImageView: View {
     let path: URL
-    @State private var image: NSImage?
-    @State private var isLoading: Bool = true
-    @State private var loadFailed: Bool = false
-    @State private var loadTask: Task<Void, Never>?
+    @StateObject private var viewModel = ScreenshotImageViewModel()
 
     var body: some View {
         Group {
-            if isLoading {
+            if viewModel.isLoading {
                 ProgressView().controlSize(.small)
-            } else if loadFailed {
+            } else if viewModel.loadFailed {
                 VStack {
                     Image(systemName: "photo.fill")
                         .font(.largeTitle)
@@ -180,40 +158,17 @@ struct ScreenshotImageView: View {
                     Text("saveinfo.screenshot.load.failed".localized())
                         .foregroundColor(.secondary)
                 }
-            } else if let image = image {
+            } else if let image = viewModel.image {
                 Image(nsImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
             }
         }
-        .task(id: path) {
-            await loadImage()
+        .task {
+            viewModel.load(path: path)
         }
         .onDisappear {
-            loadTask?.cancel()
-            loadTask = nil
-            image = nil
+            viewModel.reset()
         }
-    }
-
-    private func loadImage() async {
-        isLoading = true
-        loadFailed = false
-        loadTask?.cancel()
-        loadTask = Task { @MainActor in
-            let data = await Task.detached(priority: .userInitiated) {
-                try? Data(contentsOf: path)
-            }.value
-            if Task.isCancelled {
-                return
-            }
-            let loaded = data.flatMap {
-                ImageLoadingUtil.downsampledImage(data: $0, maxPixelSize: 1600)
-            }
-            image = loaded
-            loadFailed = (loaded == nil)
-            isLoading = false
-        }
-        await loadTask?.value
     }
 }

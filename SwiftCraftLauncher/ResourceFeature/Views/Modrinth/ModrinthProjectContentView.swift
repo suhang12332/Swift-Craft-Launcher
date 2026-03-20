@@ -16,7 +16,7 @@ struct ModrinthProjectContentView: View {
     var body: some View {
         VStack {
             if let error = error {
-                newErrorView(error)
+                errorView(error)
             } else {
                 ModrinthCompatibilitySection(
                     project: projectDetail,
@@ -28,6 +28,10 @@ struct ModrinthProjectContentView: View {
             }
         }
         .task(id: projectId) { await loadProjectDetails() }
+        .onDisappear {
+            projectDetail = nil
+            error = nil
+        }
     }
 
     private func loadProjectDetails() async {

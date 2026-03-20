@@ -68,12 +68,6 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
         didSet { objectWillChange.send() }
     }
 
-    /// 是否启用资源页面本地缓存（默认关闭）
-    @AppStorage(AppConstants.UserDefaultsKeys.enableResourcePageCache)
-    var enableResourcePageCache: Bool = false {
-        didSet { objectWillChange.send() }
-    }
-
     /// 是否限制通用 Sheet 高度（默认关闭）
     @AppStorage(AppConstants.UserDefaultsKeys.limitCommonSheetHeight)
     var limitCommonSheetHeight: Bool = false {

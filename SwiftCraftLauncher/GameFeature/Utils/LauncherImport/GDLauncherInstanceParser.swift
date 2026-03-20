@@ -35,7 +35,7 @@ struct GDLauncherInstanceParser: LauncherInstanceParser {
         let gameVersion = instanceConfig.gameConfiguration.version.release
 
         // 提取 Mod 加载器信息（取第一个 modloader）
-        var modLoader = "vanilla"
+        var modLoader = GameLoader.vanilla.displayName
         var modLoaderVersion = ""
 
         if let firstModLoader = instanceConfig.gameConfiguration.version.modloaders.first {

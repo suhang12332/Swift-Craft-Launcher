@@ -56,7 +56,7 @@ struct CategoryContentView: View {
     var body: some View {
         VStack {
             if let error = viewModel.error {
-                newErrorView(error)
+                errorView(error)
             } else {
                 if type == "resource" {
                     versionSection
@@ -70,6 +70,9 @@ struct CategoryContentView: View {
         .task {
             await loadDataWithErrorHandling()
             setupDefaultSelections()
+        }
+        .onDisappear {
+            viewModel.clearCache()
         }
     }
 

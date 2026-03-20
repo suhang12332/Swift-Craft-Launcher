@@ -89,7 +89,7 @@ struct MainView: View {
         let game = gameRepository.getGame(by: gameId)
         if let loader = game?.modLoader.lowercased() {
             let currentType = detailState.gameResourcesType.lowercased()
-            if loader == "vanilla" {
+            if loader == GameLoader.vanilla.displayName {
                 let modifiableTypes: [String] = [
                     ResourceType.mod.rawValue,
                     ResourceType.shader.rawValue,
@@ -102,6 +102,13 @@ struct MainView: View {
             } else {
                 if detailState.selectedProjectId == nil {
                     detailState.gameResourcesType = ResourceType.mod.rawValue
+                }
+                if detailState.selectedProjectId != nil && detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue {
+                    detailState.gameResourcesType = ResourceType.mod.rawValue
+                }
+                if gameId != detailState.gameId {
+                    detailState.gameResourcesType = ResourceType.mod.rawValue
+                    detailState.gameType = false
                 }
             }
         }
@@ -120,7 +127,7 @@ struct MainView: View {
 
         let game = gameRepository.getGame(by: newId)
         if let loader = game?.modLoader.lowercased() {
-            detailState.gameResourcesType = (loader == "vanilla") ? ResourceType.datapack.rawValue : ResourceType.mod.rawValue
+            detailState.gameResourcesType = (loader == GameLoader.vanilla.displayName) ? ResourceType.datapack.rawValue : ResourceType.mod.rawValue
         }
         detailState.gameId = newId
         SelectedGameManager.shared.setSelectedGame(newId)
@@ -156,6 +163,9 @@ struct MainView: View {
             detailState.gameId = nil
             detailState.loadedProjectDetail = nil
             detailState.selectedProjectId = nil
+        }
+        if !detailState.gameType && detailState.selectedProjectId == nil {
+            detailState.gameType = true
         }
         if detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue {
             filterState.dataSource = .modrinth
