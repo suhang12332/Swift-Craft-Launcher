@@ -100,6 +100,28 @@ public struct GameSettingsView: View {
                     ).font(.callout)
                 }.foregroundStyle(.primary)
             }.labeledContentStyle(.custom)
+
+            HStack {
+                Spacer()
+                Button {
+                    Task {
+                        await Task.detached(priority: .utility) {
+                            do {
+                                try ModCacheManager.shared.clearLocalModCaches()
+                            } catch {
+                                GlobalErrorHandler.shared.handle(error)
+                            }
+                        }.value
+
+                        calculateCacheInfoSafely()
+                    }
+                } label: {
+                    Text(
+                        "settings.game.clear_cache.label".localized()
+                    )
+                }
+                InfoIconWithPopover(text: "settings.game.clear_cache.help".localized())
+            }
         }
         .onAppear {
             calculateCacheInfoSafely()
