@@ -39,8 +39,6 @@ final class AcknowledgementsViewModel: ObservableObject {
                     decodedLibraries.count,
                     "libraries from GitHubService"
                 )
-            } catch is CancellationError {
-                // 正常清理场景：静默处理
             } catch {
                 guard !Task.isCancelled else { return }
                 Logger.shared.error("Failed to load libraries from GitHubService:", error)
