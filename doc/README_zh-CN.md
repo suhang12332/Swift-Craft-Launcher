@@ -139,6 +139,8 @@ brew install --cask swift-craft-launcher
 
 - **[Archify](https://github.com/Oct4Pie/archify)** - macOS 应用程序通用二进制优化工具
 
+- **[curseforge-fingerprint](https://github.com/meza/curseforge-fingerprint)** - CurseForge 模组文件指纹算法封装
+
 ---
 
 <div align="center">
