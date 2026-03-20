@@ -87,6 +87,7 @@ class ModScanner {
             )
         }
 
+        let inferredType = AppPaths.resourceType(for: fileURL)
         if let cached = getModCacheFromDatabase(hash: hash) {
             // 更新文件名为当前实际文件名（可能已重命名为 .disabled）
             var updatedCached = cached
@@ -102,20 +103,31 @@ class ModScanner {
         }
 
         if var detail = detail {
-            let inferredType = AppPaths.resourceType(for: fileURL)
             detail.type = inferredType
             // 设置本地文件名
             var detailWithFileName = detail
             detailWithFileName.fileName = fileURL.lastPathComponent
             saveToCache(hash: hash, detail: detailWithFileName)
             return detailWithFileName
-        } else {
-            let fallbackDetail = createFallbackDetailFromFileName(
-                fileURL: fileURL
-            )
-            saveToCache(hash: hash, detail: fallbackDetail)
-            return fallbackDetail
         }
+        
+        let fingerprint = try CurseForgeFingerprint.fingerprint(fileAt: fileURL)
+        if let cfAsModrinth = await CurseForgeService.fetchProjectDetailsAsModrinthByFingerprint(
+            fingerprint: fingerprint
+        ) {
+            var detailWithFileName = cfAsModrinth
+            detailWithFileName.type = inferredType
+            detailWithFileName.fileName = fileURL.lastPathComponent
+            saveToCache(hash: hash, detail: detailWithFileName)
+            return detailWithFileName
+        }
+
+        let fallbackDetail = createFallbackDetailFromFileName(
+            fileURL: fileURL
+        )
+        saveToCache(hash: hash, detail: fallbackDetail)
+        return fallbackDetail
+
     }
 
     // MARK: - Mod Cache (Database)

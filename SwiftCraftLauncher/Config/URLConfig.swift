@@ -465,6 +465,11 @@ enum URLConfig {
             static var gameVersions: URL {
                 mirrorBaseURL.appendingPathComponent("minecraft/version")
             }
+
+            // Fingerprints (按文件指纹匹配文件/模组)
+            static var fingerprints: URL {
+                mirrorBaseURL.appendingPathComponent("fingerprints/432")
+            }
         }
 
         // IP Location API

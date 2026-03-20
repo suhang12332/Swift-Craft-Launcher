@@ -399,6 +399,45 @@ enum CurseForgeService {
         return modrinthDetail
     }
 
+    /// 通过文件 fingerprint 获取项目详情（映射为 Modrinth 格式）
+    /// - Parameter fingerprint: CurseForge file fingerprint（UInt32）
+    /// - Returns: Modrinth 格式的项目详情，如果未匹配或失败返回 nil
+    static func fetchProjectDetailsAsModrinthByFingerprint(fingerprint: UInt32) async -> ModrinthProjectDetail? {
+        do {
+            return try await fetchProjectDetailsAsModrinthByFingerprintThrowing(fingerprint: fingerprint)
+        } catch {
+            Logger.shared.error("通过 fingerprint 获取 CurseForge 项目详情失败: \(error.localizedDescription)")
+            return nil
+        }
+    }
+
+    /// 通过文件 fingerprint 获取项目详情（映射为 Modrinth 格式）
+    /// - Parameter fingerprint: CurseForge file fingerprint（UInt32）
+    /// - Returns: Modrinth 格式的项目详情
+    static func fetchProjectDetailsAsModrinthByFingerprintThrowing(fingerprint: UInt32) async throws -> ModrinthProjectDetail? {
+        let matches = try await fetchFingerprintMatchesThrowing(fingerprint: fingerprint)
+        // 仅使用 exactMatches 的第一个 modId；找不到则返回 nil
+        let modId = matches
+            .data
+            .exactMatches?
+            .compactMap { $0.file?.modId }
+            .first
+
+        guard let modId else { return nil }
+        return try await fetchProjectDetailsAsModrinthThrowing(id: "\(modId)")
+    }
+
+    private static func fetchFingerprintMatchesThrowing(fingerprint: UInt32) async throws -> CurseForgeFingerprintMatchesResponse {
+        let url = URLConfig.API.CurseForge.fingerprints
+        let headers = getHeaders()
+
+        let requestBody = CurseForgeFingerprintMatchesRequest(fingerprints: [fingerprint])
+        let body = try JSONEncoder().encode(requestBody)
+
+        let data = try await APIClient.post(url: url, body: body, headers: headers)
+        return try JSONDecoder().decode(CurseForgeFingerprintMatchesResponse.self, from: data)
+    }
+
     /// 获取项目版本列表（映射为 Modrinth 格式，静默版本）
     /// - Parameter id: 项目 ID
     /// - Returns: Modrinth 格式的版本列表，失败时返回空数组
