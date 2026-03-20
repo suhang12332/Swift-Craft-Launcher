@@ -110,7 +110,7 @@ class ModScanner {
             saveToCache(hash: hash, detail: detailWithFileName)
             return detailWithFileName
         }
-        
+
         let fingerprint = try CurseForgeFingerprint.fingerprint(fileAt: fileURL)
         if let cfAsModrinth = await CurseForgeService.fetchProjectDetailsAsModrinthByFingerprint(
             fingerprint: fingerprint
@@ -127,7 +127,6 @@ class ModScanner {
         )
         saveToCache(hash: hash, detail: fallbackDetail)
         return fallbackDetail
-
     }
 
     // MARK: - Mod Cache (Database)
