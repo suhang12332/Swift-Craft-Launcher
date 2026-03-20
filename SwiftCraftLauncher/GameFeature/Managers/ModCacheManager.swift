@@ -131,10 +131,28 @@ class ModCacheManager {
         }
     }
 
+    /// 清理 json_data 中包含 local 标记的 mod 缓存
+    /// - Throws: GlobalError 当操作失败时
+    func clearLocalModCaches() throws {
+        try queue.sync {
+            try ensureInitialized()
+            try modCacheDB.deleteLocalModCaches()
+        }
+    }
+
     /// 清空所有 mod 缓存（静默版本）
     func clearSilently() {
         do {
             try clear()
+        } catch {
+            GlobalErrorHandler.shared.handle(error)
+        }
+    }
+
+    /// 清理 json_data 中包含 local 标记的 mod 缓存（静默版本）
+    func clearLocalModCachesSilently() {
+        do {
+            try clearLocalModCaches()
         } catch {
             GlobalErrorHandler.shared.handle(error)
         }
