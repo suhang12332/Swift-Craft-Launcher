@@ -32,7 +32,12 @@ struct ServerAddressSectionView: View {
             }
         }
         .sheet(item: $selectedServer) { server in
-            ServerAddressEditView(server: server, gameName: gameName, onRefresh: onRefresh)
+            ServerAddressEditView(
+                server: server,
+                gameName: gameName,
+                serverInfo: viewModel.serverInfos[server.id],
+                onRefresh: onRefresh
+            )
         }
         .sheet(isPresented: $showAddServer) {
             ServerAddressEditView(gameName: gameName, onRefresh: onRefresh)

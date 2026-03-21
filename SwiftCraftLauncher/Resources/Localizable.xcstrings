@@ -47,6 +47,16 @@
     "%lld" : {
       "shouldTranslate" : false
     },
+    "%lld / %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld / %2$lld"
+          }
+        }
+      }
+    },
     "%lld MB-%lld MB" : {
       "localizations" : {
         "en" : {
@@ -75941,6 +75951,280 @@
         }
       }
     },
+    "settings.game.clear_cache.help" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يمسح ذاكرة التخزين المؤقت المحلية للملفات الإضافية (mod) التي فشلت في الفحص، حتى يمكن تشغيل الفحص مرة أخرى لجلب التفاصيل قدر الإمكان."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rydder den lokale mod-cache, der mislykkedes med scanning, så scanning kan udløses igen for at hente detaljer så meget som muligt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löscht den lokalen Mod-Cache, der beim Scannen fehlgeschlagen ist, damit das Scannen erneut ausgelöst werden kann, um Details so weit wie möglich abzurufen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clears the local mod cache that failed to scan, so scanning can be triggered again to fetch details as much as possible."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borra la caché local de mods que falló al escanear, para que se pueda volver a ejecutar el escaneo y obtener los detalles en la medida de lo posible."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tyhjentää paikallisen modivälimuistin, joka epäonnistui skannauksessa, jotta skannaus voidaan käynnistää uudelleen ja hakemaan tiedot mahdollisimman paljon."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Efface le cache local des mods dont le scan a échoué, afin que le scan puisse être relancé pour récupérer les détails autant que possible."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "यह उन स्थानीय mod कैश को साफ़ करता है जिसका स्कैन करने में विफल रहा, ताकि स्कैन फिर से ट्रिगर हो सके और यथासंभव विवरण मिल सकें।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Svuota la cache locale dei mod che non è riuscita a essere scansionata, così la scansione può essere riavviata per ottenere i dettagli il più possibile."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スキャンに失敗したローカルのmodキャッシュを消去します。スキャンを再実行して、可能な限り詳細を取得します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스캔에 실패한 로컬 모드 캐시를 지웁니다. 스캔을 다시 실행해 가능한 한 상세 정보를 가져옵니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tømmer lokal mod-buffer som feilet å skanne, slik at skanning kan trigges på nytt for å hente detaljer så langt som mulig."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wist de lokale mod-cache waarvan het scannen is mislukt, zodat het scannen opnieuw kan worden geactiveerd om details zo veel mogelijk op te halen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyczyści lokalny cache modów, których skanowanie nie powiodło się, aby można było ponownie uruchomić skanowanie i uzyskać szczegóły w możliwie największym stopniu."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpa a cache local dos mods que falharam na verificação, para que a verificação possa ser acionada novamente e buscar os detalhes o máximo possível."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очищает локальный кэш mod’ов, сканирование которых не удалось, чтобы можно было повторно запустить сканирование и получить детали в максимально возможной степени."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rensar lokal modcache som misslyckades med skanning, så att skanning kan utlösas igen för att hämta detaljer så mycket som möjligt."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ล้างแคชม็อดในเครื่องที่สแกนไม่สำเร็จ เพื่อให้สามารถสแกนซ้ำอีกครั้งและดึงรายละเอียดได้มากที่สุดเท่าที่จะทำได้"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tarama sırasında başarısız olan yerel mod önbelleğini temizler; böylece tarama yeniden tetiklenip ayrıntılar mümkün olduğunca alınabilir."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xóa bộ nhớ đệm mod cục bộ bị lỗi khi quét, để có thể kích hoạt lại việc quét nhằm lấy thông tin chi tiết nhiều nhất có thể."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清理扫描失败的本地 mod 缓存，用于重新触发扫描，以尽可能获取详情"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清理掃描失敗的本地 mod 快取，用於重新觸發掃描，以盡可能取得詳情"
+          }
+        }
+      }
+    },
+    "settings.game.clear_cache.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مسح ذاكرة التخزين المؤقت"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ryd cache"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cache löschen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear Cache"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Borrar caché"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tyhjennä välimuisti"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Effacer le cache"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कैश साफ़ करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Svuota la cache"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャッシュを消去"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "캐시 지우기"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tøm hurtigbuffer"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cache wissen"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyczyść pamięć podręczną"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar cache"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Очистить кэш"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rensa cache"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ล้างแคช"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Önbelleği temizle"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xóa bộ nhớ đệm"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除缓存"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除快取"
+          }
+        }
+      }
+    },
     "settings.game.java.custom_parameters" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -79648,280 +79932,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "遊戲"
-          }
-        }
-      }
-    },
-    "settings.game.clear_cache.label" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "مسح ذاكرة التخزين المؤقت"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ryd cache"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cache löschen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clear Cache"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Borrar caché"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tyhjennä välimuisti"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Effacer le cache"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "कैश साफ़ करें"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Svuota la cache"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "キャッシュを消去"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "캐시 지우기"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tøm hurtigbuffer"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cache wissen"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wyczyść pamięć podręczną"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limpar cache"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Очистить кэш"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rensa cache"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ล้างแคช"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Önbelleği temizle"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Xóa bộ nhớ đệm"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清除缓存"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清除快取"
-          }
-        }
-      }
-    },
-    "settings.game.clear_cache.help" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "يمسح ذاكرة التخزين المؤقت المحلية للملفات الإضافية (mod) التي فشلت في الفحص، حتى يمكن تشغيل الفحص مرة أخرى لجلب التفاصيل قدر الإمكان."
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rydder den lokale mod-cache, der mislykkedes med scanning, så scanning kan udløses igen for at hente detaljer så meget som muligt."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Löscht den lokalen Mod-Cache, der beim Scannen fehlgeschlagen ist, damit das Scannen erneut ausgelöst werden kann, um Details so weit wie möglich abzurufen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clears the local mod cache that failed to scan, so scanning can be triggered again to fetch details as much as possible."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Borra la caché local de mods que falló al escanear, para que se pueda volver a ejecutar el escaneo y obtener los detalles en la medida de lo posible."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tyhjentää paikallisen modivälimuistin, joka epäonnistui skannauksessa, jotta skannaus voidaan käynnistää uudelleen ja hakemaan tiedot mahdollisimman paljon."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Efface le cache local des mods dont le scan a échoué, afin que le scan puisse être relancé pour récupérer les détails autant que possible."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "यह उन स्थानीय mod कैश को साफ़ करता है जिसका स्कैन करने में विफल रहा, ताकि स्कैन फिर से ट्रिगर हो सके और यथासंभव विवरण मिल सकें।"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Svuota la cache locale dei mod che non è riuscita a essere scansionata, così la scansione può essere riavviata per ottenere i dettagli il più possibile."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "スキャンに失敗したローカルのmodキャッシュを消去します。スキャンを再実行して、可能な限り詳細を取得します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "스캔에 실패한 로컬 모드 캐시를 지웁니다. 스캔을 다시 실행해 가능한 한 상세 정보를 가져옵니다."
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tømmer lokal mod-buffer som feilet å skanne, slik at skanning kan trigges på nytt for å hente detaljer så langt som mulig."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wist de lokale mod-cache waarvan het scannen is mislukt, zodat het scannen opnieuw kan worden geactiveerd om details zo veel mogelijk op te halen."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wyczyści lokalny cache modów, których skanowanie nie powiodło się, aby można było ponownie uruchomić skanowanie i uzyskać szczegóły w możliwie największym stopniu."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limpa a cache local dos mods que falharam na verificação, para que a verificação possa ser acionada novamente e buscar os detalhes o máximo possível."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Очищает локальный кэш mod’ов, сканирование которых не удалось, чтобы можно было повторно запустить сканирование и получить детали в максимально возможной степени."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rensar lokal modcache som misslyckades med skanning, så att skanning kan utlösas igen för att hämta detaljer så mycket som möjligt."
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ล้างแคชม็อดในเครื่องที่สแกนไม่สำเร็จ เพื่อให้สามารถสแกนซ้ำอีกครั้งและดึงรายละเอียดได้มากที่สุดเท่าที่จะทำได้"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tarama sırasında başarısız olan yerel mod önbelleğini temizler; böylece tarama yeniden tetiklenip ayrıntılar mümkün olduğunca alınabilir."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Xóa bộ nhớ đệm mod cục bộ bị lỗi khi quét, để có thể kích hoạt lại việc quét nhằm lấy thông tin chi tiết nhiều nhất có thể."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清理扫描失败的本地 mod 缓存，用于重新触发扫描，以尽可能获取详情"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清理掃描失敗的本地 mod 快取，用於重新觸發掃描，以盡可能取得詳情"
           }
         }
       }

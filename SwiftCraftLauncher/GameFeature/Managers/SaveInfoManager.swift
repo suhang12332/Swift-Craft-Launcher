@@ -226,10 +226,9 @@ final class SaveInfoManager: ObservableObject {
                 }
             }
 
-            if hasServersType {
-                group.addTask { [weak self] in
-                    await self?.loadServers()
-                }
+            // 服务器始终加载（即使没有 servers.dat 文件也会返回空数组）
+            group.addTask { [weak self] in
+                await self?.loadServers()
             }
 
             if hasLitematicaType {
