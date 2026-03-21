@@ -154,7 +154,7 @@ struct ServerAddressEditView: View {
         let port = portString.isEmpty ? nil : Int(portString)
         let name = serverName.isEmpty ? "saveinfo.server.name".localized() : serverName
 
-        return ServerInfoCardView(
+        return ModrinthProjectTitleView(
             serverName: name,
             serverAddress: address,
             serverPort: port,
