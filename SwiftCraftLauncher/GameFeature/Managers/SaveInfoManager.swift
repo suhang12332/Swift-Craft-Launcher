@@ -33,7 +33,6 @@ final class SaveInfoManager: ObservableObject {
     // 各个类型是否存在（目录或资源是否存在）
     @Published private(set) var hasWorldsType: Bool = false
     @Published private(set) var hasScreenshotsType: Bool = false
-    @Published private(set) var hasServersType: Bool = false
     @Published private(set) var hasLitematicaType: Bool = false
     @Published private(set) var hasLogsType: Bool = false
 
@@ -202,7 +201,6 @@ final class SaveInfoManager: ObservableObject {
         }.value
         hasWorldsType = worlds
         hasScreenshotsType = screenshots
-        hasServersType = servers
         hasLitematicaType = litematica
         hasLogsType = logs
     }
@@ -342,7 +340,6 @@ final class SaveInfoManager: ObservableObject {
         // 重置类型存在状态
         hasWorldsType = false
         hasScreenshotsType = false
-        hasServersType = false
         hasLitematicaType = false
         hasLogsType = false
     }

@@ -149,69 +149,16 @@ struct ServerAddressEditView: View {
     }
 
     private func serverInfoCard(_ info: MinecraftServerInfo) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            // 服务器图标和版本
-            HStack(spacing: 12) {
-                // 服务器图标
-                if let favicon = info.favicon,
-                   let imageData = CommonUtil.imageDataFromBase64(favicon),
-                   let nsImage = NSImage(data: imageData) {
-                    Image(nsImage: nsImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 48, height: 48)
-                        .cornerRadius(4)
-                } else {
-                    Image(systemName: "server.rack")
-                        .font(.system(size: 32))
-                        .foregroundColor(.green)
-                        .frame(width: 48, height: 48)
-                }
+        let address = serverAddress.trimmingCharacters(in: .whitespaces)
+        let portString = serverPort.trimmingCharacters(in: .whitespaces)
+        let port = portString.isEmpty ? nil : Int(portString)
+        let name = serverName.isEmpty ? "saveinfo.server.name".localized() : serverName
 
-                VStack(alignment: .leading, spacing: 4) {
-                    // 版本信息
-                    if let version = info.version {
-                        HStack(spacing: 4) {
-                            Image(systemName: "cube")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text(version.name)
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                        }
-                    }
-
-                    // 玩家数量
-                    if let players = info.players {
-                        HStack(spacing: 4) {
-                            Image(systemName: "person.2")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text("\(players.online) / \(players.max)")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-
-                Spacer()
-            }
-
-            // 描述
-            if !info.description.plainText.isEmpty {
-                Divider()
-                Text(info.description.plainText)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(3)
-            }
-        }
-        .padding(12)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(8)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.green.opacity(0.3), lineWidth: 1)
+        return ServerInfoCardView(
+            serverName: name,
+            serverAddress: address,
+            serverPort: port,
+            serverInfo: info
         )
     }
 
