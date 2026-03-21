@@ -21,24 +21,52 @@ enum ResourceDetailLoader {
         gameRepository: GameRepository,
         resourceType: String
     ) async -> (detail: ModrinthProjectDetail, compatibleGames: [GameVersionInfo])? {
-        guard let detail = await ModrinthService.fetchProjectDetails(id: projectId) else {
-            GlobalErrorHandler.shared.handle(GlobalError.resource(
-                chineseMessage: "无法获取项目详情",
-                i18nKey: "error.resource.project_details_not_found",
-                level: .notification
-            ))
-            return nil
-        }
 
-        // 检测兼容游戏
+        let isServer = resourceType == ResourceType.minecraftJavaServer.rawValue
+        let detail: ModrinthProjectDetail?
+        if isServer {
+            guard let v3 = await ModrinthService.fetchProjectDetailsV3(id: projectId) else {
+                GlobalErrorHandler.shared.handle(
+                    GlobalError.resource(
+                        chineseMessage: "无法获取服务器项目详情",
+                        i18nKey: "error.resource.server_project_details_not_found",
+                        level: .notification
+                    )
+                )
+                return nil
+            }
+            detail = ModrinthProjectDetail.fromV3(v3)
+        } else {
+            guard let v2 = await ModrinthService.fetchProjectDetails(id: projectId) else {
+                GlobalErrorHandler.shared.handle(
+                    GlobalError.resource(
+                        chineseMessage: "无法获取项目详情",
+                        i18nKey: "error.resource.project_details_not_found",
+                        level: .notification
+                    )
+                )
+                return nil
+            }
+            detail = v2
+        }
+        guard let detail else { return nil }
         let compatibleGames = await filterCompatibleGames(
             detail: detail,
             gameRepository: gameRepository,
             resourceType: resourceType,
             projectId: projectId
         )
+        let finalGames: [GameVersionInfo]
+        if isServer {
+            finalGames = await ServerAddressService.shared.filterGamesWithoutExistingServer(
+                detail: detail,
+                games: compatibleGames
+            )
+        } else {
+            finalGames = compatibleGames
+        }
 
-        return (detail, compatibleGames)
+        return (detail, finalGames)
     }
 
     /// 加载整合包详情
@@ -54,39 +82,5 @@ enum ResourceDetailLoader {
             return nil
         }
         return detail
-    }
-
-    /// 加载 Minecraft Java 服务器详情（使用 Modrinth v3 接口）
-    /// - Parameter projectId: 项目 ID
-    /// - Returns: v3 项目详情，如果加载失败则返回 nil
-    static func loadMinecraftJavaServerDetail(
-        projectId: String,
-        gameRepository: GameRepository,
-        resourceType: String
-    ) async -> (detail: ModrinthProjectDetail, compatibleGames: [GameVersionInfo])? {
-        guard let detail = await ModrinthService.fetchProjectDetailsV3(id: projectId) else {
-            GlobalErrorHandler.shared.handle(
-                GlobalError.resource(
-                    chineseMessage: "无法获取服务器项目详情",
-                    i18nKey: "error.resource.server_project_details_not_found",
-                    level: .notification
-                )
-            )
-            return nil
-        }
-        let result = ModrinthProjectDetail.fromV3(detail)
-        // 检测兼容游戏
-        let compatibleGames = await filterCompatibleGames(
-            detail: result,
-            gameRepository: gameRepository,
-            resourceType: resourceType,
-            projectId: projectId
-        )
-        // 过滤掉已经添加了该服务器的游戏
-        let filteredGames = await ServerAddressService.shared.filterGamesWithoutExistingServer(
-            detail: result,
-            games: compatibleGames
-        )
-        return (result, filteredGames)
     }
 }
