@@ -105,7 +105,7 @@ final class SaveInfoManager: ObservableObject {
     /// 检查各个类型是否存在（在后台执行，避免主线程 FileManager）
     private func checkTypesAvailability() async {
         let name = gameName
-        let (worlds, screenshots, servers, litematica, logs) = await Task.detached(priority: .userInitiated) {
+        let (worlds, screenshots, _, litematica, logs) = await Task.detached(priority: .userInitiated) {
             let fm = FileManager.default
             let profileDir = AppPaths.profileDirectory(gameName: name)
             let savesPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)

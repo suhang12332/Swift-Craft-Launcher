@@ -85,8 +85,8 @@ struct ModrinthProjectTitleView: View {
     }
 
     // MARK: - View Components
-    @ViewBuilder
-    private var iconView: some View {
+
+    @ViewBuilder private var iconView: some View {
         switch icon {
         case .favicon(let base64):
             if let base64 = base64,
@@ -177,8 +177,8 @@ extension ModrinthProjectTitleView {
         var items: [InfoItem] = [
             InfoItem(
                 text: serverPort.flatMap { $0 > 0 ? "\(serverAddress):\($0)" : nil } ?? serverAddress,
-                systemImage: "server.rack"
-            )
+                systemImage: "server.rack",
+            ),
         ]
 
         if let players = serverInfo.players {
@@ -215,7 +215,7 @@ extension ModrinthProjectTitleView {
         } else {
             self.infoItems = [
                 InfoItem(text: "\(projectDetail.downloads)", systemImage: "arrow.down.circle"),
-                InfoItem(text: "\(projectDetail.followers)", systemImage: "heart")
+                InfoItem(text: "\(projectDetail.followers)", systemImage: "heart"),
             ]
         }
 
