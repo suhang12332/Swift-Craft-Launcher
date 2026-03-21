@@ -53,45 +53,35 @@ struct ServerInfoCardView: View {
 
     // MARK: - Body
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top, spacing: 12) {
-                // 服务器图标
-                iconView
+        HStack(alignment: .top, spacing: 12) {
+            // 服务器图标
+            iconView
 
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        // 服务器名称
-                        Text(title)
-                            .font(.headline)
-                        Spacer()
-                        // 信息行（地址、玩家数量等）
-                        infoRowView
-                    }
-
-                    // 服务器描述（MOTD）
-                    if !description.isEmpty {
-                        Text(description)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .lineLimit(3)
-                    }
-
-                    // 标签/版本标签
-                    if !tags.isEmpty {
-                        tagsView
-                    }
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    // 服务器名称
+                    Text(title)
+                        .font(.headline)
+                    Spacer()
+                    // 信息行（地址、玩家数量等）
+                    infoRowView
                 }
 
-                Spacer()
+                // 服务器描述（MOTD）
+                if !description.isEmpty {
+                    Text(description)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .lineLimit(3)
+                }
+
+                // 标签/版本标签
+                if !tags.isEmpty {
+                    tagsView
+                }
             }
         }
-        .padding(12)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(8)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.green.opacity(0.3), lineWidth: 1)
-        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     // MARK: - View Components
@@ -194,7 +184,7 @@ extension ServerInfoCardView {
         if let players = serverInfo.players {
             items.append(InfoItem(
                 text: "\(players.online) / \(players.max)",
-                systemImage: "person.2"
+                systemImage: "person.2",
             ))
         }
 
