@@ -46,15 +46,13 @@ struct SaveInfoView: View {
             }
 
             // 服务器地址区域（始终显示，即使没有检测到服务器）
-            if manager.hasServersType {
-                ServerAddressSectionView(
-                    servers: manager.servers,
-                    isLoading: manager.isLoadingServers,
-                    gameName: gameName
-                ) {
-                    Task {
-                        await manager.loadData()
-                    }
+            ServerAddressSectionView(
+                servers: manager.servers,
+                isLoading: manager.isLoadingServers,
+                gameName: gameName
+            ) {
+                Task {
+                    await manager.loadData()
                 }
             }
 
@@ -73,14 +71,6 @@ struct SaveInfoView: View {
                     logs: manager.logs,
                     isLoading: manager.isLoadingLogs
                 )
-            }
-
-            // 当没有任何可用信息类型时显示空状态
-            if !manager.isLoading && !manager.hasWorldsType && !manager.hasScreenshotsType && !manager.hasServersType && !manager.hasLitematicaType && !manager.hasLogsType {
-                Text("saveinfo.no_available_info".localized())
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity)
-                    .padding()
             }
         }
         .onChange(of: gameId) { _, _ in

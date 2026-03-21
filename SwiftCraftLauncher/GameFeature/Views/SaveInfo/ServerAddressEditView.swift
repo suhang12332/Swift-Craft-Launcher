@@ -1,9 +1,11 @@
 import SwiftUI
+import AppKit
 
 // MARK: - Server Address Edit View
 struct ServerAddressEditView: View {
     let server: ServerAddress?
     let gameName: String
+    let serverInfo: MinecraftServerInfo?
     let onRefresh: (() -> Void)?
     @Environment(\.dismiss)
     private var dismiss
@@ -20,9 +22,10 @@ struct ServerAddressEditView: View {
         server == nil
     }
 
-    init(server: ServerAddress? = nil, gameName: String, onRefresh: (() -> Void)? = nil) {
+    init(server: ServerAddress? = nil, gameName: String, serverInfo: MinecraftServerInfo? = nil, onRefresh: (() -> Void)? = nil) {
         self.server = server
         self.gameName = gameName
+        self.serverInfo = serverInfo
         self.onRefresh = onRefresh
         if let server {
             _serverName = State(initialValue: server.name)
@@ -97,11 +100,15 @@ struct ServerAddressEditView: View {
     }
 
     private var bodyView: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 20) {
+            // 服务器信息卡片
+            if let serverInfo = serverInfo {
+                serverInfoCard(serverInfo)
+            }
+
             Text("saveinfo.server.name".localized())
             TextField("saveinfo.server.name".localized(), text: $serverName)
                 .textFieldStyle(.roundedBorder)
-                .padding(.bottom, 20)
 
             HStack {
                 VStack(alignment: .leading) {
@@ -132,15 +139,27 @@ struct ServerAddressEditView: View {
                         .frame(maxWidth: 100)
                 }
             }
-            .padding(.bottom, 20)
 
             HStack {
                 Toggle("saveinfo.server.hidden".localized(), isOn: $isHidden)
                 Spacer()
                 Toggle("saveinfo.server.accept_textures".localized(), isOn: $acceptTextures)
             }
-            .padding(.bottom, 20)
         }
+    }
+
+    private func serverInfoCard(_ info: MinecraftServerInfo) -> some View {
+        let address = serverAddress.trimmingCharacters(in: .whitespaces)
+        let portString = serverPort.trimmingCharacters(in: .whitespaces)
+        let port = portString.isEmpty ? nil : Int(portString)
+        let name = serverName.isEmpty ? "saveinfo.server.name".localized() : serverName
+
+        return ModrinthProjectTitleView(
+            serverName: name,
+            serverAddress: address,
+            serverPort: port,
+            serverInfo: info
+        )
     }
 
     private var footerView: some View {
