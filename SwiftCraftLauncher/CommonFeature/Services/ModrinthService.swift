@@ -233,12 +233,16 @@ enum ModrinthService {
         return includeSnapshots ? result : result.filter { $0.version_type == "release" }
     }
 
-    static func fetchProjectDetails(id: String) async -> ModrinthProjectDetail? {
+    static func fetchProjectDetails(id: String, type: String = "") async -> ModrinthProjectDetail? {
         // 检查是否是 CurseForge 项目（ID 以 "cf-" 开头）
         if id.hasPrefix("cf-") {
             return await CurseForgeService.fetchProjectDetailsAsModrinth(id: id)
         }
 
+        if !type.isEmpty {
+            guard let result = await fetchProjectDetailsV3(id: id) else { return nil }
+            return ModrinthProjectDetail.fromV3(result)
+        }
         // 使用 Modrinth 服务
         do {
             return try await fetchProjectDetailsThrowing(id: id)
