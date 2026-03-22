@@ -39,7 +39,7 @@ struct GameLocalResourceView: View {
             prompt: "search.resources".localized()
         )
         .onAppear {
-            viewModel.onAppear(game: game, query: query, localFilter: localFilter)
+            viewModel.onSearchTextChanged(searchText)
         }
         .onDisappear {
             viewModel.onDisappear()
