@@ -18,7 +18,7 @@ extension ServerConnectionStatus {
         case .success:
             return .green
         case .timeout:
-            return .yellow
+            return .red
         case .failed:
             return .red
         }

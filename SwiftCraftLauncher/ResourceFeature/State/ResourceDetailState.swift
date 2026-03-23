@@ -22,7 +22,6 @@ public final class ResourceDetailState: ObservableObject {
         }
     }
     @Published public var loadedProjectDetail: ModrinthProjectDetail?
-    @Published public var loadedProjectDetailV3: ModrinthProjectDetailV3?
     @Published public var showInstallSheet: Bool = false
     @Published public var currentProject: ModrinthProject?
     @Published var compatibleGames: [GameVersionInfo] = []
@@ -42,7 +41,6 @@ public final class ResourceDetailState: ObservableObject {
         self.gameResourcesType = gameResourcesType
         self.selectedProjectId = selectedProjectId
         self.loadedProjectDetail = loadedProjectDetail
-        self.loadedProjectDetailV3 = loadedProjectDetailV3
     }
 
     // MARK: - 便捷方法
@@ -59,7 +57,6 @@ public final class ResourceDetailState: ObservableObject {
     public func clearSelection() {
         selectedProjectId = nil
         loadedProjectDetail = nil
-        loadedProjectDetailV3 = nil
     }
 
     // MARK: - Bindings（供子视图与 GameActionManager 等使用）
@@ -106,12 +103,6 @@ public final class ResourceDetailState: ObservableObject {
         Binding(get: { [weak self] in self?.loadedProjectDetail }, set: { [weak self] value in
             guard let self else { return }
             DispatchQueue.main.async { self.loadedProjectDetail = value }
-        })
-    }
-    public var loadedProjectDetailV3Binding: Binding<ModrinthProjectDetailV3?> {
-        Binding(get: { [weak self] in self?.loadedProjectDetailV3 }, set: { [weak self] value in
-            guard let self else { return }
-            DispatchQueue.main.async { self.loadedProjectDetailV3 = value }
         })
     }
     public var showInstallSheetBinding: Binding<Bool> {

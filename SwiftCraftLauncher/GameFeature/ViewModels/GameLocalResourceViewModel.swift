@@ -28,16 +28,6 @@ final class GameLocalResourceViewModel: ObservableObject {
 
     var displayedResources: [ModrinthProjectDetail] { scannedResources }
 
-    func onAppear(game: GameVersionInfo, query: String, localFilter: LocalResourceFilter) {
-        guard !hasLoaded else { return }
-        hasLoaded = true
-        applyContext(game: game, query: query, localFilter: localFilter, forceResetDirectory: true)
-        refreshAllFiles()
-        resetPagination()
-        currentSearchText = ""
-        loadPage(page: 1, append: false, searchText: currentSearchText)
-    }
-
     func onDisappear() {
         clearAllData()
     }

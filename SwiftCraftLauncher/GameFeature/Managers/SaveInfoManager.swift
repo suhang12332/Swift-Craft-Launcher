@@ -33,7 +33,6 @@ final class SaveInfoManager: ObservableObject {
     // 各个类型是否存在（目录或资源是否存在）
     @Published private(set) var hasWorldsType: Bool = false
     @Published private(set) var hasScreenshotsType: Bool = false
-    @Published private(set) var hasServersType: Bool = false
     @Published private(set) var hasLitematicaType: Bool = false
     @Published private(set) var hasLogsType: Bool = false
 
@@ -106,7 +105,7 @@ final class SaveInfoManager: ObservableObject {
     /// 检查各个类型是否存在（在后台执行，避免主线程 FileManager）
     private func checkTypesAvailability() async {
         let name = gameName
-        let (worlds, screenshots, servers, litematica, logs) = await Task.detached(priority: .userInitiated) {
+        let (worlds, screenshots, _, litematica, logs) = await Task.detached(priority: .userInitiated) {
             let fm = FileManager.default
             let profileDir = AppPaths.profileDirectory(gameName: name)
             let savesPath = profileDir.appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
@@ -202,7 +201,6 @@ final class SaveInfoManager: ObservableObject {
         }.value
         hasWorldsType = worlds
         hasScreenshotsType = screenshots
-        hasServersType = servers
         hasLitematicaType = litematica
         hasLogsType = logs
     }
@@ -226,10 +224,9 @@ final class SaveInfoManager: ObservableObject {
                 }
             }
 
-            if hasServersType {
-                group.addTask { [weak self] in
-                    await self?.loadServers()
-                }
+            // 服务器始终加载（即使没有 servers.dat 文件也会返回空数组）
+            group.addTask { [weak self] in
+                await self?.loadServers()
             }
 
             if hasLitematicaType {
@@ -343,7 +340,6 @@ final class SaveInfoManager: ObservableObject {
         // 重置类型存在状态
         hasWorldsType = false
         hasScreenshotsType = false
-        hasServersType = false
         hasLitematicaType = false
         hasLogsType = false
     }
