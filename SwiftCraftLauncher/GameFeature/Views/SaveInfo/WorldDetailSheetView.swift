@@ -65,12 +65,10 @@ struct WorldDetailSheetView: View {
     // MARK: - Body View
     private var bodyView: some View {
         Group {
-            if viewModel.isLoading {
-                loadingView
-            } else if let metadata = viewModel.metadata {
+            if let metadata = viewModel.metadata {
                 metadataContentView(metadata: metadata)
             } else {
-                errorView
+                loadingView
             }
         }
     }
@@ -80,24 +78,6 @@ struct WorldDetailSheetView: View {
             ProgressView().controlSize(.small)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-
-    private var errorView: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.largeTitle)
-                .foregroundColor(.orange)
-            Text("saveinfo.world.detail.load.failed".localized())
-                .font(.headline)
-            if let errorMessage = viewModel.errorMessage {
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding()
     }
 
     private func metadataContentView(metadata: WorldDetailMetadata) -> some View {
