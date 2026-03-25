@@ -294,10 +294,6 @@ jobs:
           # Create output directory
           mkdir -p "$PROCESSED_DIR"
           
-          # Show archify help for debugging
-          echo "📋 archify 帮助信息:"
-          python3 .github/scripts/archify.py --help | head -20
-          
           # Process app with archify
           echo "🚀 执行 archify 命令..."
           python3 .github/scripts/archify.py \

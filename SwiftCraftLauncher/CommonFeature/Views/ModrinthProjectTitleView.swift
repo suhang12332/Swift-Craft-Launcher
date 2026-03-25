@@ -139,6 +139,7 @@ struct ModrinthProjectTitleView: View {
                     Divider().frame(height: 12)
                 }
                 Label(item.text, systemImage: item.systemImage)
+                    .lineLimit(1)
             }
         }
         .font(.caption)

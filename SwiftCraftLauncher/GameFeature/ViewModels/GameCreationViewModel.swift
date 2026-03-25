@@ -15,10 +15,15 @@ class GameCreationViewModel: BaseGameFormViewModel {
     @Published var iconImage: Image?
     @Published var selectedGameVersion = ""
     @Published var versionTime = ""
-    @Published var selectedModLoader = GameLoader.vanilla.displayName
+    @Published var selectedModLoader = GameLoader.vanilla.displayName {
+        didSet {
+            updateParentState()
+        }
+    }
     @Published var selectedLoaderVersion = "" {
         didSet {
             updateDefaultGameName()
+            updateParentState()
         }
     }
     @Published var availableLoaderVersions: [String] = []

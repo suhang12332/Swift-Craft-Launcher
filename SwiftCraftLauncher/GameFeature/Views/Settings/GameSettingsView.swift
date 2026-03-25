@@ -106,11 +106,7 @@ public struct GameSettingsView: View {
                 Button {
                     Task {
                         await Task.detached(priority: .utility) {
-                            do {
-                                try ModCacheManager.shared.clearLocalModCaches()
-                            } catch {
-                                GlobalErrorHandler.shared.handle(error)
-                            }
+                            ModCacheManager.shared.clearSilently()
                         }.value
 
                         calculateCacheInfoSafely()
