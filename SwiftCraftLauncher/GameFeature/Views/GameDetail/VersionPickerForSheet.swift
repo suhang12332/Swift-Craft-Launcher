@@ -13,7 +13,7 @@ struct VersionPickerForSheet: View {
     @State private var error: GlobalError?
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
             if isLoading {
                 ProgressView().controlSize(.small)
             } else if !availableVersions.isEmpty {

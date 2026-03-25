@@ -19,8 +19,11 @@ struct DependencySectionView: View {
             spacerView()
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(state.dependencies, id: \.id) { dep in
-                    VStack(alignment: .leading) {
-                        Text(dep.title).font(.headline).bold()
+                    VStack {
+                        Text(dep.title)
+                            .font(.headline)
+                            .bold()
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         if let versions = state.versions[dep.id],
                             !versions.isEmpty {
                             CommonMenuPicker(
