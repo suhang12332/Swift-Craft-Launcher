@@ -23,7 +23,6 @@ class GameCreationViewModel: BaseGameFormViewModel {
     @Published var selectedLoaderVersion = "" {
         didSet {
             updateDefaultGameName()
-            updateParentState()
         }
     }
     @Published var availableLoaderVersions: [String] = []
