@@ -230,17 +230,6 @@ class ModCacheDatabase {
         }
     }
 
-    /// 按 json_data 内容（如 local 标识）删除 mod 缓存数据
-    ///
-    /// 对应需求 SQL：
-    /// `delete from mod_cache where json_data like '%local%';`
-    func deleteLocalModCaches() throws {
-        try db.transaction {
-            let sql = "DELETE FROM \(tableName) WHERE json_data like '%local%';"
-            try db.execute(sql)
-        }
-    }
-
     /// - Parameter hash: mod 文件的 hash 值
     /// - Returns: 是否存在
     /// - Throws: GlobalError 当操作失败时
