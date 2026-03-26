@@ -7,7 +7,9 @@ struct WorldInfoSectionView: View {
     let isLoading: Bool
     let gameName: String
 
-    @State private var selectedWorld: WorldInfo?
+    @State private var preparedViewModel: WorldDetailSheetViewModel?
+    @State private var loadTask: Task<Void, Never>?
+    @State private var currentLoadToken: UUID?
 
     // MARK: - Body
     var body: some View {
@@ -19,8 +21,19 @@ struct WorldInfoSectionView: View {
         ) { world in
             worldChip(for: world)
         }
-        .sheet(item: $selectedWorld) { world in
-            WorldDetailSheetView(world: world, gameName: gameName)
+        .sheet(
+            isPresented: Binding(
+                get: { preparedViewModel != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        preparedViewModel = nil
+                    }
+                }
+            )
+        ) {
+            if let viewModel = preparedViewModel {
+                WorldDetailSheetView(viewModel: viewModel)
+            }
         }
     }
 
@@ -29,7 +42,17 @@ struct WorldInfoSectionView: View {
         FilterChip(
             title: world.name,
             action: {
-                selectedWorld = world
+                let token = UUID()
+                currentLoadToken = token
+                loadTask?.cancel()
+                let selected = world
+                loadTask = Task {
+                    let viewModel = WorldDetailSheetViewModel(world: selected, gameName: gameName)
+                    await viewModel.loadMetadata()
+                    guard currentLoadToken == token else { return }
+                    preparedViewModel = viewModel
+                    currentLoadToken = nil
+                }
             },
             iconName: "folder.fill",
             isLoading: false,
