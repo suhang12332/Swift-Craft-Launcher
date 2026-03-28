@@ -69,7 +69,7 @@ struct YggdrasilAuthView: View {
 
     private var notAuthenticatedView: some View {
         statusView(
-            systemImage: "person.crop.circle.badge.clock",
+            systemImage: "person.crop.circle.badge.questionmark.fill",
             titleKey: "yggdrasil.auth.ready",
             subtitleKey: "yggdrasil.auth.ready.subtitle",
             subtitleFont: .caption
@@ -78,7 +78,7 @@ struct YggdrasilAuthView: View {
 
     private var waitingForBrowserView: some View {
         statusView(
-            systemImage: "safari",
+            systemImage: "person.crop.circle.badge.clock",
             titleKey: "yggdrasil.auth.waiting_browser",
             subtitleKey: "yggdrasil.auth.waiting_browser.subtitle",
             subtitleFont: .subheadline
@@ -133,6 +133,8 @@ struct YggdrasilAuthView: View {
         VStack(spacing: 16) {
             Image(systemName: systemImage)
                 .font(.system(size: 46))
+                .symbolRenderingMode(.multicolor)
+                .symbolVariant(.none)
                 .foregroundColor(.secondary)
             Text(titleKey.localized())
                 .font(.headline)

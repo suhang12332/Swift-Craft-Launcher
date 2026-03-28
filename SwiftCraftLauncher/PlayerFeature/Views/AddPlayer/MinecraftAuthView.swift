@@ -10,7 +10,6 @@ struct MinecraftAuthView: View {
             switch authService.authState {
             case .notAuthenticated:
                 notAuthenticatedView
-//                waitingForBrowserAuthView
             case .waitingForBrowserAuth:
                 waitingForBrowserAuthView
 
