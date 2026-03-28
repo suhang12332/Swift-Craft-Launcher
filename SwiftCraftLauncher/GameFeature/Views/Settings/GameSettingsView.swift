@@ -15,91 +15,101 @@ public struct GameSettingsView: View {
     }
 
     public var body: some View {
-        Form {
-            LabeledContent("settings.default_api_source.label".localized()) {
-                Picker("", selection: $gameSettings.defaultAPISource) {
-                    ForEach(DataSource.allCases, id: \.self) { source in
-                        Text(source.localizedName).tag(source)
+        VStack {
+            Form {
+                LabeledContent("settings.default_api_source.label".localized()) {
+                    Picker("", selection: $gameSettings.defaultAPISource) {
+                        ForEach(DataSource.allCases, id: \.self) { source in
+                            Text(source.localizedName).tag(source)
+                        }
                     }
-                }
 
-                .labelsHidden()
-                .fixedSize()
-            }.labeledContentStyle(.custom(alignment: .firstTextBaseline)).padding(.bottom, 10)
-
-            LabeledContent("settings.game_versions.label".localized()) {
-                HStack {
-                    Toggle(
-                        "",
-                        isOn: $gameSettings.includeSnapshotsForGameVersions
-                    )
                     .labelsHidden()
-                    Text("settings.game_versions.include_snapshots.label".localized()).font(.callout)
+                    .fixedSize()
+                }
+                .labeledContentStyle(.custom)
+                .padding(.bottom, 10)
+
+                LabeledContent("settings.game_versions.label".localized()) {
+                    HStack {
+                        Toggle(
+                            "",
+                            isOn: $gameSettings.includeSnapshotsForGameVersions
+                        )
+                        .labelsHidden()
+                        Text("settings.game_versions.include_snapshots.label".localized()).font(.callout)
+                            .foregroundColor(.primary)
+                    }
+                }
+                .labeledContentStyle(.custom)
+                .padding(.bottom, 10)
+
+                LabeledContent("settings.ai_crash_analysis".localized()) {
+                    HStack {
+                        Toggle(
+                            "",
+                            isOn: $gameSettings.enableAICrashAnalysis
+                        ).labelsHidden()
+                        Text("settings.ai_crash_analysis.description".localized()).font(
+                            .callout
+                        )
                         .foregroundColor(.primary)
-                }
-            }.labeledContentStyle(.custom).padding(.bottom, 10)
-
-            LabeledContent("settings.ai_crash_analysis".localized()) {
-                HStack {
-                    Toggle(
-                        "",
-                        isOn: $gameSettings.enableAICrashAnalysis
-                    ).labelsHidden()
-                    Text("settings.ai_crash_analysis.description".localized()).font(
-                        .callout
-                    )
-                    .foregroundColor(.primary)
-                }
-            }.labeledContentStyle(.custom).padding(.bottom, 10)
-
-            LabeledContent {
-                HStack {
-                    MiniRangeSlider(
-                        range: $globalMemoryRange,
-                        bounds:
-                            512...Double(gameSettings.maximumMemoryAllocation)
-                    )
-                    .frame(width: 200)
-                    .controlSize(.mini)
-                    .onChange(of: globalMemoryRange) { _, newValue in
-                        gameSettings.globalXms = Int(newValue.lowerBound)
-                        gameSettings.globalXmx = Int(newValue.upperBound)
                     }
-                    .onAppear {
-                        globalMemoryRange =
-                            Double(
-                                gameSettings.globalXms
-                            )...Double(gameSettings.globalXmx)
-                    }
-                    Text(
-                        "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB"
-                    )
-                    .font(.subheadline)
-                    .foregroundColor(.primary)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    InfoIconWithPopover(
-                        text: "settings.default_memory_allocation.description".localized()
-                    )
                 }
-            } label: {
-                Text("settings.default_memory_allocation.label".localized())
+                .labeledContentStyle(.custom)
+                .padding(.bottom, 10)
+
+                LabeledContent("settings.default_memory_allocation.label".localized()) {
+                    HStack {
+                        MiniRangeSlider(
+                            range: $globalMemoryRange,
+                            bounds:
+                                512...Double(gameSettings.maximumMemoryAllocation)
+                        )
+                        .frame(width: 200)
+                        .controlSize(.mini)
+                        .onChange(of: globalMemoryRange) { _, newValue in
+                            gameSettings.globalXms = Int(newValue.lowerBound)
+                            gameSettings.globalXmx = Int(newValue.upperBound)
+                        }
+                        .onAppear {
+                            globalMemoryRange =
+                                Double(
+                                    gameSettings.globalXms
+                                )...Double(gameSettings.globalXmx)
+                        }
+                        Text(
+                            "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB"
+                        )
+                        .font(.subheadline)
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        InfoIconWithPopover(
+                            text: "settings.default_memory_allocation.description".localized()
+                        )
+                    }
+                }
+                .labeledContentStyle(.custom)
+                .padding(.bottom, 10)
+
+                LabeledContent("settings.game_resource_info.label".localized() + ":") {
+                    HStack {
+                        Label(
+                            "\(cacheManager.cacheInfo.fileCount)",
+                            systemImage: "text.document"
+                        ).font(.callout)
+                        Divider().frame(height: 16)
+                        Label(
+                            cacheManager.cacheInfo.formattedSize,
+                            systemImage: "externaldrive"
+                        ).font(.callout)
+                    }.foregroundStyle(.primary)
+                }.labeledContentStyle(.custom)
             }
-            .labeledContentStyle(.custom).padding(.bottom, 10)
-
-            LabeledContent("settings.game_resource_info.label".localized()) {
-                HStack {
-                    Label(
-                        "\(cacheManager.cacheInfo.fileCount)",
-                        systemImage: "text.document"
-                    ).font(.callout)
-                    Divider().frame(height: 16)
-                    Label(
-                        cacheManager.cacheInfo.formattedSize,
-                        systemImage: "externaldrive"
-                    ).font(.callout)
-                }.foregroundStyle(.primary)
-            }.labeledContentStyle(.custom)
+            .onAppear {
+                calculateCacheInfoSafely()
+            }
 
             HStack {
                 Spacer()
@@ -108,19 +118,13 @@ public struct GameSettingsView: View {
                         await Task.detached(priority: .utility) {
                             ModCacheManager.shared.clearSilently()
                         }.value
-
                         calculateCacheInfoSafely()
                     }
                 } label: {
-                    Text(
-                        "settings.game.clear_cache.label".localized()
-                    )
+                    Text("settings.game.clear_cache.label".localized())
                 }
                 InfoIconWithPopover(text: "settings.game.clear_cache.help".localized())
             }
-        }
-        .onAppear {
-            calculateCacheInfoSafely()
         }
     }
 }

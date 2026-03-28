@@ -40,11 +40,14 @@ struct GeneralSettingsThemeRow: View {
     @ObservedObject var themeManager: ThemeManager
 
     var body: some View {
-        LabeledContent("settings.theme.picker".localized()) {
-            ThemeSelectorView(selectedTheme: $themeManager.themeMode)
-                .fixedSize()
+        Group {
+            LabeledContent("settings.theme.picker".localized()) {
+                ThemeSelectorView(selectedTheme: $themeManager.themeMode)
+                    .fixedSize()
+            }
+            .labeledContentStyle(.custom)
+            ThemeSelectorLabel()
         }
-        .labeledContentStyle(.custom)
     }
 }
 
@@ -107,7 +110,7 @@ struct GeneralSettingsWorkingDirectoryRow: View {
                 }
             }
         }
-        .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+        .labeledContentStyle(.custom)
         .onAppear {
             Task { await gameRepository.refreshWorkingPathOptions() }
         }
@@ -177,7 +180,7 @@ struct GeneralSettingsGitHubProxyRow: View {
                 }
             }
         }
-        .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+        .labeledContentStyle(.custom)
         .padding(.top, 10)
     }
 }

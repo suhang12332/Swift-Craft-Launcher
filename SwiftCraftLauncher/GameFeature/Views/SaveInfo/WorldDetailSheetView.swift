@@ -14,8 +14,8 @@ struct WorldDetailSheetView: View {
     @Environment(\.dismiss)
     private var dismiss
 
-    init(world: WorldInfo, gameName: String) {
-        _viewModel = StateObject(wrappedValue: WorldDetailSheetViewModel(world: world, gameName: gameName))
+    init(viewModel: WorldDetailSheetViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
 
     // MARK: - Body
@@ -26,9 +26,6 @@ struct WorldDetailSheetView: View {
             footer: { footerView }
         )
         .frame(minWidth: 500, minHeight: 400)
-        .task {
-            await viewModel.loadMetadata()
-        }
         .alert(
             "common.error".localized(),
             isPresented: Binding(
@@ -67,8 +64,6 @@ struct WorldDetailSheetView: View {
         Group {
             if let metadata = viewModel.metadata {
                 metadataContentView(metadata: metadata)
-            } else {
-                loadingView
             }
         }
     }

@@ -39,7 +39,7 @@ struct GameAdvancedSettingsView: View {
                         text: viewModel.javaDetailsDescription
                     )
                 }
-            }.labeledContentStyle(.custom(alignment: .firstTextBaseline))
+            }.labeledContentStyle(.custom)
 
             LabeledContent("settings.game.java.garbage_collector".localized()) {
                 HStack {
@@ -57,7 +57,7 @@ struct GameAdvancedSettingsView: View {
                     InfoIconWithPopover(text: viewModel.selectedGarbageCollector.description)
                 }
             }
-            .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+            .labeledContentStyle(.custom)
             .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
 
             LabeledContent("settings.game.java.performance_optimization".localized()) {
@@ -77,7 +77,7 @@ struct GameAdvancedSettingsView: View {
                     InfoIconWithPopover(text: viewModel.optimizationPreset.description)
                 }
             }
-            .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+            .labeledContentStyle(.custom)
             .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
 
             LabeledContent("settings.game.java.memory".localized()) {
@@ -109,9 +109,9 @@ struct GameAdvancedSettingsView: View {
                     InfoIconWithPopover(text: "settings.game.java.custom_parameters.note".localized())
                 }
             }
-            .labeledContentStyle(.custom(alignment: .firstTextBaseline))
+            .labeledContentStyle(.custom)
 
-            LabeledContent {
+            LabeledContent("settings.game.java.environment_variables".localized()) {
                 HStack {
                     TextField("", text: $viewModel.environmentVariables, axis: .vertical)
                         .focusable(false)
@@ -122,8 +122,6 @@ struct GameAdvancedSettingsView: View {
                         .onChange(of: viewModel.environmentVariables) { _, _ in viewModel.didChangeEnvironmentVariables() }
                     InfoIconWithPopover(text: "example: JAVA_OPTS=-Dfile.encoding=UTF-8".localized())
                 }
-            } label: {
-                Text("settings.game.java.environment_variables".localized())
             }
             .labeledContentStyle(.custom)
         }

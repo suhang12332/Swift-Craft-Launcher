@@ -13,6 +13,20 @@ struct ThemeSelectorView: View {
                 ) {
                     selectedTheme = theme
                 }
+                .applyPointerHandIfAvailable()
+            }
+        }
+    }
+}
+
+struct ThemeSelectorLabel: View {
+    var body: some View {
+        HStack(spacing: 16) {
+            ForEach(ThemeMode.allCases, id: \.self) { theme in
+                Text(theme.localizedName)
+                    .font(.callout)
+                    .foregroundColor(.primary)
+                    .frame(minWidth: 60, alignment: .center)
             }
         }
     }
@@ -34,10 +48,6 @@ private struct ThemeOptionView: View {
                 ThemeWindowIcon(theme: theme)
                     .frame(width: 60, height: 40)
             }
-
-            Text(theme.localizedName)
-                .font(.caption)
-                .foregroundColor(isSelected ? .primary : .secondary)
         }
         .onTapGesture { onTap() }
         .animation(.easeInOut(duration: 0.2), value: isSelected)

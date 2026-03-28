@@ -179,12 +179,14 @@ class PlayerListViewModel: ObservableObject {
     /// 设置当前玩家（静默版本）
     /// - Parameter playerId: 要设置为当前玩家的ID
     func setCurrentPlayer(byID playerId: String) {
-        do {
-            try setCurrentPlayerThrowing(byID: playerId)
-        } catch {
-            let globalError = GlobalError.from(error)
-            Logger.shared.error("设置当前玩家失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+        if playerId != currentPlayer?.id {
+            do {
+                try setCurrentPlayerThrowing(byID: playerId)
+            } catch {
+                let globalError = GlobalError.from(error)
+                Logger.shared.error("设置当前玩家失败: \(globalError.chineseMessage)")
+                GlobalErrorHandler.shared.handle(globalError)
+            }
         }
     }
 

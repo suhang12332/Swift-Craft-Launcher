@@ -21,7 +21,6 @@ public struct PlayerSettingsView: View {
             LabeledContent("settings.player.authlib_injector".localized()) {
                 if authlibInjectorExists {
                     PathBreadcrumbView(path: authlibInjectorJarURL.path)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                 } else {
                     Button {
                         Task {
