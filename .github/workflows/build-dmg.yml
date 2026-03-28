@@ -6,6 +6,8 @@ on:
     tags: ['*']
   pull_request:
     branches: [main, master]
+  release:
+    types: [published]
   workflow_dispatch:
 
 env:
@@ -564,32 +566,28 @@ jobs:
             appcast-x86_64.xml
           body_path: release-notes.md
 
-      - name: Update Homebrew Cask
-        on:
-          release:
-            types: [published]
-        jobs:
-          update-cask:
-            runs-on: ubuntu-latest
-            steps:
-              - name: Checkout current repo
-                uses: actions/checkout@v4
-              - name: Extract version from tag
-                id: vars
-                run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-              - name: Clone homebrew repo
-                run: |
-                  git clone https://github.com/suhang12332/homebrew-swiftcraftlauncher.git
-                  cd homebrew-swiftcraftlauncher
-                  git config user.name "github-actions"
-                  git config user.email "github-actions@github.com"
-              - name: Update cask version
-                run: |
-                  cd homebrew-swiftcraftlauncher/Casks
-                  sed -i 's/version "[^"]*"/version "'"${{ steps.vars.outputs.version }}"'"/' swift-craft-launcher.rb
-              - name: Commit and push changes
-                run: |
-                  cd homebrew-swiftcraftlauncher
-                  git add .
-                  git commit -m "Update cask to version ${{ steps.vars.outputs.version }}"
-                  git push https://x-access-token:${{ secrets.HOMEBREW_TOKEN }}@github.com/suhang12332/homebrew-swiftcraftlauncher.git
+  update-cask:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current repo
+        uses: actions/checkout@v4
+      - name: Extract version from tag
+        id: vars
+        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      - name: Clone homebrew repo
+        run: |
+          git clone https://github.com/suhang12332/homebrew-swiftcraftlauncher.git
+          cd homebrew-swiftcraftlauncher
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+      - name: Update cask version
+        run: |
+          cd homebrew-swiftcraftlauncher/Casks
+          sed -i 's/version "[^"]*"/version "'"${{ steps.vars.outputs.version }}"'"/' swift-craft-launcher.rb
+      - name: Commit and push changes
+        run: |
+          cd homebrew-swiftcraftlauncher
+          git add .
+          git commit -m "Update cask to version ${{ steps.vars.outputs.version }}"
+          git push https://x-access-token:${{ secrets.HOMEBREW_TOKEN }}@github.com/suhang12332/homebrew-swiftcraftlauncher.git
