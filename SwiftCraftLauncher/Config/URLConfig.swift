@@ -3,16 +3,7 @@ import Foundation
 enum URLConfig {
     /// 安全创建 URL 的辅助方法，无效时记录日志并返回占位 URL，避免生产环境闪退
     private static func url(_ string: String) -> URL {
-        guard let url = URL(string: string) else {
-            Logger.shared.error("Invalid URL: \(string)，使用占位 URL")
-            // 使用 guard let 避免强制解包
-            guard let fallbackURL = URL(string: "https://localhost") else {
-                // 如果连 localhost 都失败，返回一个硬编码的 URL（这种情况理论上不应该发生）
-                return URL(string: "https://localhost") ?? URL(fileURLWithPath: "/")
-            }
-            return fallbackURL
-        }
-        return url
+        URL(string: string) ?? URL(string: "https://localhost") ?? URL(fileURLWithPath: "/")
     }
 
     /// GitHub 代理设置（从 UserDefaults 读取，避免 UI 依赖）
@@ -154,6 +145,13 @@ enum URLConfig {
                 }
                 return normalizedBaseURL
             }
+        }
+
+        // Yggdrasil 服务器（第三方皮肤站）
+        enum Yggdrasil {
+            static let littleSkinBaseURL = URLConfig.url("https://littleskin.cn")
+            static let muaBaseURL = URLConfig.url("https://skin.mualliance.ltd")
+            static let elyBaseURL = URLConfig.url("https://account.ely.by")
         }
 
         // GitHub API
@@ -460,6 +458,17 @@ enum URLConfig {
             static var currentLocation: URL {
                 // 使用 ipapi.co 的免费API，支持HTTPS，返回国家代码
                 URLConfig.url("https://ipapi.co/json/")
+            }
+        }
+
+        // Ely.by Skin System API
+        enum Ely {
+            static let skinSystemBase = URLConfig.url("https://skinsystem.ely.by")
+
+            static func textures(nickname: String) -> URL {
+                skinSystemBase
+                    .appendingPathComponent("textures")
+                    .appendingPathComponent(nickname)
             }
         }
     }

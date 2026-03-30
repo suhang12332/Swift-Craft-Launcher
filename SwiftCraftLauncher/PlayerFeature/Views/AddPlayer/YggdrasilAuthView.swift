@@ -5,11 +5,11 @@ struct YggdrasilAuthView: View {
     @StateObject private var viewModel = YggdrasilAuthViewModel()
     var onLoginSuccess: ((YggdrasilProfile) -> Void)?
 
-    private let servers = LittleSkinServerPresets.servers
+    private let servers = YggdrasilServerPresets.servers
 
     init(onLoginSuccess: ((YggdrasilProfile) -> Void)? = nil) {
-        // 注入 LittleSkin 解析器 Provider（幂等）
-        LittleSkinProfileParsersConfigurator.bootstrap()
+        // 注入通用解析器 Provider（幂等）
+        CommonYggdrasilProfileParsersConfigurator.bootstrap()
         self.onLoginSuccess = onLoginSuccess
     }
 
@@ -39,16 +39,10 @@ struct YggdrasilAuthView: View {
                     .tag(nil as YggdrasilServerConfig?)
 
                 ForEach(servers, id: \.self) { server in
-                    Text(server.name ?? server.baseURL).tag(server as YggdrasilServerConfig?)
+                    Text(server.name ?? server.baseURL.absoluteString).tag(server as YggdrasilServerConfig?)
                 }
             }
             .pickerStyle(.menu)
-
-            if let server = viewModel.selectedOption {
-                Text(server.baseURL)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
         }
     }
 

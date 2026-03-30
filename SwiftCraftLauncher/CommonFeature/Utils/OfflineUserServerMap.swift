@@ -9,9 +9,6 @@ enum OfflineUserServerMap {
     }
 
     /// 为指定用户设置服务器标识
-    /// - Parameters:
-    ///   - serverKey: 服务器标识（建议使用 YggdrasilServerConfig.baseURL 等稳定字符串）
-    ///   - userId: 玩家 ID（UserProfile.id）
     static func setServer(_ serverKey: String, for userId: String) {
         var map = loadMap()
         map[userId] = serverKey

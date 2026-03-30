@@ -3,6 +3,8 @@ import Foundation
 /// Yggdrasil profile 列表解析器标识
 enum YggdrasilProfileParserID: String, Codable, CaseIterable, Identifiable {
     case littleskin
+    case mua
+    case ely
 
     var id: String { rawValue }
 }
@@ -10,7 +12,7 @@ enum YggdrasilProfileParserID: String, Codable, CaseIterable, Identifiable {
 struct YggdrasilServerConfig: Codable, Equatable, Hashable {
     /// 服务器在 UI 中展示用的名称（可选）
     var name: String?
-    var baseURL: String
+    var baseURL: URL
     var clientId: String?
     var clientSecret: String?
     var redirectURI: String
@@ -22,7 +24,7 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
 
     init(
         name: String? = nil,
-        baseURL: String,
+        baseURL: URL,
         clientId: String? = nil,
         clientSecret: String? = nil,
         redirectURI: String,
@@ -33,51 +35,35 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
         parserId: YggdrasilProfileParserID
     ) {
         self.name = name
-        self.baseURL = Self.normalizeBaseURL(baseURL)
+        self.baseURL = baseURL
         self.clientId = clientId
         self.clientSecret = clientSecret
         self.redirectURI = redirectURI
-        self.authorizePath = Self.normalizePath(authorizePath)
-        self.tokenPath = Self.normalizePath(tokenPath)
-        self.profilePath = Self.normalizePath(profilePath)
+        self.authorizePath = authorizePath
+        self.tokenPath = tokenPath
+        self.profilePath = profilePath
         self.scope = scope.trimmingCharacters(in: .whitespacesAndNewlines)
         self.parserId = parserId
     }
 
-    private static func normalizeBaseURL(_ baseURL: String) -> String {
-        var trimmed = baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
-        while trimmed.hasSuffix("/") {
-            trimmed.removeLast()
-        }
-        return trimmed
-    }
-
-    private static func normalizePath(_ path: String) -> String {
-        let trimmed = path.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty { return "/" }
-        return trimmed.hasPrefix("/") ? trimmed : "/\(trimmed)"
-    }
-
     /// 授权端点：{baseURL}{authorizePath}
     var authorizeURL: URL? {
-        URL(string: baseURL)?.appendingPathComponent(authorizePath.trimmingCharacters(in: CharacterSet(charactersIn: "/")))
+        baseURL.appendingPathComponent(authorizePath)
     }
 
     /// 令牌端点：{baseURL}{tokenPath}
     var tokenURL: URL? {
-        URL(string: baseURL)?.appendingPathComponent(tokenPath.trimmingCharacters(in: CharacterSet(charactersIn: "/")))
+        baseURL.appendingPathComponent(tokenPath)
     }
 
     /// 玩家资料端点：{baseURL}{profilePath}
     var profileURL: URL? {
-        URL(string: baseURL)?
-            .appendingPathComponent(profilePath.trimmingCharacters(in: CharacterSet(charactersIn: "/")))
+        baseURL.appendingPathComponent(profilePath)
     }
 
     // /// 可选：传统 refresh 接口（/authserver/refresh）
     // var refreshURL: URL? {
-    //     URL(string: baseURL)?
-    //         .appendingPathComponent("authserver/refresh")
+    //     baseURL.appendingPathComponent("authserver/refresh")
     // }
 }
 

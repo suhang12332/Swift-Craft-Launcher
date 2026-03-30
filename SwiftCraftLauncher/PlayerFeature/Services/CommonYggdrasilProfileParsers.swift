@@ -1,10 +1,8 @@
 import Foundation
 
-/// LittleSkin 等多用户：数组 / 包装数组 + properties.textures(base64)
-struct LittleSkinStyleProfileListParser: YggdrasilProfileListParser {
-    let id: YggdrasilProfileParserID = .littleskin
-
-    func parse(data: Data) -> [YggdrasilProfileCandidate]? {
+/// 通用的 Yggdrasil 多用户列表解析（LittleSkin/MUA 同格式）
+enum CommonYggdrasilProfileListParser {
+    static func parse(data: Data) -> [YggdrasilProfileCandidate]? {
         struct Prop: Codable { let name: String; let value: String }
         struct Item: Codable {
             let id: String
@@ -91,19 +89,40 @@ struct LittleSkinStyleProfileListParser: YggdrasilProfileListParser {
     }
 }
 
-/// LittleSkin 相关的解析器 Provider，实现通用协议并注册到 YggdrasilProfileParsers
-struct LittleSkinProfileParserProvider: YggdrasilProfileParserProvider {
-    func makeParser(for id: YggdrasilProfileParserID) -> (any YggdrasilProfileListParser)? {
+/// LittleSkin 通用解析器
+struct CommonYggdrasilStyleProfileListParser: YggdrasilProfileListParser {
+    let id: YggdrasilProfileParserID = .littleskin
+    private let baseURL: String
+
+    init(baseURL: String) {
+        self.baseURL = baseURL
+    }
+
+    func parse(data: Data) async -> [YggdrasilProfileCandidate]? {
+        CommonYggdrasilProfileListParser.parse(data: data)
+    }
+}
+
+/// 通用的解析器 Provider（LittleSkin / MUA 同格式）
+struct CommonYggdrasilProfileParserProvider: YggdrasilProfileParserProvider {
+    func makeParser(
+        for id: YggdrasilProfileParserID,
+        baseURL: String
+    ) -> (any YggdrasilProfileListParser)? {
         switch id {
         case .littleskin:
-            return LittleSkinStyleProfileListParser()
+            return CommonYggdrasilStyleProfileListParser(baseURL: baseURL)
+        case .mua:
+            return CommonBlessingSkinStyleProfileListParser(baseURL: baseURL)
+        case .ely:
+            return ElyflyProfileStyleProfileListParser(baseURL: baseURL)
         }
     }
 }
 
-/// 提供一个便捷的注入入口，供 PlayerFeature 在合适的时机调用
-enum LittleSkinProfileParsersConfigurator {
+/// 统一的注入入口
+enum CommonYggdrasilProfileParsersConfigurator {
     static func bootstrap() {
-        YggdrasilProfileParsers.configure(provider: LittleSkinProfileParserProvider())
+        YggdrasilProfileParsers.configure(provider: CommonYggdrasilProfileParserProvider())
     }
 }

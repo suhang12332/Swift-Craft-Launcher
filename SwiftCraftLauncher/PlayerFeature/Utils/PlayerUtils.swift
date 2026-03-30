@@ -33,7 +33,7 @@ enum PlayerUtils {
         let uuid = bytes.withUnsafeBytes { UUID(uuid: $0.load(as: uuid_t.self)) }
         let uuidString = uuid.uuidString.lowercased()
         Logger.shared.debug("生成离线 UUID - 用户名：\(username), UUID：\(uuidString)")
-        return uuidString
+        return uuidString.replacingOccurrences(of: "-", with: "")
     }
 
     // MARK: - Avatar Name Generation
