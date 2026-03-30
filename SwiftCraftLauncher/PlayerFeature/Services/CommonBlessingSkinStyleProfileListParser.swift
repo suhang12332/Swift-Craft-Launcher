@@ -70,7 +70,7 @@ struct CommonBlessingSkinStyleProfileListParser: YggdrasilProfileListParser {
         self.baseURL = baseURL
     }
 
-    func parse(data: Data) -> [YggdrasilProfileCandidate]? {
+    func parse(data: Data) async -> [YggdrasilProfileCandidate]? {
         BlessingSkinProfileListParser.parse(data: data, baseURL: baseURL)
     }
 }

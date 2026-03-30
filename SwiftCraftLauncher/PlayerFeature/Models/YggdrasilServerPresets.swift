@@ -27,5 +27,17 @@ enum YggdrasilServerPresets {
             scope: "Player.Read User.Read",
             parserId: .mua
         ),
+        YggdrasilServerConfig(
+            name: "Ely.By",
+            baseURL: "https://account.ely.by",
+            clientId: "swift-craft-launcher",
+            clientSecret: AppConstants.elyClientSecret,
+            redirectURI: "swift-craft-launcher://auth",
+            authorizePath: "/oauth2/v1",
+            tokenPath: "/api/oauth2/v1/token",
+            profilePath: "/api/account/v1/info",
+            scope: "account_info",
+            parserId: .ely
+        ),
     ]
 }

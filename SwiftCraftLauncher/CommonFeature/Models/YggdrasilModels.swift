@@ -4,6 +4,7 @@ import Foundation
 enum YggdrasilProfileParserID: String, Codable, CaseIterable, Identifiable {
     case littleskin
     case mua
+    case ely
 
     var id: String { rawValue }
 }

@@ -293,7 +293,7 @@ private extension YggdrasilAuthService {
             )
         }
 
-        if let candidates = parser.parse(data: data) {
+        if let candidates = await parser.parse(data: data) {
             return candidates
         }
 

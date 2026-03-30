@@ -13,6 +13,7 @@ env:
   CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
   LITTLESKIN_CLIENT_SECRET: ${{ secrets.LITTLESKIN_CLIENT_SECRET }}
   MUA_CLIENT_SECRET: ${{ secrets.MUA_CLIENT_SECRET }}
+  ELYBY_CLIENT_SECRET: ${{ secrets.ELYBY_CLIENT_SECRET }}
   SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
   SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -55,37 +56,16 @@ jobs:
           echo "safe_version=$SAFE_VERSION" >> $GITHUB_OUTPUT
           echo "marketing_version=$MARKETING_VERSION" >> $GITHUB_OUTPUT
 
-      - name: Replace Info.plist variables
+      - name: Replace AppConstants secrets
         run: |
-          # 替换 AppConstants.swift 中的 CLIENTID 变量
-          SAFE_CLIENTID=$(printf '%s' "$CLIENTID" | sed 's/[\/&]/\\&/g')
-          sed -i '' "s/\$(CLIENTID)/$SAFE_CLIENTID/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
-
-          echo "✅ CLIENTID 已替换到 AppConstants.swift"
-
-      - name: Replace CURSEFORGE_API_KEY
-        run: |
-          # 替换 AppConstants.swift 中的 CURSEFORGE_API_KEY 变量（GitHub Secret 中已经是加密后的值）
-          SAFE_CURSEFORGE_KEY=$(printf '%s' "$CURSEFORGE_API_KEY" | sed 's/[\/&]/\\&/g')
-          sed -i '' "s/\$(CURSEFORGE_API_KEY)/$SAFE_CURSEFORGE_KEY/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
-
-          echo "✅ CURSEFORGE_API_KEY 已替换到 AppConstants.swift"
-
-      - name: Replace LITTLESKIN_CLIENT_SECRET
-        run: |
-          # 替换 AppConstants.swift 中的 LITTLESKIN_CLIENT_SECRET 变量（GitHub Secret 中应存放加密后的值）
-          SAFE_LITTLESKIN_SECRET=$(printf '%s' "$LITTLESKIN_CLIENT_SECRET" | sed 's/[\/&]/\\&/g')
-          sed -i '' "s/\$(LITTLESKIN_CLIENT_SECRET)/$SAFE_LITTLESKIN_SECRET/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
-
-          echo "✅ LITTLESKIN_CLIENT_SECRET 已替换到 AppConstants.swift"
-
-      - name: Replace MUA_CLIENT_SECRET
-        run: |
-          # 替换 AppConstants.swift 中的 MUA_CLIENT_SECRET 变量（GitHub Secret 中应存放加密后的值）
-          SAFE_MUA_SECRET=$(printf '%s' "$MUA_CLIENT_SECRET" | sed 's/[\/&]/\\&/g')
-          sed -i '' "s/\$(MUA_CLIENT_SECRET)/$SAFE_MUA_SECRET/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
-
-          echo "✅ MUA_CLIENT_SECRET 已替换到 AppConstants.swift"
+          TARGET_FILE="SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
+          for KEY in CLIENTID CURSEFORGE_API_KEY LITTLESKIN_CLIENT_SECRET MUA_CLIENT_SECRET ELYBY_CLIENT_SECRET; do
+            # GitHub Secret 中应存放加密后的值
+            VALUE="${!KEY}"
+            SAFE_VALUE=$(printf '%s' "$VALUE" | sed 's/[\/&]/\\&/g')
+            sed -i '' "s/\$($KEY)/$SAFE_VALUE/g" "$TARGET_FILE"
+            echo "✅ $KEY 已替换到 AppConstants.swift"
+          done
 
       - name: Build app for ${{ matrix.arch }}
         run: |

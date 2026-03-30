@@ -98,7 +98,7 @@ struct CommonYggdrasilStyleProfileListParser: YggdrasilProfileListParser {
         self.baseURL = baseURL
     }
 
-    func parse(data: Data) -> [YggdrasilProfileCandidate]? {
+    func parse(data: Data) async -> [YggdrasilProfileCandidate]? {
         CommonYggdrasilProfileListParser.parse(data: data)
     }
 }
@@ -114,6 +114,8 @@ struct CommonYggdrasilProfileParserProvider: YggdrasilProfileParserProvider {
             return CommonYggdrasilStyleProfileListParser(baseURL: baseURL)
         case .mua:
             return CommonBlessingSkinStyleProfileListParser(baseURL: baseURL)
+        case .ely:
+            return ElyflyProfileStyleProfileListParser(baseURL: baseURL)
         }
     }
 }

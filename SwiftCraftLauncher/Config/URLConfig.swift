@@ -462,6 +462,17 @@ enum URLConfig {
                 URLConfig.url("https://ipapi.co/json/")
             }
         }
+
+        // Ely.by Skin System API
+        enum Ely {
+            static let skinSystemBase = URLConfig.url("https://skinsystem.ely.by")
+
+            static func textures(nickname: String) -> URL {
+                skinSystemBase
+                    .appendingPathComponent("textures")
+                    .appendingPathComponent(nickname)
+            }
+        }
     }
 
     // Store URLs

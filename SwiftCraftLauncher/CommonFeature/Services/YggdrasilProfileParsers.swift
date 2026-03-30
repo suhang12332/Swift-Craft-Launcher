@@ -3,7 +3,7 @@ import Foundation
 protocol YggdrasilProfileListParser {
     var id: YggdrasilProfileParserID { get }
 
-    func parse(data: Data) -> [YggdrasilProfileCandidate]?
+    func parse(data: Data) async -> [YggdrasilProfileCandidate]?
 }
 
 protocol YggdrasilProfileParserProvider {

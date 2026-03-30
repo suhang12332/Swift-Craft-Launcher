@@ -84,10 +84,6 @@ struct AddPlayerSheetView: View {
                     Button(
                         "common.cancel".localized()
                     ) {
-                        if viewModel.selectedAuthType == .yggdrasil && yggdrasilAuthService.currentServer != nil {
-                            yggdrasilAuthService.logout()
-                            return
-                        }
                         authService.isLoading = false
                         yggdrasilAuthService.logout()
                         onCancel()
