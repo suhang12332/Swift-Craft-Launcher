@@ -156,6 +156,13 @@ enum URLConfig {
             }
         }
 
+        // Yggdrasil 服务器（第三方皮肤站）
+        enum Yggdrasil {
+            static let littleSkinBaseURL = URLConfig.url("https://littleskin.cn")
+            static let muaBaseURL = URLConfig.url("https://skin.mualliance.ltd")
+            static let elyBaseURL = URLConfig.url("https://account.ely.by")
+        }
+
         // GitHub API
         enum GitHub {
             static let gitHubBase = URLConfig.url("https://github.com")

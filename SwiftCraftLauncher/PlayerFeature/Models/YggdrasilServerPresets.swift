@@ -5,10 +5,10 @@ enum YggdrasilServerPresets {
     static let servers: [YggdrasilServerConfig] = [
         YggdrasilServerConfig(
             name: "LittleSkin",
-            baseURL: "https://littleskin.cn",
+            baseURL: URLConfig.API.Yggdrasil.littleSkinBaseURL,
             clientId: "1181",
             clientSecret: AppConstants.littleSkinClientSecret,
-            redirectURI: "swift-craft-launcher://auth",
+            redirectURI: URLConfig.API.Authentication.redirectUri,
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
             profilePath: "/api/yggdrasil/sessionserver/session/minecraft/profile",
@@ -16,11 +16,11 @@ enum YggdrasilServerPresets {
             parserId: .littleskin
         ),
         YggdrasilServerConfig(
-            name: "MUA",
-            baseURL: "https://skin.mualliance.ltd",
+            name: "Mua",
+            baseURL: URLConfig.API.Yggdrasil.muaBaseURL,
             clientId: "34",
             clientSecret: AppConstants.muaClientSecret,
-            redirectURI: "swift-craft-launcher://auth",
+            redirectURI: URLConfig.API.Authentication.redirectUri,
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
             profilePath: "/api/players",
@@ -29,10 +29,10 @@ enum YggdrasilServerPresets {
         ),
         YggdrasilServerConfig(
             name: "Ely.By",
-            baseURL: "https://account.ely.by",
+            baseURL: URLConfig.API.Yggdrasil.elyBaseURL,
             clientId: "swift-craft-launcher",
             clientSecret: AppConstants.elyClientSecret,
-            redirectURI: "swift-craft-launcher://auth",
+            redirectURI: URLConfig.API.Authentication.redirectUri,
             authorizePath: "/oauth2/v1",
             tokenPath: "/api/oauth2/v1/token",
             profilePath: "/api/account/v1/info",
