@@ -12,6 +12,7 @@ env:
   CLIENTID: ${{ secrets.CLIENTID }}
   CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
   LITTLESKIN_CLIENT_SECRET: ${{ secrets.LITTLESKIN_CLIENT_SECRET }}
+  MUA_CLIENT_SECRET: ${{ secrets.MUA_CLIENT_SECRET }}
   SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
   SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -77,6 +78,14 @@ jobs:
           sed -i '' "s/\$(LITTLESKIN_CLIENT_SECRET)/$SAFE_LITTLESKIN_SECRET/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
 
           echo "✅ LITTLESKIN_CLIENT_SECRET 已替换到 AppConstants.swift"
+
+      - name: Replace MUA_CLIENT_SECRET
+        run: |
+          # 替换 AppConstants.swift 中的 MUA_CLIENT_SECRET 变量（GitHub Secret 中应存放加密后的值）
+          SAFE_MUA_SECRET=$(printf '%s' "$MUA_CLIENT_SECRET" | sed 's/[\/&]/\\&/g')
+          sed -i '' "s/\$(MUA_CLIENT_SECRET)/$SAFE_MUA_SECRET/g" "SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
+
+          echo "✅ MUA_CLIENT_SECRET 已替换到 AppConstants.swift"
 
       - name: Build app for ${{ matrix.arch }}
         run: |
