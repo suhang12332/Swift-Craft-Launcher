@@ -285,7 +285,7 @@ private extension YggdrasilAuthService {
         let headers = ["Authorization": "Bearer \(accessToken)"]
         let data = try await APIClient.get(url: profileURL, headers: headers)
 
-        guard let parser = YggdrasilProfileParsers.make(server.parserId) else {
+        guard let parser = YggdrasilProfileParsers.make(server.parserId, baseURL: server.baseURL) else {
             throw GlobalError.validation(
                 chineseMessage: "未找到对应的 Yggdrasil 玩家资料解析器",
                 i18nKey: "error.validation.yggdrasil_profile_parse_failed",

@@ -3,6 +3,7 @@ import Foundation
 /// Yggdrasil profile 列表解析器标识
 enum YggdrasilProfileParserID: String, Codable, CaseIterable, Identifiable {
     case littleskin
+    case mua
 
     var id: String { rawValue }
 }

@@ -7,7 +7,10 @@ protocol YggdrasilProfileListParser {
 }
 
 protocol YggdrasilProfileParserProvider {
-    func makeParser(for id: YggdrasilProfileParserID) -> (any YggdrasilProfileListParser)?
+    func makeParser(
+        for id: YggdrasilProfileParserID,
+        baseURL: String
+    ) -> (any YggdrasilProfileListParser)?
 }
 
 enum YggdrasilProfileParsers {
@@ -17,7 +20,7 @@ enum YggdrasilProfileParsers {
         self.provider = provider
     }
 
-    static func make(_ id: YggdrasilProfileParserID) -> (any YggdrasilProfileListParser)? {
-        provider?.makeParser(for: id)
+    static func make(_ id: YggdrasilProfileParserID, baseURL: String) -> (any YggdrasilProfileListParser)? {
+        provider?.makeParser(for: id, baseURL: baseURL)
     }
 }
