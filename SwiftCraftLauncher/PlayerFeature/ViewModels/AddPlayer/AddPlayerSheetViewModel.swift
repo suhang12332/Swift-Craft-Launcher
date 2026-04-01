@@ -52,12 +52,11 @@ final class AddPlayerSheetViewModel: ObservableObject {
         let canAdd = canAddOfflineAccount()
         guard canAdd else { return types }
 
-        types.append(.offline)
-
         if playerSettings.enableOfflineLogin {
             types.append(.yggdrasil)
         }
 
+        types.append(.offline)
         return types
     }
 
