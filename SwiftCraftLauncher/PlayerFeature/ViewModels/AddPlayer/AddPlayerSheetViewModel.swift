@@ -49,13 +49,13 @@ final class AddPlayerSheetViewModel: ObservableObject {
     var availableAuthTypes: [AccountAuthType] {
         var types: [AccountAuthType] = [.premium]
 
-        // 启用三方登录时才显示 Yggdrasil
+        let canAdd = canAddOfflineAccount()
+        guard canAdd else { return types }
+
+        types.append(.offline)
+
         if playerSettings.enableOfflineLogin {
             types.append(.yggdrasil)
-        }
-
-        if canAddOfflineAccount() {
-            types.append(.offline)
         }
 
         return types
