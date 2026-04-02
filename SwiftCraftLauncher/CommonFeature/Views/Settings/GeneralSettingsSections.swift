@@ -4,35 +4,37 @@ struct GeneralSettingsLanguageRow: View {
     @ObservedObject var viewModel: GeneralSettingsViewModel
 
     var body: some View {
-        LabeledContent("settings.language.picker".localized()) {
-            Picker("", selection: $viewModel.selectedLanguage) {
-                ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
-                    Text(name).tag(code)
+        Group {
+            LabeledContent("settings.language.picker".localized()) {
+                Picker("", selection: $viewModel.selectedLanguage) {
+                    ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
+                        Text(name).tag(code)
+                    }
+                }
+                .labelsHidden()
+                .fixedSize()
+                .onChange(of: viewModel.selectedLanguage) { _, newValue in
+                    viewModel.onSelectedLanguageChanged(newValue)
+                }
+                .confirmationDialog(
+                    "settings.language.restart.title".localized(),
+                    isPresented: $viewModel.showingRestartAlert,
+                    titleVisibility: .visible
+                ) {
+                    Button("settings.language.restart.confirm".localized(), role: .destructive) {
+                        viewModel.confirmLanguageChangeAndRestart()
+                    }
+                    .keyboardShortcut(.defaultAction)
+                    Button("common.cancel".localized(), role: .cancel) {
+                        viewModel.cancelLanguageChange()
+                    }
+                } message: {
+                    Text("settings.language.restart.message".localized())
                 }
             }
-            .labelsHidden()
-            .fixedSize()
-            .onChange(of: viewModel.selectedLanguage) { _, newValue in
-                viewModel.onSelectedLanguageChanged(newValue)
-            }
-            .confirmationDialog(
-                "settings.language.restart.title".localized(),
-                isPresented: $viewModel.showingRestartAlert,
-                titleVisibility: .visible
-            ) {
-                Button("settings.language.restart.confirm".localized(), role: .destructive) {
-                    viewModel.confirmLanguageChangeAndRestart()
-                }
-                .keyboardShortcut(.defaultAction)
-                Button("common.cancel".localized(), role: .cancel) {
-                    viewModel.cancelLanguageChange()
-                }
-            } message: {
-                Text("settings.language.restart.message".localized())
-            }
+            .labeledContentStyle(.custom)
+            CommonDescriptionText(text: "settings.language.translation.notice".localized()).padding(.bottom, 10)
         }
-        .labeledContentStyle(.custom)
-        .padding(.bottom, 10)
     }
 }
 

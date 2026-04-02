@@ -101,6 +101,15 @@ struct SwiftCraftLauncherApp: App {
                 Divider()
 
                 Link("GitHub", destination: URLConfig.API.GitHub.repositoryURL())
+                Link("menu.community.website".localized(), destination: URLConfig.API.Community.website())
+
+                Menu("menu.community".localized()) {
+                    Link("menu.community.discussions".localized(), destination: URLConfig.API.Community.discussions())
+                    Link("menu.community.discord".localized(), destination: URLConfig.API.Community.discord())
+                    Link("menu.community.qq".localized(), destination: URLConfig.API.Community.qq())
+                }
+
+                Link("menu.community.report.issue".localized(), destination: URLConfig.API.Community.issues())
 
                 Button("about.contributors".localized()) {
                     WindowManager.shared.openWindow(id: .contributors)
