@@ -50,13 +50,13 @@ enum CommonService {
                         ) == nil
                     }
                 }
-                .filter { CommonUtil.isVersionAtLeast($0) }
-            result = CommonUtil.sortMinecraftVersions(filteredVersions)
+            let sortResult = CommonUtil.sortMinecraftVersions(filteredVersions)
+            result = CommonUtil.versionsAtLeast(sortResult)
         default:
             let gameVersions = await ModrinthService.fetchGameVersions(
                 includeSnapshots: includeSnapshots
             )
-            let allVersions = gameVersions
+            let versionNames = gameVersions
                 .map { version in
                     // 缓存每个版本的时间信息
                     let cacheKey = "version_time_\(version.version)"
@@ -70,8 +70,7 @@ enum CommonService {
                     )
                     return version.version
                 }
-                .filter { CommonUtil.isVersionAtLeast($0) }
-            result = CommonUtil.sortMinecraftVersions(allVersions)
+            result = CommonUtil.versionsAtLeast(versionNames)
         }
         return result
     }

@@ -54,7 +54,6 @@ struct AddPlayerSheetView: View {
                             selection: $viewModel.selectedAuthType,
                             hidesLabel: true
                         ) {
-                            Text("")
                         } content: {
                             ForEach(viewModel.availableAuthTypes) { type in
                                 Text(type.displayName).tag(type)

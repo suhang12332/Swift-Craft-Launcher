@@ -266,6 +266,28 @@ enum URLConfig {
             }
         }
 
+        enum Community {
+            static func website() -> URL {
+                URLConfig.url("https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/")
+            }
+
+            static func discussions() -> URL {
+                URLConfig.url("https://github.com/suhang12332/Swift-Craft-Launcher/discussions")
+            }
+
+            static func issues() -> URL {
+                URLConfig.url("https://github.com/suhang12332/Swift-Craft-Launcher/issues")
+            }
+
+            static func discord() -> URL {
+                URLConfig.url("https://discord.gg/gYESVa3CZd")
+            }
+
+            static func qq() -> URL {
+                URLConfig.url("https://qm.qq.com/cgi-bin/qm/qr?k=1057517524")
+            }
+        }
+
         // Modrinth API
         enum Modrinth {
             static let baseURL = URLConfig.url("https://api.modrinth.com/v2")

@@ -158,7 +158,43 @@ enum CommonUtil {
         }
     }
 
-    /// 判断 Minecraft 版本是否至少为基线版本
+    /// 按基线版本裁剪 Minecraft 版本集合。
+    /// 如果集合中存在基线版本，则直接基于当前序列截断，保留基线及其之前的元素；
+    /// 如果不存在基线版本，则退回到逐项比较，并保持原始顺序不变。
+    static func versionsAtLeast(
+        _ versions: [String],
+        baseline: String = AppConstants.MinecraftVersions.featureBaseline
+    ) -> [String] {
+        if let baselineIndex = versions.firstIndex(of: baseline) {
+            return Array(versions.prefix(through: baselineIndex))
+        }
+
+        return versions.filter {
+            compareMinecraftVersions($0, baseline) >= 0
+        }
+    }
+
+    /// 按基线版本裁剪 Minecraft 版本模型集合。
+    /// 如果集合中存在基线版本，则直接基于当前序列截断，保留基线及其之前的元素；
+    /// 如果不存在基线版本，则退回到逐项比较，并保持原始顺序不变。
+    static func versionsAtLeast<T>(
+        _ versions: [T],
+        baseline: String = AppConstants.MinecraftVersions.featureBaseline,
+        version: (T) -> String
+    ) -> [T] {
+        if let baselineIndex = versions.firstIndex(where: {
+            version($0) == baseline
+        }) {
+            return Array(versions.prefix(through: baselineIndex))
+        }
+
+        return versions.filter {
+            compareMinecraftVersions(version($0), baseline) >= 0
+        }
+    }
+
+    /// 判断单个 Minecraft 版本是否至少为基线版本。
+    /// 仅用于没有版本集合上下文时的退回判断。
     static func isVersionAtLeast(_ version: String) -> Bool {
         return compareMinecraftVersions(version, AppConstants.MinecraftVersions.featureBaseline) >= 0
     }

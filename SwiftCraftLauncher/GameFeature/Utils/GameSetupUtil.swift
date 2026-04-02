@@ -138,11 +138,15 @@ class GameSetupUtil: ObservableObject {
             // 保存游戏配置
             gameRepository.addGameSilently(gameInfo)
 
-            // 根据当前启动器语言，为新创建的游戏写入/更新 options.txt 的语言设置
-            configureGameLanguage(for: gameInfo.gameName)
+            // 根据设置决定是否为新创建的游戏写入/更新 options.txt 的语言设置
+            if GameSettingsManager.shared.syncLanguageForNewGames {
+                configureGameLanguage(for: gameInfo.gameName)
+            }
 
-            // 扫描游戏的 mods 目录（同步阻塞）
-            ModScanner.shared.scanGameModsDirectorySync(game: gameInfo)
+            // 扫描游戏的 mods 目录
+            Task.detached(priority: .utility) {
+                await ModScanner.shared.scanGameModsDirectory(game: gameInfo)
+            }
 
             // 发送通知
             NotificationManager.sendSilently(

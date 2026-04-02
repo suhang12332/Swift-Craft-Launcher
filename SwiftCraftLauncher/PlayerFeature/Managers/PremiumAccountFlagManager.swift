@@ -19,10 +19,4 @@ class PremiumAccountFlagManager {
         UserDefaults.standard.set(true, forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
         Logger.shared.debug("已设置正版账户添加标记")
     }
-
-    /// 清除正版账户标记（用于测试或重置）
-    func clearPremiumAccountFlag() {
-        UserDefaults.standard.removeObject(forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
-        Logger.shared.debug("已清除正版账户标记")
-    }
 }

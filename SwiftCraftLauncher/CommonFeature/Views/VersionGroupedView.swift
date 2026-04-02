@@ -41,11 +41,11 @@ struct VersionGroupedView: View {
     // MARK: - Body
     var body: some View {
         let groups = groupVersions(items)
-        let sortedKeys = sortVersionKeys(groups.keys)
+        let groupKeys = orderedVersionKeys(from: items)
 
         ScrollView {
             VStack(alignment: .leading, spacing: Constants.groupSpacing) {
-                ForEach(sortedKeys, id: \.self) { key in
+                ForEach(groupKeys, id: \.self) { key in
                     versionGroupView(key: key, items: groups[key] ?? [])
                 }
             }
@@ -92,22 +92,58 @@ struct VersionGroupedView: View {
     /// 将版本项按主版本号分组
     private func groupVersions(_ items: [FilterItem]) -> [String: [FilterItem]] {
         Dictionary(grouping: items) { item in
-            let components = item.name.split(separator: ".")
-            if components.count >= 2 {
-                return "\(components[0]).\(components[1])"
-            } else {
-                return item.name
-            }
+            versionGroupKey(for: item.name)
         }
     }
 
-    /// 对版本键进行排序（最新版本在前）
-    private func sortVersionKeys(_ keys: Dictionary<String, [FilterItem]>.Keys) -> [String] {
-        keys.sorted { key1, key2 in
-            let components1 = key1.split(separator: ".").compactMap { Int($0) }
-            let components2 = key2.split(separator: ".").compactMap { Int($0) }
-            return components1.lexicographicallyPrecedes(components2)
+    /// 保持分组顺序与传入版本列表一致，不做额外排序。
+    private func orderedVersionKeys(from items: [FilterItem]) -> [String] {
+        var seen = Set<String>()
+        return items.compactMap { item in
+            let key = versionGroupKey(for: item.name)
+            return seen.insert(key).inserted ? key : nil
         }
-        .reversed()
+    }
+
+    /// 兼容正式版、预发布版和快照版的分组键。
+    /// 例如：
+    /// - 1.21.1 -> 1.21
+    /// - 1.21-pre1 -> 1.21
+    /// - 24w14a -> 24w
+    private func versionGroupKey(for version: String) -> String {
+        let trimmedVersion = version.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if let releaseSeries = extractReleaseSeries(from: trimmedVersion) {
+            return releaseSeries
+        }
+
+        if let snapshotSeries = extractSnapshotSeries(from: trimmedVersion) {
+            return snapshotSeries
+        }
+
+        return trimmedVersion
+    }
+
+    private func extractReleaseSeries(from version: String) -> String? {
+        guard let range = version.range(
+            of: #"^\d+\.\d+"#,
+            options: .regularExpression
+        ) else {
+            return nil
+        }
+
+        return String(version[range])
+    }
+
+    private func extractSnapshotSeries(from version: String) -> String? {
+        guard let range = version.range(
+            of: #"^\d{2}w\d{2}[a-z]?"#,
+            options: [.regularExpression, .caseInsensitive]
+        ) else {
+            return nil
+        }
+
+        let snapshot = String(version[range]).lowercased()
+        return String(snapshot.prefix(3))
     }
 }

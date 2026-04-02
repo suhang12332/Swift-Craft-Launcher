@@ -205,8 +205,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     /// 应用预加载的项目详情，避免在 sheet 内重复加载
     func applyPreloadedDetail(_ detail: ModrinthProjectDetail) {
         projectDetail = detail
-        let filteredVersions = detail.gameVersions.filter { CommonUtil.isVersionAtLeast($0) }
-        availableGameVersions = CommonUtil.sortMinecraftVersions(filteredVersions)
+        availableGameVersions = detail.gameVersions
         isLoadingProjectDetails = false
     }
 
@@ -219,9 +218,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 try await ModrinthService.fetchProjectDetailsThrowing(
                     id: projectId
                 )
-            let gameVersions = projectDetail?.gameVersions ?? []
-            let filteredVersions = gameVersions.filter { CommonUtil.isVersionAtLeast($0) }
-            availableGameVersions = CommonUtil.sortMinecraftVersions(filteredVersions)
+            availableGameVersions = projectDetail?.gameVersions ?? []
         } catch {
             let globalError = GlobalError.from(error)
             GlobalErrorHandler.shared.handle(globalError)

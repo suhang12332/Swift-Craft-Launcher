@@ -50,6 +50,12 @@ class GameSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    /// 是否在新游戏下载完成后，将游戏语言同步为当前启动器语言
+    @AppStorage(AppConstants.UserDefaultsKeys.syncLanguageForNewGames)
+    var syncLanguageForNewGames: Bool = true {
+        didSet { objectWillChange.send() }
+    }
+
     /// 计算系统最大可用内存分配（基于物理内存的70%）
     var maximumMemoryAllocation: Int {
         let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory

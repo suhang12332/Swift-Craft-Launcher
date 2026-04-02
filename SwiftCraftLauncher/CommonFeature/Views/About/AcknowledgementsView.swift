@@ -240,8 +240,8 @@ private struct DescriptionTextWithPopover: View {
                     .lineLimit(nil)
                     .multilineTextAlignment(.leading)
             }
-            .padding(10)
-            .frame(minWidth: 200, maxWidth: 500)
+            .padding()
+            .frame(maxWidth: 500)
             .fixedSize(horizontal: true, vertical: false)
         }
         .onDisappear {
