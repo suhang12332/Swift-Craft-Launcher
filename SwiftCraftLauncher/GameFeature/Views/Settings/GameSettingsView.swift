@@ -49,10 +49,20 @@ public struct GameSettingsView: View {
                             "",
                             isOn: $gameSettings.enableAICrashAnalysis
                         ).labelsHidden()
-                        Text("settings.ai_crash_analysis.description".localized()).font(
-                            .callout
+                        Text("settings.ai_crash_analysis.description".localized())
+                    }
+                }
+                .labeledContentStyle(.custom)
+                .padding(.bottom, 10)
+
+                LabeledContent("settings.game.language.label".localized()) {
+                    HStack {
+                        Toggle(
+                            "",
+                            isOn: $gameSettings.syncLanguageForNewGames
                         )
-                        .foregroundColor(.primary)
+                        .labelsHidden()
+                        Text("settings.game.language.sync_with_launcher".localized())
                     }
                 }
                 .labeledContentStyle(.custom)

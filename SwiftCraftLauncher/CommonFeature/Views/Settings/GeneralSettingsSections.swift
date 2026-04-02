@@ -162,8 +162,6 @@ struct GeneralSettingsGitHubProxyRow: View {
                     Toggle("", isOn: $generalSettings.enableGitHubProxy)
                         .labelsHidden()
                     Text("settings.github_proxy.enable".localized())
-                        .font(.callout)
-                        .foregroundColor(.primary)
                 }
                 HStack(spacing: 8) {
                     TextField("", text: $generalSettings.gitProxyURL)
@@ -194,7 +192,6 @@ struct GeneralSettingsCommonSheetHeightLimitRow: View {
                 "settings.common_sheet_height_limit.enable".localized(),
                 isOn: $generalSettings.limitCommonSheetHeight
             )
-            .toggleStyle(.checkbox)
         }
         .labeledContentStyle(.custom)
     }

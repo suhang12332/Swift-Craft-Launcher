@@ -16,7 +16,6 @@ public struct PlayerSettingsView: View {
                     "settings.player.offline_login.toggle".localized(),
                     isOn: $playerSettings.enableOfflineLogin
                 )
-                .toggleStyle(.checkbox)
             }.labeledContentStyle(.custom)
             LabeledContent("settings.player.default_skin_server".localized()) {
                 Picker(
