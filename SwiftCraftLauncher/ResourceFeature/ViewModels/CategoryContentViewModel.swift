@@ -163,7 +163,7 @@ final class CategoryContentViewModel: ObservableObject {
         }
 
         await MainActor.run {
-            self.versions = versions
+            self.versions = versions.filter { CommonUtil.isVersionAtLeast($0.version) }
             self.categories = filteredCategories.filter {
                 $0.header == CategoryHeader.categories
             }
