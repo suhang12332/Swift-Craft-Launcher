@@ -14,6 +14,7 @@ enum AppConstants {
         // Player settings
         static let currentPlayerId = "currentPlayerId"
         static let enableOfflineLogin = "enableOfflineLogin"
+        static let defaultYggdrasilServerBaseURL = "defaultYggdrasilServerBaseURL"
         static let hasAddedPremiumAccount = "hasAddedPremiumAccount"
         static let offlineUserServerMap = "offlineUserServerMap"
 
@@ -30,6 +31,7 @@ enum AppConstants {
         static let enableAICrashAnalysis = "enableAICrashAnalysis"
         static let defaultAPISource = "defaultAPISource"
         static let includeSnapshotsForGameVersions = "includeSnapshotsForGameVersions"
+        static let syncLanguageForNewGames = "syncLanguageForNewGames"
 
         // General settings
         static let enableGitHubProxy = "enableGitHubProxy"
