@@ -389,13 +389,18 @@ enum CurseForgeService {
         let cfDetail = try await cfDetailTask
         let description = try await descriptionTask
 
-        guard let modrinthDetail = CFToModrinthAdapter.convertProjectDetail(cfDetail, descriptionHTML: description) else {
+        guard var modrinthDetail = CFToModrinthAdapter.convertProjectDetail(cfDetail, descriptionHTML: description) else {
             throw GlobalError.validation(
                 chineseMessage: "转换项目详情失败",
                 i18nKey: "error.validation.project_detail_convert_failed",
                 level: .notification
             )
         }
+        let releaseGameVersions = modrinthDetail.gameVersions.filter {
+            $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil && CommonUtil.isVersionAtLeast($0)
+        }
+        modrinthDetail.gameVersions = CommonUtil.sortMinecraftVersions(releaseGameVersions)
+
         return modrinthDetail
     }
 
