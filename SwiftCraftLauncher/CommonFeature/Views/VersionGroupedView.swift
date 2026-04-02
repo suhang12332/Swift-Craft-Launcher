@@ -8,6 +8,8 @@ struct VersionGroupedView: View {
     @Binding var selectedItems: [String]
     let onItemTap: (String) -> Void
     var isMultiSelect: Bool = true  // 是否支持多选，默认为true
+    @State private var visibleItemCounts: [String: Int] = [:]
+    @State private var visibleGroupCount: Int = Constants.initialVisibleGroupCount
 
     // 单选模式的可选绑定
     @Binding var selectedItem: String?
@@ -36,17 +38,25 @@ struct VersionGroupedView: View {
         static let groupSpacing: CGFloat = 8
         static let itemSpacing: CGFloat = 4
         static let groupTitlePadding: CGFloat = 4
+        static let initialVisibleGroupCount = 6
+        static let incrementalGroupLoadBatchSize = 4
+        static let initialVisibleItemsPerGroup = 12
+        static let incrementalLoadBatchSize = 12
     }
 
     // MARK: - Body
     var body: some View {
         let groups = groupVersions(items)
         let groupKeys = orderedVersionKeys(from: items)
+        let visibleGroupKeys = Array(groupKeys.prefix(visibleGroupCount))
 
         ScrollView {
-            VStack(alignment: .leading, spacing: Constants.groupSpacing) {
-                ForEach(groupKeys, id: \.self) { key in
+            LazyVStack(alignment: .leading, spacing: Constants.groupSpacing) {
+                ForEach(visibleGroupKeys, id: \.self) { key in
                     versionGroupView(key: key, items: groups[key] ?? [])
+                        .onAppear {
+                            loadMoreGroupsIfNeeded(currentKey: key, groupKeys: groupKeys)
+                        }
                 }
             }
             .padding()
@@ -58,20 +68,21 @@ struct VersionGroupedView: View {
     @ViewBuilder
     private func versionGroupView(key: String, items: [FilterItem]) -> some View {
         VStack(alignment: .leading, spacing: Constants.itemSpacing) {
-            // 分组标题
             Text(key)
                 .font(.headline.bold())
                 .foregroundColor(.primary)
                 .padding(.top, Constants.groupTitlePadding)
 
-            // 版本项
             FlowLayout {
-                ForEach(items) { item in
+                ForEach(visibleItems(for: key, items: items)) { item in
                     FilterChip(
                         title: item.name,
                         isSelected: isSelected(item.id)
                     ) {
                         onItemTap(item.id)
+                    }
+                    .onAppear {
+                        loadMoreItemsIfNeeded(currentItem: item, in: key, allItems: items)
                     }
                 }
             }
@@ -87,6 +98,38 @@ struct VersionGroupedView: View {
         } else {
             return selectedItem == itemId
         }
+    }
+
+    private func visibleItems(for key: String, items: [FilterItem]) -> [FilterItem] {
+        let visibleCount = visibleItemCounts[key, default: Constants.initialVisibleItemsPerGroup]
+        return Array(items.prefix(visibleCount))
+    }
+
+    private func loadMoreGroupsIfNeeded(currentKey: String, groupKeys: [String]) {
+        guard currentKey == groupKeys.prefix(visibleGroupCount).last else {
+            return
+        }
+
+        guard visibleGroupCount < groupKeys.count else { return }
+
+        visibleGroupCount = min(
+            visibleGroupCount + Constants.incrementalGroupLoadBatchSize,
+            groupKeys.count
+        )
+    }
+
+    private func loadMoreItemsIfNeeded(currentItem: FilterItem, in key: String, allItems: [FilterItem]) {
+        guard currentItem.id == visibleItems(for: key, items: allItems).last?.id else {
+            return
+        }
+
+        let currentVisibleCount = visibleItemCounts[key, default: Constants.initialVisibleItemsPerGroup]
+        guard currentVisibleCount < allItems.count else { return }
+
+        visibleItemCounts[key] = min(
+            currentVisibleCount + Constants.incrementalLoadBatchSize,
+            allItems.count
+        )
     }
 
     /// 将版本项按主版本号分组
