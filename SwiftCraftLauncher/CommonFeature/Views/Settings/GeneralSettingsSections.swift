@@ -176,8 +176,8 @@ struct GeneralSettingsGitHubProxyRow: View {
                         generalSettings.gitProxyURL = "https://gh-proxy.com"
                     }
                     .disabled(!generalSettings.enableGitHubProxy)
-                    InfoIconWithPopover(text: "settings.github_proxy.description".localized())
                 }
+                CommonDescriptionText(text: "settings.github_proxy.description".localized())
             }
         }
         .labeledContentStyle(.custom)

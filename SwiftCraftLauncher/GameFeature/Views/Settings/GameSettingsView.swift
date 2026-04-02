@@ -37,8 +37,7 @@ public struct GameSettingsView: View {
                             isOn: $gameSettings.includeSnapshotsForGameVersions
                         )
                         .labelsHidden()
-                        Text("settings.game_versions.include_snapshots.label".localized()).font(.callout)
-                            .foregroundColor(.primary)
+                        Text("settings.game_versions.include_snapshots.label".localized())
                     }
                 }
                 .labeledContentStyle(.custom)
@@ -59,41 +58,42 @@ public struct GameSettingsView: View {
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
 
-                LabeledContent("settings.default_memory_allocation.label".localized()) {
-                    HStack {
-                        MiniRangeSlider(
-                            range: $globalMemoryRange,
-                            bounds:
-                                512...Double(gameSettings.maximumMemoryAllocation)
-                        )
-                        .frame(width: 200)
-                        .controlSize(.mini)
-                        .onChange(of: globalMemoryRange) { _, newValue in
-                            gameSettings.globalXms = Int(newValue.lowerBound)
-                            gameSettings.globalXmx = Int(newValue.upperBound)
+                Group {
+                    LabeledContent("settings.default_memory_allocation.label".localized()) {
+                        HStack {
+                            MiniRangeSlider(
+                                range: $globalMemoryRange,
+                                bounds:
+                                    512...Double(gameSettings.maximumMemoryAllocation)
+                            )
+                            .frame(width: 200)
+                            .controlSize(.mini)
+                            .onChange(of: globalMemoryRange) { _, newValue in
+                                gameSettings.globalXms = Int(newValue.lowerBound)
+                                gameSettings.globalXmx = Int(newValue.upperBound)
+                            }
+                            .onAppear {
+                                globalMemoryRange =
+                                    Double(
+                                        gameSettings.globalXms
+                                    )...Double(gameSettings.globalXmx)
+                            }
+                            Text(
+                                "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB"
+                            )
+                            .font(.subheadline)
+                            .foregroundColor(.primary)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
                         }
-                        .onAppear {
-                            globalMemoryRange =
-                                Double(
-                                    gameSettings.globalXms
-                                )...Double(gameSettings.globalXmx)
-                        }
-                        Text(
-                            "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB"
-                        )
-                        .font(.subheadline)
-                        .foregroundColor(.primary)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        InfoIconWithPopover(
-                            text: "settings.default_memory_allocation.description".localized()
-                        )
                     }
+                    .labeledContentStyle(.custom)
+                    CommonDescriptionText(
+                        text: "settings.default_memory_allocation.description".localized()
+                    )
                 }
-                .labeledContentStyle(.custom)
-                .padding(.bottom, 10)
 
-                LabeledContent("settings.game_resource_info.label".localized() + ":") {
+                LabeledContent("settings.game_resource_info.label".localized()) {
                     HStack {
                         Label(
                             "\(cacheManager.cacheInfo.fileCount)",
@@ -105,7 +105,9 @@ public struct GameSettingsView: View {
                             systemImage: "externaldrive"
                         ).font(.callout)
                     }.foregroundStyle(.primary)
-                }.labeledContentStyle(.custom)
+                }
+                .labeledContentStyle(.custom)
+                .padding(.top, 10)
             }
             .onAppear {
                 calculateCacheInfoSafely()

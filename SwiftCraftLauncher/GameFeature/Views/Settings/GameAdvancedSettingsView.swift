@@ -41,8 +41,8 @@ struct GameAdvancedSettingsView: View {
                 }
             }.labeledContentStyle(.custom)
 
-            LabeledContent("settings.game.java.garbage_collector".localized()) {
-                HStack {
+            Group {
+                LabeledContent("settings.game.java.garbage_collector".localized()) {
                     Picker("", selection: $viewModel.selectedGarbageCollector) {
                         ForEach(viewModel.availableGarbageCollectors, id: \.self) { gc in
                             Text(gc.displayName).tag(gc)
@@ -54,14 +54,14 @@ struct GameAdvancedSettingsView: View {
                     .onChange(of: viewModel.selectedGarbageCollector) { _, _ in
                         viewModel.didSelectGarbageCollector()
                     }
-                    InfoIconWithPopover(text: viewModel.selectedGarbageCollector.description)
                 }
+                .labeledContentStyle(.custom)
+                .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
+                CommonDescriptionText(text: viewModel.selectedGarbageCollector.description)
             }
-            .labeledContentStyle(.custom)
-            .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
 
-            LabeledContent("settings.game.java.performance_optimization".localized()) {
-                HStack {
+            Group {
+                LabeledContent("settings.game.java.performance_optimization".localized()) {
                     Picker("", selection: $viewModel.optimizationPreset) {
                         // 最大优化仅在 G1GC 时可用
                         ForEach(viewModel.availableOptimizationPresets, id: \.self) { preset in
@@ -74,11 +74,11 @@ struct GameAdvancedSettingsView: View {
                     .onChange(of: viewModel.optimizationPreset) { _, newValue in
                         viewModel.didSelectOptimizationPreset(newValue)
                     }
-                    InfoIconWithPopover(text: viewModel.optimizationPreset.description)
                 }
+                .labeledContentStyle(.custom)
+                .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
+                CommonDescriptionText(text: viewModel.optimizationPreset.description)
             }
-            .labeledContentStyle(.custom)
-            .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
 
             LabeledContent("settings.game.java.memory".localized()) {
                 HStack {
@@ -96,9 +96,10 @@ struct GameAdvancedSettingsView: View {
                 }
             }
             .labeledContentStyle(.custom)
+            .padding(.vertical, 10)
 
-            LabeledContent("settings.game.java.custom_parameters".localized()) {
-                HStack {
+            Group {
+                LabeledContent("settings.game.java.custom_parameters".localized()) {
                     TextField("", text: $viewModel.customJvmArguments)
                         .focusable(false)
                         .labelsHidden()
@@ -106,13 +107,13 @@ struct GameAdvancedSettingsView: View {
                         .lineLimit(2...4)
                         .frame(width: 200)
                         .onChange(of: viewModel.customJvmArguments) { _, _ in viewModel.didChangeCustomJvmArguments() }
-                    InfoIconWithPopover(text: "settings.game.java.custom_parameters.note".localized())
                 }
+                .labeledContentStyle(.custom)
+                CommonDescriptionText(text: "settings.game.java.custom_parameters.note".localized())
             }
-            .labeledContentStyle(.custom)
 
-            LabeledContent("settings.game.java.environment_variables".localized()) {
-                HStack {
+            Group {
+                LabeledContent("settings.game.java.environment_variables".localized()) {
                     TextField("", text: $viewModel.environmentVariables, axis: .vertical)
                         .focusable(false)
                         .labelsHidden()
@@ -120,10 +121,10 @@ struct GameAdvancedSettingsView: View {
                         .lineLimit(2...4)
                         .frame(width: 200)
                         .onChange(of: viewModel.environmentVariables) { _, _ in viewModel.didChangeEnvironmentVariables() }
-                    InfoIconWithPopover(text: "example: JAVA_OPTS=-Dfile.encoding=UTF-8".localized())
                 }
+                .labeledContentStyle(.custom)
+                CommonDescriptionText(text: "example: JAVA_OPTS=-Dfile.encoding=UTF-8".localized())
             }
-            .labeledContentStyle(.custom)
         }
         .onAppear {
             viewModel.setRepository(gameRepository)

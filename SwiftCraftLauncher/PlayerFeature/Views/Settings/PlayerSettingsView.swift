@@ -33,6 +33,7 @@ public struct PlayerSettingsView: View {
                 }
                 .labelsHidden()
                 .fixedSize()
+                .disabled(!playerSettings.enableOfflineLogin)
             }
             .labeledContentStyle(.custom)
             LabeledContent("settings.player.authlib_injector".localized()) {

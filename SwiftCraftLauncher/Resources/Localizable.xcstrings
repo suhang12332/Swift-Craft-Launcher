@@ -72916,144 +72916,6 @@
         }
       }
     },
-    "settings.ai.api_url.description": {
-      "comment": "AI Settings",
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "عنوان API المخصص (اتركه فارغًا لاستخدام العنوان الافتراضي)"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Brugerdefineret API URL (lad stå tom for at bruge standardadressen)"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Benutzerdefinierte API-URL (leer lassen für Standardadresse)"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Custom API URL (leave empty to use default address)"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL de API personalizada (dejar vacío para usar la dirección predeterminada)"
-          }
-        },
-        "fi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mukautettu API-osoite (jätä tyhjäksi käyttääksesi oletusosoitetta)"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL d'API personnalisée (laisser vide pour utiliser l'adresse par défaut)"
-          }
-        },
-        "hi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "कस्टम API URL (डिफ़ॉल्ट पता उपयोग करने के लिए खाली छोड़ें)"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL API personalizzata (lasciare vuoto per usare l'indirizzo predefinito)"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "カスタム API URL（デフォルトアドレスを使用するには空のままにします）"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "사용자 정의 API URL (기본 주소를 사용하려면 비워 두세요)"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tilpasset API URL (la stå tom for å bruke standardadressen)"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aangepaste API URL (leeg laten om standaardadres te gebruiken)"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Niestandardowy URL API (zostaw puste, aby użyć domyślnego adresu)"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL da API personalizada (deixe vazio para usar o endereço padrão)"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Пользовательский URL API (оставьте пустым для использования адреса по умолчанию)"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Anpassad API URL (lämna tom för att använda standardadressen)"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL API ที่กำหนดเอง (เว้นว่างไว้เพื่อใช้ที่อยู่เริ่มต้น)"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Özel API URL (varsayılan adresi kullanmak için boş bırakın)"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "URL API tùy chỉnh (để trống để sử dụng địa chỉ mặc định)"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "自定义 API 地址（留空使用默认地址）"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "自訂 API 地址（留空使用預設地址）"
-          }
-        }
-      }
-    },
     "settings.ai.api_url.label": {
       "comment": "AI Settings",
       "extractionState": "manual",
@@ -73199,55 +73061,55 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC 皮肤直链，必须是 64x64 像素"
+            "value": "Minecraft 皮肤直链，必须是 64x64 像素"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC skin direct link, must be 64x64 pixels"
+            "value": "Minecraft skin direct link, must be 64x64 pixels"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC-Skin-Direktlink, muss 64x64 Pixel sein"
+            "value": "Minecraft-Skin-Direktlink, muss 64x64 Pixel sein"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC skin direct link, must be 64x64 pixels"
+            "value": "Minecraft skin direct link, must be 64x64 pixels"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enlace directo de skin MC, debe ser 64x64 píxeles"
+            "value": "Enlace directo de skin Minecraft, debe ser 64x64 píxeles"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC-skinin suora linkki, on oltava 64x64 pikseliä"
+            "value": "Minecraft-skinin suora linkki, on oltava 64x64 pikseliä"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lien direct de la skin MC, doit être 64x64 pixels"
+            "value": "Lien direct de la skin Minecraft, doit être 64x64 pixels"
           }
         },
         "hi": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC स्किन डायरेक्ट लिंक, 64x64 पिक्सेल होना चाहिए"
+            "value": "Minecraft स्किन डायरेक्ट लिंक, 64x64 पिक्सेल होना चाहिए"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Link diretto della skin MC, deve essere 64x64 pixel"
+            "value": "Link diretto della skin Minecraft, deve essere 64x64 pixel"
           }
         },
         "ja": {
@@ -73259,73 +73121,73 @@
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC 스킨 직접 링크, 64x64 픽셀이어야 합니다"
+            "value": "Minecraft 스킨 직접 링크, 64x64 픽셀이어야 합니다"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC-skin direkte lenke, må være 64x64 piksler"
+            "value": "Minecraft-skin direkte lenke, må være 64x64 piksler"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC-skin directe link, moet 64x64 pixels zijn"
+            "value": "Minecraft-skin directe link, moet 64x64 pixels zijn"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bezpośredni link do skórki MC, musi mieć 64x64 pikseli"
+            "value": "Bezpośredni link do skórki Minecraft, musi mieć 64x64 pikseli"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Link direto da skin MC, deve ser 64x64 pixels"
+            "value": "Link direto da skin Minecraft, deve ser 64x64 pixels"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Прямая ссылка на скин MC, должна быть 64x64 пикселя"
+            "value": "Прямая ссылка на скин Minecraft, должна быть 64x64 пикселя"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC-skin direktlänk, måste vara 64x64 pixlar"
+            "value": "Minecraft-skin direktlänk, måste vara 64x64 pixlar"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ลิงก์ตรงของสกิน MC ต้องเป็น 64x64 พิกเซล"
+            "value": "ลิงก์ตรงของสกิน Minecraft ต้องเป็น 64x64 พิกเซล"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC skin doğrudan bağlantısı, 64x64 piksel olmalıdır"
+            "value": "Minecraft skin doğrudan bağlantısı, 64x64 piksel olmalıdır"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Liên kết trực tiếp skin MC, phải là 64x64 pixel"
+            "value": "Liên kết trực tiếp skin Minecraft, phải là 64x64 pixel"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC 皮肤直链，必须是 64x64 像素"
+            "value": "Minecraft 皮肤直链，必须是 64x64 像素"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC 皮膚直鏈，必須是 64x64 像素"
+            "value": "Minecraft 皮膚直鏈，必須是 64x64 像素"
           }
         }
       }
@@ -73475,271 +73337,133 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "输入 MC 皮肤直链 (64x64)"
+            "value": "输入 Minecraft 皮肤直链 (64x64)"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enter MC skin URL (64x64)"
+            "value": "Enter Minecraft skin URL (64x64)"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC-Skin-URL eingeben (64x64)"
+            "value": "Minecraft-Skin-URL eingeben (64x64)"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enter MC skin URL (64x64)"
+            "value": "Enter Minecraft skin URL (64x64)"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ingrese la URL de la skin de MC (64x64)"
+            "value": "Ingrese la URL de la skin de Minecraft (64x64)"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Syötä MC-skinin URL (64x64)"
+            "value": "Syötä Minecraft-skinin URL (64x64)"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Entrez l'URL de la skin MC (64x64)"
+            "value": "Entrez l'URL de la skin Minecraft (64x64)"
           }
         },
         "hi": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC स्किन URL दर्ज करें (64x64)"
+            "value": "Minecraft स्किन URL दर्ज करें (64x64)"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Inserisci l'URL della skin MC (64x64)"
+            "value": "Inserisci l'URL della skin Minecraft (64x64)"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "MCスキンURLを入力 (64x64)"
+            "value": "MinecraftスキンURLを入力 (64x64)"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC 스킨 URL 입력 (64x64)"
+            "value": "Minecraft 스킨 URL 입력 (64x64)"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Skriv inn MC-skin URL (64x64)"
+            "value": "Skriv inn Minecraft-skin URL (64x64)"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Voer MC-skin URL in (64x64)"
+            "value": "Voer Minecraft-skin URL in (64x64)"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wprowadź URL skórki MC (64x64)"
+            "value": "Wprowadź URL skórki Minecraft (64x64)"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Digite a URL da skin MC (64x64)"
+            "value": "Digite a URL da skin Minecraft (64x64)"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Введите URL скина MC (64x64)"
+            "value": "Введите URL скина Minecraft (64x64)"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ange MC-skin URL (64x64)"
+            "value": "Ange Minecraft-skin URL (64x64)"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "ป้อน URL สกิน MC (64x64)"
+            "value": "ป้อน URL สกิน Minecraft (64x64)"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "MC skin URL'sini girin (64x64)"
+            "value": "Minecraft skin URL'sini girin (64x64)"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nhập URL skin MC (64x64)"
+            "value": "Nhập URL skin Minecraft (64x64)"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "输入 MC 皮肤直链 (64x64)"
+            "value": "输入 Minecraft 皮肤直链 (64x64)"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "輸入 MC 皮膚直鏈 (64x64)"
-          }
-        }
-      }
-    },
-    "settings.ai.model.description": {
-      "comment": "AI Settings",
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "اسم النموذج المطلوب استخدامه (مطلوب)"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Navnet på den model, der skal bruges (påkrævet)"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Der zu verwendende Modellname (erforderlich)"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The model name to use (required)"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "El nombre del modelo a usar (requerido)"
-          }
-        },
-        "fi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Käytettävän mallin nimi (pakollinen)"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le nom du modèle à utiliser (requis)"
-          }
-        },
-        "hi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "उपयोग करने के लिए मॉडल नाम (आवश्यक)"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Il nome del modello da utilizzare (richiesto)"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "使用するモデル名（必須）"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "사용할 모델 이름 (필수)"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modellnavnet som skal brukes (påkrevd)"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "De te gebruiken modelnaam (verplicht)"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nazwa modelu do użycia (wymagane)"
-          }
-        },
-        "pt": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "O nome do modelo a ser usado (obrigatório)"
-          }
-        },
-        "ru": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Название модели для использования (обязательно)"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modellnamnet som ska användas (obligatoriskt)"
-          }
-        },
-        "th": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ชื่อโมเดลที่จะใช้ (จำเป็น)"
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kullanılacak model adı (gerekli)"
-          }
-        },
-        "vi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tên mô hình cần sử dụng (bắt buộc)"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "要使用的模型名称（必填）"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "要使用的模型名稱（必填）"
+            "value": "輸入 Minecraft 皮膚直鏈 (64x64)"
           }
         }
       }
