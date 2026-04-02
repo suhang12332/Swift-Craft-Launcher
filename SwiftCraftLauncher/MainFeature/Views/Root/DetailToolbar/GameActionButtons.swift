@@ -23,6 +23,7 @@ struct GameActionButtons: View {
     @StateObject private var gameActionManager = GameActionManager.shared
     @State private var showDeleteAlert = false
     @State private var showExportSheet = false
+    @State private var showSwitchModLoader = false
     @State private var showCrashAlert = false
     @State private var crashDirectory: URL?
 
@@ -102,6 +103,18 @@ struct GameActionButtons: View {
                 .help("modpack.export.button".localized())
                 .sheet(isPresented: $showExportSheet) {
                     ModPackExportSheet(gameInfo: game)
+                }
+            }
+            
+            if game.modLoader == GameLoader.vanilla.displayName {
+                Button{
+                    showSwitchModLoader = true
+                } label: {
+                    Label("switch.modloader.button".localized(), systemImage: "arrow.clockwise.square")
+                }
+                .help("switch.modloader.button".localized())
+                .sheet(isPresented: $showSwitchModLoader) {
+                    SwitchModLoaderSheet(gameInfo: game)
                 }
             }
 
