@@ -397,9 +397,10 @@ enum CurseForgeService {
             )
         }
         let releaseGameVersions = modrinthDetail.gameVersions.filter {
-            $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil && CommonUtil.isVersionAtLeast($0)
+            $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil
         }
-        modrinthDetail.gameVersions = CommonUtil.sortMinecraftVersions(releaseGameVersions)
+        let result = CommonUtil.sortMinecraftVersions(releaseGameVersions)
+        modrinthDetail.gameVersions = CommonUtil.versionsAtLeast(result)
 
         return modrinthDetail
     }

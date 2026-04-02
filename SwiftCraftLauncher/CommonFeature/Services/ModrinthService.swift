@@ -272,9 +272,10 @@ enum ModrinthService {
 
         // 仅保留纯数字（含点号）的正式版游戏版本，例如 1.20.4
         let releaseGameVersions = detail.gameVersions.filter {
-            $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil && CommonUtil.isVersionAtLeast($0)
+            $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil
         }
-        detail.gameVersions = CommonUtil.sortMinecraftVersions(releaseGameVersions)
+        let result = CommonUtil.sortMinecraftVersions(releaseGameVersions)
+        detail.gameVersions = CommonUtil.versionsAtLeast(result)
 
         return detail
     }
