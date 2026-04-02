@@ -15,5 +15,11 @@ class PlayerSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    /// 离线登录默认使用的 Yggdrasil 皮肤站 baseURL（空表示不预设）
+    @AppStorage(AppConstants.UserDefaultsKeys.defaultYggdrasilServerBaseURL)
+    var defaultYggdrasilServerBaseURL: String = "" {
+        didSet { objectWillChange.send() }
+    }
+
     private init() {}
 }

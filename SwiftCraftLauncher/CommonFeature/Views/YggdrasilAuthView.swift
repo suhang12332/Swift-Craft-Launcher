@@ -3,6 +3,7 @@ import SwiftUI
 struct YggdrasilAuthView: View {
     @StateObject private var authService = YggdrasilAuthService.shared
     @StateObject private var viewModel = YggdrasilAuthViewModel()
+    @StateObject private var playerSettings = PlayerSettingsManager.shared
     var onLoginSuccess: ((YggdrasilProfile) -> Void)?
 
     private let servers = YggdrasilServerPresets.servers
@@ -24,6 +25,14 @@ struct YggdrasilAuthView: View {
         .padding(.vertical, 20)
         .onChange(of: viewModel.selectedOption) { _, newValue in
             viewModel.onSelectedOptionChanged(newValue, authService: authService)
+        }
+        .onAppear {
+            guard viewModel.selectedOption == nil else { return }
+            let presetBaseURL = playerSettings.defaultYggdrasilServerBaseURL
+            guard !presetBaseURL.isEmpty else { return }
+            if let preset = servers.first(where: { $0.baseURL.absoluteString == presetBaseURL }) {
+                viewModel.selectedOption = preset
+            }
         }
         .onDisappear {
             viewModel.onDisappear(authService: authService)
