@@ -142,17 +142,15 @@ struct SwitchModLoaderSheet: View {
     }
 
     private var installProgressView: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ProgressView(value: Double(installProgress.completed), total: Double(max(installProgress.total, 1))) {
-                Text(installProgress.message)
-                    .font(.caption)
-                    .lineLimit(1)
-            }
-            .progressViewStyle(.linear)
-
-            Text("\(installProgress.completed) / \(installProgress.total)")
-                .font(.caption2)
-                .foregroundColor(.secondary)
+        FormSection {
+            DownloadProgressRow(
+                title: "switch.modloader.installing".localized(),
+                progress: Double(installProgress.completed) / Double(max(installProgress.total, 1)),
+                currentFile: installProgress.message,
+                completed: installProgress.completed,
+                total: installProgress.total,
+                version: selectedLoaderVersion
+            )
         }
         .padding(.top, 8)
     }
