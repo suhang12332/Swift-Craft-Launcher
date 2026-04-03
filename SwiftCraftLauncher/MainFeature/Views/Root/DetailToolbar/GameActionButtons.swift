@@ -107,7 +107,7 @@ struct GameActionButtons: View {
             }
 
             if game.modLoader == GameLoader.vanilla.displayName {
-                Button{
+                Button {
                     showSwitchModLoader = true
                 } label: {
                     Label("switch.modloader.button".localized(), systemImage: "arrow.clockwise.square")

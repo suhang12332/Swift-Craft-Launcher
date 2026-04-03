@@ -276,8 +276,7 @@ struct SwitchModLoaderSheet: View {
 
             // 如果版本列表为空，显示错误提示
             if versions.isEmpty {
-                if let error = loadError {
-                    let globalError = GlobalError.from(error)
+                if loadError != nil {
                     versionLoadError = String(format: "switch.modloader.no_versions_for_loader".localized(), getModLoaderDisplayName(loader), gameVersion)
                 } else {
                     versionLoadError = String(format: "switch.modloader.no_versions_for_loader".localized(), getModLoaderDisplayName(loader), gameVersion)
@@ -331,13 +330,12 @@ struct SwitchModLoaderSheet: View {
             let result = try await handler.setupWithSpecificVersionThrowing(
                 for: gameInfo.gameVersion,
                 loaderVersion: selectedLoaderVersion,
-                gameInfo: gameInfo,
-                onProgressUpdate: { message, completed, total in
-                    Task { @MainActor in
-                        self.installProgress = (message, completed, total)
-                    }
+                gameInfo: gameInfo
+            ) { message, completed, total in
+                Task { @MainActor in
+                    self.installProgress = (message, completed, total)
                 }
-            )
+            }
 
             // 获取额外的加载器信息（JVM参数、游戏参数等）
             let (modJvm, gameArguments) = try await fetchLoaderArguments(
