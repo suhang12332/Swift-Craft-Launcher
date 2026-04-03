@@ -105,7 +105,7 @@ struct GameActionButtons: View {
                     ModPackExportSheet(gameInfo: game)
                 }
             }
-            
+
             if game.modLoader == GameLoader.vanilla.displayName {
                 Button{
                     showSwitchModLoader = true

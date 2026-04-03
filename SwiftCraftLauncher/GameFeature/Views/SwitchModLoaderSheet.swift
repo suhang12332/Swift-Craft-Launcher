@@ -9,7 +9,8 @@ import SwiftUI
 
 struct SwitchModLoaderSheet: View {
     let gameInfo: GameVersionInfo
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss)
+    var dismiss
     @EnvironmentObject var gameRepository: GameRepository
 
     @State private var selectedModLoader: String = ""
@@ -19,6 +20,7 @@ struct SwitchModLoaderSheet: View {
     @State private var isInstalling = false
     @State private var installProgress: (message: String, completed: Int, total: Int) = ("", 0, 0)
     @State private var installError: String?
+    @State private var versionLoadError: String?
 
     private var availableModLoaders: [String] {
         AppConstants.modLoaders.filter { $0 != GameLoader.vanilla.displayName }
@@ -60,12 +62,20 @@ struct SwitchModLoaderSheet: View {
                 loaderVersionPicker
             }
 
+            // 版本加载错误提示
+            if let versionError = versionLoadError {
+                Text(versionError)
+                    .font(.caption)
+                    .foregroundColor(.orange)
+                    .padding(.top, 8)
+            }
+
             // 安装进度
             if isInstalling {
                 installProgressView
             }
 
-            // 错误信息
+            // 安装错误信息
             if let error = installError {
                 Text(error)
                     .font(.caption)
@@ -86,7 +96,6 @@ struct SwitchModLoaderSheet: View {
             Text("game.form.modloader".localized())
                 .font(.subheadline)
                 .foregroundColor(.primary)
-
             CommonMenuPicker(
                 selection: $selectedModLoader,
                 hidesLabel: true
@@ -94,7 +103,18 @@ struct SwitchModLoaderSheet: View {
                 Text("")
             } content: {
                 ForEach(availableModLoaders, id: \.self) { loader in
-                    Text(getModLoaderDisplayName(loader)).tag(loader)
+                    switch loader {
+                    case GameLoader.fabric.displayName:
+                        Text("modloader.fabric.text".localized()).tag(loader)
+                    case GameLoader.forge.displayName:
+                        Text("modloader.forge.text".localized()).tag(loader)
+                    case GameLoader.neoforge.displayName:
+                        Text("modloader.neoforge.text".localized()).tag(loader)
+                    case GameLoader.quilt.rawValue:
+                        Text("modloader.quilt.text".localized()).tag(loader)
+                    default:
+                        Text(loader.capitalized).tag(loader)
+                    }
                 }
             }
             .disabled(isInstalling || isLoadingVersions)
@@ -157,7 +177,7 @@ struct SwitchModLoaderSheet: View {
                         .controlSize(.small)
                         .scaleEffect(0.8)
                 } else {
-                    Text("common.install".localized())
+                    Text("resource.add".localized())
                 }
             }
             .keyboardShortcut(.defaultAction)
@@ -181,23 +201,6 @@ struct SwitchModLoaderSheet: View {
         !selectedLoaderVersion.isEmpty &&
         !isInstalling &&
         !isLoadingVersions
-    }
-
-    // MARK: - Helper Methods
-
-    private func getModLoaderDisplayName(_ loader: String) -> String {
-        switch loader {
-        case GameLoader.fabric.displayName:
-            return "modloader.fabric.text".localized()
-        case GameLoader.forge.displayName:
-            return "modloader.forge.text".localized()
-        case GameLoader.neoforge.displayName:
-            return "modloader.neoforge.text".localized()
-        case GameLoader.quilt.rawValue:
-            return "modloader.quilt.text".localized()
-        default:
-            return loader.capitalized
-        }
     }
 
     // MARK: - Initialization
@@ -225,6 +228,7 @@ struct SwitchModLoaderSheet: View {
             isLoadingVersions = true
             availableLoaderVersions = []
             selectedLoaderVersion = ""
+            versionLoadError = nil
         }
 
         defer {
@@ -235,6 +239,7 @@ struct SwitchModLoaderSheet: View {
 
         let gameVersion = gameInfo.gameVersion
         var versions: [String] = []
+        var loadError: Error?
 
         switch loader.lowercased() {
         case GameLoader.fabric.displayName:
@@ -245,6 +250,7 @@ struct SwitchModLoaderSheet: View {
                 let forgeVersions = try await ForgeLoaderService.fetchAllForgeVersions(for: gameVersion)
                 versions = forgeVersions.loaders.map { $0.id }
             } catch {
+                loadError = error
                 Logger.shared.error("获取 Forge 版本失败: \(error.localizedDescription)")
             }
         case GameLoader.neoforge.displayName:
@@ -252,6 +258,7 @@ struct SwitchModLoaderSheet: View {
                 let neoforgeVersions = try await NeoForgeLoaderService.fetchAllNeoForgeVersions(for: gameVersion)
                 versions = neoforgeVersions.loaders.map { $0.id }
             } catch {
+                loadError = error
                 Logger.shared.error("获取 NeoForge 版本失败: \(error.localizedDescription)")
             }
         case GameLoader.quilt.rawValue:
@@ -266,6 +273,31 @@ struct SwitchModLoaderSheet: View {
             if let firstVersion = versions.first {
                 selectedLoaderVersion = firstVersion
             }
+
+            // 如果版本列表为空，显示错误提示
+            if versions.isEmpty {
+                if let error = loadError {
+                    let globalError = GlobalError.from(error)
+                    versionLoadError = String(format: "switch.modloader.no_versions_for_loader".localized(), getModLoaderDisplayName(loader), gameVersion)
+                } else {
+                    versionLoadError = String(format: "switch.modloader.no_versions_for_loader".localized(), getModLoaderDisplayName(loader), gameVersion)
+                }
+            }
+        }
+    }
+
+    private func getModLoaderDisplayName(_ loader: String) -> String {
+        switch loader {
+        case GameLoader.fabric.displayName:
+            return "modloader.fabric.text".localized()
+        case GameLoader.forge.displayName:
+            return "modloader.forge.text".localized()
+        case GameLoader.neoforge.displayName:
+            return "modloader.neoforge.text".localized()
+        case GameLoader.quilt.rawValue:
+            return "modloader.quilt.text".localized()
+        default:
+            return loader.capitalized
         }
     }
 
@@ -381,7 +413,6 @@ struct SwitchModLoaderSheet: View {
             await MainActor.run {
                 dismiss()
             }
-
         } catch {
             let globalError = GlobalError.from(error)
             await MainActor.run {
