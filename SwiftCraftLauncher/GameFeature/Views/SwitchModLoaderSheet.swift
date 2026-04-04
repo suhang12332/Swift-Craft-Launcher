@@ -31,16 +31,9 @@ struct SwitchModLoaderSheet: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                HStack(spacing: 8) {
-                    Text(viewModel.gameInfo.gameName)
-                        .font(.body)
-                        .fontWeight(.medium)
-                    Text("-")
-                        .foregroundColor(.secondary)
-                    Text(viewModel.gameInfo.gameVersion)
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                }
+                Text(viewModel.gameInfo.gameName)
+                    .font(.body)
+                    .fontWeight(.medium)
             }
 
             Divider()
