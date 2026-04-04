@@ -21,7 +21,7 @@ final class SwitchModLoaderSheetViewModel: ObservableObject {
 
     // MARK: - Dependencies
     let gameInfo: GameVersionInfo
-    private var gameRepository: GameRepository?
+    var gameRepository: GameRepository?
 
     // MARK: - Computed Properties
     var availableModLoaders: [String] {
@@ -72,7 +72,6 @@ final class SwitchModLoaderSheetViewModel: ObservableObject {
 
         let gameVersion = gameInfo.gameVersion
         var versions: [String] = []
-        var loadError: Error?
 
         switch loader.lowercased() {
         case GameLoader.fabric.displayName:
@@ -83,16 +82,14 @@ final class SwitchModLoaderSheetViewModel: ObservableObject {
                 let forgeVersions = try await ForgeLoaderService.fetchAllForgeVersions(for: gameVersion)
                 versions = forgeVersions.loaders.map { $0.id }
             } catch {
-                loadError = error
-                Logger.shared.error("获取 Forge 版本失败: \(error.localizedDescription)")
+                Logger.shared.error("获取 Forge 版本失败：\(error.localizedDescription)")
             }
         case GameLoader.neoforge.displayName:
             do {
                 let neoforgeVersions = try await NeoForgeLoaderService.fetchAllNeoForgeVersions(for: gameVersion)
                 versions = neoforgeVersions.loaders.map { $0.id }
             } catch {
-                loadError = error
-                Logger.shared.error("获取 NeoForge 版本失败: \(error.localizedDescription)")
+                Logger.shared.error("获取 NeoForge 版本失败：\(error.localizedDescription)")
             }
         case GameLoader.quilt.rawValue:
             let quiltVersions = await QuiltLoaderService.fetchAllQuiltLoaders(for: gameVersion)

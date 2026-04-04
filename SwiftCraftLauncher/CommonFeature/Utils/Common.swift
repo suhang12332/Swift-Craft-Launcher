@@ -163,6 +163,21 @@ enum CommonUtil {
         return compareMinecraftVersions(version, AppConstants.MinecraftVersions.featureBaseline) >= 0
     }
 
+    /// 判断游戏版本是否为正式版
+    /// - Parameter version: 游戏版本号
+    /// - Returns: 如果是正式版返回 true，否则返回 false
+    static func isReleaseVersion(_ version: String) -> Bool {
+        let components = version.components(separatedBy: ".")
+
+        for component in components {
+            if component.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) != nil {
+                return false
+            }
+        }
+        
+        return true
+    }
+
     /// 更新服务器连通性状态（在主线程上设置状态，避免 View 里重复逻辑）
     static func updateServerConnectionStatus(
         for address: String,

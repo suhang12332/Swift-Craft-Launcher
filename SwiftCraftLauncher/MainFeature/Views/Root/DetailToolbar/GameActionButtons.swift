@@ -31,6 +31,10 @@ struct GameActionButtons: View {
         gameStatusManager.isGameRunning(gameId: gameId, userId: userId)
     }
 
+    private var isReleaseVersion: Bool {
+        CommonUtil.isReleaseVersion(game.gameVersion)
+    }
+
     var body: some View {
         Group {
             Button {
@@ -106,7 +110,7 @@ struct GameActionButtons: View {
                 }
             }
 
-            if game.modLoader == GameLoader.vanilla.displayName {
+            if game.modLoader == GameLoader.vanilla.displayName && isReleaseVersion {
                 Button {
                     showSwitchModLoader = true
                 } label: {
