@@ -168,13 +168,9 @@ enum CommonUtil {
     /// - Returns: 如果是正式版返回 true，否则返回 false
     static func isReleaseVersion(_ version: String) -> Bool {
         let components = version.components(separatedBy: ".")
-
-        for component in components {
-            if component.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) != nil {
-                return false
-            }
+        for component in components where component.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) != nil {
+            return false
         }
-        
         return true
     }
 
