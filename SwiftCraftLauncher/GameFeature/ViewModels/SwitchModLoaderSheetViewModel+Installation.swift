@@ -1,5 +1,5 @@
 //
-//  SwitchModLoaderSheetViewModel+Save.swift
+//  SwitchModLoaderSheetViewModel+Installation.swift
 //  SwiftCraftLauncher
 //
 //  Created by Hongbro886 on 2026/4/3.
