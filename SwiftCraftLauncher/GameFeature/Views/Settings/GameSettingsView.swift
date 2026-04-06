@@ -2,17 +2,11 @@ import Foundation
 import SwiftUI
 
 public struct GameSettingsView: View {
-    @StateObject private var cacheManager = CacheManager()
 
     @StateObject private var gameSettings = GameSettingsManager.shared
 
     // 内存区间
     @State private var globalMemoryRange: ClosedRange<Double> = 512...4096
-
-    /// 安全地计算缓存信息
-    private func calculateCacheInfoSafely() {
-        cacheManager.calculateMetaCacheInfo()
-    }
 
     public var body: some View {
         VStack {
@@ -23,13 +17,13 @@ public struct GameSettingsView: View {
                             Text(source.localizedName).tag(source)
                         }
                     }
-
+                    
                     .labelsHidden()
                     .fixedSize()
                 }
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
-
+                
                 LabeledContent("settings.game_versions.label".localized()) {
                     HStack {
                         Toggle(
@@ -42,7 +36,7 @@ public struct GameSettingsView: View {
                 }
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
-
+                
                 LabeledContent("settings.ai_crash_analysis".localized()) {
                     HStack {
                         Toggle(
@@ -54,7 +48,7 @@ public struct GameSettingsView: View {
                 }
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
-
+                
                 LabeledContent("settings.game.language.label".localized()) {
                     HStack {
                         Toggle(
@@ -67,7 +61,7 @@ public struct GameSettingsView: View {
                 }
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
-
+                
                 Group {
                     LabeledContent("settings.default_memory_allocation.label".localized()) {
                         HStack {
@@ -84,9 +78,9 @@ public struct GameSettingsView: View {
                             }
                             .onAppear {
                                 globalMemoryRange =
-                                    Double(
-                                        gameSettings.globalXms
-                                    )...Double(gameSettings.globalXmx)
+                                Double(
+                                    gameSettings.globalXms
+                                )...Double(gameSettings.globalXmx)
                             }
                             Text(
                                 "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB"
@@ -102,27 +96,7 @@ public struct GameSettingsView: View {
                         text: "settings.default_memory_allocation.description".localized()
                     )
                 }
-
-                LabeledContent("settings.game_resource_info.label".localized()) {
-                    HStack {
-                        Label(
-                            "\(cacheManager.cacheInfo.fileCount)",
-                            systemImage: "text.document"
-                        ).font(.callout)
-                        Divider().frame(height: 16)
-                        Label(
-                            cacheManager.cacheInfo.formattedSize,
-                            systemImage: "externaldrive"
-                        ).font(.callout)
-                    }.foregroundStyle(.primary)
-                }
-                .labeledContentStyle(.custom)
-                .padding(.top, 10)
             }
-            .onAppear {
-                calculateCacheInfoSafely()
-            }
-
             HStack {
                 Spacer()
                 Button {
@@ -130,7 +104,6 @@ public struct GameSettingsView: View {
                         await Task.detached(priority: .utility) {
                             ModCacheManager.shared.clearSilently()
                         }.value
-                        calculateCacheInfoSafely()
                     }
                 } label: {
                     Text("settings.game.clear_cache.label".localized())
