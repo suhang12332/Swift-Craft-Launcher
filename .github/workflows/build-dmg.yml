@@ -155,11 +155,6 @@ jobs:
           # 验证复制是否成功
           if [[ -d "$HELP_TARGET_PATH" ]]; then
             echo "✅ 帮助文档复制成功"
-            echo "帮助文档结构:"
-            ls -la "$HELP_TARGET_PATH" || true
-            if [[ -d "$HELP_TARGET_PATH/Contents" ]]; then
-              ls -la "$HELP_TARGET_PATH/Contents" || true
-            fi
           else
             echo "❌ 帮助文档复制失败"
             exit 1
@@ -220,7 +215,6 @@ jobs:
           
             if [[ -f "$HELPINDEX_PATH" ]]; then
               echo "  ✅ 标准 helpindex 生成成功"
-              ls -lh "$HELPINDEX_PATH"
             else
               echo "  ❌ 标准 helpindex 生成失败"
               cd "$ORIGINAL_DIR"
@@ -234,7 +228,6 @@ jobs:
           
             if [[ -f "$CSHELPINDEX_PATH" ]]; then
               echo "  ✅ Core Spotlight helpindex 生成成功"
-              ls -lh "$CSHELPINDEX_PATH"
             else
               echo "  ❌ Core Spotlight helpindex 生成失败"
               cd "$ORIGINAL_DIR"
@@ -284,20 +277,12 @@ jobs:
             echo "✅ archify 处理成功"
             echo "处理后的应用路径: $PROCESSED_APP"
           
-            # Show file info for comparison
-            echo "原始应用大小:"
-            du -sh "$APP_PATH"
-            echo "处理后应用大小:"
-            du -sh "$PROCESSED_APP"
-          
             # Replace original app with processed app
             rm -rf "$APP_PATH"
             cp -R "$PROCESSED_APP" "$APP_PATH"
             echo "✅ 已用处理后的应用替换原始应用"
           else
             echo "❌ archify 处理失败，使用原始应用"
-            echo "检查输出目录内容:"
-            ls -la "$PROCESSED_DIR" || echo "输出目录不存在"
           fi
 
       - name: Install create-dmg
@@ -358,8 +343,6 @@ jobs:
           
           if [[ -f "$DMG_NAME" ]]; then
             echo "✅ DMG 创建成功: $DMG_NAME"
-            # Show DMG info
-            hdiutil info "$DMG_NAME" | head -20
             echo "dmg_name=$DMG_NAME" >> $GITHUB_OUTPUT
           else
             echo "❌ DMG 创建失败"
@@ -403,8 +386,6 @@ jobs:
           
           if [[ -f "bin/generate_appcast" ]]; then
             echo "✅ generate_appcast binary found in bin/"
-            echo "Binary permissions:"
-            ls -la bin/generate_appcast
           else
             echo "❌ generate_appcast binary not found"
             exit 1
