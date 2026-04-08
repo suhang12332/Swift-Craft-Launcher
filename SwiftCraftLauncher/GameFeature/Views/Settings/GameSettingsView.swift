@@ -17,13 +17,13 @@ public struct GameSettingsView: View {
                             Text(source.localizedName).tag(source)
                         }
                     }
-                    
+
                     .labelsHidden()
                     .fixedSize()
                 }
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
-                
+
                 LabeledContent("settings.game_versions.label".localized()) {
                     HStack {
                         Toggle(
@@ -36,7 +36,7 @@ public struct GameSettingsView: View {
                 }
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
-                
+
                 LabeledContent("settings.ai_crash_analysis".localized()) {
                     HStack {
                         Toggle(
@@ -48,7 +48,7 @@ public struct GameSettingsView: View {
                 }
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
-                
+
                 LabeledContent("settings.game.language.label".localized()) {
                     HStack {
                         Toggle(
@@ -61,7 +61,7 @@ public struct GameSettingsView: View {
                 }
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
-                
+
                 Group {
                     LabeledContent("settings.default_memory_allocation.label".localized()) {
                         HStack {
