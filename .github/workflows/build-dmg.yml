@@ -574,10 +574,10 @@ jobs:
           fi
 
           echo "📝 将 Homebrew Cask 版本更新为: $VERSION"
-          sed -E -i '' "s/^version \".*\"/version \"$VERSION\"/" "$CASK_FILE"
+          sed -E -i '' "s/^[[:space:]]*version \".*\"/  version \"$VERSION\"/" "$CASK_FILE"
 
           echo "✅ 更新后的 version 行:"
-          grep -n '^version "' "$CASK_FILE"
+          grep -nE '^[[:space:]]*version "' "$CASK_FILE"
 
       - name: Commit and push Homebrew Cask version
         run: |
