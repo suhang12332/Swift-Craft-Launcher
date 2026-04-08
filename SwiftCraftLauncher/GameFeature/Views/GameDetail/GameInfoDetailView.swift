@@ -212,6 +212,15 @@ struct GameInfoDetailView: View {
         Task {
             let success = await ioViewModel.saveGameIcon(from: result, gameName: gameName)
             if success {
+                var updatedGame = gameRepository.games.first { $0.id == game.id } ?? game
+                if updatedGame.gameIcon.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    updatedGame.gameIcon = AppConstants.defaultGameIcon
+                    do {
+                        try await gameRepository.updateGame(updatedGame)
+                    } catch {
+                        GlobalErrorHandler.shared.handle(error)
+                    }
+                }
                 IconRefreshNotifier.shared.notifyRefresh(for: gameName)
                 updateHeaders()
             }

@@ -54,6 +54,7 @@ enum ModPackExporter {
         modPackName: String,
         modPackVersion: String = "1.0.0",
         summary: String? = nil,
+        exportFormat: ModPackExportFormat = .modrinth,
         selectedFiles: [URL],
         progressCallback: ((ExportProgress) -> Void)? = nil
     ) async -> ExportResult {
@@ -68,11 +69,16 @@ enum ModPackExporter {
                 try? FileManager.default.removeItem(at: tempDir)
             }
 
-            // 3. 仅基于用户勾选的文件计算总数
+            // 3. 仅基于用户勾选的文件计算总数（按导出格式决定扫描范围）
             let resolvedFiles = resolveSelectedFiles(from: selectedFiles)
             let gameDirectory = AppPaths.profileDirectory(gameName: gameInfo.gameName)
-            // 参与扫描的资源数：仅限游戏根目录下的 mods / shaderpacks / resourcepacks / datapacks
-            let totalScanResources = resolvedFiles.filter { shouldScanForModrinth($0, gameDirectory: gameDirectory) }.count
+            let shouldScan: (URL) -> Bool = switch exportFormat {
+            case .modrinth:
+                { shouldScanForModrinth($0, gameDirectory: gameDirectory) }
+            case .curseforge:
+                { shouldScanForCurseForge($0, gameDirectory: gameDirectory) }
+            }
+            let totalScanResources = resolvedFiles.filter(shouldScan).count
             // 4. 使用真实的资源总数初始化扫描进度条
             var initialProgress = ExportProgress()
             if totalScanResources > 0 {
@@ -89,20 +95,21 @@ enum ModPackExporter {
             // 5. 扫描识别所有资源文件
             let progressUpdater = ProgressUpdater()
 
-            let (indexFiles, filesToCopy) = await identifySelectedResources(
+            let selectedResourcesResult = await identifySelectedResources(
                 gameInfo: gameInfo,
                 selectedFiles: resolvedFiles,
                 totalResources: totalScanResources,
+                exportFormat: exportFormat,
                 progressUpdater: progressUpdater,
                 progressCallback: progressCallback
             )
 
             // 6. 复制需要复制的资源文件
-            let copyCounter = CopyCounter(total: filesToCopy.count)
+            let copyCounter = CopyCounter(total: selectedResourcesResult.filesToCopy.count)
 
             try await copyFiles(
                 params: CopyFilesParams(
-                    filesToCopy: filesToCopy,
+                    filesToCopy: selectedResourcesResult.filesToCopy,
                     overridesDir: overridesDir
                 ),
                 copyCounter: copyCounter,
@@ -117,7 +124,10 @@ enum ModPackExporter {
                     modPackName: modPackName,
                     modPackVersion: modPackVersion,
                     summary: summary,
-                    indexFiles: indexFiles
+                    indexFiles: selectedResourcesResult.indexFiles,
+                    curseForgeFiles: selectedResourcesResult.curseForgeFiles,
+                    curseForgeModListItems: selectedResourcesResult.curseForgeModListItems,
+                    exportFormat: exportFormat
                 ),
                 tempDir: tempDir,
                 outputPath: outputPath,
@@ -156,12 +166,30 @@ enum ModPackExporter {
     // MARK: - Parameter Structures
 
     /// 索引构建参数
-    private struct IndexBuildParams {
+    struct IndexBuildParams {
         let gameInfo: GameVersionInfo
         let modPackName: String
         let modPackVersion: String
         let summary: String?
         let indexFiles: [ModrinthIndexFile]
+        let curseForgeFiles: [CurseForgeManifestBuilder.ManifestFile]
+        let curseForgeModListItems: [CurseForgeModListItem]
+        let exportFormat: ModPackExportFormat
+    }
+
+    struct CurseForgeModListItem {
+        let projectID: Int
+        let fileID: Int
+        let fileName: String
+        let projectName: String?
+        let authorsText: String?
+    }
+
+    private struct SelectedResourcesResult {
+        let indexFiles: [ModrinthIndexFile]
+        let curseForgeFiles: [CurseForgeManifestBuilder.ManifestFile]
+        let curseForgeModListItems: [CurseForgeModListItem]
+        let filesToCopy: [(file: URL, relativePath: String)]
     }
 
     /// 文件复制参数
@@ -186,36 +214,50 @@ enum ModPackExporter {
     }
 
     /// 基于勾选的文件识别资源
-    /// 仅对 mods / shaderpacks / resourcepacks / datapacks 进行 Modrinth 扫描，
+    /// 按导出格式决定扫描范围：
+    /// - Modrinth: mods / shaderpacks / resourcepacks / datapacks
+    /// - CurseForge: 仅 mods 下的 jar
     /// 其他文件直接标记为需要复制到 overrides，且保留相对于游戏目录的原始路径结构。
     private static func identifySelectedResources(
         gameInfo: GameVersionInfo,
         selectedFiles: [URL],
         totalResources: Int,
+        exportFormat: ModPackExportFormat,
         progressUpdater: ProgressUpdater,
         progressCallback: ((ExportProgress) -> Void)?
-    ) async -> ([ModrinthIndexFile], [(file: URL, relativePath: String)]) {
+    ) async -> SelectedResourcesResult {
         // 不需要扫描的文件加入待复制列表
         var indexFiles: [ModrinthIndexFile] = []
+        var curseForgeFiles: [CurseForgeManifestBuilder.ManifestFile] = []
+        var curseForgeModListItems: [CurseForgeModListItem] = []
         var filesToCopy: [(file: URL, relativePath: String)] = []
 
         let gameDirectory = AppPaths.profileDirectory(gameName: gameInfo.gameName)
         let processedCounter = ProcessedCounter()
 
-        for file in selectedFiles where !shouldScanForModrinth(file, gameDirectory: gameDirectory) {
+        let shouldScan: (URL) -> Bool = switch exportFormat {
+        case .modrinth:
+            { shouldScanForModrinth($0, gameDirectory: gameDirectory) }
+        case .curseforge:
+            { shouldScanForCurseForge($0, gameDirectory: gameDirectory) }
+        }
+
+        for file in selectedFiles where !shouldScan(file) {
             let relativePath = makeRelativePath(for: file, gameDirectory: gameDirectory)
             filesToCopy.append((file: file, relativePath: relativePath))
         }
 
-        // 对需要扫描的资源（mods / shaderpacks / resourcepacks / datapacks）并发识别
-        return await withTaskGroup(of: ResourceProcessor.ProcessResult.self) { group in
-            for file in selectedFiles where shouldScanForModrinth(file, gameDirectory: gameDirectory) {
+        // 对需要扫描的资源并发识别（扫描范围由导出格式决定）
+        return await withTaskGroup(of: SelectedResourceProcessResult.self) { group in
+            for file in selectedFiles where shouldScan(file) {
                 group.addTask {
                     // 对参与扫描的资源：子目录按资源类型(四大目录)归类
                     let relativePath = inferOverridesSubdirectory(for: file, gameDirectory: gameDirectory)
-                    let result = await ResourceProcessor.identify(
+                    let result = await identifyResourceByFormat(
                         file: file,
-                        relativePath: relativePath
+                        relativePath: relativePath,
+                        gameDirectory: gameDirectory,
+                        exportFormat: exportFormat
                     )
 
                     // 更新扫描进度
@@ -235,15 +277,51 @@ enum ModPackExporter {
             // 收集扫描结果
             for await result in group {
                 if let indexFile = result.indexFile {
-                    // 成功识别到 Modrinth 资源，添加到索引
                     indexFiles.append(indexFile)
+                }
+                if let curseForgeFile = result.curseForgeFile {
+                    curseForgeFiles.append(curseForgeFile)
+                    if let modListItem = result.curseForgeModListItem {
+                        curseForgeModListItems.append(modListItem)
+                    }
                 } else if result.shouldCopyToOverrides {
-                    // 未识别到或识别失败，需要复制到 overrides
                     filesToCopy.append((file: result.sourceFile, relativePath: result.relativePath))
                 }
             }
 
-            return (indexFiles, filesToCopy)
+            return SelectedResourcesResult(
+                indexFiles: indexFiles,
+                curseForgeFiles: curseForgeFiles,
+                curseForgeModListItems: curseForgeModListItems,
+                filesToCopy: filesToCopy
+            )
+        }
+    }
+
+    struct SelectedResourceProcessResult {
+        let indexFile: ModrinthIndexFile?
+        let curseForgeFile: CurseForgeManifestBuilder.ManifestFile?
+        let curseForgeModListItem: CurseForgeModListItem?
+        let shouldCopyToOverrides: Bool
+        let sourceFile: URL
+        let relativePath: String
+    }
+
+    static func identifyResourceByFormat(
+        file: URL,
+        relativePath: String,
+        gameDirectory: URL,
+        exportFormat: ModPackExportFormat
+    ) async -> SelectedResourceProcessResult {
+        switch exportFormat {
+        case .modrinth:
+            return await identifyModrinthResource(file: file, relativePath: relativePath)
+        case .curseforge:
+            return await identifyCurseForgeResource(
+                file: file,
+                relativePath: relativePath,
+                gameDirectory: gameDirectory
+            )
         }
     }
 
@@ -274,7 +352,7 @@ enum ModPackExporter {
     }
 
     /// 提取相对于游戏目录的顶级目录名（例如 "游戏名/mods/foo.jar" -> "mods"）
-    private static func topLevelDirectoryName(of file: URL, gameDirectory: URL) -> String? {
+    static func topLevelDirectoryName(of file: URL, gameDirectory: URL) -> String? {
         let filePath = file.standardizedFileURL.path
         let rootPath = gameDirectory.standardizedFileURL.path
 
@@ -307,6 +385,15 @@ enum ModPackExporter {
         || topLevel == AppConstants.DirectoryNames.shaderpacks.lowercased()
         || topLevel == AppConstants.DirectoryNames.resourcepacks.lowercased()
         || topLevel == AppConstants.DirectoryNames.mods.lowercased()
+    }
+
+    /// CurseForge 导出仅扫描游戏根目录下 mods/*.jar
+    private static func shouldScanForCurseForge(_ file: URL, gameDirectory: URL) -> Bool {
+        guard let topLevel = topLevelDirectoryName(of: file, gameDirectory: gameDirectory)?.lowercased() else {
+            return false
+        }
+        return topLevel == AppConstants.DirectoryNames.mods.lowercased()
+            && file.pathExtension.lowercased() == AppConstants.FileExtensions.jar
     }
 
     /// 计算文件相对于游戏目录的相对路径，用于在 overrides 中保持原始目录结构
@@ -428,24 +515,21 @@ enum ModPackExporter {
         progressUpdater: ProgressUpdater,
         progressCallback: ((ExportProgress) -> Void)?
     ) async throws {
-        // 生成 modrinth.index.json
-        let indexJson = try await ModrinthIndexBuilder.build(
-            gameInfo: params.gameInfo,
-            modPackName: params.modPackName,
-            modPackVersion: params.modPackVersion,
-            summary: params.summary,
-            files: params.indexFiles
-        )
+        let rootFileNames = try await writeManifestFile(params: params, tempDir: tempDir)
 
-        let indexPath = tempDir.appendingPathComponent(AppConstants.modrinthIndexFileName)
-        try indexJson.write(to: indexPath, atomically: true, encoding: String.Encoding.utf8)
-
-        // 仅记录生成 modrinth.index.json 的进度（视为该阶段完成）
         let currentProgress = await progressUpdater.getFullProgress()
         progressCallback?(currentProgress)
 
-        // 打包为 .mrpack
-        try ModPackArchiver.archive(tempDir: tempDir, outputPath: outputPath)
+        try ModPackArchiver.archive(tempDir: tempDir, outputPath: outputPath, rootFiles: rootFileNames)
+    }
+
+    static func writeManifestFile(params: IndexBuildParams, tempDir: URL) async throws -> [String] {
+        switch params.exportFormat {
+        case .modrinth:
+            return try await writeModrinthManifest(params: params, tempDir: tempDir)
+        case .curseforge:
+            return try await writeCurseForgeManifest(params: params, tempDir: tempDir)
+        }
     }
 
     // MARK: - Progress Management Types

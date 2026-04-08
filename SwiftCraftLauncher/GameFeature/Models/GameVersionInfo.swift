@@ -18,7 +18,7 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
     let gameName: String
 
     /// 游戏图标路径或URL
-    let gameIcon: String
+    var gameIcon: String
 
     /// 游戏版本号
     let gameVersion: String

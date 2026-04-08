@@ -68,7 +68,7 @@ struct GameHeaderListRow: View {
         )
     }
 
-    /// 图标文件 URL（路径固定不变；刷新仅依赖通知触发 .id 重建）
+    /// 图标文件 URL（基础路径）
     private var iconFileURL: URL? {
         let trimmed = game.gameIcon.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
@@ -81,9 +81,17 @@ struct GameHeaderListRow: View {
         return url
     }
 
+    /// 带刷新参数的 URL，用于绕过 AsyncImage 的缓存命中
+    private var iconDisplayURL: URL? {
+        guard let baseURL = iconFileURL else { return nil }
+        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
+        components?.queryItems = [URLQueryItem(name: "refresh", value: refreshTrigger.uuidString)]
+        return components?.url ?? baseURL
+    }
+
     private var gameIcon: some View {
         Group {
-            if let iconURL = iconFileURL {
+            if let iconURL = iconDisplayURL {
                 AsyncImage(url: iconURL) { phase in
                     switch phase {
                     case .empty:

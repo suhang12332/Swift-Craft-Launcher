@@ -146,7 +146,7 @@ final class ModPackInstallCoordinator {
         let tempGameInfo = GameVersionInfo(
             id: UUID(),
             gameName: input.gameName,
-            gameIcon: iconPath ?? "",
+            gameIcon: iconPath ?? AppConstants.defaultGameIcon,
             gameVersion: input.selectedGameVersion,
             assetIndex: "",
             modLoader: indexInfo.loaderType
@@ -219,7 +219,7 @@ final class ModPackInstallCoordinator {
             Task {
                 await input.gameSetupService.saveGame(
                     gameName: input.gameName,
-                    gameIcon: iconPath ?? "",
+                    gameIcon: iconPath ?? AppConstants.defaultGameIcon,
                     selectedGameVersion: input.selectedGameVersion,
                     selectedModLoader: indexInfo.loaderType,
                     specifiedLoaderVersion: indexInfo.loaderVersion,
