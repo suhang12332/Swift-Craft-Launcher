@@ -56,6 +56,12 @@ class GameSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    /// 整合包导出格式（游戏设置）
+    @AppStorage(AppConstants.UserDefaultsKeys.defaultModPackExportFormat)
+    var defaultModPackExportFormat: ModPackExportFormat = .modrinth {
+        didSet { objectWillChange.send() }
+    }
+
     /// 计算系统最大可用内存分配（基于物理内存的70%）
     var maximumMemoryAllocation: Int {
         let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory

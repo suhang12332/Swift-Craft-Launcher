@@ -11,7 +11,10 @@ import UniformTypeIdentifiers
 /// 整合包文档类型，用于文件导出
 struct ModPackDocument: FileDocument {
     static var readableContentTypes: [UTType] {
-        [UTType(filenameExtension: "mrpack") ?? UTType.zip]
+        [
+            UTType(filenameExtension: "mrpack") ?? UTType.zip,
+            UTType.zip,
+        ]
     }
 
     var data: Data
@@ -79,8 +82,8 @@ struct ModPackExportSheet: View {
         .fileExporter(
             isPresented: $coordinator.isExporting,
             document: coordinator.exportDocument,
-            contentType: UTType(filenameExtension: "mrpack") ?? UTType.zip,
-            defaultFilename: viewModel.modPackName.isEmpty ? ResourceType.modpack.rawValue : viewModel.modPackName
+            contentType: exportContentType,
+            defaultFilename: exportDefaultFilename
         ) { result in
             switch result {
             case .success(let url):
@@ -222,6 +225,20 @@ struct ModPackExportSheet: View {
             .keyboardShortcut(.defaultAction)
             .disabled(viewModel.modPackName.isEmpty || viewModel.isExporting)
         }
+    }
+
+    private var exportContentType: UTType {
+        switch viewModel.currentExportFormat {
+        case .modrinth:
+            return UTType(filenameExtension: "mrpack") ?? UTType.zip
+        case .curseforge:
+            return UTType.zip
+        }
+    }
+
+    private var exportDefaultFilename: String {
+        let baseName = viewModel.modPackName.isEmpty ? ResourceType.modpack.rawValue : viewModel.modPackName
+        return "\(baseName).\(viewModel.currentExportFormat.fileExtension)"
     }
 
     // MARK: - Reusable Components

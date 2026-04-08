@@ -24,6 +24,18 @@ public struct GameSettingsView: View {
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
 
+                LabeledContent("settings.modpack.export.format.label".localized()) {
+                    Picker("", selection: $gameSettings.defaultModPackExportFormat) {
+                        ForEach(ModPackExportFormat.allCases, id: \.self) { format in
+                            Text(format.displayName).tag(format)
+                        }
+                    }
+                    .labelsHidden()
+                    .fixedSize()
+                }
+                .labeledContentStyle(.custom)
+                .padding(.bottom, 10)
+
                 LabeledContent("settings.game_versions.label".localized()) {
                     HStack {
                         Toggle(

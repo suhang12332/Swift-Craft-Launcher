@@ -50,6 +50,9 @@ class ModPackExportViewModel: ObservableObject {
     /// 在文件树里选择的文件（用于后续导出过滤）
     @Published var selectedFileURLs: [URL] = []
 
+    /// 当前导出使用的格式
+    @Published var currentExportFormat: ModPackExportFormat = .modrinth
+
     // MARK: - Private Properties
 
     /// 导出任务
@@ -85,9 +88,10 @@ class ModPackExportViewModel: ObservableObject {
         tempExportPath = nil
         hasShownSaveDialog = false
         saveError = nil
+        currentExportFormat = GameSettingsManager.shared.defaultModPackExportFormat
 
         let tempPath = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(modPackName).mrpack")
+            .appendingPathComponent("\(modPackName).\(currentExportFormat.fileExtension)")
 
         exportTask = Task {
             let result = await ModPackExporter.exportModPack(
@@ -96,6 +100,7 @@ class ModPackExportViewModel: ObservableObject {
                 modPackName: modPackName,
                 modPackVersion: modPackVersion,
                 summary: summary.isEmpty ? nil : summary,
+                exportFormat: currentExportFormat,
                 selectedFiles: selectedFileURLs
             ) { progress in
                 Task { @MainActor in
@@ -165,6 +170,7 @@ class ModPackExportViewModel: ObservableObject {
         modPackName = ""
         modPackVersion = "1.0.0"
         summary = ""
+        currentExportFormat = GameSettingsManager.shared.defaultModPackExportFormat
     }
 
     // MARK: - Private Helper Methods
@@ -192,5 +198,9 @@ class ModPackExportViewModel: ObservableObject {
         } catch {
             Logger.shared.warning("清理临时导出目录失败: \(error.localizedDescription)")
         }
+    }
+
+    init() {
+        currentExportFormat = GameSettingsManager.shared.defaultModPackExportFormat
     }
 }
