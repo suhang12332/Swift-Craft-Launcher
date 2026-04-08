@@ -40,6 +40,7 @@ enum AppConstants {
         static let concurrentDownloads = "concurrentDownloads"
         static let launcherWorkingDirectory = "launcherWorkingDirectory"
         static let interfaceLayoutStyle = "interfaceLayoutStyle"
+        static let defaultModPackExportFormat = "defaultModPackExportFormat"
 
         // Theme
         static let themeMode = "themeMode"
