@@ -30,6 +30,7 @@ public struct SidebarView: View {
                         HStack(spacing: 6) {
                             Label(type.localizedName, systemImage: type.systemImage)
                         }
+                        .layoutPriority(1)
                     }
                 }
             }
@@ -46,6 +47,7 @@ public struct SidebarView: View {
                             Text(game.gameName)
                                 .lineLimit(1)
                         }
+                        .layoutPriority(1)
                         .tag(game.id)
                     }
                     .contextMenu {
@@ -68,6 +70,7 @@ public struct SidebarView: View {
                         HStack(spacing: 6) {
                             Label(name, systemImage: "exclamationmark.triangle")
                         }
+                        .layoutPriority(1)
                         .contextMenu {
                             Button(role: .destructive) {
                                 gameActionManager.deleteCorruptedGame(
