@@ -28,8 +28,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
 
       - name: Setup Xcode
         uses: JohnTitor/setup-xcode@v0.1.1
@@ -157,11 +155,6 @@ jobs:
           # 验证复制是否成功
           if [[ -d "$HELP_TARGET_PATH" ]]; then
             echo "✅ 帮助文档复制成功"
-            echo "帮助文档结构:"
-            ls -la "$HELP_TARGET_PATH" || true
-            if [[ -d "$HELP_TARGET_PATH/Contents" ]]; then
-              ls -la "$HELP_TARGET_PATH/Contents" || true
-            fi
           else
             echo "❌ 帮助文档复制失败"
             exit 1
@@ -222,7 +215,6 @@ jobs:
           
             if [[ -f "$HELPINDEX_PATH" ]]; then
               echo "  ✅ 标准 helpindex 生成成功"
-              ls -lh "$HELPINDEX_PATH"
             else
               echo "  ❌ 标准 helpindex 生成失败"
               cd "$ORIGINAL_DIR"
@@ -236,7 +228,6 @@ jobs:
           
             if [[ -f "$CSHELPINDEX_PATH" ]]; then
               echo "  ✅ Core Spotlight helpindex 生成成功"
-              ls -lh "$CSHELPINDEX_PATH"
             else
               echo "  ❌ Core Spotlight helpindex 生成失败"
               cd "$ORIGINAL_DIR"
@@ -250,18 +241,6 @@ jobs:
           done
           
           echo "✅ 所有语言文件夹的 helpindex 文件生成完成"
-
-      - name: Verify build output
-        run: |
-          ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"
-          APP_PATH="$ARCHIVE_PATH/Products/Applications/Swift Craft Launcher.app"
-          
-          if [[ ! -d "$APP_PATH" ]]; then
-            echo "❌ 未找到构建产物: $APP_PATH"
-            exit 1
-          fi
-          echo "✅ 应用构建成功: $APP_PATH"
-          file "$APP_PATH/Contents/MacOS/Swift Craft Launcher"
 
       - name: Process app with archify
         run: |
@@ -298,20 +277,12 @@ jobs:
             echo "✅ archify 处理成功"
             echo "处理后的应用路径: $PROCESSED_APP"
           
-            # Show file info for comparison
-            echo "原始应用大小:"
-            du -sh "$APP_PATH"
-            echo "处理后应用大小:"
-            du -sh "$PROCESSED_APP"
-          
             # Replace original app with processed app
             rm -rf "$APP_PATH"
             cp -R "$PROCESSED_APP" "$APP_PATH"
             echo "✅ 已用处理后的应用替换原始应用"
           else
             echo "❌ archify 处理失败，使用原始应用"
-            echo "检查输出目录内容:"
-            ls -la "$PROCESSED_DIR" || echo "输出目录不存在"
           fi
 
       - name: Install create-dmg
@@ -372,8 +343,6 @@ jobs:
           
           if [[ -f "$DMG_NAME" ]]; then
             echo "✅ DMG 创建成功: $DMG_NAME"
-            # Show DMG info
-            hdiutil info "$DMG_NAME" | head -20
             echo "dmg_name=$DMG_NAME" >> $GITHUB_OUTPUT
           else
             echo "❌ DMG 创建失败"
@@ -403,40 +372,10 @@ jobs:
     runs-on: macos-15
 
     steps:
-      - name: Verify remote release notes exists
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
-          NOTES_HTML_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/$VERSION.html"
-          
-          echo "检查 Release Notes 是否存在: $NOTES_URL"
-          if ! curl -fsSI "$NOTES_URL" >/dev/null; then
-            echo "❌ Release Notes 不存在或不可访问: $NOTES_URL"
-            exit 1
-          fi
-          echo "✅ Release Notes 可访问"
-          
-          echo "检查 Release Notes HTML 页面是否存在: $NOTES_HTML_URL"
-          if ! curl -fsSI "$NOTES_HTML_URL" >/dev/null; then
-            echo "❌ Release Notes HTML 页面不存在或不可访问: $NOTES_HTML_URL"
-            exit 1
-          fi
-          echo "✅ Release Notes HTML 页面可访问"
-
       - name: Download build artifacts
         uses: actions/download-artifact@v8
         with:
           path: release-artifacts
-
-      - name: Display downloaded artifacts
-        run: |
-          echo "Downloaded artifacts:"
-          find release-artifacts -type f -name "*.dmg"
-
-      - name: Setup Xcode
-        uses: JohnTitor/setup-xcode@v0.1.1
-        with:
-          xcode-version: '16.3'
 
       - name: setup sparkle
         run: |
@@ -447,8 +386,6 @@ jobs:
           
           if [[ -f "bin/generate_appcast" ]]; then
             echo "✅ generate_appcast binary found in bin/"
-            echo "Binary permissions:"
-            ls -la bin/generate_appcast
           else
             echo "❌ generate_appcast binary not found"
             exit 1
@@ -465,73 +402,28 @@ jobs:
           curl -fsSL "$NOTES_URL" -o release-notes.md
           echo "✅ Release Notes 已保存到 release-notes.md"
 
-      - name: Generate appcast for arm64
+      - name: Generate appcast files
         run: |
-          # 获取版本信息
           VERSION=${GITHUB_REF#refs/tags/}
           echo "版本: $VERSION"
+          for ARCH in arm64 x86_64; do
+            echo "查找 ${ARCH} DMG 文件..."
+            DMG_FILE=$(find . -name "*${ARCH}*.dmg" 2>/dev/null | head -1)
+            if [[ -z "$DMG_FILE" ]]; then
+              echo "❌ 未找到 ${ARCH} DMG 文件"
+              exit 1
+            fi
 
-          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
-          echo "检查 Release Notes 是否存在: $NOTES_URL"
-          if ! curl -fsSI "$NOTES_URL" >/dev/null; then
-            echo "❌ Release Notes 不存在或不可访问: $NOTES_URL"
-            exit 1
-          fi
-          
-          # 查找arm64 DMG文件
-          echo "查找 arm64 DMG 文件..."
-          ARM64_DMG=$(find . -name "*arm64*.dmg" 2>/dev/null | head -1)
-          
-          if [[ -z "$ARM64_DMG" ]]; then
-            echo "❌ 未找到 arm64 DMG 文件"
-            exit 1
-          fi
-          
-          echo "找到的 arm64 DMG 文件: $ARM64_DMG"
-          
-          # 生成arm64 appcast条目
-          ./bin/generate_appcast \
-            --ed-key-file <(printf '%s' "$SPARKLE_PRIVATE_KEY") \
-            --full-release-notes-url "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/${VERSION}.html" \
-            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
-            -o appcast-arm64.xml \
-            "$(dirname $ARM64_DMG)"
-          
-          echo "✅ ARM64 appcast generated successfully"
+            echo "找到的 ${ARCH} DMG 文件: $DMG_FILE"
+            ./bin/generate_appcast \
+              --ed-key-file <(printf '%s' "$SPARKLE_PRIVATE_KEY") \
+              --full-release-notes-url "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/${VERSION}.html" \
+              --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
+              -o "appcast-${ARCH}.xml" \
+              "$(dirname "$DMG_FILE")"
 
-      - name: Generate appcast for x86_64
-        run: |
-          # 获取版本信息
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo "版本: $VERSION"
-
-          NOTES_URL="https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases-notes/$VERSION.md"
-          echo "检查 Release Notes 是否存在: $NOTES_URL"
-          if ! curl -fsSI "$NOTES_URL" >/dev/null; then
-            echo "❌ Release Notes 不存在或不可访问: $NOTES_URL"
-            exit 1
-          fi
-          
-          # 查找x86_64 DMG文件
-          echo "查找 x86_64 DMG 文件..."
-          X86_64_DMG=$(find . -name "*x86_64*.dmg" 2>/dev/null | head -1)
-          
-          if [[ -z "$X86_64_DMG" ]]; then
-            echo "❌ 未找到 x86_64 DMG 文件"
-            exit 1
-          fi
-          
-          echo "找到的 x86_64 DMG 文件: $X86_64_DMG"
-          
-          # 生成x86_64 appcast条目
-          ./bin/generate_appcast \
-            --ed-key-file <(printf '%s' "$SPARKLE_PRIVATE_KEY") \
-            --full-release-notes-url "https://suhang12332.github.io/Swift-Craft-Launcher-Assets/releases/${VERSION}.html" \
-            --download-url-prefix "https://github.com/${{ github.repository }}/releases/download/$VERSION/" \
-            -o appcast-x86_64.xml \
-            "$(dirname $X86_64_DMG)"
-          
-          echo "✅ x86_64 appcast generated successfully"
+            echo "✅ ${ARCH} appcast generated successfully"
+          done
 
       - name: Fix appcast release notes link
         run: |
