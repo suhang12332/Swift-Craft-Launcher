@@ -437,7 +437,7 @@ jobs:
           done
 
       - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@v2.5.0
+        uses: softprops/action-gh-release@v2.6.1
         with:
           files: |
             release-artifacts/**/*.dmg
