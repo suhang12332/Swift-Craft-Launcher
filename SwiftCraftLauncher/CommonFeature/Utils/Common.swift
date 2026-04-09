@@ -88,6 +88,48 @@ enum CommonUtil {
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 
+    // MARK: - Minecraft News URL Slug Helpers
+
+    /// 判断是否为快照版本，例如 26w11a
+    static func isMinecraftSnapshotVersion(_ version: String) -> Bool {
+        let trimmed = version.trimmingCharacters(in: .whitespacesAndNewlines)
+        let isPureNumericVersion = trimmed.range(
+            of: #"^\d+(\.\d+)*$"#,
+            options: [.regularExpression]
+        ) != nil
+        return !isPureNumericVersion
+    }
+
+    /// 生成正式版新闻 slug，例如 1.26.1 -> minecraft-java-edition-26-1
+    static func minecraftReleaseNewsSlug(version: String) -> String {
+        let trimmedVersion = version.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalized = trimmedVersion.replacingOccurrences(of: ".", with: "-")
+        return "minecraft-java-edition-\(normalized)"
+    }
+
+    /// 生成非正式版新闻 slug，例如:
+    /// - 26w11a -> minecraft-snapshot-26w11a
+    /// - 26.1.2-rc-1 -> minecraft-26-1-2-release-candidate-1
+    /// - 26.1-pre-3 -> minecraft-26-1-pre-release-3
+    static func minecraftSnapshotNewsSlug(version: String) -> String {
+        let base = version
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased()
+            .replacingOccurrences(of: ".", with: "-")
+
+        if base.range(
+            of: #"^\d{2}w\d{2}[a-z]?$"#,
+            options: [.regularExpression]
+        ) != nil {
+            return "minecraft-snapshot-\(base)"
+        }
+
+        let normalized = base
+            .replacingOccurrences(of: "-rc-", with: "-release-candidate-")
+            .replacingOccurrences(of: "-pre-", with: "-pre-release-")
+        return "minecraft-\(normalized)"
+    }
+
     /// 解析 `ModrinthProjectDetail.fileName` 中的服务器信息
     static func parseMinecraftJavaServerInfo(from raw: String) -> (address: String, playersText: String?) {
         // 按 `|` 分割并去掉首尾空白

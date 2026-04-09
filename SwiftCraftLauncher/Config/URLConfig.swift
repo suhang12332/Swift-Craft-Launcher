@@ -103,6 +103,21 @@ enum URLConfig {
             static let versionList = URLConfig.url("https://launchermeta.mojang.com/mc/game/version_manifest.json")
         }
 
+        /// Minecraft 新闻文章链接生成
+        enum MinecraftNews {
+            /// 根据版本号生成正式版文章链接，例如 1.26.1 -> minecraft-java-edition-26-1
+            static func javaEditionRelease(version: String) -> URL {
+                let slug = CommonUtil.minecraftReleaseNewsSlug(version: version)
+                return URLConfig.url("https://www.minecraft.net/en-us/article/\(slug)")
+            }
+
+            /// 根据快照版本生成文章链接，例如 26w11a -> minecraft-26-1-snapshot-11
+            static func snapshot(version: String) -> URL {
+                let slug = CommonUtil.minecraftSnapshotNewsSlug(version: version)
+                return URLConfig.url("https://www.minecraft.net/en-us/article/\(slug)")
+            }
+        }
+
         // Java Runtime API
         enum JavaRuntime {
             static let baseURL = URLConfig.url("https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871")

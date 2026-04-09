@@ -82261,6 +82261,143 @@
         }
       }
     },
+    "settings.modpack.export.format.label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تنسيق تصدير حزمة المودات"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eksportformat for modpack"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack-Exportformat"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpack export format"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato de exportación del modpack"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modipaketin vientimuoto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Format d'exportation du modpack"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मॉडपैक निर्यात प्रारूप"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato di esportazione del modpack"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modpackのエクスポート形式"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모드팩 내보내기 형식"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eksportformat for modpakke"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportindeling voor modpack"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Format eksportu paczki modów"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formato de exportação do modpack"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Формат экспорта модпака"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exportformat för modpack"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "รูปแบบการส่งออกม็อดแพ็ก"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mod paketi dışa aktarma biçimi"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Định dạng xuất gói mod"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "整合包导出格式"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "整合包匯出格式"
+          }
+        }
+      }
+    },
     "settings.player.authlib_injector" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -88854,139 +88991,140 @@
         }
       }
     },
-    "settings.modpack.export.format.label" : {
+    "release.view.details.hint" : {
+      "comment" : "Hint text for opening the release notes/details page of the current version.",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تنسيق تصدير حزمة المودات"
+            "value" : "انقر لعرض تفاصيل الإصدار لهذا الإصدار"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eksportformat for modpack"
+            "value" : "Klik for at se versionsdetaljer for denne version"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack-Exportformat"
+            "value" : "Klicken, um Versionsdetails für diese Version anzuzeigen"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpack export format"
+            "value" : "Click to view release details for this version"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Formato de exportación del modpack"
+            "value" : "Haz clic para ver los detalles de lanzamiento de esta versión"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modipaketin vientimuoto"
+            "value" : "Napsauta nähdäksesi tämän version julkaisutiedot"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Format d'exportation du modpack"
+            "value" : "Cliquez pour voir les détails de publication de cette version"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मॉडपैक निर्यात प्रारूप"
+            "value" : "इस संस्करण के रिलीज़ विवरण देखने के लिए क्लिक करें"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Formato di esportazione del modpack"
+            "value" : "Fai clic per visualizzare i dettagli di rilascio di questa versione"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modpackのエクスポート形式"
+            "value" : "クリックしてこのバージョンのリリース詳細を表示"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드팩 내보내기 형식"
+            "value" : "클릭하여 이 버전의 릴리스 세부 정보 보기"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eksportformat for modpakke"
+            "value" : "Klikk for å se utgivelsesdetaljer for denne versjonen"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exportindeling voor modpack"
+            "value" : "Klik om release-details van deze versie te bekijken"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Format eksportu paczki modów"
+            "value" : "Kliknij, aby zobaczyć szczegóły wydania tej wersji"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Formato de exportação do modpack"
+            "value" : "Clique para ver os detalhes de lançamento desta versão"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Формат экспорта модпака"
+            "value" : "Нажмите, чтобы просмотреть сведения о выпуске этой версии"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exportformat för modpack"
+            "value" : "Klicka för att visa versionsinformation för den här versionen"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "รูปแบบการส่งออกม็อดแพ็ก"
+            "value" : "คลิกเพื่อดูรายละเอียดการเผยแพร่ของเวอร์ชันนี้"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod paketi dışa aktarma biçimi"
+            "value" : "Bu sürümün yayın ayrıntılarını görüntülemek için tıklayın"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Định dạng xuất gói mod"
+            "value" : "Nhấp để xem chi tiết phát hành của phiên bản này"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "整合包导出格式"
+            "value" : "点击查看此版本的发布详情"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "整合包匯出格式"
+            "value" : "點擊查看此版本的發布詳情"
           }
         }
       }
