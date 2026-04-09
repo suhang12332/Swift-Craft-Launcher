@@ -34,6 +34,8 @@ struct GlobalResourceSheet: View {
             header: {
                 Text(headerTitle)
                     .font(.headline)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
                     .frame(maxWidth: .infinity, alignment: .leading)
             },
             body: {

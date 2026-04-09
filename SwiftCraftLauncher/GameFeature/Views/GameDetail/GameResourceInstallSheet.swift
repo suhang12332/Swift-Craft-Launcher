@@ -50,6 +50,8 @@ struct GameResourceInstallSheet: View {
                     )
                 )
                 .font(.headline)
+                .lineLimit(1)
+                .truncationMode(.tail)
                 .frame(maxWidth: .infinity, alignment: .leading)
             },
             body: {

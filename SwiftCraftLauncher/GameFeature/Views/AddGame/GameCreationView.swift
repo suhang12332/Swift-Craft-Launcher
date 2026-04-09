@@ -127,7 +127,6 @@ struct GameCreationView: View {
     private var gameIconView: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("game.form.icon".localized())
-                .font(.subheadline)
                 .foregroundColor(.primary)
 
                 iconContainer
@@ -216,7 +215,6 @@ struct GameCreationView: View {
     private var modLoaderPicker: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("game.form.modloader".localized())
-                .font(.subheadline)
                 .foregroundColor(.primary)
             CommonMenuPicker(
                 selection: $viewModel.selectedModLoader,

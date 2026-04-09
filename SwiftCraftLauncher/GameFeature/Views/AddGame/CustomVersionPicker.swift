@@ -22,7 +22,6 @@ struct CustomVersionPicker: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("game.form.version".localized())
-                    .font(.subheadline)
                     .foregroundColor(.primary)
                 Spacer()
                 if let articleURL = releaseArticleURL, !time.isEmpty {
