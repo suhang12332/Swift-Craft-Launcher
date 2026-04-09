@@ -111,9 +111,21 @@ struct ModPackExportSheet: View {
     }
 
     private var headerView: some View {
-        Text("modpack.export.title".localized())
-            .font(.headline)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(alignment: .center, spacing: 12) {
+            Text("modpack.export.title".localized())
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Picker("", selection: $viewModel.currentExportFormat) {
+                ForEach(ModPackExportFormat.allCases, id: \.self) { format in
+                    Text(format.displayName).tag(format)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.menu)
+            .fixedSize()
+            .disabled(viewModel.isExporting)
+        }
     }
 
     @ViewBuilder private var bodyView: some View {
@@ -201,8 +213,14 @@ struct ModPackExportSheet: View {
     private var footerView: some View {
         HStack {
             Button("common.cancel".localized()) {
-                viewModel.cleanupAllData()
-                dismiss()
+                if viewModel.isExporting {
+                    coordinator.reset()
+                    viewModel.cancelExport()
+                    viewModel.resetToInitial(gameInfo: gameInfo)
+                } else {
+                    viewModel.cleanupAllData()
+                    dismiss()
+                }
             }
             .keyboardShortcut(.cancelAction)
 

@@ -20,6 +20,8 @@ enum ModPackArchiver {
         outputPath: URL,
         rootFiles: [String] = [AppConstants.modrinthIndexFileName]
     ) throws {
+        if Task.isCancelled { throw CancellationError() }
+
         // 如果输出文件已存在，先删除
         if FileManager.default.fileExists(atPath: outputPath.path) {
             try FileManager.default.removeItem(at: outputPath)
@@ -39,6 +41,7 @@ enum ModPackArchiver {
 
         // 添加根目录文件（如 modrinth.index.json / manifest.json）
         for fileName in rootFiles {
+            if Task.isCancelled { throw CancellationError() }
             let filePath = tempDir.appendingPathComponent(fileName)
             if FileManager.default.fileExists(atPath: filePath.path) {
                 let fileData = try Data(contentsOf: filePath)
@@ -71,6 +74,7 @@ enum ModPackArchiver {
                 : overridesDirPath + "/"
 
             while let fileURL = overridesEnumerator?.nextObject() as? URL {
+                if Task.isCancelled { throw CancellationError() }
                 if let isRegularFile = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
                    isRegularFile {
                     // 计算相对路径（相对于 overridesDir），添加 overrides/ 前缀

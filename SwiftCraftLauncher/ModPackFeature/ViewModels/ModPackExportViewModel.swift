@@ -88,7 +88,6 @@ class ModPackExportViewModel: ObservableObject {
         tempExportPath = nil
         hasShownSaveDialog = false
         saveError = nil
-        currentExportFormat = GameSettingsManager.shared.defaultModPackExportFormat
 
         let tempPath = FileManager.default.temporaryDirectory
             .appendingPathComponent("\(modPackName).\(currentExportFormat.fileExtension)")
@@ -109,6 +108,9 @@ class ModPackExportViewModel: ObservableObject {
             }
 
             await MainActor.run {
+                if Task.isCancelled || result.error is CancellationError || result.message == "已取消" {
+                    return
+                }
                 if result.success {
                     self.exportState = .completed
                     self.tempExportPath = result.outputPath
@@ -171,6 +173,26 @@ class ModPackExportViewModel: ObservableObject {
         modPackVersion = "1.0.0"
         summary = ""
         currentExportFormat = GameSettingsManager.shared.defaultModPackExportFormat
+    }
+
+    /// 取消导出后将界面恢复为初始可编辑状态（不关闭 Sheet）
+    func resetToInitial(gameInfo: GameVersionInfo) {
+        exportTask?.cancel()
+        exportTask = nil
+        cleanupTempFile()
+        cleanupTempDirectories()
+
+        exportState = .idle
+        exportProgress = ModPackExporter.ExportProgress()
+        exportError = nil
+        tempExportPath = nil
+        hasShownSaveDialog = false
+        saveError = nil
+
+        modPackName = gameInfo.gameName
+        modPackVersion = "1.0.0"
+        summary = ""
+        selectedFileURLs = []
     }
 
     // MARK: - Private Helper Methods

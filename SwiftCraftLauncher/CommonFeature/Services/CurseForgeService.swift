@@ -446,6 +446,9 @@ enum CurseForgeService {
             }
             return (projectId, fileId)
         } catch {
+            if error is CancellationError {
+                return nil
+            }
             Logger.shared.warning("通过 fingerprint 获取 CurseForge 文件信息失败: \(error.localizedDescription)")
             return nil
         }

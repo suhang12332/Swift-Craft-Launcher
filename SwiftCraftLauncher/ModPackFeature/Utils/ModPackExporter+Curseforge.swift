@@ -6,6 +6,16 @@ extension ModPackExporter {
         relativePath: String,
         gameDirectory: URL
     ) async -> SelectedResourceProcessResult {
+        if Task.isCancelled {
+            return SelectedResourceProcessResult(
+                indexFile: nil,
+                curseForgeFile: nil,
+                curseForgeModListItem: nil,
+                shouldCopyToOverrides: false,
+                sourceFile: file,
+                relativePath: relativePath
+            )
+        }
         guard isModsJarFile(file, gameDirectory: gameDirectory) else {
             return SelectedResourceProcessResult(
                 indexFile: nil,
@@ -17,6 +27,16 @@ extension ModPackExporter {
             )
         }
 
+        if Task.isCancelled {
+            return SelectedResourceProcessResult(
+                indexFile: nil,
+                curseForgeFile: nil,
+                curseForgeModListItem: nil,
+                shouldCopyToOverrides: false,
+                sourceFile: file,
+                relativePath: relativePath
+            )
+        }
         guard let fingerprint = try? CurseForgeFingerprint.fingerprint(fileAt: file),
               let match = await CurseForgeService.fetchProjectAndFileByFingerprint(fingerprint: fingerprint) else {
             return SelectedResourceProcessResult(
