@@ -16,7 +16,7 @@ enum YggdrasilServerPresets {
             parserId: .littleskin
         ),
         YggdrasilServerConfig(
-            name: "MUA",
+            name: "Mua",
             baseURL: URLConfig.API.Yggdrasil.muaBaseURL,
             clientId: "34",
             clientSecret: AppConstants.muaClientSecret,
