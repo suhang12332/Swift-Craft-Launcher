@@ -30,7 +30,6 @@ struct CustomVersionPicker: View {
                         destination: articleURL
                     )
                     .font(.subheadline)
-                    .underline()
                     .applyPointerHandIfAvailable()
                     .help("release.view.details.hint".localized())
                 } else {
