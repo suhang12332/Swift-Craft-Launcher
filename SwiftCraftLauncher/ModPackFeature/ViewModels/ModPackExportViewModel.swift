@@ -29,7 +29,7 @@ class ModPackExportViewModel: ObservableObject {
     /// 导出进度信息
     @Published var exportProgress = ModPackExporter.ExportProgress()
 
-    /// 整合包名称
+    /// 整合包名称（固定使用当前游戏名）
     @Published var modPackName: String = ""
 
     /// 整合包版本
@@ -78,9 +78,8 @@ class ModPackExportViewModel: ObservableObject {
     func startExport(gameInfo: GameVersionInfo) {
         guard exportState == .idle else { return }
 
-        if modPackName.isEmpty {
-            modPackName = gameInfo.gameName
-        }
+        // 导出包名固定为当前游戏名，后缀由导出格式决定
+        modPackName = gameInfo.gameName
 
         exportState = .exporting
         exportProgress = ModPackExporter.ExportProgress()
@@ -90,13 +89,13 @@ class ModPackExportViewModel: ObservableObject {
         saveError = nil
 
         let tempPath = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(modPackName).\(currentExportFormat.fileExtension)")
+            .appendingPathComponent("\(gameInfo.gameName).\(currentExportFormat.fileExtension)")
 
         exportTask = Task {
             let result = await ModPackExporter.exportModPack(
                 gameInfo: gameInfo,
                 outputPath: tempPath,
-                modPackName: modPackName,
+                modPackName: gameInfo.gameName,
                 modPackVersion: modPackVersion,
                 summary: summary.isEmpty ? nil : summary,
                 exportFormat: currentExportFormat,
