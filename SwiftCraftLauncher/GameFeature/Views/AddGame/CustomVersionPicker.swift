@@ -33,11 +33,9 @@ struct CustomVersionPicker: View {
                     .applyPointerHandIfAvailable()
                     .help("release.view.details.hint".localized())
                 } else {
-                    Text(
-                        time.isEmpty ? "" : "release.time.prefix".localized() + time
-                    )
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    ProgressView()
+                        .controlSize(.small)
+                        .scaleEffect(0.85)
                 }
             }
             versionInput
