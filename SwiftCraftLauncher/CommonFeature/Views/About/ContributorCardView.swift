@@ -62,11 +62,8 @@ struct ContributorCardView: View {
             Spacer()
 
             // 箭头
-            Image("github-mark")
-                .renderingMode(.template)
-                .resizable()
-                .frame(width: 16, height: 16)
-                .imageScale(.medium)
+            Image(systemName: "globe")
+                .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.secondary)
         }
         .padding(.horizontal, 16)

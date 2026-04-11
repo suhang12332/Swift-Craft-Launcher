@@ -28,7 +28,7 @@ struct PlayerInfoSectionView: View {
                             EmptyView()
                         }
                         .labelsHidden()
-                        .toggleStyle(SwitchToggleStyle())
+                        .toggleStyle(.switch)
                         .controlSize(.mini)
 
                         Text("skin.slim".localized())

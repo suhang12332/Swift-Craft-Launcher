@@ -127,7 +127,6 @@ struct GameCreationView: View {
     private var gameIconView: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("game.form.icon".localized())
-                .font(.subheadline)
                 .foregroundColor(.primary)
 
                 iconContainer
@@ -216,7 +215,6 @@ struct GameCreationView: View {
     private var modLoaderPicker: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("game.form.modloader".localized())
-                .font(.subheadline)
                 .foregroundColor(.primary)
             CommonMenuPicker(
                 selection: $viewModel.selectedModLoader,
@@ -243,12 +241,14 @@ struct GameCreationView: View {
             }
             .disabled(viewModel.gameSetupService.downloadState.isDownloading)
         }
+        .onChange(of: viewModel.selectedModLoader) { _, _ in
+            viewModel.availableLoaderVersions = []
+        }
     }
 
     private var loaderVersionPicker: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("game.form.loader.version".localized())
-                .font(.subheadline)
                 .foregroundColor(.primary)
             CommonMenuPicker(
                 selection: $viewModel.selectedLoaderVersion,

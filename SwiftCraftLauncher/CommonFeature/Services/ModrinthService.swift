@@ -274,7 +274,8 @@ enum ModrinthService {
         let releaseGameVersions = detail.gameVersions.filter {
             $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil
         }
-        detail.gameVersions = CommonUtil.sortMinecraftVersions(releaseGameVersions)
+        let result = CommonUtil.sortMinecraftVersions(releaseGameVersions)
+        detail.gameVersions = CommonUtil.versionsAtLeast(result)
 
         return detail
     }

@@ -27,31 +27,32 @@ public struct AISettingsView: View {
             }
             .labeledContentStyle(.custom)
 
-            LabeledContent("settings.ai.api_key.label".localized()) {
-                HStack {
-                    Group {
-                        if showApiKey {
-                            TextField("".localized(), text: $aiSettings.apiKey)
-                                .textFieldStyle(.roundedBorder).labelsHidden()
-                        } else {
-                            SecureField("".localized(), text: $aiSettings.apiKey)
-                                .textFieldStyle(.roundedBorder).labelsHidden()
+            Group {
+                LabeledContent("settings.ai.api_key.label".localized()) {
+                    HStack {
+                        Group {
+                            if showApiKey {
+                                TextField("".localized(), text: $aiSettings.apiKey)
+                                    .textFieldStyle(.roundedBorder).labelsHidden()
+                            } else {
+                                SecureField("".localized(), text: $aiSettings.apiKey)
+                                    .textFieldStyle(.roundedBorder).labelsHidden()
+                            }
                         }
+                        .frame(width: 300)
+                        .focusable(false)
+                        Button(action: {
+                            showApiKey.toggle()
+                        }, label: {
+                            Image(systemName: showApiKey ? "eye.slash" : "eye")
+                        })
+                        .buttonStyle(.plain)
+                        .applyReplaceTransition()
                     }
-                    .frame(width: 300)
-                    .focusable(false)
-                    Button(action: {
-                        showApiKey.toggle()
-                    }, label: {
-                        Image(systemName: showApiKey ? "eye.slash" : "eye")
-                    })
-                    .buttonStyle(.plain)
-                    .applyReplaceTransition()
-                    InfoIconWithPopover(text: "settings.ai.api_key.description".localized())
                 }
+                .labeledContentStyle(.custom)
+                CommonDescriptionText(text: "settings.ai.api_key.description".localized())
             }
-            .labeledContentStyle(.custom)
-
             // Ollama 地址设置（仅在选择 Ollama 时显示）
             if aiSettings.selectedProvider == .ollama {
                 LabeledContent("settings.ai.ollama.url.label".localized()) {
@@ -68,55 +69,48 @@ public struct AISettingsView: View {
             // OpenAI 格式的自定义接口地址设置（可用于 DeepSeek 等兼容服务）
             if aiSettings.selectedProvider.apiFormat == .openAI {
                 LabeledContent("settings.ai.api_url.label".localized()) {
-                    HStack {
-                        TextField(aiSettings.selectedProvider.baseURL, text: $aiSettings.openAIBaseURL)
-                            .textFieldStyle(.roundedBorder)
-                            .labelsHidden()
-                            .frame(width: 180)
-                            .fixedSize()
-                            .focusable(false)
-                        InfoIconWithPopover(text: "settings.ai.api_url.description".localized())
-                    }
+                    TextField(aiSettings.selectedProvider.baseURL, text: $aiSettings.openAIBaseURL)
+                        .textFieldStyle(.roundedBorder)
+                        .labelsHidden()
+                        .frame(width: 180)
+                        .fixedSize()
+                        .focusable(false)
                 }
                 .labeledContentStyle(.custom)
             }
 
             // 模型设置（必填）
             LabeledContent("settings.ai.model.label".localized()) {
-                HStack {
-                    TextField("settings.ai.model.placeholder".localized(), text: $aiSettings.modelOverride)
-                        .textFieldStyle(.roundedBorder)
-                        .labelsHidden()
-                        .frame(width: 180)
-                        .fixedSize()
-                        .focusable(false)
-                    InfoIconWithPopover(text: "settings.ai.model.description".localized())
-                }
+                TextField("settings.ai.model.placeholder".localized(), text: $aiSettings.modelOverride)
+                    .textFieldStyle(.roundedBorder)
+                    .labelsHidden()
+                    .frame(width: 180)
+                    .fixedSize()
+                    .focusable(false)
             }
             .labeledContentStyle(.custom)
 
             // AI 头像设置
             Group {
-                // 头像预览
                 MinecraftSkinUtils(
                     type: .url,
                     src: aiSettings.aiAvatarURL,
                     size: 42
                 )
                 .padding(.leading, 2)
-                // URL 输入框
-                LabeledContent("settings.ai.avatar.label".localized()) {
-                    HStack {
+                Group {
+                    LabeledContent("settings.ai.avatar.label".localized()) {
                         TextField("settings.ai.avatar.placeholder".localized(), text: $aiSettings.aiAvatarURL)
                             .textFieldStyle(.roundedBorder)
                             .labelsHidden()
                             .frame(maxWidth: 300)
                             .fixedSize()
                             .focusable(false)
-                        InfoIconWithPopover(text: "settings.ai.avatar.description".localized())
                     }
+                    .labeledContentStyle(.custom)
+                    CommonDescriptionText(text: "settings.ai.avatar.description".localized())
                 }
-                .labeledContentStyle(.custom)
+                .padding(.leading, 2)
             }
         }
     }

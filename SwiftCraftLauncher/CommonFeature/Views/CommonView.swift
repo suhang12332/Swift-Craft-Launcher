@@ -28,6 +28,20 @@ func spacerView() -> some View {
     Spacer().frame(maxHeight: 20)
 }
 
+// 通用说明文本样式
+struct CommonDescriptionText: View {
+    let text: String
+    var width: CGFloat = 320
+
+    var body: some View {
+        Text(text)
+            .foregroundStyle(.secondary)
+            .font(.subheadline)
+            .frame(width: width, alignment: .leading)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+}
+
 // 路径设置行
 struct DirectorySettingRow: View {
     let title: String
@@ -52,7 +66,7 @@ struct DirectorySettingRow: View {
                     .padding(.leading, 8)
             }
             Text(description)
-                .font(.footnote)
+                .font(.subheadline)
                 .foregroundColor(.secondary)
         }
     }
@@ -264,7 +278,6 @@ struct InfoIconWithPopover<Content: View>: View {
 
 // MARK: - 便捷初始化方法（使用字符串）
 extension InfoIconWithPopover {
-    /// 使用字符串文本创建 InfoIconWithPopover 的便捷初始化方法
     init(
         text: String,
         delay: Double = 0.5
@@ -280,7 +293,6 @@ extension InfoIconWithPopover {
         }
     }
 
-    /// 使用字符串文本和自定义 SF Symbol 图标的便捷初始化方法
     init(
         text: String,
         iconSize: CGFloat = 14,

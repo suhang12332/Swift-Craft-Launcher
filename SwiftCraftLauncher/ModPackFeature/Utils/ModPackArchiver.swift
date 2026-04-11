@@ -17,8 +17,11 @@ enum ModPackArchiver {
     ///   - outputPath: 输出文件路径
     static func archive(
         tempDir: URL,
-        outputPath: URL
+        outputPath: URL,
+        rootFiles: [String] = [AppConstants.modrinthIndexFileName]
     ) throws {
+        if Task.isCancelled { throw CancellationError() }
+
         // 如果输出文件已存在，先删除
         if FileManager.default.fileExists(atPath: outputPath.path) {
             try FileManager.default.removeItem(at: outputPath)
@@ -36,19 +39,22 @@ enum ModPackArchiver {
             )
         }
 
-        // 添加 modrinth.index.json 到 zip 根目录
-        let indexPath = tempDir.appendingPathComponent(AppConstants.modrinthIndexFileName)
-        if FileManager.default.fileExists(atPath: indexPath.path) {
-            let indexData = try Data(contentsOf: indexPath)
-            try archive.addEntry(
-                with: AppConstants.modrinthIndexFileName,
-                type: .file,
-                uncompressedSize: Int64(indexData.count),
-                compressionMethod: .deflate
-            ) { position, size -> Data in
-                let start = Int(position)
-                let end = min(start + size, indexData.count)
-                return indexData.subdata(in: start..<end)
+        // 添加根目录文件（如 modrinth.index.json / manifest.json）
+        for fileName in rootFiles {
+            if Task.isCancelled { throw CancellationError() }
+            let filePath = tempDir.appendingPathComponent(fileName)
+            if FileManager.default.fileExists(atPath: filePath.path) {
+                let fileData = try Data(contentsOf: filePath)
+                try archive.addEntry(
+                    with: fileName,
+                    type: .file,
+                    uncompressedSize: Int64(fileData.count),
+                    compressionMethod: .deflate
+                ) { position, size -> Data in
+                    let start = Int(position)
+                    let end = min(start + size, fileData.count)
+                    return fileData.subdata(in: start..<end)
+                }
             }
         }
 
@@ -68,6 +74,7 @@ enum ModPackArchiver {
                 : overridesDirPath + "/"
 
             while let fileURL = overridesEnumerator?.nextObject() as? URL {
+                if Task.isCancelled { throw CancellationError() }
                 if let isRegularFile = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
                    isRegularFile {
                     // 计算相对路径（相对于 overridesDir），添加 overrides/ 前缀

@@ -389,13 +389,19 @@ enum CurseForgeService {
         let cfDetail = try await cfDetailTask
         let description = try await descriptionTask
 
-        guard let modrinthDetail = CFToModrinthAdapter.convertProjectDetail(cfDetail, descriptionHTML: description) else {
+        guard var modrinthDetail = CFToModrinthAdapter.convertProjectDetail(cfDetail, descriptionHTML: description) else {
             throw GlobalError.validation(
                 chineseMessage: "转换项目详情失败",
                 i18nKey: "error.validation.project_detail_convert_failed",
                 level: .notification
             )
         }
+        let releaseGameVersions = modrinthDetail.gameVersions.filter {
+            $0.range(of: #"^\d+(\.\d+)*$"#, options: .regularExpression) != nil
+        }
+        let result = CommonUtil.sortMinecraftVersions(releaseGameVersions)
+        modrinthDetail.gameVersions = CommonUtil.versionsAtLeast(result)
+
         return modrinthDetail
     }
 
@@ -425,6 +431,27 @@ enum CurseForgeService {
 
         guard let modId else { return nil }
         return try await fetchProjectDetailsAsModrinthThrowing(id: "\(modId)")
+    }
+
+    /// 通过文件 fingerprint 获取 CurseForge 的 projectId/fileId
+    /// - Parameter fingerprint: CurseForge file fingerprint（UInt32）
+    /// - Returns: (projectId, fileId)，如果无精确匹配返回 nil
+    static func fetchProjectAndFileByFingerprint(fingerprint: UInt32) async -> (projectId: Int, fileId: Int)? {
+        do {
+            let matches = try await fetchFingerprintMatchesThrowing(fingerprint: fingerprint)
+            guard let match = matches.data.exactMatches?.first,
+                  let projectId = match.file?.modId,
+                  let fileId = match.file?.id else {
+                return nil
+            }
+            return (projectId, fileId)
+        } catch {
+            if error is CancellationError {
+                return nil
+            }
+            Logger.shared.warning("通过 fingerprint 获取 CurseForge 文件信息失败: \(error.localizedDescription)")
+            return nil
+        }
     }
 
     private static func fetchFingerprintMatchesThrowing(fingerprint: UInt32) async throws -> CurseForgeFingerprintMatchesResponse {

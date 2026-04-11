@@ -11,7 +11,10 @@ import UniformTypeIdentifiers
 /// 整合包文档类型，用于文件导出
 struct ModPackDocument: FileDocument {
     static var readableContentTypes: [UTType] {
-        [UTType(filenameExtension: "mrpack") ?? UTType.zip]
+        [
+            UTType(filenameExtension: "mrpack") ?? UTType.zip,
+            UTType.zip,
+        ]
     }
 
     var data: Data
@@ -51,10 +54,8 @@ struct ModPackExportSheet: View {
     init(gameInfo: GameVersionInfo) {
         self.gameInfo = gameInfo
         let viewModel = ModPackExportViewModel()
-        // 在初始化时设置默认值
-        if viewModel.modPackName.isEmpty {
-            viewModel.modPackName = gameInfo.gameName
-        }
+        // 导出包名固定使用当前游戏名
+        viewModel.modPackName = gameInfo.gameName
         _viewModel = StateObject(wrappedValue: viewModel)
     }
 
@@ -79,8 +80,8 @@ struct ModPackExportSheet: View {
         .fileExporter(
             isPresented: $coordinator.isExporting,
             document: coordinator.exportDocument,
-            contentType: UTType(filenameExtension: "mrpack") ?? UTType.zip,
-            defaultFilename: viewModel.modPackName.isEmpty ? ResourceType.modpack.rawValue : viewModel.modPackName
+            contentType: exportContentType,
+            defaultFilename: exportDefaultFilename
         ) { result in
             switch result {
             case .success(let url):
@@ -108,9 +109,21 @@ struct ModPackExportSheet: View {
     }
 
     private var headerView: some View {
-        Text("modpack.export.title".localized())
-            .font(.headline)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(alignment: .center, spacing: 12) {
+            Text("modpack.export.title".localized())
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Picker("", selection: $viewModel.currentExportFormat) {
+                ForEach(ModPackExportFormat.allCases, id: \.self) { format in
+                    Text(format.displayName).tag(format)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.menu)
+            .fixedSize()
+            .disabled(viewModel.isExporting)
+        }
     }
 
     @ViewBuilder private var bodyView: some View {
@@ -135,16 +148,6 @@ struct ModPackExportSheet: View {
 
     private var exportFormView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // 整合包名称
-            VStack(alignment: .leading, spacing: 8) {
-                Text("modpack.export.name".localized())
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                TextField("modpack.export.name.placeholder".localized(), text: $viewModel.modPackName)
-                    .textFieldStyle(.roundedBorder)
-                    .focusable(false)
-            }
-
             // 整合包版本
             VStack(alignment: .leading, spacing: 8) {
                 Text("modpack.export.version".localized())
@@ -198,8 +201,14 @@ struct ModPackExportSheet: View {
     private var footerView: some View {
         HStack {
             Button("common.cancel".localized()) {
-                viewModel.cleanupAllData()
-                dismiss()
+                if viewModel.isExporting {
+                    coordinator.reset()
+                    viewModel.cancelExport()
+                    viewModel.resetToInitial(gameInfo: gameInfo)
+                } else {
+                    viewModel.cleanupAllData()
+                    dismiss()
+                }
             }
             .keyboardShortcut(.cancelAction)
 
@@ -220,8 +229,21 @@ struct ModPackExportSheet: View {
                 }
             }
             .keyboardShortcut(.defaultAction)
-            .disabled(viewModel.modPackName.isEmpty || viewModel.isExporting)
+            .disabled(viewModel.isExporting)
         }
+    }
+
+    private var exportContentType: UTType {
+        switch viewModel.currentExportFormat {
+        case .modrinth:
+            return UTType(filenameExtension: "mrpack") ?? UTType.zip
+        case .curseforge:
+            return UTType.zip
+        }
+    }
+
+    private var exportDefaultFilename: String {
+        "\(gameInfo.gameName).\(viewModel.currentExportFormat.fileExtension)"
     }
 
     // MARK: - Reusable Components

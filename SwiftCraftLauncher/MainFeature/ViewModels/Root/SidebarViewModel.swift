@@ -20,8 +20,8 @@ final class SidebarViewModel: ObservableObject {
                 if let gameName = refreshedGameName {
                     self.iconRefreshTriggers[gameName] = UUID()
                 } else {
-                    for game in games {
-                        self.iconRefreshTriggers[game.gameName] = UUID()
+                    for gameName in self.iconRefreshTriggers.keys {
+                        self.iconRefreshTriggers[gameName] = UUID()
                     }
                 }
             }
