@@ -9,16 +9,22 @@ import SwiftUI
 struct GameToolbarItems: View {
     let game: GameVersionInfo
 
+    @Environment(\.controlActiveState)
+    private var controlActiveState
     @EnvironmentObject var filterState: ResourceFilterState
     @EnvironmentObject var detailState: ResourceDetailState
 
     var body: some View {
         ResourceFilterMenus.resourcesTypeMenu(detailState: detailState)
+            .id(controlActiveState)
         ResourceFilterMenus.resourcesMenu(currentGame: game, detailState: detailState)
+            .id(controlActiveState)
         if detailState.gameType {
             ResourceFilterMenus.dataSourceMenu(filterState: filterState)
+                .id(controlActiveState)
         } else {
             ResourceFilterMenus.localResourceFilterMenu(filterState: filterState)
+                .id(controlActiveState)
         }
 
         Spacer()
