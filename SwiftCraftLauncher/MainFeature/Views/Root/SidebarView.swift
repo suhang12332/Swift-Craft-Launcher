@@ -1,5 +1,4 @@
 import SwiftUI
-import Combine
 
 /// 侧边栏：游戏列表与资源列表导航
 public struct SidebarView: View {
@@ -8,8 +7,7 @@ public struct SidebarView: View {
     @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
-    @State private var gameToDelete: GameVersionInfo?
-    @State private var gameToExport: GameVersionInfo?
+    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
     @StateObject private var gameActionManager = GameActionManager.shared
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @ObservedObject private var selectedGameManager = SelectedGameManager.shared
@@ -50,10 +48,10 @@ public struct SidebarView: View {
                     .contextMenu {
                         GameContextMenu(
                             game: game,
-                            onDelete: { gameToDelete = game },
+                            onDelete: { gameDialogsPresenter.requestGameDeletion(of: game) },
                             onOpenSettings: { openSettings() },
                             onExport: {
-                                gameToExport = game
+                                gameDialogsPresenter.presentModPackExport(for: game)
                             }
                         )
                     }
@@ -101,10 +99,6 @@ public struct SidebarView: View {
             // 当游戏列表变化时，为新游戏初始化刷新触发器
             viewModel.onGamesChanged(newGames)
         }
-        .deleteGameConfirmationDialog(gamePendingDeletion: $gameToDelete)
-        .sheet(item: $gameToExport) { game in
-            ModPackExportSheet(gameInfo: game)
-        }
     }
 
     // 只对游戏名做模糊搜索
@@ -125,149 +119,5 @@ public struct SidebarView: View {
         }
         let lower = trimmed.lowercased()
         return names.filter { $0.lowercased().contains(lower) }
-    }
-}
-
-// MARK: - Game Icon View
-
-/// 游戏图标视图组件，支持图标刷新
-private struct GameIconView: View {
-    let game: GameVersionInfo
-    let refreshTrigger: UUID
-
-    private var iconFileURL: URL? {
-        let trimmed = game.gameIcon.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return nil }
-
-        let url = profileDir.appendingPathComponent(trimmed)
-        var isDirectory: ObjCBool = false
-        guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory),
-              !isDirectory.boolValue
-        else { return nil }
-
-        return url
-    }
-
-    /// 获取图标URL（添加刷新触发器作为查询参数，强制AsyncImage重新加载）
-    private var iconURL: URL {
-        guard let baseURL = iconFileURL else { return profileDir }
-        // 添加刷新触发器作为查询参数，确保文件更新后能重新加载
-        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
-        components?.queryItems = [URLQueryItem(name: "refresh", value: refreshTrigger.uuidString)]
-        return components?.url ?? baseURL
-    }
-
-    var body: some View {
-        Group {
-            if iconFileURL != nil {
-                AsyncImage(url: iconURL) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView().controlSize(.mini)
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .interpolation(.none)
-                            .scaledToFit()
-                            .frame(width: 16, height: 16)
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
-                    case .failure:
-                        Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-                            .resizable()
-                            .interpolation(.none)
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
-                    @unknown default:
-                        EmptyView()
-                    }
-                }
-            } else {
-                Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-                    .resizable()
-                    .interpolation(.none)
-                    .scaledToFit()
-                    .frame(width: 20, height: 29)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
-            }
-        }
-        .frame(width: 20, height: 20, alignment: .center)
-    }
-
-    private var profileDir: URL {
-        AppPaths.profileDirectory(gameName: game.gameName)
-    }
-}
-
-// MARK: - Game Context Menu
-
-/// 游戏右键菜单组件，优化内存使用
-/// 使用独立的视图组件和缓存的状态，减少内存占用
-private struct GameContextMenu: View {
-    let game: GameVersionInfo
-    let onDelete: () -> Void
-    let onOpenSettings: () -> Void
-    let onExport: () -> Void
-
-    @ObservedObject private var gameStatusManager = GameStatusManager.shared
-    @ObservedObject private var gameActionManager = GameActionManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
-    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
-    @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
-    @StateObject private var actionViewModel = GameContextMenuActionViewModel()
-
-    /// 使用缓存的游戏状态，避免每次渲染都检查进程
-    /// key 为 processKey(gameId, userId)，当前选中的玩家决定 userId
-    private var isRunning: Bool {
-        let userId = playerListViewModel.currentPlayer?.id ?? ""
-        let key = GameProcessManager.processKey(gameId: game.id, userId: userId)
-        return gameStatusManager.allGameStates[key] ?? false
-    }
-
-    var body: some View {
-        Button(action: {
-            toggleGameState()
-        }, label: {
-            Label(
-                isRunning ? "stop.fill".localized() : "play.fill".localized(),
-                systemImage: isRunning ? "stop.fill" : "play.fill"
-            )
-        })
-
-        Button(action: {
-            gameActionManager.showInFinder(game: game)
-        }, label: {
-            Label("sidebar.context_menu.show_in_finder".localized(), systemImage: "folder")
-        })
-
-        Button(action: {
-            selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
-            onOpenSettings()
-        }, label: {
-            Label("settings.game.advanced.tab".localized(), systemImage: "gearshape")
-        })
-
-        Divider()
-
-        if game.modLoader != GameLoader.vanilla.displayName {
-            Button(action: onExport) {
-                Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
-            }
-        }
-
-        Button(action: onDelete) {
-            Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
-        }
-    }
-
-    /// 启动或停止游戏
-    private func toggleGameState() {
-        actionViewModel.toggleGameState(
-            isRunning: isRunning,
-            player: playerListViewModel.currentPlayer,
-            game: game,
-            gameLaunchUseCase: gameLaunchUseCase
-        )
     }
 }

@@ -13,6 +13,7 @@ struct MainView: View {
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @StateObject private var filterState = ResourceFilterState()
     @StateObject private var detailState = ResourceDetailState()
+    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
     @EnvironmentObject var gameRepository: GameRepository
     @Environment(\.appLogger)
     private var logger
@@ -43,6 +44,10 @@ struct MainView: View {
             detailState.selectedItem = .resource(.mod)
             detailState.gameType = true
         }
+        .sheet(item: $gameDialogsPresenter.gameForExport) { game in
+            ModPackExportSheet(gameInfo: game)
+        }
+        .deleteGameConfirmationDialog(gamePendingDeletion: $gameDialogsPresenter.gamePendingDeletion)
         .frame(minWidth: 900, minHeight: 500)
     }
 

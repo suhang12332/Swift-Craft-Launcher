@@ -21,8 +21,7 @@ struct GameActionButtons: View {
     @ObservedObject private var selectedGameManager = SelectedGameManager.shared
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @StateObject private var gameActionManager = GameActionManager.shared
-    @State private var gamePendingDeletion: GameVersionInfo?
-    @State private var showExportSheet = false
+    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
     @State private var showCrashAlert = false
     @State private var crashDirectory: URL?
 
@@ -95,18 +94,15 @@ struct GameActionButtons: View {
 
             if game.modLoader != GameLoader.vanilla.displayName {
                 Button {
-                    showExportSheet = true
+                    gameDialogsPresenter.presentModPackExport(for: game)
                 } label: {
                     Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
                 }
                 .help("modpack.export.button".localized())
-                .sheet(isPresented: $showExportSheet) {
-                    ModPackExportSheet(gameInfo: game)
-                }
             }
 
             Button(role: .destructive) {
-                gamePendingDeletion = game
+                gameDialogsPresenter.requestGameDeletion(of: game)
             } label: {
                 Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
             }
@@ -132,6 +128,5 @@ struct GameActionButtons: View {
                 showCrashAlert = true
             }
         }
-        .deleteGameConfirmationDialog(gamePendingDeletion: $gamePendingDeletion)
     }
 }
