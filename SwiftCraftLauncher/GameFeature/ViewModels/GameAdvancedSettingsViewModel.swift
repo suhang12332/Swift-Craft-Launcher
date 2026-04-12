@@ -68,12 +68,10 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
 
     /// Java 详细信息说明，用于 InfoIconWithPopover 展示
     var javaDetailsDescription: String {
-        let versionPart = javaVersionInfo.trimmingCharacters(in: .whitespacesAndNewlines)
-        let pathPart = effectiveJavaPath.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        return [pathPart, versionPart]
-            .filter { !$0.isEmpty }
-            .joined(separator: "\n")
+        JavaDetailsFormatting.description(
+            javaExecutablePath: effectiveJavaPath,
+            versionOutput: javaVersionInfo
+        )
     }
 
     /// 获取当前游戏的 Java 版本

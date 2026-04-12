@@ -4,6 +4,8 @@ import SwiftUI
 public struct GameSettingsView: View {
 
     @StateObject private var gameSettings = GameSettingsManager.shared
+    @ObservedObject private var javaDownloadManager = JavaDownloadManager.shared
+    @StateObject private var viewModel = GameSettingsJavaRuntimeViewModel()
 
     // 内存区间
     @State private var globalMemoryRange: ClosedRange<Double> = 512...4096
@@ -108,6 +110,36 @@ public struct GameSettingsView: View {
                         text: "settings.default_memory_allocation.description".localized()
                     )
                 }
+                if let components = viewModel.installedRuntimeComponents, !components.isEmpty {
+                    LabeledContent("settings.game.java.runtimes.section".localized()) {
+                        HStack(spacing: 8) {
+                            Picker("", selection: $viewModel.selectedRuntimeComponent) {
+                                ForEach(components, id: \.self) { component in
+                                    Text(component).tag(component)
+                                }
+                            }
+                            .labelsHidden()
+                            .fixedSize()
+
+                            Button("settings.game.java.runtime.reinstall".localized()) {
+                                Task {
+                                    await javaDownloadManager.downloadJavaRuntime(
+                                        version: viewModel.selectedRuntimeComponent
+                                    )
+                                }
+                            }
+                            .disabled(
+                                viewModel.selectedRuntimeComponent.isEmpty
+                                    || javaDownloadManager.downloadState.isDownloading
+                            )
+
+                            if !viewModel.selectedRuntimeComponent.isEmpty {
+                                InfoIconWithPopover(text: viewModel.javaDetailsDescription)
+                            }
+                        }
+                    }
+                    .labeledContentStyle(.custom)
+                }
             }
             HStack {
                 Spacer()
@@ -123,9 +155,21 @@ public struct GameSettingsView: View {
                 InfoIconWithPopover(text: "settings.game.clear_cache.help".localized())
             }
         }
+        .onAppear {
+            viewModel.refreshInstalledRuntimes(showScanningIndicator: true)
+        }
+        .onChange(of: javaDownloadManager.isWindowVisible) { _, isVisible in
+            if !isVisible {
+                viewModel.refreshInstalledRuntimes(showScanningIndicator: false)
+            }
+        }
+        .onChange(of: viewModel.selectedRuntimeComponent) { _, newValue in
+            viewModel.loadDetails(forRuntimeComponent: newValue)
+        }
+        .onChange(of: javaDownloadManager.downloadState.isDownloading) { _, isDownloading in
+            if !isDownloading, !viewModel.selectedRuntimeComponent.isEmpty {
+                viewModel.loadDetails(forRuntimeComponent: viewModel.selectedRuntimeComponent)
+            }
+        }
     }
-}
-
-#Preview {
-    GameSettingsView()
 }

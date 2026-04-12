@@ -109,6 +109,11 @@ class JavaRuntimeService {
     }
     /// 下载指定版本的Java运行时
     func downloadJavaRuntime(for version: String) async throws {
+        let dir = AppPaths.runtimeDirectory.appendingPathComponent(version)
+        if FileManager.default.fileExists(atPath: dir.path) {
+            try FileManager.default.removeItem(at: dir)
+        }
+
         // 检查是否为当前架构的特供版本（Zulu JDK）
         if let bundledVersionURL = specialJavaRuntimeURL(for: version) {
             try await downloadBundledJavaRuntime(version: version, url: bundledVersionURL)
