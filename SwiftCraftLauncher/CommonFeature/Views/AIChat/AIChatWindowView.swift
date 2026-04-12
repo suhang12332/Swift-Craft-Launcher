@@ -73,6 +73,11 @@ struct AIChatWindowView: View {
                 aiAvatarURL: aiSettings.aiAvatarURL
             )
         }
+        .onChange(of: chatState.isSending) { wasSending, isSendingNow in
+            if wasSending, !isSendingNow {
+                isInputFocused = true
+            }
+        }
         .onChange(of: gameRepository.games) { _, newGames in
             // 当游戏列表加载完成且未选择游戏时，自动选择第一个游戏
             viewModel.onGamesChanged(newGames)

@@ -151,19 +151,5 @@ struct SwiftCraftLauncherApp: App {
             .windowStyle(.titleBar)
             .applyRestorationBehaviorDisabled()
             .windowResizability(.contentSize)
-
-        // 右上角的状态栏(可以显示图标的)
-        MenuBarExtra(
-            content: {
-                Button("ai.assistant.title".localized()) {
-                    AIChatManager.shared.openChatWindow()
-                }
-            },
-            label: {
-                Image("menu-png").resizable()
-                    .renderingMode(.template)
-                    .scaledToFit()
-            }
-        )
     }
 }
