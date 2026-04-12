@@ -56,7 +56,7 @@ jobs:
 
       - name: Replace AppConstants secrets
         run: |
-          TARGET_FILE="SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
+          TARGET_FILE="SwiftCraftLauncher/CommonFeature/Utilities/AppConstants.swift"
           for KEY in CLIENTID CURSEFORGE_API_KEY LITTLESKIN_CLIENT_SECRET MUA_CLIENT_SECRET ELYBY_CLIENT_SECRET; do
             # GitHub Secret 中应存放加密后的值
             VALUE="${!KEY}"
