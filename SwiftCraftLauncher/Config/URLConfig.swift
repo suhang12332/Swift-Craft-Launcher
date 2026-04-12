@@ -41,15 +41,14 @@ enum URLConfig {
     /// - Parameter url: 原始 URL
     /// - Returns: 应用代理后的 URL（如果需要）
     static func applyGitProxyIfNeeded(_ url: URL) -> URL {
-        guard GitHubProxySettings.isEnabled else { return url }
-        guard let proxy = GitHubProxySettings.normalizedProxyPrefix else { return url }
-
         // 优化：直接使用 URL 的 host 属性，避免转换为 String
         guard let host = url.host else { return url }
-
-        // 仅对 GitHub 相关域名应用代理（排除 api.github.com）
+        // 仅对 GitHub 相关域名应用代理（排除 api.github.com,suhang12332.github.io）
         let isGitHubURL = host == githubHost || host == rawGithubHost
         guard isGitHubURL else { return url }
+
+        guard GitHubProxySettings.isEnabled else { return url }
+        guard let proxy = GitHubProxySettings.normalizedProxyPrefix else { return url }
 
         // 优化：使用 URL 的 absoluteString 检查是否已有代理前缀
         let urlString = url.absoluteString
