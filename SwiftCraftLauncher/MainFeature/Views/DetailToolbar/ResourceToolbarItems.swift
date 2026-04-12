@@ -118,6 +118,7 @@ struct ResourceToolbarItems: View {
                     Label("return".localized(), systemImage: "arrow.backward")
                 }
                 .help("return".localized())
+                .id(controlActiveState)
                 Spacer()
                 Button {
                     openInstallSheet()
@@ -166,6 +167,7 @@ struct ResourceToolbarItems: View {
                         .disabled(
                             detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue
                         )
+                        .id(controlActiveState)
                 }
             }
         }

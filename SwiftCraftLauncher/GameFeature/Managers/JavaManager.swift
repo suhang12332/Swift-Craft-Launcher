@@ -26,6 +26,24 @@ class JavaManager {
         return javaPath
     }
 
+    /// `runtime` 目录下已安装的组件名（排除 Legacy / Alpha / Beta）。
+    func listInstalledRuntimeComponents() -> [String] {
+        let base = AppPaths.runtimeDirectory
+        guard let names = try? fileManager.contentsOfDirectory(atPath: base.path) else {
+            return []
+        }
+        return names.filter { name in
+            guard !AppConstants.gameSettingsRuntimeExcludedComponents.contains(name) else { return false }
+            var isDir: ObjCBool = false
+            let path = base.appendingPathComponent(name).path
+            guard fileManager.fileExists(atPath: path, isDirectory: &isDir), isDir.boolValue else {
+                return false
+            }
+            let javaPath = getJavaExecutablePath(version: name)
+            return fileManager.isExecutableFile(atPath: javaPath)
+        }
+    }
+
     func canJavaRun(at javaPath: String) -> Bool {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: javaPath)

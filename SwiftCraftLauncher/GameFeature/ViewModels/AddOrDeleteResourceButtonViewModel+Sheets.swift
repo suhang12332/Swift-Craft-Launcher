@@ -109,7 +109,8 @@ extension AddOrDeleteResourceButtonViewModel {
               let result = await ResourceDetailLoader.loadProjectDetail(
                   projectId: project.projectId,
                   gameRepository: gameRepository,
-                  resourceType: query
+                  resourceType: query,
+                  skipCompatibleGameResolution: true
               )
         else { return }
 

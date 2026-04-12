@@ -21,8 +21,7 @@ struct GameActionButtons: View {
     @ObservedObject private var selectedGameManager = SelectedGameManager.shared
     @StateObject private var gameStatusManager = GameStatusManager.shared
     @StateObject private var gameActionManager = GameActionManager.shared
-    @State private var showDeleteAlert = false
-    @State private var showExportSheet = false
+    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
     @State private var showCrashAlert = false
     @State private var crashDirectory: URL?
 
@@ -95,42 +94,19 @@ struct GameActionButtons: View {
 
             if game.modLoader != GameLoader.vanilla.displayName {
                 Button {
-                    showExportSheet = true
+                    gameDialogsPresenter.presentModPackExport(for: game)
                 } label: {
                     Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
                 }
                 .help("modpack.export.button".localized())
-                .sheet(isPresented: $showExportSheet) {
-                    ModPackExportSheet(gameInfo: game)
-                }
             }
 
             Button(role: .destructive) {
-                showDeleteAlert = true
+                gameDialogsPresenter.requestGameDeletion(of: game)
             } label: {
                 Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
             }
             .help("sidebar.context_menu.delete_game".localized())
-            .confirmationDialog(
-                "delete.title".localized(),
-                isPresented: $showDeleteAlert,
-                titleVisibility: .visible
-            ) {
-                Button("common.delete".localized(), role: .destructive) {
-                    gameActionManager.deleteGame(
-                        game: game,
-                        gameRepository: gameRepository,
-                        selectedItem: detailState.selectedItemBinding,
-                        gameType: detailState.gameTypeBinding
-                    )
-                }
-                .keyboardShortcut(.defaultAction)
-                Button("common.cancel".localized(), role: .cancel) {}
-            } message: {
-                Text(
-                    String(format: "delete.game.confirm".localized(), game.gameName)
-                )
-            }
             .alert(
                 "error.game_launch.game_crashed".localized(),
                 isPresented: $showCrashAlert

@@ -59,6 +59,8 @@ enum ModPackExporter {
         progressCallback: ((ExportProgress) -> Void)? = nil
     ) async -> ExportResult {
         do {
+            try Task.checkCancellation()
+
             // 1. 初始化进度
             progressCallback?(ExportProgress())
 
@@ -68,6 +70,8 @@ enum ModPackExporter {
                 // 清理临时目录
                 try? FileManager.default.removeItem(at: tempDir)
             }
+
+            try Task.checkCancellation()
 
             // 3. 仅基于用户勾选的文件计算总数（按导出格式决定扫描范围）
             let resolvedFiles = resolveSelectedFiles(from: selectedFiles)
@@ -104,6 +108,8 @@ enum ModPackExporter {
                 progressCallback: progressCallback
             )
 
+            try Task.checkCancellation()
+
             // 6. 复制需要复制的资源文件
             let copyCounter = CopyCounter(total: selectedResourcesResult.filesToCopy.count)
 
@@ -116,6 +122,8 @@ enum ModPackExporter {
                 progressUpdater: progressUpdater,
                 progressCallback: progressCallback
             )
+
+            try Task.checkCancellation()
 
             // 7. 生成索引文件并打包
             try await buildIndexAndArchive(
@@ -142,6 +150,14 @@ enum ModPackExporter {
                 message: ""
             )
         } catch {
+            if error is CancellationError {
+                return ExportResult(
+                    success: false,
+                    outputPath: nil,
+                    error: error,
+                    message: "已取消"
+                )
+            }
             Logger.shared.error("导出整合包失败: \(error.localizedDescription)")
             return ExportResult(
                 success: false,
@@ -243,6 +259,7 @@ enum ModPackExporter {
         }
 
         for file in selectedFiles where !shouldScan(file) {
+            if Task.isCancelled { break }
             let relativePath = makeRelativePath(for: file, gameDirectory: gameDirectory)
             filesToCopy.append((file: file, relativePath: relativePath))
         }
@@ -253,6 +270,16 @@ enum ModPackExporter {
                 group.addTask {
                     // 对参与扫描的资源：子目录按资源类型(四大目录)归类
                     let relativePath = inferOverridesSubdirectory(for: file, gameDirectory: gameDirectory)
+                    if Task.isCancelled {
+                        return SelectedResourceProcessResult(
+                            indexFile: nil,
+                            curseForgeFile: nil,
+                            curseForgeModListItem: nil,
+                            shouldCopyToOverrides: false,
+                            sourceFile: file,
+                            relativePath: relativePath
+                        )
+                    }
                     let result = await identifyResourceByFormat(
                         file: file,
                         relativePath: relativePath,
@@ -457,6 +484,8 @@ enum ModPackExporter {
         progressUpdater: ProgressUpdater,
         progressCallback: ((ExportProgress) -> Void)?
     ) async throws {
+        try Task.checkCancellation()
+
         let filesToCopy = params.filesToCopy
         let overridesDir = params.overridesDir
         let totalFilesToCopy = filesToCopy.count
@@ -472,6 +501,7 @@ enum ModPackExporter {
         await withTaskGroup(of: Void.self) { group in
             for (file, relativePath) in filesToCopy {
                 group.addTask {
+                    if Task.isCancelled { return }
                     do {
                         try ResourceProcessor.copyToOverrides(
                             file: file,
@@ -515,11 +545,13 @@ enum ModPackExporter {
         progressUpdater: ProgressUpdater,
         progressCallback: ((ExportProgress) -> Void)?
     ) async throws {
+        try Task.checkCancellation()
         let rootFileNames = try await writeManifestFile(params: params, tempDir: tempDir)
 
         let currentProgress = await progressUpdater.getFullProgress()
         progressCallback?(currentProgress)
 
+        try Task.checkCancellation()
         try ModPackArchiver.archive(tempDir: tempDir, outputPath: outputPath, rootFiles: rootFileNames)
     }
 

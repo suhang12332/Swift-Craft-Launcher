@@ -56,7 +56,7 @@ jobs:
 
       - name: Replace AppConstants secrets
         run: |
-          TARGET_FILE="SwiftCraftLauncher/CommonFeature/Utils/AppConstants.swift"
+          TARGET_FILE="SwiftCraftLauncher/CommonFeature/Utilities/AppConstants.swift"
           for KEY in CLIENTID CURSEFORGE_API_KEY LITTLESKIN_CLIENT_SECRET MUA_CLIENT_SECRET ELYBY_CLIENT_SECRET; do
             # GitHub Secret 中应存放加密后的值
             VALUE="${!KEY}"
@@ -370,6 +370,8 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
     needs: build
     runs-on: macos-15
+    permissions:
+      contents: write
 
     steps:
       - name: Download build artifacts
@@ -437,15 +439,39 @@ jobs:
           done
 
       - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@v2.5.0
-        with:
-          files: |
-            release-artifacts/**/*.dmg
-            appcast-arm64.xml
-            appcast-x86_64.xml
-          body_path: release-notes.md
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF#refs/tags/}"
+          assets=()
+          while IFS= read -r f; do
+            [[ -n "$f" ]] && assets+=("$f")
+          done < <(find release-artifacts -name '*.dmg' -type f | LC_ALL=C sort)
+          if [[ ${#assets[@]} -eq 0 ]]; then
+            echo "No DMG files found under release-artifacts"
+            exit 1
+          fi
+          for f in appcast-arm64.xml appcast-x86_64.xml; do
+            if [[ ! -f "$f" ]]; then
+              echo "Missing required file: $f"
+              exit 1
+            fi
+          done
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists; updating notes and assets..."
+            gh release edit "$VERSION" --notes-file release-notes.md
+            gh release upload "$VERSION" --clobber "${assets[@]}" appcast-arm64.xml appcast-x86_64.xml
+          else
+            gh release create "$VERSION" \
+              --title "$VERSION" \
+              --notes-file release-notes.md \
+              "${assets[@]}" \
+              appcast-arm64.xml \
+              appcast-x86_64.xml
+          fi
 
       - name: Checkout Homebrew Cask repository
         uses: actions/checkout@v6

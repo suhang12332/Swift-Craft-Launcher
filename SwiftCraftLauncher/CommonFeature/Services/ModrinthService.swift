@@ -544,7 +544,7 @@ enum ModrinthService {
                 let lowercasedType = type.lowercased()
 
                 if lowercasedType == ResourceType.mod.rawValue {
-                    if ModScanner.shared.isModInstalledSync(hash: hash, in: modsDir) {
+                    if (try? await ModScanner.shared.isModInstalledThrowing(hash: hash, in: modsDir)) == true {
                         return true
                     }
                 } else {

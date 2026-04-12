@@ -22,14 +22,21 @@ struct CustomVersionPicker: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text("game.form.version".localized())
-                    .font(.subheadline)
                     .foregroundColor(.primary)
                 Spacer()
-                Text(
-                    time.isEmpty ? "" : "release.time.prefix".localized() + time
-                )
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+                if let articleURL = releaseArticleURL, !time.isEmpty {
+                    Link(
+                        "release.time.prefix".localized() + time,
+                        destination: articleURL
+                    )
+                    .font(.subheadline)
+                    .applyPointerHandIfAvailable()
+                    .help("release.view.details.hint".localized())
+                } else {
+                    ProgressView()
+                        .controlSize(.small)
+                        .scaleEffect(0.85)
+                }
             }
             versionInput
         }
@@ -107,6 +114,14 @@ struct CustomVersionPicker: View {
             minHeight: Constants.versionPopoverMinHeight,
             maxHeight: Constants.versionPopoverMaxHeight
         )
+    }
+
+    private var releaseArticleURL: URL? {
+        guard !selected.isEmpty else { return nil }
+        if CommonUtil.isMinecraftSnapshotVersion(selected) {
+            return URLConfig.API.MinecraftNews.snapshot(version: selected)
+        }
+        return URLConfig.API.MinecraftNews.javaEditionRelease(version: selected)
     }
 
     private func handleEmptyVersionsError() {

@@ -15,11 +15,13 @@ enum ResourceDetailLoader {
     ///   - projectId: 项目 ID
     ///   - gameRepository: 游戏仓库
     ///   - resourceType: 资源类型
+    ///   - skipCompatibleGameResolution: 为 true 时只拉取项目详情，不解析兼容游戏、不做已安装过滤
     /// - Returns: 项目详情和兼容游戏列表的元组，如果加载失败则返回 nil
     static func loadProjectDetail(
         projectId: String,
         gameRepository: GameRepository,
-        resourceType: String
+        resourceType: String,
+        skipCompatibleGameResolution: Bool = false
     ) async -> (detail: ModrinthProjectDetail, compatibleGames: [GameVersionInfo])? {
 
         let isServer = resourceType == ResourceType.minecraftJavaServer.rawValue
@@ -32,6 +34,9 @@ enum ResourceDetailLoader {
                 )
             )
             return nil
+        }
+        if skipCompatibleGameResolution {
+            return (detail, [])
         }
         let compatibleGames = await filterCompatibleGames(
             detail: detail,
