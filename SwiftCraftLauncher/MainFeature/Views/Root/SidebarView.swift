@@ -8,7 +8,6 @@ public struct SidebarView: View {
     @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
-    @State private var showDeleteAlert: Bool = false
     @State private var gameToDelete: GameVersionInfo?
     @State private var gameToExport: GameVersionInfo?
     @StateObject private var gameActionManager = GameActionManager.shared
@@ -51,7 +50,7 @@ public struct SidebarView: View {
                     .contextMenu {
                         GameContextMenu(
                             game: game,
-                            onDelete: { gameToDelete = game; showDeleteAlert = true },
+                            onDelete: { gameToDelete = game },
                             onOpenSettings: { openSettings() },
                             onExport: {
                                 gameToExport = game
@@ -102,30 +101,7 @@ public struct SidebarView: View {
             // 当游戏列表变化时，为新游戏初始化刷新触发器
             viewModel.onGamesChanged(newGames)
         }
-        .confirmationDialog(
-            "delete.title".localized(),
-            isPresented: $showDeleteAlert,
-            titleVisibility: .visible
-        ) {
-            Button("common.delete".localized(), role: .destructive) {
-                if let game = gameToDelete {
-                    gameActionManager.deleteGame(
-                        game: game,
-                        gameRepository: gameRepository,
-                        selectedItem: detailState.selectedItemBinding,
-                        gameType: detailState.gameTypeBinding
-                    )
-                }
-            }
-            .keyboardShortcut(.defaultAction)
-            Button("common.cancel".localized(), role: .cancel) {}
-        } message: {
-            if let game = gameToDelete {
-                Text(
-                    String(format: "delete.game.confirm".localized(), game.gameName)
-                )
-            }
-        }
+        .deleteGameConfirmationDialog(gamePendingDeletion: $gameToDelete)
         .sheet(item: $gameToExport) { game in
             ModPackExportSheet(gameInfo: game)
         }
