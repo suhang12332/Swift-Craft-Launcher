@@ -194,6 +194,14 @@ enum AppConstants {
         /// 启用部分特性的最低 Minecraft 版本
         static let featureBaseline = "1.13"
     }
+
+    // MARK: - Java Runtime
+    /// 游戏设置里不展示的 Mojang 运行时（Legacy / Alpha / Beta）
+    static let gameSettingsRuntimeExcludedComponents: Set<String> = [
+        "jre-legacy",
+        "java-runtime-alpha",
+        "java-runtime-beta",
+    ]
 }
 
 // MARK: - Bundle Extension
