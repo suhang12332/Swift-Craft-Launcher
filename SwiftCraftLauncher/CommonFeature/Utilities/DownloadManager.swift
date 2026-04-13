@@ -256,4 +256,38 @@ enum DownloadManager {
     static func calculateFileSHA1(at url: URL) throws -> String {
         return try SHA1Calculator.sha1(ofFileAt: url)
     }
+
+    /// 下载 URL 对应的原始数据
+    /// - Parameter url: 下载地址
+    /// - Returns: 下载到的数据
+    /// - Throws: GlobalError 当操作失败时
+    static func downloadData(from url: URL) async throws -> Data {
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                throw GlobalError.download(
+                    chineseMessage: "HTTP 请求失败",
+                    i18nKey: "error.download.http_status_error",
+                    level: .notification
+                )
+            }
+            return data
+        } catch {
+            if let globalError = error as? GlobalError {
+                throw globalError
+            } else if error is URLError {
+                throw GlobalError.download(
+                    chineseMessage: "网络请求失败",
+                    i18nKey: "error.download.network_request_failed",
+                    level: .notification
+                )
+            } else {
+                throw GlobalError.download(
+                    chineseMessage: "下载失败",
+                    i18nKey: "error.download.general_failure",
+                    level: .notification
+                )
+            }
+        }
+    }
 }
