@@ -46,6 +46,10 @@ final class ModPackDownloadService {
                 )
                 return savePath
             } catch {
+                if error is CancellationError || Task.isCancelled {
+                    Logger.shared.info("整合包下载已取消")
+                    return nil
+                }
                 if let urlError = error as? URLError, urlError.code == .cancelled {
                     Logger.shared.info("整合包下载已取消")
                     return nil
