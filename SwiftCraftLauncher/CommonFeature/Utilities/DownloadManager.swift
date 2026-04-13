@@ -88,12 +88,6 @@ enum DownloadManager {
         return try await downloadFile(url: url, destinationURL: destURL, expectedSha1: expectedSha1)
     }
 
-    // 常量字符串，避免重复创建
-    private static let githubPrefix = "https://github.com/"
-    private static let rawGithubPrefix = "https://raw.githubusercontent.com/"
-    private static let githubHost = "github.com"
-    private static let rawGithubHost = "raw.githubusercontent.com"
-
     /// 通用下载文件到指定路径（不做任何目录结构拼接）
     /// - Parameters:
     ///   - urlString: 下载地址（字符串形式）
@@ -106,17 +100,7 @@ enum DownloadManager {
         destinationURL: URL,
         expectedSha1: String? = nil
     ) async throws -> URL {
-        // 优化：先创建 URL，然后调用内部方法
-        let url: URL = try autoreleasepool {
-            guard let url = URL(string: urlString) else {
-                throw GlobalError.validation(
-                    chineseMessage: "无效的下载地址",
-                    i18nKey: "error.validation.invalid_download_url",
-                    level: .notification
-                )
-            }
-            return url
-        }
+        let url = try FileDownloadCore.parseURL(from: urlString)
         return try await downloadFile(url: url, destinationURL: destinationURL, expectedSha1: expectedSha1)
     }
 
@@ -132,61 +116,18 @@ enum DownloadManager {
         destinationURL: URL,
         expectedSha1: String? = nil
     ) async throws -> URL {
-        // 优化：在同步部分使用 autoreleasepool 及时释放临时对象
-        // 优化：直接使用 URL，避免同时存储 String 和 URL（节省内存）
-        let finalURL: URL = autoreleasepool {
-            // 优化：直接使用 URL 的 host 属性检查，避免转换为 String
-            let needsProxy: Bool
-            if let host = url.host {
-                needsProxy = host == Self.githubHost || host == Self.rawGithubHost
-            } else {
-                // 如果没有 host，检查 absoluteString（可能是相对路径）
-                let absoluteString = url.absoluteString
-                needsProxy = absoluteString.hasPrefix(Self.githubPrefix) || absoluteString.hasPrefix(Self.rawGithubPrefix)
-            }
-
-            if needsProxy {
-                return URLConfig.applyGitProxyIfNeeded(url)
-            } else {
-                return url
-            }
-        }
+        let finalURL = FileDownloadCore.normalizedDownloadURL(from: url)
 
         let fileManager = FileManager.default
 
-        do {
-            try fileManager.createDirectory(at: destinationURL.deletingLastPathComponent(), withIntermediateDirectories: true)
-        } catch {
-            throw GlobalError.fileSystem(
-                chineseMessage: "创建目标目录失败",
-                i18nKey: "error.filesystem.download_directory_creation_failed",
-                level: .notification
-            )
-        }
+        try FileDownloadCore.ensureParentDirectory(for: destinationURL, fileManager: fileManager)
 
-        // 检查是否需要 SHA1 校验
-        let shouldCheckSha1 = (expectedSha1?.isEmpty == false)
-
-        // 如果文件已存在
-        let destinationPath = destinationURL.path
-        if fileManager.fileExists(atPath: destinationPath) {
-            if shouldCheckSha1, let expectedSha1 = expectedSha1 {
-                // 优化：使用 autoreleasepool 释放 SHA1 计算过程中的临时对象
-                do {
-                    let actualSha1 = try autoreleasepool {
-                        try Self.calculateFileSHA1(at: destinationURL)
-                    }
-                    if actualSha1 == expectedSha1 {
-                        return destinationURL
-                    }
-                    // 如果校验失败，继续下载（不返回，继续执行下面的下载逻辑）
-                } catch {
-                    // 如果校验出错，继续下载（不中断）
-                }
-            } else {
-                // 没有 SHA1 时直接跳过
-                return destinationURL
-            }
+        if FileDownloadCore.existingFileSizeIfReusable(
+            at: destinationURL,
+            expectedSha1: expectedSha1,
+            fileManager: fileManager
+        ) != nil {
+            return destinationURL
         }
 
         // 下载文件到临时位置（异步操作在 autoreleasepool 外部）
@@ -206,27 +147,8 @@ enum DownloadManager {
                 )
             }
 
-            // SHA1 校验（优化：使用 autoreleasepool）
-            if shouldCheckSha1, let expectedSha1 = expectedSha1 {
-                try autoreleasepool {
-                    let actualSha1 = try Self.calculateFileSHA1(at: tempFileURL)
-                    if actualSha1 != expectedSha1 {
-                        throw GlobalError.validation(
-                            chineseMessage: "SHA1 校验失败",
-                            i18nKey: "error.validation.sha1_check_failed",
-                            level: .notification
-                        )
-                    }
-                }
-            }
-
-            // 原子性地移动到最终位置
-            if fileManager.fileExists(atPath: destinationURL.path) {
-                // 先尝试直接替换
-                try fileManager.replaceItem(at: destinationURL, withItemAt: tempFileURL, backupItemName: nil, options: [], resultingItemURL: nil)
-            } else {
-                try fileManager.moveItem(at: tempFileURL, to: destinationURL)
-            }
+            try FileDownloadCore.validateSHA1IfNeeded(for: tempFileURL, expectedSha1: expectedSha1)
+            try FileDownloadCore.moveDownloadedFile(from: tempFileURL, to: destinationURL, fileManager: fileManager)
 
             return destinationURL
         } catch {

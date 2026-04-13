@@ -1,11 +1,6 @@
 import Foundation
 
 enum ProgressDownloadManager {
-    private static let githubPrefix = "https://github.com/"
-    private static let rawGithubPrefix = "https://raw.githubusercontent.com/"
-    private static let githubHost = "github.com"
-    private static let rawGithubHost = "raw.githubusercontent.com"
-
     static func downloadFile(
         urlString: String,
         destinationURL: URL,
@@ -13,63 +8,20 @@ enum ProgressDownloadManager {
         progressHandler: ((Int64, Int64) -> Void)? = nil
     ) async throws -> URL {
         try Task.checkCancellation()
-        let url: URL = try autoreleasepool {
-            guard let url = URL(string: urlString) else {
-                throw GlobalError.validation(
-                    chineseMessage: "无效的下载地址",
-                    i18nKey: "error.validation.invalid_download_url",
-                    level: .notification
-                )
-            }
-            return url
-        }
-
-        let finalURL: URL = autoreleasepool {
-            let needsProxy: Bool
-            if let host = url.host {
-                needsProxy = host == Self.githubHost || host == Self.rawGithubHost
-            } else {
-                let absoluteString = url.absoluteString
-                needsProxy = absoluteString.hasPrefix(Self.githubPrefix) || absoluteString.hasPrefix(Self.rawGithubPrefix)
-            }
-            return needsProxy ? URLConfig.applyGitProxyIfNeeded(url) : url
-        }
+        let url = try FileDownloadCore.parseURL(from: urlString)
+        let finalURL = FileDownloadCore.normalizedDownloadURL(from: url)
 
         let fileManager = FileManager.default
-        do {
-            try fileManager.createDirectory(at: destinationURL.deletingLastPathComponent(), withIntermediateDirectories: true)
-        } catch {
-            throw GlobalError.fileSystem(
-                chineseMessage: "创建目标目录失败",
-                i18nKey: "error.filesystem.download_directory_creation_failed",
-                level: .notification
-            )
-        }
 
-        let shouldCheckSha1 = (expectedSha1?.isEmpty == false)
-        if fileManager.fileExists(atPath: destinationURL.path) {
-            if shouldCheckSha1, let expectedSha1 = expectedSha1 {
-                do {
-                    let actualSha1 = try autoreleasepool {
-                        try DownloadManager.calculateFileSHA1(at: destinationURL)
-                    }
-                    if actualSha1 == expectedSha1 {
-                        if let attributes = try? fileManager.attributesOfItem(atPath: destinationURL.path),
-                           let fileSize = attributes[.size] as? Int64 {
-                            progressHandler?(fileSize, fileSize)
-                        }
-                        return destinationURL
-                    }
-                } catch {
-                    // SHA1 读取失败时继续重新下载
-                }
-            } else {
-                if let attributes = try? fileManager.attributesOfItem(atPath: destinationURL.path),
-                   let fileSize = attributes[.size] as? Int64 {
-                    progressHandler?(fileSize, fileSize)
-                }
-                return destinationURL
-            }
+        try FileDownloadCore.ensureParentDirectory(for: destinationURL, fileManager: fileManager)
+
+        if let existingFileSize = FileDownloadCore.existingFileSizeIfReusable(
+            at: destinationURL,
+            expectedSha1: expectedSha1,
+            fileManager: fileManager
+        ) {
+            progressHandler?(existingFileSize, existingFileSize)
+            return destinationURL
         }
 
         let fileSize = try await getRemoteFileSize(from: finalURL)
@@ -86,28 +38,8 @@ enum ProgressDownloadManager {
                     case .success(let tempURL):
                         defer { try? fileManager.removeItem(at: tempURL) }
                         do {
-                            if shouldCheckSha1, let expectedSha1 = expectedSha1 {
-                                let actualSha1 = try DownloadManager.calculateFileSHA1(at: tempURL)
-                                if actualSha1 != expectedSha1 {
-                                    throw GlobalError.validation(
-                                        chineseMessage: "SHA1 校验失败",
-                                        i18nKey: "error.validation.sha1_check_failed",
-                                        level: .notification
-                                    )
-                                }
-                            }
-
-                            if fileManager.fileExists(atPath: destinationURL.path) {
-                                try fileManager.replaceItem(
-                                    at: destinationURL,
-                                    withItemAt: tempURL,
-                                    backupItemName: nil,
-                                    options: [],
-                                    resultingItemURL: nil
-                                )
-                            } else {
-                                try fileManager.moveItem(at: tempURL, to: destinationURL)
-                            }
+                            try FileDownloadCore.validateSHA1IfNeeded(for: tempURL, expectedSha1: expectedSha1)
+                            try FileDownloadCore.moveDownloadedFile(from: tempURL, to: destinationURL, fileManager: fileManager)
                             continuation.resume(returning: destinationURL)
                         } catch {
                             continuation.resume(throwing: error)
