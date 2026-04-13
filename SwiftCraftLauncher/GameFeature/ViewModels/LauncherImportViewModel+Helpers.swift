@@ -29,11 +29,7 @@ extension LauncherImportViewModel {
 
     /// 下载图标
     func downloadIcon(from urlString: String, instanceName: String) async -> Data? {
-        guard let url = URL(string: urlString) else { return nil }
-
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-
             // 缓存图标
             let cacheDir = AppPaths.appCache.appendingPathComponent("imported_icons")
             try FileManager.default.createDirectory(
@@ -41,7 +37,11 @@ extension LauncherImportViewModel {
                 withIntermediateDirectories: true
             )
             let cachedPath = cacheDir.appendingPathComponent("\(instanceName).png")
-            try data.write(to: cachedPath)
+            let downloadedPath = try await DownloadManager.downloadFile(
+                urlString: urlString,
+                destinationURL: cachedPath
+            )
+            let data = try Data(contentsOf: downloadedPath)
 
             return data
         } catch {
