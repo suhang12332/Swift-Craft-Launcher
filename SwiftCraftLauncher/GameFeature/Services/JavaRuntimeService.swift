@@ -4,7 +4,6 @@ import ZIPFoundation
 /// Java运行时下载器
 class JavaRuntimeService {
     static let shared = JavaRuntimeService()
-    private let downloadSession = URLSession.shared
 
     // 进度回调 - 使用actor来确保线程安全
     private let progressActor = ProgressActor()
@@ -266,19 +265,7 @@ class JavaRuntimeService {
                 level: .notification
             )
         }
-
-        let (data, response) = try await downloadSession.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw GlobalError.network(
-                chineseMessage: "下载失败",
-                i18nKey: "error.network.download_failed",
-                level: .notification
-            )
-        }
-
-        return data
+        return try await APIClient.get(url: url)
     }
     /// 获取当前macOS平台标识
     private func getCurrentMacPlatform() -> String {
