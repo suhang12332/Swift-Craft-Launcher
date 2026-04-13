@@ -10,6 +10,8 @@ class JavaDownloadManager: ObservableObject {
 
     private let javaRuntimeService = JavaRuntimeService.shared
     private var dismissCallback: (() -> Void)?
+    private var currentDownloadTask: Task<Void, Error>?
+    private var cancelRequested = false
 
     /// 设置窗口关闭回调
     func setDismissCallback(_ callback: @escaping () -> Void) {
@@ -18,10 +20,15 @@ class JavaDownloadManager: ObservableObject {
 
     /// 开始下载Java运行时
     func downloadJavaRuntime(version: String) async {
+        defer {
+            currentDownloadTask = nil
+            cancelRequested = false
+        }
         do {
             // 重置状态
             downloadState.reset()
             downloadState.startDownload(version: version)
+            cancelRequested = false
 
             // 显示下载弹窗
             showDownloadWindow()
@@ -38,14 +45,18 @@ class JavaDownloadManager: ObservableObject {
 
             // 设置取消检查回调
             javaRuntimeService.setCancelCallback { [weak self] in
-                return self?.downloadState.isCancelled ?? false
+                return self?.cancelRequested ?? false
             }
 
             // 开始下载
-            try await javaRuntimeService.downloadJavaRuntime(for: version)
+            let task = Task { [javaRuntimeService] in
+                try await javaRuntimeService.downloadJavaRuntime(for: version)
+            }
+            currentDownloadTask = task
+            try await task.value
 
             // 检查是否被取消
-            if downloadState.isCancelled {
+            if downloadState.isCancelled || cancelRequested {
                 Logger.shared.info("Java下载已被取消")
                 cleanupCancelledDownload()
                 return
@@ -56,6 +67,11 @@ class JavaDownloadManager: ObservableObject {
 
             closeWindow()
         } catch {
+            if error is CancellationError || downloadState.isCancelled || cancelRequested {
+                Logger.shared.info("Java下载任务已取消")
+                cleanupCancelledDownload()
+                return
+            }
             // 下载失败
             if !downloadState.isCancelled {
                 downloadState.setError(error.localizedDescription)
@@ -65,10 +81,13 @@ class JavaDownloadManager: ObservableObject {
 
     /// 取消下载
     func cancelDownload() {
+        guard downloadState.isDownloading else {
+            closeWindow()
+            return
+        }
+        cancelRequested = true
         downloadState.cancel()
-        // 取消状态会通过shouldCancel回调传递给JavaRuntimeService
-        // 立即关闭窗口
-        cleanupCancelledDownload()
+        currentDownloadTask?.cancel()
     }
 
     /// 重试下载
