@@ -583,37 +583,31 @@ enum ModrinthService {
     }
 
     static func fetchModrinthDetail(by hash: String, completion: @escaping (ModrinthProjectDetail?) -> Void) {
-        let url = URLConfig.API.Modrinth.versionFile(hash: hash)
-        let task = URLSession.shared.dataTask(with: url) { data, _, _ in
-            guard let data = data else {
-                completion(nil)
-                return
-            }
-
-            let decoder = JSONDecoder()
-            decoder.configureForModrinth()
-
-            guard let version = try? decoder.decode(ModrinthProjectDetailVersion.self, from: data) else {
-                completion(nil)
-                return
-            }
-
-            Task {
-                do {
-                    let detail = try await Self.fetchProjectDetailsThrowing(id: version.projectId)
-                    await MainActor.run {
-                        completion(detail)
-                    }
-                } catch {
-                    let globalError = GlobalError.from(error)
-                    Logger.shared.error("通过哈希获取项目详情失败 (Hash: \(hash)): \(globalError.chineseMessage)")
-                    GlobalErrorHandler.shared.handle(globalError)
-                    await MainActor.run {
-                        completion(nil)
-                    }
+        Task {
+            do {
+                let detail = try await fetchModrinthDetailThrowing(by: hash)
+                await MainActor.run {
+                    completion(detail)
+                }
+            } catch {
+                let globalError = GlobalError.from(error)
+                Logger.shared.error("通过哈希获取项目详情失败 (Hash: \(hash)): \(globalError.chineseMessage)")
+                GlobalErrorHandler.shared.handle(globalError)
+                await MainActor.run {
+                    completion(nil)
                 }
             }
         }
-        task.resume()
+    }
+
+    static func fetchModrinthDetailThrowing(by hash: String) async throws -> ModrinthProjectDetail {
+        let url = URLConfig.API.Modrinth.versionFile(hash: hash)
+        let data = try await APIClient.get(url: url)
+
+        let decoder = JSONDecoder()
+        decoder.configureForModrinth()
+        let version = try decoder.decode(ModrinthProjectDetailVersion.self, from: data)
+
+        return try await Self.fetchProjectDetailsThrowing(id: version.projectId)
     }
 }
