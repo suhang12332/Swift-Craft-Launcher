@@ -179,6 +179,11 @@ struct GameCreationView: View {
                         EmptyView()
                     }
                 }
+                .onDisappear {
+                    URLCache.shared.removeCachedResponse(
+                        for: URLRequest(url: url)
+                    )
+                }
             } else {
                 VStack(spacing: 12) {
                     Image(systemName: "photo.badge.plus")

@@ -113,6 +113,11 @@ struct ModrinthProjectTitleView: View {
                 }
                 .frame(width: 64, height: 64)
                 .cornerRadius(8)
+                .onDisappear {
+                    URLCache.shared.removeCachedResponse(
+                        for: URLRequest(url: url)
+                    )
+                }
             } else {
                 defaultIcon(systemName: "server.rack")
             }

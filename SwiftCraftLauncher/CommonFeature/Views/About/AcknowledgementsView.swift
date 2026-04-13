@@ -142,6 +142,13 @@ public struct AcknowledgementsView: View {
                 .frame(width: 40, height: 40)
                 .cornerRadius(8)
                 .clipped()
+                .onDisappear {
+                    if let optimizedURL {
+                        URLCache.shared.removeCachedResponse(
+                            for: URLRequest(url: optimizedURL)
+                        )
+                    }
+                }
             } else {
                 Rectangle()
                     .foregroundColor(.gray.opacity(0.3))

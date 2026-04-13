@@ -108,6 +108,11 @@ struct GameHeaderListRow: View {
                 }
                 // 额外加一层保险：即使 URL 拼接/缓存行为不如预期，也强制重建 AsyncImage
                 .id(refreshTrigger)
+                .onDisappear {
+                    URLCache.shared.removeCachedResponse(
+                        for: URLRequest(url: iconURL)
+                    )
+                }
             } else {
                 defaultIcon
             }
