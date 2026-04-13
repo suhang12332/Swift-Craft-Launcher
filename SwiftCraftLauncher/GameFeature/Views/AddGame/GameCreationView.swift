@@ -94,8 +94,8 @@ struct GameCreationView: View {
         if viewModel.isDownloading {
             viewModel.handleCancel()
         }
-        // ViewModel 的数据会在下次打开时重新初始化，这里主要清理临时文件
-        // 不重置 ViewModel 状态，可能正在使用
+        // 清理已加载的版本数据，避免下次打开仍显示上次缓存
+        viewModel.clearLoadedVersionsOnClose()
     }
 
     // MARK: - View Components
