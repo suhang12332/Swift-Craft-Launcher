@@ -50,10 +50,6 @@ final class ModPackDownloadService {
                     Logger.shared.info("整合包下载已取消")
                     return nil
                 }
-                if let urlError = error as? URLError, urlError.code == .cancelled {
-                    Logger.shared.info("整合包下载已取消")
-                    return nil
-                }
                 let globalError = GlobalError.from(error)
                 errorHandler?(globalError.chineseMessage, globalError.i18nKey)
                 return nil
