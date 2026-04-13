@@ -15,17 +15,6 @@ final class ContributorAvatarCache: @unchecked Sendable {
     /// 图片缓存：key 为 URL 字符串，value 为 NSImage
     private let imageCache: NSCache<NSString, NSImage>
 
-    /// 磁盘缓存目录（位于系统 Caches 目录下）
-    private static let diskCachePath: String = {
-        let fm = FileManager.default
-        let dir = AppPaths.appCache.appendingPathComponent("ContributorAvatarCache", isDirectory: true)
-        try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
-        return dir.path
-    }()
-
-    /// 共享的 URLSession，启用缓存以减少内存占用
-    private let urlSession: URLSession
-
     private init() {
         // 设置缓存限制：最多缓存 30 张图片，总内存限制 3MB
         let cache = NSCache<NSString, NSImage>()
@@ -33,16 +22,6 @@ final class ContributorAvatarCache: @unchecked Sendable {
         cache.totalCostLimit = 3 * 1024 * 1024  // 3MB
         cache.name = "ContributorAvatarCache"
         self.imageCache = cache
-
-        // 配置 URLSession 使用较小的缓存
-        let config = URLSessionConfiguration.default
-        config.requestCachePolicy = .returnCacheDataElseLoad
-        config.urlCache = URLCache(
-            memoryCapacity: 1 * 1024 * 1024,  // 1MB 内存缓存
-            diskCapacity: 5 * 1024 * 1024,    // 5MB 磁盘缓存
-            diskPath: Self.diskCachePath
-        )
-        self.urlSession = URLSession(configuration: config)
     }
 
     /// 加载图片
@@ -56,7 +35,7 @@ final class ContributorAvatarCache: @unchecked Sendable {
         }
 
         // 从网络加载
-        let (data, _) = try await urlSession.data(from: url)
+        let data = try await DownloadManager.downloadData(from: url)
         guard let image = NSImage(data: data) else {
             throw NSError(domain: "ContributorAvatarCache", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法解析图片数据"])
         }
@@ -127,17 +106,6 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
     /// 图片缓存：key 为 URL 字符串，value 为 NSImage
     private let imageCache: NSCache<NSString, NSImage>
 
-    /// 磁盘缓存目录（位于系统 Caches 目录下）
-    private static let diskCachePath: String = {
-        let fm = FileManager.default
-        let dir = AppPaths.appCache.appendingPathComponent("StaticContributorAvatarCache", isDirectory: true)
-        try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
-        return dir.path
-    }()
-
-    /// 共享的 URLSession，启用缓存以减少内存占用
-    private let urlSession: URLSession
-
     private init() {
         // 设置缓存限制：最多缓存 20 张图片，总内存限制 2MB
         let cache = NSCache<NSString, NSImage>()
@@ -145,16 +113,6 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
         cache.totalCostLimit = 2 * 1024 * 1024  // 2MB
         cache.name = "StaticContributorAvatarCache"
         self.imageCache = cache
-
-        // 配置 URLSession 使用较小的缓存
-        let config = URLSessionConfiguration.default
-        config.requestCachePolicy = .returnCacheDataElseLoad
-        config.urlCache = URLCache(
-            memoryCapacity: 1 * 1024 * 1024,  // 1MB 内存缓存
-            diskCapacity: 5 * 1024 * 1024,    // 5MB 磁盘缓存
-            diskPath: Self.diskCachePath
-        )
-        self.urlSession = URLSession(configuration: config)
     }
 
     /// 加载图片
@@ -168,7 +126,7 @@ final class StaticContributorAvatarCache: @unchecked Sendable {
         }
 
         // 从网络加载
-        let (data, _) = try await urlSession.data(from: url)
+        let data = try await DownloadManager.downloadData(from: url)
         guard let image = NSImage(data: data) else {
             throw NSError(domain: "StaticContributorAvatarCache", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法解析图片数据"])
         }
