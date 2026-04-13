@@ -12,14 +12,8 @@ class AIChatManager: ObservableObject {
     static let shared = AIChatManager()
 
     private let settings = AISettingsManager.shared
-    private var urlSession: URLSession
 
-    private init() {
-        let configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = 60
-        configuration.timeoutIntervalForResource = 300
-        self.urlSession = URLSession(configuration: configuration)
-    }
+    private init() {}
 
     // MARK: - 发送消息
 
@@ -140,15 +134,7 @@ class AIChatManager: ObservableObject {
         request.httpBody = jsonData
 
         // 发送流式请求
-        let (asyncBytes, response) = try await urlSession.bytes(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "无效的 HTTP 响应",
-                i18nKey: "error.network.invalid_response",
-                level: .notification
-            )
-        }
+        let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
@@ -270,15 +256,7 @@ class AIChatManager: ObservableObject {
         request.httpBody = jsonData
 
         // 发送流式请求
-        let (asyncBytes, response) = try await urlSession.bytes(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "无效的 HTTP 响应",
-                i18nKey: "error.network.invalid_response",
-                level: .notification
-            )
-        }
+        let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
@@ -383,15 +361,7 @@ class AIChatManager: ObservableObject {
         request.httpBody = jsonData
 
         // 发送流式请求
-        let (asyncBytes, response) = try await urlSession.bytes(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw GlobalError.network(
-                chineseMessage: "无效的 HTTP 响应",
-                i18nKey: "error.network.invalid_response",
-                level: .notification
-            )
-        }
+        let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
