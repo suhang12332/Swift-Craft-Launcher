@@ -25,14 +25,16 @@ enum ModUpdateChecker {
 
     /// 检测本地 mod 是否有新版本
     /// - Parameters:
-    ///   - project: Modrinth 项目信息
+    ///   - projectId: Modrinth 项目 ID
     ///   - gameInfo: 游戏信息
     ///   - resourceType: 资源类型（mod, datapack, shader, resourcepack）
+    ///   - installedFileName: 当前安装文件名（调用方维护）
     /// - Returns: 更新检测结果
     static func checkForUpdate(
-        project: ModrinthProject,
+        projectId: String,
         gameInfo: GameVersionInfo,
-        resourceType: String
+        resourceType: String,
+        installedFileName: String? = nil
     ) async -> UpdateCheckResult {
         // 1. 获取本地文件的 hash
         guard let resourceDir = AppPaths.resourceDirectory(
@@ -49,8 +51,8 @@ enum ModUpdateChecker {
 
         // 获取当前安装的文件 hash
         let currentHash = await getCurrentInstalledHash(
-            project: project,
-            resourceDir: resourceDir
+            resourceDir: resourceDir,
+            installedFileName: installedFileName
         )
 
         guard let currentHash = currentHash else {
@@ -69,7 +71,7 @@ enum ModUpdateChecker {
 
         do {
             let versions = try await ModrinthService.fetchProjectVersionsFilter(
-                id: project.projectId,
+                id: projectId,
                 selectedVersions: versionFilters,
                 selectedLoaders: loaderFilters,
                 type: resourceType
@@ -112,27 +114,17 @@ enum ModUpdateChecker {
 
     /// 获取当前安装的文件 hash
     /// - Parameters:
-    ///   - project: Modrinth 项目信息
     ///   - resourceDir: 资源目录
+    ///   - installedFileName: 当前安装文件名
     /// - Returns: 当前安装的文件 hash，如果未找到则返回 nil
     private static func getCurrentInstalledHash(
-        project: ModrinthProject,
-        resourceDir: URL
+        resourceDir: URL,
+        installedFileName: String?
     ) async -> String? {
-        // 方法1: 通过文件名查找（如果 project 有 fileName）
-        if let fileName = project.fileName {
+        if let fileName = installedFileName {
             let fileURL = resourceDir.appendingPathComponent(fileName)
             if FileManager.default.fileExists(atPath: fileURL.path) {
                 return ModScanner.sha1Hash(of: fileURL)
-            }
-            return nil
-        }
-
-        // 仅在缺少 fileName 时使用该兜底策略
-        if !project.projectId.isEmpty {
-            let localDetails = ModScanner.shared.localModDetails(in: resourceDir)
-            if let matchingDetail = localDetails.first(where: { $0.detail?.id == project.projectId }) {
-                return matchingDetail.hash
             }
         }
         return nil

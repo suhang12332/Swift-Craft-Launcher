@@ -134,7 +134,6 @@ public struct ContentToolbarView: ToolbarContent {
                     }
                 }
             }
-
         }
     }
 }

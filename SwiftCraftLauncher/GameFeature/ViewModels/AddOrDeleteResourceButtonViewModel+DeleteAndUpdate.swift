@@ -2,7 +2,7 @@ import Foundation
 
 extension AddOrDeleteResourceButtonViewModel {
     func confirmDelete() {
-        deleteFile(fileName: project.fileName)
+        deleteFile(fileName: effectiveFileName)
     }
 
     func deleteFile(fileName: String?, isUpdate: Bool = false) {
@@ -84,7 +84,7 @@ extension AddOrDeleteResourceButtonViewModel {
             return
         }
 
-        let fileName = currentFileName ?? project.fileName
+        let fileName = effectiveFileName
         guard let fileName else {
             Logger.shared.error("切换资源启用状态失败：缺少文件名")
             return
@@ -96,8 +96,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 resourceDir: resourceDir
             )
             currentFileName = newFileName
-            isDisabled = ResourceEnableDisableManager.isDisabled(fileName: newFileName)
-            setIsResourceDisabled(isDisabled)
+            syncDisableState(using: newFileName)
             onToggleDisableState?(isDisabled)
 
             if !isDisabled && type == false {
@@ -109,9 +108,7 @@ extension AddOrDeleteResourceButtonViewModel {
     }
 
     func updateDisableState() {
-        let fileName = currentFileName ?? project.fileName
-        isDisabled = ResourceEnableDisableManager.isDisabled(fileName: fileName)
-        setIsResourceDisabled(isDisabled)
+        syncDisableState(using: effectiveFileName)
     }
 
     func checkForUpdate() {
@@ -123,9 +120,10 @@ extension AddOrDeleteResourceButtonViewModel {
 
         Task {
             let result = await ModUpdateChecker.checkForUpdate(
-                project: project,
+                projectId: project.projectId,
                 gameInfo: gameInfo,
-                resourceType: query
+                resourceType: query,
+                installedFileName: effectiveFileName
             )
             if result.hasUpdate {
                 addButtonState = .update

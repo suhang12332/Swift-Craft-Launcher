@@ -66,5 +66,4 @@ final class ContentToolbarViewModel: ObservableObject {
         preloadedSkinInfo = nil
         preloadedProfile = nil
     }
-
 }

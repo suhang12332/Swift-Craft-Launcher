@@ -70,4 +70,13 @@ final class AddOrDeleteResourceButtonViewModel: ObservableObject {
         self.gameRepository = gameRepository
         self.playerListViewModel = playerListViewModel
     }
+
+    var effectiveFileName: String? {
+        currentFileName ?? project.fileName
+    }
+
+    func syncDisableState(using fileName: String?) {
+        isDisabled = ResourceEnableDisableManager.isDisabled(fileName: fileName)
+        setIsResourceDisabled(isDisabled)
+    }
 }
