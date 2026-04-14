@@ -81,27 +81,3 @@ struct StartupInfoSheetView: View {
         )
     }
 }
-
-// MARK: - Preview
-#Preview {
-    StartupInfoSheetView(
-        announcementData: AnnouncementData(
-            title: "SwiftCraft Launcher v1.2.0",
-            content:
-                """
-                ### 欢迎使用 %@
-
-                本次更新包含以下内容：
-
-                - 优化启动性能，减少首次加载等待时间
-                - 改进账号登录稳定性与错误提示
-                - 修复已知崩溃问题并提升整体流畅度
-
-                如遇问题，请在设置页面反馈给 **%@ 团队**。
-
-                感谢你对 **%@** 的支持！
-                """,
-            author: "Swift Craft Launcher Team"
-        )
-    )
-}

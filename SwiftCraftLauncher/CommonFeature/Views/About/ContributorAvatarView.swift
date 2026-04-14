@@ -7,58 +7,10 @@
 import SwiftUI
 import Foundation
 
-/// 贡献者头像图片缓存管理器
-/// 使用 NSCache 限制内存占用，避免加载过多图片导致内存溢出
-final class ContributorAvatarCache: @unchecked Sendable {
-    static let shared = ContributorAvatarCache()
-
-    /// 图片缓存：key 为 URL 字符串，value 为 NSImage
-    private let imageCache: NSCache<NSString, NSImage>
-
-    private init() {
-        // 设置缓存限制：最多缓存 30 张图片，总内存限制 3MB
-        let cache = NSCache<NSString, NSImage>()
-        cache.countLimit = 30
-        cache.totalCostLimit = 3 * 1024 * 1024  // 3MB
-        cache.name = "ContributorAvatarCache"
-        self.imageCache = cache
-    }
-
-    /// 加载图片
-    @MainActor
-    func loadImage(from url: URL) async throws -> NSImage {
-        let cacheKey = url.absoluteString as NSString
-
-        // 先检查缓存
-        if let cachedImage = imageCache.object(forKey: cacheKey) {
-            return cachedImage
-        }
-
-        // 从网络加载
-        let data = try await DownloadManager.downloadData(from: url)
-        guard let image = NSImage(data: data) else {
-            throw NSError(domain: "ContributorAvatarCache", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法解析图片数据"])
-        }
-
-        // 计算图片大小（用于缓存成本）
-        let cost = data.count
-        imageCache.setObject(image, forKey: cacheKey, cost: cost)
-
-        return image
-    }
-
-    /// 清理缓存
-    func clearCache() {
-        imageCache.removeAllObjects()
-    }
-}
-
 /// 贡献者头像视图
 struct ContributorAvatarView: View {
     let avatarUrl: String
     let size: CGFloat
-
-    @StateObject private var viewModel = ContributorAvatarViewModel()
 
     init(avatarUrl: String, size: CGFloat = 32) {
         self.avatarUrl = avatarUrl
@@ -66,81 +18,7 @@ struct ContributorAvatarView: View {
     }
 
     var body: some View {
-        Group {
-            if let image = viewModel.image {
-                Image(nsImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-            } else if viewModel.isLoading {
-                Rectangle()
-                    .foregroundColor(.gray.opacity(0.3))
-                    .overlay(
-                        ProgressView()
-                            .scaleEffect(0.5)
-                    )
-            } else {
-                Rectangle()
-                    .foregroundColor(.gray.opacity(0.3))
-                    .overlay(
-                        Image(systemName: "person.fill")
-                            .foregroundColor(.gray)
-                            .font(.caption)
-                    )
-            }
-        }
-        .frame(width: size, height: size)
-        .clipShape(Circle())
-        .onAppear {
-            viewModel.load(avatarUrl: avatarUrl, size: size)
-        }
-        .onDisappear {
-            viewModel.cancel()
-        }
-    }
-}
-
-/// 静态贡献者头像图片缓存管理器
-final class StaticContributorAvatarCache: @unchecked Sendable {
-    static let shared = StaticContributorAvatarCache()
-
-    /// 图片缓存：key 为 URL 字符串，value 为 NSImage
-    private let imageCache: NSCache<NSString, NSImage>
-
-    private init() {
-        // 设置缓存限制：最多缓存 20 张图片，总内存限制 2MB
-        let cache = NSCache<NSString, NSImage>()
-        cache.countLimit = 20
-        cache.totalCostLimit = 2 * 1024 * 1024  // 2MB
-        cache.name = "StaticContributorAvatarCache"
-        self.imageCache = cache
-    }
-
-    /// 加载图片
-    @MainActor
-    func loadImage(from url: URL) async throws -> NSImage {
-        let cacheKey = url.absoluteString as NSString
-
-        // 先检查缓存
-        if let cachedImage = imageCache.object(forKey: cacheKey) {
-            return cachedImage
-        }
-
-        // 从网络加载
-        let data = try await DownloadManager.downloadData(from: url)
-        guard let image = NSImage(data: data) else {
-            throw NSError(domain: "StaticContributorAvatarCache", code: -1, userInfo: [NSLocalizedDescriptionKey: "无法解析图片数据"])
-        }
-
-        // 计算图片大小（用于缓存成本）
-        let cost = data.count
-        imageCache.setObject(image, forKey: cacheKey, cost: cost)
-
-        return image
-    }
-
-    /// 清理缓存
-    func clearCache() {
-        imageCache.removeAllObjects()
+        AvatarRemoteImageView(rawValue: avatarUrl, size: size)
     }
 }
 
@@ -149,53 +27,78 @@ struct StaticContributorAvatarView: View {
     let avatar: String
     let size: CGFloat
 
-    @StateObject private var viewModel = StaticContributorAvatarViewModel()
-
     init(avatar: String, size: CGFloat = 32) {
         self.avatar = avatar
         self.size = size
     }
 
     var body: some View {
-        Group {
-            if avatar.starts(with: "http") {
-                Group {
-                    if let image = viewModel.image {
-                        Image(nsImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    } else if viewModel.isLoading {
-                        Rectangle()
-                            .foregroundColor(.gray.opacity(0.3))
-                            .overlay(
-                                ProgressView()
-                                    .scaleEffect(0.5)
-                            )
-                    } else {
-                        Rectangle()
-                            .foregroundColor(.gray.opacity(0.3))
-                            .overlay(
-                                Image(systemName: "person.fill")
-                                    .foregroundColor(.gray)
-                                    .font(.caption)
-                            )
-                    }
-                }
+        if isRemoteAvatarURLString(avatar) {
+            AvatarRemoteImageView(rawValue: avatar, size: size)
+        } else {
+            Text(avatar)
+                .font(.system(size: 24))
                 .frame(width: size, height: size)
+                .background(Color.gray.opacity(0.1))
                 .clipShape(Circle())
-                .onAppear {
-                    viewModel.load(avatar: avatar, size: size)
-                }
-                .onDisappear {
-                    viewModel.cancel()
-                }
-            } else {
-                Text(avatar)
-                    .font(.system(size: 24))
-                    .frame(width: size, height: size)
-                    .background(Color.gray.opacity(0.1))
-                    .clipShape(Circle())
-            }
         }
     }
+}
+
+private struct AvatarRemoteImageView: View {
+    let rawValue: String
+    let size: CGFloat
+
+    var body: some View {
+        Group {
+            if let url = optimizedAvatarURL(from: rawValue, size: size) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    case .empty, .failure:
+                        AvatarPlaceholderView()
+                    @unknown default:
+                        AvatarPlaceholderView()
+                    }
+                }
+                .onDisappear {
+                    URLCache.shared.removeCachedResponse(
+                        for: URLRequest(url: url)
+                    )
+                }
+            } else {
+                AvatarPlaceholderView()
+            }
+        }
+        .frame(width: size, height: size)
+        .clipShape(Circle())
+    }
+}
+
+private struct AvatarPlaceholderView: View {
+    var body: some View {
+        Rectangle()
+            .foregroundColor(.gray.opacity(0.3))
+    }
+}
+
+private func isRemoteAvatarURLString(_ value: String) -> Bool {
+    guard let scheme = URLComponents(string: value)?.scheme?.lowercased() else { return false }
+    return scheme == "http" || scheme == "https"
+}
+
+private func optimizedAvatarURL(from rawValue: String, size: CGFloat) -> URL? {
+    guard isRemoteAvatarURLString(rawValue), let url = URL(string: rawValue.httpToHttps()) else { return nil }
+
+    if url.host?.contains("github.com") == true || url.host?.contains("avatars.githubusercontent.com") == true {
+        let pixelSize = Int(size * 2)
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        components?.queryItems = [URLQueryItem(name: "s", value: "\(pixelSize)")]
+        return components?.url
+    }
+
+    return url
 }

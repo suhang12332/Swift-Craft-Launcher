@@ -94,7 +94,6 @@ struct GameCreationView: View {
         if viewModel.isDownloading {
             viewModel.handleCancel()
         }
-        // 清理已加载的版本数据，避免下次打开仍显示上次缓存
         viewModel.clearLoadedVersionsOnClose()
     }
 

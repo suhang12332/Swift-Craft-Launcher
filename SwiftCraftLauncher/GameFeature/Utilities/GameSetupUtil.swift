@@ -170,9 +170,6 @@ class GameSetupUtil: ObservableObject {
         return
     }
 
-    // MARK: - Private Methods
-
-    /// 仅在 `saveGame` 下载流程中调用：统一判断 Task/用户停止/取消类错误，不在下层分散处理。
     private func isSaveGameDownloadCancelled(_ error: Error) -> Bool {
         if Task.isCancelled { return true }
         if downloadState.isCancelled { return true }

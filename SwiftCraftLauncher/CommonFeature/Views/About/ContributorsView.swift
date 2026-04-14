@@ -153,9 +153,6 @@ public struct ContributorsView: View {
         staticViewModel.clearAllData()
         // 清理 ViewModel 的贡献者数据，释放内存
         viewModel.clearContributors()
-        // 清理图片缓存，释放内存
-        ContributorAvatarCache.shared.clearCache()
-        StaticContributorAvatarCache.shared.clearCache()
         Logger.shared.info("All contributors data cleared")
     }
 }
