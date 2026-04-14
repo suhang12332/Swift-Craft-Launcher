@@ -41,6 +41,7 @@ enum AppConstants {
         static let launcherWorkingDirectory = "launcherWorkingDirectory"
         static let interfaceLayoutStyle = "interfaceLayoutStyle"
         static let defaultModPackExportFormat = "defaultModPackExportFormat"
+        static let acknowledgedAnnouncementVersion = "acknowledgedAnnouncementVersion"
 
         // Theme
         static let themeMode = "themeMode"

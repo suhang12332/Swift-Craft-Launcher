@@ -3,25 +3,9 @@ import SwiftUI
 
 @MainActor
 final class ContentToolbarViewModel: ObservableObject {
-    @Published var hasAnnouncement: Bool = false
-    @Published var announcementData: AnnouncementData?
-
     @Published var isLoadingSkin: Bool = false
     @Published var preloadedSkinInfo: PlayerSkinService.PublicSkinInfo?
     @Published var preloadedProfile: MinecraftProfileResponse?
-
-    private var hasCheckedAnnouncement = false
-
-    func checkAnnouncementIfNeeded() async {
-        guard !hasCheckedAnnouncement else { return }
-        hasCheckedAnnouncement = true
-
-        // 低优先级后台执行，不阻塞 UI
-        await Task(priority: .utility) { [weak self] in
-            guard let self else { return }
-            await self.checkAnnouncement()
-        }.value
-    }
 
     func preloadSkinDataForManager(player: Player?) async {
         guard let player else { return }
@@ -83,28 +67,4 @@ final class ContentToolbarViewModel: ObservableObject {
         preloadedProfile = nil
     }
 
-    private func checkAnnouncement() async {
-        let version = Bundle.main.appVersion
-        let language = LanguageManager.shared.selectedLanguage.isEmpty
-            ? LanguageManager.getDefaultLanguage()
-            : LanguageManager.shared.selectedLanguage
-
-        do {
-            let data = try await GitHubService.shared.fetchAnnouncement(
-                version: version,
-                language: language
-            )
-
-            if let data = data {
-                hasAnnouncement = true
-                announcementData = data
-            } else {
-                hasAnnouncement = false
-                announcementData = nil
-            }
-        } catch {
-            hasAnnouncement = false
-            announcementData = nil
-        }
-    }
 }

@@ -12,9 +12,6 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var showEditSkin = false
     @StateObject private var viewModel = ContentToolbarViewModel()
 
-    // MARK: - Startup Info State
-    @State private var showStartupInfo = false
-
     // MARK: - Computed Properties
 
     /// 当前玩家（计算属性，避免重复访问）
@@ -39,9 +36,6 @@ public struct ContentToolbarView: ToolbarContent {
                 Label("game.form.title".localized(), systemImage: "plus")
             }
             .help("game.form.title".localized())
-            .task {
-                await viewModel.checkAnnouncementIfNeeded()
-            }
             .sheet(isPresented: $showingGameForm) {
                 GameFormView()
                     .environmentObject(gameRepository)
@@ -141,19 +135,6 @@ public struct ContentToolbarView: ToolbarContent {
                 }
             }
 
-            // 启动信息按钮 - 仅在存在公告时显示
-            if viewModel.hasAnnouncement, let announcement = viewModel.announcementData {
-                Button {
-                    showStartupInfo = true
-                } label: {
-                    Label(announcement.title, systemImage: "bell.badge")
-                        .labelStyle(.iconOnly)
-                }
-                .help(announcement.title)
-                .sheet(isPresented: $showStartupInfo) {
-                    StartupInfoSheetView(announcementData: viewModel.announcementData)
-                }
-            }
         }
     }
 }
