@@ -110,36 +110,42 @@ public struct GameSettingsView: View {
                         text: "settings.default_memory_allocation.description".localized()
                     )
                 }
-                if let components = viewModel.installedRuntimeComponents, !components.isEmpty {
-                    LabeledContent("settings.game.java.runtimes.section".localized()) {
-                        HStack(spacing: 8) {
-                            Picker("", selection: $viewModel.selectedRuntimeComponent) {
+                LabeledContent("settings.game.java.runtimes.section".localized()) {
+                    HStack(spacing: 8) {
+                        let components = viewModel.installedRuntimeComponents ?? []
+                        Picker("", selection: $viewModel.selectedRuntimeComponent) {
+                            if components.isEmpty {
+                                Text("settings.game.java.runtime.none".localized())
+                                    .tag("")
+                            } else {
                                 ForEach(components, id: \.self) { component in
                                     Text(component).tag(component)
                                 }
                             }
-                            .labelsHidden()
-                            .fixedSize()
+                        }
+                        .labelsHidden()
+                        .fixedSize()
+                        .disabled((viewModel.installedRuntimeComponents ?? []).isEmpty)
 
-                            Button("settings.game.java.runtime.reinstall".localized()) {
-                                Task {
-                                    await javaDownloadManager.downloadJavaRuntime(
-                                        version: viewModel.selectedRuntimeComponent
-                                    )
-                                }
-                            }
-                            .disabled(
-                                viewModel.selectedRuntimeComponent.isEmpty
-                                    || javaDownloadManager.downloadState.isDownloading
-                            )
-
-                            if !viewModel.selectedRuntimeComponent.isEmpty {
-                                InfoIconWithPopover(text: viewModel.javaDetailsDescription)
+                        Button("settings.game.java.runtime.reinstall".localized()) {
+                            Task {
+                                await javaDownloadManager.downloadJavaRuntime(
+                                    version: viewModel.selectedRuntimeComponent
+                                )
                             }
                         }
+                        .disabled(
+                            viewModel.selectedRuntimeComponent.isEmpty
+                                || javaDownloadManager.downloadState.isDownloading
+                                || (viewModel.installedRuntimeComponents ?? []).isEmpty
+                        )
+
+                        if !viewModel.selectedRuntimeComponent.isEmpty {
+                            InfoIconWithPopover(text: viewModel.javaDetailsDescription)
+                        }
                     }
-                    .labeledContentStyle(.custom)
                 }
+                .labeledContentStyle(.custom)
             }
             HStack {
                 Spacer()
