@@ -34,16 +34,6 @@ enum ModUpdateChecker {
         gameInfo: GameVersionInfo,
         resourceType: String
     ) async -> UpdateCheckResult {
-        // 如果是本地文件（projectId 以 "local_" 或 "file_" 开头），不检测更新
-        if project.projectId.hasPrefix("local_") || project.projectId.hasPrefix("file_") {
-            return UpdateCheckResult(
-                hasUpdate: false,
-                currentHash: nil,
-                latestHash: nil,
-                latestVersion: nil
-            )
-        }
-
         // 1. 获取本地文件的 hash
         guard let resourceDir = AppPaths.resourceDirectory(
             for: resourceType,
@@ -135,24 +125,16 @@ enum ModUpdateChecker {
             if FileManager.default.fileExists(atPath: fileURL.path) {
                 return ModScanner.sha1Hash(of: fileURL)
             }
-
-            // 也检查 .disable 版本
-            let disabledFileName = fileName + ".disable"
-            let disabledFileURL = resourceDir.appendingPathComponent(disabledFileName)
-            if FileManager.default.fileExists(atPath: disabledFileURL.path) {
-                return ModScanner.sha1Hash(of: disabledFileURL)
-            }
+            return nil
         }
 
-        // 方法2: 通过项目 ID 查找（扫描目录）
-        // 如果项目有 projectId，尝试通过扫描找到匹配的文件
+        // 仅在缺少 fileName 时使用该兜底策略
         if !project.projectId.isEmpty {
             let localDetails = ModScanner.shared.localModDetails(in: resourceDir)
             if let matchingDetail = localDetails.first(where: { $0.detail?.id == project.projectId }) {
                 return matchingDetail.hash
             }
         }
-
         return nil
     }
 }
