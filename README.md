@@ -7,15 +7,24 @@
   
   [![Swift Craft Launcher](https://img.shields.io/badge/Swift%20Craft%20Launcher-SCL-orange.svg?logo=swift)](https://github.com/suhang12332/Swift-Craft-Launcher)
   [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg?logo=swift)](https://swift.org/)
-
-  [![QQ Group](https://img.shields.io/badge/QQ%20Group-1057517524-blue.svg?logo=tencentqq)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
-  [![Discord](https://img.shields.io/badge/Discord-blue.svg?logo=discord)](https://discord.gg/gYESVa3CZd)
-
-  [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?logo=gnu)](https://www.gnu.org/licenses/agpl-3.0)
-  [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release&logo=github)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
+  [![Top Language](https://img.shields.io/github/languages/top/suhang12332/Swift-Craft-Launcher?style=flat)](https://github.com/suhang12332/Swift-Craft-Launcher)
   [![macOS](https://img.shields.io/badge/macOS-14.0+-blue.svg?logo=apple)](https://developer.apple.com/macos/)
-  [![Homebrew](https://img.shields.io/badge/Homebrew-available-green.svg?logo=homebrew)](https://formulae.brew.sh/cask/swiftcraft-launcher)
+
+  [![QQ Group](https://img.shields.io/badge/QQ%20Group-1057517524-blue.svg?logo=qq)](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
+  [![Join The Community](https://img.shields.io/badge/Discord-7289DA.svg?logo=discord)](https://discord.gg/gYESVa3CZd)
+
+  [![latest-release](https://img.shields.io/github/v/release/suhang12332/Swift-Craft-Launcher?label=latest-release&logo=github)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
+  [![Release Date](https://img.shields.io/github/release-date/suhang12332/Swift-Craft-Launcher?style=flat&logo=github)](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest)
+  
+  [![Downloads](https://img.shields.io/github/downloads/suhang12332/Swift-Craft-Launcher/total?label=Downloads&logo=github)](https://github.com/suhang12332/Swift-Craft-Launcher/releases)
+  [![Stars](https://img.shields.io/github/stars/suhang12332/Swift-Craft-Launcher?style=flat&logo=github)](https://github.com/suhang12332/Swift-Craft-Launcher/stargazers)
+  [![Repo Size](https://img.shields.io/github/repo-size/suhang12332/Swift-Craft-Launcher?style=flat&logo=github)](https://github.com/suhang12332/Swift-Craft-Launcher)
   [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&logo=githubsponsors)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
+  
+  [![CI](https://img.shields.io/github/actions/workflow/status/suhang12332/Swift-Craft-Launcher/build-dmg.yml?branch=main&label=CI&logo=githubactions)](https://github.com/suhang12332/Swift-Craft-Launcher/actions/workflows/build-dmg.yml)
+  [![Homebrew](https://img.shields.io/badge/Homebrew-available-green.svg?logo=homebrew)](https://formulae.brew.sh/cask/swiftcraft-launcher)
+  [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?logo=gnu)](https://www.gnu.org/licenses/agpl-3.0)
+
   
   🌐 [Website](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/) • 💾 [Download](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • 📚 [Documentation](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/)
   
