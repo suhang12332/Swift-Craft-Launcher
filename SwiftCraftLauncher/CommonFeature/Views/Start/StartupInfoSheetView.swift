@@ -5,6 +5,7 @@
 //  Created by su on 2025/1/12.
 //
 
+import SwiftMarkDownUI
 import SwiftUI
 
 /// 启动信息提示Sheet视图
@@ -47,35 +48,26 @@ struct StartupInfoSheetView: View {
 
                         // 主要信息内容
                         if let announcementData = announcementData {
-                            // 显示从API获取的公告内容
-                            Text(
-                                String.localizedStringWithFormat(
-                                    announcementData.content,
-                                    Bundle.main.appName,
-                                    Bundle.main.appName,
-                                    Bundle.main.appName
-                                )
+                            let placeholderPattern = /%(\d+\$)?@/
+                            let localizedContent = announcementData.content.replacing(
+                                placeholderPattern,
+                                with: Bundle.main.appName
                             )
-                            .font(.body)
-                            .multilineTextAlignment(.leading)
-                            .lineSpacing(4)
-                            .fixedSize(horizontal: false, vertical: true)
-
-                            // 作者信息
-                            if !announcementData.author.isEmpty {
-                                Text(announcementData.author)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .padding(.top, 8)
-                            }
+                            MixedMarkdownView(localizedContent)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity)
                     .padding(.horizontal, 4)  // 为滚动条留出空间
                 }
             },
             footer: {
                 HStack {
+                    if let author = announcementData?.author, !author.isEmpty {
+                        Text(author)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                     Spacer()
 
                     Button("startup.info.understand".localized()) {
@@ -87,18 +79,29 @@ struct StartupInfoSheetView: View {
                 }
             }
         )
-        //        .frame(width: 600, height: 500)
-        .onAppear {
-            // 设置窗口属性
-            if let window = NSApplication.shared.windows.last {
-                window.level = .floating
-                window.center()
-            }
-        }
     }
 }
 
 // MARK: - Preview
 #Preview {
-    StartupInfoSheetView(announcementData: nil)
+    StartupInfoSheetView(
+        announcementData: AnnouncementData(
+            title: "SwiftCraft Launcher v1.2.0",
+            content:
+                """
+                ### 欢迎使用 %@
+
+                本次更新包含以下内容：
+
+                - 优化启动性能，减少首次加载等待时间
+                - 改进账号登录稳定性与错误提示
+                - 修复已知崩溃问题并提升整体流畅度
+
+                如遇问题，请在设置页面反馈给 **%@ 团队**。
+
+                感谢你对 **%@** 的支持！
+                """,
+            author: "Swift Craft Launcher Team"
+        )
+    )
 }
