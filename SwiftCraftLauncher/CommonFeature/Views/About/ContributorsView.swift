@@ -38,7 +38,7 @@ public struct ContributorsView: View {
 
     // MARK: - Contributors Content
     private var contributorsContent: some View {
-        LazyVStack(spacing: 16) {
+        VStack(spacing: 16) {
             // GitHub贡献者列表
             if !viewModel.contributors.isEmpty {
                 contributorsList
@@ -61,7 +61,9 @@ public struct ContributorsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             ForEach(staticViewModel.contributors.indices, id: \.self) { index in
-                staticContributorRow(staticViewModel.contributors[index])
+                StaticContributorCardView(
+                    contributor: staticViewModel.contributors[index]
+                )
                     .id("static-\(index)")
 
                 if index < staticViewModel.contributors.count - 1 {
@@ -142,20 +144,11 @@ public struct ContributorsView: View {
         }
     }
 
-    // MARK: - Static Contributor Row
-    private func staticContributorRow(
-        _ contributor: StaticContributor
-    ) -> some View {
-        StaticContributorCardView(contributor: contributor)
-    }
     /// 清理所有数据
     private func clearAllData() {
         staticViewModel.clearAllData()
         // 清理 ViewModel 的贡献者数据，释放内存
         viewModel.clearContributors()
-        // 清理图片缓存，释放内存
-        ContributorAvatarCache.shared.clearCache()
-        StaticContributorAvatarCache.shared.clearCache()
         Logger.shared.info("All contributors data cleared")
     }
 }

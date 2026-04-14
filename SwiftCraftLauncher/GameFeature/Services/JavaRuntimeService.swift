@@ -4,7 +4,6 @@ import ZIPFoundation
 /// Java运行时下载器
 class JavaRuntimeService {
     static let shared = JavaRuntimeService()
-    private let downloadSession = URLSession.shared
 
     // 进度回调 - 使用actor来确保线程安全
     private let progressActor = ProgressActor()
@@ -266,19 +265,7 @@ class JavaRuntimeService {
                 level: .notification
             )
         }
-
-        let (data, response) = try await downloadSession.data(from: url)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw GlobalError.network(
-                chineseMessage: "下载失败",
-                i18nKey: "error.network.download_failed",
-                level: .notification
-            )
-        }
-
-        return data
+        return try await APIClient.get(url: url)
     }
     /// 获取当前macOS平台标识
     private func getCurrentMacPlatform() -> String {
@@ -470,119 +457,17 @@ class JavaRuntimeService {
     ///   - destinationURL: 目标文件路径
     ///   - fileName: 显示的文件名
     private func downloadZipWithProgress(from url: URL, to destinationURL: URL, fileName: String) async throws {
-        // 先获取文件大小
-        let fileSize = try await getFileSize(from: url)
-
-        // 设置初始进度
-        await progressActor.callProgressUpdate(fileName, 0, Int(fileSize))
-
-        // 创建进度跟踪器
         let progressCallback: (Int64, Int64) -> Void = { [progressActor] downloadedBytes, totalBytes in
             // 传递实际字节数用于字节大小进度显示
             Task {
                 await progressActor.callProgressUpdate(fileName, Int(downloadedBytes), Int(totalBytes))
             }
         }
-        let progressTracker = DownloadProgressTracker(totalSize: fileSize, progressCallback: progressCallback)
-
-        // 创建URLSession配置
-        let config = URLSessionConfiguration.default
-        let session = URLSession(configuration: config, delegate: progressTracker, delegateQueue: nil)
-
-        // 使用downloadTask方式下载，配合进度回调
-        return try await withCheckedThrowingContinuation { continuation in
-            // 设置完成回调
-            progressTracker.completionHandler = { result in
-                switch result {
-                case .success(let tempURL):
-                    do {
-                        let fileManager = FileManager.default
-
-                        // 如果目标文件已存在，先删除
-                        if fileManager.fileExists(atPath: destinationURL.path) {
-                            try fileManager.removeItem(at: destinationURL)
-                        }
-
-                        // 移动临时文件到目标位置
-                        try fileManager.moveItem(at: tempURL, to: destinationURL)
-                        continuation.resume()
-                    } catch {
-                        Logger.shared.error("移动下载文件失败: \(error.localizedDescription)")
-                        continuation.resume(throwing: error)
-                    }
-                case .failure(let error):
-                    Logger.shared.error("下载失败: \(error.localizedDescription)")
-                    continuation.resume(throwing: error)
-                }
-            }
-
-            // 创建下载任务并开始
-            let downloadTask = session.downloadTask(with: url)
-            downloadTask.resume()
-        }
-    }
-
-    /// 获取远程文件大小
-    private func getFileSize(from url: URL) async throws -> Int64 {
-        var request = URLRequest(url: url)
-        request.httpMethod = "HEAD"
-
-        // 使用统一的 API 客户端（HEAD 请求需要返回响应头）
-        let (_, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
-
-        guard httpResponse.statusCode == 200 else {
-            throw GlobalError.network(
-                chineseMessage: "无法获取文件大小 - HTTP状态码: \(httpResponse.statusCode)",
-                i18nKey: "error.network.cannot_get_file_size",
-                level: .notification
-            )
-        }
-
-        guard let contentLength = httpResponse.value(forHTTPHeaderField: "Content-Length"),
-              let fileSize = Int64(contentLength) else {
-            throw GlobalError.network(
-                chineseMessage: "无法获取文件大小 - 缺少或无效的Content-Length头部",
-                i18nKey: "error.network.cannot_get_file_size",
-                level: .notification
-            )
-        }
-
-        return fileSize
-    }
-}
-
-/// 下载进度跟踪器
-private class DownloadProgressTracker: NSObject, URLSessionDownloadDelegate {
-    private let progressCallback: (Int64, Int64) -> Void
-    private let totalFileSize: Int64
-    var completionHandler: ((Result<URL, Error>) -> Void)?
-
-    init(totalSize: Int64, progressCallback: @escaping (Int64, Int64) -> Void) {
-        self.totalFileSize = totalSize
-        self.progressCallback = progressCallback
-    }
-
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        // 使用真实的下载进度
-        let actualTotalSize = totalBytesExpectedToWrite > 0 ? totalBytesExpectedToWrite : totalFileSize
-
-        if actualTotalSize > 0 {
-            // 确保在主线程调用进度回调
-            DispatchQueue.main.async { [weak self] in
-                self?.progressCallback(totalBytesWritten, actualTotalSize)
-            }
-        }
-    }
-
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        // 调用完成回调
-        completionHandler?(.success(location))
-    }
-
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        if let error = error {
-            completionHandler?(.failure(error))
-        }
+        _ = try await ProgressDownloadManager.downloadFile(
+            urlString: url.absoluteString,
+            destinationURL: destinationURL,
+            progressHandler: progressCallback
+        )
     }
 }
 

@@ -52,6 +52,11 @@ struct GameIconView: View {
                         EmptyView()
                     }
                 }
+                .onDisappear {
+                    URLCache.shared.removeCachedResponse(
+                        for: URLRequest(url: iconURL)
+                    )
+                }
             } else {
                 Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
                     .resizable()

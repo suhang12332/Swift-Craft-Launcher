@@ -135,4 +135,14 @@ class GameCreationViewModel: BaseGameFormViewModel {
     var pendingIconURLForDisplay: URL? {
         pendingIconURL
     }
+
+    /// 添加游戏窗口关闭时，清理已加载的版本列表
+    func clearLoadedVersionsOnClose() {
+        availableVersions = []
+        availableLoaderVersions = []
+        selectedGameVersion = ""
+        selectedLoaderVersion = ""
+        versionTime = ""
+        didInit = false
+    }
 }

@@ -2,6 +2,8 @@ import SwiftUI
 
 public struct AcknowledgementsView: View {
     @StateObject private var viewModel = AcknowledgementsViewModel()
+    private let avatarSize: CGFloat = 40
+    private let avatarCornerRadius: CGFloat = 8
 
     public init() {}
 
@@ -17,7 +19,6 @@ public struct AcknowledgementsView: View {
             .padding(.vertical, 8)
         }
         .onAppear {
-            // 每次打开都重新加载数据
             viewModel.load()
         }
         .onDisappear {
@@ -34,13 +35,11 @@ public struct AcknowledgementsView: View {
     }
 
     // MARK: - Libraries Content
-    private var librariesContent: some View {
-        LazyVStack(spacing: 0) {
-            if !viewModel.libraries.isEmpty {
-                librariesList
-            } else if viewModel.loadFailed {
-                errorView
-            }
+    @ViewBuilder private var librariesContent: some View {
+        if viewModel.loadFailed {
+            errorView
+        } else if !viewModel.libraries.isEmpty {
+            librariesList
         }
     }
 
@@ -74,25 +73,20 @@ public struct AcknowledgementsView: View {
     // MARK: - Library Row Content
     private func libraryRowContent(_ library: OpenSourceLibrary) -> some View {
         HStack(spacing: 12) {
-            // 头像
             libraryAvatar(library)
 
-            // 信息部分
             VStack(alignment: .leading, spacing: 4) {
-                // 库名称
                 Text(library.name)
                     .font(.body)
                     .fontWeight(.medium)
                     .foregroundColor(.primary)
 
-                // 描述（带 popover）
                 if let description = library.description, !description.isEmpty {
                     DescriptionTextWithPopover(description: description)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // 箭头图标
             Image(systemName: "globe")
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.secondary)
@@ -103,79 +97,53 @@ public struct AcknowledgementsView: View {
     }
 
     // MARK: - Library Avatar
+    @ViewBuilder
     private func libraryAvatar(_ library: OpenSourceLibrary) -> some View {
-        Group {
-            if let avatarURL = library.avatar {
-                // 优化后的头像 URL（使用缩略图参数）
-                let optimizedURL = optimizedAvatarURL(from: avatarURL, size: 40)
-                AsyncImage(url: optimizedURL) { phase in
-                    switch phase {
-                    case .empty:
-                        Rectangle()
-                            .foregroundColor(.gray.opacity(0.3))
-                            .overlay(
-                                ProgressView()
-                                    .scaleEffect(0.5)
-                            )
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    case .failure:
-                        Rectangle()
-                            .foregroundColor(.gray.opacity(0.3))
-                            .overlay(
-                                Image(systemName: "photo")
-                                    .foregroundColor(.gray)
-                                    .font(.caption)
-                            )
-                    @unknown default:
-                        Rectangle()
-                            .foregroundColor(.gray.opacity(0.3))
-                            .overlay(
-                                Image(systemName: "photo")
-                                    .foregroundColor(.gray)
-                                    .font(.caption)
-                            )
-                    }
-                }
-                .frame(width: 40, height: 40)
-                .cornerRadius(8)
-                .clipped()
-            } else {
-                Rectangle()
-                    .foregroundColor(.gray.opacity(0.3))
-                    .overlay(
-                        Image(systemName: "photo")
-                            .foregroundColor(.gray)
-                            .font(.caption)
-                    )
-                    .frame(width: 40, height: 40)
-                    .cornerRadius(8)
+        if let avatarURL = library.avatar,
+           let url = URL(string: avatarURL) {
+            AsyncImage(url: url) { phase in
+                avatarImage(for: phase)
             }
+            .frame(width: avatarSize, height: avatarSize)
+            .cornerRadius(avatarCornerRadius)
+            .clipped()
+            .onDisappear {
+                URLCache.shared.removeCachedResponse(
+                    for: URLRequest(url: url)
+                )
+            }
+        } else {
+            avatarPlaceholder()
+                .frame(width: avatarSize, height: avatarSize)
+                .cornerRadius(avatarCornerRadius)
         }
     }
 
-    /// 获取优化后的头像 URL（使用缩略图参数减少下载大小）
-    /// - Parameters:
-    ///   - avatarURL: 原始头像 URL
-    ///   - size: 显示大小（像素）
-    /// - Returns: 优化后的 URL
-    private func optimizedAvatarURL(from avatarURL: String, size: CGFloat) -> URL? {
-        guard let url = URL(string: avatarURL) else { return nil }
-
-        // 如果已经是 GitHub 头像 URL，添加大小参数
-        // GitHub 头像 URL 格式: https://avatars.githubusercontent.com/u/xxx 或 https://github.com/identicons/xxx.png
-        if url.host?.contains("github.com") == true || url.host?.contains("avatars.githubusercontent.com") == true {
-            // 计算需要的像素大小（@2x 屏幕需要 2 倍）
-            let pixelSize = Int(size * 2)
-            // 移除现有的查询参数（如果有）
-            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            components?.queryItems = [URLQueryItem(name: "s", value: "\(pixelSize)")]
-            return components?.url
+    @ViewBuilder
+    private func avatarImage(for phase: AsyncImagePhase) -> some View {
+        switch phase {
+        case .empty:
+            avatarPlaceholder(showLoading: true)
+        case .success(let image):
+            image
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+        case .failure:
+            avatarPlaceholder()
+        @unknown default:
+            avatarPlaceholder()
         }
+    }
 
-        return url
+    private func avatarPlaceholder(showLoading: Bool = false) -> some View {
+        Rectangle()
+            .foregroundColor(.gray.opacity(0.3))
+            .overlay {
+                if showLoading {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+            }
     }
 
     // MARK: - Error View
@@ -191,66 +159,4 @@ public struct AcknowledgementsView: View {
         .frame(maxWidth: .infinity, minHeight: 100)
         .padding()
     }
-}
-
-// MARK: - Description Text With Popover
-private struct DescriptionTextWithPopover: View {
-    let description: String
-    @State private var isHovering = false
-    @State private var showPopover = false
-    @State private var hoverTask: Task<Void, Never>?
-
-    var body: some View {
-        Button {
-            // 点击时也显示 popover
-            showPopover.toggle()
-        } label: {
-            Text(description)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .buttonStyle(.plain)
-        .onHover { hovering in
-            isHovering = hovering
-            // 取消之前的任务
-            hoverTask?.cancel()
-
-            if hovering {
-                // 延迟显示 popover，避免鼠标快速移动时频繁显示
-                hoverTask = Task {
-                    try? await Task.sleep(nanoseconds: 500_000_000) // 0.5秒
-                    if !Task.isCancelled && isHovering {
-                        await MainActor.run {
-                            showPopover = true
-                        }
-                    }
-                }
-            } else {
-                showPopover = false
-            }
-        }
-        .popover(isPresented: $showPopover, arrowEdge: .top) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(description)
-                    .font(.system(size: 12))
-                    .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
-            }
-            .padding()
-            .frame(maxWidth: 500)
-            .fixedSize(horizontal: true, vertical: false)
-        }
-        .onDisappear {
-            hoverTask?.cancel()
-            showPopover = false
-        }
-    }
-}
-
-#Preview {
-    AcknowledgementsView()
 }

@@ -3,9 +3,10 @@ import SwiftUI
 
 struct CapeTextureView: View {
     let imageURL: String
+    private var url: URL? { URL(string: imageURL.httpToHttps()) }
 
     var body: some View {
-        AsyncImage(url: URL(string: imageURL.httpToHttps())) { phase in
+        AsyncImage(url: url) { phase in
             switch phase {
             case .empty:
                 ProgressView().controlSize(.mini)
@@ -19,6 +20,13 @@ struct CapeTextureView: View {
                 Image(systemName: "photo")
                     .font(.system(size: 16))
                     .foregroundColor(.secondary)
+            }
+        }
+        .onDisappear {
+            if let url {
+                URLCache.shared.removeCachedResponse(
+                    for: URLRequest(url: url)
+                )
             }
         }
     }

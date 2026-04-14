@@ -174,4 +174,22 @@ enum APIClient {
 
         return (data, httpResponse)
     }
+
+    /// 执行流式请求并返回字节流与响应
+    /// - Parameter request: URLRequest
+    /// - Returns: (流式字节, HTTP响应)
+    /// - Throws: GlobalError 当响应无效时
+    static func performStreamRequest(request: URLRequest) async throws -> (URLSession.AsyncBytes, HTTPURLResponse) {
+        let (asyncBytes, response) = try await sharedSession.bytes(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw GlobalError.network(
+                chineseMessage: "无效的 HTTP 响应",
+                i18nKey: "error.network.invalid_response",
+                level: .notification
+            )
+        }
+
+        return (asyncBytes, httpResponse)
+    }
 }

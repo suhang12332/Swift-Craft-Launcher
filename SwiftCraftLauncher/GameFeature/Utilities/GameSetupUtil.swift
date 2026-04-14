@@ -154,23 +154,29 @@ class GameSetupUtil: ObservableObject {
                 body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader)
             )
             onSuccess()
-        } catch is CancellationError {
-            Logger.shared.info("游戏下载任务已取消")
-            // 清理已创建的游戏文件夹
-            await cleanupGameDirectories(gameName: gameName)
-            await MainActor.run {
-                self.objectWillChange.send()
-                downloadState.reset()
-            }
         } catch {
-            // 清理已创建的游戏文件夹
+            if isSaveGameDownloadCancelled(error) {
+                Logger.shared.info("游戏下载任务已取消")
+                await cleanupGameDirectories(gameName: gameName)
+                await MainActor.run {
+                    self.objectWillChange.send()
+                    self.downloadState.reset()
+                }
+                return
+            }
             await cleanupGameDirectories(gameName: gameName)
             GlobalErrorHandler.shared.handle(error)
         }
         return
     }
 
-    // MARK: - Private Methods
+    private func isSaveGameDownloadCancelled(_ error: Error) -> Bool {
+        if Task.isCancelled { return true }
+        if downloadState.isCancelled { return true }
+        if error is CancellationError { return true }
+        if let urlError = error as? URLError, urlError.code == .cancelled { return true }
+        return false
+    }
 
     /// 清理游戏文件夹
     /// - Parameter gameName: 游戏名称
@@ -237,15 +243,7 @@ class GameSetupUtil: ObservableObject {
             }
         }
 
-        // 使用静默版本的 API，避免抛出异常
-        let success = await fileManager.downloadVersionFiles(manifest: manifest, gameName: gameName)
-        if !success {
-            throw GlobalError.download(
-                chineseMessage: "下载 Minecraft 版本文件失败",
-                i18nKey: "error.download.minecraft_version_failed",
-                level: .notification
-            )
-        }
+        try await fileManager.downloadVersionFilesThrowing(manifest: manifest, gameName: gameName)
     }
 
     private func downloadAssetIndex(manifest: MinecraftVersionManifest) async throws -> DownloadedAssetIndex {

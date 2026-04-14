@@ -46,6 +46,10 @@ final class ModPackDownloadService {
                 )
                 return savePath
             } catch {
+                if error is CancellationError || Task.isCancelled {
+                    Logger.shared.info("整合包下载已取消")
+                    return nil
+                }
                 let globalError = GlobalError.from(error)
                 errorHandler?(globalError.chineseMessage, globalError.i18nKey)
                 return nil
@@ -147,134 +151,13 @@ final class ModPackDownloadService {
         destinationURL: URL,
         expectedSha1: String?
     ) async throws -> URL {
-        guard let url = URL(string: urlString) else {
-            throw GlobalError.validation(
-                chineseMessage: "无效的下载地址",
-                i18nKey: "error.validation.invalid_download_url",
-                level: .notification
-            )
+        return try await ProgressDownloadManager.downloadFile(
+            urlString: urlString,
+            destinationURL: destinationURL,
+            expectedSha1: expectedSha1
+        ) { [weak self] downloadedBytes, totalBytes in
+            self?.progressHandler?(downloadedBytes, totalBytes)
         }
-
-        let finalURL: URL = {
-            if let host = url.host,
-               host == "github.com" || host == "raw.githubusercontent.com" {
-                return URLConfig.applyGitProxyIfNeeded(url)
-            }
-            return url
-        }()
-
-        let fileManager = FileManager.default
-        try fileManager.createDirectory(
-            at: destinationURL.deletingLastPathComponent(),
-            withIntermediateDirectories: true
-        )
-
-        if fileManager.fileExists(atPath: destinationURL.path) {
-            if let expectedSha1 = expectedSha1, !expectedSha1.isEmpty {
-                let actualSha1 = try DownloadManager.calculateFileSHA1(at: destinationURL)
-                if actualSha1 == expectedSha1 {
-                    if let attributes = try? fileManager.attributesOfItem(atPath: destinationURL.path),
-                       let fileSize = attributes[.size] as? Int64 {
-                        progressHandler?(fileSize, fileSize)
-                    }
-                    return destinationURL
-                }
-            } else {
-                if let attributes = try? fileManager.attributesOfItem(atPath: destinationURL.path),
-                   let fileSize = attributes[.size] as? Int64 {
-                    progressHandler?(fileSize, fileSize)
-                }
-                return destinationURL
-            }
-        }
-
-        let fileSize = try await getFileSize(from: finalURL)
-        progressHandler?(0, fileSize)
-
-        let progressCallback: (Int64, Int64) -> Void = { [weak self] downloadedBytes, totalBytes in
-            Task { @MainActor in
-                self?.progressHandler?(downloadedBytes, totalBytes)
-            }
-        }
-        let progressTracker = ModPackDownloadProgressTracker(
-            totalSize: fileSize,
-            progressCallback: progressCallback
-        )
-
-        let config = URLSessionConfiguration.default
-        let session = URLSession(
-            configuration: config,
-            delegate: progressTracker,
-            delegateQueue: nil
-        )
-
-        return try await withCheckedThrowingContinuation { continuation in
-            progressTracker.completionHandler = { result in
-                switch result {
-                case .success(let tempURL):
-                    do {
-                        if let expectedSha1 = expectedSha1, !expectedSha1.isEmpty {
-                            let actualSha1 = try DownloadManager.calculateFileSHA1(at: tempURL)
-                            if actualSha1 != expectedSha1 {
-                                throw GlobalError.validation(
-                                    chineseMessage: "SHA1 校验失败",
-                                    i18nKey: "error.validation.sha1_check_failed",
-                                    level: .notification
-                                )
-                            }
-                        }
-
-                        if fileManager.fileExists(atPath: destinationURL.path) {
-                            try fileManager.replaceItem(
-                                at: destinationURL,
-                                withItemAt: tempURL,
-                                backupItemName: nil,
-                                options: [],
-                                resultingItemURL: nil
-                            )
-                        } else {
-                            try fileManager.moveItem(at: tempURL, to: destinationURL)
-                        }
-
-                        continuation.resume(returning: destinationURL)
-                    } catch {
-                        continuation.resume(throwing: error)
-                    }
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-
-            let downloadTask = session.downloadTask(with: finalURL)
-            downloadTask.resume()
-        }
-    }
-
-    private func getFileSize(from url: URL) async throws -> Int64 {
-        var request = URLRequest(url: url)
-        request.httpMethod = "HEAD"
-
-        let (_, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
-            throw GlobalError.download(
-                chineseMessage: "无法获取文件大小",
-                i18nKey: "error.download.cannot_get_file_size",
-                level: .notification
-            )
-        }
-
-        guard let contentLength = httpResponse.value(forHTTPHeaderField: "Content-Length"),
-              let fileSize = Int64(contentLength) else {
-            throw GlobalError.download(
-                chineseMessage: "无法获取文件大小",
-                i18nKey: "error.download.cannot_get_file_size",
-                level: .notification
-            )
-        }
-
-        return fileSize
     }
 
     private func createTempDirectory(for purpose: String) throws -> URL {

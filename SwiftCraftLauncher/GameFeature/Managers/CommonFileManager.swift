@@ -8,19 +8,11 @@ import Foundation
 
 class CommonFileManager {
     let librariesDir: URL
-    let session: URLSession
     var onProgressUpdate: ((String, Int, Int) -> Void)?
     private let fileManager = FileManager.default
-    private let retryCount = 3
-    private let retryDelay: TimeInterval = 2
 
     init(librariesDir: URL) {
         self.librariesDir = librariesDir
-        let config = URLSessionConfiguration.ephemeral
-        config.httpMaximumConnectionsPerHost =
-            GeneralSettingsManager.shared.concurrentDownloads
-        config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        self.session = URLSession(configuration: config)
     }
 
     actor Counter {

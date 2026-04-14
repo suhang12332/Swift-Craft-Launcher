@@ -55,40 +55,24 @@ final class ModPackInstallCoordinator {
 
     func run(_ input: RunInput) async -> Bool {
         input.setProcessing(true)
-
-        let extractedPath: URL
-        let indexInfo: ModrinthIndexInfo
-        let projectDetailForIcon: ModrinthProjectDetail?
-
-        if let prepared = input.prepared {
-            extractedPath = prepared.extractedPath
-            indexInfo = prepared.indexInfo
-            projectDetailForIcon = prepared.projectDetailForIcon
-            input.setLastParsedIndexInfo(indexInfo)
-        } else {
-            guard let prepared = await prepare(
-                archivePath: input.archivePath,
-                projectDetailForIcon: input.projectDetailForIcon
-            ) else {
-                input.setProcessing(false)
-                return false
-            }
-            extractedPath = prepared.extractedPath
-            indexInfo = prepared.indexInfo
-            projectDetailForIcon = prepared.projectDetailForIcon
-            input.setLastParsedIndexInfo(indexInfo)
-        }
-
-        // 4. 下载游戏图标（可选）
-        let iconPath: String?
-        if let projectDetailForIcon {
-            iconPath = await downloadService.downloadGameIcon(
-                projectDetail: projectDetailForIcon,
-                gameName: input.gameName
+        if Task.isCancelled {
+            await handleCancelledInstallation(
+                gameName: input.gameName,
+                gameSetupService: input.gameSetupService,
+                modPackInstallState: input.modPackInstallState
             )
-        } else {
-            iconPath = nil
+            return false
         }
+        guard let preparedPack = await resolvePreparedPack(input) else {
+            input.setProcessing(false)
+            return false
+        }
+        let extractedPath = preparedPack.extractedPath
+        let indexInfo = preparedPack.indexInfo
+        let iconPath = await downloadOptionalIcon(
+            projectDetailForIcon: preparedPack.projectDetailForIcon,
+            gameName: input.gameName
+        )
 
         // 5. 创建 profile 文件夹
         let profileCreated = await createProfileDirectories(for: input.gameName)
@@ -105,44 +89,15 @@ final class ModPackInstallCoordinator {
         // 进入安装阶段（复制 overrides / 下载文件 / 安装依赖）
         input.setProcessing(false)
 
-        // 6. 复制 overrides
         let resourceDir = AppPaths.profileDirectory(gameName: input.gameName)
-        let overridesTotal = await calculateOverridesTotal(extractedPath: extractedPath)
-        if overridesTotal > 0 {
-            input.modPackInstallState.isInstalling = true
-            input.modPackInstallState.overridesTotal = overridesTotal
-            input.modPackInstallState.objectWillChange.send()
-        }
-
-        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
-
-        let overridesSuccess = await ModPackDependencyInstaller.installOverrides(
+        guard await installOverridesStep(
             extractedPath: extractedPath,
-            resourceDir: resourceDir
-        ) { fileName, completed, total, type in
-            Task { @MainActor in
-                self.updateInstallProgress(
-                    modPackInstallState: input.modPackInstallState,
-                    fileName: fileName,
-                    completed: completed,
-                    total: total,
-                    type: type
-                )
-                input.modPackInstallState.objectWillChange.send()
-            }
+            resourceDir: resourceDir,
+            input: input
+        ) else {
+            return await handleStepFailure(input)
         }
 
-        guard overridesSuccess else {
-            await handleInstallationResult(
-                success: false,
-                gameName: input.gameName,
-                gameSetupService: input.gameSetupService,
-                modPackInstallState: input.modPackInstallState
-            )
-            return false
-        }
-
-        // 7. 准备安装
         let tempGameInfo = GameVersionInfo(
             id: UUID(),
             gameName: input.gameName,
@@ -158,38 +113,91 @@ final class ModPackInstallCoordinator {
             dependenciesTotal: requiredDependencies.count
         )
 
-        // 8. 下载整合包文件（mod 文件）
-        let filesSuccess = await ModPackDependencyInstaller.installModPackFiles(
-            files: indexInfo.files,
+        guard await installFilesStep(
+            indexInfo: indexInfo,
             resourceDir: resourceDir,
-            gameInfo: tempGameInfo
-        ) { fileName, completed, total, type in
-            Task { @MainActor in
-                self.updateInstallProgress(
-                    modPackInstallState: input.modPackInstallState,
-                    fileName: fileName,
-                    completed: completed,
-                    total: total,
-                    type: type
-                )
-                input.modPackInstallState.objectWillChange.send()
-            }
-        }
-
-        guard filesSuccess else {
-            await handleInstallationResult(
-                success: false,
-                gameName: input.gameName,
-                gameSetupService: input.gameSetupService,
-                modPackInstallState: input.modPackInstallState
-            )
-            return false
-        }
-
-        // 9. 安装依赖
-        let dependencySuccess = await ModPackDependencyInstaller.installModPackDependencies(
-            dependencies: indexInfo.dependencies,
             gameInfo: tempGameInfo,
+            input: input
+        ) else {
+            return await handleStepFailure(input)
+        }
+
+        guard await installDependenciesStep(
+            indexInfo: indexInfo,
+            resourceDir: resourceDir,
+            gameInfo: tempGameInfo,
+            input: input
+        ) else {
+            return await handleStepFailure(input)
+        }
+
+        let gameSuccess = await installGameStep(
+            input: input,
+            indexInfo: indexInfo,
+            iconPath: iconPath
+        )
+
+        await handleInstallationResult(
+            success: gameSuccess,
+            gameName: input.gameName,
+            gameSetupService: input.gameSetupService,
+            modPackInstallState: input.modPackInstallState
+        )
+
+        downloadService.cleanupTempFiles()
+        return gameSuccess
+    }
+
+    // MARK: - Helpers
+
+    private func resolvePreparedPack(_ input: RunInput) async -> PreparedModPack? {
+        if let prepared = input.prepared {
+            input.setLastParsedIndexInfo(prepared.indexInfo)
+            return prepared
+        }
+        guard let prepared = await prepare(
+            archivePath: input.archivePath,
+            projectDetailForIcon: input.projectDetailForIcon
+        ) else {
+            if Task.isCancelled {
+                await handleCancelledInstallation(
+                    gameName: input.gameName,
+                    gameSetupService: input.gameSetupService,
+                    modPackInstallState: input.modPackInstallState
+                )
+            }
+            return nil
+        }
+        input.setLastParsedIndexInfo(prepared.indexInfo)
+        return prepared
+    }
+
+    private func downloadOptionalIcon(
+        projectDetailForIcon: ModrinthProjectDetail?,
+        gameName: String
+    ) async -> String? {
+        guard let projectDetailForIcon else { return nil }
+        return await downloadService.downloadGameIcon(
+            projectDetail: projectDetailForIcon,
+            gameName: gameName
+        )
+    }
+
+    private func installOverridesStep(
+        extractedPath: URL,
+        resourceDir: URL,
+        input: RunInput
+    ) async -> Bool {
+        let overridesTotal = await calculateOverridesTotal(extractedPath: extractedPath)
+        if overridesTotal > 0 {
+            input.modPackInstallState.isInstalling = true
+            input.modPackInstallState.overridesTotal = overridesTotal
+            input.modPackInstallState.objectWillChange.send()
+        }
+        try? await Task.sleep(nanoseconds: 100_000_000)
+
+        return await ModPackDependencyInstaller.installOverrides(
+            extractedPath: extractedPath,
             resourceDir: resourceDir
         ) { fileName, completed, total, type in
             Task { @MainActor in
@@ -203,19 +211,62 @@ final class ModPackInstallCoordinator {
                 input.modPackInstallState.objectWillChange.send()
             }
         }
+    }
 
-        guard dependencySuccess else {
-            await handleInstallationResult(
-                success: false,
-                gameName: input.gameName,
-                gameSetupService: input.gameSetupService,
-                modPackInstallState: input.modPackInstallState
-            )
-            return false
+    private func installFilesStep(
+        indexInfo: ModrinthIndexInfo,
+        resourceDir: URL,
+        gameInfo: GameVersionInfo,
+        input: RunInput
+    ) async -> Bool {
+        await ModPackDependencyInstaller.installModPackFiles(
+            files: indexInfo.files,
+            resourceDir: resourceDir,
+            gameInfo: gameInfo
+        ) { fileName, completed, total, type in
+            Task { @MainActor in
+                self.updateInstallProgress(
+                    modPackInstallState: input.modPackInstallState,
+                    fileName: fileName,
+                    completed: completed,
+                    total: total,
+                    type: type
+                )
+                input.modPackInstallState.objectWillChange.send()
+            }
         }
+    }
 
-        // 10. 安装游戏本体
-        let gameSuccess = await withCheckedContinuation { continuation in
+    private func installDependenciesStep(
+        indexInfo: ModrinthIndexInfo,
+        resourceDir: URL,
+        gameInfo: GameVersionInfo,
+        input: RunInput
+    ) async -> Bool {
+        await ModPackDependencyInstaller.installModPackDependencies(
+            dependencies: indexInfo.dependencies,
+            gameInfo: gameInfo,
+            resourceDir: resourceDir
+        ) { fileName, completed, total, type in
+            Task { @MainActor in
+                self.updateInstallProgress(
+                    modPackInstallState: input.modPackInstallState,
+                    fileName: fileName,
+                    completed: completed,
+                    total: total,
+                    type: type
+                )
+                input.modPackInstallState.objectWillChange.send()
+            }
+        }
+    }
+
+    private func installGameStep(
+        input: RunInput,
+        indexInfo: ModrinthIndexInfo,
+        iconPath: String?
+    ) async -> Bool {
+        await withCheckedContinuation { continuation in
             Task {
                 await input.gameSetupService.saveGame(
                     gameName: input.gameName,
@@ -239,19 +290,25 @@ final class ModPackInstallCoordinator {
                 )
             }
         }
+    }
 
+    private func handleStepFailure(_ input: RunInput) async -> Bool {
+        if Task.isCancelled {
+            await handleCancelledInstallation(
+                gameName: input.gameName,
+                gameSetupService: input.gameSetupService,
+                modPackInstallState: input.modPackInstallState
+            )
+            return false
+        }
         await handleInstallationResult(
-            success: gameSuccess,
+            success: false,
             gameName: input.gameName,
             gameSetupService: input.gameSetupService,
             modPackInstallState: input.modPackInstallState
         )
-
-        downloadService.cleanupTempFiles()
-        return gameSuccess
+        return false
     }
-
-    // MARK: - Helpers
 
     private func calculateOverridesTotal(extractedPath: URL) async -> Int {
         var overridesPath = extractedPath.appendingPathComponent("overrides")
@@ -360,6 +417,15 @@ final class ModPackInstallCoordinator {
         gameSetupService: GameSetupUtil,
         modPackInstallState: ModPackInstallState
     ) async {
+        if Task.isCancelled {
+            await handleCancelledInstallation(
+                gameName: gameName,
+                gameSetupService: gameSetupService,
+                modPackInstallState: modPackInstallState
+            )
+            return
+        }
+
         if success {
             Logger.shared.info("整合包依赖安装完成: \(gameName)")
         } else {
@@ -375,6 +441,17 @@ final class ModPackInstallCoordinator {
             modPackInstallState.reset()
             gameSetupService.downloadState.reset()
         }
+    }
+
+    private func handleCancelledInstallation(
+        gameName: String,
+        gameSetupService: GameSetupUtil,
+        modPackInstallState: ModPackInstallState
+    ) async {
+        Logger.shared.info("整合包安装已取消: \(gameName)")
+        await cleanupGameDirectories(gameName: gameName)
+        modPackInstallState.reset()
+        gameSetupService.downloadState.reset()
     }
 
     private func cleanupGameDirectories(gameName: String) async {

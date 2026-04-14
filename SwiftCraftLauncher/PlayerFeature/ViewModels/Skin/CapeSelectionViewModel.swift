@@ -28,7 +28,7 @@ final class CapeSelectionViewModel: ObservableObject {
             guard let url = URL(string: https) else { return }
 
             do {
-                let (data, _) = try await URLSession.shared.data(from: url)
+                let data = try await DownloadManager.downloadData(from: url)
                 guard !Task.isCancelled else { return }
                 self.selectedCapeImageURL.wrappedValue = imageURL
                 self.selectedCapeImage.wrappedValue = NSImage(data: data)

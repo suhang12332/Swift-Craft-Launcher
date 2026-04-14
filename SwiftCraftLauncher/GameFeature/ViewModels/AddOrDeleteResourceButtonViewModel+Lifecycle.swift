@@ -4,9 +4,6 @@ extension AddOrDeleteResourceButtonViewModel {
     func onAppear(selectedItem: SidebarItem, scannedDetailIds: Set<String>) {
         if type == false {
             addButtonState = .installed
-            if currentFileName == nil {
-                currentFileName = project.fileName
-            }
             updateDisableState()
             checkForUpdate()
         } else {
@@ -21,7 +18,7 @@ extension AddOrDeleteResourceButtonViewModel {
 
     func handleUpdateTap() {
         guard type == false else { return }
-        oldFileNameForUpdate = currentFileName ?? project.fileName
+        oldFileNameForUpdate = effectiveFileName
         isUpdateButtonLoading = true
         Task { await loadGameResourceInstallDetailBeforeOpeningSheet() }
     }

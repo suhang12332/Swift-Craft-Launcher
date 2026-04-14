@@ -46,6 +46,11 @@ extension ModPackImportViewModel {
             // 清理不再需要的索引数据以释放内存
             modPackViewModel.clearParsedIndexInfo()
             configuration.actions.onCancel() // Use cancel to dismiss
+        } else if Task.isCancelled || gameSetupService.downloadState.isCancelled {
+            Logger.shared.info("本地整合包导入已取消: \(gameName)")
+            modPackViewModel.modPackInstallState.reset()
+            gameSetupService.downloadState.reset()
+            modPackViewModel.clearParsedIndexInfo()
         } else {
             Logger.shared.error("本地整合包导入失败: \(gameName)")
             // 清理已创建的游戏文件夹
