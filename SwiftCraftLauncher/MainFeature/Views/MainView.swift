@@ -47,7 +47,10 @@ struct MainView: View {
         .sheet(item: $gameDialogsPresenter.gameForExport) { game in
             ModPackExportSheet(gameInfo: game)
         }
-        .deleteGameConfirmationDialog(gamePendingDeletion: $gameDialogsPresenter.gamePendingDeletion)
+        .deleteGameConfirmationDialog(
+            gamePendingDeletion: $gameDialogsPresenter.gamePendingDeletion,
+            detailState: detailState
+        )
         .frame(minWidth: 900, minHeight: 500)
     }
 

@@ -8,9 +8,9 @@ import SwiftUI
 /// 统一的「删除游戏」确认对话框（侧边栏、工具栏等入口共用）
 struct DeleteGameConfirmationModifier: ViewModifier {
     @Binding var gamePendingDeletion: GameVersionInfo?
+    @ObservedObject var detailState: ResourceDetailState
 
     @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var detailState: ResourceDetailState
 
     private var isDialogPresented: Binding<Bool> {
         Binding(
@@ -48,7 +48,15 @@ struct DeleteGameConfirmationModifier: ViewModifier {
 }
 
 extension View {
-    func deleteGameConfirmationDialog(gamePendingDeletion: Binding<GameVersionInfo?>) -> some View {
-        modifier(DeleteGameConfirmationModifier(gamePendingDeletion: gamePendingDeletion))
+    func deleteGameConfirmationDialog(
+        gamePendingDeletion: Binding<GameVersionInfo?>,
+        detailState: ResourceDetailState
+    ) -> some View {
+        modifier(
+            DeleteGameConfirmationModifier(
+                gamePendingDeletion: gamePendingDeletion,
+                detailState: detailState
+            )
+        )
     }
 }
