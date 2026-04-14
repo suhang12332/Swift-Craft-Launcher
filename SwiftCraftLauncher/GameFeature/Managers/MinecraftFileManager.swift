@@ -13,8 +13,6 @@ private enum Constants {
     ]
     static let assetChunkSize = 500
     static let downloadTimeout: TimeInterval = 30
-    static let retryCount = 3
-    static let retryDelay: TimeInterval = 2
     static let memoryBufferSize = 1024 * 1024  // 1MB buffer for file operations
 }
 
@@ -24,7 +22,6 @@ class MinecraftFileManager {
     // MARK: - Properties
 
     private let fileManager = FileManager.default
-    private let session: URLSession
     private let coreFilesCount = NSLockingCounter()
     private let resourceFilesCount = NSLockingCounter()
     private var coreTotalFiles = 0
@@ -43,13 +40,6 @@ class MinecraftFileManager {
 
     // MARK: - Initialization
     init() {
-        let config = URLSessionConfiguration.ephemeral
-        config.timeoutIntervalForRequest = Constants.downloadTimeout
-        config.timeoutIntervalForResource = Constants.downloadTimeout
-        config.httpMaximumConnectionsPerHost =
-            GeneralSettingsManager.shared.concurrentDownloads
-        config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        self.session = URLSession(configuration: config)
     }
 
     // MARK: - Public Methods
