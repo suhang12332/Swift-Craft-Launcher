@@ -1,0 +1,57 @@
+name: Agent Review (PR)
+
+on:
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install SwiftLint (best-effort)
+        run: |
+          brew update
+          brew install swiftlint || true
+
+      - name: Run automated review checks
+        id: checks
+        run: |
+          chmod +x .github/scripts/agent_review.sh
+          .github/scripts/agent_review.sh agent-review.md || true
+
+      - name: Comment review report on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('agent-review.md', 'utf8');
+            const marker = '<!-- agent-review -->';
+            const finalBody = `${marker}\n${body}`;
+
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            // Try to update an existing agent-review comment (keeps PR clean)
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find(c => (c.user?.type === 'Bot' || c.user?.login?.includes('bot')) && c.body?.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner, repo, comment_id: existing.id, body: finalBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner, repo, issue_number, body: finalBody,
+              });
+            }
