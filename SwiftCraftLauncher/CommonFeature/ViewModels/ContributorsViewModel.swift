@@ -15,9 +15,7 @@ public class ContributorsViewModel: ObservableObject {
             contributors = try await gitHubService.fetchContributors(
                 perPage: 50
             )
-        } catch {
-            // 静默处理错误
-        }
+        } catch {}
     }
 
     public func getContributorProfileURL(
