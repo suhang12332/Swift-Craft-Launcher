@@ -58,10 +58,12 @@ private struct AvatarRemoteImageView: View {
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
-                    case .empty, .failure:
-                        AvatarPlaceholderView()
+                    case .empty:
+                        avatarPlaceholder(showLoading: true)
+                    case .failure:
+                        avatarPlaceholder()
                     @unknown default:
-                        AvatarPlaceholderView()
+                        avatarPlaceholder()
                     }
                 }
                 .onDisappear {
@@ -70,7 +72,7 @@ private struct AvatarRemoteImageView: View {
                     )
                 }
             } else {
-                AvatarPlaceholderView()
+                avatarPlaceholder()
             }
         }
         .frame(width: size, height: size)
@@ -78,11 +80,15 @@ private struct AvatarRemoteImageView: View {
     }
 }
 
-private struct AvatarPlaceholderView: View {
-    var body: some View {
-        Rectangle()
-            .foregroundColor(.gray.opacity(0.3))
-    }
+private func avatarPlaceholder(showLoading: Bool = false) -> some View {
+    Rectangle()
+        .foregroundColor(.gray.opacity(0.3))
+        .overlay {
+            if showLoading {
+                ProgressView()
+                    .controlSize(.small)
+            }
+        }
 }
 
 private func isRemoteAvatarURLString(_ value: String) -> Bool {
