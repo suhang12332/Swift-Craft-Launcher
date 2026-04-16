@@ -133,7 +133,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
     }
 
     var pendingIconURLForDisplay: URL? {
-        pendingIconURL
+        pendingIconURL ?? URLConfig.API.GitHub.gameIcon(selectedModLoader)
     }
 
     /// 添加游戏窗口关闭时，清理已加载的版本列表

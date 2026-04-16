@@ -81,6 +81,7 @@ class GameSetupUtil: ObservableObject {
         // 保存游戏图标
         await saveGameIcon(
             gameName: gameName,
+            modLoader: selectedModLoader,
             pendingIconData: pendingIconData,
             onError: onError
         )
@@ -192,10 +193,11 @@ class GameSetupUtil: ObservableObject {
 
     private func saveGameIcon(
         gameName: String,
+        modLoader: String,
         pendingIconData: Data?,
         onError: @escaping (GlobalError, String) -> Void
     ) async {
-        guard let data = pendingIconData, !gameName.isEmpty else {
+        guard !gameName.isEmpty else {
             return
         }
         let profileDir = AppPaths.profileDirectory(gameName: gameName)
@@ -203,7 +205,17 @@ class GameSetupUtil: ObservableObject {
 
         do {
             try FileManager.default.createDirectory(at: profileDir, withIntermediateDirectories: true)
-            try data.write(to: iconURL)
+
+            if let data = pendingIconData {
+                try data.write(to: iconURL)
+            } else {
+                let remoteIconURL = URLConfig.API.GitHub.gameIcon(modLoader)
+                _ = try await DownloadManager.downloadFile(
+                    urlString: remoteIconURL.absoluteString,
+                    destinationURL: iconURL,
+                    expectedSha1: nil
+                )
+            }
         } catch {
             onError(
                 GlobalError.fileSystem(

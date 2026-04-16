@@ -32,6 +32,10 @@ extension GameCreationViewModel {
 
     /// 处理模组加载器变化
     func handleModLoaderChange(_ newLoader: String) {
+        pendingIconURL = nil
+        pendingIconData = nil
+        iconImage = nil
+
         Task {
             let includeSnapshots = GameSettingsManager.shared.includeSnapshotsForGameVersions
             let compatibleVersions = await CommonService.compatibleVersions(

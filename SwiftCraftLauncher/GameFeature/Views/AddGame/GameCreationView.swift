@@ -129,6 +129,7 @@ struct GameCreationView: View {
                 .foregroundColor(.primary)
 
                 iconContainer
+                .applyPointerHandIfAvailable()
                 .onTapGesture {
                     if !viewModel.gameSetupService.downloadState.isDownloading {
                         onRequestImagePicker()
@@ -152,6 +153,7 @@ struct GameCreationView: View {
                     switch phase {
                     case .empty:
                         ProgressView()
+                            .controlSize(.small)
                     case .success(let image):
                         image
                             .resizable()
@@ -178,6 +180,7 @@ struct GameCreationView: View {
                         EmptyView()
                     }
                 }
+                .id(url.absoluteString)
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(
                         for: URLRequest(url: url)
