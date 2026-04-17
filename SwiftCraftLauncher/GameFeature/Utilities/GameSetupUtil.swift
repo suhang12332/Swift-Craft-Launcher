@@ -476,8 +476,7 @@ class GameSetupUtil: ObservableObject {
 
     /// 根据启动器当前语言，为指定游戏实例写入/更新 Minecraft 的 options.txt 语言设置
     private func configureGameLanguage(for gameName: String) {
-        let launcherLang = LanguageManager.shared.selectedLanguage
-        let mcLang = CommonUtil.minecraftLanguageCode(from: launcherLang)
+        let mcLang = CommonUtil.minecraftLanguageCode(from: LanguageManager.shared.selectedLanguage)
         CommonUtil.upsertOptionsEntry(gameName: gameName, key: "lang", value: mcLang)
     }
 }
