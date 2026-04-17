@@ -56,7 +56,7 @@ public class LanguageManager {
     public static func getDefaultLanguage() -> String {
         Bundle.main.preferredLocalizations.first ?? "en"
     }
-    
+
     /// 获取语言显示名称（用于 UI 展示）。
     /// - Parameters:
     ///   - code: 语言/地区标识（例如 "en"、"zh-Hans"、"ja"）
@@ -72,7 +72,7 @@ public class LanguageManager {
         }
         return name
     }
-    
+
     /// 当前生效语言的显示名称（用于 UI 展示）。
     public var selectedLanguageDisplayName: String {
         Self.displayName(for: selectedLanguage)

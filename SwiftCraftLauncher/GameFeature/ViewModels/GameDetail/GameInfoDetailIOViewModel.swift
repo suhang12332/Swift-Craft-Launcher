@@ -56,6 +56,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
             do {
                 try await Task.detached(priority: .userInitiated) {
                     let imageData = try Data(contentsOf: url)
+                    let optimizedImageData = GameIconProcessor.optimize(data: imageData)
                     let profileDir = AppPaths.profileDirectory(gameName: gameName)
                     let iconFileName = AppConstants.defaultGameIcon
                     let iconURL = profileDir.appendingPathComponent(iconFileName)
@@ -63,7 +64,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
                         at: profileDir,
                         withIntermediateDirectories: true
                     )
-                    try imageData.write(to: iconURL)
+                    try optimizedImageData.write(to: iconURL)
                 }.value
 
                 Logger.shared.info("成功更新游戏图标: \(gameName)")
