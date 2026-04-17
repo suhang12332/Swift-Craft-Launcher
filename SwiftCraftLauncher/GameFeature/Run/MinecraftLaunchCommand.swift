@@ -234,11 +234,11 @@ struct MinecraftLaunchCommand {
         // 设置环境变量（高级设置）
         if !game.environmentVariables.isEmpty {
             var env = ProcessInfo.processInfo.environment
-            let envLines = game.environmentVariables.components(separatedBy: "\n")
-            for line in envLines {
-                if let equalIndex = line.firstIndex(of: "=") {
-                    let key = String(line[..<equalIndex])
-                    let value = String(line[line.index(after: equalIndex)...])
+            let envItems = game.environmentVariables.split(whereSeparator: \.isWhitespace)
+            for pair in envItems {
+                if let equalIndex = pair.firstIndex(of: "=") {
+                    let key = String(pair[..<equalIndex])
+                    let value = String(pair[pair.index(after: equalIndex)...])
                     env[key] = value
                 }
             }

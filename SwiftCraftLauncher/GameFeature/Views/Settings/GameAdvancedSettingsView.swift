@@ -105,7 +105,7 @@ struct GameAdvancedSettingsView: View {
                         .labelsHidden()
                         .textFieldStyle(.roundedBorder)
                         .lineLimit(2...4)
-                        .frame(width: 200)
+                        .frame(width: 300)
                         .onChange(of: viewModel.customJvmArguments) { _, _ in viewModel.didChangeCustomJvmArguments() }
                 }
                 .labeledContentStyle(.custom)
@@ -119,7 +119,7 @@ struct GameAdvancedSettingsView: View {
                         .labelsHidden()
                         .textFieldStyle(.roundedBorder)
                         .lineLimit(2...4)
-                        .frame(width: 200)
+                        .frame(width: 300)
                         .onChange(of: viewModel.environmentVariables) { _, _ in viewModel.didChangeEnvironmentVariables() }
                 }
                 .labeledContentStyle(.custom)

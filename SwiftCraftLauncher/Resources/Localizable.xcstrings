@@ -40386,133 +40386,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "على سبيل المثال: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "على سبيل المثال: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "For eksempel: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "For eksempel: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zum Beispiel: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Zum Beispiel: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "For example: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "For example: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por ejemplo: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Por ejemplo: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esimerkiksi: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Esimerkiksi: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Par exemple : `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Par exemple : `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "उदाहरण के लिए: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "उदाहरण के लिए: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ad esempio: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Ad esempio: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "例: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "예시: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "예시: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "For eksempel: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "For eksempel: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bijvoorbeeld: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Bijvoorbeeld: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na przykład: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Na przykład: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por exemplo: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Por exemplo: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Например: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Например: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Till exempel: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Till exempel: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ตัวอย่าง: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "ตัวอย่าง: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Örneğin: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Örneğin: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ví dụ: `JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "Ví dụ: `JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例如:`JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "例如:`JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "例如:`JAVA_OPTS=-Dfile.encoding=UTF-8`"
+            "value" : "例如:`JAVA_OPTS=-Dfile.encoding=UTF-8 MY_FLAG=1`"
           }
         }
       }
