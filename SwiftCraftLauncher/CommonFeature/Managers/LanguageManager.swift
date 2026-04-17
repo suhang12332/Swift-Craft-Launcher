@@ -38,11 +38,6 @@ public class LanguageManager {
         return nil
     }
 
-    /// 启动器支持的本地化代码（从 bundle 的实际本地化自动推导）。
-    public static var supportedLanguageCodes: [String] {
-        Bundle.main.localizations.filter { $0 != "Base" }
-    }
-
     public var selectedLanguage: String {
         Self.getDefaultLanguage()
     }
