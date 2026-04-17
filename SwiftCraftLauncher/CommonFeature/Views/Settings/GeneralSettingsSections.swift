@@ -6,7 +6,7 @@ struct GeneralSettingsLanguageRow: View {
         Group {
             LabeledContent("settings.language.picker".localized()) {
                 Button {
-                    openSystemLanguageAndRegionSettings()
+                    SystemSettings.open(AppConstants.SystemSettingsDeepLinks.localizationApps)
                 } label: {
                     Text(LanguageManager.shared.selectedLanguageDisplayName)
                         .foregroundColor(.primary)
@@ -19,16 +19,6 @@ struct GeneralSettingsLanguageRow: View {
             CommonDescriptionText(text: "settings.language.translation.notice".localized())
                 .padding(.bottom, 10)
         }
-    }
-
-    private func openSystemLanguageAndRegionSettings() {
-        if let url = URL(string: "x-apple.systempreferences:com.apple.Localization-Settings.extension") {
-            NSWorkspace.shared.open(url)
-            return
-        }
-
-        let legacyPaneURL = URL(fileURLWithPath: "/System/Library/PreferencePanes/Localization.prefPane")
-        NSWorkspace.shared.open(legacyPaneURL)
     }
 }
 
@@ -145,6 +135,17 @@ struct GeneralSettingsConcurrentDownloadsRow: View {
         .onChange(of: generalSettings.concurrentDownloads) { _, newValue in
             viewModel.onConcurrentDownloadsChanged(newValue)
         }
+    }
+}
+
+struct GeneralSettingsSystemProxyRow: View {
+    var body: some View {
+        LabeledContent("settings.system_proxy.label".localized()) {
+            Button("settings.system_proxy.open".localized()) {
+                SystemSettings.open(AppConstants.SystemSettingsDeepLinks.networkProxies)
+            }
+        }
+        .labeledContentStyle(.custom)
     }
 }
 

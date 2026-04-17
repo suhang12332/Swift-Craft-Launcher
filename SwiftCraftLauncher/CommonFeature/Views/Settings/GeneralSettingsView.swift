@@ -22,6 +22,7 @@ public struct GeneralSettingsView: View {
                 generalSettings: generalSettings,
                 viewModel: viewModel
             )
+            GeneralSettingsSystemProxyRow()
             GeneralSettingsGitHubProxyRow(generalSettings: generalSettings)
             GeneralSettingsCommonSheetHeightLimitRow(generalSettings: generalSettings)
         }

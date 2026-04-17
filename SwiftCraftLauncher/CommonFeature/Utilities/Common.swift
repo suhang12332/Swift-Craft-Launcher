@@ -398,3 +398,18 @@ extension ResourceType {
         }
     }
 }
+
+enum SystemSettings {
+
+    /// 打开 System Settings（支持多级 fallback）
+    @discardableResult
+    static func open(_ paths: [String]) -> Bool {
+        for path in paths {
+            guard let url = URL(string: path) else { continue }
+            if NSWorkspace.shared.open(url) {
+                return true
+            }
+        }
+        return false
+    }
+}

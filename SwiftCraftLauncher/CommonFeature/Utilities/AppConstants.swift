@@ -197,6 +197,19 @@ enum AppConstants {
         "java-runtime-alpha",
         "java-runtime-beta",
     ]
+
+    // MARK: - System Settings
+    enum SystemSettingsDeepLinks {
+        static let localizationApps = [
+            "x-apple.systempreferences:com.apple.Localization-Settings.extension?Apps",
+            "x-apple.systempreferences:com.apple.Localization-Settings.extension",
+        ]
+
+        static let networkProxies = [
+            "x-apple.systempreferences:com.apple.Network-Settings.extension?Proxies",
+            "x-apple.systempreferences:com.apple.Network-Settings.extension",
+        ]
+    }
 }
 
 // MARK: - Bundle Extension

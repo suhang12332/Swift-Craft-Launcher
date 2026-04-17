@@ -4,7 +4,7 @@ import CoreGraphics
 import ImageIO
 
 enum GameIconProcessor {
-    static let maxIconPixelSize = 256
+    static let maxIconPixelSize = 128
 
     static func optimize(data: Data, maxPixelSize: Int = maxIconPixelSize) -> Data {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
