@@ -8,7 +8,7 @@ enum CurseForgeService {
 
     /// 获取 CurseForge API 请求头（包含 API key，如果可用）
     private static func getHeaders() -> [String: String] {
-        var headers: [String: String] = ["Accept": "application/json"]
+        var headers: [String: String] = APIClient.DefaultHeaders.acceptJSON
         if let apiKey = AppConstants.curseForgeAPIKey {
             headers["x-api-key"] = apiKey
         }

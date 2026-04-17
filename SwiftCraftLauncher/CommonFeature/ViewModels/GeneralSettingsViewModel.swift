@@ -5,8 +5,6 @@ import SwiftUI
 @MainActor
 final class GeneralSettingsViewModel: ObservableObject {
     @Published var showDirectoryPicker = false
-    @Published var showingRestartAlert = false
-    @Published var selectedLanguage: String
     @Published var error: GlobalError?
 
     @Published var concurrentDownloadsDraft: Double
@@ -14,35 +12,14 @@ final class GeneralSettingsViewModel: ObservableObject {
 
     private let generalSettings: GeneralSettingsManager
     private weak var gameRepository: GameRepository?
-    private weak var sparkleUpdateService: SparkleUpdateService?
 
     init(generalSettings: GeneralSettingsManager = .shared) {
         self.generalSettings = generalSettings
-        self.selectedLanguage = LanguageManager.shared.selectedLanguage
         self.concurrentDownloadsDraft = Double(generalSettings.concurrentDownloads)
     }
 
-    func configure(gameRepository: GameRepository, sparkleUpdateService: SparkleUpdateService) {
+    func configure(gameRepository: GameRepository) {
         self.gameRepository = gameRepository
-        self.sparkleUpdateService = sparkleUpdateService
-    }
-
-    // MARK: - Language
-
-    func onSelectedLanguageChanged(_ newValue: String) {
-        if newValue != LanguageManager.shared.selectedLanguage {
-            showingRestartAlert = true
-        }
-    }
-
-    func confirmLanguageChangeAndRestart() {
-        sparkleUpdateService?.updateSparkleLanguage(selectedLanguage)
-        LanguageManager.shared.selectedLanguage = selectedLanguage
-        restartAppSafely()
-    }
-
-    func cancelLanguageChange() {
-        selectedLanguage = LanguageManager.shared.selectedLanguage
     }
 
     // MARK: - Working Directory

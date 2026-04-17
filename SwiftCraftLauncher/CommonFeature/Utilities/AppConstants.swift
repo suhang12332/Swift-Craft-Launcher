@@ -47,12 +47,6 @@ enum AppConstants {
         static let themeMode = "themeMode"
     }
 
-    // MARK: - System UserDefaults Keys
-    /// 系统（Apple）预定义的 UserDefaults key
-    enum SystemUserDefaultsKeys {
-        static let appleLanguages = "AppleLanguages"
-    }
-
     // MARK: - Keychain Keys
     enum KeychainAccounts {
         static let aiSettings = "aiSettings"

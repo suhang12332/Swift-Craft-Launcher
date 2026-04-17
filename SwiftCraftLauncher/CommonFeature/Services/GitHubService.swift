@@ -37,7 +37,7 @@ public class GitHubService: ObservableObject {
     private func fetchAcknowledgementsData() async throws -> Data {
         let url = URLConfig.API.GitHub.acknowledgements()
         // 使用统一的 API 客户端
-        let headers = ["Accept": "application/json"]
+        let headers = APIClient.DefaultHeaders.acceptJSON
         return try await APIClient.get(url: url, headers: headers)
     }
 
@@ -64,7 +64,7 @@ public class GitHubService: ObservableObject {
         )
 
         // 使用统一的 API 客户端
-        let headers = ["Accept": "application/json"]
+        let headers = APIClient.DefaultHeaders.acceptJSON
         let data = try await APIClient.get(url: url, headers: headers)
 
         let announcementResponse = try JSONDecoder().decode(

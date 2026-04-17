@@ -255,7 +255,7 @@ private extension YggdrasilAuthService {
             .joined(separator: "&")
 
         let bodyData = bodyString.data(using: .utf8)
-        let headers = ["Content-Type": "application/x-www-form-urlencoded"]
+        let headers = APIClient.DefaultHeaders.contentTypeFormURLEncoded
 
         let data = try await APIClient.post(url: tokenURL, body: bodyData, headers: headers)
 

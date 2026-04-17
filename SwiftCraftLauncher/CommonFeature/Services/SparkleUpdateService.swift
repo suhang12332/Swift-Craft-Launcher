@@ -35,8 +35,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         do {
             updater = SPUUpdater(hostBundle: hostBundle, applicationBundle: hostBundle, userDriver: driver, delegate: self)
 
-            setSparkleLanguage()
-
             try updater?.start()
 
             // 添加这些配置以确保"稍后提示我"功能正常工作
@@ -46,18 +44,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         } catch {
             Logger.shared.error("初始化更新器失败：\(error.localizedDescription)")
         }
-    }
-
-    /// 设置 Sparkle 的语言
-    private func setSparkleLanguage() {
-        let selectedLanguage = LanguageManager.shared.selectedLanguage
-        UserDefaults.standard.set([selectedLanguage], forKey: AppConstants.SystemUserDefaultsKeys.appleLanguages)
-    }
-
-    /// 公共方法：设置 Sparkle 的语言
-    /// - Parameter language: 语言代码
-    func updateSparkleLanguage(_ language: String) {
-        UserDefaults.standard.set([language], forKey: AppConstants.SystemUserDefaultsKeys.appleLanguages)
     }
 
     // MARK: - SPUUpdaterDelegate

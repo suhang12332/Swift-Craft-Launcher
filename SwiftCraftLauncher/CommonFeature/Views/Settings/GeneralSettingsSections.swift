@@ -1,40 +1,34 @@
+import AppKit
 import SwiftUI
 
 struct GeneralSettingsLanguageRow: View {
-    @ObservedObject var viewModel: GeneralSettingsViewModel
-
     var body: some View {
         Group {
             LabeledContent("settings.language.picker".localized()) {
-                Picker("", selection: $viewModel.selectedLanguage) {
-                    ForEach(LanguageManager.shared.languages, id: \.1) { name, code in
-                        Text(name).tag(code)
-                    }
+                Button {
+                    openSystemLanguageAndRegionSettings()
+                } label: {
+                    Text(LanguageManager.shared.selectedLanguageDisplayName)
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                        .foregroundColor(.primary)
                 }
-                .labelsHidden()
-                .fixedSize()
-                .onChange(of: viewModel.selectedLanguage) { _, newValue in
-                    viewModel.onSelectedLanguageChanged(newValue)
-                }
-                .confirmationDialog(
-                    "settings.language.restart.title".localized(),
-                    isPresented: $viewModel.showingRestartAlert,
-                    titleVisibility: .visible
-                ) {
-                    Button("settings.language.restart.confirm".localized(), role: .destructive) {
-                        viewModel.confirmLanguageChangeAndRestart()
-                    }
-                    .keyboardShortcut(.defaultAction)
-                    Button("common.cancel".localized(), role: .cancel) {
-                        viewModel.cancelLanguageChange()
-                    }
-                } message: {
-                    Text("settings.language.restart.message".localized())
-                }
+                .help("settings.language.picker".localized())
             }
             .labeledContentStyle(.custom)
-            CommonDescriptionText(text: "settings.language.translation.notice".localized()).padding(.bottom, 10)
+            CommonDescriptionText(text: "settings.language.translation.notice".localized())
+                .padding(.bottom, 10)
         }
+    }
+
+    private func openSystemLanguageAndRegionSettings() {
+        if let url = URL(string: "x-apple.systempreferences:com.apple.Localization-Settings.extension") {
+            NSWorkspace.shared.open(url)
+            return
+        }
+
+        let legacyPaneURL = URL(fileURLWithPath: "/System/Library/PreferencePanes/Localization.prefPane")
+        NSWorkspace.shared.open(legacyPaneURL)
     }
 }
 
