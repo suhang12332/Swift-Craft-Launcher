@@ -127,7 +127,7 @@ class AIChatManager: ObservableObject {
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
         request.setValue("Bearer \(settings.apiKey)", forHTTPHeaderField: "Authorization")
 
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
@@ -245,7 +245,7 @@ class AIChatManager: ObservableObject {
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
 
         // Ollama 可能不需要 API Key，但如果有就加上
         if !settings.apiKey.isEmpty {
@@ -355,7 +355,7 @@ class AIChatManager: ObservableObject {
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
 
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         request.httpBody = jsonData

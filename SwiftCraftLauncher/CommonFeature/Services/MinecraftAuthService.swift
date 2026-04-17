@@ -167,7 +167,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         let url = URLConfig.API.Authentication.token
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.setValue(APIClient.MimeType.formURLEncoded, forHTTPHeaderField: APIClient.Header.contentType)
 
         let bodyParameters = [
             "client_id": clientId,
@@ -181,7 +181,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         let bodyData = bodyString.data(using: .utf8)
 
         // 使用统一的 API 客户端
-        let headers = ["Content-Type": "application/x-www-form-urlencoded"]
+        let headers = APIClient.DefaultHeaders.contentTypeFormURLEncoded
         let data = try await APIClient.post(url: url, body: bodyData, headers: headers)
 
         do {
@@ -212,7 +212,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         let url = URLConfig.API.Authentication.xboxLiveAuth
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
 
         let body: [String: Any] = [
             "Properties": [
@@ -236,7 +236,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         }
 
         // 使用统一的 API 客户端
-        let headers = ["Content-Type": "application/json"]
+        let headers = APIClient.DefaultHeaders.contentTypeJSON
         let data = try await APIClient.post(url: url, body: bodyData, headers: headers)
 
         do {
@@ -268,7 +268,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         let xstsUrl = URLConfig.API.Authentication.xstsAuth
         var xstsRequest = URLRequest(url: xstsUrl)
         xstsRequest.httpMethod = "POST"
-        xstsRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        xstsRequest.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
 
         let xstsBody: [String: Any] = [
             "Properties": [
@@ -291,7 +291,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         }
 
         // 使用统一的 API 客户端
-        let xstsHeaders = ["Content-Type": "application/json"]
+        let xstsHeaders = APIClient.DefaultHeaders.contentTypeJSON
         let xstsData = try await APIClient.post(url: xstsUrl, body: xstsBodyData, headers: xstsHeaders)
 
         let xstsTokenResponse: XboxLiveTokenResponse
@@ -327,7 +327,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         // 使用统一的 API 客户端（需要处理非 200 状态码）
         var minecraftRequest = URLRequest(url: minecraftUrl)
         minecraftRequest.httpMethod = "POST"
-        minecraftRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        minecraftRequest.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
         minecraftRequest.timeoutInterval = 30.0
         minecraftRequest.httpBody = minecraftBodyData
 
@@ -391,7 +391,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         let url = URLConfig.API.Authentication.minecraftEntitlements
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.accept)
         request.timeoutInterval = 30.0
 
         // 使用统一的 API 客户端（需要处理非 200 状态码）
@@ -622,7 +622,7 @@ extension MinecraftAuthService {
         // 使用统一的 API 客户端（需要处理非 200 状态码）
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        request.setValue(APIClient.MimeType.formURLEncodedUTF8, forHTTPHeaderField: APIClient.Header.contentType)
         request.httpBody = bodyData
 
         let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)

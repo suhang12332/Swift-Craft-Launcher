@@ -28,7 +28,7 @@
   
   🌐 [Website](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/) • 💾 [Download](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • 📚 [Documentation](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/)
   
-  **🇬🇧 English** | [🇨🇳 简体中文](doc/README_zh-CN.md) | [🇭🇰 繁體中文](doc/README_zh-TW.md)
+  **English** | [简体中文](doc/README_zh-CN.md) | [繁體中文](doc/README_zh-TW.md)
 </div>
 
 ---

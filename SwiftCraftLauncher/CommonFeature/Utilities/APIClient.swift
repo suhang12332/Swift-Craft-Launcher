@@ -2,6 +2,23 @@ import Foundation
 
 /// 统一的 API 客户端
 enum APIClient {
+    enum Header {
+        static let accept = "Accept"
+        static let contentType = "Content-Type"
+    }
+
+    enum MimeType {
+        static let json = "application/json"
+        static let formURLEncoded = "application/x-www-form-urlencoded"
+        static let formURLEncodedUTF8 = "application/x-www-form-urlencoded; charset=utf-8"
+    }
+
+    enum DefaultHeaders {
+        static let acceptJSON: [String: String] = [Header.accept: MimeType.json]
+        static let contentTypeJSON: [String: String] = [Header.contentType: MimeType.json]
+        static let contentTypeFormURLEncoded: [String: String] = [Header.contentType: MimeType.formURLEncoded]
+    }
+
     private static let sharedDecoder: JSONDecoder = {
         let decoder = JSONDecoder()
         return decoder
@@ -21,8 +38,6 @@ enum APIClient {
         return URLSession(configuration: configuration)
     }()
 
-    private static let contentTypeHeader = "Content-Type"
-    private static let contentTypeJSON = "application/json"
     private static let httpMethodGET = "GET"
     private static let httpMethodPOST = "POST"
 
@@ -64,7 +79,7 @@ enum APIClient {
         if body != nil {
             if let headers = headers {
                 needsContentType = !headers.keys.contains { key in
-                    key.localizedCaseInsensitiveCompare(contentTypeHeader) == .orderedSame
+                    key.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame
                 }
             } else {
                 needsContentType = true
@@ -74,7 +89,7 @@ enum APIClient {
         headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
 
         if needsContentType {
-            request.setValue(contentTypeJSON, forHTTPHeaderField: contentTypeHeader)
+            request.setValue(MimeType.json, forHTTPHeaderField: Header.contentType)
         }
 
         return try await performRequest(request: request)
@@ -124,7 +139,7 @@ enum APIClient {
         request.httpBody = body
 
         if body != nil && method == httpMethodPOST {
-            request.setValue(contentTypeJSON, forHTTPHeaderField: contentTypeHeader)
+            request.setValue(MimeType.json, forHTTPHeaderField: Header.contentType)
         }
 
         headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }

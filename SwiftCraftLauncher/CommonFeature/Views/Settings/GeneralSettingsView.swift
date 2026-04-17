@@ -5,13 +5,12 @@ public struct GeneralSettingsView: View {
     @StateObject private var themeManager = ThemeManager.shared
     @StateObject private var viewModel = GeneralSettingsViewModel()
     @EnvironmentObject private var gameRepository: GameRepository
-    @EnvironmentObject private var sparkleUpdateService: SparkleUpdateService
 
     public init() {}
 
     public var body: some View {
         Form {
-            GeneralSettingsLanguageRow(viewModel: viewModel)
+            GeneralSettingsLanguageRow()
             GeneralSettingsThemeRow(themeManager: themeManager)
             GeneralSettingsInterfaceLayoutRow(generalSettings: generalSettings)
             GeneralSettingsWorkingDirectoryRow(
@@ -23,12 +22,13 @@ public struct GeneralSettingsView: View {
                 generalSettings: generalSettings,
                 viewModel: viewModel
             )
+            GeneralSettingsSystemProxyRow()
             GeneralSettingsGitHubProxyRow(generalSettings: generalSettings)
             GeneralSettingsCommonSheetHeightLimitRow(generalSettings: generalSettings)
         }
         .globalErrorHandler()
         .onAppear {
-            viewModel.configure(gameRepository: gameRepository, sparkleUpdateService: sparkleUpdateService)
+            viewModel.configure(gameRepository: gameRepository)
         }
         .alert(
             "error.notification.validation.title".localized(),

@@ -129,6 +129,7 @@ struct GameCreationView: View {
                 .foregroundColor(.primary)
 
                 iconContainer
+                .applyPointerHandIfAvailable()
                 .onTapGesture {
                     if !viewModel.gameSetupService.downloadState.isDownloading {
                         onRequestImagePicker()
@@ -152,6 +153,7 @@ struct GameCreationView: View {
                     switch phase {
                     case .empty:
                         ProgressView()
+                            .controlSize(.small)
                     case .success(let image):
                         image
                             .resizable()
@@ -168,34 +170,34 @@ struct GameCreationView: View {
                             )
                             .contentShape(Rectangle())
                     case .failure:
-                        RoundedRectangle(cornerRadius: Constants.cornerRadius)
-                            .stroke(
-                                Color.accentColor.opacity(0.3),
-                                lineWidth: 1
-                            )
-                            .background(Color.gray.opacity(0.08))
+                        iconPlaceholderView
                     @unknown default:
                         EmptyView()
                     }
                 }
+                .id(url.absoluteString)
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(
                         for: URLRequest(url: url)
                     )
                 }
             } else {
-                VStack(spacing: 12) {
-                    Image(systemName: "photo.badge.plus")
-                        .symbolRenderingMode(.multicolor)
-                        .symbolVariant(.none)
-                        .fontWeight(.regular)
-                        .font(.system(size: 16))
-                }
-                .frame(maxWidth: .infinity, minHeight: 80)
-                .background(emptyDropBackground())
+                iconPlaceholderView
             }
         }
         .frame(width: Constants.iconSize, height: Constants.iconSize)
+    }
+
+    private var iconPlaceholderView: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "photo.badge.plus")
+                .symbolRenderingMode(.multicolor)
+                .symbolVariant(.none)
+                .fontWeight(.regular)
+                .font(.system(size: 16))
+        }
+        .frame(maxWidth: .infinity, minHeight: 80)
+        .background(emptyDropBackground())
     }
 
     private var gameVersionAndLoaderView: some View {

@@ -26,10 +26,11 @@ extension GameCreationViewModel {
                 let result: Result<(Data, URL), Error> = await Task.detached(priority: .userInitiated) {
                     do {
                         let data = try Data(contentsOf: url)
+                        let optimizedData = GameIconProcessor.optimize(data: data)
                         let tempDir = FileManager.default.temporaryDirectory
                         let tempURL = tempDir.appendingPathComponent("\(UUID().uuidString).png")
-                        try data.write(to: tempURL)
-                        return .success((data, tempURL))
+                        try optimizedData.write(to: tempURL)
+                        return .success((optimizedData, tempURL))
                     } catch {
                         return .failure(error)
                     }
@@ -77,11 +78,12 @@ extension GameCreationViewModel {
 
                 if let data = data {
                     Task { @MainActor in
+                        let optimizedData = GameIconProcessor.optimize(data: data)
                         let result: URL? = await Task.detached(priority: .userInitiated) {
                             let tempURL = FileManager.default.temporaryDirectory
                                 .appendingPathComponent("\(UUID().uuidString).png")
                             do {
-                                try data.write(to: tempURL)
+                                try optimizedData.write(to: tempURL)
                                 return tempURL
                             } catch {
                                 return nil
@@ -89,7 +91,7 @@ extension GameCreationViewModel {
                         }.value
                         if let tempURL = result {
                             self.pendingIconURL = tempURL
-                            self.pendingIconData = data
+                            self.pendingIconData = optimizedData
                             self.iconImage = nil
                         } else {
                             self.handleFileReadError(

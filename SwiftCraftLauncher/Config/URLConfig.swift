@@ -255,6 +255,14 @@ enum URLConfig {
                 return URLConfig.applyGitProxyIfNeeded(url)
             }
 
+            static func gameIcon(_ value: String) -> URL {
+                let url = assetBaseURL
+                    .appendingPathComponent("imagebed")
+                    .appendingPathComponent("gameicons")
+                    .appendingPathComponent("\(value).png")
+                return URLConfig.applyGitProxyIfNeeded(url)
+            }
+
             // LICENSE 文件（API）
             static func license(ref: String = "main") -> URL {
                 gitHubBase

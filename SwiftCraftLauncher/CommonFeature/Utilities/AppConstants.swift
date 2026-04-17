@@ -47,12 +47,6 @@ enum AppConstants {
         static let themeMode = "themeMode"
     }
 
-    // MARK: - System UserDefaults Keys
-    /// 系统（Apple）预定义的 UserDefaults key
-    enum SystemUserDefaultsKeys {
-        static let appleLanguages = "AppleLanguages"
-    }
-
     // MARK: - Keychain Keys
     enum KeychainAccounts {
         static let aiSettings = "aiSettings"
@@ -203,6 +197,19 @@ enum AppConstants {
         "java-runtime-alpha",
         "java-runtime-beta",
     ]
+
+    // MARK: - System Settings
+    enum SystemSettingsDeepLinks {
+        static let localizationApps = [
+            "x-apple.systempreferences:com.apple.Localization-Settings.extension?Apps",
+            "x-apple.systempreferences:com.apple.Localization-Settings.extension",
+        ]
+
+        static let networkProxies = [
+            "x-apple.systempreferences:com.apple.Network-Settings.extension?Proxies",
+            "x-apple.systempreferences:com.apple.Network-Settings.extension",
+        ]
+    }
 }
 
 // MARK: - Bundle Extension

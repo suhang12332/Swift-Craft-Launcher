@@ -280,7 +280,7 @@ enum PlayerSkinService {
         )
         request.setValue(
             "multipart/form-data; boundary=\(boundary)",
-            forHTTPHeaderField: "Content-Type"
+            forHTTPHeaderField: APIClient.Header.contentType
         )
         request.httpBody = body
         request.timeoutInterval = 30
@@ -445,7 +445,7 @@ enum PlayerSkinService {
             "Bearer \(player.authAccessToken)",
             forHTTPHeaderField: "Authorization"
         )
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
         request.httpBody = jsonData
         request.timeoutInterval = 30
 

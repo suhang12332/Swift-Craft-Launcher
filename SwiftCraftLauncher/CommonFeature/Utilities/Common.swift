@@ -274,45 +274,49 @@ enum CommonUtil {
         let code = launcherLang.lowercased()
 
         switch code {
-        case "zh-hans", "zh_cn", "zh-cn":
+        case "zh-hans":
             return "zh_cn"      // 简体中文
-        case "zh-hant", "zh_tw", "zh-tw", "zh-hk":
+        case "zh-hant":
             return "zh_tw"      // 繁体中文
-
-        case "en", "en_us", "en-us", "en-gb":
-            return "en_us"      // 英文（默认美式）
-
-        case "de", "de_de", "de-de":
+        case "ar":
+            return "ar_sa"      // 阿拉伯语
+        case "da":
+            return "da_dk"      // 丹麦语
+        case "en":
+            return "en_us"      // 英文
+        case "de":
             return "de_de"      // 德语
-        case "es", "es_es", "es-es":
+        case "es":
             return "es_es"      // 西班牙语
-        case "fr", "fr_fr", "fr-fr":
+        case "fr":
             return "fr_fr"      // 法语
-        case "fi", "fi_fi", "fi-fi":
+        case "fi":
             return "fi_fi"      // 芬兰语
-        case "it", "it_it", "it-it":
+        case "hi":
+            return "hi_in"      // 印地语
+        case "it":
             return "it_it"      // 意大利语
-        case "ja", "ja_jp", "ja-jp":
+        case "ja":
             return "ja_jp"      // 日语
-        case "ko", "ko_kr", "ko-kr":
+        case "ko":
             return "ko_kr"      // 韩语
-        case "nb", "no", "nb_no", "nb-no", "no_no", "no-no":
+        case "nb":
             return "nb_no"      // 挪威语
-        case "nl", "nl_nl", "nl-nl":
+        case "nl":
             return "nl_nl"      // 荷兰语
-        case "pl", "pl_pl", "pl-pl":
+        case "pl":
             return "pl_pl"      // 波兰语
-        case "pt", "pt_br", "pt-br":
+        case "pt":
             return "pt_br"      // 葡萄牙语（默认巴西葡语）
-        case "ru", "ru_ru", "ru-ru":
+        case "ru":
             return "ru_ru"      // 俄语
-        case "sv", "sv_se", "sv-se":
+        case "sv":
             return "sv_se"      // 瑞典语
-        case "th", "th_th", "th-th":
+        case "th":
             return "th_th"      // 泰语
-        case "tr", "tr_tr", "tr-tr":
+        case "tr":
             return "tr_tr"      // 土耳其语
-        case "vi", "vi_vn", "vi-vn":
+        case "vi":
             return "vi_vn"      // 越南语
 
         default:
@@ -392,5 +396,20 @@ extension ResourceType {
         case .modpack, .minecraftJavaServer:
             return rawValue
         }
+    }
+}
+
+enum SystemSettings {
+
+    /// 打开 System Settings（支持多级 fallback）
+    @discardableResult
+    static func open(_ paths: [String]) -> Bool {
+        for path in paths {
+            guard let url = URL(string: path) else { continue }
+            if NSWorkspace.shared.open(url) {
+                return true
+            }
+        }
+        return false
     }
 }
