@@ -4,6 +4,40 @@ import SwiftUI
 /// 语言管理器
 /// 只负责语言列表与当前生效语言读取（不在 App 内修改语言）
 public class LanguageManager {
+    private static let languageFlagByCode: [String: String] = [
+        "zh-Hans": "🇨🇳",
+        "zh-Hant": "🇨🇳",
+        "ar": "🇸🇦",
+        "da": "🇩🇰",
+        "de": "🇩🇪",
+        "en": "🇺🇸/🇬🇧",
+        "es": "🇪🇸",
+        "fi": "🇫🇮",
+        "fr": "🇫🇷",
+        "hi": "🇮🇳",
+        "it": "🇮🇹",
+        "ja": "🇯🇵",
+        "ko": "🇰🇷",
+        "nb": "🇳🇴",
+        "nl": "🇳🇱",
+        "pl": "🇵🇱",
+        "pt": "🇵🇹/🇧🇷",
+        "ru": "🇷🇺",
+        "sv": "🇸🇪",
+        "th": "🇹🇭",
+        "tr": "🇹🇷",
+        "vi": "🇻🇳",
+    ]
+
+    private static func flagEmoji(for code: String) -> String? {
+        if let flag = languageFlagByCode[code] { return flag }
+        if let base = code.split(separator: "-").first.map(String.init),
+           let flag = languageFlagByCode[base] {
+            return flag
+        }
+        return nil
+    }
+
     /// 启动器支持的本地化代码（从 bundle 的实际本地化自动推导）。
     public static var supportedLanguageCodes: [String] {
         Bundle.main.localizations.filter { $0 != "Base" }
@@ -29,10 +63,14 @@ public class LanguageManager {
     ///   - locale: 用于显示的 Locale（默认当前系统 Locale）
     /// - Returns: 尽可能本地化的显示名；如果无法解析则回退到英语显示名。
     public static func displayName(for code: String, locale: Locale = .current) -> String {
-        if let name = locale.localizedString(forIdentifier: code) {
-            return name
+        let name = locale.localizedString(forIdentifier: code)
+            ?? locale.localizedString(forIdentifier: "en")
+            ?? "English"
+
+        if let flag = flagEmoji(for: code) {
+            return "\(flag) \(name)"
         }
-        return locale.localizedString(forIdentifier: "en") ?? "English"
+        return name
     }
     
     /// 当前生效语言的显示名称（用于 UI 展示）。
