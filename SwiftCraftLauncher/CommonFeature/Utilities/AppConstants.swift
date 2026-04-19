@@ -139,6 +139,7 @@ enum AppConstants {
         static let zip = "zip"
         static let json = "json"
         static let log = "log"
+        static let mrpack = "mrpack"
     }
 
     // MARK: - Authlib Injector
