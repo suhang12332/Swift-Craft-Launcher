@@ -55,7 +55,7 @@ struct SwiftCraftLauncherApp: App {
     // MARK: - Body
     var body: some Scene {
 
-        WindowGroup {
+        Window(Bundle.main.appName, id: WindowID.main.rawValue) {
             MainView()
                 .environment(\.appLogger, Logger.shared)
                 .environmentObject(playerListViewModel)
@@ -77,7 +77,6 @@ struct SwiftCraftLauncherApp: App {
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
-        .conditionalRestorationBehavior()
         .commands {
             if sparkleUpdateService.updateAvailable {
                 CommandMenu(String(format: "menu.update.released.title".localized(), sparkleUpdateService.versionString)) {
