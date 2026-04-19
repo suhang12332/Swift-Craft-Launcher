@@ -67,6 +67,9 @@ struct SwiftCraftLauncherApp: App {
                 .preferredColorScheme(themeManager.currentColorScheme)
                 .errorAlert()
                 .windowOpener()
+                .onOpenURL { url in
+                    OpenURLModPackImportPresenter.shared.handle(url: url)
+                }
                 .onAppear {
                     // 应用启动时清理所有窗口数据
                     WindowDataStore.shared.cleanup(for: .aiChat)

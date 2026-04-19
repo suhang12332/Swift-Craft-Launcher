@@ -13,7 +13,9 @@ struct MainView: View {
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @StateObject private var filterState = ResourceFilterState()
     @StateObject private var detailState = ResourceDetailState()
+    @ObservedObject private var openURLModPackImportPresenter = OpenURLModPackImportPresenter.shared
     @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @Environment(\.appLogger)
     private var logger
 
@@ -36,6 +38,18 @@ struct MainView: View {
         }
         .environmentObject(filterState)
         .environmentObject(detailState)
+        .sheet(
+            isPresented: $openURLModPackImportPresenter.showImportSheet,
+            onDismiss: { openURLModPackImportPresenter.clear() },
+            content: {
+                if let file = openURLModPackImportPresenter.preselectedTempFile {
+                    GameFormView(initialMode: GameFormMode.modPackImport(file: file, shouldProcess: true))
+                        .environmentObject(gameRepository)
+                        .environmentObject(playerListViewModel)
+                        .presentationBackgroundInteraction(.automatic)
+                }
+            }
+        )
         .onChange(of: detailState.selectedItem) { oldValue, newValue in
             handleSidebarItemChange(from: oldValue, to: newValue)
         }
