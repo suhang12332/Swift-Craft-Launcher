@@ -44,7 +44,7 @@ struct GameContextMenu: View {
             selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
             onOpenSettings()
         }, label: {
-            Label("settings.game.advanced.tab".localized(), systemImage: "gearshape")
+            Label("settings.game.advanced".localized(), systemImage: "gearshape")
         })
 
         Divider()

@@ -77,12 +77,12 @@ struct GameActionButtons: View {
                 openSettings()
             } label: {
                 Label(
-                    "settings.game.advanced.tab".localized(),
+                    "settings.game.advanced".localized(),
                     systemImage: "gearshape"
                 )
             }
             .id(controlActiveState)
-            .help("settings.game.advanced.tab".localized())
+            .help("settings.game.advanced".localized())
 
             Button {
                 gameActionManager.showInFinder(game: game)
