@@ -145,6 +145,14 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSHandlerRank string Owner" "$INFO_PLIST_PATH"
           /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes array" "$INFO_PLIST_PATH"
           /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:0 string com.modrinth.mrpack" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:1 dict" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:1:CFBundleTypeName string ZIP Archive" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:1:CFBundleTypeRole string Viewer" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:1:LSHandlerRank string Alternate" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:1:LSItemContentTypes array" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:1:LSItemContentTypes:0 string public.zip-archive" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:1:CFBundleTypeExtensions array" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:1:CFBundleTypeExtensions:0 string zip" "$INFO_PLIST_PATH"
           echo "✅ 文档类型配置已添加到生成的 Info.plist"
 
       - name: Fetch help documentation
