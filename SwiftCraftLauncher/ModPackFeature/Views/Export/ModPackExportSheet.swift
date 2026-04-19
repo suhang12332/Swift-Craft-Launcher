@@ -12,7 +12,7 @@ import UniformTypeIdentifiers
 struct ModPackDocument: FileDocument {
     static var readableContentTypes: [UTType] {
         [
-            UTType(filenameExtension: "mrpack") ?? UTType.zip,
+            UTType(filenameExtension: AppConstants.FileExtensions.mrpack) ?? UTType.zip,
             UTType.zip,
         ]
     }
@@ -236,7 +236,7 @@ struct ModPackExportSheet: View {
     private var exportContentType: UTType {
         switch viewModel.currentExportFormat {
         case .modrinth:
-            return UTType(filenameExtension: "mrpack") ?? UTType.zip
+            return UTType(filenameExtension: AppConstants.FileExtensions.mrpack) ?? UTType.zip
         case .curseforge:
             return UTType.zip
         }

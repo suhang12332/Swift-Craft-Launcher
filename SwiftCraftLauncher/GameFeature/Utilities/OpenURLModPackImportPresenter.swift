@@ -13,7 +13,11 @@ final class OpenURLModPackImportPresenter: ObservableObject {
 
     func handle(url: URL) {
         guard url.isFileURL else { return }
-        guard url.pathExtension.lowercased() == "mrpack" else { return }
+        let supportedExtensions = [
+            AppConstants.FileExtensions.zip,
+            AppConstants.FileExtensions.mrpack,
+        ]
+        guard supportedExtensions.contains(url.pathExtension.lowercased()) else { return }
 
         Task {
             let mode = await importViewModel.prepareModPackImportMode(from: .success([url]))
