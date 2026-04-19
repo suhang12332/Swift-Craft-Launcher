@@ -4,49 +4,27 @@ import Foundation
 class ModScanner {
     static let shared = ModScanner()
 
-    /// 按目录路径管理的目录监控器，key 为标准化后的目录绝对路径
-    private var directoryWatchers: [String: ModsDirectoryTreeWatcher] = [:]
-
     private init() {}
 
-    /// 确保为某个目录创建目录监控（按标准化路径去重）
-    private func ensureWatchingDirectory(
-        dir: URL,
-        onChange: @escaping () -> Void
+    nonisolated func scheduleDirectoryHashRebuild(
+        standardizedDirectoryURL: URL,
+        gameNameHint: String?
     ) {
-        let key = dir.standardizedFileURL.path
-
-        // 已经有监控器则直接返回
-        if directoryWatchers[key] != nil {
-            return
-        }
-
-        // 目录不存在则不创建监控器
-        guard FileManager.default.fileExists(atPath: key) else {
-            return
-        }
-
-        let watcher = ModsDirectoryTreeWatcher(path: key) {
-            onChange()
-        }
-        directoryWatchers[key] = watcher
-    }
-
-    /// 为某个游戏的 mods 目录创建目录监控，并在变更时重建该目录 hash 缓存
-    private func ensureWatchingModsDirectory(for gameName: String, modsDir: URL) {
-        ensureWatchingDirectory(dir: modsDir) { [weak self] in
-            guard let self = self else { return }
-            let standardizedDir = modsDir.standardizedFileURL
-            Task.detached(priority: .utility) {
-                do {
-                    _ = try await self.rebuildDirectoryHashes(
-                        dir: standardizedDir,
-                        gameNameHint: gameName
-                    )
-                } catch {
-                    let globalError = GlobalError.from(error)
+        Task.detached(priority: .utility) {
+            do {
+                _ = try await Self.shared.rebuildDirectoryHashes(
+                    dir: standardizedDirectoryURL,
+                    gameNameHint: gameNameHint
+                )
+            } catch {
+                let globalError = GlobalError.from(error)
+                if let gameNameHint {
                     Logger.shared.warning(
-                        "FSEvents 重新扫描游戏 \(gameName) 的 mods 目录失败: \(globalError.chineseMessage)"
+                        "FSEvents 重新扫描游戏 \(gameNameHint) 的 mods 目录失败: \(globalError.chineseMessage)"
+                    )
+                } else {
+                    Logger.shared.warning(
+                        "FSEvents 重新扫描目录 \(standardizedDirectoryURL.lastPathComponent) 失败: \(globalError.chineseMessage)"
                     )
                 }
             }
@@ -427,37 +405,40 @@ extension ModScanner {
     }
 
     // 返回 Set 以提高查找性能（O(1)）
-    public func scanAllDetailIdsThrowing(in dir: URL) async throws -> Set<String> {
-        let standardizedDir = dir.standardizedFileURL
 
-        // 为所有需要 hash 的目录创建统一的 watcher：
-        // - mods 目录：由 ensureWatchingModsDirectory 负责（会同时更新 ModInstallationCache）
-        // - 其他目录：使用通用 ensureWatchingDirectory + rebuildDirectoryHashes
-        if isModsDirectory(standardizedDir), let gameName = extractGameName(from: standardizedDir) {
-            ensureWatchingModsDirectory(for: gameName, modsDir: standardizedDir)
-        } else {
-            ensureWatchingDirectory(dir: standardizedDir) { [weak self] in
-                guard let self = self else { return }
-                Task.detached(priority: .utility) {
-                    do {
-                        _ = try await self.rebuildDirectoryHashes(dir: standardizedDir)
-                    } catch {
-                        let globalError = GlobalError.from(error)
-                        Logger.shared.warning(
-                            "FSEvents 重新扫描目录 \(standardizedDir.lastPathComponent) 失败: \(globalError.chineseMessage)"
-                        )
-                    }
-                }
-            }
-        }
+    private func ensureFSEventsWatcherRegistered(
+        standardizedDirectory: URL,
+        gameNameHint: String?
+    ) async {
+        let hint: String? = {
+            if let gameNameHint { return gameNameHint }
+            guard isModsDirectory(standardizedDirectory) else { return nil }
+            return extractGameName(from: standardizedDirectory)
+        }()
+        await ModDirectoryWatcherRegistry.shared.ensureWatching(
+            directoryURL: standardizedDirectory,
+            gameNameHint: hint
+        )
+    }
 
-        // 优先从通用目录 hash 缓存读取
-        if let cached = await DirectoryHashCache.shared.get(for: standardizedDir) {
+    private func scanAllDetailIdsAfterWatcherRegisteredThrowing(
+        standardizedDirectory: URL
+    ) async throws -> Set<String> {
+        if let cached = await DirectoryHashCache.shared.get(for: standardizedDirectory) {
             return cached
         }
+        return try await rebuildDirectoryHashes(dir: standardizedDirectory)
+    }
 
-        // 没有缓存时，同步扫描一次并写入缓存（对 mods 目录会顺带同步到 ModInstallationCache）
-        return try await rebuildDirectoryHashes(dir: standardizedDir)
+    public func scanAllDetailIdsThrowing(in dir: URL) async throws -> Set<String> {
+        let standardizedDir = dir.standardizedFileURL
+        await ensureFSEventsWatcherRegistered(
+            standardizedDirectory: standardizedDir,
+            gameNameHint: nil
+        )
+        return try await scanAllDetailIdsAfterWatcherRegisteredThrowing(
+            standardizedDirectory: standardizedDir
+        )
     }
 
     public func scanGameModsDirectory(game: GameVersionInfo) async {
@@ -469,11 +450,16 @@ extension ModScanner {
             return
         }
 
-        // 为该游戏的 mods 目录启动目录树监控（如尚未启动）
-        ensureWatchingModsDirectory(for: game.gameName, modsDir: modsDir)
+        let standardizedModsDir = modsDir.standardizedFileURL
+        await ensureFSEventsWatcherRegistered(
+            standardizedDirectory: standardizedModsDir,
+            gameNameHint: game.gameName
+        )
 
         do {
-            let detailIds = try await scanAllDetailIdsThrowing(in: modsDir)
+            let detailIds = try await scanAllDetailIdsAfterWatcherRegisteredThrowing(
+                standardizedDirectory: standardizedModsDir
+            )
             Logger.shared.debug("游戏 \(game.gameName) 扫描完成，发现 \(detailIds.count) 个 mod")
         } catch {
             let globalError = GlobalError.from(error)
@@ -491,15 +477,18 @@ extension ModScanner {
             return
         }
 
-        // 为该游戏的 mods 目录启动目录树监控（如尚未启动）
-        ensureWatchingModsDirectory(for: game.gameName, modsDir: modsDir)
-
-        // 使用 Task 同步等待异步操作完成
+        let standardizedModsDir = modsDir.standardizedFileURL
         let semaphore = DispatchSemaphore(value: 0)
         Task {
             defer { semaphore.signal() }
+            await self.ensureFSEventsWatcherRegistered(
+                standardizedDirectory: standardizedModsDir,
+                gameNameHint: game.gameName
+            )
             do {
-                let detailIds = try await scanAllDetailIdsThrowing(in: modsDir)
+                let detailIds = try await self.scanAllDetailIdsAfterWatcherRegisteredThrowing(
+                    standardizedDirectory: standardizedModsDir
+                )
                 Logger.shared.debug("游戏 \(game.gameName) 扫描完成，发现 \(detailIds.count) 个 mod")
             } catch {
                 let globalError = GlobalError.from(error)

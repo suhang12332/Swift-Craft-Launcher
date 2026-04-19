@@ -73,10 +73,16 @@ final class ModsDirectoryTreeWatcher {
     }
 
     deinit {
-        if let stream = stream {
+        guard let stream else { return }
+        let teardown = {
             FSEventStreamStop(stream)
             FSEventStreamInvalidate(stream)
             FSEventStreamRelease(stream)
+        }
+        if Thread.isMainThread {
+            teardown()
+        } else {
+            DispatchQueue.main.sync(execute: teardown)
         }
     }
 }
