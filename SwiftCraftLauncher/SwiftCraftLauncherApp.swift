@@ -39,6 +39,10 @@ struct SwiftCraftLauncherApp: App {
     @StateObject var generalSettingsManager = GeneralSettingsManager.shared
     @StateObject var themeManager = ThemeManager.shared
     @StateObject private var skinSelectionStore = SkinSelectionStore()
+    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
+
+    @Environment(\.openSettings)
+    private var openSettings
 
     // MARK: - Notification Delegate
     private let notificationCenterDelegate = NotificationCenterDelegate()
@@ -153,5 +157,24 @@ struct SwiftCraftLauncherApp: App {
             .windowStyle(.titleBar)
             .applyRestorationBehaviorDisabled()
             .windowResizability(.contentSize)
+
+        // 右上角的状态栏(可以显示图标的)
+        MenuBarExtra(
+            content: {
+                MenuBarExtraContentView(
+                    openSettings: { openSettings() },
+                    openGameDeletion: { game in gameDialogsPresenter.requestGameDeletion(of: game) },
+                    openModPackExport: { game in gameDialogsPresenter.presentModPackExport(for: game) }
+                )
+                .environmentObject(playerListViewModel)
+                .environmentObject(gameRepository)
+                .environmentObject(gameLaunchUseCase)
+            },
+            label: {
+                Image("menu-png").resizable()
+                    .renderingMode(.template)
+                    .scaledToFit()
+            }
+        )
     }
 }

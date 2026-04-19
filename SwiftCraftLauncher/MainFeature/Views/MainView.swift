@@ -14,6 +14,7 @@ struct MainView: View {
     @StateObject private var filterState = ResourceFilterState()
     @StateObject private var detailState = ResourceDetailState()
     @ObservedObject private var openURLModPackImportPresenter = OpenURLModPackImportPresenter.shared
+    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @Environment(\.appLogger)
@@ -52,6 +53,11 @@ struct MainView: View {
         )
         .onChange(of: detailState.selectedItem) { oldValue, newValue in
             handleSidebarItemChange(from: oldValue, to: newValue)
+        }
+        .onChange(of: selectedGameManager.selectedGameId) { _, newId in
+            guard let gameId = newId else { return }
+            if case .game(gameId) = detailState.selectedItem { return }
+            detailState.selectedItem = .game(gameId)
         }
         .onChange(of: gameRepository.workingPathChanged) { _, _ in
             detailState.selectedItem = .resource(.mod)

@@ -50,6 +50,34 @@ class WindowManager {
         }
     }
 
+    func showAndActivateWindow(id: WindowID) {
+        if let existingWindow = findWindow(id: id) {
+            bringWindowToFront(existingWindow)
+            return
+        }
+        openWindow(id: id)
+        NSApplication.shared.activate(ignoringOtherApps: true)
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self, let window = self.findWindow(id: id) else { return }
+            self.bringWindowToFront(window)
+        }
+    }
+
+    /// 把窗口恢复并置于前台
+    private func bringWindowToFront(_ window: NSWindow) {
+        NSApplication.shared.activate(ignoringOtherApps: true)
+        if window.isMiniaturized {
+            window.deminiaturize(nil)
+            DispatchQueue.main.async {
+                NSApplication.shared.activate(ignoringOtherApps: true)
+                window.makeKeyAndOrderFront(nil)
+            }
+            return
+        }
+        window.makeKeyAndOrderFront(nil)
+    }
+
     /// 关闭指定 ID 的窗口
     func closeWindow(id: WindowID) {
         if let window = findWindow(id: id) {
