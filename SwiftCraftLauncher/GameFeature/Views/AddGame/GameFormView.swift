@@ -121,9 +121,9 @@ struct GameFormView: View {
                         switch filePickerType {
                         case .modPack:
                             return [
-                                UTType(filenameExtension: "mrpack") ?? UTType.data,
+                                UTType(filenameExtension: AppConstants.FileExtensions.mrpack) ?? UTType.data,
                                 .zip,
-                                UTType(filenameExtension: "zip") ?? UTType.zip,
+                                UTType(filenameExtension: AppConstants.FileExtensions.zip) ?? UTType.zip,
                             ]
                         case .gameIcon:
                             return [.png, .jpeg, .gif]

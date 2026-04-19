@@ -106,7 +106,7 @@ final class ModPackDownloadService {
         do {
             let fileExtension = modPackPath.pathExtension.lowercased()
 
-            guard fileExtension == "zip" || fileExtension == "mrpack" else {
+            guard fileExtension == AppConstants.FileExtensions.zip || fileExtension == AppConstants.FileExtensions.mrpack else {
                 errorHandler?(
                     "不支持的整合包格式: \(fileExtension)",
                     "error.resource.unsupported_modpack_format"

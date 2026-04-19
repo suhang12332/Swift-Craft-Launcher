@@ -16,9 +16,9 @@ enum ModPackExportFormat: String, CaseIterable, Codable {
     var fileExtension: String {
         switch self {
         case .modrinth:
-            return "mrpack"
+            return AppConstants.FileExtensions.mrpack
         case .curseforge:
-            return "zip"
+            return AppConstants.FileExtensions.zip
         }
     }
 }
