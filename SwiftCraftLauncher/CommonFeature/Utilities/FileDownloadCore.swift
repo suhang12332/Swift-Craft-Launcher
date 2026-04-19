@@ -1,11 +1,6 @@
 import Foundation
 
 enum FileDownloadCore {
-    private static let githubPrefix = "https://github.com/"
-    private static let rawGithubPrefix = "https://raw.githubusercontent.com/"
-    private static let githubHost = "github.com"
-    private static let rawGithubHost = "raw.githubusercontent.com"
-
     static func parseURL(from urlString: String) throws -> URL {
         try autoreleasepool {
             guard let url = URL(string: urlString) else {
@@ -21,14 +16,7 @@ enum FileDownloadCore {
 
     static func normalizedDownloadURL(from originalURL: URL) -> URL {
         autoreleasepool {
-            let needsProxy: Bool
-            if let host = originalURL.host {
-                needsProxy = host == githubHost || host == rawGithubHost
-            } else {
-                let absoluteString = originalURL.absoluteString
-                needsProxy = absoluteString.hasPrefix(githubPrefix) || absoluteString.hasPrefix(rawGithubPrefix)
-            }
-            return needsProxy ? URLConfig.applyGitProxyIfNeeded(originalURL) : originalURL
+            URLConfig.applyGitProxyIfNeeded(originalURL)
         }
     }
 
