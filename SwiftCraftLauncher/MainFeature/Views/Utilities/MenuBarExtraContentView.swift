@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/4/20.
 //
 
+import AppKit
 import SwiftUI
 
 struct MenuBarExtraContentView: View {
@@ -64,5 +65,10 @@ struct MenuBarExtraContentView: View {
         Button("ai.assistant.title".localized()) {
             AIChatManager.shared.openChatWindow()
         }
+
+        Button("menu.quit".localized()) {
+            NSApplication.shared.terminate(nil)
+        }
+        .keyboardShortcut("q", modifiers: .command)
     }
 }
