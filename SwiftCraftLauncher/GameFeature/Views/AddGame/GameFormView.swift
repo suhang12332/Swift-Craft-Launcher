@@ -37,11 +37,15 @@ struct GameFormView: View {
     @State private var triggerCancel = false
     @State private var showFilePicker = false
     @State private var filePickerType: FilePickerType = .modPack
-    @State private var mode: GameFormMode = .creation
+    @State private var mode: GameFormMode
     @State private var isModPackParsed = false
     @State private var imagePickerHandler: ((Result<[URL], Error>) -> Void)?
     @State private var showImportPicker = false
     @StateObject private var importViewModel = GameFormImportViewModel()
+
+    init(initialMode: GameFormMode = .creation) {
+        _mode = State(initialValue: initialMode)
+    }
 
     // MARK: - Body
     @ViewBuilder var body: some View {

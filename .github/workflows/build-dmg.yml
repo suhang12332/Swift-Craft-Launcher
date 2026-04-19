@@ -112,6 +112,41 @@ jobs:
           
           echo "✅ HelpBook 配置已添加到生成的 Info.plist"
 
+          echo "📝 向生成的 Info.plist 添加 URL Scheme 配置..."
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleURLTypes" "$INFO_PLIST_PATH" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleTypeRole string Editor" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string com.su.code.SwiftCraftLauncher" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string swift-craft-launcher" "$INFO_PLIST_PATH"
+          echo "✅ URL Scheme 配置已添加到生成的 Info.plist"
+
+          echo "📝 向生成的 Info.plist 添加 UTI 配置..."
+          /usr/libexec/PlistBuddy -c "Delete :UTImportedTypeDeclarations" "$INFO_PLIST_PATH" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :UTImportedTypeDeclarations array" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :UTImportedTypeDeclarations:0 dict" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :UTImportedTypeDeclarations:0:UTTypeConformsTo array" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :UTImportedTypeDeclarations:0:UTTypeConformsTo:0 string public.zip-archive" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :UTImportedTypeDeclarations:0:UTTypeDescription string Modrinth Modpack" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :UTImportedTypeDeclarations:0:UTTypeIdentifier string com.modrinth.mrpack" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :UTImportedTypeDeclarations:0:UTTypeTagSpecification dict" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :UTImportedTypeDeclarations:0:UTTypeTagSpecification:public.filename-extension array" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :UTImportedTypeDeclarations:0:UTTypeTagSpecification:public.filename-extension:0 string mrpack" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :UTImportedTypeDeclarations:0:UTTypeTagSpecification:public.mime-type string application/x-modrinth-modpack+zip" "$INFO_PLIST_PATH"
+          echo "✅ UTI 配置已添加到生成的 Info.plist"
+
+          echo "📝 向生成的 Info.plist 添加文档类型配置..."
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleDocumentTypes" "$INFO_PLIST_PATH" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes array" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0 dict" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:CFBundleTypeName string Modrinth Modpack" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:CFBundleTypeRole string Viewer" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSHandlerRank string Owner" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes array" "$INFO_PLIST_PATH"
+          /usr/libexec/PlistBuddy -c "Add :CFBundleDocumentTypes:0:LSItemContentTypes:0 string com.modrinth.mrpack" "$INFO_PLIST_PATH"
+          echo "✅ 文档类型配置已添加到生成的 Info.plist"
+
       - name: Fetch help documentation
         run: |
           ARCHIVE_PATH="build_${{ matrix.arch }}/SwiftCraftLauncher.xcarchive"

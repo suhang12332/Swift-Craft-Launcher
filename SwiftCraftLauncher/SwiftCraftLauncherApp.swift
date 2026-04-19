@@ -39,6 +39,10 @@ struct SwiftCraftLauncherApp: App {
     @StateObject var generalSettingsManager = GeneralSettingsManager.shared
     @StateObject var themeManager = ThemeManager.shared
     @StateObject private var skinSelectionStore = SkinSelectionStore()
+    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
+
+    @Environment(\.openSettings)
+    private var openSettings
 
     // MARK: - Notification Delegate
     private let notificationCenterDelegate = NotificationCenterDelegate()
@@ -55,7 +59,7 @@ struct SwiftCraftLauncherApp: App {
     // MARK: - Body
     var body: some Scene {
 
-        WindowGroup {
+        Window(Bundle.main.appName, id: WindowID.main.rawValue) {
             MainView()
                 .environment(\.appLogger, Logger.shared)
                 .environmentObject(playerListViewModel)
@@ -67,6 +71,9 @@ struct SwiftCraftLauncherApp: App {
                 .preferredColorScheme(themeManager.currentColorScheme)
                 .errorAlert()
                 .windowOpener()
+                .onOpenURL { url in
+                    OpenURLModPackImportPresenter.shared.handle(url: url)
+                }
                 .onAppear {
                     // 应用启动时清理所有窗口数据
                     WindowDataStore.shared.cleanup(for: .aiChat)
@@ -77,7 +84,6 @@ struct SwiftCraftLauncherApp: App {
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
-        .conditionalRestorationBehavior()
         .commands {
             if sparkleUpdateService.updateAvailable {
                 CommandMenu(String(format: "menu.update.released.title".localized(), sparkleUpdateService.versionString)) {
@@ -151,5 +157,24 @@ struct SwiftCraftLauncherApp: App {
             .windowStyle(.titleBar)
             .applyRestorationBehaviorDisabled()
             .windowResizability(.contentSize)
+
+        // 右上角的状态栏(可以显示图标的)
+        MenuBarExtra(
+            content: {
+                MenuBarExtraContentView(
+                    openSettings: { openSettings() },
+                    openGameDeletion: { game in gameDialogsPresenter.requestGameDeletion(of: game) },
+                    openModPackExport: { game in gameDialogsPresenter.presentModPackExport(for: game) }
+                )
+                .environmentObject(playerListViewModel)
+                .environmentObject(gameRepository)
+                .environmentObject(gameLaunchUseCase)
+            },
+            label: {
+                Image("menu-png").resizable()
+                    .renderingMode(.template)
+                    .scaledToFit()
+            }
+        )
     }
 }
