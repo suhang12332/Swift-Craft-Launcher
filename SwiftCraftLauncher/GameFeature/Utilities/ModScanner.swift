@@ -12,7 +12,7 @@ class ModScanner {
     ) {
         Task.detached(priority: .utility) {
             do {
-                _ = try await ModScanner.shared.rebuildDirectoryHashes(
+                _ = try await Self.shared.rebuildDirectoryHashes(
                     dir: standardizedDirectoryURL,
                     gameNameHint: gameNameHint
                 )
