@@ -1,5 +1,5 @@
 {
-  "originHash" : "689c8027b9f471582b5f408135014821429676ce9ce1fb9fb83bf34747f7ebae",
+  "originHash" : "8dc2113afe21c609ab4b6517e8734e353308615fc6549d79d04e21e460056050",
   "pins" : [
     {
       "identity" : "cfmodrinthadapterkit",
@@ -26,6 +26,15 @@
       "state" : {
         "branch" : "release",
         "revision" : "6177141260f167eb0fc42924edab0202452b24d0"
+      }
+    },
+    {
+      "identity" : "playerdatakit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/suhang12332/PlayerDataKit.git",
+      "state" : {
+        "branch" : "releases",
+        "revision" : "6f448d2a2b180d0e7077d8c28377a1aa3ca6b168"
       }
     },
     {
