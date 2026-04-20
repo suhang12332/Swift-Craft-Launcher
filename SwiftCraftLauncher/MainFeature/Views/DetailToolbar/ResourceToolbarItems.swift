@@ -14,6 +14,9 @@ struct ResourceToolbarItems: View {
     @EnvironmentObject var filterState: ResourceFilterState
     @EnvironmentObject var detailState: ResourceDetailState
     @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @State private var showingLauncherStats = false
+    @State private var launcherStatsSheetIdentity = UUID()
 
     /// 打开当前资源在浏览器中的项目页面
     private func openCurrentResourceInBrowser() {
@@ -104,6 +107,30 @@ struct ResourceToolbarItems: View {
         detailState.showInstallSheet = true
     }
 
+    @ViewBuilder
+    private func dataAny() -> some View {
+        Button {
+            launcherStatsSheetIdentity = UUID()
+            showingLauncherStats = true
+        } label: {
+            Label("launcher.stats.title".localized(), systemImage: "chart.line.text.clipboard")
+        }
+        .help("launcher.stats.title".localized())
+        .sheet(
+            isPresented: $showingLauncherStats,
+            onDismiss: {
+                launcherStatsSheetIdentity = UUID()
+            },
+            content: {
+                LauncherStatsSheetView()
+                    .id(launcherStatsSheetIdentity)
+                    .environmentObject(gameRepository)
+                    .environmentObject(playerListViewModel)
+                    .presentationBackgroundInteraction(.automatic)
+            }
+        )
+    }
+
     var body: some View {
         Group {
             if detailState.selectedProjectId != nil {
@@ -161,6 +188,7 @@ struct ResourceToolbarItems: View {
                 }
                 .id(controlActiveState)
                 .help("resource.open_in_browser".localized())
+                dataAny()
             } else {
                 if detailState.gameType {
                     ResourceFilterMenus.dataSourceMenu(filterState: filterState)
@@ -169,6 +197,8 @@ struct ResourceToolbarItems: View {
                         )
                         .id(controlActiveState)
                 }
+                Spacer()
+                dataAny()
             }
         }
     }

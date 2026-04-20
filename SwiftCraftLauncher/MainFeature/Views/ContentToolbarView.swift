@@ -10,8 +10,6 @@ public struct ContentToolbarView: ToolbarContent {
     @State private var showingGameForm = false
     @EnvironmentObject var gameRepository: GameRepository
     @State private var showEditSkin = false
-    @State private var showingLauncherStats = false
-    @State private var launcherStatsSheetIdentity = UUID()
     @StateObject private var viewModel = ContentToolbarViewModel()
 
     // MARK: - Computed Properties
@@ -99,26 +97,6 @@ public struct ContentToolbarView: ToolbarContent {
                     playerListViewModel: playerListViewModel
                 )
             }
-            Button {
-                launcherStatsSheetIdentity = UUID()
-                showingLauncherStats = true
-            } label: {
-                Label("launcher.stats.title".localized(), systemImage: "chart.line.text.clipboard")
-            }
-            .help("launcher.stats.title".localized())
-            .sheet(
-                isPresented: $showingLauncherStats,
-                onDismiss: {
-                    launcherStatsSheetIdentity = UUID()
-                },
-                content: {
-                    LauncherStatsSheetView()
-                        .id(launcherStatsSheetIdentity)
-                        .environmentObject(gameRepository)
-                        .environmentObject(playerListViewModel)
-                        .presentationBackgroundInteraction(.automatic)
-                    }
-            )
             .alert(isPresented: $showPlayerAlert) {
                 Alert(
                     title: Text("sidebar.alert.no_player.title".localized()),

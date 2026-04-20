@@ -43,6 +43,7 @@ struct LauncherStatsSheetView: View {
                 }
             }
         )
+        .frame(minWidth: 980, minHeight: 680)
         .task(id: AllPlayersMultiGameStatsController.entriesSignature(entries)) {
             await statsController.configureAndLoad(entries: entries)
         }
