@@ -9,23 +9,33 @@ struct GameContextMenu: View {
     let onExport: () -> Void
     let showsShowInLauncher: Bool
 
+    @ObservedObject private var gameStatusManager: GameStatusManager
+    @ObservedObject private var gameActionManager: GameActionManager
+    @ObservedObject private var selectedGameManager: SelectedGameManager
+    private let windowManager: WindowManager
+
     init(
         game: GameVersionInfo,
         onDelete: @escaping () -> Void,
         onOpenSettings: @escaping () -> Void,
         onExport: @escaping () -> Void,
-        showsShowInLauncher: Bool = false
+        showsShowInLauncher: Bool = false,
+        gameStatusManager: GameStatusManager = AppServices.gameStatusManager,
+        gameActionManager: GameActionManager = AppServices.gameActionManager,
+        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
+        windowManager: WindowManager = AppServices.windowManager
     ) {
         self.game = game
         self.onDelete = onDelete
         self.onOpenSettings = onOpenSettings
         self.onExport = onExport
         self.showsShowInLauncher = showsShowInLauncher
+        self.gameStatusManager = gameStatusManager
+        self.gameActionManager = gameActionManager
+        self.selectedGameManager = selectedGameManager
+        self.windowManager = windowManager
     }
 
-    @ObservedObject private var gameStatusManager = GameStatusManager.shared
-    @ObservedObject private var gameActionManager = GameActionManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
@@ -57,8 +67,8 @@ struct GameContextMenu: View {
 
         if showsShowInLauncher {
             Button(action: {
-                SelectedGameManager.shared.setSelectedGame(game.id)
-                WindowManager.shared.showAndActivateWindow(id: .main)
+                selectedGameManager.setSelectedGame(game.id)
+                windowManager.showAndActivateWindow(id: .main)
             }, label: {
                 Label("sidebar.context_menu.show_in_launcher".localized(), systemImage: "macwindow")
             })
@@ -76,7 +86,7 @@ struct GameContextMenu: View {
         if game.modLoader != GameLoader.vanilla.displayName {
             Button(action: {
                 if showsShowInLauncher {
-                    WindowManager.shared.showAndActivateWindow(id: .main)
+                    windowManager.showAndActivateWindow(id: .main)
                 }
                 onExport()
             }, label: {
@@ -86,7 +96,7 @@ struct GameContextMenu: View {
 
         Button(action: {
             if showsShowInLauncher {
-                WindowManager.shared.showAndActivateWindow(id: .main)
+                windowManager.showAndActivateWindow(id: .main)
             }
             onDelete()
         }, label: {

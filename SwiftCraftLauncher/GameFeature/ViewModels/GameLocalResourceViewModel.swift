@@ -22,11 +22,21 @@ final class GameLocalResourceViewModel: ObservableObject {
     private var searchTask: Task<Void, Never>?
     private var searchGeneration: Int = 0
     private var currentSearchText: String = ""
+    private let errorHandler: GlobalErrorHandler
+    private let modScanner: ModScanner
 
     private static let pageSize: Int = 20
     private var pageSize: Int { Self.pageSize }
 
     var displayedResources: [ModrinthProjectDetail] { scannedResources }
+
+    init(
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        modScanner: ModScanner = AppServices.modScanner
+    ) {
+        self.errorHandler = errorHandler
+        self.modScanner = modScanner
+    }
 
     func onDisappear() {
         clearAllData()
@@ -196,7 +206,7 @@ final class GameLocalResourceViewModel: ObservableObject {
                 level: .notification
             )
             Logger.shared.error("初始化资源目录失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             error = globalError
         }
     }
@@ -220,7 +230,7 @@ final class GameLocalResourceViewModel: ObservableObject {
             return
         }
 
-        allFiles = ModScanner.shared.getAllResourceFiles(resourceDir)
+        allFiles = modScanner.getAllResourceFiles(resourceDir)
     }
 
     private func filterResourcesByTitle(_ details: [ModrinthProjectDetail], searchText: String) -> [ModrinthProjectDetail] {
@@ -263,7 +273,7 @@ final class GameLocalResourceViewModel: ObservableObject {
         let isSearching = !effectiveSearchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let generationAtStart = searchGeneration
 
-        ModScanner.shared.scanResourceFilesPage(
+        modScanner.scanResourceFilesPage(
             fileURLs: sourceFiles,
             page: page,
             pageSize: pageSize

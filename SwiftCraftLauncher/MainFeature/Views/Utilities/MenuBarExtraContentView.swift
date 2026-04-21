@@ -16,6 +16,19 @@ struct MenuBarExtraContentView: View {
     let openSettings: () -> Void
     let openGameDeletion: (GameVersionInfo) -> Void
     let openModPackExport: (GameVersionInfo) -> Void
+    private let aiChatManager: AIChatManager
+
+    init(
+        openSettings: @escaping () -> Void,
+        openGameDeletion: @escaping (GameVersionInfo) -> Void,
+        openModPackExport: @escaping (GameVersionInfo) -> Void,
+        aiChatManager: AIChatManager = AppServices.aiChatManager
+    ) {
+        self.openSettings = openSettings
+        self.openGameDeletion = openGameDeletion
+        self.openModPackExport = openModPackExport
+        self.aiChatManager = aiChatManager
+    }
 
     var body: some View {
         if !gameRepository.games.isEmpty {
@@ -63,7 +76,7 @@ struct MenuBarExtraContentView: View {
         Divider()
 
         Button("ai.assistant.title".localized()) {
-            AIChatManager.shared.openChatWindow()
+            aiChatManager.openChatWindow()
         }
 
         Button("menu.quit".localized()) {

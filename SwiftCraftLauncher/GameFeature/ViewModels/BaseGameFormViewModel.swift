@@ -21,9 +21,14 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     internal var downloadTask: Task<Void, Error>?
     private var cancellables = Set<AnyCancellable>()
     let configuration: GameFormConfiguration
+    let errorHandler: GlobalErrorHandler
 
-    init(configuration: GameFormConfiguration) {
+    init(
+        configuration: GameFormConfiguration,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+    ) {
         self.configuration = configuration
+        self.errorHandler = errorHandler
         self.gameNameValidator = GameNameValidator(gameSetupService: gameSetupService)
 
         // 监听子对象的状态变化
@@ -139,6 +144,6 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     // MARK: - Setup Methods
     func handleNonCriticalError(_ error: GlobalError, message: String) {
         Logger.shared.error("\(message): \(error.chineseMessage)")
-        GlobalErrorHandler.shared.handle(error)
+        errorHandler.handle(error)
     }
 }

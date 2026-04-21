@@ -3,6 +3,17 @@ import UniformTypeIdentifiers
 
 @MainActor
 final class GameInfoDetailIOViewModel: ObservableObject {
+    private let errorHandler: GlobalErrorHandler
+    private let modScanner: ModScanner
+
+    init(
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        modScanner: ModScanner = AppServices.modScanner
+    ) {
+        self.errorHandler = errorHandler
+        self.modScanner = modScanner
+    }
+
     /// 扫描本地资源目录，返回 detailId Set（失败返回空集合，并上报 GlobalError）
     func scanAllDetailIds(query: String, gameName: String) async -> Set<String> {
         // Modpacks don't have a local directory to scan
@@ -19,11 +30,11 @@ final class GameInfoDetailIOViewModel: ObservableObject {
         }
 
         do {
-            return try await ModScanner.shared.scanAllDetailIdsThrowing(in: resourceDir)
+            return try await modScanner.scanAllDetailIdsThrowing(in: resourceDir)
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("扫描所有资源失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return []
         }
     }
@@ -38,7 +49,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
                     i18nKey: "error.validation.no_file_selected",
                     level: .notification
                 )
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 return false
             }
 
@@ -48,7 +59,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
                     i18nKey: "error.filesystem.file_access_failed",
                     level: .notification
                 )
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 return false
             }
             defer { url.stopAccessingSecurityScopedResource() }
@@ -72,13 +83,13 @@ final class GameInfoDetailIOViewModel: ObservableObject {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("更新游戏图标失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 return false
             }
 
         case .failure(let error):
             let globalError = GlobalError.from(error)
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }

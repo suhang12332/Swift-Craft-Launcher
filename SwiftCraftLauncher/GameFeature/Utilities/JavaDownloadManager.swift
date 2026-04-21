@@ -8,10 +8,19 @@ class JavaDownloadManager: ObservableObject {
     @Published var downloadState = JavaDownloadState()
     @Published var isWindowVisible = false
 
-    private let javaRuntimeService = JavaRuntimeService.shared
+    private let javaRuntimeService: JavaRuntimeService
+    private let windowManager: WindowManager
     private var dismissCallback: (() -> Void)?
     private var currentDownloadTask: Task<Void, Error>?
     private var cancelRequested = false
+
+    private init(
+        javaRuntimeService: JavaRuntimeService = AppServices.javaRuntimeService,
+        windowManager: WindowManager = AppServices.windowManager
+    ) {
+        self.javaRuntimeService = javaRuntimeService
+        self.windowManager = windowManager
+    }
 
     /// 设置窗口关闭回调
     func setDismissCallback(_ callback: @escaping () -> Void) {
@@ -100,13 +109,13 @@ class JavaDownloadManager: ObservableObject {
 
     /// 显示下载窗口
     private func showDownloadWindow() {
-        WindowManager.shared.openWindow(id: .javaDownload)
+        windowManager.openWindow(id: .javaDownload)
         isWindowVisible = true
     }
 
     /// 关闭窗口
     func closeWindow() {
-        WindowManager.shared.closeWindow(id: .javaDownload)
+        windowManager.closeWindow(id: .javaDownload)
         isWindowVisible = false
         downloadState.reset()
         dismissCallback?()

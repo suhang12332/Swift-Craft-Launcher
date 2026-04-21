@@ -29,8 +29,11 @@ class LauncherImportViewModel: BaseGameFormViewModel {
 
     // MARK: - Initialization
 
-    override init(configuration: GameFormConfiguration) {
-        super.init(configuration: configuration)
+    override init(
+        configuration: GameFormConfiguration,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+    ) {
+        super.init(configuration: configuration, errorHandler: errorHandler)
     }
 
     // MARK: - Setup Methods

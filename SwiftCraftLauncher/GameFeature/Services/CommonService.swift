@@ -19,7 +19,7 @@ enum CommonService {
             Logger.shared.error(
                 "获取 \(loader) 版本失败: \(globalError.chineseMessage)"
             )
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }
@@ -63,7 +63,7 @@ enum CommonService {
                     let formattedTime = CommonUtil.formatRelativeTime(
                         version.date
                     )
-                    AppCacheManager.shared.setSilently(
+                    AppServices.appCacheManager.setSilently(
                         namespace: "version_time",
                         key: cacheKey,
                         value: formattedTime
@@ -107,7 +107,7 @@ enum CommonService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取加载器版本失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }

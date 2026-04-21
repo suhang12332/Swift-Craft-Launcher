@@ -1,8 +1,16 @@
 import SwiftUI
 
 struct MinecraftAuthView: View {
-    @StateObject private var authService = MinecraftAuthService.shared
+    @StateObject private var authService: MinecraftAuthService
     var onLoginSuccess: ((MinecraftProfileResponse) -> Void)?
+
+    init(
+        authService: MinecraftAuthService = AppServices.minecraftAuthService,
+        onLoginSuccess: ((MinecraftProfileResponse) -> Void)? = nil
+    ) {
+        _authService = StateObject(wrappedValue: authService)
+        self.onLoginSuccess = onLoginSuccess
+    }
 
     var body: some View {
         VStack(spacing: 20) {

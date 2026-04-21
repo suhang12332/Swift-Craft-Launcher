@@ -7,16 +7,26 @@ public struct SidebarView: View {
     @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @State private var searchText: String = ""
-    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
-    @StateObject private var gameActionManager = GameActionManager.shared
-    @StateObject private var gameStatusManager = GameStatusManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
+    @StateObject private var gameActionManager: GameActionManager
+    @StateObject private var gameStatusManager: GameStatusManager
+    @ObservedObject private var selectedGameManager: SelectedGameManager
     @StateObject private var viewModel = SidebarViewModel()
 
     @Environment(\.openSettings)
     private var openSettings
 
-    public init() {}
+    init(
+        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter,
+        gameActionManager: GameActionManager = AppServices.gameActionManager,
+        gameStatusManager: GameStatusManager = AppServices.gameStatusManager,
+        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager
+    ) {
+        _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
+        _gameActionManager = StateObject(wrappedValue: gameActionManager)
+        _gameStatusManager = StateObject(wrappedValue: gameStatusManager)
+        _selectedGameManager = ObservedObject(wrappedValue: selectedGameManager)
+    }
 
     public var body: some View {
         List(selection: detailState.selectedItemOptionalBinding) {

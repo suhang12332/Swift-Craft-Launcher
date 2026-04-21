@@ -33,11 +33,13 @@ final class CategoryContentViewModel: ObservableObject {
 
     // MARK: - Private Properties
     private let project: String
+    private let errorHandler: GlobalErrorHandler
     private var loadTask: Task<Void, Never>?
 
     // MARK: - Initialization
-    init(project: String) {
+    init(project: String, errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
         self.project = project
+        self.errorHandler = errorHandler
     }
 
     deinit {
@@ -195,7 +197,7 @@ final class CategoryContentViewModel: ObservableObject {
     private func handleError(_ error: Error) {
         let globalError = GlobalError.from(error)
         Logger.shared.error("加载分类数据错误: \(globalError.chineseMessage)")
-        GlobalErrorHandler.shared.handle(globalError)
+        errorHandler.handle(globalError)
         Task { @MainActor in
             self.error = globalError
         }

@@ -37,6 +37,11 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
     private var currentPage: Int = 1
     private var lastSearchParams: String = ""
     private var debounceTask: Task<Void, Never>?
+    private let errorHandler: GlobalErrorHandler
+
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
+    }
 
     var hasMoreResults: Bool {
         false
@@ -155,7 +160,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("搜索失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             self.error = globalError
         }
     }

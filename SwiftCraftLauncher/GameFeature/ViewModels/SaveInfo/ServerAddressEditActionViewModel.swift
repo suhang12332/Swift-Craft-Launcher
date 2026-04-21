@@ -7,6 +7,11 @@ final class ServerAddressEditActionViewModel: ObservableObject {
     @Published var isDeleting: Bool = false
     @Published var showError: Bool = false
     @Published var errorMessage: String = ""
+    private let serverAddressService: ServerAddressService
+
+    init(serverAddressService: ServerAddressService = AppServices.serverAddressService) {
+        self.serverAddressService = serverAddressService
+    }
 
     struct SaveRequest: Sendable {
         let existing: ServerAddress?
@@ -34,7 +39,7 @@ final class ServerAddressEditActionViewModel: ObservableObject {
         Task { [weak self] in
             guard let self else { return }
             do {
-                var currentServers = try await ServerAddressService.shared.loadServerAddresses(for: request.gameName)
+                var currentServers = try await self.serverAddressService.loadServerAddresses(for: request.gameName)
 
                 if let existingServer = request.existing {
                     let updatedServer = ServerAddress(
@@ -64,7 +69,7 @@ final class ServerAddressEditActionViewModel: ObservableObject {
                     currentServers.append(newServer)
                 }
 
-                try await ServerAddressService.shared.saveServerAddresses(currentServers, for: request.gameName)
+                try await self.serverAddressService.saveServerAddresses(currentServers, for: request.gameName)
 
                 self.isSaving = false
                 dismiss()
@@ -90,9 +95,9 @@ final class ServerAddressEditActionViewModel: ObservableObject {
         Task { [weak self] in
             guard let self else { return }
             do {
-                var currentServers = try await ServerAddressService.shared.loadServerAddresses(for: gameName)
+                var currentServers = try await self.serverAddressService.loadServerAddresses(for: gameName)
                 currentServers.removeAll { $0.id == serverToDelete.id }
-                try await ServerAddressService.shared.saveServerAddresses(currentServers, for: gameName)
+                try await self.serverAddressService.saveServerAddresses(currentServers, for: gameName)
 
                 self.isDeleting = false
                 dismiss()

@@ -16,15 +16,39 @@ struct AddPlayerSheetView: View {
 
     @State private var isPremium: Bool = false
     @State private var authenticatedProfile: MinecraftProfileResponse?
-    @StateObject private var authService = MinecraftAuthService.shared
-    @StateObject private var yggdrasilAuthService = YggdrasilAuthService.shared
-    @StateObject private var playerSettings = PlayerSettingsManager.shared
+    @StateObject private var authService: MinecraftAuthService
+    @StateObject private var yggdrasilAuthService: YggdrasilAuthService
+    @StateObject private var playerSettings: PlayerSettingsManager
     @StateObject private var viewModel = AddPlayerSheetViewModel()
 
     @Environment(\.openURL)
     private var openURL
     @FocusState private var isTextFieldFocused: Bool
     @State private var showErrorPopover: Bool = false
+
+    init(
+        playerName: Binding<String>,
+        isPlayerNameValid: Binding<Bool>,
+        onAdd: @escaping () -> Void,
+        onCancel: @escaping () -> Void,
+        onLogin: @escaping (MinecraftProfileResponse) -> Void,
+        onYggdrasilLogin: ((YggdrasilProfile) -> Void)? = nil,
+        playerListViewModel: PlayerListViewModel,
+        authService: MinecraftAuthService = AppServices.minecraftAuthService,
+        yggdrasilAuthService: YggdrasilAuthService = AppServices.yggdrasilAuthService,
+        playerSettings: PlayerSettingsManager = AppServices.playerSettingsManager
+    ) {
+        self._playerName = playerName
+        self._isPlayerNameValid = isPlayerNameValid
+        self.onAdd = onAdd
+        self.onCancel = onCancel
+        self.onLogin = onLogin
+        self.onYggdrasilLogin = onYggdrasilLogin
+        self.playerListViewModel = playerListViewModel
+        _authService = StateObject(wrappedValue: authService)
+        _yggdrasilAuthService = StateObject(wrappedValue: yggdrasilAuthService)
+        _playerSettings = StateObject(wrappedValue: playerSettings)
+    }
 
     var body: some View {
         CommonSheetView(

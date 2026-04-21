@@ -5,6 +5,11 @@ class JavaManager {
     static let shared = JavaManager()
 
     private let fileManager = FileManager.default
+    private let javaDownloadManager: JavaDownloadManager
+
+    private init(javaDownloadManager: JavaDownloadManager = AppServices.javaDownloadManager) {
+        self.javaDownloadManager = javaDownloadManager
+    }
 
     func getJavaExecutablePath(version: String) -> String {
         return AppPaths.javaExecutablePath(version: version)
@@ -110,7 +115,7 @@ class JavaManager {
 
         // 如果不存在，则使用进度窗口下载Java运行时
         Logger.shared.info("Java版本 \(version) 不存在，开始下载...")
-        await JavaDownloadManager.shared.downloadJavaRuntime(version: version)
+        await javaDownloadManager.downloadJavaRuntime(version: version)
         Logger.shared.info("Java版本 \(version) 下载完成")
 
         // 下载完成后再次尝试获取 Java 路径

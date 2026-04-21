@@ -1,16 +1,22 @@
 import SwiftUI
 
 struct YggdrasilAuthView: View {
-    @StateObject private var authService = YggdrasilAuthService.shared
+    @StateObject private var authService: YggdrasilAuthService
     @StateObject private var viewModel = YggdrasilAuthViewModel()
-    @StateObject private var playerSettings = PlayerSettingsManager.shared
+    @StateObject private var playerSettings: PlayerSettingsManager
     var onLoginSuccess: ((YggdrasilProfile) -> Void)?
 
     private let servers = YggdrasilServerPresets.servers
 
-    init(onLoginSuccess: ((YggdrasilProfile) -> Void)? = nil) {
+    init(
+        authService: YggdrasilAuthService = AppServices.yggdrasilAuthService,
+        playerSettings: PlayerSettingsManager = AppServices.playerSettingsManager,
+        onLoginSuccess: ((YggdrasilProfile) -> Void)? = nil
+    ) {
         // 注入通用解析器 Provider（幂等）
         CommonYggdrasilProfileParsersConfigurator.bootstrap()
+        _authService = StateObject(wrappedValue: authService)
+        _playerSettings = StateObject(wrappedValue: playerSettings)
         self.onLoginSuccess = onLoginSuccess
     }
 

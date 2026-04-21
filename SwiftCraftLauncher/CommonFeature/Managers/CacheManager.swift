@@ -8,7 +8,16 @@ import SwiftUI
 
 class CacheManager: ObservableObject {
     @Published var cacheInfo: CacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
-    private let calculator = CacheCalculator.shared
+    private let errorHandler: GlobalErrorHandler
+    private let calculator: CacheCalculator
+
+    init(
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        calculator: CacheCalculator = AppServices.cacheCalculator
+    ) {
+        self.errorHandler = errorHandler
+        self.calculator = calculator
+    }
 
     /// 计算数据缓存信息（静默版本）
     func calculateDataCacheInfo() {
@@ -17,7 +26,7 @@ class CacheManager: ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("计算数据缓存信息失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
     }
 
@@ -29,7 +38,7 @@ class CacheManager: ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("计算游戏缓存信息失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
     }
 }

@@ -2,12 +2,20 @@ import SwiftUI
 
 /// 主窗口级展示层（导出、删除确认、启动公告）
 struct MainViewPresentationModifier: ViewModifier {
-    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
+    @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
     @ObservedObject var detailState: ResourceDetailState
 
     @StateObject private var startupAnnouncementViewModel = StartupAnnouncementViewModel()
     @State private var showStartupInfo = false
     @State private var hasPresentedStartupInfo = false
+
+    init(
+        detailState: ResourceDetailState,
+        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter
+    ) {
+        self.detailState = detailState
+        _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
+    }
 
     func body(content: Content) -> some View {
         content
@@ -38,6 +46,10 @@ struct MainViewPresentationModifier: ViewModifier {
 
 extension View {
     func mainViewPresentations(detailState: ResourceDetailState) -> some View {
-        modifier(MainViewPresentationModifier(detailState: detailState))
+        modifier(
+            MainViewPresentationModifier(
+                detailState: detailState
+            )
+        )
     }
 }

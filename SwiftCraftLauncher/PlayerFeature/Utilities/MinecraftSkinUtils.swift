@@ -396,7 +396,7 @@ struct MinecraftSkinUtils: View {
                     self.isLoading = false
                 }
                 Logger.shared.error("❌ 皮肤加载失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                AppServices.errorHandler.handle(globalError)
             }
         }
     }

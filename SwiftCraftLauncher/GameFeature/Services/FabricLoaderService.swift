@@ -11,7 +11,7 @@ enum FabricLoaderService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Fabric 加载器版本失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }
@@ -56,7 +56,7 @@ enum FabricLoaderService {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
 
         // 1. 查全局缓存
-        if let cached = AppCacheManager.shared.get(namespace: GameLoader.fabric.displayName, key: cacheKey, as: ModrinthLoader.self) {
+        if let cached = AppServices.appCacheManager.get(namespace: GameLoader.fabric.displayName, key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
 
@@ -69,7 +69,7 @@ enum FabricLoaderService {
         result.version = loaderVersion
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
         // 3. 存入缓存
-        AppCacheManager.shared.setSilently(namespace: GameLoader.fabric.displayName, key: cacheKey, value: result)
+        AppServices.appCacheManager.setSilently(namespace: GameLoader.fabric.displayName, key: cacheKey, value: result)
         return result
     }
 
@@ -96,7 +96,7 @@ enum FabricLoaderService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("Fabric 指定版本设置失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }

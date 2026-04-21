@@ -23,7 +23,7 @@ enum ForgeLoaderService {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
 
         // 1. 查全局缓存
-        if let cached = AppCacheManager.shared.get(namespace: GameLoader.forge.displayName, key: cacheKey, as: ModrinthLoader.self) {
+        if let cached = AppServices.appCacheManager.get(namespace: GameLoader.forge.displayName, key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
 
@@ -36,7 +36,7 @@ enum ForgeLoaderService {
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
         result.version = loaderVersion
         // 3. 存入缓存
-        AppCacheManager.shared.setSilently(namespace: GameLoader.forge.displayName, key: cacheKey, value: result)
+        AppServices.appCacheManager.setSilently(namespace: GameLoader.forge.displayName, key: cacheKey, value: result)
 
         return result
     }
@@ -64,7 +64,7 @@ enum ForgeLoaderService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("Forge 指定版本设置失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }

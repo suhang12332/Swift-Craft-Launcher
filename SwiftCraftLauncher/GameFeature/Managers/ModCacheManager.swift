@@ -6,10 +6,12 @@ class ModCacheManager {
     static let shared = ModCacheManager()
 
     private let modCacheDB: ModCacheDatabase
+    private let errorHandler: GlobalErrorHandler
     private let queue = DispatchQueue(label: "ModCacheManager.queue")
     private var isInitialized = false
 
-    private init() {
+    private init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
         let dbPath = AppPaths.gameVersionDatabase.path
         self.modCacheDB = ModCacheDatabase(dbPath: dbPath)
     }
@@ -49,7 +51,7 @@ class ModCacheManager {
         do {
             try set(hash: hash, jsonData: jsonData)
         } catch {
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
         }
     }
 
@@ -62,7 +64,7 @@ class ModCacheManager {
                 try ensureInitialized()
                 return try modCacheDB.getModCache(hash: hash)
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                errorHandler.handle(error)
                 return nil
             }
         }
@@ -76,7 +78,7 @@ class ModCacheManager {
                 try ensureInitialized()
                 return try modCacheDB.getAllModCaches()
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                errorHandler.handle(error)
                 return [:]
             }
         }
@@ -98,7 +100,7 @@ class ModCacheManager {
         do {
             try remove(hash: hash)
         } catch {
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
         }
     }
 
@@ -118,7 +120,7 @@ class ModCacheManager {
         do {
             try remove(hashes: hashes)
         } catch {
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
         }
     }
 
@@ -136,7 +138,7 @@ class ModCacheManager {
         do {
             try clear()
         } catch {
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
         }
     }
 
@@ -148,7 +150,7 @@ class ModCacheManager {
                 try ensureInitialized()
                 return try modCacheDB.hasModCache(hash: hash)
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                errorHandler.handle(error)
                 return false
             }
         }
@@ -168,7 +170,7 @@ class ModCacheManager {
         do {
             try setAll(data)
         } catch {
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
         }
     }
 }

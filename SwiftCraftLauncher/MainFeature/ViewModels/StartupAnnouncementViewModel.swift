@@ -7,6 +7,19 @@ final class StartupAnnouncementViewModel: ObservableObject {
     @Published var announcementData: AnnouncementData?
 
     private var hasCheckedAnnouncement = false
+    private let announcementStateManager: AnnouncementStateManager
+    private let languageManager: LanguageManager
+    private let gitHubService: GitHubService
+
+    init(
+        announcementStateManager: AnnouncementStateManager = AppServices.announcementStateManager,
+        languageManager: LanguageManager = AppServices.languageManager,
+        gitHubService: GitHubService = AppServices.gitHubService
+    ) {
+        self.announcementStateManager = announcementStateManager
+        self.languageManager = languageManager
+        self.gitHubService = gitHubService
+    }
 
     func checkAnnouncementIfNeeded() async {
         guard !hasCheckedAnnouncement else { return }
@@ -19,19 +32,19 @@ final class StartupAnnouncementViewModel: ObservableObject {
     }
 
     private func checkAnnouncement() async {
-        if AnnouncementStateManager.shared.isAnnouncementAcknowledgedForCurrentVersion() {
+        if announcementStateManager.isAnnouncementAcknowledgedForCurrentVersion() {
             hasAnnouncement = false
             announcementData = nil
             return
         }
 
         let version = Bundle.main.appVersion
-        let language = LanguageManager.shared.selectedLanguage.isEmpty
+        let language = languageManager.selectedLanguage.isEmpty
             ? LanguageManager.getDefaultLanguage()
-            : LanguageManager.shared.selectedLanguage
+            : languageManager.selectedLanguage
 
         do {
-            let data = try await GitHubService.shared.fetchAnnouncement(
+            let data = try await gitHubService.fetchAnnouncement(
                 version: version,
                 language: language
             )

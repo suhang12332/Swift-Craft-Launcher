@@ -315,10 +315,12 @@ class GlobalErrorHandler: ObservableObject {
 
         case .notification:
             // 发送通知
-            NotificationManager.sendSilently(
-                title: error.notificationTitle,
-                body: error.localizedDescription
-            )
+            Task {
+                await NotificationManager.sendSilently(
+                    title: error.notificationTitle,
+                    body: error.localizedDescription
+                )
+            }
 
         case .silent:
             // 静默处理，只记录日志
@@ -371,7 +373,11 @@ class GlobalErrorHandler: ObservableObject {
 // MARK: - Error Handling View Modifier
 
 struct GlobalErrorHandlerModifier: ViewModifier {
-    @StateObject private var errorHandler = GlobalErrorHandler.shared
+    @StateObject private var errorHandler: GlobalErrorHandler
+
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        _errorHandler = StateObject(wrappedValue: errorHandler)
+    }
 
     func body(content: Content) -> some View {
         content
@@ -387,7 +393,7 @@ struct GlobalErrorHandlerModifier: ViewModifier {
 // MARK: - View Extension
 
 extension View {
-    func globalErrorHandler() -> some View {
+    func errorHandler() -> some View {
         self.modifier(GlobalErrorHandlerModifier())
     }
 }

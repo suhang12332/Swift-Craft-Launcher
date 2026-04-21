@@ -12,12 +12,26 @@ struct AIChatWindowView: View {
     @ObservedObject var chatState: ChatState
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @EnvironmentObject var gameRepository: GameRepository
-    @StateObject private var aiSettings = AISettingsManager.shared
+    @StateObject private var aiSettings: AISettingsManager
+    private let aiChatManager: AIChatManager
+    private let errorHandler: GlobalErrorHandler
     @StateObject private var attachmentManager = AIChatAttachmentManager()
     @StateObject private var viewModel = AIChatWindowViewModel()
     @State private var inputText = ""
     @FocusState private var isInputFocused: Bool
     @State private var showFilePicker = false
+
+    init(
+        chatState: ChatState,
+        aiSettings: AISettingsManager = AppServices.aiSettingsManager,
+        aiChatManager: AIChatManager = AppServices.aiChatManager,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+    ) {
+        self.chatState = chatState
+        _aiSettings = StateObject(wrappedValue: aiSettings)
+        self.aiChatManager = aiChatManager
+        self.errorHandler = errorHandler
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -130,7 +144,7 @@ struct AIChatWindowView: View {
         attachmentManager.clearAll()
 
         Task {
-            await AIChatManager.shared.sendMessage(text, attachments: attachments, chatState: chatState)
+            await aiChatManager.sendMessage(text, attachments: attachments, chatState: chatState)
         }
     }
 
@@ -141,7 +155,7 @@ struct AIChatWindowView: View {
             attachmentManager.handleFileSelection(urls)
         case .failure(let error):
             let globalError = GlobalError.from(error)
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
     }
 }

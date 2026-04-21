@@ -33,6 +33,8 @@ final class AddOrDeleteResourceButtonViewModel: ObservableObject {
     let onResourceUpdated: ((String, String, String, String?) -> Void)?
     let setIsResourceDisabled: (Bool) -> Void
     let addScannedHash: (String) -> Void
+    let errorHandler: GlobalErrorHandler
+    let modScanner: ModScanner
 
     var gameRepository: GameRepository?
     var playerListViewModel: PlayerListViewModel?
@@ -48,7 +50,9 @@ final class AddOrDeleteResourceButtonViewModel: ObservableObject {
         onResourceUpdated: ((String, String, String, String?) -> Void)?,
         onToggleDisableState: ((Bool) -> Void)?,
         setIsResourceDisabled: @escaping (Bool) -> Void,
-        addScannedHash: @escaping (String) -> Void
+        addScannedHash: @escaping (String) -> Void,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        modScanner: ModScanner = AppServices.modScanner
     ) {
         self.project = project
         self.selectedVersions = selectedVersions
@@ -61,6 +65,8 @@ final class AddOrDeleteResourceButtonViewModel: ObservableObject {
         self.onToggleDisableState = onToggleDisableState
         self.setIsResourceDisabled = setIsResourceDisabled
         self.addScannedHash = addScannedHash
+        self.errorHandler = errorHandler
+        self.modScanner = modScanner
     }
 
     func setDependencies(

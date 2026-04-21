@@ -32,7 +32,7 @@ extension LauncherImportViewModel {
         let instanceName = selectedInstancePath?.lastPathComponent ?? "Unknown"
         let chineseMessage = "实例 \(instanceName) 使用了不支持的 Mod Loader (\(info.modLoader))，仅支持 \(supportedModLoadersList)"
 
-        GlobalErrorHandler.shared.handle(
+        errorHandler.handle(
             GlobalError.fileSystem(
                 chineseMessage: chineseMessage,
                 i18nKey: "error.filesystem.unsupported_mod_loader",

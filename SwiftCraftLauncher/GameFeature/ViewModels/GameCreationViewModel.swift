@@ -32,14 +32,28 @@ class GameCreationViewModel: BaseGameFormViewModel {
     var pendingIconData: Data?
     var pendingIconURL: URL?
     var didInit = false
+    let gameSettingsManager: GameSettingsManager
 
     // MARK: - Environment Objects (to be set from view)
     var gameRepository: GameRepository?
     var playerListViewModel: PlayerListViewModel?
 
     // MARK: - Initialization
-    override init(configuration: GameFormConfiguration) {
-        super.init(configuration: configuration)
+    override init(
+        configuration: GameFormConfiguration,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+    ) {
+        self.gameSettingsManager = AppServices.gameSettingsManager
+        super.init(configuration: configuration, errorHandler: errorHandler)
+    }
+
+    init(
+        configuration: GameFormConfiguration,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        gameSettingsManager: GameSettingsManager
+    ) {
+        self.gameSettingsManager = gameSettingsManager
+        super.init(configuration: configuration, errorHandler: errorHandler)
     }
 
     // MARK: - Setup Methods

@@ -24,31 +24,28 @@ enum NotificationManager {
     ///   - title: 通知标题
     ///   - body: 通知内容
     /// - Throws: GlobalError 当操作失败时
-    static func send(title: String, body: String) throws {
+    static func send(title: String, body: String) async throws {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         content.sound = .default
 
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
-
-        let semaphore = DispatchSemaphore(value: 0)
-        var notificationError: Error?
-
-        UNUserNotificationCenter.current().add(request) { error in
-            notificationError = error
-            semaphore.signal()
-        }
-
-        semaphore.wait()
-
-        if let error = notificationError {
-            Logger.shared.error("添加通知请求时出错：\(error.localizedDescription)")
-            throw GlobalError.resource(
-                chineseMessage: "发送通知失败: \(error.localizedDescription)",
-                i18nKey: "error.resource.notification_send_failed",
-                level: .silent
-            )
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            UNUserNotificationCenter.current().add(request) { error in
+                if let error = error {
+                    Logger.shared.error("添加通知请求时出错：\(error.localizedDescription)")
+                    continuation.resume(
+                        throwing: GlobalError.resource(
+                            chineseMessage: "发送通知失败: \(error.localizedDescription)",
+                            i18nKey: "error.resource.notification_send_failed",
+                            level: .silent
+                        )
+                    )
+                    return
+                }
+                continuation.resume(returning: ())
+            }
         }
     }
 
@@ -56,13 +53,13 @@ enum NotificationManager {
     /// - Parameters:
     ///   - title: 通知标题
     ///   - body: 通知内容
-    static func sendSilently(title: String, body: String) {
+    static func sendSilently(title: String, body: String) async {
         do {
-            try send(title: title, body: body)
+            try await send(title: title, body: body)
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("发送通知失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
         }
     }
 
@@ -104,7 +101,7 @@ enum NotificationManager {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("请求通知权限失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
         }
     }
 

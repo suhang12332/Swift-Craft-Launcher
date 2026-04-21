@@ -60,7 +60,7 @@ enum AppPaths {
         metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.versions)
     }
     static var profileRootDirectory: URL {
-        let customPath = GeneralSettingsManager.shared.launcherWorkingDirectory
+        let customPath = AppServices.generalSettingsManager.launcherWorkingDirectory
         let workingDirectory = customPath.isEmpty ? launcherSupportDirectory.path : customPath
 
         let baseURL = URL(fileURLWithPath: workingDirectory, isDirectory: true)

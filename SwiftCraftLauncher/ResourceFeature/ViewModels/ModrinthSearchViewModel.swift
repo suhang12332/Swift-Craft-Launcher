@@ -14,9 +14,12 @@ final class ModrinthSearchViewModel: ObservableObject {
     // MARK: - Private Properties
     var searchTask: Task<Void, Never>?
     let pageSize: Int = 20
+    private let errorHandler: GlobalErrorHandler
 
     // MARK: - Initialization
-    init() {}
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
+    }
 
     deinit {
         searchTask?.cancel()
@@ -134,7 +137,7 @@ final class ModrinthSearchViewModel: ObservableObject {
                     self.isLoadingMore = false
                 }
                 Logger.shared.error("搜索失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
             }
         }
     }

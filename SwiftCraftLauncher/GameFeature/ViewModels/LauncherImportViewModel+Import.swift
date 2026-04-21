@@ -22,7 +22,7 @@ extension LauncherImportViewModel {
         do {
             guard let parsedInfo = try parser.parseInstance(at: instancePath, basePath: basePath) else {
                 Logger.shared.error("解析实例失败: \(instanceName) - 返回 nil")
-                GlobalErrorHandler.shared.handle(
+                errorHandler.handle(
                     GlobalError.fileSystem(
                         chineseMessage: "解析实例 \(instanceName) 失败：无法获取实例信息",
                         i18nKey: "error.filesystem.parse_instance_failed",
@@ -34,7 +34,7 @@ extension LauncherImportViewModel {
             instanceInfo = parsedInfo
         } catch {
             Logger.shared.error("解析实例失败: \(instanceName) - \(error.localizedDescription)")
-            GlobalErrorHandler.shared.handle(
+            errorHandler.handle(
                 GlobalError.fileSystem(
                     chineseMessage: "解析实例 \(instanceName) 失败: \(error.localizedDescription)",
                     i18nKey: "error.filesystem.parse_instance_failed",
@@ -47,7 +47,7 @@ extension LauncherImportViewModel {
         // 验证实例必须有版本
         guard !instanceInfo.gameVersion.isEmpty else {
             Logger.shared.error("实例 \(instanceName) 没有游戏版本")
-            GlobalErrorHandler.shared.handle(
+            errorHandler.handle(
                 GlobalError.fileSystem(
                     chineseMessage: "实例 \(instanceName) 没有游戏版本，无法导入",
                     i18nKey: "error.filesystem.instance_no_version",
@@ -98,7 +98,7 @@ extension LauncherImportViewModel {
         } catch {
             Logger.shared.error("复制游戏目录失败: \(error.localizedDescription)")
             copyTask = nil
-            GlobalErrorHandler.shared.handle(
+            errorHandler.handle(
                 GlobalError.fileSystem(
                     chineseMessage: "复制游戏目录失败: \(error.localizedDescription)",
                     i18nKey: "error.filesystem.copy_game_directory_failed",
@@ -125,7 +125,7 @@ extension LauncherImportViewModel {
                     },
                     onError: { error, message in
                         Logger.shared.error("游戏下载失败: \(message)")
-                        GlobalErrorHandler.shared.handle(error)
+                        self.errorHandler.handle(error)
                         continuation.resume(returning: false)
                     }
                 )

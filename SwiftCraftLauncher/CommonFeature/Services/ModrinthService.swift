@@ -29,7 +29,7 @@ enum ModrinthService {
         let cacheKey = "version_info_\(version)"
 
         // 检查缓存
-        if let cachedVersionInfo: MinecraftVersionManifest = AppCacheManager.shared.get(namespace: "version_info", key: cacheKey, as: MinecraftVersionManifest.self) {
+        if let cachedVersionInfo: MinecraftVersionManifest = AppServices.appCacheManager.get(namespace: "version_info", key: cacheKey, as: MinecraftVersionManifest.self) {
             return cachedVersionInfo
         }
 
@@ -37,7 +37,7 @@ enum ModrinthService {
         let versionInfo = try await fetchVersionInfoThrowing(from: version)
 
         // 缓存整个版本信息
-        AppCacheManager.shared.setSilently(
+        AppServices.appCacheManager.setSilently(
             namespace: "version_info",
             key: cacheKey,
             value: versionInfo
@@ -50,7 +50,7 @@ enum ModrinthService {
         let cacheKey = "version_time_\(version)"
 
         // 检查缓存
-        if let cachedTime: String = AppCacheManager.shared.get(namespace: "version_time", key: cacheKey, as: String.self) {
+        if let cachedTime: String = AppServices.appCacheManager.get(namespace: "version_time", key: cacheKey, as: String.self) {
             return cachedTime
         }
 
@@ -60,7 +60,7 @@ enum ModrinthService {
             let formattedTime = CommonUtil.formatRelativeTime(versionInfo.releaseTime)
 
             // 缓存版本时间信息
-            AppCacheManager.shared.setSilently(
+            AppServices.appCacheManager.setSilently(
                 namespace: "version_time",
                 key: cacheKey,
                 value: formattedTime
@@ -112,7 +112,7 @@ enum ModrinthService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("搜索 Modrinth 项目失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return ModrinthResult(hits: [], offset: offset, limit: limit, totalHits: 0)
         }
     }
@@ -182,7 +182,7 @@ enum ModrinthService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Modrinth 加载器列表失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }
@@ -200,7 +200,7 @@ enum ModrinthService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Modrinth 分类列表失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }
@@ -218,7 +218,7 @@ enum ModrinthService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Modrinth 游戏版本列表失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }
@@ -249,7 +249,7 @@ enum ModrinthService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取项目详情失败 (ID: \(id)): \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }
@@ -287,7 +287,7 @@ enum ModrinthService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 v3 项目详情失败 (ID: \(id)): \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }
@@ -313,7 +313,7 @@ enum ModrinthService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取项目版本列表失败 (ID: \(id)): \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }
@@ -391,7 +391,7 @@ enum ModrinthService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取项目依赖失败 (ID: \(id)): \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return ModrinthProjectDependency(projects: [])
         }
     }
@@ -544,11 +544,11 @@ enum ModrinthService {
                 let lowercasedType = type.lowercased()
 
                 if lowercasedType == ResourceType.mod.rawValue {
-                    if (try? await ModScanner.shared.isModInstalledThrowing(hash: hash, in: modsDir)) == true {
+                    if (try? await AppServices.modScanner.isModInstalledThrowing(hash: hash, in: modsDir)) == true {
                         return true
                     }
                 } else {
-                    let isInstalled = await ModScanner.shared.isResourceInstalledByHash(
+                    let isInstalled = await AppServices.modScanner.isResourceInstalledByHash(
                         hash,
                         in: modsDir
                     )
@@ -560,7 +560,7 @@ enum ModrinthService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("检查项目安装状态失败 (ID: \(projectId)): \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
         }
 
         return false
@@ -592,7 +592,7 @@ enum ModrinthService {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("通过哈希获取项目详情失败 (Hash: \(hash)): \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                AppServices.errorHandler.handle(globalError)
                 await MainActor.run {
                     completion(nil)
                 }

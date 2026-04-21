@@ -2,13 +2,19 @@ import AppKit
 import SwiftUI
 
 struct GeneralSettingsLanguageRow: View {
+    private let languageManager: LanguageManager
+
+    init(languageManager: LanguageManager = AppServices.languageManager) {
+        self.languageManager = languageManager
+    }
+
     var body: some View {
         Group {
             LabeledContent("settings.language.picker".localized()) {
                 Button {
                     SystemSettings.open(AppConstants.SystemSettingsDeepLinks.localizationApps)
                 } label: {
-                    Text(LanguageManager.shared.selectedLanguageDisplayName)
+                    Text(languageManager.selectedLanguageDisplayName)
                         .foregroundColor(.primary)
                         .lineLimit(1)
                         .foregroundColor(.primary)

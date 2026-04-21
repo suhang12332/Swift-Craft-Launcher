@@ -12,6 +12,19 @@ struct ModrinthProjectContentView: View {
     @Binding var projectDetail: ModrinthProjectDetail?
     let projectId: String
     let resourceType: String
+    private let errorHandler: GlobalErrorHandler
+
+    init(
+        projectDetail: Binding<ModrinthProjectDetail?>,
+        projectId: String,
+        resourceType: String,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+    ) {
+        _projectDetail = projectDetail
+        self.projectId = projectId
+        self.resourceType = resourceType
+        self.errorHandler = errorHandler
+    }
 
     var body: some View {
         VStack {
@@ -43,7 +56,7 @@ struct ModrinthProjectContentView: View {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("加载项目详情失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             await MainActor.run {
                 self.error = globalError
             }

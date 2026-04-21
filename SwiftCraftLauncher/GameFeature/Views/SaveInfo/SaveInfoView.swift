@@ -5,13 +5,18 @@ struct SaveInfoView: View {
     let gameId: String
     let gameName: String
     @StateObject private var manager: SaveInfoManager
-    @ObservedObject private var gameStatusManager = GameStatusManager.shared
+    @ObservedObject private var gameStatusManager: GameStatusManager
 
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
 
-    init(gameId: String, gameName: String) {
+    init(
+        gameId: String,
+        gameName: String,
+        gameStatusManager: GameStatusManager = AppServices.gameStatusManager
+    ) {
         self.gameId = gameId
         self.gameName = gameName
+        self.gameStatusManager = gameStatusManager
         _manager = StateObject(wrappedValue: SaveInfoManager(gameName: gameName))
     }
     /// 当前游戏的运行状态

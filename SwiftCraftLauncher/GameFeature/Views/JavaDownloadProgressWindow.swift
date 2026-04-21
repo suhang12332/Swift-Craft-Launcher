@@ -4,6 +4,15 @@ struct JavaDownloadProgressWindow: View {
     @ObservedObject var downloadState: JavaDownloadState
     @Environment(\.dismiss)
     private var dismiss
+    private let javaDownloadManager: JavaDownloadManager
+
+    init(
+        downloadState: JavaDownloadState,
+        javaDownloadManager: JavaDownloadManager = AppServices.javaDownloadManager
+    ) {
+        self.downloadState = downloadState
+        self.javaDownloadManager = javaDownloadManager
+    }
 
     var body: some View {
         // 下载项列表
@@ -16,7 +25,7 @@ struct JavaDownloadProgressWindow: View {
                     subtitle: downloadState.errorMessage,
                     status: .error,
                     onCancel: {
-                        JavaDownloadManager.shared.retryDownload()
+                        javaDownloadManager.retryDownload()
                     },
                     downloadState: downloadState
                 )
@@ -28,7 +37,7 @@ struct JavaDownloadProgressWindow: View {
                     subtitle: downloadState.currentFile.isEmpty ? "Preparing..." : downloadState.currentFile,
                     status: .downloading(progress: downloadState.progress),
                     onCancel: {
-                        JavaDownloadManager.shared.cancelDownload()
+                        javaDownloadManager.cancelDownload()
                     },
                     downloadState: downloadState
                 )
@@ -48,7 +57,7 @@ struct JavaDownloadProgressWindow: View {
         .padding()
         .onAppear {
             // 设置窗口关闭回调
-            JavaDownloadManager.shared.setDismissCallback {
+            javaDownloadManager.setDismissCallback {
                 dismiss()
             }
         }

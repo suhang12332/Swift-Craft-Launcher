@@ -3,6 +3,11 @@ import Foundation
 /// 解析包含 `modrinth.index.json` 的整合包（可以是 `.mrpack` 或 `.zip`）
 struct ModrinthIndexAdapter: ModPackIndexAdapter {
     let id: String = "modrinth"
+    private let errorHandler: GlobalErrorHandler
+
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
+    }
 
     private enum ModrinthIndexError: Error {
         case emptyIndex
@@ -48,7 +53,7 @@ struct ModrinthIndexAdapter: ModPackIndexAdapter {
                 source: .modrinth
             )
         } catch ModrinthIndexError.emptyIndex {
-            GlobalErrorHandler.shared.handle(
+            errorHandler.handle(
                 GlobalError.resource(
                     chineseMessage: "modrinth.index.json 文件为空",
                     i18nKey: "error.resource.modrinth_index_empty",

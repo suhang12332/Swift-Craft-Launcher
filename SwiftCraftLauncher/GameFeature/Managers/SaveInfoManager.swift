@@ -38,10 +38,18 @@ final class SaveInfoManager: ObservableObject {
 
     // MARK: - Private Properties
     private var loadTask: Task<Void, Never>?
+    private let serverAddressService: ServerAddressService
+    private let litematicaService: LitematicaService
 
     // MARK: - Initialization
-    init(gameName: String) {
+    init(
+        gameName: String,
+        serverAddressService: ServerAddressService = AppServices.serverAddressService,
+        litematicaService: LitematicaService = AppServices.litematicaService
+    ) {
         self.gameName = gameName
+        self.serverAddressService = serverAddressService
+        self.litematicaService = litematicaService
     }
 
     deinit {
@@ -284,7 +292,7 @@ final class SaveInfoManager: ObservableObject {
         defer { isLoadingServers = false }
 
         do {
-            servers = try await ServerAddressService.shared.loadServerAddresses(for: gameName)
+            servers = try await serverAddressService.loadServerAddresses(for: gameName)
         } catch {
             Logger.shared.error("加载服务器地址信息失败: \(error.localizedDescription)")
             // 如果加载失败，返回空数组
@@ -298,7 +306,7 @@ final class SaveInfoManager: ObservableObject {
         defer { isLoadingLitematica = false }
 
         do {
-            litematicaFiles = try await LitematicaService.shared.loadLitematicaFiles(for: gameName)
+            litematicaFiles = try await litematicaService.loadLitematicaFiles(for: gameName)
         } catch {
             Logger.shared.error("加载 Litematica 文件信息失败: \(error.localizedDescription)")
             // 如果加载失败，返回空数组

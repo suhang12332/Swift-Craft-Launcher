@@ -8,8 +8,8 @@ extension GameAdvancedSettingsViewModel {
         isLoadingSettings = true
         defer { isLoadingSettings = false }
 
-        let xms = game.xms == 0 ? GameSettingsManager.shared.globalXms : game.xms
-        let xmx = game.xmx == 0 ? GameSettingsManager.shared.globalXmx : game.xmx
+        let xms = game.xms == 0 ? gameSettingsManager.globalXms : game.xms
+        let xmx = game.xmx == 0 ? gameSettingsManager.globalXmx : game.xmx
         memoryRange = Double(xms)...Double(xmx)
         environmentVariables = game.environmentVariables
         javaPath = game.javaPath
@@ -39,7 +39,7 @@ extension GameAdvancedSettingsViewModel {
         }
 
         Task {
-            let info = JavaManager.shared.getJavaVersionInfo(at: path) ?? ""
+            let info = javaManager.getJavaVersionInfo(at: path) ?? ""
             await MainActor.run {
                 if self.effectiveJavaPath == path {
                     self.javaVersionInfo = info

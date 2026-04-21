@@ -15,8 +15,11 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
     private var manuallyStoppedGames: Set<String> = []
     private let queue = DispatchQueue(label: "com.swiftcraftlauncher.gameprocessmanager")
     private let gameDatabase = GameVersionDatabase(dbPath: AppPaths.gameVersionDatabase.path)
+    private let gameSettingsManager: GameSettingsManager
 
-    private init() {}
+    private init(gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager) {
+        self.gameSettingsManager = gameSettingsManager
+    }
 
     func storeProcess(gameId: String, userId: String, process: Process) {
         let key = Self.processKey(gameId: gameId, userId: userId)
@@ -44,7 +47,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
             let isCrash = await checkIfCrash(gameId: gameId, process: process)
 
             if isCrash {
-                let gameSettings = GameSettingsManager.shared
+                let gameSettings = self.gameSettingsManager
                 if gameSettings.enableAICrashAnalysis {
                     Logger.shared.info("检测到游戏崩溃，启用AI分析: \(gameId)")
                     await collectLogsForGameImmediately(gameId: gameId)
@@ -65,7 +68,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
         }
 
         await MainActor.run {
-            GameStatusManager.shared.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
+            AppServices.gameStatusManager.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
         }
         queue.async { [weak self] in
             self?.gameProcesses.removeValue(forKey: key)
@@ -159,7 +162,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
             let playerListViewModel = PlayerListViewModel()
             let gameRepository = GameRepository()
 
-            await GameLogCollector.shared.collectAndOpenAIWindow(
+            await AppServices.gameLogCollector.collectAndOpenAIWindow(
                 gameName: game.gameName,
                 playerListViewModel: playerListViewModel,
                 gameRepository: gameRepository
@@ -260,7 +263,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
                 if let idx = key.firstIndex(of: "_") {
                     let gameId = String(key[..<idx])
                     let userId = String(key[key.index(after: idx)...])
-                    GameStatusManager.shared.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
+                    AppServices.gameStatusManager.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
                 }
             }
         }
@@ -308,7 +311,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
                 if let idx = key.firstIndex(of: "_") {
                     let gameId = String(key[..<idx])
                     let userId = String(key[key.index(after: idx)...])
-                    GameStatusManager.shared.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
+                    AppServices.gameStatusManager.setGameRunning(gameId: gameId, userId: userId, isRunning: false)
                 }
             }
         }

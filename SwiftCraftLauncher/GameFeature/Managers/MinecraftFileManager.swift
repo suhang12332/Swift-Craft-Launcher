@@ -30,6 +30,7 @@ class MinecraftFileManager {
         label: "com.launcher.download",
         qos: .userInitiated
     )
+    private let errorHandler: GlobalErrorHandler
 
     var onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
 
@@ -39,7 +40,8 @@ class MinecraftFileManager {
     }
 
     // MARK: - Initialization
-    init() {
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
     }
 
     // MARK: - Public Methods
@@ -86,7 +88,7 @@ class MinecraftFileManager {
             Logger.shared.error(
                 "下载 Minecraft 版本文件失败: \(globalError.chineseMessage)"
             )
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }
@@ -237,7 +239,7 @@ class MinecraftFileManager {
 
         // 创建信号量控制并发数量
         let semaphore = AsyncSemaphore(
-            value: GeneralSettingsManager.shared.concurrentDownloads
+            value: AppServices.generalSettingsManager.concurrentDownloads
         )
 
         // 预先获取 metaDirectory，避免在循环中重复访问
@@ -553,7 +555,7 @@ class MinecraftFileManager {
 
         // 创建信号量控制并发数量
         let semaphore = AsyncSemaphore(
-            value: GeneralSettingsManager.shared.concurrentDownloads
+            value: AppServices.generalSettingsManager.concurrentDownloads
         )
 
         // Process assets in chunks to balance memory usage and performance
@@ -622,9 +624,6 @@ class MinecraftFileManager {
         }
     }
 }
-
-// MARK: - Asset Index Data Types
-// 移除了 DownloadedAssetIndex 和 AssetIndexData 的定义，直接引用 Models/MinecraftManifest.swift 中的类型。
 
 // MARK: - Thread-safe Counter
 final class NSLockingCounter {

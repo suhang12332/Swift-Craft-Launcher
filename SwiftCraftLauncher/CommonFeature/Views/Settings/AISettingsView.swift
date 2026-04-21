@@ -7,8 +7,17 @@
 import SwiftUI
 
 public struct AISettingsView: View {
-    @StateObject private var aiSettings = AISettingsManager.shared
+    @StateObject private var aiSettings: AISettingsManager
     @State private var showApiKey = false
+
+    public init() {
+        _aiSettings = StateObject(wrappedValue: AppServices.aiSettingsManager)
+    }
+
+    init(aiSettings: AISettingsManager) {
+        _aiSettings = StateObject(wrappedValue: aiSettings)
+    }
+
     public var body: some View {
         Form {
             LabeledContent("settings.ai.api_type.label".localized()) {

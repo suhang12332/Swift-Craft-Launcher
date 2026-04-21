@@ -11,7 +11,7 @@ import Foundation
 /// 负责安装整合包中定义的所有必需依赖
 enum ModPackDependencyInstaller {
     private static var downloadSemaphoreValue: Int {
-        max(1, GeneralSettingsManager.shared.concurrentDownloads / 4)
+        max(1, AppServices.generalSettingsManager.concurrentDownloads / 4)
     }
 
     // MARK: - Download Type
@@ -246,7 +246,7 @@ enum ModPackDependencyInstaller {
                     var detailWithFile = cfAsModrinth
                     detailWithFile.fileName = fileDetail.fileName
                     detailWithFile.type = detailWithFile.projectType
-                    ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
+                    AppServices.modScanner.saveToCache(hash: hash, detail: detailWithFile)
                 }
             }
 
@@ -361,7 +361,7 @@ enum ModPackDependencyInstaller {
                             detailWithFile.type = AppPaths.resourceType(for: fileUrl)
 
                             // 存入缓存
-                            ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
+                            AppServices.modScanner.saveToCache(hash: hash, detail: detailWithFile)
                         }
                         continuation.resume()
                     }
@@ -477,7 +477,7 @@ enum ModPackDependencyInstaller {
                 // 如果有指定版本ID，直接获取该版本
                 if let version = try? await ModrinthService.fetchProjectVersionThrowing(id: versionId),
                    let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) {
-                    if ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
+                    if AppServices.modScanner.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
                         return true
                     }
                 }
@@ -491,7 +491,7 @@ enum ModPackDependencyInstaller {
                 )
                 if let version = versions?.first,
                    let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) {
-                    if ModScanner.shared.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
+                    if AppServices.modScanner.isModInstalledSync(hash: primaryFile.hashes.sha1, in: resourceDir) {
                         return true
                     }
                 }
@@ -725,7 +725,7 @@ enum ModPackDependencyInstaller {
                 var detailWithFile = projectDetail
                 detailWithFile.fileName = primaryFile.filename
                 detailWithFile.type = ResourceType.mod.rawValue
-                ModScanner.shared.saveToCache(hash: hash, detail: detailWithFile)
+                AppServices.modScanner.saveToCache(hash: hash, detail: detailWithFile)
             }
 
             return true

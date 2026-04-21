@@ -4,6 +4,11 @@ import Foundation
 final class PlayerSettingsViewModel: ObservableObject {
     @Published var isDownloadingAuthlibInjector: Bool = false
     @Published var authlibInjectorExists: Bool = false
+    private let errorHandler: GlobalErrorHandler
+
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
+    }
 
     func refreshAuthlibInjectorExists() {
         let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(
@@ -35,7 +40,7 @@ final class PlayerSettingsViewModel: ObservableObject {
                 i18nKey: "error.download.authlib_injector_failed",
                 level: .notification
             )
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
     }
 }

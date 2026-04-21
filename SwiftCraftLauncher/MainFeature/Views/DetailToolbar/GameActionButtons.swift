@@ -18,12 +18,26 @@ struct GameActionButtons: View {
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
-    @StateObject private var gameStatusManager = GameStatusManager.shared
-    @StateObject private var gameActionManager = GameActionManager.shared
-    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
+    @ObservedObject private var selectedGameManager: SelectedGameManager
+    @StateObject private var gameStatusManager: GameStatusManager
+    @StateObject private var gameActionManager: GameActionManager
+    @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
     @State private var showCrashAlert = false
     @State private var crashDirectory: URL?
+
+    init(
+        game: GameVersionInfo,
+        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
+        gameStatusManager: GameStatusManager = AppServices.gameStatusManager,
+        gameActionManager: GameActionManager = AppServices.gameActionManager,
+        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter
+    ) {
+        self.game = game
+        _selectedGameManager = ObservedObject(wrappedValue: selectedGameManager)
+        _gameStatusManager = StateObject(wrappedValue: gameStatusManager)
+        _gameActionManager = StateObject(wrappedValue: gameActionManager)
+        _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
+    }
 
     private func isGameRunning(gameId: String, userId: String) -> Bool {
         gameStatusManager.isGameRunning(gameId: gameId, userId: userId)

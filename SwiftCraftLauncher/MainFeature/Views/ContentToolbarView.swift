@@ -11,6 +11,19 @@ public struct ContentToolbarView: ToolbarContent {
     @EnvironmentObject var gameRepository: GameRepository
     @State private var showEditSkin = false
     @StateObject private var viewModel = ContentToolbarViewModel()
+    private let minecraftAuthService: MinecraftAuthService
+    private let yggdrasilAuthService: YggdrasilAuthService
+    private let premiumAccountFlagManager: PremiumAccountFlagManager
+
+    init(
+        minecraftAuthService: MinecraftAuthService = AppServices.minecraftAuthService,
+        yggdrasilAuthService: YggdrasilAuthService = AppServices.yggdrasilAuthService,
+        premiumAccountFlagManager: PremiumAccountFlagManager = AppServices.premiumAccountFlagManager
+    ) {
+        self.minecraftAuthService = minecraftAuthService
+        self.yggdrasilAuthService = yggdrasilAuthService
+        self.premiumAccountFlagManager = premiumAccountFlagManager
+    }
 
     // MARK: - Computed Properties
 
@@ -72,16 +85,16 @@ public struct ContentToolbarView: ToolbarContent {
                         showingAddPlayerSheet = false
                         // 延迟清理认证状态，避免影响对话框关闭动画
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            MinecraftAuthService.shared.clearAuthenticationData()
+                            minecraftAuthService.clearAuthenticationData()
                         }
                     },
                     onLogin: { profile in
                         Logger.shared.debug("正版登录成功，用户: \(profile.name)")
                         _ = playerListViewModel.addOnlinePlayer(profile: profile)
-                        PremiumAccountFlagManager.shared.setPremiumAccountAdded()
+                        premiumAccountFlagManager.setPremiumAccountAdded()
                         showingAddPlayerSheet = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            MinecraftAuthService.shared.clearAuthenticationData()
+                            minecraftAuthService.clearAuthenticationData()
                         }
                     },
                     onYggdrasilLogin: { profile in
@@ -91,7 +104,7 @@ public struct ContentToolbarView: ToolbarContent {
                         _ = playerListViewModel.addOnlinePlayer(profile: profile)
                         showingAddPlayerSheet = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            YggdrasilAuthService.shared.logout()
+                            yggdrasilAuthService.logout()
                         }
                     },
                     playerListViewModel: playerListViewModel

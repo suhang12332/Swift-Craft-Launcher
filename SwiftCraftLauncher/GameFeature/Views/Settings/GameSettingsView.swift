@@ -3,12 +3,34 @@ import SwiftUI
 
 public struct GameSettingsView: View {
 
-    @StateObject private var gameSettings = GameSettingsManager.shared
-    @ObservedObject private var javaDownloadManager = JavaDownloadManager.shared
-    @StateObject private var viewModel = GameSettingsJavaRuntimeViewModel()
+    @StateObject private var gameSettings: GameSettingsManager
+    @ObservedObject private var javaDownloadManager: JavaDownloadManager
+    @StateObject private var viewModel: GameSettingsJavaRuntimeViewModel
+    private let modCacheManager: ModCacheManager
 
     // 内存区间
     @State private var globalMemoryRange: ClosedRange<Double> = 512...4096
+
+    @MainActor
+    public init() {
+        _gameSettings = StateObject(wrappedValue: AppServices.gameSettingsManager)
+        _javaDownloadManager = ObservedObject(wrappedValue: AppServices.javaDownloadManager)
+        _viewModel = StateObject(wrappedValue: GameSettingsJavaRuntimeViewModel())
+        self.modCacheManager = AppServices.modCacheManager
+    }
+
+    @MainActor
+    init(
+        gameSettings: GameSettingsManager,
+        javaDownloadManager: JavaDownloadManager,
+        viewModel: GameSettingsJavaRuntimeViewModel,
+        modCacheManager: ModCacheManager = AppServices.modCacheManager
+    ) {
+        _gameSettings = StateObject(wrappedValue: gameSettings)
+        _javaDownloadManager = ObservedObject(wrappedValue: javaDownloadManager)
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.modCacheManager = modCacheManager
+    }
 
     public var body: some View {
         VStack {
@@ -152,7 +174,7 @@ public struct GameSettingsView: View {
                 Button {
                     Task {
                         await Task.detached(priority: .utility) {
-                            ModCacheManager.shared.clearSilently()
+                            await modCacheManager.clearSilently()
                         }.value
                     }
                 } label: {

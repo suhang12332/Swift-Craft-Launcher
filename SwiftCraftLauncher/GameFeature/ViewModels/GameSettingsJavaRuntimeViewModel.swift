@@ -12,6 +12,11 @@ final class GameSettingsJavaRuntimeViewModel: ObservableObject {
 
     private var loadTask: Task<Void, Never>?
     private var loadGeneration: Int = 0
+    private let javaManager: JavaManager
+
+    init(javaManager: JavaManager = AppServices.javaManager) {
+        self.javaManager = javaManager
+    }
 
     /// Java 详细信息说明，用于 InfoIconWithPopover 展示
     var javaDetailsDescription: String {
@@ -32,7 +37,7 @@ final class GameSettingsJavaRuntimeViewModel: ObservableObject {
         loadGeneration += 1
         let generation = loadGeneration
 
-        let path = JavaManager.shared.getJavaExecutablePath(version: component)
+        let path = javaManager.getJavaExecutablePath(version: component)
         javaExecutablePath = path
 
         guard FileManager.default.isExecutableFile(atPath: path) else {
@@ -40,15 +45,13 @@ final class GameSettingsJavaRuntimeViewModel: ObservableObject {
             return
         }
 
-        loadTask = Task { [weak self] in
+        loadTask = Task { [weak self, javaManager] in
+            guard let self else { return }
             let info = await Task.detached {
-                JavaManager.shared.getJavaVersionInfo(at: path) ?? ""
+                javaManager.getJavaVersionInfo(at: path) ?? ""
             }.value
-            await MainActor.run { [weak self] in
-                guard let self else { return }
-                guard generation == self.loadGeneration else { return }
-                self.javaVersionInfo = info
-            }
+            guard generation == self.loadGeneration else { return }
+            self.javaVersionInfo = info
         }
     }
 
@@ -56,18 +59,16 @@ final class GameSettingsJavaRuntimeViewModel: ObservableObject {
         if showScanningIndicator {
             installedRuntimeComponents = nil
         }
-        Task { [weak self] in
+        Task { [weak self, javaManager] in
+            guard let self else { return }
             let list = await Task.detached(priority: .utility) {
-                JavaManager.shared.listInstalledRuntimeComponents()
+                javaManager.listInstalledRuntimeComponents()
             }.value
-            await MainActor.run { [weak self] in
-                guard let self else { return }
-                installedRuntimeComponents = list
-                if list.isEmpty {
-                    selectedRuntimeComponent = ""
-                } else if !list.contains(selectedRuntimeComponent) {
-                    selectedRuntimeComponent = list[0]
-                }
+            installedRuntimeComponents = list
+            if list.isEmpty {
+                selectedRuntimeComponent = ""
+            } else if !list.contains(selectedRuntimeComponent) {
+                selectedRuntimeComponent = list[0]
             }
         }
     }

@@ -34,12 +34,17 @@ struct SwiftCraftLauncherApp: App {
     @StateObject var playerListViewModel = PlayerListViewModel()
     @StateObject var gameRepository = GameRepository()
     @StateObject var gameLaunchUseCase = GameLaunchUseCase()
-    @StateObject private var globalErrorHandler = GlobalErrorHandler.shared
-    @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
-    @StateObject var generalSettingsManager = GeneralSettingsManager.shared
-    @StateObject var themeManager = ThemeManager.shared
+    @StateObject private var errorHandler: GlobalErrorHandler
+    @StateObject private var sparkleUpdateService: SparkleUpdateService
+    @StateObject var generalSettingsManager: GeneralSettingsManager
+    @StateObject var themeManager: ThemeManager
+    @StateObject var javaDownloadManager: JavaDownloadManager
     @StateObject private var skinSelectionStore = SkinSelectionStore()
-    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
+    @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
+    private let openURLModPackImportPresenter: OpenURLModPackImportPresenter
+    private let windowDataStore: WindowDataStore
+    private let aiChatManager: AIChatManager
+    private let windowManager: WindowManager
 
     @Environment(\.openSettings)
     private var openSettings
@@ -48,6 +53,17 @@ struct SwiftCraftLauncherApp: App {
     private let notificationCenterDelegate = NotificationCenterDelegate()
 
     init() {
+        _errorHandler = StateObject(wrappedValue: AppServices.errorHandler)
+        _sparkleUpdateService = StateObject(wrappedValue: AppServices.sparkleUpdateService)
+        _generalSettingsManager = StateObject(wrappedValue: AppServices.generalSettingsManager)
+        _themeManager = StateObject(wrappedValue: AppServices.themeManager)
+        _javaDownloadManager = StateObject(wrappedValue: AppServices.javaDownloadManager)
+        _gameDialogsPresenter = ObservedObject(wrappedValue: AppServices.gameDialogsPresenter)
+        self.openURLModPackImportPresenter = AppServices.openURLModPackImportPresenter
+        self.windowDataStore = AppServices.windowDataStore
+        self.aiChatManager = AppServices.aiChatManager
+        self.windowManager = AppServices.windowManager
+
         URLCache.shared = URLCache(
             memoryCapacity: 2 * 1024 * 1024,
             diskCapacity: 10 * 1024 * 1024,
@@ -60,6 +76,8 @@ struct SwiftCraftLauncherApp: App {
         Task {
             await NotificationManager.requestAuthorizationIfNeeded()
         }
+
+        AppServices.freeze()
     }
 
     // MARK: - Body
@@ -78,12 +96,12 @@ struct SwiftCraftLauncherApp: App {
                 .errorAlert()
                 .windowOpener()
                 .onOpenURL { url in
-                    OpenURLModPackImportPresenter.shared.handle(url: url)
+                    openURLModPackImportPresenter.handle(url: url)
                 }
                 .onAppear {
                     // 应用启动时清理所有窗口数据
-                    WindowDataStore.shared.cleanup(for: .aiChat)
-                    WindowDataStore.shared.cleanup(for: .skinPreview)
+                    windowDataStore.cleanup(for: .aiChat)
+                    windowDataStore.cleanup(for: .skinPreview)
                 }
         }
         .windowStyle(.titleBar)
@@ -124,12 +142,12 @@ struct SwiftCraftLauncherApp: App {
                 Link("menu.community.report.issue".localized(), destination: URLConfig.API.Community.issues())
 
                 Button("about.contributors".localized()) {
-                    WindowManager.shared.openWindow(id: .contributors)
+                    windowManager.openWindow(id: .contributors)
                 }
                 .keyboardShortcut("c", modifiers: [.command, .shift])
 
                 Button("about.acknowledgements".localized()) {
-                    WindowManager.shared.openWindow(id: .acknowledgements)
+                    windowManager.openWindow(id: .acknowledgements)
                 }
                 .keyboardShortcut("a", modifiers: [.command, .shift])
 
@@ -139,7 +157,7 @@ struct SwiftCraftLauncherApp: App {
                 Divider()
 
                 Button("ai.assistant.title".localized()) {
-                    AIChatManager.shared.openChatWindow()
+                    aiChatManager.openChatWindow()
                 }
                 .keyboardShortcut("i", modifiers: [.command, .shift])
             }

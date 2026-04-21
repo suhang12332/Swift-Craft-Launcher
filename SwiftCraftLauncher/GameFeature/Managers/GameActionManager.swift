@@ -15,7 +15,25 @@ class GameActionManager: ObservableObject {
 
     static let shared = GameActionManager()
 
-    private init() {}
+    private let errorHandler: GlobalErrorHandler
+    private let gameProcessManager: GameProcessManager
+    private let gameStatusManager: GameStatusManager
+    private let modScanner: ModScanner
+    private let gameIconCache: GameIconCache
+
+    private init(
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        gameProcessManager: GameProcessManager = AppServices.gameProcessManager,
+        gameStatusManager: GameStatusManager = AppServices.gameStatusManager,
+        modScanner: ModScanner = AppServices.modScanner,
+        gameIconCache: GameIconCache = AppServices.gameIconCache
+    ) {
+        self.errorHandler = errorHandler
+        self.gameProcessManager = gameProcessManager
+        self.gameStatusManager = gameStatusManager
+        self.modScanner = modScanner
+        self.gameIconCache = gameIconCache
+    }
 
     // MARK: - Public Methods
 
@@ -50,13 +68,13 @@ class GameActionManager: ObservableObject {
         Task {
             do {
                 // 游戏运行中不允许删除（任意玩家下该游戏在运行即不允许）
-                if GameProcessManager.shared.isGameRunningForAnyUser(gameId: game.id) {
+                if gameProcessManager.isGameRunningForAnyUser(gameId: game.id) {
                     let error = GlobalError.validation(
                         chineseMessage: "游戏运行中，无法删除",
                         i18nKey: "error.validation.game_running_cannot_delete",
                         level: .notification
                     )
-                    GlobalErrorHandler.shared.handle(error)
+                    errorHandler.handle(error)
                     return
                 }
 
@@ -76,8 +94,8 @@ class GameActionManager: ObservableObject {
                 }
 
                 // 清除该游戏在进程/状态管理器中的残留状态（删除后避免无效 key）
-                GameProcessManager.shared.removeGameState(gameId: game.id)
-                GameStatusManager.shared.removeGameState(gameId: game.id)
+                gameProcessManager.removeGameState(gameId: game.id)
+                gameStatusManager.removeGameState(gameId: game.id)
 
                 // 先删除游戏文件夹（若不存在则跳过但继续删记录）
                 let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
@@ -88,9 +106,9 @@ class GameActionManager: ObservableObject {
                 }
 
                 // 清除该游戏相关的所有内存缓存（图标、路径、mod 扫描结果）
-                GameIconCache.shared.invalidateCache(for: game.gameName)
+                gameIconCache.invalidateCache(for: game.gameName)
                 AppPaths.invalidatePaths(forGameName: game.gameName)
-                await ModScanner.shared.clearModCache(for: game.gameName)
+                await modScanner.clearModCache(for: game.gameName)
 
                 // 删除游戏记录
                 try await gameRepository.deleteGame(id: game.id)
@@ -103,7 +121,7 @@ class GameActionManager: ObservableObject {
                     level: .notification
                 )
                 Logger.shared.error("删除游戏失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
             }
         }
     }
@@ -125,9 +143,9 @@ class GameActionManager: ObservableObject {
                 }
 
                 // 清除缓存
-                GameIconCache.shared.invalidateCache(for: name)
+                gameIconCache.invalidateCache(for: name)
                 AppPaths.invalidatePaths(forGameName: name)
-                await ModScanner.shared.clearModCache(for: name)
+                await modScanner.clearModCache(for: name)
 
                 // 删除当前工作路径下该名称的所有数据库记录
                 try await gameRepository.deleteGamesByName(name)
@@ -140,7 +158,7 @@ class GameActionManager: ObservableObject {
                     level: .notification
                 )
                 Logger.shared.error("删除损坏游戏失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
             }
         }
     }

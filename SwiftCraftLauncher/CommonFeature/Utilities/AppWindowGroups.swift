@@ -46,7 +46,7 @@ extension SwiftCraftLauncherApp {
 
         // Java 下载窗口
         Window("global_resource.download".localized(), id: WindowID.javaDownload.rawValue) {
-            JavaDownloadProgressWindow(downloadState: JavaDownloadManager.shared.downloadState)
+            JavaDownloadProgressWindow(downloadState: javaDownloadManager.downloadState)
                 .preferredColorScheme(themeManager.currentColorScheme)
                 .windowStyleConfig(for: .javaDownload)
                 .windowCleanup(for: .javaDownload)
@@ -68,10 +68,14 @@ extension SwiftCraftLauncherApp {
 
 /// AI 聊天窗口内容视图（用于观察 WindowDataStore 变化）
 private struct AIChatWindowContent: View {
-    @ObservedObject private var windowDataStore = WindowDataStore.shared
+    @ObservedObject private var windowDataStore: WindowDataStore
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var generalSettingsManager: GeneralSettingsManager
+
+    init(windowDataStore: WindowDataStore = AppServices.windowDataStore) {
+        _windowDataStore = ObservedObject(wrappedValue: windowDataStore)
+    }
 
     var body: some View {
         Group {
@@ -86,7 +90,11 @@ private struct AIChatWindowContent: View {
 
 /// 皮肤预览窗口内容视图（用于观察 WindowDataStore 变化）
 private struct SkinPreviewWindowContent: View {
-    @ObservedObject private var windowDataStore = WindowDataStore.shared
+    @ObservedObject private var windowDataStore: WindowDataStore
+
+    init(windowDataStore: WindowDataStore = AppServices.windowDataStore) {
+        _windowDataStore = ObservedObject(wrappedValue: windowDataStore)
+    }
 
     var body: some View {
         Group {

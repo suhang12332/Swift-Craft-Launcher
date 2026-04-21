@@ -3,6 +3,12 @@ import Foundation
 /// 用户基本信息存储管理器
 /// 使用 UserDefaults (plist) 存储用户基本信息
 class UserProfileStore {
+    private let errorHandler: GlobalErrorHandler
+
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
+    }
+
     // MARK: - Public Methods
 
     /// 加载所有用户基本信息
@@ -49,7 +55,7 @@ class UserProfileStore {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("保存用户基本信息失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
     }
 

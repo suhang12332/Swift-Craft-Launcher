@@ -4,7 +4,12 @@ import ZIPFoundation
 @MainActor
 final class ModPackDownloadService {
     var progressHandler: ((Int64, Int64) -> Void)?
-    var errorHandler: ((String, String) -> Void)?
+    var onError: ((String, String) -> Void)?
+    private let errorHandler: GlobalErrorHandler
+
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
+    }
 
     func cleanupTempFiles() {
         Task.detached(priority: .utility) {
@@ -51,12 +56,12 @@ final class ModPackDownloadService {
                     return nil
                 }
                 let globalError = GlobalError.from(error)
-                errorHandler?(globalError.chineseMessage, globalError.i18nKey)
+                onError?(globalError.chineseMessage, globalError.i18nKey)
                 return nil
             }
         } catch {
             let globalError = GlobalError.from(error)
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return nil
         }
     }
@@ -87,14 +92,14 @@ final class ModPackDownloadService {
                 )
                 return iconFileName
             } catch {
-                errorHandler?(
+                onError?(
                     "下载游戏图标失败",
                     "error.network.icon_download_failed"
                 )
                 return nil
             }
         } catch {
-            errorHandler?(
+            onError?(
                 "下载游戏图标失败",
                 "error.network.icon_download_failed"
             )
@@ -107,7 +112,7 @@ final class ModPackDownloadService {
             let fileExtension = modPackPath.pathExtension.lowercased()
 
             guard fileExtension == AppConstants.FileExtensions.zip || fileExtension == AppConstants.FileExtensions.mrpack else {
-                errorHandler?(
+                onError?(
                     "不支持的整合包格式: \(fileExtension)",
                     "error.resource.unsupported_modpack_format"
                 )
@@ -116,7 +121,7 @@ final class ModPackDownloadService {
 
             let modPackPathString = modPackPath.path
             guard FileManager.default.fileExists(atPath: modPackPathString) else {
-                errorHandler?(
+                onError?(
                     "整合包文件不存在: \(modPackPathString)",
                     "error.filesystem.file_not_found"
                 )
@@ -128,7 +133,7 @@ final class ModPackDownloadService {
             )
             let sourceSize = sourceAttributes[.size] as? Int64 ?? 0
             guard sourceSize > 0 else {
-                errorHandler?("整合包文件为空", "error.resource.modpack_empty")
+                onError?("整合包文件为空", "error.resource.modpack_empty")
                 return nil
             }
 
@@ -136,7 +141,7 @@ final class ModPackDownloadService {
             try FileManager.default.unzipItem(at: modPackPath, to: tempDir)
             return tempDir
         } catch {
-            errorHandler?(
+            onError?(
                 "解压整合包失败: \(error.localizedDescription)",
                 "error.filesystem.extraction_failed"
             )

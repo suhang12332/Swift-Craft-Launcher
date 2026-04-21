@@ -30,8 +30,11 @@ final class ResourceFilterState: ObservableObject {
     @Published var searchText: String = ""
     @Published var localResourceFilter: LocalResourceFilter = .all
 
-    init(dataSource: DataSource? = nil) {
-        self.dataSource = dataSource ?? GameSettingsManager.shared.defaultAPISource
+    init(
+        dataSource: DataSource? = nil,
+        gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager
+    ) {
+        self.dataSource = dataSource ?? gameSettingsManager.defaultAPISource
     }
 
     // MARK: - 便捷方法

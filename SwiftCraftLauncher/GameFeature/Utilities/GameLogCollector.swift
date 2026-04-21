@@ -6,8 +6,22 @@ import SwiftUI
 @MainActor
 class GameLogCollector {
     static let shared = GameLogCollector()
+    private let errorHandler: GlobalErrorHandler
+    private let windowManager: WindowManager
+    private let aiChatManager: AIChatManager
+    private let windowDataStore: WindowDataStore
 
-    private init() {}
+    private init(
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        windowManager: WindowManager = AppServices.windowManager,
+        aiChatManager: AIChatManager = AppServices.aiChatManager,
+        windowDataStore: WindowDataStore = AppServices.windowDataStore
+    ) {
+        self.errorHandler = errorHandler
+        self.windowManager = windowManager
+        self.aiChatManager = aiChatManager
+        self.windowDataStore = windowDataStore
+    }
 
     /// 收集游戏日志并打开 AI 窗口
     /// - Parameters:
@@ -29,7 +43,7 @@ class GameLogCollector {
                 i18nKey: "error.filesystem.logs_not_found",
                 level: .notification
             )
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
             return
         }
 
@@ -111,14 +125,14 @@ class GameLogCollector {
         }
 
         // 存储到 WindowDataStore
-        WindowDataStore.shared.aiChatState = chatState
+        windowDataStore.aiChatState = chatState
         // 打开窗口
-        WindowManager.shared.openWindow(id: .aiChat)
+        windowManager.openWindow(id: .aiChat)
 
         // 等待窗口打开后发送消息
         try? await Task.sleep(nanoseconds: 100_000_000) // 等待 0.1 秒
 
         // 发送消息和附件
-        await AIChatManager.shared.sendMessage("", attachments: attachments, chatState: chatState)
+        await aiChatManager.sendMessage("", attachments: attachments, chatState: chatState)
     }
 }

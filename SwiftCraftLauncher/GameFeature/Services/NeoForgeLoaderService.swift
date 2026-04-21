@@ -23,7 +23,7 @@ enum NeoForgeLoaderService {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
 
         // 1. 查全局缓存
-        if let cached = AppCacheManager.shared.get(namespace: GameLoader.neoforge.displayName, key: cacheKey, as: ModrinthLoader.self) {
+        if let cached = AppServices.appCacheManager.get(namespace: GameLoader.neoforge.displayName, key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
 
@@ -36,7 +36,7 @@ enum NeoForgeLoaderService {
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
         // 3. 存入缓存
         result.version = loaderVersion
-        AppCacheManager.shared.setSilently(namespace: GameLoader.neoforge.displayName, key: cacheKey, value: result)
+        AppServices.appCacheManager.setSilently(namespace: GameLoader.neoforge.displayName, key: cacheKey, value: result)
 
         return result
     }
@@ -64,7 +64,7 @@ enum NeoForgeLoaderService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("NeoForge 指定版本设置失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }

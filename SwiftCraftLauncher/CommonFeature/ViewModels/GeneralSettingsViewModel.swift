@@ -11,10 +11,15 @@ final class GeneralSettingsViewModel: ObservableObject {
     @Published var isEditingConcurrentDownloads = false
 
     private let generalSettings: GeneralSettingsManager
+    private let errorHandler: GlobalErrorHandler
     private weak var gameRepository: GameRepository?
 
-    init(generalSettings: GeneralSettingsManager = .shared) {
+    init(
+        generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+    ) {
         self.generalSettings = generalSettings
+        self.errorHandler = errorHandler
         self.concurrentDownloadsDraft = Double(generalSettings.concurrentDownloads)
     }
 
@@ -113,7 +118,7 @@ final class GeneralSettingsViewModel: ObservableObject {
     }
 
     private func present(_ globalError: GlobalError) {
-        GlobalErrorHandler.shared.handle(globalError)
+        errorHandler.handle(globalError)
         error = globalError
     }
 

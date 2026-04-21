@@ -11,9 +11,22 @@ import SwiftUI
 class AIChatManager: ObservableObject {
     static let shared = AIChatManager()
 
-    private let settings = AISettingsManager.shared
+    private let settings: AISettingsManager
+    private let errorHandler: GlobalErrorHandler
+    private let windowManager: WindowManager
+    private let windowDataStore: WindowDataStore
 
-    private init() {}
+    private init(
+        settings: AISettingsManager = AppServices.aiSettingsManager,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        windowManager: WindowManager = AppServices.windowManager,
+        windowDataStore: WindowDataStore = AppServices.windowDataStore
+    ) {
+        self.settings = settings
+        self.errorHandler = errorHandler
+        self.windowManager = windowManager
+        self.windowDataStore = windowDataStore
+    }
 
     // MARK: - 发送消息
 
@@ -28,7 +41,7 @@ class AIChatManager: ObservableObject {
             Logger.shared.error("AI 服务未配置，请检查 API Key")
             await MainActor.run {
                 chatState.isSending = false
-                GlobalErrorHandler.shared.handle(error)
+                errorHandler.handle(error)
             }
             return
         }
@@ -42,7 +55,7 @@ class AIChatManager: ObservableObject {
             Logger.shared.error("AI 模型未配置，请在设置中填写模型名称")
             await MainActor.run {
                 chatState.isSending = false
-                GlobalErrorHandler.shared.handle(error)
+                errorHandler.handle(error)
             }
             return
         }
@@ -82,7 +95,7 @@ class AIChatManager: ObservableObject {
                 chatState.isSending = false
 
                 if let globalError = error as? GlobalError {
-                    GlobalErrorHandler.shared.handle(globalError)
+                    errorHandler.handle(globalError)
                     // 在消息中显示错误
                     if let lastIndex = chatState.messages.indices.last {
                         let userFriendlyMessage = globalError.localizedDescription
@@ -95,7 +108,7 @@ class AIChatManager: ObservableObject {
                         i18nKey: "error.network.ai_request_failed",
                         level: .notification
                     )
-                    GlobalErrorHandler.shared.handle(globalError)
+                    errorHandler.handle(globalError)
                     // 在消息中显示错误
                     if let lastIndex = chatState.messages.indices.last {
                         let userFriendlyMessage = globalError.localizedDescription
@@ -522,8 +535,8 @@ class AIChatManager: ObservableObject {
     func openChatWindow() {
         let chatState = ChatState()
         // 存储到 WindowDataStore
-        WindowDataStore.shared.aiChatState = chatState
+        windowDataStore.aiChatState = chatState
         // 打开窗口
-        WindowManager.shared.openWindow(id: .aiChat)
+        windowManager.openWindow(id: .aiChat)
     }
 }

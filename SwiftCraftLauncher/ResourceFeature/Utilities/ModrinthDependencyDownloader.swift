@@ -48,7 +48,7 @@ enum ModrinthDependencyDownloader {
 
             // 3. 读取最大并发数，最少为1
             let semaphore = AsyncSemaphore(
-                value: GeneralSettingsManager.shared.concurrentDownloads
+                value: AppServices.generalSettingsManager.concurrentDownloads
             )  // 控制最大并发数
 
             // 4. 并发下载所有依赖和主mod，收集结果
@@ -96,13 +96,13 @@ enum ModrinthDependencyDownloader {
                             // 新增缓存
                             if let fileURL = fileURL,
                                 let hash = ModScanner.sha1Hash(of: fileURL) {
-                                ModScanner.shared.saveToCache(
+                                AppServices.modScanner.saveToCache(
                                     hash: hash,
                                     detail: detailWithFile
                                 )
                                 // 如果是 mod，添加到安装缓存
                                 if query.lowercased() == ResourceType.mod.rawValue {
-                                    ModScanner.shared.addModHash(
+                                    AppServices.modScanner.addModHash(
                                         hash,
                                         to: gameInfo.gameName
                                     )
@@ -151,13 +151,13 @@ enum ModrinthDependencyDownloader {
                             // 新增缓存
                             if let fileURL = fileURL,
                                 let hash = ModScanner.sha1Hash(of: fileURL) {
-                                ModScanner.shared.saveToCache(
+                                AppServices.modScanner.saveToCache(
                                     hash: hash,
                                     detail: mainProjectDetail
                                 )
                                 // 如果是 mod，添加到安装缓存
                                 if query.lowercased() == ResourceType.mod.rawValue {
-                                    ModScanner.shared.addModHash(
+                                    AppServices.modScanner.addModHash(
                                         hash,
                                         to: gameInfo.gameName
                                     )
@@ -171,7 +171,7 @@ enum ModrinthDependencyDownloader {
                         Logger.shared.error(
                             "下载主资源 \(projectId) 失败: \(globalError.chineseMessage)"
                         )
-                        GlobalErrorHandler.shared.handle(globalError)
+                        AppServices.errorHandler.handle(globalError)
                         return nil
                     }
                 }
@@ -309,7 +309,7 @@ enum ModrinthDependencyDownloader {
         var resourcesToAdd: [ModrinthProjectDetail] = []
         var allSuccess = true
         let semaphore = AsyncSemaphore(
-            value: GeneralSettingsManager.shared.concurrentDownloads
+            value: AppServices.generalSettingsManager.concurrentDownloads
         )
 
         await withTaskGroup(of: (String, Bool, ModrinthProjectDetail?).self) { group in
@@ -349,13 +349,13 @@ enum ModrinthDependencyDownloader {
                         success = true
                         // 新增缓存
                         if let hash = ModScanner.sha1Hash(of: fileURL) {
-                            ModScanner.shared.saveToCache(
+                            AppServices.modScanner.saveToCache(
                                 hash: hash,
                                 detail: depCopy
                             )
                             // 如果是 mod，添加到安装缓存
                             if query.lowercased() == ResourceType.mod.rawValue {
-                                ModScanner.shared.addModHash(
+                                AppServices.modScanner.addModHash(
                                     hash,
                                     to: gameInfo.gameName
                                 )
@@ -366,7 +366,7 @@ enum ModrinthDependencyDownloader {
                         Logger.shared.error(
                             "下载依赖 \(depId) 失败: \(globalError.chineseMessage)"
                         )
-                        GlobalErrorHandler.shared.handle(globalError)
+                        AppServices.errorHandler.handle(globalError)
                         success = false
                     }
                     let depCopyFinal = depCopy
@@ -443,13 +443,13 @@ enum ModrinthDependencyDownloader {
             mainProjectDetail.type = query
             // 新增缓存
             if let hash = ModScanner.sha1Hash(of: fileURL) {
-                ModScanner.shared.saveToCache(
+                AppServices.modScanner.saveToCache(
                     hash: hash,
                     detail: mainProjectDetail
                 )
                 // 如果是 mod，添加到安装缓存
                 if query.lowercased() == ResourceType.mod.rawValue {
-                    ModScanner.shared.addModHash(
+                    AppServices.modScanner.addModHash(
                         hash,
                         to: gameInfo.gameName
                     )
@@ -461,7 +461,7 @@ enum ModrinthDependencyDownloader {
             Logger.shared.error(
                 "下载主资源 \(mainProjectId) 失败: \(globalError.chineseMessage)"
             )
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return false
         }
     }
@@ -511,13 +511,13 @@ enum ModrinthDependencyDownloader {
             // 新增缓存
             if let h = ModScanner.sha1Hash(of: fileURL) {
                 hash = h
-                ModScanner.shared.saveToCache(
+                AppServices.modScanner.saveToCache(
                     hash: h,
                     detail: mainProjectDetail
                 )
                 // 如果是 mod，添加到安装缓存
                 if query.lowercased() == ResourceType.mod.rawValue {
-                    ModScanner.shared.addModHash(
+                    AppServices.modScanner.addModHash(
                         h,
                         to: gameInfo.gameName
                     )
@@ -529,7 +529,7 @@ enum ModrinthDependencyDownloader {
             Logger.shared.error(
                 "仅下载主资源 \(mainProjectId) 失败: \(globalError.chineseMessage)"
             )
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return (false, nil, nil)
         }
     }

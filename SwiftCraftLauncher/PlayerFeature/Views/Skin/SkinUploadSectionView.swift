@@ -19,6 +19,42 @@ struct SkinUploadSectionView: View {
 
     let onSkinDropped: (NSImage) -> Void
     let onDrop: ([NSItemProvider]) -> Bool
+    private let windowDataStore: WindowDataStore
+    private let windowManager: WindowManager
+
+    init(
+        currentModel: Binding<PlayerSkinService.PublicSkinInfo.SkinModel>,
+        showingFileImporter: Binding<Bool>,
+        selectedSkinImage: Binding<NSImage?>,
+        selectedSkinPath: Binding<String?>,
+        currentSkinRenderImage: Binding<NSImage?>,
+        selectedCapeLocalPath: Binding<String?>,
+        selectedCapeImage: Binding<NSImage?>,
+        selectedCapeImageURL: Binding<String?>,
+        isCapeLoading: Binding<Bool>,
+        capeLoadCompleted: Binding<Bool>,
+        showingSkinPreview: Binding<Bool>,
+        onSkinDropped: @escaping (NSImage) -> Void,
+        onDrop: @escaping ([NSItemProvider]) -> Bool,
+        windowDataStore: WindowDataStore = AppServices.windowDataStore,
+        windowManager: WindowManager = AppServices.windowManager
+    ) {
+        _currentModel = currentModel
+        _showingFileImporter = showingFileImporter
+        _selectedSkinImage = selectedSkinImage
+        _selectedSkinPath = selectedSkinPath
+        _currentSkinRenderImage = currentSkinRenderImage
+        _selectedCapeLocalPath = selectedCapeLocalPath
+        _selectedCapeImage = selectedCapeImage
+        _selectedCapeImageURL = selectedCapeImageURL
+        _isCapeLoading = isCapeLoading
+        _capeLoadCompleted = capeLoadCompleted
+        _showingSkinPreview = showingSkinPreview
+        self.onSkinDropped = onSkinDropped
+        self.onDrop = onDrop
+        self.windowDataStore = windowDataStore
+        self.windowManager = windowManager
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -121,14 +157,14 @@ struct SkinUploadSectionView: View {
     private func openSkinPreviewWindow() {
         let playerModel = convertToPlayerModel(currentModel)
         // 存储到 WindowDataStore
-        WindowDataStore.shared.skinPreviewData = SkinPreviewData(
+        windowDataStore.skinPreviewData = SkinPreviewData(
             skinImage: selectedSkinImage ?? currentSkinRenderImage,
             skinPath: selectedSkinPath,
             capeImage: selectedCapeImage,
             playerModel: playerModel
         )
         // 打开窗口
-        WindowManager.shared.openWindow(id: .skinPreview)
+        windowManager.openWindow(id: .skinPreview)
     }
 }
 

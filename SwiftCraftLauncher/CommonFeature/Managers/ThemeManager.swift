@@ -41,8 +41,9 @@ final class ThemeManager: ObservableObject {
 
     /// 当主题模式为 system 时，返回系统当前的主题
     var currentColorScheme: ColorScheme? {
-        // Scheme A: SwiftUI 负责 system 跟随；仅在用户强制 light/dark 时指定配色。
-        guard themeMode != .system else { return nil }
+        guard NSApplication.shared.isRunning else {
+            return themeMode == .system ? nil : themeMode.effectiveColorScheme
+        }
         return themeMode.effectiveColorScheme
     }
 
