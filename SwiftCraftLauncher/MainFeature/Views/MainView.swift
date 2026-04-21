@@ -18,8 +18,6 @@ struct MainView: View {
     private let modScanner: ModScanner
     @EnvironmentObject var gameRepository: GameRepository
     @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @Environment(\.appLogger)
-    private var logger
 
     init(
         general: GeneralSettingsManager = AppServices.generalSettingsManager,
@@ -209,7 +207,7 @@ struct MainView: View {
     private func scanAllGamesModsDirectory() {
         Task {
             let games = gameRepository.games
-            logger.info("开始扫描 \(games.count) 个游戏的 mods 目录")
+            Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
             await withTaskGroup(of: Void.self) { group in
                 for game in games {
                     group.addTask {
@@ -217,7 +215,7 @@ struct MainView: View {
                     }
                 }
             }
-            logger.info("完成所有游戏的 mods 目录扫描")
+            Logger.shared.info("完成所有游戏的 mods 目录扫描")
         }
     }
 }

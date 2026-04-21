@@ -120,13 +120,9 @@ struct SwiftCraftLauncherApp: App {
     // MARK: - Main Content
     private var mainWindowContent: some View {
         MainView()
-            .environment(\.appLogger, Logger.shared)
             .environmentObject(playerListViewModel)
             .environmentObject(gameRepository)
             .environmentObject(gameLaunchUseCase)
-            .environmentObject(sparkleUpdateService)
-            .environmentObject(generalSettingsManager)
-            .environmentObject(skinSelectionStore)
             .preferredColorScheme(themeManager.currentColorScheme)
             .errorAlert()
             .windowOpener()
@@ -137,10 +133,6 @@ struct SwiftCraftLauncherApp: App {
     private var settingsContent: some View {
         SettingsView()
             .environmentObject(gameRepository)
-            .environmentObject(gameLaunchUseCase)
-            .environmentObject(playerListViewModel)
-            .environmentObject(sparkleUpdateService)
-            .environmentObject(generalSettingsManager)
             .preferredColorScheme(themeManager.currentColorScheme)
             .errorAlert()
     }
