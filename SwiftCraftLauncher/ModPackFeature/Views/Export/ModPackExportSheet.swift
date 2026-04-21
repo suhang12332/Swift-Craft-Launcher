@@ -206,7 +206,6 @@ struct ModPackExportSheet: View {
                     viewModel.cancelExport()
                     viewModel.resetToInitial(gameInfo: gameInfo)
                 } else {
-                    viewModel.cleanupAllData()
                     dismiss()
                 }
             }
