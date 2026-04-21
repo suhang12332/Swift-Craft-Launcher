@@ -51,9 +51,7 @@ struct LauncherStatsSheetView: View {
             )
         }
         .onDisappear {
-            DispatchQueue.main.async {
-                statsController.clearForDismiss()
-            }
+            statsController.clearForDismiss()
         }
     }
 
