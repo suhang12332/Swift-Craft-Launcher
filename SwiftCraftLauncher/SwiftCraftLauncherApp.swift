@@ -48,6 +48,12 @@ struct SwiftCraftLauncherApp: App {
     private let notificationCenterDelegate = NotificationCenterDelegate()
 
     init() {
+        URLCache.shared = URLCache(
+            memoryCapacity: 2 * 1024 * 1024,
+            diskCapacity: 10 * 1024 * 1024,
+            diskPath: nil
+        )
+
         // 设置通知中心代理，确保前台时也能展示 Banner
         UNUserNotificationCenter.current().delegate = notificationCenterDelegate
 
