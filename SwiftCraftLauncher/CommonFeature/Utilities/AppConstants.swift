@@ -6,6 +6,12 @@ enum AppConstants {
     static let modrinthIndex = "relevance"
     static let modrinthIndexFileName = "modrinth.index.json"
 
+    // MARK: - URL Cache
+    enum URLCacheConfig {
+        static let memoryCapacity = 2 * 1024 * 1024
+        static let diskCapacity = 10 * 1024 * 1024
+    }
+
     // MARK: - UserDefaults Keys
     enum UserDefaultsKeys {
         // Player profiles
