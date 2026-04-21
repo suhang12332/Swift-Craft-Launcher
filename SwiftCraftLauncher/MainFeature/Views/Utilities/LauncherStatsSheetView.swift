@@ -37,7 +37,7 @@ struct LauncherStatsSheetView: View {
                 HStack {
                     Spacer()
                     Button("common.close".localized()) {
-                        closeSheet()
+                        dismiss()
                     }
                     .keyboardShortcut(.defaultAction)
                 }
@@ -51,13 +51,10 @@ struct LauncherStatsSheetView: View {
             )
         }
         .onDisappear {
-            statsController.clearForDismiss()
+            DispatchQueue.main.async {
+                statsController.clearForDismiss()
+            }
         }
-    }
-
-    private func closeSheet() {
-        statsController.clearForDismiss()
-        dismiss()
     }
 
     private func launcherPlayer(for id: String) -> Player? {
