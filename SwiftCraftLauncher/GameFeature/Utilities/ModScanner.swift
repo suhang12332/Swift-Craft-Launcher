@@ -13,8 +13,7 @@ class ModScanner {
         standardizedDirectoryURL: URL,
         gameNameHint: String?
     ) {
-        let modScanner = self
-        Task.detached(priority: .utility) {
+        Task.detached(priority: .utility) { [modScanner = self] in
             do {
                 _ = try await modScanner.rebuildDirectoryHashes(
                     dir: standardizedDirectoryURL,
