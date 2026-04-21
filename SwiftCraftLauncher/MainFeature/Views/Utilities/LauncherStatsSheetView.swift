@@ -43,9 +43,12 @@ struct LauncherStatsSheetView: View {
                 }
             }
         )
-        .frame(minWidth: 980, minHeight: 680)
+        .frame(minWidth: 980, minHeight: 520)
         .task(id: AllPlayersMultiGameStatsController.entriesSignature(entries)) {
-            await statsController.configureAndLoad(entries: entries)
+            await statsController.configureAndLoad(
+                entries: entries,
+                currentPlayerIDs: Set(playerListViewModel.players.map(\.id))
+            )
         }
         .onDisappear {
             statsController.clearForDismiss()
@@ -57,22 +60,23 @@ struct LauncherStatsSheetView: View {
         dismiss()
     }
 
-    private func launcherPlayer(for uuid: UUID) -> Player {
-        let normalizedUUID = MinecraftPlayerIdentity.normalizedIdString(uuid.uuidString)
-        guard let player = playerListViewModel.players.first(where: {
-            MinecraftPlayerIdentity.normalizedIdString($0.id) == normalizedUUID
-        }) else {
-            preconditionFailure("Launcher stats UUID must exist in player list")
+    private func launcherPlayer(for id: String) -> Player? {
+        playerListViewModel.players.first {
+            MinecraftPlayerIdentity.normalizedIdString($0.id) == id
         }
-        return player
     }
 
-    private func playerDisplayName(for uuid: UUID) -> String {
-        launcherPlayer(for: uuid).name
+    private func playerDisplayName(for id: String) -> String {
+        launcherPlayer(for: id)?.name ?? String(id.prefix(8))
     }
 
-    private func playerAvatarView(for uuid: UUID) -> AnyView {
-        let player = launcherPlayer(for: uuid)
+    private func playerAvatarView(for id: String) -> AnyView {
+        guard let player = playerListViewModel.players.first(where: {
+            MinecraftPlayerIdentity.normalizedIdString($0.id) == id
+        }) else {
+            return AnyView(EmptyView())
+        }
+
         return AnyView(
             MinecraftSkinUtils(
                 type: player.isRemote ? .url : .asset,
