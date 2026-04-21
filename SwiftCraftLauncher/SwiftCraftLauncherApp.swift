@@ -73,7 +73,15 @@ struct SwiftCraftLauncherApp: App {
     // MARK: - Body
     var body: some Scene {
         Window(Bundle.main.appName, id: WindowID.main.rawValue) {
-            mainWindowContent
+            MainView()
+                .environmentObject(playerListViewModel)
+                .environmentObject(gameRepository)
+                .environmentObject(gameLaunchUseCase)
+                .preferredColorScheme(themeManager.currentColorScheme)
+                .errorAlert()
+                .windowOpener()
+                .onOpenURL(perform: openURLModPackImportPresenter.handle)
+                .onAppear(perform: cleanupWindowDataOnLaunch)
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
@@ -88,7 +96,10 @@ struct SwiftCraftLauncherApp: App {
         }
 
         Settings {
-            settingsContent
+            SettingsView()
+                .environmentObject(gameRepository)
+                .preferredColorScheme(themeManager.currentColorScheme)
+                .errorAlert()
         }
 
         // 应用窗口组
@@ -115,26 +126,6 @@ struct SwiftCraftLauncherApp: App {
                     .scaledToFit()
             }
         )
-    }
-
-    // MARK: - Main Content
-    private var mainWindowContent: some View {
-        MainView()
-            .environmentObject(playerListViewModel)
-            .environmentObject(gameRepository)
-            .environmentObject(gameLaunchUseCase)
-            .preferredColorScheme(themeManager.currentColorScheme)
-            .errorAlert()
-            .windowOpener()
-            .onOpenURL(perform: openURLModPackImportPresenter.handle)
-            .onAppear(perform: cleanupWindowDataOnLaunch)
-    }
-
-    private var settingsContent: some View {
-        SettingsView()
-            .environmentObject(gameRepository)
-            .preferredColorScheme(themeManager.currentColorScheme)
-            .errorAlert()
     }
 
     // MARK: - Helpers

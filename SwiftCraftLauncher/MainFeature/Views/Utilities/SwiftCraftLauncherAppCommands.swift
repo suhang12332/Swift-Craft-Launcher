@@ -10,8 +10,7 @@ struct SwiftCraftLauncherAppCommands: Commands {
     let windowManager: WindowManager
     let aiChatManager: AIChatManager
 
-    @CommandsBuilder
-    var body: some Commands {
+    @CommandsBuilder var body: some Commands {
         if sparkleUpdateService.updateAvailable {
             CommandMenu(String(format: "menu.update.released.title".localized(), sparkleUpdateService.versionString)) {
                 Link(
