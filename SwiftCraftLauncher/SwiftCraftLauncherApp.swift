@@ -34,18 +34,8 @@ struct SwiftCraftLauncherApp: App {
     @StateObject var playerListViewModel = PlayerListViewModel()
     @StateObject var gameRepository = GameRepository()
     @StateObject var gameLaunchUseCase = GameLaunchUseCase()
-    @StateObject var errorHandler: GlobalErrorHandler
-    @StateObject var sparkleUpdateService: SparkleUpdateService
     @StateObject var generalSettingsManager: GeneralSettingsManager
     @StateObject var themeManager: ThemeManager
-    @StateObject var javaDownloadManager: JavaDownloadManager
-    @StateObject var gameActionManager: GameActionManager
-    @StateObject var gameStatusManager: GameStatusManager
-    @ObservedObject var gameDialogsPresenter: GameDialogsPresenter
-    private let openURLModPackImportPresenter: OpenURLModPackImportPresenter
-    private let windowDataStore: WindowDataStore
-    private let aiChatManager: AIChatManager
-    private let windowManager: WindowManager
 
     @Environment(\.openSettings)
     private var openSettings
@@ -54,18 +44,8 @@ struct SwiftCraftLauncherApp: App {
     private let notificationCenterDelegate = NotificationCenterDelegate()
 
     init() {
-        _errorHandler = StateObject(wrappedValue: AppServices.errorHandler)
-        _sparkleUpdateService = StateObject(wrappedValue: AppServices.sparkleUpdateService)
         _generalSettingsManager = StateObject(wrappedValue: AppServices.generalSettingsManager)
         _themeManager = StateObject(wrappedValue: AppServices.themeManager)
-        _javaDownloadManager = StateObject(wrappedValue: AppServices.javaDownloadManager)
-        _gameDialogsPresenter = ObservedObject(wrappedValue: AppServices.gameDialogsPresenter)
-        _gameActionManager = StateObject(wrappedValue: AppServices.gameActionManager)
-        _gameStatusManager = StateObject(wrappedValue: AppServices.gameStatusManager)
-        self.openURLModPackImportPresenter = AppServices.openURLModPackImportPresenter
-        self.windowDataStore = AppServices.windowDataStore
-        self.aiChatManager = AppServices.aiChatManager
-        self.windowManager = AppServices.windowManager
 
         Self.configureURLCache()
         Self.configureNotifications(delegate: notificationCenterDelegate)
@@ -80,12 +60,17 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .environmentObject(gameLaunchUseCase)
-                .environmentObject(gameActionManager)
-                .environmentObject(gameStatusManager)
+                .environmentObject(AppServices.gameActionManager)
+                .environmentObject(AppServices.gameStatusManager)
                 .preferredColorScheme(themeManager.currentColorScheme)
                 .errorAlert()
                 .windowOpener()
-                .onOpenURL(perform: openURLModPackImportPresenter.handle)
+                .onOpenURL { url in
+                    AppServices.openURLModPackImportPresenter.handle(url: url)
+                }
+                .task {
+                    AppServices.sparkleUpdateService.scheduleStartupCheckIfNeeded()
+                }
                 .onAppear(perform: cleanupWindowDataOnLaunch)
         }
         .windowStyle(.titleBar)
@@ -93,11 +78,7 @@ struct SwiftCraftLauncherApp: App {
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
         .commands {
-            SwiftCraftLauncherAppCommands(
-                sparkleUpdateService: sparkleUpdateService,
-                windowManager: windowManager,
-                aiChatManager: aiChatManager
-            )
+            SwiftCraftLauncherAppCommands()
         }
 
         Settings {
@@ -116,16 +97,14 @@ struct SwiftCraftLauncherApp: App {
         // 右上角的状态栏(可以显示图标的)
         MenuBarExtra(
             content: {
-                MenuBarExtraContentView(
-                    openSettings: { openSettings() },
-                    openGameDeletion: { game in gameDialogsPresenter.requestGameDeletion(of: game) },
-                    openModPackExport: { game in gameDialogsPresenter.presentModPackExport(for: game) }
-                )
+                MenuBarExtraContentView {
+                    openSettings()
+                }
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .environmentObject(gameLaunchUseCase)
-                .environmentObject(gameActionManager)
-                .environmentObject(gameStatusManager)
+                .environmentObject(AppServices.gameActionManager)
+                .environmentObject(AppServices.gameStatusManager)
             },
             label: {
                 Image("menu-png").resizable()
@@ -154,7 +133,7 @@ struct SwiftCraftLauncherApp: App {
 
     private func cleanupWindowDataOnLaunch() {
         // 应用启动时清理所有窗口数据
-        windowDataStore.cleanup(for: .aiChat)
-        windowDataStore.cleanup(for: .skinPreview)
+        AppServices.windowDataStore.cleanup(for: .aiChat)
+        AppServices.windowDataStore.cleanup(for: .skinPreview)
     }
 }

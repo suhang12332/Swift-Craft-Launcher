@@ -6,9 +6,11 @@
 import SwiftUI
 
 struct SwiftCraftLauncherAppCommands: Commands {
-    let sparkleUpdateService: SparkleUpdateService
-    let windowManager: WindowManager
-    let aiChatManager: AIChatManager
+    @ObservedObject private var sparkleUpdateService: SparkleUpdateService
+
+    init(sparkleUpdateService: SparkleUpdateService = AppServices.sparkleUpdateService) {
+        _sparkleUpdateService = ObservedObject(wrappedValue: sparkleUpdateService)
+    }
 
     @CommandsBuilder var body: some Commands {
         if sparkleUpdateService.updateAvailable {
@@ -47,12 +49,12 @@ struct SwiftCraftLauncherAppCommands: Commands {
             Link("menu.community.report.issue".localized(), destination: URLConfig.API.Community.issues())
 
             Button("about.contributors".localized()) {
-                windowManager.openWindow(id: .contributors)
+                AppServices.windowManager.openWindow(id: .contributors)
             }
             .keyboardShortcut("c", modifiers: [.command, .shift])
 
             Button("about.acknowledgements".localized()) {
-                windowManager.openWindow(id: .acknowledgements)
+                AppServices.windowManager.openWindow(id: .acknowledgements)
             }
             .keyboardShortcut("a", modifiers: [.command, .shift])
 
@@ -62,7 +64,7 @@ struct SwiftCraftLauncherAppCommands: Commands {
             Divider()
 
             Button("ai.assistant.title".localized()) {
-                aiChatManager.openChatWindow()
+                AppServices.aiChatManager.openChatWindow()
             }
             .keyboardShortcut("i", modifiers: [.command, .shift])
         }

@@ -15,25 +15,7 @@ class GameActionManager: ObservableObject {
 
     static let shared = GameActionManager()
 
-    private let errorHandler: GlobalErrorHandler
-    private let gameProcessManager: GameProcessManager
-    private let gameStatusManager: GameStatusManager
-    private let modScanner: ModScanner
-    private let gameIconCache: GameIconCache
-
-    private init(
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        gameProcessManager: GameProcessManager = AppServices.gameProcessManager,
-        gameStatusManager: GameStatusManager = AppServices.gameStatusManager,
-        modScanner: ModScanner = AppServices.modScanner,
-        gameIconCache: GameIconCache = AppServices.gameIconCache
-    ) {
-        self.errorHandler = errorHandler
-        self.gameProcessManager = gameProcessManager
-        self.gameStatusManager = gameStatusManager
-        self.modScanner = modScanner
-        self.gameIconCache = gameIconCache
-    }
+    private init() {}
 
     // MARK: - Public Methods
 
@@ -67,6 +49,11 @@ class GameActionManager: ObservableObject {
     ) {
         Task {
             do {
+                let gameProcessManager = AppServices.gameProcessManager
+                let gameStatusManager = AppServices.gameStatusManager
+                let gameIconCache = AppServices.gameIconCache
+                let modScanner = AppServices.modScanner
+
                 // 游戏运行中不允许删除（任意玩家下该游戏在运行即不允许）
                 if gameProcessManager.isGameRunningForAnyUser(gameId: game.id) {
                     let error = GlobalError.validation(
@@ -74,7 +61,7 @@ class GameActionManager: ObservableObject {
                         i18nKey: "error.validation.game_running_cannot_delete",
                         level: .notification
                     )
-                    errorHandler.handle(error)
+                    AppServices.errorHandler.handle(error)
                     return
                 }
 
@@ -121,7 +108,7 @@ class GameActionManager: ObservableObject {
                     level: .notification
                 )
                 Logger.shared.error("删除游戏失败: \(globalError.chineseMessage)")
-                errorHandler.handle(globalError)
+                AppServices.errorHandler.handle(globalError)
             }
         }
     }
@@ -136,6 +123,9 @@ class GameActionManager: ObservableObject {
     ) {
         Task {
             do {
+                let gameIconCache = AppServices.gameIconCache
+                let modScanner = AppServices.modScanner
+
                 // 删除目录（若存在）：可能是“只有目录”的损坏情况
                 let profileDir = AppPaths.profileDirectory(gameName: name)
                 if FileManager.default.fileExists(atPath: profileDir.path) {
@@ -158,7 +148,7 @@ class GameActionManager: ObservableObject {
                     level: .notification
                 )
                 Logger.shared.error("删除损坏游戏失败: \(globalError.chineseMessage)")
-                errorHandler.handle(globalError)
+                AppServices.errorHandler.handle(globalError)
             }
         }
     }

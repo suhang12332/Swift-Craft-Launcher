@@ -15,20 +15,17 @@ struct MainView: View {
     @StateObject private var detailState = ResourceDetailState()
     @ObservedObject private var openURLModPackImportPresenter: OpenURLModPackImportPresenter
     @ObservedObject private var selectedGameManager: SelectedGameManager
-    private let modScanner: ModScanner
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
 
     init(
         general: GeneralSettingsManager = AppServices.generalSettingsManager,
         openURLModPackImportPresenter: OpenURLModPackImportPresenter = AppServices.openURLModPackImportPresenter,
-        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
-        modScanner: ModScanner = AppServices.modScanner
+        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager
     ) {
         _general = StateObject(wrappedValue: general)
         _openURLModPackImportPresenter = ObservedObject(wrappedValue: openURLModPackImportPresenter)
         _selectedGameManager = ObservedObject(wrappedValue: selectedGameManager)
-        self.modScanner = modScanner
     }
 
     var body: some View {
@@ -73,6 +70,9 @@ struct MainView: View {
         .onChange(of: gameRepository.workingPathChanged) { _, _ in
             detailState.selectedItem = .resource(.mod)
             detailState.gameType = true
+        }
+        .task {
+            await loadInitialAppData()
         }
         .mainViewPresentations(detailState: detailState)
         .frame(minWidth: 900, minHeight: 500)
@@ -204,18 +204,9 @@ struct MainView: View {
         }
     }
 
-    private func scanAllGamesModsDirectory() {
-        Task {
-            let games = gameRepository.games
-            Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
-            await withTaskGroup(of: Void.self) { group in
-                for game in games {
-                    group.addTask {
-                        await modScanner.scanGameModsDirectory(game: game)
-                    }
-                }
-            }
-            Logger.shared.info("完成所有游戏的 mods 目录扫描")
-        }
+    @MainActor
+    private func loadInitialAppData() async {
+        playerListViewModel.loadPlayersIfNeeded()
+        await gameRepository.loadInitialDataIfNeeded()
     }
 }

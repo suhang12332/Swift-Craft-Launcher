@@ -14,21 +14,18 @@ struct MenuBarExtraContentView: View {
     @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject private var gameStatusManager: GameStatusManager
     @EnvironmentObject private var gameActionManager: GameActionManager
+    @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
 
     let openSettings: () -> Void
-    let openGameDeletion: (GameVersionInfo) -> Void
-    let openModPackExport: (GameVersionInfo) -> Void
     private let aiChatManager: AIChatManager
 
     init(
         openSettings: @escaping () -> Void,
-        openGameDeletion: @escaping (GameVersionInfo) -> Void,
-        openModPackExport: @escaping (GameVersionInfo) -> Void,
+        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter,
         aiChatManager: AIChatManager = AppServices.aiChatManager,
     ) {
+        _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
         self.openSettings = openSettings
-        self.openGameDeletion = openGameDeletion
-        self.openModPackExport = openModPackExport
         self.aiChatManager = aiChatManager
     }
 
@@ -54,9 +51,9 @@ struct MenuBarExtraContentView: View {
                 Menu {
                     GameContextMenu(
                         game: game,
-                        onDelete: { openGameDeletion(game) },
+                        onDelete: { gameDialogsPresenter.requestGameDeletion(of: game) },
                         onOpenSettings: { openSettings() },
-                        onExport: { openModPackExport(game) },
+                        onExport: { gameDialogsPresenter.presentModPackExport(for: game) },
                         showsShowInLauncher: true
                     )
                     .environmentObject(playerListViewModel)
