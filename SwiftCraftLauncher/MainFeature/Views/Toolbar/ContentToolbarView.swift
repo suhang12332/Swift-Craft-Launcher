@@ -2,13 +2,13 @@ import SwiftUI
 
 /// 内容区域工具栏内容
 public struct ContentToolbarView: ToolbarContent {
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @State private var showingAddPlayerSheet = false
     @State private var playerName = ""
     @State private var isPlayerNameValid = false
     @State private var showPlayerAlert = false
     @State private var showingGameForm = false
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var gameRepository: GameRepository
     @State private var showEditSkin = false
     @StateObject private var viewModel = ContentToolbarViewModel()
     private let minecraftAuthService: MinecraftAuthService

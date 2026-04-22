@@ -69,9 +69,9 @@ extension SwiftCraftLauncherApp {
 /// AI 聊天窗口内容视图（用于观察 WindowDataStore 变化）
 private struct AIChatWindowContent: View {
     @ObservedObject private var windowDataStore: WindowDataStore
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var generalSettingsManager: GeneralSettingsManager
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var generalSettingsManager: GeneralSettingsManager
 
     init(windowDataStore: WindowDataStore = AppServices.windowDataStore) {
         _windowDataStore = ObservedObject(wrappedValue: windowDataStore)

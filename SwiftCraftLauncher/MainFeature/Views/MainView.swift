@@ -16,8 +16,8 @@ struct MainView: View {
     @ObservedObject private var openURLModPackImportPresenter: OpenURLModPackImportPresenter
     @ObservedObject private var selectedGameManager: SelectedGameManager
     private let modScanner: ModScanner
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
 
     init(
         general: GeneralSettingsManager = AppServices.generalSettingsManager,

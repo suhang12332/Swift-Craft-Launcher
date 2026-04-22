@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct DetailView: View {
-    @EnvironmentObject var filterState: ResourceFilterState
-    @EnvironmentObject var detailState: ResourceDetailState
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var filterState: ResourceFilterState
+    @EnvironmentObject private var detailState: ResourceDetailState
+    @EnvironmentObject private var gameRepository: GameRepository
 
     @ViewBuilder var body: some View {
         switch detailState.selectedItem {

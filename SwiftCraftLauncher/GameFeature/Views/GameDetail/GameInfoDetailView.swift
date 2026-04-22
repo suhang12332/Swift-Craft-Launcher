@@ -25,7 +25,7 @@ struct GameInfoDetailView: View {
     @Binding var selectedProjectId: String?
     @Binding var selectedLoaders: [String]
     @Binding var gameType: Bool  // false = local,   = server
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var gameRepository: GameRepository
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
     @Binding var localResourceFilter: LocalResourceFilter

@@ -10,8 +10,8 @@ import UniformTypeIdentifiers
 /// AI 对话窗口视图
 struct AIChatWindowView: View {
     @ObservedObject var chatState: ChatState
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var gameRepository: GameRepository
     @StateObject private var aiSettings: AISettingsManager
     private let aiChatManager: AIChatManager
     private let errorHandler: GlobalErrorHandler

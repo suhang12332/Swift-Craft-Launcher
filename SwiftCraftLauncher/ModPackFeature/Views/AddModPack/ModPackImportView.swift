@@ -4,12 +4,12 @@ import UniformTypeIdentifiers
 // MARK: - ModPackImportView
 struct ModPackImportView: View {
     @StateObject private var viewModel: ModPackImportViewModel
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var gameRepository: GameRepository
 
     // Bindings from parent
     private let triggerConfirm: Binding<Bool>
     private let triggerCancel: Binding<Bool>
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 

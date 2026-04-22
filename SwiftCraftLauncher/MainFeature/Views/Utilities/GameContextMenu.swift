@@ -9,8 +9,8 @@ struct GameContextMenu: View {
     let onExport: () -> Void
     let showsShowInLauncher: Bool
 
-    @EnvironmentObject var gameStatusManager: GameStatusManager
-    @EnvironmentObject var gameActionManager: GameActionManager
+    @EnvironmentObject private var gameStatusManager: GameStatusManager
+    @EnvironmentObject private var gameActionManager: GameActionManager
     @ObservedObject private var selectedGameManager: SelectedGameManager
     private let windowManager: WindowManager
 

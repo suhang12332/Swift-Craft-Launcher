@@ -9,7 +9,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct GameAdvancedSettingsView: View {
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var gameRepository: GameRepository
     @StateObject private var selectedGameManager: SelectedGameManager
     @StateObject private var viewModel = GameAdvancedSettingsViewModel()
 

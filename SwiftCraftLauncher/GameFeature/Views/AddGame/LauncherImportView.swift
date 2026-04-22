@@ -11,8 +11,8 @@ import UniformTypeIdentifiers
 struct LauncherImportView: View {
     @StateObject private var viewModel: LauncherImportViewModel
     @StateObject private var folderPickerViewModel = LauncherImportFolderPickerViewModel()
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
 
     // Bindings from parent
     private let triggerConfirm: Binding<Bool>

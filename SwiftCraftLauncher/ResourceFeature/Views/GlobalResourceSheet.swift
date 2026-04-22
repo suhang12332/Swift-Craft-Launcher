@@ -7,7 +7,7 @@ struct GlobalResourceSheet: View {
     @Binding var isPresented: Bool
     let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
     let preloadedCompatibleGames: [GameVersionInfo]  // 预检测的兼容游戏列表
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var gameRepository: GameRepository
     @State private var selectedGame: GameVersionInfo?
     @State private var selectedVersion: ModrinthProjectDetailVersion?
     @State private var availableVersions: [ModrinthProjectDetailVersion] = []

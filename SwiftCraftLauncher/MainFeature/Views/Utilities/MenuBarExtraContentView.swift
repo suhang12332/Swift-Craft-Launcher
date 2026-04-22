@@ -13,7 +13,7 @@ struct MenuBarExtraContentView: View {
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject private var gameStatusManager: GameStatusManager
-    @EnvironmentObject var gameActionManager: GameActionManager
+    @EnvironmentObject private var gameActionManager: GameActionManager
 
     let openSettings: () -> Void
     let openGameDeletion: (GameVersionInfo) -> Void
