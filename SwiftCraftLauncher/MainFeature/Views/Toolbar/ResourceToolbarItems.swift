@@ -107,30 +107,6 @@ struct ResourceToolbarItems: View {
         detailState.showInstallSheet = true
     }
 
-//    @ViewBuilder
-//    private func dataAny() -> some View {
-//        Button {
-//            launcherStatsSheetIdentity = UUID()
-//            showingLauncherStats = true
-//        } label: {
-//            Label("launcher.stats.title".localized(), systemImage: "chart.line.text.clipboard")
-//        }
-//        .help("launcher.stats.title".localized())
-//        .sheet(
-//            isPresented: $showingLauncherStats,
-//            onDismiss: {
-//                launcherStatsSheetIdentity = UUID()
-//            },
-//            content: {
-//                LauncherStatsSheetView()
-//                    .id(launcherStatsSheetIdentity)
-//                    .environmentObject(gameRepository)
-//                    .environmentObject(playerListViewModel)
-//                    .presentationBackgroundInteraction(.automatic)
-//            }
-//        )
-//    }
-
     var body: some View {
         Group {
             if detailState.selectedProjectId != nil {
@@ -188,7 +164,6 @@ struct ResourceToolbarItems: View {
                 }
                 .id(controlActiveState)
                 .help("resource.open_in_browser".localized())
-//                dataAny()
             } else {
                 if detailState.gameType {
                     ResourceFilterMenus.dataSourceMenu(filterState: filterState)
@@ -197,8 +172,6 @@ struct ResourceToolbarItems: View {
                         )
                         .id(controlActiveState)
                 }
-                Spacer()
-//                dataAny()
             }
         }
     }
