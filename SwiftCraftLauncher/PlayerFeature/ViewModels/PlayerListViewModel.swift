@@ -9,10 +9,10 @@ class PlayerListViewModel: ObservableObject {
     private let dataManager = PlayerDataManager()
     private let errorHandler: GlobalErrorHandler
     private var notificationObserver: NSObjectProtocol?
+    private var hasLoadedPlayers = false
 
     init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
         self.errorHandler = errorHandler
-        loadPlayersSafely()
         setupNotifications()
     }
     deinit {
@@ -34,6 +34,11 @@ class PlayerListViewModel: ObservableObject {
 
     // MARK: - Public Methods
 
+    func loadPlayersIfNeeded() {
+        guard !hasLoadedPlayers else { return }
+        loadPlayersSafely()
+    }
+
     /// 加载玩家列表（静默版本）
     func loadPlayers() {
         loadPlayersSafely()
@@ -52,6 +57,7 @@ class PlayerListViewModel: ObservableObject {
     private func loadPlayersSafely() {
         do {
             try loadPlayersThrowing()
+            hasLoadedPlayers = true
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("加载玩家列表失败: \(globalError.chineseMessage)")

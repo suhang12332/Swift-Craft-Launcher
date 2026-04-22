@@ -46,7 +46,7 @@ extension SwiftCraftLauncherApp {
 
         // Java 下载窗口
         Window("global_resource.download".localized(), id: WindowID.javaDownload.rawValue) {
-            JavaDownloadProgressWindow(downloadState: javaDownloadManager.downloadState)
+            JavaDownloadWindowContent()
                 .preferredColorScheme(themeManager.currentColorScheme)
                 .windowStyleConfig(for: .javaDownload)
                 .windowCleanup(for: .javaDownload)
@@ -65,6 +65,18 @@ extension SwiftCraftLauncherApp {
 }
 
 // MARK: - 窗口内容视图
+
+private struct JavaDownloadWindowContent: View {
+    @ObservedObject private var javaDownloadManager: JavaDownloadManager
+
+    init(javaDownloadManager: JavaDownloadManager = AppServices.javaDownloadManager) {
+        _javaDownloadManager = ObservedObject(wrappedValue: javaDownloadManager)
+    }
+
+    var body: some View {
+        JavaDownloadProgressWindow(downloadState: javaDownloadManager.downloadState)
+    }
+}
 
 /// AI 聊天窗口内容视图（用于观察 WindowDataStore 变化）
 private struct AIChatWindowContent: View {

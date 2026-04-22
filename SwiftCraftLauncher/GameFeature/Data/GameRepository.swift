@@ -33,6 +33,8 @@ class GameRepository: ObservableObject {
     private let modScanner: ModScanner
     private var workingPathCancellable: AnyCancellable?
     private var lastWorkingPath: String = ""
+    private var initialLoadTask: Task<Void, Never>?
+    private var hasLoadedInitialData = false
 
     @Published var workingPathChanged: Bool = false
 
@@ -50,17 +52,6 @@ class GameRepository: ObservableObject {
         self.database = GameVersionDatabase(dbPath: dbPath)
 
         lastWorkingPath = currentWorkingPath
-
-        // 初始化数据库
-        Task {
-            do {
-                try await initializeDatabase()
-                loadGamesSafely()
-                await refreshWorkingPathOptions()
-            } catch {
-                self.errorHandler.handle(error)
-            }
-        }
 
         DispatchQueue.main.async { [weak self] in
             self?.setupWorkingPathObserver()
@@ -116,6 +107,37 @@ class GameRepository: ObservableObject {
     }
 
     // MARK: - Public Methods
+
+    @MainActor
+    func loadInitialDataIfNeeded() async {
+        if hasLoadedInitialData {
+            return
+        }
+        if let initialLoadTask {
+            await initialLoadTask.value
+            return
+        }
+
+        let task = Task { [weak self] in
+            guard let self else { return }
+            do {
+                try await self.initializeDatabase()
+                try await self.loadGamesThrowing()
+                await self.scanAllGamesModsDirectory()
+                await self.refreshWorkingPathOptions()
+                self.hasLoadedInitialData = true
+            } catch {
+                self.errorHandler.handle(error)
+                await MainActor.run {
+                    self.gamesByWorkingPath = [:]
+                }
+            }
+        }
+
+        initialLoadTask = task
+        await task.value
+        initialLoadTask = nil
+    }
 
     /// 重新加载所有工作路径及其游戏数量
     func refreshWorkingPathOptions() async {

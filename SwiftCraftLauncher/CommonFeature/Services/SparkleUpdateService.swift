@@ -6,6 +6,8 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     static let shared = SparkleUpdateService()
 
     private var updater: SPUUpdater?
+    private var hasStartedUpdater = false
+    private var hasScheduledStartupCheck = false
 
     @Published var isCheckingForUpdates = false
     @Published var updateAvailable = false
@@ -20,11 +22,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     override private init() {
         super.init()
         currentVersion = Bundle.main.appVersion
-        setupUpdater()
-        // 延迟 2 秒后静默检查更新
-        DispatchQueue.main.asyncAfter(deadline: .now() + startupCheckDelay) { [weak self] in
-            self?.checkForUpdatesSilently()
-        }
     }
 
     /// 设置 Sparkle 更新器
@@ -44,6 +41,12 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         } catch {
             Logger.shared.error("初始化更新器失败：\(error.localizedDescription)")
         }
+    }
+
+    private func ensureUpdaterStarted() {
+        guard !hasStartedUpdater else { return }
+        hasStartedUpdater = true
+        setupUpdater()
     }
 
     // MARK: - SPUUpdaterDelegate
@@ -110,8 +113,17 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         return (isInitialized: true, sessionInProgress: updater.sessionInProgress, isChecking: isCheckingForUpdates)
     }
 
+    func scheduleStartupCheckIfNeeded() {
+        guard !hasScheduledStartupCheck else { return }
+        hasScheduledStartupCheck = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + startupCheckDelay) { [weak self] in
+            self?.checkForUpdatesSilently()
+        }
+    }
+
     /// 手动检查更新（显示Sparkle标准UI）
     func checkForUpdatesWithUI() {
+        ensureUpdaterStarted()
         guard let updater = updater else {
             Logger.shared.error("更新器尚未初始化")
             return
@@ -131,6 +143,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
 
     /// 静默检查更新（无 UI）
     func checkForUpdatesSilently() {
+        ensureUpdaterStarted()
         guard let updater = updater else {
             Logger.shared.error("更新器尚未初始化")
             return
