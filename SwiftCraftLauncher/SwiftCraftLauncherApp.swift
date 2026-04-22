@@ -34,12 +34,18 @@ struct SwiftCraftLauncherApp: App {
     @StateObject var playerListViewModel = PlayerListViewModel()
     @StateObject var gameRepository = GameRepository()
     @StateObject var gameLaunchUseCase = GameLaunchUseCase()
-    @StateObject private var globalErrorHandler = GlobalErrorHandler.shared
-    @StateObject private var sparkleUpdateService = SparkleUpdateService.shared
-    @StateObject var generalSettingsManager = GeneralSettingsManager.shared
-    @StateObject var themeManager = ThemeManager.shared
-    @StateObject private var skinSelectionStore = SkinSelectionStore()
-    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
+    @StateObject var errorHandler: GlobalErrorHandler
+    @StateObject var sparkleUpdateService: SparkleUpdateService
+    @StateObject var generalSettingsManager: GeneralSettingsManager
+    @StateObject var themeManager: ThemeManager
+    @StateObject var javaDownloadManager: JavaDownloadManager
+    @StateObject var gameActionManager: GameActionManager
+    @StateObject var gameStatusManager: GameStatusManager
+    @ObservedObject var gameDialogsPresenter: GameDialogsPresenter
+    private let openURLModPackImportPresenter: OpenURLModPackImportPresenter
+    private let windowDataStore: WindowDataStore
+    private let aiChatManager: AIChatManager
+    private let windowManager: WindowManager
 
     @Environment(\.openSettings)
     private var openSettings
@@ -48,106 +54,55 @@ struct SwiftCraftLauncherApp: App {
     private let notificationCenterDelegate = NotificationCenterDelegate()
 
     init() {
-        // 设置通知中心代理，确保前台时也能展示 Banner
-        UNUserNotificationCenter.current().delegate = notificationCenterDelegate
+        _errorHandler = StateObject(wrappedValue: AppServices.errorHandler)
+        _sparkleUpdateService = StateObject(wrappedValue: AppServices.sparkleUpdateService)
+        _generalSettingsManager = StateObject(wrappedValue: AppServices.generalSettingsManager)
+        _themeManager = StateObject(wrappedValue: AppServices.themeManager)
+        _javaDownloadManager = StateObject(wrappedValue: AppServices.javaDownloadManager)
+        _gameDialogsPresenter = ObservedObject(wrappedValue: AppServices.gameDialogsPresenter)
+        _gameActionManager = StateObject(wrappedValue: AppServices.gameActionManager)
+        _gameStatusManager = StateObject(wrappedValue: AppServices.gameStatusManager)
+        self.openURLModPackImportPresenter = AppServices.openURLModPackImportPresenter
+        self.windowDataStore = AppServices.windowDataStore
+        self.aiChatManager = AppServices.aiChatManager
+        self.windowManager = AppServices.windowManager
 
-        Task {
-            await NotificationManager.requestAuthorizationIfNeeded()
-        }
+        Self.configureURLCache()
+        Self.configureNotifications(delegate: notificationCenterDelegate)
+
+        AppServices.freeze()
     }
 
     // MARK: - Body
     var body: some Scene {
-
         Window(Bundle.main.appName, id: WindowID.main.rawValue) {
             MainView()
-                .environment(\.appLogger, Logger.shared)
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .environmentObject(gameLaunchUseCase)
-                .environmentObject(sparkleUpdateService)
-                .environmentObject(generalSettingsManager)
-                .environmentObject(skinSelectionStore)
+                .environmentObject(gameActionManager)
+                .environmentObject(gameStatusManager)
                 .preferredColorScheme(themeManager.currentColorScheme)
                 .errorAlert()
                 .windowOpener()
-                .onOpenURL { url in
-                    OpenURLModPackImportPresenter.shared.handle(url: url)
-                }
-                .onAppear {
-                    // 应用启动时清理所有窗口数据
-                    WindowDataStore.shared.cleanup(for: .aiChat)
-                    WindowDataStore.shared.cleanup(for: .skinPreview)
-                }
+                .onOpenURL(perform: openURLModPackImportPresenter.handle)
+                .onAppear(perform: cleanupWindowDataOnLaunch)
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
         .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
         .commands {
-            if sparkleUpdateService.updateAvailable {
-                CommandMenu(String(format: "menu.update.released.title".localized(), sparkleUpdateService.versionString)) {
-                    Link("menu.view.release.details".localized(), destination: URLConfig.API.GitHub.releaseTag(
-                        version: sparkleUpdateService.versionString
-                    ))
-                }
-            }
-            CommandGroup(after: .appInfo) {
-                Button("menu.check.updates".localized()) {
-                    sparkleUpdateService.checkForUpdatesWithUI()
-                }
-                .keyboardShortcut("u", modifiers: [.command, .shift])
-            }
-            CommandGroup(after: .help) {
-                Button("menu.open.log".localized()) {
-                    Logger.shared.openLogFile()
-                }
-                .keyboardShortcut("l", modifiers: [.command, .shift])
-
-                Divider()
-
-                Link("GitHub", destination: URLConfig.API.GitHub.repositoryURL())
-                Link("menu.community.website".localized(), destination: URLConfig.API.Community.website())
-
-                Menu("menu.community".localized()) {
-                    Link("menu.community.discussions".localized(), destination: URLConfig.API.Community.discussions())
-                    Link("menu.community.discord".localized(), destination: URLConfig.API.Community.discord())
-                    Link("menu.community.qq".localized(), destination: URLConfig.API.Community.qq())
-                }
-
-                Link("menu.community.report.issue".localized(), destination: URLConfig.API.Community.issues())
-
-                Button("about.contributors".localized()) {
-                    WindowManager.shared.openWindow(id: .contributors)
-                }
-                .keyboardShortcut("c", modifiers: [.command, .shift])
-
-                Button("about.acknowledgements".localized()) {
-                    WindowManager.shared.openWindow(id: .acknowledgements)
-                }
-                .keyboardShortcut("a", modifiers: [.command, .shift])
-
-                Link("license.view".localized(), destination: URLConfig.API.GitHub.license())
-                    .keyboardShortcut("l", modifiers: [.command, .option])
-
-                Divider()
-
-                Button("ai.assistant.title".localized()) {
-                    AIChatManager.shared.openChatWindow()
-                }
-                .keyboardShortcut("i", modifiers: [.command, .shift])
-            }
-            CommandGroup(replacing: .newItem) { }
-            CommandGroup(replacing: .saveItem) { }
+            SwiftCraftLauncherAppCommands(
+                sparkleUpdateService: sparkleUpdateService,
+                windowManager: windowManager,
+                aiChatManager: aiChatManager
+            )
         }
 
         Settings {
             SettingsView()
                 .environmentObject(gameRepository)
-                .environmentObject(gameLaunchUseCase)
-                .environmentObject(playerListViewModel)
-                .environmentObject(sparkleUpdateService)
-                .environmentObject(generalSettingsManager)
                 .preferredColorScheme(themeManager.currentColorScheme)
                 .errorAlert()
         }
@@ -169,6 +124,8 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .environmentObject(gameLaunchUseCase)
+                .environmentObject(gameActionManager)
+                .environmentObject(gameStatusManager)
             },
             label: {
                 Image("menu-png").resizable()
@@ -176,5 +133,28 @@ struct SwiftCraftLauncherApp: App {
                     .scaledToFit()
             }
         )
+    }
+
+    // MARK: - Helpers
+    private static func configureURLCache() {
+        URLCache.shared = URLCache(
+            memoryCapacity: AppConstants.URLCacheConfig.memoryCapacity,
+            diskCapacity: AppConstants.URLCacheConfig.diskCapacity,
+            diskPath: nil
+        )
+    }
+
+    private static func configureNotifications(delegate: UNUserNotificationCenterDelegate) {
+        // 设置通知中心代理，确保前台时也能展示 Banner
+        UNUserNotificationCenter.current().delegate = delegate
+        Task {
+            await NotificationManager.requestAuthorizationIfNeeded()
+        }
+    }
+
+    private func cleanupWindowDataOnLaunch() {
+        // 应用启动时清理所有窗口数据
+        windowDataStore.cleanup(for: .aiChat)
+        windowDataStore.cleanup(for: .skinPreview)
     }
 }

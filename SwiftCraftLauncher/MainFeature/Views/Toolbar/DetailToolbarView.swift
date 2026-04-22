@@ -2,9 +2,9 @@ import SwiftUI
 
 /// 详情区域工具栏内容
 public struct DetailToolbarView: ToolbarContent {
-    @EnvironmentObject var filterState: ResourceFilterState
-    @EnvironmentObject var detailState: ResourceDetailState
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var filterState: ResourceFilterState
+    @EnvironmentObject private var detailState: ResourceDetailState
+    @EnvironmentObject private var gameRepository: GameRepository
 
     private var currentGame: GameVersionInfo? {
         if case .game(let gameId) = detailState.selectedItem {

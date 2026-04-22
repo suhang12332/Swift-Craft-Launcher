@@ -26,11 +26,6 @@ enum APIClient {
 
     private static let sharedSession: URLSession = {
         let configuration = URLSessionConfiguration.default
-        configuration.urlCache = URLCache(
-            memoryCapacity: 4 * 1024 * 1024,  // 4MB 内存缓存
-            diskCapacity: 20 * 1024 * 1024,   // 20MB 磁盘缓存
-            diskPath: nil
-        )
         configuration.requestCachePolicy = .useProtocolCachePolicy
         configuration.timeoutIntervalForRequest = 30
         configuration.timeoutIntervalForResource = 60

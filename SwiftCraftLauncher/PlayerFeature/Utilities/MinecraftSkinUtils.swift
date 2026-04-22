@@ -76,21 +76,8 @@ struct MinecraftSkinUtils: View {
         config.timeoutIntervalForRequest = Constants.networkTimeout
         config.timeoutIntervalForResource = Constants.networkTimeout
 
-        // 磁盘缓存目录（位于系统 Caches 目录下）
-        let diskCachePath: String = {
-            let fm = FileManager.default
-            let dir = AppPaths.appCache.appendingPathComponent("MinecraftSkinCache", isDirectory: true)
-            try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
-            return dir.path
-        }()
-        // 使用缓存策略：允许使用本地缓存，但会验证服务器响应
-        config.requestCachePolicy = .returnCacheDataElseLoad
-        // 减少 URLSession 缓存大小，应用已有独立缓存
-        config.urlCache = URLCache(
-            memoryCapacity: 2 * 1024 * 1024,  // 2MB 内存缓存（从 5MB 减少）
-            diskCapacity: 5 * 1024 * 1024,    // 5MB 磁盘缓存（从 10MB 减少）
-            diskPath: diskCachePath
-        )
+        config.requestCachePolicy = .useProtocolCachePolicy
+        config.urlCache = .shared
         return URLSession(configuration: config)
     }()
 
@@ -409,7 +396,7 @@ struct MinecraftSkinUtils: View {
                     self.isLoading = false
                 }
                 Logger.shared.error("❌ 皮肤加载失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                AppServices.errorHandler.handle(globalError)
             }
         }
     }

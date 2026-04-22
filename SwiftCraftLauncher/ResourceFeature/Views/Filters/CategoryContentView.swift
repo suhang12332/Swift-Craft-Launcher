@@ -21,6 +21,7 @@ struct CategoryContentView: View {
     let gameVersion: String?
     let gameLoader: String?
     let dataSource: DataSource
+    private let errorHandler: GlobalErrorHandler
 
     // MARK: - Initialization
     init(
@@ -34,7 +35,8 @@ struct CategoryContentView: View {
         selectedLoaders: Binding<[String]>,
         gameVersion: String? = nil,
         gameLoader: String? = nil,
-        dataSource: DataSource
+        dataSource: DataSource,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
     ) {
         self.project = project
         self.type = type
@@ -47,6 +49,7 @@ struct CategoryContentView: View {
         self.gameVersion = gameVersion
         self.gameLoader = gameLoader
         self.dataSource = dataSource
+        self.errorHandler = errorHandler
         self._viewModel = StateObject(
             wrappedValue: CategoryContentViewModel(project: project)
         )
@@ -97,7 +100,7 @@ struct CategoryContentView: View {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("加载分类数据失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             await MainActor.run {
                 viewModel.setError(globalError)
             }

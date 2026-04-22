@@ -14,7 +14,7 @@ final class AcknowledgementsViewModel: ObservableObject {
     }
 
     convenience init() {
-        self.init(gitHubService: .shared)
+        self.init(gitHubService: AppServices.gitHubService)
     }
 
     func load() {

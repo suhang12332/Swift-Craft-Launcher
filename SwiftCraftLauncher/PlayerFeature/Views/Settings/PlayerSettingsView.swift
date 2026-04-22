@@ -1,11 +1,17 @@
 import SwiftUI
 
 public struct PlayerSettingsView: View {
-    @StateObject private var playerSettings = PlayerSettingsManager.shared
+    @StateObject private var playerSettings: PlayerSettingsManager
     @StateObject private var viewModel = PlayerSettingsViewModel()
     private let yggdrasilServers = YggdrasilServerPresets.servers
 
-    public init() {}
+    public init() {
+        _playerSettings = StateObject(wrappedValue: AppServices.playerSettingsManager)
+    }
+
+    init(playerSettings: PlayerSettingsManager) {
+        _playerSettings = StateObject(wrappedValue: playerSettings)
+    }
 
     public var body: some View {
         let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(AppConstants.AuthlibInjector.jarFileName)

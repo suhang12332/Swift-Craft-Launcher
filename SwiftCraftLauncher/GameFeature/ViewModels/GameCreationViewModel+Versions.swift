@@ -5,7 +5,7 @@ extension GameCreationViewModel {
 
     /// 初始化版本选择器
     func initializeVersionPicker() async {
-        let includeSnapshots = GameSettingsManager.shared.includeSnapshotsForGameVersions
+        let includeSnapshots = gameSettingsManager.includeSnapshotsForGameVersions
         let compatibleVersions = await CommonService.compatibleVersions(
             for: selectedModLoader,
             includeSnapshots: includeSnapshots
@@ -37,7 +37,7 @@ extension GameCreationViewModel {
         iconImage = nil
 
         Task {
-            let includeSnapshots = GameSettingsManager.shared.includeSnapshotsForGameVersions
+            let includeSnapshots = gameSettingsManager.includeSnapshotsForGameVersions
             let compatibleVersions = await CommonService.compatibleVersions(
                 for: newLoader,
                 includeSnapshots: includeSnapshots

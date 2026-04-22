@@ -57,6 +57,7 @@ class ModPackExportViewModel: ObservableObject {
 
     /// 导出任务
     private var exportTask: Task<Void, Never>?
+    private let gameSettingsManager: GameSettingsManager
 
     /// 是否已显示保存对话框（防止重复显示）
     private var hasShownSaveDialog = false
@@ -171,7 +172,7 @@ class ModPackExportViewModel: ObservableObject {
         modPackName = ""
         modPackVersion = "1.0.0"
         summary = ""
-        currentExportFormat = GameSettingsManager.shared.defaultModPackExportFormat
+        currentExportFormat = gameSettingsManager.defaultModPackExportFormat
     }
 
     /// 取消导出后将界面恢复为初始可编辑状态（不关闭 Sheet）
@@ -221,7 +222,8 @@ class ModPackExportViewModel: ObservableObject {
         }
     }
 
-    init() {
-        currentExportFormat = GameSettingsManager.shared.defaultModPackExportFormat
+    init(gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager) {
+        self.gameSettingsManager = gameSettingsManager
+        currentExportFormat = gameSettingsManager.defaultModPackExportFormat
     }
 }

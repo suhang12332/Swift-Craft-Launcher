@@ -22,9 +22,14 @@ final class ModPackInstallCoordinator {
     }
 
     private let downloadService: ModPackDownloadService
+    private let errorHandler: GlobalErrorHandler
 
-    init(downloadService: ModPackDownloadService) {
+    init(
+        downloadService: ModPackDownloadService,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+    ) {
         self.downloadService = downloadService
+        self.errorHandler = errorHandler
     }
 
     func prepare(
@@ -36,7 +41,7 @@ final class ModPackInstallCoordinator {
         }
 
         guard let indexInfo = await ModPackIndexParser.parseIndex(extractedPath: extractedPath) else {
-            GlobalErrorHandler.shared.handle(
+            errorHandler.handle(
                 GlobalError.resource(
                     chineseMessage: "不支持的整合包格式，请使用 Modrinth (.mrpack) 或 CurseForge (.zip) 格式的整合包",
                     i18nKey: "error.resource.unsupported_modpack_format",
@@ -283,7 +288,7 @@ final class ModPackInstallCoordinator {
                     onError: { error, message in
                         Task { @MainActor in
                             Logger.shared.error("游戏设置失败: \(message)")
-                            GlobalErrorHandler.shared.handle(error)
+                            self.errorHandler.handle(error)
                         }
                         continuation.resume(returning: false)
                     }
@@ -352,7 +357,7 @@ final class ModPackInstallCoordinator {
                 Logger.shared.error(
                     "创建目录失败: \(dir.path), 错误: \(error.localizedDescription)"
                 )
-                GlobalErrorHandler.shared.handle(
+                errorHandler.handle(
                     GlobalError.fileSystem(
                         chineseMessage: "创建目录失败: \(dir.path)",
                         i18nKey: "error.filesystem.directory_creation_failed",
@@ -431,7 +436,7 @@ final class ModPackInstallCoordinator {
         } else {
             Logger.shared.error("整合包依赖安装失败: \(gameName)")
             await cleanupGameDirectories(gameName: gameName)
-            GlobalErrorHandler.shared.handle(
+            errorHandler.handle(
                 GlobalError.resource(
                     chineseMessage: "整合包依赖安装失败",
                     i18nKey: "error.resource.modpack_dependencies_failed",

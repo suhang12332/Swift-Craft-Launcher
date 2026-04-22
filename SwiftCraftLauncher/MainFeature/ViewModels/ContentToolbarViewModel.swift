@@ -6,6 +6,11 @@ final class ContentToolbarViewModel: ObservableObject {
     @Published var isLoadingSkin: Bool = false
     @Published var preloadedSkinInfo: PlayerSkinService.PublicSkinInfo?
     @Published var preloadedProfile: MinecraftProfileResponse?
+    private let authService: MinecraftAuthService
+
+    init(authService: MinecraftAuthService = AppServices.minecraftAuthService) {
+        self.authService = authService
+    }
 
     func preloadSkinDataForManager(player: Player?) async {
         guard let player else { return }
@@ -32,7 +37,6 @@ final class ContentToolbarViewModel: ObservableObject {
             }
         }
 
-        let authService = MinecraftAuthService.shared
         let validatedPlayer: Player
         do {
             validatedPlayer = try await authService.validateAndRefreshPlayerTokenThrowing(for: playerWithCredential)

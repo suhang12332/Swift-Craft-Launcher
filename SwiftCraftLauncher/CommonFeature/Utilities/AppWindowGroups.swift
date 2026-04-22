@@ -38,6 +38,7 @@ extension SwiftCraftLauncherApp {
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .environmentObject(generalSettingsManager)
+                .preferredColorScheme(themeManager.currentColorScheme)
                 .windowStyleConfig(for: .aiChat)
                 .windowCleanup(for: .aiChat)
         }
@@ -45,7 +46,8 @@ extension SwiftCraftLauncherApp {
 
         // Java 下载窗口
         Window("global_resource.download".localized(), id: WindowID.javaDownload.rawValue) {
-            JavaDownloadProgressWindow(downloadState: JavaDownloadManager.shared.downloadState)
+            JavaDownloadProgressWindow(downloadState: javaDownloadManager.downloadState)
+                .preferredColorScheme(themeManager.currentColorScheme)
                 .windowStyleConfig(for: .javaDownload)
                 .windowCleanup(for: .javaDownload)
         }
@@ -54,6 +56,7 @@ extension SwiftCraftLauncherApp {
         // 皮肤预览窗口
         Window("skin.preview".localized(), id: WindowID.skinPreview.rawValue) {
             SkinPreviewWindowContent()
+                .preferredColorScheme(themeManager.currentColorScheme)
                 .windowStyleConfig(for: .skinPreview)
                 .windowCleanup(for: .skinPreview)
         }
@@ -65,17 +68,19 @@ extension SwiftCraftLauncherApp {
 
 /// AI 聊天窗口内容视图（用于观察 WindowDataStore 变化）
 private struct AIChatWindowContent: View {
-    @ObservedObject private var windowDataStore = WindowDataStore.shared
-    @ObservedObject private var themeManager = ThemeManager.shared
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var generalSettingsManager: GeneralSettingsManager
+    @ObservedObject private var windowDataStore: WindowDataStore
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var generalSettingsManager: GeneralSettingsManager
+
+    init(windowDataStore: WindowDataStore = AppServices.windowDataStore) {
+        _windowDataStore = ObservedObject(wrappedValue: windowDataStore)
+    }
 
     var body: some View {
         Group {
             if let chatState = windowDataStore.aiChatState {
                 AIChatWindowView(chatState: chatState)
-                    .preferredColorScheme(themeManager.currentColorScheme)
             } else {
                 EmptyView()
             }
@@ -85,7 +90,11 @@ private struct AIChatWindowContent: View {
 
 /// 皮肤预览窗口内容视图（用于观察 WindowDataStore 变化）
 private struct SkinPreviewWindowContent: View {
-    @ObservedObject private var windowDataStore = WindowDataStore.shared
+    @ObservedObject private var windowDataStore: WindowDataStore
+
+    init(windowDataStore: WindowDataStore = AppServices.windowDataStore) {
+        _windowDataStore = ObservedObject(wrappedValue: windowDataStore)
+    }
 
     var body: some View {
         Group {

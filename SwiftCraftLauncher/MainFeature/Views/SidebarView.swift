@@ -2,21 +2,27 @@ import SwiftUI
 
 /// 侧边栏：游戏列表与资源列表导航
 public struct SidebarView: View {
-    @EnvironmentObject var detailState: ResourceDetailState
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var detailState: ResourceDetailState
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var gameActionManager: GameActionManager
+    @EnvironmentObject private var gameStatusManager: GameStatusManager
     @State private var searchText: String = ""
-    @ObservedObject private var gameDialogsPresenter = GameDialogsPresenter.shared
-    @StateObject private var gameActionManager = GameActionManager.shared
-    @StateObject private var gameStatusManager = GameStatusManager.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
+    @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
+    @ObservedObject private var selectedGameManager: SelectedGameManager
     @StateObject private var viewModel = SidebarViewModel()
 
     @Environment(\.openSettings)
     private var openSettings
 
-    public init() {}
+    init(
+        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter,
+        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager
+    ) {
+        _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
+        _selectedGameManager = ObservedObject(wrappedValue: selectedGameManager)
+    }
 
     public var body: some View {
         List(selection: detailState.selectedItemOptionalBinding) {

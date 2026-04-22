@@ -9,11 +9,15 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct GameAdvancedSettingsView: View {
-    @EnvironmentObject var gameRepository: GameRepository
-    @StateObject private var selectedGameManager = SelectedGameManager.shared
+    @EnvironmentObject private var gameRepository: GameRepository
+    @StateObject private var selectedGameManager: SelectedGameManager
     @StateObject private var viewModel = GameAdvancedSettingsViewModel()
 
     @State private var showJavaPathPicker = false
+
+    init(selectedGameManager: SelectedGameManager = AppServices.selectedGameManager) {
+        _selectedGameManager = StateObject(wrappedValue: selectedGameManager)
+    }
 
     var body: some View {
         Form {
@@ -84,7 +88,7 @@ struct GameAdvancedSettingsView: View {
                 HStack {
                     MiniRangeSlider(
                         range: $viewModel.memoryRange,
-                        bounds: 512...Double(GameSettingsManager.shared.maximumMemoryAllocation)
+                        bounds: 512...Double(viewModel.gameSettingsManager.maximumMemoryAllocation)
                     )
                     .frame(width: 200)
                     .controlSize(.mini)
@@ -137,7 +141,7 @@ struct GameAdvancedSettingsView: View {
         .onChange(of: viewModel.javaPath) { _, _ in
             viewModel.onJavaPathChanged()
         }
-        .globalErrorHandler()
+        .errorHandler()
         .alert(
             "error.notification.validation.title".localized(),
             isPresented: .constant(viewModel.error != nil && viewModel.error?.level == .popup)

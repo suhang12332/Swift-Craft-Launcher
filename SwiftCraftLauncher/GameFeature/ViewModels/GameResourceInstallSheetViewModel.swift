@@ -13,6 +13,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
     let resourceType: String
     let gameInfo: GameVersionInfo
     let isUpdateMode: Bool
+    private let errorHandler: GlobalErrorHandler
 
     private var gameRepository: GameRepository?
 
@@ -20,12 +21,14 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         project: ModrinthProject,
         resourceType: String,
         gameInfo: GameVersionInfo,
-        isUpdateMode: Bool
+        isUpdateMode: Bool,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
     ) {
         self.project = project
         self.resourceType = resourceType
         self.gameInfo = gameInfo
         self.isUpdateMode = isUpdateMode
+        self.errorHandler = errorHandler
     }
 
     func setDependencies(gameRepository: GameRepository) {
@@ -49,7 +52,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("加载依赖项失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 dependencyState = DependencyState()
             }
         }
@@ -100,7 +103,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("手动下载所有依赖项失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 isDownloadingAll = false
             }
         }
@@ -165,7 +168,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("下载资源失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 isDownloadingAll = false
             }
         }

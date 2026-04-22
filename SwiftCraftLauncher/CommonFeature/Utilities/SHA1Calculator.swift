@@ -71,7 +71,7 @@ public enum SHA1Calculator {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("计算文件哈希值失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }

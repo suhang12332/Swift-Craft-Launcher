@@ -4,7 +4,7 @@ import UniformTypeIdentifiers
 import SkinRenderKit
 
 struct SkinToolDetailView: View {
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 

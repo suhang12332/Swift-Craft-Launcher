@@ -20,7 +20,7 @@ enum MinecraftJavaServerResourceUtils {
             )
         }
 
-        try await ServerAddressService.shared.addServerIfNeeded(
+        try await AppServices.serverAddressService.addServerIfNeeded(
             for: game.gameName,
             address: address,
             name: detail.title

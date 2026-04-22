@@ -10,9 +10,17 @@ class CommonFileManager {
     let librariesDir: URL
     var onProgressUpdate: ((String, Int, Int) -> Void)?
     private let fileManager = FileManager.default
+    private let errorHandler: GlobalErrorHandler
+    private let javaManager: JavaManager
 
-    init(librariesDir: URL) {
+    init(
+        librariesDir: URL,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        javaManager: JavaManager = AppServices.javaManager
+    ) {
         self.librariesDir = librariesDir
+        self.errorHandler = errorHandler
+        self.javaManager = javaManager
     }
 
     actor Counter {
@@ -32,7 +40,7 @@ class CommonFileManager {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("下载 Forge JAR 文件失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
     }
 
@@ -86,7 +94,7 @@ class CommonFileManager {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("下载 JAR 文件失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
     }
 
@@ -170,7 +178,7 @@ class CommonFileManager {
 
         // 通过gameVersion获取对应的Java版本，只获取一次，避免在每个processor中重复请求和校验
         let versionInfo = try await ModrinthService.fetchVersionInfo(from: gameVersion)
-        let javaPath = JavaManager.shared.findJavaExecutable(version: versionInfo.javaVersion.component)
+        let javaPath = javaManager.findJavaExecutable(version: versionInfo.javaVersion.component)
 
         for (index, processor) in clientProcessors.enumerated() {
             do {

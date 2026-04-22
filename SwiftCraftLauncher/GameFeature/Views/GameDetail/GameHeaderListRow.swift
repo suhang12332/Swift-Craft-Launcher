@@ -7,9 +7,26 @@ struct GameHeaderListRow: View {
     let query: String
     let onImport: () -> Void
     var onIconTap: (() -> Void)?
+    private let iconRefreshNotifier: IconRefreshNotifier
 
     @State private var refreshTrigger: UUID = UUID()
     @State private var cancellable: AnyCancellable?
+
+    init(
+        game: GameVersionInfo,
+        cacheInfo: CacheInfo,
+        query: String,
+        onImport: @escaping () -> Void,
+        onIconTap: (() -> Void)? = nil,
+        iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier
+    ) {
+        self.game = game
+        self.cacheInfo = cacheInfo
+        self.query = query
+        self.onImport = onImport
+        self.onIconTap = onIconTap
+        self.iconRefreshNotifier = iconRefreshNotifier
+    }
 
     var body: some View {
         HStack {
@@ -122,7 +139,7 @@ struct GameHeaderListRow: View {
         }
         .onAppear {
             // 监听图标刷新通知
-            cancellable = IconRefreshNotifier.shared.refreshPublisher
+            cancellable = iconRefreshNotifier.refreshPublisher
                 .sink { refreshedGameName in
                     // 如果通知的游戏名称匹配，或者通知为 nil（刷新所有），则刷新
                     if refreshedGameName == nil || refreshedGameName == game.gameName {

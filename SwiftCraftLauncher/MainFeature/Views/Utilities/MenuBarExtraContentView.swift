@@ -12,10 +12,39 @@ struct MenuBarExtraContentView: View {
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
+    @EnvironmentObject private var gameStatusManager: GameStatusManager
+    @EnvironmentObject private var gameActionManager: GameActionManager
 
     let openSettings: () -> Void
     let openGameDeletion: (GameVersionInfo) -> Void
     let openModPackExport: (GameVersionInfo) -> Void
+    private let aiChatManager: AIChatManager
+
+    init(
+        openSettings: @escaping () -> Void,
+        openGameDeletion: @escaping (GameVersionInfo) -> Void,
+        openModPackExport: @escaping (GameVersionInfo) -> Void,
+        aiChatManager: AIChatManager = AppServices.aiChatManager,
+    ) {
+        self.openSettings = openSettings
+        self.openGameDeletion = openGameDeletion
+        self.openModPackExport = openModPackExport
+        self.aiChatManager = aiChatManager
+    }
+
+    private func gameStatusSymbolName(for game: GameVersionInfo) -> String {
+        let userId = playerListViewModel.currentPlayer?.id ?? ""
+        let isRunning = gameStatusManager.isGameRunning(gameId: game.id, userId: userId)
+        let isLaunching = gameStatusManager.isGameLaunching(gameId: game.id, userId: userId)
+
+        if isLaunching && !isRunning {
+            return "progress.indicator"
+        } else if isRunning {
+            return "stop.fill"
+        } else {
+            return "play.fill"
+        }
+    }
 
     var body: some View {
         if !gameRepository.games.isEmpty {
@@ -34,6 +63,7 @@ struct MenuBarExtraContentView: View {
                     .environmentObject(gameRepository)
                     .environmentObject(gameLaunchUseCase)
                 } label: {
+                    Image(systemName: gameStatusSymbolName(for: game))
                     Text(game.gameName)
                 }
             }
@@ -63,7 +93,7 @@ struct MenuBarExtraContentView: View {
         Divider()
 
         Button("ai.assistant.title".localized()) {
-            AIChatManager.shared.openChatWindow()
+            aiChatManager.openChatWindow()
         }
 
         Button("menu.quit".localized()) {

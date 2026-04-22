@@ -29,6 +29,8 @@ class GameRepository: ObservableObject {
 
     private let workingPathProvider: WorkingPathProviding
     private let database: GameVersionDatabase
+    private let errorHandler: GlobalErrorHandler
+    private let modScanner: ModScanner
     private var workingPathCancellable: AnyCancellable?
     private var lastWorkingPath: String = ""
 
@@ -36,8 +38,14 @@ class GameRepository: ObservableObject {
 
     // MARK: - Initialization
 
-    init(workingPathProvider: WorkingPathProviding = GeneralSettingsManager.shared) {
+    init(
+        workingPathProvider: WorkingPathProviding = AppServices.generalSettingsManager,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        modScanner: ModScanner = AppServices.modScanner
+    ) {
         self.workingPathProvider = workingPathProvider
+        self.errorHandler = errorHandler
+        self.modScanner = modScanner
         let dbPath = AppPaths.gameVersionDatabase.path
         self.database = GameVersionDatabase(dbPath: dbPath)
 
@@ -50,7 +58,7 @@ class GameRepository: ObservableObject {
                 loadGamesSafely()
                 await refreshWorkingPathOptions()
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                self.errorHandler.handle(error)
             }
         }
 
@@ -98,7 +106,7 @@ class GameRepository: ObservableObject {
                             // 重置通知标志
                             self.workingPathChanged = false
                         } catch {
-                            GlobalErrorHandler.shared.handle(error)
+                            self.errorHandler.handle(error)
                             // 即使出错也要重置标志
                             self.workingPathChanged = false
                         }
@@ -145,7 +153,7 @@ class GameRepository: ObservableObject {
             do {
                 try await addGame(game)
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                self.errorHandler.handle(error)
             }
         }
     }
@@ -176,7 +184,7 @@ class GameRepository: ObservableObject {
             do {
                 try await deleteGame(id: id)
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                self.errorHandler.handle(error)
             }
         }
     }
@@ -233,7 +241,7 @@ class GameRepository: ObservableObject {
             do {
                 try await updateGame(game)
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                self.errorHandler.handle(error)
             }
         }
         return true // Note: This will always return true since the operation is async
@@ -269,7 +277,7 @@ class GameRepository: ObservableObject {
             do {
                 try await updateGameLastPlayed(id: id, lastPlayed: lastPlayed)
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                self.errorHandler.handle(error)
             }
         }
         return true // Note: This will always return true since the operation is async
@@ -294,7 +302,7 @@ class GameRepository: ObservableObject {
             do {
                 try await updateJavaPath(id: id, javaPath: javaPath)
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                self.errorHandler.handle(error)
             }
         }
         return true // Note: This will always return true since the operation is async
@@ -319,7 +327,7 @@ class GameRepository: ObservableObject {
             do {
                 try await updateJvmArguments(id: id, jvmArguments: jvmArguments)
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                self.errorHandler.handle(error)
             }
         }
         return true // Note: This will always return true since the operation is async
@@ -354,7 +362,7 @@ class GameRepository: ObservableObject {
             do {
                 try await updateMemorySize(id: id, xms: xms, xmx: xmx)
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                self.errorHandler.handle(error)
             }
         }
         return true // Note: This will always return true since the operation is async
@@ -376,7 +384,7 @@ class GameRepository: ObservableObject {
                 // 加载完成后，扫描所有游戏的 mods 目录
                 await scanAllGamesModsDirectory()
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                self.errorHandler.handle(error)
                 await MainActor.run {
                     gamesByWorkingPath = [:]
                 }
@@ -393,7 +401,7 @@ class GameRepository: ObservableObject {
         await withTaskGroup(of: Void.self) { group in
             for game in games {
                 group.addTask {
-                    await ModScanner.shared.scanGameModsDirectory(game: game)
+                    await self.modScanner.scanGameModsDirectory(game: game)
                 }
             }
         }

@@ -11,7 +11,7 @@ enum QuiltLoaderService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Fabric 加载器版本失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }
@@ -36,7 +36,7 @@ enum QuiltLoaderService {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
 
         // 1. 查全局缓存
-        if let cached = AppCacheManager.shared.get(namespace: GameLoader.quilt.rawValue, key: cacheKey, as: ModrinthLoader.self) {
+        if let cached = AppServices.appCacheManager.get(namespace: GameLoader.quilt.rawValue, key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
 
@@ -49,7 +49,7 @@ enum QuiltLoaderService {
         result.version = loaderVersion
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
         // 3. 存入缓存
-        AppCacheManager.shared.setSilently(namespace: GameLoader.quilt.rawValue, key: cacheKey, value: result)
+        AppServices.appCacheManager.setSilently(namespace: GameLoader.quilt.rawValue, key: cacheKey, value: result)
 
         return result
     }
@@ -77,7 +77,7 @@ enum QuiltLoaderService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("Quilt 指定版本设置失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }

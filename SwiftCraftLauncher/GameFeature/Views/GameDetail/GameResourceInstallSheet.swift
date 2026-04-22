@@ -8,7 +8,7 @@ struct GameResourceInstallSheet: View {
     @Binding var isPresented: Bool
     let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
     var isUpdateMode: Bool = false  // 更新模式：footer 显示「下载」、不显示依赖
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var gameRepository: GameRepository
     /// 下载成功回调，参数为 (fileName, hash)，仅 downloadResource 路径会传值，downloadAllManual 传 (nil, nil)
     var onDownloadSuccess: ((String?, String?) -> Void)?
 

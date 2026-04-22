@@ -62,7 +62,7 @@ extension ModPackImportViewModel {
                 i18nKey: "error.resource.local_modpack_import_failed",
                 level: .notification
             )
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             modPackViewModel.modPackInstallState.reset()
             gameSetupService.downloadState.reset()
             // 清理不再需要的索引数据以释放内存

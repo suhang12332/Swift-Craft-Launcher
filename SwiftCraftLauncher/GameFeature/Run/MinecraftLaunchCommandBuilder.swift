@@ -17,7 +17,7 @@ enum MinecraftLaunchCommandBuilder {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("构建启动命令失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }

@@ -3,8 +3,14 @@ import Foundation
 /// 玩家数据管理器
 /// 使用 UserProfileStore (plist) 和 AuthCredentialStore (Keychain) 分离存储
 class PlayerDataManager {
-    private let profileStore = UserProfileStore()
+    private let errorHandler: GlobalErrorHandler
+    private let profileStore: UserProfileStore
     private let credentialStore = AuthCredentialStore()
+
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
+        self.profileStore = UserProfileStore(errorHandler: errorHandler)
+    }
 
     // MARK: - Public Methods
 
@@ -131,7 +137,7 @@ class PlayerDataManager {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("添加玩家失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }
@@ -144,7 +150,7 @@ class PlayerDataManager {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("加载玩家数据失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return []
         }
     }
@@ -182,7 +188,7 @@ class PlayerDataManager {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("检查玩家存在性失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }
@@ -231,7 +237,7 @@ class PlayerDataManager {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("删除玩家失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }
@@ -244,7 +250,7 @@ class PlayerDataManager {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("保存玩家数据失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
     }
 
@@ -318,7 +324,7 @@ class PlayerDataManager {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("更新玩家信息失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }

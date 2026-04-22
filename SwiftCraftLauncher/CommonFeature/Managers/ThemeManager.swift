@@ -25,7 +25,6 @@ final class ThemeManager: ObservableObject {
     }
 
     private var appearanceObserver: NSKeyValueObservation?
-    private var debounceWorkItem: DispatchWorkItem?
 
     private init() {
         DispatchQueue.main.async { [weak self] in
@@ -36,7 +35,6 @@ final class ThemeManager: ObservableObject {
 
     deinit {
         appearanceObserver?.invalidate()
-        debounceWorkItem?.cancel()
     }
 
     /// 当主题模式为 system 时，返回系统当前的主题
@@ -47,22 +45,14 @@ final class ThemeManager: ObservableObject {
         return themeMode.effectiveColorScheme
     }
 
-    /// 设置系统外观变化观察者（debounce 降低触发频率）
+    /// 设置系统外观变化观察者
     private func setupAppearanceObserver() {
         appearanceObserver = NSApp.observe(
             \.effectiveAppearance,
             options: [.new, .initial]
         ) { [weak self] _, _ in
-            guard let self else { return }
-            self.debounceWorkItem?.cancel()
-            let item = DispatchWorkItem { [weak self] in
-                guard let self, self.themeMode == .system else { return }
-                DispatchQueue.main.async {
-                    self.objectWillChange.send()
-                }
-            }
-            self.debounceWorkItem = item
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: item)
+            guard let self, self.themeMode == .system else { return }
+            self.objectWillChange.send()
         }
     }
 

@@ -6,6 +6,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
     private let project: ModrinthProject
     private let resourceType: String
     private let gameRepository: GameRepository
+    private let errorHandler: GlobalErrorHandler
 
     private let isPresented: Binding<Bool>
     private let isDownloadingAll: Binding<Bool>
@@ -17,7 +18,8 @@ final class GlobalResourceFooterViewModel: ObservableObject {
         isPresented: Binding<Bool>,
         isDownloadingAll: Binding<Bool>,
         isDownloadingMainOnly: Binding<Bool>,
-        gameRepository: GameRepository
+        gameRepository: GameRepository,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
     ) {
         self.project = project
         self.resourceType = resourceType
@@ -25,6 +27,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
         self.isDownloadingAll = isDownloadingAll
         self.isDownloadingMainOnly = isDownloadingMainOnly
         self.gameRepository = gameRepository
+        self.errorHandler = errorHandler
     }
 
     func downloadMainOnly(selectedGame: GameVersionInfo?) {
@@ -37,7 +40,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("下载主资源失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
             }
 
             isDownloadingMainOnly.wrappedValue = false
@@ -63,7 +66,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("手动下载所有依赖项失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
             }
 
             isDownloadingAll.wrappedValue = false
@@ -87,7 +90,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("添加服务器失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
             }
 
             isDownloadingAll.wrappedValue = false
@@ -105,7 +108,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("下载资源失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
             }
 
             isDownloadingAll.wrappedValue = false

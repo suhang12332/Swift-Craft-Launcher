@@ -24,10 +24,11 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         configuration: GameFormConfiguration,
         preselectedFile: URL? = nil,
         shouldStartProcessing: Bool = false,
-        onProcessingStateChanged: @escaping (Bool) -> Void = { _ in }
+        onProcessingStateChanged: @escaping (Bool) -> Void = { _ in },
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
     ) {
         self.onProcessingStateChanged = onProcessingStateChanged
-        super.init(configuration: configuration)
+        super.init(configuration: configuration, errorHandler: errorHandler)
 
         self.selectedModPackFile = preselectedFile
         self.isProcessingModPack = shouldStartProcessing

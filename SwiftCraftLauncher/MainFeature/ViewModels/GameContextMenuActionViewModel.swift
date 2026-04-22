@@ -4,7 +4,7 @@ import Foundation
 final class GameContextMenuActionViewModel: ObservableObject {
     private let gameStatusManager: GameStatusManager
 
-    init(gameStatusManager: GameStatusManager = .shared) {
+    init(gameStatusManager: GameStatusManager = AppServices.gameStatusManager) {
         self.gameStatusManager = gameStatusManager
     }
 

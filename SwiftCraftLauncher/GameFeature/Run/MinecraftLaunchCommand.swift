@@ -4,6 +4,26 @@ import AVFoundation
 struct MinecraftLaunchCommand {
     let player: Player?
     let game: GameVersionInfo
+    private let minecraftAuthService: MinecraftAuthService
+    private let gameSettingsManager: GameSettingsManager
+    private let gameProcessManager: GameProcessManager
+    private let gameStatusManager: GameStatusManager
+
+    init(
+        player: Player?,
+        game: GameVersionInfo,
+        minecraftAuthService: MinecraftAuthService = AppServices.minecraftAuthService,
+        gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager,
+        gameProcessManager: GameProcessManager = AppServices.gameProcessManager,
+        gameStatusManager: GameStatusManager = AppServices.gameStatusManager
+    ) {
+        self.player = player
+        self.game = game
+        self.minecraftAuthService = minecraftAuthService
+        self.gameSettingsManager = gameSettingsManager
+        self.gameProcessManager = gameProcessManager
+        self.gameStatusManager = gameStatusManager
+    }
 
     /// 启动游戏（静默版本）
     func launchGame() async {
@@ -17,7 +37,7 @@ struct MinecraftLaunchCommand {
     /// 停止游戏（使用当前 command 的 player+game 定位进程）
     func stopGame() async {
         let userId = player?.id ?? ""
-        _ = GameProcessManager.shared.stopProcess(for: game.id, userId: userId)
+        _ = gameProcessManager.stopProcess(for: game.id, userId: userId)
     }
 
     /// 启动游戏（抛出异常版本）
@@ -56,8 +76,7 @@ struct MinecraftLaunchCommand {
         }
 
         // 使用已加载/更新后的玩家对象验证并尝试刷新Token
-        let authService = MinecraftAuthService.shared
-        let validatedPlayer = try await authService.validateAndRefreshPlayerTokenThrowing(for: playerWithCredential)
+        let validatedPlayer = try await minecraftAuthService.validateAndRefreshPlayerTokenThrowing(for: playerWithCredential)
 
         // 如果Token被更新了，需要保存到PlayerDataManager
         if validatedPlayer.authAccessToken != player.authAccessToken {
@@ -127,7 +146,7 @@ struct MinecraftLaunchCommand {
     }
 
     private func replaceGameParameters(command: [String]) -> [String] {
-        let settings = GameSettingsManager.shared
+        let settings = gameSettingsManager
 
         // 内存设置：优先使用游戏配置，游戏没配置则使用全局
         let xms = game.xms > 0 ? game.xms : settings.globalXms
@@ -247,22 +266,22 @@ struct MinecraftLaunchCommand {
 
         // 存储进程到管理器（会自动设置终止处理器）
         let userId = player?.id ?? ""
-        GameProcessManager.shared.storeProcess(gameId: game.id, userId: userId, process: process)
+        gameProcessManager.storeProcess(gameId: game.id, userId: userId, process: process)
 
         do {
             try process.run()
 
             // 进程启动后立即设置状态为运行中
             _ = await MainActor.run {
-                GameStatusManager.shared.setGameRunning(gameId: game.id, userId: userId, isRunning: true)
+                gameStatusManager.setGameRunning(gameId: game.id, userId: userId, isRunning: true)
             }
         } catch {
             Logger.shared.error("启动进程失败: \(error.localizedDescription)")
 
             // 启动失败时清理进程并重置状态
-            _ = GameProcessManager.shared.stopProcess(for: game.id, userId: userId)
+            _ = gameProcessManager.stopProcess(for: game.id, userId: userId)
             _ = await MainActor.run {
-                GameStatusManager.shared.setGameRunning(gameId: game.id, userId: userId, isRunning: false)
+                gameStatusManager.setGameRunning(gameId: game.id, userId: userId, isRunning: false)
             }
 
             throw GlobalError.gameLaunch(
@@ -280,6 +299,6 @@ struct MinecraftLaunchCommand {
 
         // 使用全局错误处理器处理错误
         let globalError = GlobalError.from(error)
-        GlobalErrorHandler.shared.handle(globalError)
+        AppServices.errorHandler.handle(globalError)
     }
 }

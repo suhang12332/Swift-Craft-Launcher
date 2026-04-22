@@ -13,12 +13,23 @@ enum SettingsTab: Int {
 /// 通用设置视图
 /// 应用设置
 public struct SettingsView: View {
-    @StateObject private var general = GeneralSettingsManager.shared
-    @StateObject private var selectedGameManager = SelectedGameManager.shared
+    @StateObject private var general: GeneralSettingsManager
+    @StateObject private var selectedGameManager: SelectedGameManager
     @EnvironmentObject private var gameRepository: GameRepository
     @State private var selectedTab: SettingsTab = .general
 
-    public init() {}
+    public init() {
+        _general = StateObject(wrappedValue: AppServices.generalSettingsManager)
+        _selectedGameManager = StateObject(wrappedValue: AppServices.selectedGameManager)
+    }
+
+    init(
+        general: GeneralSettingsManager,
+        selectedGameManager: SelectedGameManager
+    ) {
+        _general = StateObject(wrappedValue: general)
+        _selectedGameManager = StateObject(wrappedValue: selectedGameManager)
+    }
 
     public var body: some View {
         TabView(selection: $selectedTab) {

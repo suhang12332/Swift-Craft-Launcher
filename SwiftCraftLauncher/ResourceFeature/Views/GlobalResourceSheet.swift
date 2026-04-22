@@ -7,7 +7,7 @@ struct GlobalResourceSheet: View {
     @Binding var isPresented: Bool
     let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
     let preloadedCompatibleGames: [GameVersionInfo]  // 预检测的兼容游戏列表
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var gameRepository: GameRepository
     @State private var selectedGame: GameVersionInfo?
     @State private var selectedVersion: ModrinthProjectDetailVersion?
     @State private var availableVersions: [ModrinthProjectDetailVersion] = []
@@ -15,6 +15,23 @@ struct GlobalResourceSheet: View {
     @State private var isDownloadingAll = false
     @State private var isDownloadingMainOnly = false
     @State private var mainVersionId = ""
+    private let errorHandler: GlobalErrorHandler
+
+    init(
+        project: ModrinthProject,
+        resourceType: String,
+        isPresented: Binding<Bool>,
+        preloadedDetail: ModrinthProjectDetail?,
+        preloadedCompatibleGames: [GameVersionInfo],
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+    ) {
+        self.project = project
+        self.resourceType = resourceType
+        _isPresented = isPresented
+        self.preloadedDetail = preloadedDetail
+        self.preloadedCompatibleGames = preloadedCompatibleGames
+        self.errorHandler = errorHandler
+    }
 
     /// Sheet 标题（根据资源类型与是否选中游戏动态变化）
     private var headerTitle: String {
@@ -123,7 +140,7 @@ struct GlobalResourceSheet: View {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("加载依赖项失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 _ = await MainActor.run {
                     dependencyState = DependencyState()
                 }

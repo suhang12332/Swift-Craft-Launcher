@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9021A5442F963799003B98AF /* PlayerDataKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9021A5432F963799003B98AF /* PlayerDataKit */; };
 		9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 9023D91B2E313A67005A53F1 /* ZIPFoundation */; };
 		9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9049FDB02F1151B50070A9E3 /* SkinRenderKit */; };
 		90645F072F6BF80C006AD2D8 /* SwiftMarkDownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 90645F062F6BF80C006AD2D8 /* SwiftMarkDownUI */; };
@@ -31,6 +32,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9021A5442F963799003B98AF /* PlayerDataKit in Frameworks */,
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
 				9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */,
 				90E123456789ABCD0001 /* Sparkle in Frameworks */,
@@ -76,6 +78,7 @@
 				9049FDB02F1151B50070A9E3 /* SkinRenderKit */,
 				9098463E2F688B0400D7876B /* CFModrinthAdapterKit */,
 				90645F062F6BF80C006AD2D8 /* SwiftMarkDownUI */,
+				9021A5432F963799003B98AF /* PlayerDataKit */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */;
@@ -133,6 +136,7 @@
 				9049FDAF2F1151B50070A9E3 /* XCRemoteSwiftPackageReference "NSSkinRender" */,
 				9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */,
 				90645F052F6BF80C006AD2D8 /* XCRemoteSwiftPackageReference "SwiftMarkDownUI" */,
+				9021A5422F963799003B98AF /* XCRemoteSwiftPackageReference "PlayerDataKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -207,7 +211,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 71;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -231,7 +235,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025-2026 Swift Craft Launcher";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14;
-				MARKETING_VERSION = 1.1.6;
+				MARKETING_VERSION = 1.1.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -276,7 +280,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 71;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -294,7 +298,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025-2026 Swift Craft Launcher";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14;
-				MARKETING_VERSION = 1.1.6;
+				MARKETING_VERSION = 1.1.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -313,7 +317,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 71;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -325,7 +329,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14;
-				MARKETING_VERSION = 1.1.6;
+				MARKETING_VERSION = 1.1.7;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
@@ -346,7 +350,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 70;
+				CURRENT_PROJECT_VERSION = 71;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -358,7 +362,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14;
-				MARKETING_VERSION = 1.1.6;
+				MARKETING_VERSION = 1.1.7;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
@@ -398,6 +402,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.59.1;
+			};
+		};
+		9021A5422F963799003B98AF /* XCRemoteSwiftPackageReference "PlayerDataKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/suhang12332/PlayerDataKit.git";
+			requirement = {
+				branch = releases;
+				kind = branch;
 			};
 		};
 		9023D91A2E313A67005A53F1 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
@@ -447,6 +459,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */;
 			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
+		9021A5432F963799003B98AF /* PlayerDataKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9021A5422F963799003B98AF /* XCRemoteSwiftPackageReference "PlayerDataKit" */;
+			productName = PlayerDataKit;
 		};
 		9023D91B2E313A67005A53F1 /* ZIPFoundation */ = {
 			isa = XCSwiftPackageProductDependency;

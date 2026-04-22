@@ -1,12 +1,28 @@
 import SwiftUI
 
 public struct GeneralSettingsView: View {
-    @StateObject private var generalSettings = GeneralSettingsManager.shared
-    @StateObject private var themeManager = ThemeManager.shared
-    @StateObject private var viewModel = GeneralSettingsViewModel()
+    @StateObject private var generalSettings: GeneralSettingsManager
+    @StateObject private var themeManager: ThemeManager
+    @StateObject private var viewModel: GeneralSettingsViewModel
     @EnvironmentObject private var gameRepository: GameRepository
 
-    public init() {}
+    @MainActor
+    public init() {
+        _generalSettings = StateObject(wrappedValue: AppServices.generalSettingsManager)
+        _themeManager = StateObject(wrappedValue: AppServices.themeManager)
+        _viewModel = StateObject(wrappedValue: GeneralSettingsViewModel())
+    }
+
+    @MainActor
+    init(
+        generalSettings: GeneralSettingsManager,
+        themeManager: ThemeManager,
+        viewModel: GeneralSettingsViewModel
+    ) {
+        _generalSettings = StateObject(wrappedValue: generalSettings)
+        _themeManager = StateObject(wrappedValue: themeManager)
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
 
     public var body: some View {
         Form {
@@ -26,7 +42,7 @@ public struct GeneralSettingsView: View {
             GeneralSettingsGitHubProxyRow(generalSettings: generalSettings)
             GeneralSettingsCommonSheetHeightLimitRow(generalSettings: generalSettings)
         }
-        .globalErrorHandler()
+        .errorHandler()
         .onAppear {
             viewModel.configure(gameRepository: gameRepository)
         }
@@ -43,8 +59,4 @@ public struct GeneralSettingsView: View {
             }
         }
     }
-}
-
-#Preview {
-    GeneralSettingsView()
 }

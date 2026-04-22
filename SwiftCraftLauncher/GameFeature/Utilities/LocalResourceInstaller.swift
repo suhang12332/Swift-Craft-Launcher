@@ -86,7 +86,19 @@ extension LocalResourceInstaller {
         let onResourceChanged: () -> Void
 
         @State private var showImporter = false
-        @StateObject private var errorHandler = GlobalErrorHandler.shared
+        @StateObject private var errorHandler: GlobalErrorHandler
+
+        init(
+            query: String,
+            gameName: String,
+            onResourceChanged: @escaping () -> Void,
+            errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        ) {
+            self.query = query
+            self.gameName = gameName
+            self.onResourceChanged = onResourceChanged
+            _errorHandler = StateObject(wrappedValue: errorHandler)
+        }
 
         var body: some View {
             VStack(spacing: 8) {

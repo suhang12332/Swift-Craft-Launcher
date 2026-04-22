@@ -12,17 +12,19 @@ import SwiftUI
 struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
 
     // MARK: - Properties
-    @ObservedObject private var generalSettings = GeneralSettingsManager.shared
+    @ObservedObject private var generalSettings: GeneralSettingsManager
     let header: Header
     let bodyContent: BodyContent
     let footer: Footer
 
     // MARK: - Initialization
     init(
+        generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder header: () -> Header,
         @ViewBuilder body: () -> BodyContent,
         @ViewBuilder footer: () -> Footer
     ) {
+        self.generalSettings = generalSettings
         self.header = header()
         self.bodyContent = body()
         self.footer = footer()
@@ -62,8 +64,10 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
 extension CommonSheetView where Header == EmptyView, Footer == EmptyView {
     /// 只有主体内容的初始化方法
     init(
+        generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder body: () -> BodyContent
     ) {
+        self.generalSettings = generalSettings
         self.header = EmptyView()
         self.bodyContent = body()
         self.footer = EmptyView()
@@ -73,9 +77,11 @@ extension CommonSheetView where Header == EmptyView, Footer == EmptyView {
 extension CommonSheetView where Footer == EmptyView {
     /// 有头部和主体的初始化方法
     init(
+        generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder header: () -> Header,
         @ViewBuilder body: () -> BodyContent
     ) {
+        self.generalSettings = generalSettings
         self.header = header()
         self.bodyContent = body()
         self.footer = EmptyView()
@@ -85,9 +91,11 @@ extension CommonSheetView where Footer == EmptyView {
 extension CommonSheetView where Header == EmptyView {
     /// 有主体和底部的初始化方法
     init(
+        generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder body: () -> BodyContent,
         @ViewBuilder footer: () -> Footer
     ) {
+        self.generalSettings = generalSettings
         self.header = EmptyView()
         self.bodyContent = body()
         self.footer = footer()

@@ -17,7 +17,7 @@ extension ModPackImportViewModel {
                 )
             } catch {
                 Logger.shared.error("创建目录失败: \(dir.path), 错误: \(error.localizedDescription)")
-                GlobalErrorHandler.shared.handle(
+                errorHandler.handle(
                     GlobalError.fileSystem(
                         chineseMessage: "创建目录失败: \(dir.path)",
                         i18nKey: "error.filesystem.directory_creation_failed",

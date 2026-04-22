@@ -10,9 +10,17 @@ final class AddPlayerSheetViewModel: ObservableObject {
     @Published var isForeignIP: Bool = false
 
     private let playerSettings: PlayerSettingsManager
+    private let premiumAccountFlagManager: PremiumAccountFlagManager
+    private let ipLocationService: IPLocationService
 
-    init(playerSettings: PlayerSettingsManager = .shared) {
+    init(
+        playerSettings: PlayerSettingsManager = AppServices.playerSettingsManager,
+        premiumAccountFlagManager: PremiumAccountFlagManager = AppServices.premiumAccountFlagManager,
+        ipLocationService: IPLocationService = AppServices.ipLocationService
+    ) {
         self.playerSettings = playerSettings
+        self.premiumAccountFlagManager = premiumAccountFlagManager
+        self.ipLocationService = ipLocationService
     }
 
     func reset() {
@@ -30,12 +38,10 @@ final class AddPlayerSheetViewModel: ObservableObject {
     }
 
     func checkPremiumAccountFlag() async {
-        let flagManager = PremiumAccountFlagManager.shared
-        let hasFlag = flagManager.hasAddedPremiumAccount()
+        let hasFlag = premiumAccountFlagManager.hasAddedPremiumAccount()
 
         if !hasFlag {
-            let locationService = IPLocationService.shared
-            let foreign = await locationService.isForeignIP()
+            let foreign = await ipLocationService.isForeignIP()
             isForeignIP = foreign
         }
 
@@ -61,8 +67,7 @@ final class AddPlayerSheetViewModel: ObservableObject {
     }
 
     private func canAddOfflineAccount() -> Bool {
-        let flagManager = PremiumAccountFlagManager.shared
-        if flagManager.hasAddedPremiumAccount() {
+        if premiumAccountFlagManager.hasAddedPremiumAccount() {
             return true
         }
         return !isForeignIP

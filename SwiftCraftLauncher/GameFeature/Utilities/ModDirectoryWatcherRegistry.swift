@@ -4,8 +4,11 @@ actor ModDirectoryWatcherRegistry {
     static let shared = ModDirectoryWatcherRegistry()
 
     private var watchers: [String: ModsDirectoryTreeWatcher] = [:]
+    private let modScanner: ModScanner
 
-    private init() {}
+    private init(modScanner: ModScanner = AppServices.modScanner) {
+        self.modScanner = modScanner
+    }
 
     func ensureWatching(directoryURL: URL, gameNameHint: String?) {
         let standardized = directoryURL.standardizedFileURL
@@ -19,7 +22,7 @@ actor ModDirectoryWatcherRegistry {
 
         let hint = gameNameHint
         let watcher = ModsDirectoryTreeWatcher(path: key) {
-            ModScanner.shared.scheduleDirectoryHashRebuild(
+            self.modScanner.scheduleDirectoryHashRebuild(
                 standardizedDirectoryURL: standardized,
                 gameNameHint: hint
             )

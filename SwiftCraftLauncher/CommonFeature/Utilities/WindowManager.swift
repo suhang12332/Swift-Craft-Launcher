@@ -90,12 +90,17 @@ class WindowManager {
 struct WindowOpener: ViewModifier {
     @Environment(\.openWindow)
     private var openWindow
+    private let windowManager: WindowManager
+
+    init(windowManager: WindowManager = AppServices.windowManager) {
+        self.windowManager = windowManager
+    }
 
     func body(content: Content) -> some View {
         content
             .onAppear {
                 // 设置全局窗口打开动作（使用闭包包装 OpenWindowAction）
-                WindowManager.shared.setOpenWindowAction { windowID in
+                windowManager.setOpenWindowAction { windowID in
                     openWindow(id: windowID)
                 }
             }

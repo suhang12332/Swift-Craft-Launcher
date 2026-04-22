@@ -9,16 +9,27 @@
 import SwiftUI
 
 struct MainView: View {
-    @StateObject private var general = GeneralSettingsManager.shared
+    @StateObject private var general: GeneralSettingsManager
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @StateObject private var filterState = ResourceFilterState()
     @StateObject private var detailState = ResourceDetailState()
-    @ObservedObject private var openURLModPackImportPresenter = OpenURLModPackImportPresenter.shared
-    @ObservedObject private var selectedGameManager = SelectedGameManager.shared
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
-    @Environment(\.appLogger)
-    private var logger
+    @ObservedObject private var openURLModPackImportPresenter: OpenURLModPackImportPresenter
+    @ObservedObject private var selectedGameManager: SelectedGameManager
+    private let modScanner: ModScanner
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+
+    init(
+        general: GeneralSettingsManager = AppServices.generalSettingsManager,
+        openURLModPackImportPresenter: OpenURLModPackImportPresenter = AppServices.openURLModPackImportPresenter,
+        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
+        modScanner: ModScanner = AppServices.modScanner
+    ) {
+        _general = StateObject(wrappedValue: general)
+        _openURLModPackImportPresenter = ObservedObject(wrappedValue: openURLModPackImportPresenter)
+        _selectedGameManager = ObservedObject(wrappedValue: selectedGameManager)
+        self.modScanner = modScanner
+    }
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
@@ -136,7 +147,7 @@ struct MainView: View {
 
         detailState.gameId = gameId
         detailState.selectedProjectId = nil
-        SelectedGameManager.shared.setSelectedGame(gameId)
+        selectedGameManager.setSelectedGame(gameId)
     }
 
     private func handleGameToGameTransition(
@@ -151,7 +162,7 @@ struct MainView: View {
             detailState.gameResourcesType = (loader == GameLoader.vanilla.displayName) ? ResourceType.datapack.rawValue : ResourceType.mod.rawValue
         }
         detailState.gameId = newId
-        SelectedGameManager.shared.setSelectedGame(newId)
+        selectedGameManager.setSelectedGame(newId)
     }
 
     private func resetToResourceDefaults() {
@@ -160,7 +171,7 @@ struct MainView: View {
                 filterState.clearSearchText()
             }
         }
-        SelectedGameManager.shared.clearSelection()
+        selectedGameManager.clearSelection()
 
         if !detailState.gameType && detailState.selectedProjectId == nil {
             detailState.gameType = true
@@ -196,15 +207,15 @@ struct MainView: View {
     private func scanAllGamesModsDirectory() {
         Task {
             let games = gameRepository.games
-            logger.info("开始扫描 \(games.count) 个游戏的 mods 目录")
+            Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
             await withTaskGroup(of: Void.self) { group in
                 for game in games {
                     group.addTask {
-                        await ModScanner.shared.scanGameModsDirectory(game: game)
+                        await modScanner.scanGameModsDirectory(game: game)
                     }
                 }
             }
-            logger.info("完成所有游戏的 mods 目录扫描")
+            Logger.shared.info("完成所有游戏的 mods 目录扫描")
         }
     }
 }

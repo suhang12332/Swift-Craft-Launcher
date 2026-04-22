@@ -5,7 +5,11 @@ public class ContributorsViewModel: ObservableObject {
     @Published public var contributors: [GitHubContributor] = []
     @Published public var isLoading: Bool = false
 
-    private let gitHubService = GitHubService.shared
+    private let gitHubService: GitHubService
+
+    init(gitHubService: GitHubService = AppServices.gitHubService) {
+        self.gitHubService = gitHubService
+    }
 
     public func fetchContributors() async {
         isLoading = true

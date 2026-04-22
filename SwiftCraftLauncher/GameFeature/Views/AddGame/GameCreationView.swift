@@ -18,8 +18,8 @@ private enum Constants {
 // MARK: - GameCreationView
 struct GameCreationView: View {
     @StateObject private var viewModel: GameCreationViewModel
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 

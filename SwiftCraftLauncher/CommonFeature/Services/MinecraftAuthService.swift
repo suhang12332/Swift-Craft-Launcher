@@ -202,7 +202,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Xbox Live 令牌失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }
@@ -257,7 +257,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 Minecraft 访问令牌失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }
@@ -677,7 +677,7 @@ extension MinecraftAuthService {
             level: .notification
         )
 
-        GlobalErrorHandler.shared.handle(notification)
+        AppServices.errorHandler.handle(notification)
     }
 }
 

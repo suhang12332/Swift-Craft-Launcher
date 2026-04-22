@@ -5,11 +5,14 @@ struct SaveInfoView: View {
     let gameId: String
     let gameName: String
     @StateObject private var manager: SaveInfoManager
-    @ObservedObject private var gameStatusManager = GameStatusManager.shared
+    @EnvironmentObject private var gameStatusManager: GameStatusManager
 
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
 
-    init(gameId: String, gameName: String) {
+    init(
+        gameId: String,
+        gameName: String,
+    ) {
         self.gameId = gameId
         self.gameName = gameName
         _manager = StateObject(wrappedValue: SaveInfoManager(gameName: gameName))

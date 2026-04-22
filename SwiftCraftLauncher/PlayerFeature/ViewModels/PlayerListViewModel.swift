@@ -7,9 +7,11 @@ class PlayerListViewModel: ObservableObject {
     @Published var currentPlayer: Player?
 
     private let dataManager = PlayerDataManager()
+    private let errorHandler: GlobalErrorHandler
     private var notificationObserver: NSObjectProtocol?
 
-    init() {
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
         loadPlayersSafely()
         setupNotifications()
     }
@@ -53,7 +55,7 @@ class PlayerListViewModel: ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("加载玩家列表失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             // 保持现有状态
         }
     }
@@ -68,7 +70,7 @@ class PlayerListViewModel: ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("添加玩家失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }
@@ -93,7 +95,7 @@ class PlayerListViewModel: ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("添加在线玩家失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }
@@ -128,7 +130,7 @@ class PlayerListViewModel: ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("添加 Yggdrasil 玩家失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }
@@ -161,7 +163,7 @@ class PlayerListViewModel: ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("删除玩家失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }
@@ -185,7 +187,7 @@ class PlayerListViewModel: ObservableObject {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("设置当前玩家失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
             }
         }
     }
@@ -229,7 +231,7 @@ class PlayerListViewModel: ObservableObject {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("更新玩家列表失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
     }
 

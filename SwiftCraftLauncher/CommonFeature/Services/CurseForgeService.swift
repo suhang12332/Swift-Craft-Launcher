@@ -165,7 +165,7 @@ enum CurseForgeService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("搜索 CurseForge 项目失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return CurseForgeSearchResult(data: [], pagination: nil)
         }
     }
@@ -318,7 +318,7 @@ enum CurseForgeService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 CurseForge 分类列表失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }
@@ -343,7 +343,7 @@ enum CurseForgeService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 CurseForge 游戏版本列表失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }
@@ -370,7 +370,7 @@ enum CurseForgeService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取项目详情失败 (ID: \(id)): \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return nil
         }
     }
@@ -474,7 +474,7 @@ enum CurseForgeService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取项目版本列表失败 (ID: \(id)): \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return []
         }
     }
@@ -606,7 +606,7 @@ enum CurseForgeService {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取 CurseForge 项目依赖失败 (ID: \(id)): \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            AppServices.errorHandler.handle(globalError)
             return ModrinthProjectDependency(projects: [])
         }
     }

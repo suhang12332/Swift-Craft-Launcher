@@ -2,6 +2,12 @@ import Foundation
 
 @MainActor
 final class GameFormImportViewModel: ObservableObject {
+    private let errorHandler: GlobalErrorHandler
+
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
+    }
+
     func prepareModPackImportMode(from result: Result<[URL], Error>) async -> GameFormMode? {
         switch result {
         case .success(let urls):
@@ -13,7 +19,7 @@ final class GameFormImportViewModel: ObservableObject {
                     i18nKey: "error.filesystem.file_access_failed",
                     level: .notification
                 )
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 return nil
             }
 
@@ -23,12 +29,12 @@ final class GameFormImportViewModel: ObservableObject {
                 let tempFile = try await copyToTempDirectory(url: url)
                 return .modPackImport(file: tempFile, shouldProcess: true)
             } catch {
-                GlobalErrorHandler.shared.handle(GlobalError.from(error))
+                errorHandler.handle(GlobalError.from(error))
                 return nil
             }
 
         case .failure(let error):
-            GlobalErrorHandler.shared.handle(GlobalError.from(error))
+            errorHandler.handle(GlobalError.from(error))
             return nil
         }
     }

@@ -19,6 +19,17 @@ struct LitematicaDetailSheetView: View {
     @State private var isLoading = true
     @State private var errorMessage: String?
     @State private var showError = false
+    private let litematicaService: LitematicaService
+
+    init(
+        filePath: URL,
+        gameName: String,
+        litematicaService: LitematicaService = AppServices.litematicaService
+    ) {
+        self.filePath = filePath
+        self.gameName = gameName
+        self.litematicaService = litematicaService
+    }
 
     // MARK: - Body
     var body: some View {
@@ -209,7 +220,7 @@ struct LitematicaDetailSheetView: View {
 
         do {
             Logger.shared.debug("开始加载投影详细信息: \(filePath.lastPathComponent)")
-            let loadedMetadata = try await LitematicaService.shared.loadFullMetadata(filePath: filePath)
+            let loadedMetadata = try await litematicaService.loadFullMetadata(filePath: filePath)
             await MainActor.run {
                 if let metadata = loadedMetadata {
                     Logger.shared.debug("成功加载投影元数据: \(metadata.name)")

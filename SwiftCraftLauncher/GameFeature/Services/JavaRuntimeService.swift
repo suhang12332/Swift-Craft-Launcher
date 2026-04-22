@@ -9,6 +9,11 @@ class JavaRuntimeService {
     private let progressActor = ProgressActor()
     // 取消检查回调 - 使用actor来确保线程安全
     private let cancelActor = CancelActor()
+    private let generalSettingsManager: GeneralSettingsManager
+
+    private init(generalSettingsManager: GeneralSettingsManager = AppServices.generalSettingsManager) {
+        self.generalSettingsManager = generalSettingsManager
+    }
 
     // 公共接口方法
     func setProgressCallback(_ callback: @escaping (String, Int, Int) -> Void) {
@@ -155,7 +160,7 @@ class JavaRuntimeService {
 
         // 创建信号量控制并发数量
         let semaphore = AsyncSemaphore(
-            value: GeneralSettingsManager.shared.concurrentDownloads
+            value: generalSettingsManager.concurrentDownloads
         )
 
         // 创建计数器用于进度跟踪

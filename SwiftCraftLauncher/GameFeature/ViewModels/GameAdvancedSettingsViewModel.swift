@@ -7,6 +7,8 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
     // MARK: - Dependencies
 
     let selectedGameManager: SelectedGameManager
+    let gameSettingsManager: GameSettingsManager
+    let javaManager: JavaManager
     var gameRepository: GameRepository?
 
     // MARK: - Output (UI state)
@@ -33,9 +35,15 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
 
     // MARK: - Init
 
-    init(selectedGameManager: SelectedGameManager = .shared) {
+    init(
+        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
+        gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager,
+        javaManager: JavaManager = AppServices.javaManager
+    ) {
         self.selectedGameManager = selectedGameManager
-        self.memoryRange = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
+        self.gameSettingsManager = gameSettingsManager
+        self.javaManager = javaManager
+        self.memoryRange = Double(gameSettingsManager.globalXms)...Double(gameSettingsManager.globalXmx)
         self.selectedGarbageCollector = .g1gc
         self.optimizationPreset = .balanced
         self.customJvmArguments = ""
@@ -147,7 +155,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
         isLoadingSettings = true
         defer { isLoadingSettings = false }
 
-        memoryRange = Double(GameSettingsManager.shared.globalXms)...Double(GameSettingsManager.shared.globalXmx)
+        memoryRange = Double(gameSettingsManager.globalXms)...Double(gameSettingsManager.globalXmx)
         selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
         optimizationPreset = .balanced
         applyOptimizationPreset(.balanced)
@@ -161,7 +169,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
         guard let game = currentGame else { return }
 
         Task {
-            let defaultPath = await JavaManager.shared.findDefaultJavaPath(for: game.gameVersion)
+            let defaultPath = await javaManager.findDefaultJavaPath(for: game.gameVersion)
             await MainActor.run {
                 self.javaPath = defaultPath
                 self.autoSave()
@@ -184,7 +192,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
                 return
             }
 
-            if JavaManager.shared.canJavaRun(at: url.path) {
+            if javaManager.canJavaRun(at: url.path) {
                 javaPath = url.path
                 autoSave()
                 Logger.shared.info("Java路径已设置为: \(url.path)")

@@ -71,7 +71,7 @@ struct StartupInfoSheetView: View {
                     Spacer()
 
                     Button("startup.info.understand".localized()) {
-                        AnnouncementStateManager.shared.markAnnouncementAcknowledgedForCurrentVersion()
+                        AppServices.announcementStateManager.markAnnouncementAcknowledgedForCurrentVersion()
                         dismiss()
                     }
                     .buttonStyle(.borderedProminent)

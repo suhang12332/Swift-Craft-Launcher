@@ -17,7 +17,7 @@ class GameStatusManager: ObservableObject {
     ///   - userId: 玩家ID
     /// - Returns: 是否正在运行
     func isGameRunning(gameId: String, userId: String) -> Bool {
-        let actuallyRunning = GameProcessManager.shared.isGameRunning(gameId: gameId, userId: userId)
+        let actuallyRunning = AppServices.gameProcessManager.isGameRunning(gameId: gameId, userId: userId)
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
 
         DispatchQueue.main.async {
@@ -45,7 +45,7 @@ class GameStatusManager: ObservableObject {
     ///   - gameId: 游戏ID
     ///   - userId: 玩家ID
     func refreshGameStatus(gameId: String, userId: String) {
-        let actuallyRunning = GameProcessManager.shared.isGameRunning(gameId: gameId, userId: userId)
+        let actuallyRunning = AppServices.gameProcessManager.isGameRunning(gameId: gameId, userId: userId)
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -72,7 +72,7 @@ class GameStatusManager: ObservableObject {
 
     /// 清理已停止的游戏状态
     func cleanupStoppedGames() {
-        let processManager = GameProcessManager.shared
+        let processManager = AppServices.gameProcessManager
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }

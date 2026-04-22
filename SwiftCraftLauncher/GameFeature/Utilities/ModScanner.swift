@@ -3,16 +3,19 @@ import Foundation
 
 class ModScanner {
     static let shared = ModScanner()
+    private let errorHandler: GlobalErrorHandler
 
-    private init() {}
+    private init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
+    }
 
     nonisolated func scheduleDirectoryHashRebuild(
         standardizedDirectoryURL: URL,
         gameNameHint: String?
     ) {
-        Task.detached(priority: .utility) {
+        Task.detached(priority: .utility) { [modScanner = self] in
             do {
-                _ = try await Self.shared.rebuildDirectoryHashes(
+                _ = try await modScanner.rebuildDirectoryHashes(
                     dir: standardizedDirectoryURL,
                     gameNameHint: gameNameHint
                 )
@@ -47,7 +50,7 @@ class ModScanner {
                 Logger.shared.error(
                     "获取 Modrinth 项目详情失败: \(globalError.chineseMessage)"
                 )
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 completion(nil)
             }
         }
@@ -110,7 +113,7 @@ class ModScanner {
     // MARK: - Mod Cache (Database)
 
     private func getModCacheFromDatabase(hash: String) -> ModrinthProjectDetail? {
-        guard let jsonData = ModCacheManager.shared.get(hash: hash) else {
+        guard let jsonData = AppServices.modCacheManager.get(hash: hash) else {
             return nil
         }
 
@@ -125,10 +128,10 @@ class ModScanner {
     func saveToCache(hash: String, detail: ModrinthProjectDetail) {
         do {
             let jsonData = try JSONEncoder().encode(detail)
-            ModCacheManager.shared.setSilently(hash: hash, jsonData: jsonData)
+            AppServices.modCacheManager.setSilently(hash: hash, jsonData: jsonData)
         } catch {
             Logger.shared.error("编码 mod 缓存失败: \(error.localizedDescription)")
-            GlobalErrorHandler.shared.handle(GlobalError.validation(
+            errorHandler.handle(GlobalError.validation(
                 chineseMessage: "保存 mod 缓存失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.mod_cache_encode_failed",
                 level: .silent
@@ -289,7 +292,7 @@ extension ModScanner {
         hash: String,
         gameName: String
     ) async -> Bool {
-        let cachedMods = await ModInstallationCache.shared.getAllModsInstalled(for: gameName)
+        let cachedMods = await AppServices.modInstallationCache.getAllModsInstalled(for: gameName)
         return cachedMods.contains(hash)
     }
 
@@ -308,7 +311,7 @@ extension ModScanner {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("检查资源安装状态失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }
@@ -322,7 +325,7 @@ extension ModScanner {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取本地 mod 详情失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return []
         }
     }
@@ -343,7 +346,7 @@ extension ModScanner {
         let jarFiles = try readJarZipFiles(from: standardizedDir)
 
         // 使用 TaskGroup 并发计算 hash
-        let concurrentCount = GeneralSettingsManager.shared.concurrentDownloads
+        let concurrentCount = AppServices.generalSettingsManager.concurrentDownloads
         let semaphore = AsyncSemaphore(value: concurrentCount)
 
         let hashes: Set<String> = await withTaskGroup(of: String?.self) { group in
@@ -369,13 +372,13 @@ extension ModScanner {
         }
 
         // 写入通用目录 hash 缓存
-        await DirectoryHashCache.shared.set(hashes, for: standardizedDir)
+        await AppServices.directoryHashCache.set(hashes, for: standardizedDir)
 
         // 如果是 mods 目录，同步到 ModInstallationCache，供 isModInstalled* 使用
         if isModsDirectory(standardizedDir) {
             let gameName = gameNameHint ?? extractGameName(from: standardizedDir)
             if let gameName {
-                await ModInstallationCache.shared.setAllModsInstalled(
+                await AppServices.modInstallationCache.setAllModsInstalled(
                     for: gameName,
                     hashes: hashes
                 )
@@ -398,7 +401,7 @@ extension ModScanner {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("扫描所有 detailId 失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 completion(Set<String>())
             }
         }
@@ -415,7 +418,7 @@ extension ModScanner {
             guard isModsDirectory(standardizedDirectory) else { return nil }
             return extractGameName(from: standardizedDirectory)
         }()
-        await ModDirectoryWatcherRegistry.shared.ensureWatching(
+        await AppServices.modDirectoryWatcherRegistry.ensureWatching(
             directoryURL: standardizedDirectory,
             gameNameHint: hint
         )
@@ -424,7 +427,7 @@ extension ModScanner {
     private func scanAllDetailIdsAfterWatcherRegisteredThrowing(
         standardizedDirectory: URL
     ) async throws -> Set<String> {
-        if let cached = await DirectoryHashCache.shared.get(for: standardizedDirectory) {
+        if let cached = await AppServices.directoryHashCache.get(for: standardizedDirectory) {
             return cached
         }
         return try await rebuildDirectoryHashes(dir: standardizedDirectory)
@@ -519,7 +522,7 @@ extension ModScanner {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("检查 mod 安装状态失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return false
         }
     }
@@ -564,7 +567,7 @@ extension ModScanner {
                 Logger.shared.error(
                     "检查 mod 安装状态失败: \(globalError.chineseMessage)"
                 )
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 completion(false)
             }
         }
@@ -594,7 +597,7 @@ extension ModScanner {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("扫描资源目录失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 completion([])
             }
         }
@@ -697,7 +700,7 @@ extension ModScanner {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("获取资源文件列表失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return []
         }
     }
@@ -730,7 +733,7 @@ extension ModScanner {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("分页扫描资源目录失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 completion([], false)
             }
         }
@@ -754,7 +757,7 @@ extension ModScanner {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("分页扫描资源文件失败: \(globalError.chineseMessage)")
-                GlobalErrorHandler.shared.handle(globalError)
+                errorHandler.handle(globalError)
                 completion([], false)
             }
         }
@@ -775,7 +778,7 @@ extension ModScanner {
         }
 
         let pageFiles = Array(fileURLs[pageRange.startIndex..<pageRange.endIndex])
-        let concurrentCount = GeneralSettingsManager.shared.concurrentDownloads
+        let concurrentCount = AppServices.generalSettingsManager.concurrentDownloads
         let semaphore = AsyncSemaphore(value: concurrentCount)
         let results = await scanFilesConcurrently(fileURLs: pageFiles, semaphore: semaphore)
 
@@ -863,21 +866,21 @@ extension ModScanner {
 
     func addModHash(_ hash: String, to gameName: String) {
         Task {
-            await ModInstallationCache.shared.addHash(hash, to: gameName)
+            await AppServices.modInstallationCache.addHash(hash, to: gameName)
         }
     }
 
     func removeModHash(_ hash: String, from gameName: String) {
         Task {
-            await ModInstallationCache.shared.removeHash(hash, from: gameName)
+            await AppServices.modInstallationCache.removeHash(hash, from: gameName)
         }
     }
 
     func getAllModsInstalled(for gameName: String) async -> Set<String> {
-        return await ModInstallationCache.shared.getAllModsInstalled(for: gameName)
+        return await AppServices.modInstallationCache.getAllModsInstalled(for: gameName)
     }
 
     func clearModCache(for gameName: String) async {
-        await ModInstallationCache.shared.removeGame(gameName: gameName)
+        await AppServices.modInstallationCache.removeGame(gameName: gameName)
     }
 }

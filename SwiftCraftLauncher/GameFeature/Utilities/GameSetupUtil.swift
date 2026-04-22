@@ -20,6 +20,25 @@ class GameSetupUtil: ObservableObject {
     @Published var neoForgeDownloadState = DownloadState()
 
     private var downloadTask: Task<Void, Never>?
+    private let errorHandler: GlobalErrorHandler
+    private let javaManager: JavaManager
+    private let gameSettingsManager: GameSettingsManager
+    private let modScanner: ModScanner
+    private let languageManager: LanguageManager
+
+    init(
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        javaManager: JavaManager = AppServices.javaManager,
+        gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager,
+        modScanner: ModScanner = AppServices.modScanner,
+        languageManager: LanguageManager = AppServices.languageManager
+    ) {
+        self.errorHandler = errorHandler
+        self.javaManager = javaManager
+        self.gameSettingsManager = gameSettingsManager
+        self.modScanner = modScanner
+        self.languageManager = languageManager
+    }
 
     // MARK: - Public Methods
 
@@ -101,7 +120,7 @@ class GameSetupUtil: ObservableObject {
             let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
 
             // 确保并获取 Java 路径，避免后续再次重复校验
-            let javaPath = await JavaManager.shared.ensureJavaExists(
+            let javaPath = await javaManager.ensureJavaExists(
                 version: downloadedManifest.javaVersion.component
             )
 
@@ -140,17 +159,17 @@ class GameSetupUtil: ObservableObject {
             gameRepository.addGameSilently(gameInfo)
 
             // 根据设置决定是否为新创建的游戏写入/更新 options.txt 的语言设置
-            if GameSettingsManager.shared.syncLanguageForNewGames {
+            if gameSettingsManager.syncLanguageForNewGames {
                 configureGameLanguage(for: gameInfo.gameName)
             }
 
             // 扫描游戏的 mods 目录
             Task.detached(priority: .utility) {
-                await ModScanner.shared.scanGameModsDirectory(game: gameInfo)
+                await self.modScanner.scanGameModsDirectory(game: gameInfo)
             }
 
             // 发送通知
-            NotificationManager.sendSilently(
+            await NotificationManager.sendSilently(
                 title: "notification.download.complete.title".localized(),
                 body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader)
             )
@@ -166,7 +185,7 @@ class GameSetupUtil: ObservableObject {
                 return
             }
             await cleanupGameDirectories(gameName: gameName)
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
         }
         return
     }
@@ -476,7 +495,7 @@ class GameSetupUtil: ObservableObject {
 
     /// 根据启动器当前语言，为指定游戏实例写入/更新 Minecraft 的 options.txt 语言设置
     private func configureGameLanguage(for gameName: String) {
-        let mcLang = CommonUtil.minecraftLanguageCode(from: LanguageManager.shared.selectedLanguage)
+        let mcLang = CommonUtil.minecraftLanguageCode(from: languageManager.selectedLanguage)
         CommonUtil.upsertOptionsEntry(gameName: gameName, key: "lang", value: mcLang)
     }
 }

@@ -3,6 +3,11 @@ import Foundation
 class AppCacheManager {
     static let shared = AppCacheManager()
     private let queue = DispatchQueue(label: "AppCacheManager.queue")
+    private let errorHandler: GlobalErrorHandler
+
+    private init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
+    }
 
     private func fileURL(for namespace: String) throws -> URL {
 
@@ -52,7 +57,7 @@ class AppCacheManager {
         do {
             try set(namespace: namespace, key: key, value: value)
         } catch {
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
         }
     }
 
@@ -71,7 +76,7 @@ class AppCacheManager {
                 do {
                     return try JSONDecoder().decode(T.self, from: data)
                 } catch {
-                    GlobalErrorHandler.shared.handle(GlobalError.validation(
+                    errorHandler.handle(GlobalError.validation(
                         chineseMessage: "解码缓存数据失败: \(error.localizedDescription)",
                         i18nKey: "error.validation.cache_data_decode_failed",
                         level: .silent
@@ -79,7 +84,7 @@ class AppCacheManager {
                     return nil
                 }
             } catch {
-                GlobalErrorHandler.shared.handle(error)
+                errorHandler.handle(error)
                 return nil
             }
         }
@@ -106,7 +111,7 @@ class AppCacheManager {
         do {
             try remove(namespace: namespace, key: key)
         } catch {
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
         }
     }
 
@@ -125,7 +130,7 @@ class AppCacheManager {
         do {
             try clear(namespace: namespace)
         } catch {
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
         }
     }
 
@@ -154,7 +159,7 @@ class AppCacheManager {
         do {
             try clearAll()
         } catch {
-            GlobalErrorHandler.shared.handle(error)
+            errorHandler.handle(error)
         }
     }
 

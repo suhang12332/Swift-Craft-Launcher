@@ -9,8 +9,19 @@ import SwiftUI
 struct DeleteGameConfirmationModifier: ViewModifier {
     @Binding var gamePendingDeletion: GameVersionInfo?
     @ObservedObject var detailState: ResourceDetailState
+    private let gameActionManager: GameActionManager
 
     @EnvironmentObject private var gameRepository: GameRepository
+
+    init(
+        gamePendingDeletion: Binding<GameVersionInfo?>,
+        detailState: ResourceDetailState,
+        gameActionManager: GameActionManager = AppServices.gameActionManager
+    ) {
+        self._gamePendingDeletion = gamePendingDeletion
+        self.detailState = detailState
+        self.gameActionManager = gameActionManager
+    }
 
     private var isDialogPresented: Binding<Bool> {
         Binding(
@@ -28,7 +39,7 @@ struct DeleteGameConfirmationModifier: ViewModifier {
             ) {
                 Button("common.delete".localized(), role: .destructive) {
                     if let game = gamePendingDeletion {
-                        GameActionManager.shared.deleteGame(
+                        gameActionManager.deleteGame(
                             game: game,
                             gameRepository: gameRepository,
                             selectedItem: detailState.selectedItemBinding,

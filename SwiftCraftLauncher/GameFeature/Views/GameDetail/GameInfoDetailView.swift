@@ -25,7 +25,7 @@ struct GameInfoDetailView: View {
     @Binding var selectedProjectId: String?
     @Binding var selectedLoaders: [String]
     @Binding var gameType: Bool  // false = local,   = server
-    @EnvironmentObject var gameRepository: GameRepository
+    @EnvironmentObject private var gameRepository: GameRepository
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
     @Binding var localResourceFilter: LocalResourceFilter
@@ -42,6 +42,44 @@ struct GameInfoDetailView: View {
 
     // 文件选择器状态
     @State private var showIconFilePicker = false
+    private let errorHandler: GlobalErrorHandler
+    private let iconRefreshNotifier: IconRefreshNotifier
+
+    init(
+        game: GameVersionInfo,
+        query: Binding<String>,
+        dataSource: Binding<DataSource>,
+        selectedVersions: Binding<[String]>,
+        selectedCategories: Binding<[String]>,
+        selectedFeatures: Binding<[String]>,
+        selectedResolutions: Binding<[String]>,
+        selectedPerformanceImpact: Binding<[String]>,
+        selectedProjectId: Binding<String?>,
+        selectedLoaders: Binding<[String]>,
+        gameType: Binding<Bool>,
+        selectedItem: Binding<SidebarItem>,
+        searchText: Binding<String>,
+        localResourceFilter: Binding<LocalResourceFilter>,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
+        iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier
+    ) {
+        self.game = game
+        _query = query
+        _dataSource = dataSource
+        _selectedVersions = selectedVersions
+        _selectedCategories = selectedCategories
+        _selectedFeatures = selectedFeatures
+        _selectedResolutions = selectedResolutions
+        _selectedPerformanceImpact = selectedPerformanceImpact
+        _selectedProjectId = selectedProjectId
+        _selectedLoaders = selectedLoaders
+        _gameType = gameType
+        _selectedItem = selectedItem
+        _searchText = searchText
+        _localResourceFilter = localResourceFilter
+        self.errorHandler = errorHandler
+        self.iconRefreshNotifier = iconRefreshNotifier
+    }
 
     var body: some View {
         return Group {
@@ -218,10 +256,10 @@ struct GameInfoDetailView: View {
                     do {
                         try await gameRepository.updateGame(updatedGame)
                     } catch {
-                        GlobalErrorHandler.shared.handle(error)
+                        errorHandler.handle(error)
                     }
                 }
-                IconRefreshNotifier.shared.notifyRefresh(for: gameName)
+                iconRefreshNotifier.notifyRefresh(for: gameName)
                 updateHeaders()
             }
         }

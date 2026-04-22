@@ -6,6 +6,8 @@ public class GitHubService: ObservableObject {
 
     public static let shared = GitHubService()
 
+    private init() {}
+
     // MARK: - Public Methods
 
     /// 获取仓库贡献者列表

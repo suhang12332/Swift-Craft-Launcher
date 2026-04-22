@@ -29,6 +29,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     private var downloadTask: Task<Void, Never>?
     private let downloadService = ModPackDownloadService()
     private lazy var installCoordinator = ModPackInstallCoordinator(downloadService: downloadService)
+    private let errorHandler: GlobalErrorHandler
     // MARK: - Memory Management
     /// 清理不再需要的索引数据以释放内存
     /// 在 ModPack 安装完成后调用
@@ -72,7 +73,8 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         self.gameRepository = repository
     }
 
-    init() {
+    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+        self.errorHandler = errorHandler
         downloadService.progressHandler = { [weak self] downloaded, total in
             guard let self else { return }
             Task { @MainActor in
@@ -82,7 +84,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 }
             }
         }
-        downloadService.errorHandler = { [weak self] message, i18nKey in
+        downloadService.onError = { [weak self] message, i18nKey in
             guard let self else { return }
             Task { @MainActor in
                 self.handleDownloadError(message, i18nKey)
@@ -156,7 +158,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
         guard let fileToDownload = primaryFile else {
             isProcessing = false
-            GlobalErrorHandler.shared.handle(
+            errorHandler.handle(
                 GlobalError.resource(
                     chineseMessage: "没有找到可下载的文件",
                     i18nKey: "error.resource.no_downloadable_file",
@@ -221,7 +223,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             availableGameVersions = projectDetail?.gameVersions ?? []
         } catch {
             let globalError = GlobalError.from(error)
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
 
         isLoadingProjectDetails = false
@@ -247,7 +249,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 }
         } catch {
             let globalError = GlobalError.from(error)
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
 
         isLoadingModPackVersions = false
@@ -280,6 +282,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             i18nKey: i18nKey,
             level: .notification
         )
-        GlobalErrorHandler.shared.handle(globalError)
+        errorHandler.handle(globalError)
     }
 }

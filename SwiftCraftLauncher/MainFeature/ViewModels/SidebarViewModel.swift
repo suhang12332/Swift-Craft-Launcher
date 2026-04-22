@@ -6,6 +6,11 @@ final class SidebarViewModel: ObservableObject {
     @Published private(set) var iconRefreshTriggers: [String: UUID] = [:]
 
     private var cancellable: AnyCancellable?
+    private let iconRefreshNotifier: IconRefreshNotifier
+
+    init(iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier) {
+        self.iconRefreshNotifier = iconRefreshNotifier
+    }
 
     func refreshTrigger(for gameName: String) -> UUID {
         iconRefreshTriggers[gameName] ?? UUID()
@@ -14,7 +19,7 @@ final class SidebarViewModel: ObservableObject {
     func onAppear(games: [GameVersionInfo]) {
         ensureTriggers(for: games)
 
-        cancellable = IconRefreshNotifier.shared.refreshPublisher
+        cancellable = iconRefreshNotifier.refreshPublisher
             .sink { [weak self] refreshedGameName in
                 guard let self else { return }
                 if let gameName = refreshedGameName {

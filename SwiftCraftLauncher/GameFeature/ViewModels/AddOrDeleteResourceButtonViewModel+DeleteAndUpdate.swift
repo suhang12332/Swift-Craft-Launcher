@@ -15,7 +15,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 level: .notification
             )
             Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return
         }
 
@@ -28,7 +28,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 level: .notification
             )
             Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return
         }
 
@@ -39,7 +39,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 level: .notification
             )
             Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
             return
         }
 
@@ -139,7 +139,7 @@ extension AddOrDeleteResourceButtonViewModel {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
-            GlobalErrorHandler.shared.handle(globalError)
+            errorHandler.handle(globalError)
         }
     }
 
@@ -162,7 +162,7 @@ extension AddOrDeleteResourceButtonViewModel {
         do {
             try FileManager.default.removeItem(at: fileURL)
             if let hash, let gameName {
-                ModScanner.shared.removeModHash(hash, from: gameName)
+                modScanner.removeModHash(hash, from: gameName)
             }
         } catch {
             throw GlobalError.fileSystem(

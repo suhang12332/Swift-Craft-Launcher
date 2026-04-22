@@ -13,6 +13,21 @@ struct CustomVersionPicker: View {
     let onVersionSelected: (String) async -> String  // 新增：版本选择回调，返回时间信息
     @State private var showMenu = false
     @State private var error: GlobalError?
+    private let errorHandler: GlobalErrorHandler
+
+    init(
+        selected: Binding<String>,
+        availableVersions: [String],
+        time: Binding<String>,
+        onVersionSelected: @escaping (String) async -> String,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+    ) {
+        _selected = selected
+        self.availableVersions = availableVersions
+        _time = time
+        self.onVersionSelected = onVersionSelected
+        self.errorHandler = errorHandler
+    }
 
     private var versionItems: [FilterItem] {
         availableVersions.map { FilterItem(id: $0, name: $0) }
@@ -131,14 +146,14 @@ struct CustomVersionPicker: View {
             level: .notification
         )
         Logger.shared.error("版本选择器错误: \(globalError.chineseMessage)")
-        GlobalErrorHandler.shared.handle(globalError)
+        errorHandler.handle(globalError)
         error = globalError
     }
 
     private func handleVersionSelectionError(_ error: Error) {
         let globalError = GlobalError.from(error)
         Logger.shared.error("版本选择错误: \(globalError.chineseMessage)")
-        GlobalErrorHandler.shared.handle(globalError)
+        errorHandler.handle(globalError)
         self.error = globalError
     }
 }

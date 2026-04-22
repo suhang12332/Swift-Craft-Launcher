@@ -9,10 +9,10 @@ import SwiftUI
 import WebKit
 
 struct ContentView: View {
-    @EnvironmentObject var filterState: ResourceFilterState
-    @EnvironmentObject var detailState: ResourceDetailState
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var filterState: ResourceFilterState
+    @EnvironmentObject private var detailState: ResourceDetailState
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
 
     var body: some View {
         List {

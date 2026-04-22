@@ -1,15 +1,8 @@
 import SwiftUI
 
-/// 玩家状态管理器（单例）
-class PlayerStatusManager: ObservableObject {
-    static let shared = PlayerStatusManager()
-
-    private init() {}
-}
-
 /// 显示玩家列表的视图
 struct PlayerListView: View {
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @Environment(\.dismiss)
     var dismiss
     @State private var playerToDelete: Player?
@@ -52,7 +45,6 @@ struct PlayerListView: View {
 
 private struct PlayerSelectorLabel: View {
     let selectedPlayer: Player?
-    @StateObject private var statusManager = PlayerStatusManager.shared
 
     var body: some View {
         if let selectedPlayer = selectedPlayer {
@@ -76,7 +68,6 @@ private struct PlayerListItemView: View {
     @Binding var playerToDelete: Player?
     @Binding var showDeleteAlert: Bool
     @Binding var showingPlayerListPopover: Bool
-    @StateObject private var statusManager = PlayerStatusManager.shared
 
     var body: some View {
         HStack {

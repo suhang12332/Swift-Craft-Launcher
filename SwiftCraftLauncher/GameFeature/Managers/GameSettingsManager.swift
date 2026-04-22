@@ -24,6 +24,8 @@ class GameSettingsManager: ObservableObject {
     // MARK: - 单例实例
     static let shared = GameSettingsManager()
 
+    private init() {}
+
     @AppStorage(AppConstants.UserDefaultsKeys.globalXms)
     var globalXms: Int = 512 {
         didSet { objectWillChange.send() }

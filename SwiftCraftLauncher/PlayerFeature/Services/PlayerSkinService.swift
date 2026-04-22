@@ -16,7 +16,7 @@ enum PlayerSkinService {
     private static func handleError(_ error: Error, operation: String) {
         let globalError = GlobalError.from(error)
         Logger.shared.error("\(operation) failed: \(globalError.chineseMessage)")
-        GlobalErrorHandler.shared.handle(globalError)
+        AppServices.errorHandler.handle(globalError)
     }
 
     // MARK: - Common Error Helpers
