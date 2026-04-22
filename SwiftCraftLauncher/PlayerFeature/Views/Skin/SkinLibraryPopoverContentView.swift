@@ -37,6 +37,7 @@ struct SkinLibraryPopoverContentView: View {
                             onDeleteItem(item)
                         }
                     }
+                    .applyPointerHandIfAvailable()
             }
         }
         .padding()
