@@ -34,13 +34,14 @@ struct SwiftCraftLauncherApp: App {
     @StateObject var playerListViewModel = PlayerListViewModel()
     @StateObject var gameRepository = GameRepository()
     @StateObject var gameLaunchUseCase = GameLaunchUseCase()
-    @StateObject private var errorHandler: GlobalErrorHandler
-    @StateObject private var sparkleUpdateService: SparkleUpdateService
+    @StateObject var errorHandler: GlobalErrorHandler
+    @StateObject var sparkleUpdateService: SparkleUpdateService
     @StateObject var generalSettingsManager: GeneralSettingsManager
     @StateObject var themeManager: ThemeManager
     @StateObject var javaDownloadManager: JavaDownloadManager
-    @StateObject private var skinSelectionStore = SkinSelectionStore()
-    @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
+    @StateObject var gameActionManager: GameActionManager
+    @StateObject var gameStatusManager: GameStatusManager
+    @ObservedObject var gameDialogsPresenter: GameDialogsPresenter
     private let openURLModPackImportPresenter: OpenURLModPackImportPresenter
     private let windowDataStore: WindowDataStore
     private let aiChatManager: AIChatManager
@@ -59,6 +60,8 @@ struct SwiftCraftLauncherApp: App {
         _themeManager = StateObject(wrappedValue: AppServices.themeManager)
         _javaDownloadManager = StateObject(wrappedValue: AppServices.javaDownloadManager)
         _gameDialogsPresenter = ObservedObject(wrappedValue: AppServices.gameDialogsPresenter)
+        _gameActionManager = StateObject(wrappedValue: AppServices.gameActionManager)
+        _gameStatusManager = StateObject(wrappedValue: AppServices.gameStatusManager)
         self.openURLModPackImportPresenter = AppServices.openURLModPackImportPresenter
         self.windowDataStore = AppServices.windowDataStore
         self.aiChatManager = AppServices.aiChatManager
@@ -77,6 +80,8 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .environmentObject(gameLaunchUseCase)
+                .environmentObject(gameActionManager)
+                .environmentObject(gameStatusManager)
                 .preferredColorScheme(themeManager.currentColorScheme)
                 .errorAlert()
                 .windowOpener()
@@ -119,6 +124,8 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .environmentObject(gameLaunchUseCase)
+                .environmentObject(gameActionManager)
+                .environmentObject(gameStatusManager)
             },
             label: {
                 Image("menu-png").resizable()

@@ -9,8 +9,8 @@ struct GameContextMenu: View {
     let onExport: () -> Void
     let showsShowInLauncher: Bool
 
-    @ObservedObject private var gameStatusManager: GameStatusManager
-    @ObservedObject private var gameActionManager: GameActionManager
+    @EnvironmentObject var gameStatusManager: GameStatusManager
+    @EnvironmentObject var gameActionManager: GameActionManager
     @ObservedObject private var selectedGameManager: SelectedGameManager
     private let windowManager: WindowManager
 
@@ -20,8 +20,6 @@ struct GameContextMenu: View {
         onOpenSettings: @escaping () -> Void,
         onExport: @escaping () -> Void,
         showsShowInLauncher: Bool = false,
-        gameStatusManager: GameStatusManager = AppServices.gameStatusManager,
-        gameActionManager: GameActionManager = AppServices.gameActionManager,
         selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
         windowManager: WindowManager = AppServices.windowManager
     ) {
@@ -30,8 +28,6 @@ struct GameContextMenu: View {
         self.onOpenSettings = onOpenSettings
         self.onExport = onExport
         self.showsShowInLauncher = showsShowInLauncher
-        self.gameStatusManager = gameStatusManager
-        self.gameActionManager = gameActionManager
         self.selectedGameManager = selectedGameManager
         self.windowManager = windowManager
     }

@@ -11,10 +11,10 @@ struct ResourceToolbarItems: View {
     private var controlActiveState
     @Environment(\.openURL)
     private var openURL
-    @EnvironmentObject var filterState: ResourceFilterState
-    @EnvironmentObject var detailState: ResourceDetailState
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var filterState: ResourceFilterState
+    @EnvironmentObject private var detailState: ResourceDetailState
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @State private var showingLauncherStats = false
     @State private var launcherStatsSheetIdentity = UUID()
 

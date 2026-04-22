@@ -2,14 +2,14 @@ import SwiftUI
 
 /// 侧边栏：游戏列表与资源列表导航
 public struct SidebarView: View {
-    @EnvironmentObject var detailState: ResourceDetailState
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var detailState: ResourceDetailState
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var gameActionManager: GameActionManager
+    @EnvironmentObject private var gameStatusManager: GameStatusManager
     @State private var searchText: String = ""
     @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
-    @StateObject private var gameActionManager: GameActionManager
-    @StateObject private var gameStatusManager: GameStatusManager
     @ObservedObject private var selectedGameManager: SelectedGameManager
     @StateObject private var viewModel = SidebarViewModel()
 
@@ -18,13 +18,9 @@ public struct SidebarView: View {
 
     init(
         gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter,
-        gameActionManager: GameActionManager = AppServices.gameActionManager,
-        gameStatusManager: GameStatusManager = AppServices.gameStatusManager,
         selectedGameManager: SelectedGameManager = AppServices.selectedGameManager
     ) {
         _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
-        _gameActionManager = StateObject(wrappedValue: gameActionManager)
-        _gameStatusManager = StateObject(wrappedValue: gameStatusManager)
         _selectedGameManager = ObservedObject(wrappedValue: selectedGameManager)
     }
 

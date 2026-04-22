@@ -14,13 +14,13 @@ struct GameActionButtons: View {
 
     @Environment(\.openSettings)
     private var openSettings
-    @EnvironmentObject var detailState: ResourceDetailState
-    @EnvironmentObject var gameRepository: GameRepository
-    @EnvironmentObject var gameLaunchUseCase: GameLaunchUseCase
-    @EnvironmentObject var playerListViewModel: PlayerListViewModel
+    @EnvironmentObject private var detailState: ResourceDetailState
+    @EnvironmentObject private var gameRepository: GameRepository
+    @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @ObservedObject private var selectedGameManager: SelectedGameManager
-    @StateObject private var gameStatusManager: GameStatusManager
-    @StateObject private var gameActionManager: GameActionManager
+    @EnvironmentObject private var gameStatusManager: GameStatusManager
+    @EnvironmentObject private var gameActionManager: GameActionManager
     @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
     @State private var showCrashAlert = false
     @State private var crashDirectory: URL?
@@ -28,14 +28,10 @@ struct GameActionButtons: View {
     init(
         game: GameVersionInfo,
         selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
-        gameStatusManager: GameStatusManager = AppServices.gameStatusManager,
-        gameActionManager: GameActionManager = AppServices.gameActionManager,
         gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter
     ) {
         self.game = game
         _selectedGameManager = ObservedObject(wrappedValue: selectedGameManager)
-        _gameStatusManager = StateObject(wrappedValue: gameStatusManager)
-        _gameActionManager = StateObject(wrappedValue: gameActionManager)
         _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
     }
 
