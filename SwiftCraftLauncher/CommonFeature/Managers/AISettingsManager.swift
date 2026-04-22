@@ -172,7 +172,5 @@ class AISettingsManager: ObservableObject {
         return modelOverride.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    private init() {
-        _ = apiKey
-    }
+    private init() {}
 }
