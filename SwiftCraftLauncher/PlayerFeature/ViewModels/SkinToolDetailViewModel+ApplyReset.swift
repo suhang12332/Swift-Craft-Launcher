@@ -60,6 +60,7 @@ extension SkinToolDetailViewModel {
                 )
                 try Task.checkCancellation()
                 if result {
+                    persistSelectedSkinToLibrary()
                     Logger.shared.info("Skin upload successful with model: \(currentModel.rawValue)")
                 } else {
                     Logger.shared.error("Skin upload failed")
@@ -154,6 +155,18 @@ extension SkinToolDetailViewModel {
         } catch {
             Logger.shared.error("Failed to re-upload skin with new model: \(error)")
             return false
+        }
+    }
+
+    private func persistSelectedSkinToLibrary() {
+        guard let selectedSkinData else { return }
+        let originalFileName = selectedSkinPath.map { URL(fileURLWithPath: $0).lastPathComponent }
+        if let item = skinLibraryStore.saveSkin(
+            data: selectedSkinData,
+            model: currentModel,
+            originalFileName: originalFileName
+        ) {
+            selectedSkinPath = item.fileURL.path
         }
     }
 }

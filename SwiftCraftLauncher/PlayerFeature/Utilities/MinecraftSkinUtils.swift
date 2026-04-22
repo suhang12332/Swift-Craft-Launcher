@@ -6,7 +6,7 @@ import AppKit
 // MARK: - Types and Constants
 
 enum SkinType {
-    case url, asset
+    case url, asset, local
 }
 
 // MARK: - Cache Wrapper
@@ -122,6 +122,8 @@ struct MinecraftSkinUtils: View {
             typeString = "url"
         case .asset:
             typeString = "asset"
+        case .local:
+            typeString = "local"
         }
         return "\(typeString):\(src)"
     }
@@ -407,6 +409,8 @@ struct MinecraftSkinUtils: View {
             return try await loadAssetData()
         case .url:
             return try await loadURLData()
+        case .local:
+            return try await loadLocalData()
         }
     }
 
@@ -469,6 +473,11 @@ struct MinecraftSkinUtils: View {
         }
     }
 
+    private func loadLocalData() async throws -> Data {
+        let fileURL = URL(fileURLWithPath: src)
+        return try Data(contentsOf: fileURL)
+    }
+
     // MARK: - Export Functions
 
     /// 导出玩家头像图像
@@ -518,6 +527,9 @@ struct MinecraftSkinUtils: View {
                 )
             }
             data = responseData
+        case .local:
+            let fileURL = URL(fileURLWithPath: src)
+            data = try Data(contentsOf: fileURL)
         }
 
         // 创建 CIImage

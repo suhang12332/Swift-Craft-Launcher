@@ -75129,133 +75129,133 @@
       "localizations" : {
         "ar" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "الإعدادات المتقدمة للعبة"
           }
         },
         "da" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Avancerede spilindstillinger"
           }
         },
         "de" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Erweiterte Spieleinstellungen"
           }
         },
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Advanced Game Settings"
           }
         },
         "es" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Configuración avanzada del juego"
           }
         },
         "fi" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Pelin lisäasetukset"
           }
         },
         "fr" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Paramètres avancés du jeu"
           }
         },
         "hi" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "उन्नत गेम सेटिंग्स"
           }
         },
         "it" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Impostazioni avanzate del gioco"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "ゲームの詳細設定"
           }
         },
         "ko" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "게임 고급 설정"
           }
         },
         "nb" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Avanserte spillinnstillinger"
           }
         },
         "nl" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Geavanceerde spelinstellingen"
           }
         },
         "pl" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Zaawansowane ustawienia gry"
           }
         },
         "pt" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Configurações avançadas do jogo"
           }
         },
         "ru" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Расширенные настройки игры"
           }
         },
         "sv" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Avancerade spelinställningar"
           }
         },
         "th" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "การตั้งค่าขั้นสูงของเกม"
           }
         },
         "tr" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Gelişmiş oyun ayarları"
           }
         },
         "vi" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Cài đặt trò chơi nâng cao"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "高级游戏设置"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "進階遊戲設定"
           }
         }
@@ -85695,6 +85695,417 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "經典"
+          }
+        }
+      }
+    },
+    "skin.library.delete.history.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سيؤدي هذا إلى حذف \"%@\" نهائيًا من مكتبة السكنات المحلية. لا يمكن التراجع عن هذا الإجراء."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dette vil permanent slette \"%@\" fra det lokale skin-bibliotek. Denne handling kan ikke fortrydes."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dadurch wird \"%@\" dauerhaft aus der lokalen Skin-Bibliothek gelöscht. Diese Aktion kann nicht rückgängig gemacht werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This will permanently delete \"%@\" from the local skin library. This action cannot be undone."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto eliminará permanentemente \"%@\" de la biblioteca local de skins. Esta acción no se puede deshacer."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tämä poistaa kohteen \"%@\" pysyvästi paikallisesta skin-kirjastosta. Tätä toimintoa ei voi kumota."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cela supprimera définitivement \"%@\" de la bibliothèque locale de skins. Cette action est irréversible."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "यह \"%@\" को स्थानीय स्किन लाइब्रेरी से स्थायी रूप से हटा देगा। इस क्रिया को पूर्ववत नहीं किया जा सकता।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo eliminerà definitivamente \"%@\" dalla libreria skin locale. Questa azione non può essere annullata."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "これにより \"%@\" はローカルスキンライブラリから完全に削除されます。この操作は元に戻せません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 작업은 \"%@\"을(를) 로컬 스킨 라이브러리에서 영구적으로 삭제합니다. 이 작업은 되돌릴 수 없습니다."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dette vil slette \"%@\" permanent fra det lokale skin-biblioteket. Denne handlingen kan ikke angres."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiermee wordt \"%@\" permanent verwijderd uit de lokale skinbibliotheek. Deze actie kan niet ongedaan worden gemaakt."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spowoduje to trwałe usunięcie \"%@\" z lokalnej biblioteki skinów. Tej akcji nie można cofnąć."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isso excluirá \"%@\" permanentemente da biblioteca local de skins. Esta ação não pode ser desfeita."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это навсегда удалит \"%@\" из локальной библиотеки скинов. Это действие нельзя отменить."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detta kommer att permanent radera \"%@\" från det lokala skin-biblioteket. Denna åtgärd kan inte ångras."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "การดำเนินการนี้จะลบ \"%@\" ออกจากคลังสกินภายในเครื่องอย่างถาวร และไม่สามารถยกเลิกได้"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu işlem \"%@\" öğesini yerel skin kitaplığından kalıcı olarak siler. Bu işlem geri alınamaz."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thao tác này sẽ xóa vĩnh viễn \"%@\" khỏi thư viện skin cục bộ. Hành động này không thể hoàn tác."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这将从本地皮肤库中永久删除“%@”。此操作无法撤销。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這將從本地皮膚庫中永久刪除「%@」。此操作無法復原。"
+          }
+        }
+      }
+    },
+    "skin.library.delete.history.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف سجل السكنات؟"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slet skinhistorik?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skin-Verlauf löschen?"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete skin history?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar historial de skins?"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poistetaanko skin-historia?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer l'historique des skins ?"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "स्किन इतिहास हटाएं?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminare cronologia skin?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スキン履歴を削除しますか？"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스킨 기록을 삭제하시겠습니까?"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slette skinhistorikk?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skingeschiedenis verwijderen?"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usunąć historię skinów?"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir histórico de skins?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить историю скинов?"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radera skinhistorik?"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ลบประวัติสกินหรือไม่?"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skin geçmişi silinsin mi?"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xóa lịch sử skin?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除皮肤历史记录？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "刪除皮膚歷史記錄？"
+          }
+        }
+      }
+    },
+    "skin.library.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مكتبة سجل السكنات"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skinhistorik-bibliotek"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skin-Verlaufsbibliothek"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skin History Library"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteca del historial de skins"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skin-historiakirjasto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliothèque d'historique des skins"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "स्किन इतिहास लाइब्रेरी"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libreria cronologia skin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スキン履歴ライブラリ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "스킨 기록 라이브러리"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skinhistorikk-bibliotek"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skingeschiedenisbibliotheek"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteka historii skinów"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteca de histórico de skins"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Библиотека истории скинов"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skinhistorikbibliotek"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "คลังประวัติสกิน"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skin Geçmişi Kitaplığı"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thư viện lịch sử skin"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "历史皮肤库"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歷史皮膚庫"
           }
         }
       }

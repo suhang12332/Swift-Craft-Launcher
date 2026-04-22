@@ -80,6 +80,9 @@ struct SkinToolDetailView: View {
                 },
                 onDrop: { providers in
                     viewModel.handleDrop(providers)
+                },
+                onSelectSkinLibraryItem: { item in
+                    viewModel.selectSkinLibraryItem(item)
                 }
             )
 
