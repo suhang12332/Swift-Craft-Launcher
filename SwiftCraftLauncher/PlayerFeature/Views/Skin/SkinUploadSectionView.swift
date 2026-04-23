@@ -97,8 +97,7 @@ struct SkinUploadSectionView: View {
                         },
                         onDeleteItem: { item in
                             pendingDeletion = item
-                        },
-                        onAppear: reloadSkinLibraryItems
+                        }
                     )
                 }
                 Button {
