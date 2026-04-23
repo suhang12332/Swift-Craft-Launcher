@@ -88,7 +88,7 @@ struct SkinUploadSectionView: View {
                 }
                 .buttonStyle(.bordered)
                 .disabled(skinLibraryItems.isEmpty)
-                .popover(isPresented: $showingSkinLibraryPopover, arrowEdge: .bottom) {
+                .popover(isPresented: $showingSkinLibraryPopover, arrowEdge: .trailing) {
                     SkinLibraryPopoverContentView(
                         items: skinLibraryItems,
                         isPresented: $showingSkinLibraryPopover,
