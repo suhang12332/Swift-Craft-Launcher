@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SkinLibraryPopoverContentView: View {
     private static let tileSize: CGFloat = 48
-    private static let gridSpacing: CGFloat = 12
+    private static let gridSpacing: CGFloat = 16
     private static let maxColumnsCount = 4
 
     let items: [SkinLibraryItem]
