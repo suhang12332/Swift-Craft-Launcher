@@ -42,12 +42,7 @@ struct GameIconView: View {
                             .frame(width: 16, height: 16)
                             .clipShape(RoundedRectangle(cornerRadius: 4))
                     case .failure:
-                        Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-                            .resizable()
-                            .interpolation(.none)
-                            .scaledToFit()
-                            .frame(width: 20, height: 20)
-                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                        iconPlaceholder
                     @unknown default:
                         EmptyView()
                     }
@@ -58,12 +53,7 @@ struct GameIconView: View {
                     )
                 }
             } else {
-                Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-                    .resizable()
-                    .interpolation(.none)
-                    .scaledToFit()
-                    .frame(width: 20, height: 29)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                iconPlaceholder
             }
         }
         .frame(width: 20, height: 20, alignment: .center)
@@ -71,5 +61,18 @@ struct GameIconView: View {
 
     private var profileDir: URL {
         AppPaths.profileDirectory(gameName: game.gameName)
+    }
+
+    private var iconPlaceholder: some View {
+        RoundedRectangle(cornerRadius: 4, style: .continuous)
+            .fill(Color.secondary.opacity(0.12))
+            .overlay {
+                Image(systemName: "photo.badge.plus")
+                    .symbolRenderingMode(.multicolor)
+                    .symbolVariant(.none)
+                    .font(.system(size: 6, weight: .regular))
+                    .foregroundColor(.secondary)
+            }
+            .frame(width: 16, height: 16)
     }
 }

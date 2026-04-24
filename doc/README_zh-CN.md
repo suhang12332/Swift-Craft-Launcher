@@ -3,7 +3,7 @@
   
   # 🚀 Swift Craft Launcher
   
-  **✨ 现代化的 macOS Minecraft 启动器 ✨**
+  **一款轻量、原生的 macOS Minecraft 启动器，基于 Swift 与 SwiftUI 构建。**
   
   [![Swift Craft Launcher](https://img.shields.io/badge/Swift%20Craft%20Launcher-SCL-orange.svg?logo=swift)](https://github.com/suhang12332/Swift-Craft-Launcher)
   [![Swift](https://img.shields.io/badge/Swift-5.5+-red.svg?logo=swift)](https://swift.org/)
