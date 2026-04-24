@@ -21,6 +21,7 @@ enum AppConstants {
         static let currentPlayerId = "currentPlayerId"
         static let enableOfflineLogin = "enableOfflineLogin"
         static let defaultYggdrasilServerBaseURL = "defaultYggdrasilServerBaseURL"
+        static let enableHistorySkinLibrary = "enableHistorySkinLibrary"
         static let hasAddedPremiumAccount = "hasAddedPremiumAccount"
         static let offlineUserServerMap = "offlineUserServerMap"
 
