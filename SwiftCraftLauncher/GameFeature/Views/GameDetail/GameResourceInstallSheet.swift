@@ -73,7 +73,6 @@ struct GameResourceInstallSheet: View {
                         if resourceType == ResourceType.mod.rawValue, !isUpdateMode {
                             if viewModel.dependencyState.isLoading
                                 || !viewModel.dependencyState.dependencies.isEmpty {
-                                spacerView()
                                 DependencySectionView(state: $viewModel.dependencyState)
                             }
                         }
