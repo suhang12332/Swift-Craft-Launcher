@@ -89793,133 +89793,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "تفعيل مكتبة السكنات السابقة (لحسابات Minecraft فقط)"
+            "value" : "تفعيل مكتبة السكنات السابقة (لحسابات Microsoft فقط)"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktiver historisk skinbibliotek (kun Minecraft-konti)"
+            "value" : "Aktiver historisk skinbibliotek (kun Microsoft-konti)"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Historische Skin-Bibliothek aktivieren (nur Minecraft-Konten)"
+            "value" : "Historische Skin-Bibliothek aktivieren (nur Microsoft-Konten)"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enable History Skin Library (Minecraft accounts only)"
+            "value" : "Enable History Skin Library (Microsoft accounts only)"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activar biblioteca historica de skins (solo cuentas de Minecraft)"
+            "value" : "Activar biblioteca historica de skins (solo cuentas de Microsoft)"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ota historiallinen skinkirjasto kayttoon (vain Minecraft-tilit)"
+            "value" : "Ota historiallinen skinkirjasto kayttoon (vain Microsoft-tilit)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Activer la bibliotheque d'historique des skins (comptes Minecraft uniquement)"
+            "value" : "Activer la bibliotheque d'historique des skins (comptes Microsoft uniquement)"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "इतिहास स्किन लाइब्रेरी सक्षम करें (केवल Minecraft खातों के लिए)"
+            "value" : "इतिहास स्किन लाइब्रेरी सक्षम करें (केवल Microsoft खातों के लिए)"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abilita libreria cronologia skin (solo account Minecraft)"
+            "value" : "Abilita libreria cronologia skin (solo account Microsoft)"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "履歴スキンライブラリを有効化（Minecraftアカウントのみ）"
+            "value" : "履歴スキンライブラリを有効化（Microsoftアカウントのみ）"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기록 스킨 라이브러리 사용 (Minecraft 계정 전용)"
+            "value" : "기록 스킨 라이브러리 사용 (Microsoft 계정 전용)"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktiver historisk skin-bibliotek (kun Minecraft-kontoer)"
+            "value" : "Aktiver historisk skin-bibliotek (kun Microsoft-kontoer)"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Historische skinbibliotheek inschakelen (alleen Minecraft-accounts)"
+            "value" : "Historische skinbibliotheek inschakelen (alleen Microsoft-accounts)"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wlacz biblioteke historii skinow (tylko konta Minecraft)"
+            "value" : "Wlacz biblioteke historii skinow (tylko konta Microsoft)"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ativar biblioteca de historico de skins (somente contas Minecraft)"
+            "value" : "Ativar biblioteca de historico de skins (somente contas Microsoft)"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vklyuchit biblioteku istorii skinov (tolko akkaunty Minecraft)"
+            "value" : "Vklyuchit biblioteku istorii skinov (tolko akkaunty Microsoft)"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktivera historiskt skinbibliotek (endast Minecraft-konton)"
+            "value" : "Aktivera historiskt skinbibliotek (endast Microsoft-konton)"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "เปิดใช้งานคลังสกินประวัติ (เฉพาะบัญชี Minecraft)"
+            "value" : "เปิดใช้งานคลังสกินประวัติ (เฉพาะบัญชี Microsoft)"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gecmis skin kutuphanesini etkinlestir (yalnizca Minecraft hesaplari)"
+            "value" : "Gecmis skin kutuphanesini etkinlestir (yalnizca Microsoft hesaplari)"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bat thu vien skin lich su (chi danh cho tai khoan Minecraft)"
+            "value" : "Bat thu vien skin lich su (chi danh cho tai khoan Microsoft)"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "开启历史皮肤库(仅限Minecraft账户)"
+            "value" : "开启历史皮肤库(仅限Microsoft帐户)"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開啟歷史皮膚庫（僅限 Minecraft 帳戶）"
+            "value" : "開啟歷史皮膚庫（僅限 Microsoft 帳戶）"
           }
         }
       }
