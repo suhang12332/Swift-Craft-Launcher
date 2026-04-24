@@ -27,7 +27,7 @@ struct DescriptionTextWithPopover: View {
             }
         }
         .popover(isPresented: $showPopover, arrowEdge: .top) {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading) {
                 Text(description)
                     .font(.system(size: 12))
                     .foregroundColor(.secondary)

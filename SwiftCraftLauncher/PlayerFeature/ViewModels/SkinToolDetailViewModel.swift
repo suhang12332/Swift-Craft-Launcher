@@ -5,16 +5,19 @@ import SkinRenderKit
 
 @MainActor
 final class SkinToolDetailViewModel: ObservableObject {
+    let skinLibraryStore: SkinLibraryStore
 
     let preloadedSkinInfo: PlayerSkinService.PublicSkinInfo?
     let preloadedProfile: MinecraftProfileResponse?
 
     init(
         preloadedSkinInfo: PlayerSkinService.PublicSkinInfo?,
-        preloadedProfile: MinecraftProfileResponse?
+        preloadedProfile: MinecraftProfileResponse?,
+        skinLibraryStore: SkinLibraryStore = SkinLibraryStore()
     ) {
         self.preloadedSkinInfo = preloadedSkinInfo
         self.preloadedProfile = preloadedProfile
+        self.skinLibraryStore = skinLibraryStore
     }
 
     @Published var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
@@ -158,5 +161,24 @@ final class SkinToolDetailViewModel: ObservableObject {
             isCapeLoading = false
         }
         updateHasChanges()
+    }
+
+    func selectSkinLibraryItem(_ item: SkinLibraryItem) {
+        let fileURL = item.fileURL
+
+        guard let image = NSImage(contentsOf: fileURL) else {
+            Logger.shared.error("Failed to decode selected skin library image at path: \(fileURL.path)")
+            return
+        }
+
+        currentSkinRenderImage = nil
+        currentModel = item.model
+        selectedSkinImage = nil
+        selectedSkinPath = nil
+
+        Task { @MainActor in
+            await Task.yield()
+            self.handleSkinDroppedImage(image)
+        }
     }
 }

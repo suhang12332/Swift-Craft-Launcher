@@ -188,6 +188,7 @@ enum AppConstants {
     enum DatabaseTables {
         static let gameVersions = "game_versions"
         static let modCache = "mod_cache"
+        static let skinLibrary = "skin_library"
     }
 
     // MARK: - Minecraft Versions

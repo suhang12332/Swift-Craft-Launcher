@@ -16,11 +16,17 @@ struct SkinUploadSectionView: View {
     @Binding var isCapeLoading: Bool
     @Binding var capeLoadCompleted: Bool
     @Binding var showingSkinPreview: Bool
+    let showSkinLibrary: Bool
+    @State private var showingSkinLibraryPopover = false
+    @State private var skinLibraryItems: [SkinLibraryItem] = []
+    @State private var pendingDeletion: SkinLibraryItem?
 
     let onSkinDropped: (NSImage) -> Void
     let onDrop: ([NSItemProvider]) -> Bool
+    let onSelectSkinLibraryItem: (SkinLibraryItem) -> Void
     private let windowDataStore: WindowDataStore
     private let windowManager: WindowManager
+    private let skinLibraryStore: SkinLibraryStore
 
     init(
         currentModel: Binding<PlayerSkinService.PublicSkinInfo.SkinModel>,
@@ -34,10 +40,13 @@ struct SkinUploadSectionView: View {
         isCapeLoading: Binding<Bool>,
         capeLoadCompleted: Binding<Bool>,
         showingSkinPreview: Binding<Bool>,
+        showSkinLibrary: Bool,
         onSkinDropped: @escaping (NSImage) -> Void,
         onDrop: @escaping ([NSItemProvider]) -> Bool,
+        onSelectSkinLibraryItem: @escaping (SkinLibraryItem) -> Void,
         windowDataStore: WindowDataStore = AppServices.windowDataStore,
-        windowManager: WindowManager = AppServices.windowManager
+        windowManager: WindowManager = AppServices.windowManager,
+        skinLibraryStore: SkinLibraryStore = SkinLibraryStore()
     ) {
         _currentModel = currentModel
         _showingFileImporter = showingFileImporter
@@ -50,15 +59,19 @@ struct SkinUploadSectionView: View {
         _isCapeLoading = isCapeLoading
         _capeLoadCompleted = capeLoadCompleted
         _showingSkinPreview = showingSkinPreview
+        self.showSkinLibrary = showSkinLibrary
         self.onSkinDropped = onSkinDropped
         self.onDrop = onDrop
+        self.onSelectSkinLibraryItem = onSelectSkinLibraryItem
         self.windowDataStore = windowDataStore
         self.windowManager = windowManager
+        self.skinLibraryStore = skinLibraryStore
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("skin.upload".localized()).font(.headline)
+            Text("skin.upload".localized())
+                .font(.headline)
 
             skinRenderArea
 
@@ -73,6 +86,25 @@ struct SkinUploadSectionView: View {
                 }
                 .padding(.horizontal, 4)
                 Spacer()
+                if showSkinLibrary {
+                    Button("skin.library.title".localized()) {
+                        showingSkinLibraryPopover = true
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(skinLibraryItems.isEmpty)
+                    .popover(isPresented: $showingSkinLibraryPopover, arrowEdge: .trailing) {
+                        SkinLibraryPopoverContentView(
+                            items: skinLibraryItems,
+                            isPresented: $showingSkinLibraryPopover,
+                            onSelectItem: { item in
+                                onSelectSkinLibraryItem(item)
+                            },
+                            onDeleteItem: { item in
+                                pendingDeletion = item
+                            }
+                        )
+                    }
+                }
                 Button {
                     openSkinPreviewWindow()
                 } label: {
@@ -83,13 +115,39 @@ struct SkinUploadSectionView: View {
                 .disabled(selectedSkinImage == nil && currentSkinRenderImage == nil && selectedSkinPath == nil)
             }
         }
+        .onAppear {
+            if showSkinLibrary {
+                reloadSkinLibraryItems()
+            }
+        }
+        .confirmationDialog(
+            "skin.library.delete.history.title".localized(),
+            isPresented: Binding(
+                get: { pendingDeletion != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        pendingDeletion = nil
+                    }
+                }
+            ),
+            titleVisibility: .visible,
+            presenting: pendingDeletion
+        ) { item in
+            Button("common.delete".localized(), role: .destructive) {
+                _ = skinLibraryStore.deleteItem(item)
+                pendingDeletion = nil
+                reloadSkinLibraryItems()
+            }
+            Button("skin.cancel".localized(), role: .cancel) {
+                pendingDeletion = nil
+            }
+        } message: { item in
+            Text(String(format: "skin.library.delete.history.message".localized(), item.displayName))
+        }
     }
 
     private var skinRenderArea: some View {
         let playerModel = convertToPlayerModel(currentModel)
-        // 判断是否有 SkinRenderView 显示（已有皮肤时，SkinRenderView 会处理拖拽）
-        // 根据是否有皮肤数据判断，不依赖 capeLoadCompleted
-        // 避免在披风加载期间误认为没有渲染视图，从而导致视图结构来回切换。
         let hasSkinRenderView = (selectedSkinImage != nil || currentSkinRenderImage != nil || selectedSkinPath != nil)
 
         return skinRenderContent(playerModel: playerModel)
@@ -100,46 +158,33 @@ struct SkinUploadSectionView: View {
 
     @ViewBuilder
     private func skinRenderContent(playerModel: PlayerModel) -> some View {
-        ZStack {
-            // 底层始终根据皮肤数据决定是否渲染角色，
-            // 不再因为披风加载状态来回切换视图类型，避免 SceneKit 视图被销毁重建。
-            Group {
-                if let image = selectedSkinImage ?? currentSkinRenderImage {
-                    SkinRenderView(
-                        skinImage: image,
-                        // 披风更新流程：
-                        // 1. selectedCapeImage @Binding 变化（用户操作/初始化）
-                        // 2. SwiftUI body 重新评估，创建/更新 SceneKitCharacterViewRepresentable
-                        // 3. updateNSViewController 被调用
-                        // 4. 检查 capeImage 是否存在，调用 updateCapeTexture(image:) 或 removeCapeTexture()
-                        // 5. applyCapeUpdate 检查实例是否相同 (!==)，如果不同则更新并调用 rebuildCharacter()
-                        // 6. 重建或增量更新角色节点，包含新的披风纹理
-                        // 7. SceneKit 渲染新的角色模型
-                        capeImage: $selectedCapeImage,
-                        playerModel: playerModel,
-                        rotationDuration: 0,
-                        backgroundColor: NSColor.clear,
-                        onSkinDropped: { dropped in
-                            onSkinDropped(dropped)
-                        },
-                        onCapeDropped: { _ in }
-                    )
-                } else if let skinPath = selectedSkinPath {
-                    SkinRenderView(
-                        texturePath: skinPath,
-                        // 披风更新流程同上：selectedCapeImage 变化 → SwiftUI 重新评估 → SkinRenderView 内部处理更新
-                        capeImage: $selectedCapeImage,
-                        playerModel: playerModel,
-                        rotationDuration: 0,
-                        backgroundColor: NSColor.clear,
-                        onSkinDropped: { dropped in
-                            onSkinDropped(dropped)
-                        },
-                        onCapeDropped: { _ in }
-                    )
-                } else {
-                    Color.clear
-                }
+        Group {
+            if let image = selectedSkinImage ?? currentSkinRenderImage {
+                SkinRenderView(
+                    skinImage: image,
+                    capeImage: $selectedCapeImage,
+                    playerModel: playerModel,
+                    rotationDuration: 0,
+                    backgroundColor: NSColor.clear,
+                    onSkinDropped: { dropped in
+                        onSkinDropped(dropped)
+                    },
+                    onCapeDropped: { _ in }
+                )
+            } else if let skinPath = selectedSkinPath {
+                SkinRenderView(
+                    texturePath: skinPath,
+                    capeImage: $selectedCapeImage,
+                    playerModel: playerModel,
+                    rotationDuration: 0,
+                    backgroundColor: NSColor.clear,
+                    onSkinDropped: { dropped in
+                        onSkinDropped(dropped)
+                    },
+                    onCapeDropped: { _ in }
+                )
+            } else {
+                Color.clear
             }
         }
     }
@@ -165,6 +210,10 @@ struct SkinUploadSectionView: View {
         )
         // 打开窗口
         windowManager.openWindow(id: .skinPreview)
+    }
+
+    private func reloadSkinLibraryItems() {
+        skinLibraryItems = skinLibraryStore.loadItems()
     }
 }
 

@@ -89,7 +89,6 @@ struct GlobalResourceSheet: View {
                                     }
                                     if resourceType == ResourceType.mod.rawValue {
                                         if dependencyState.isLoading || !dependencyState.dependencies.isEmpty {
-                                            spacerView()
                                             DependencySectionView(state: $dependencyState)
                                         }
                                     }

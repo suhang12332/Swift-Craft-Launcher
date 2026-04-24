@@ -77,9 +77,7 @@ private struct GameVersionsPopover: View {
         VersionGroupedView(
             items: versions.map { FilterItem(id: $0, name: $0) },
             selectedItems: .constant([])
-        ) { _ in
-            // No action needed for display-only popover
-        }
+        ) { _ in }
         .frame(width: Constants.popoverWidth, height: Constants.popoverHeight)
     }
 }
@@ -183,7 +181,7 @@ private struct PlatformSupportSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("\("platform.support".localized()):")
+            Text("platform.support".localized())
                 .font(.headline)
                 .padding(.bottom, SectionViewConstants.defaultHeaderBottomPadding)
 

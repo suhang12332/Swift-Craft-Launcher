@@ -41,6 +41,16 @@ public struct PlayerSettingsView: View {
                 .disabled(!playerSettings.enableOfflineLogin)
             }
             .labeledContentStyle(.custom)
+            Group {
+                LabeledContent("settings.player.history_skin_library".localized()) {
+                    Toggle(
+                        "settings.player.history_skin_library.toggle".localized(),
+                        isOn: $playerSettings.enableHistorySkinLibrary
+                    )
+                }
+                .labeledContentStyle(.custom)
+                CommonDescriptionText(text: "settings.player.history_skin_library.description".localized())
+            }
             LabeledContent("settings.player.authlib_injector".localized()) {
                 if viewModel.authlibInjectorExists {
                     PathBreadcrumbView(path: authlibInjectorJarURL.path)

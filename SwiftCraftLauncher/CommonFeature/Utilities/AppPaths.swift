@@ -193,6 +193,13 @@ extension AppPaths {
         }
     }
 
+    /// 本地皮肤库存储目录
+    static var skinsDirectory: URL {
+        cachedURL(key: "skinsDirectory") {
+            dataDirectory.appendingPathComponent("skins", isDirectory: true)
+        }
+    }
+
     /// 游戏版本数据库路径
     static var gameVersionDatabase: URL {
         dataDirectory.appendingPathComponent("data.db")

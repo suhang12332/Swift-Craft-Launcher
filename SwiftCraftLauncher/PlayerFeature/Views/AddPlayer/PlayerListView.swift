@@ -14,14 +14,14 @@ struct PlayerListView: View {
             showingPlayerListPopover.toggle()
         } label: {
             PlayerSelectorLabel(selectedPlayer: playerListViewModel.currentPlayer)
+                .applyPointerHandIfAvailable()
         }
         .buttonStyle(.borderless)
         .popover(isPresented: $showingPlayerListPopover, arrowEdge: .top) {
-            VStack(alignment: .leading, spacing: 0) {
-                ForEach(playerListViewModel.players) { player in
-                    PlayerListItemView(player: player, playerListViewModel: playerListViewModel, playerToDelete: $playerToDelete, showDeleteAlert: $showDeleteAlert, showingPlayerListPopover: $showingPlayerListPopover)
-                }
+            ForEach(playerListViewModel.players) { player in
+                PlayerListItemView(player: player, playerListViewModel: playerListViewModel, playerToDelete: $playerToDelete, showDeleteAlert: $showDeleteAlert, showingPlayerListPopover: $showingPlayerListPopover)
             }
+            .padding()
         }
         .confirmationDialog(
             "player.remove".localized(),
@@ -89,8 +89,6 @@ private struct PlayerListItemView: View {
             }
             .buttonStyle(.borderless)
         }
-        .padding(.horizontal)
-        .padding(.vertical, 6)
     }
 }
 

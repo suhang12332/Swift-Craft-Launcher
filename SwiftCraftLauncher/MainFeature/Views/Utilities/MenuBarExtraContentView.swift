@@ -45,7 +45,7 @@ struct MenuBarExtraContentView: View {
 
     var body: some View {
         if !gameRepository.games.isEmpty {
-            Text("sidebar.games.title")
+            Text("sidebar.games.title".localized())
                 .font(.headline)
             ForEach(gameRepository.games) { game in
                 Menu {

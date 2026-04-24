@@ -15,12 +15,21 @@ struct CommonSheetGameBody: View {
                 GameVersionInfo?(nil)
             )
             ForEach(compatibleGames, id: \.id) { game in
-                (Text("\(game.gameName)-")
-                    + Text("\(game.gameVersion)-").foregroundStyle(.secondary)
-                    + Text("\(game.modLoader)-")
-                    + Text("\(game.modVersion)").foregroundStyle(.secondary))
+                game.displayText
                     .tag(Optional(game))
             }
         }
+    }
+}
+
+extension GameVersionInfo {
+    var displayText: Text {
+        Text(gameName)
+        + Text("-")
+        + Text(gameVersion).foregroundStyle(.secondary)
+        + Text("-")
+        + Text(modLoader)
+        + Text("-")
+        + Text(modVersion).foregroundStyle(.secondary)
     }
 }

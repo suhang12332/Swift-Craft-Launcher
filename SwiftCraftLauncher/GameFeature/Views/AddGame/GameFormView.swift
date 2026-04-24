@@ -150,7 +150,7 @@ struct GameFormView: View {
     private var headerView: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("\(currentModeTitle)")
+                Text(currentModeTitle)
                     .font(.headline)
                 Spacer()
                 importModePicker
