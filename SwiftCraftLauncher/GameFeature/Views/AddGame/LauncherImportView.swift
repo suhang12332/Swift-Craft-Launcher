@@ -177,7 +177,7 @@ struct LauncherImportView: View {
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                     if !info.modLoaderVersion.isEmpty {
-                                        Text("(\(info.modLoaderVersion))")
+                                        Text(info.modLoaderVersion)
                                             .font(.subheadline)
                                             .foregroundColor(.secondary)
                                     }

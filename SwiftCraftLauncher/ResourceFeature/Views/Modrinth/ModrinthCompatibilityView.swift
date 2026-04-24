@@ -181,7 +181,7 @@ private struct PlatformSupportSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("\("platform.support".localized()):")
+            Text("platform.support".localized())
                 .font(.headline)
                 .padding(.bottom, SectionViewConstants.defaultHeaderBottomPadding)
 

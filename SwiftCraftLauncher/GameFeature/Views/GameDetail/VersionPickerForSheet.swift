@@ -31,7 +31,7 @@ struct VersionPickerForSheet: View {
                             let loaders = version.loaders.joined(
                                 separator: ", "
                             )
-                            Text("\(version.name) (\(loaders))").tag(
+                            Text(version.name + loaders).tag(
                                 Optional(version)
                             )
                         } else {

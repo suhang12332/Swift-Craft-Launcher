@@ -40,7 +40,7 @@ struct ServerAddressChip: View {
                 }
                 if !address.isEmpty {
                     if let port, port > 0 {
-                        Text("\(address):\(String(port))")
+                        Text(address + ":" + String(port))
                             .font(.caption2)
                             .foregroundColor(.secondary)
                             .lineLimit(1)

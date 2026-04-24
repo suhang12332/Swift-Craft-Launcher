@@ -4,43 +4,14 @@
     "" : {
       "shouldTranslate" : false
     },
+    "-" : {
+      "shouldTranslate" : false
+    },
     ":" : {
       "shouldTranslate" : false
     },
     "…" : {
       "shouldTranslate" : false
-    },
-    "(%@)" : {
-
-    },
-    "%@" : {
-
-    },
-    "%@ (%@)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ (%2$@)"
-          }
-        }
-      }
-    },
-    "%@-" : {
-
-    },
-    "%@:" : {
-
-    },
-    "%@:%@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@:%2$@"
-          }
-        }
-      }
     },
     "%lld" : {
       "shouldTranslate" : false
@@ -61002,133 +60973,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "محملات المود:"
+            "value" : "محملات المود"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod-indlæsere:"
+            "value" : "Mod-indlæsere"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod-Loader:"
+            "value" : "Mod-Loader"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod Loaders:"
+            "value" : "Mod Loaders"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cargadores de mods:"
+            "value" : "Cargadores de mods"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod-lataajat:"
+            "value" : "Mod-lataajat"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chargeurs de mods :"
+            "value" : "Chargeurs de mods"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "मॉड लोडर:"
+            "value" : "मॉड लोडर"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Caricatori mod:"
+            "value" : "Caricatori mod"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Modローダー:"
+            "value" : "Modローダー"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모드 로더:"
+            "value" : "모드 로더"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod-lastere:"
+            "value" : "Mod-lastere"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod-laders:"
+            "value" : "Mod-laders"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ładowacze modów:"
+            "value" : "Ładowacze modów"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Carregadores de mods:"
+            "value" : "Carregadores de mods"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Загрузчики модов:"
+            "value" : "Загрузчики модов"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod-laddare:"
+            "value" : "Mod-laddare"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ตัวโหลดมอด:"
+            "value" : "ตัวโหลดมอด"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod yükleyicileri:"
+            "value" : "Mod yükleyicileri"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trình tải mod:"
+            "value" : "Trình tải mod"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod 加载器:"
+            "value" : "Mod 加载器"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mod 加載器:"
+            "value" : "Mod 加載器"
           }
         }
       }
