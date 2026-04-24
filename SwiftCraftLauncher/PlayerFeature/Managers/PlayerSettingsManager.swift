@@ -21,5 +21,11 @@ class PlayerSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    /// 是否启用历史皮肤库（仅正版账号生效）
+    @AppStorage(AppConstants.UserDefaultsKeys.enableHistorySkinLibrary)
+    var enableHistorySkinLibrary: Bool = false {
+        didSet { objectWillChange.send() }
+    }
+
     private init() {}
 }

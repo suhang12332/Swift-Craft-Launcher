@@ -9,6 +9,7 @@ struct SkinToolDetailView: View {
     private var dismiss
 
     @StateObject private var viewModel: SkinToolDetailViewModel
+    @StateObject private var playerSettings = AppServices.playerSettingsManager
 
     init(
         preloadedSkinInfo: PlayerSkinService.PublicSkinInfo? = nil,
@@ -75,6 +76,7 @@ struct SkinToolDetailView: View {
                 isCapeLoading: $viewModel.isCapeLoading,
                 capeLoadCompleted: $viewModel.capeLoadCompleted,
                 showingSkinPreview: $viewModel.showingSkinPreview,
+                showSkinLibrary: playerSettings.enableHistorySkinLibrary,
                 onSkinDropped: { image in
                     viewModel.handleSkinDroppedImage(image)
                 },

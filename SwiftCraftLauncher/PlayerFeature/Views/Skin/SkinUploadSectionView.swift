@@ -16,6 +16,7 @@ struct SkinUploadSectionView: View {
     @Binding var isCapeLoading: Bool
     @Binding var capeLoadCompleted: Bool
     @Binding var showingSkinPreview: Bool
+    let showSkinLibrary: Bool
     @State private var showingSkinLibraryPopover = false
     @State private var skinLibraryItems: [SkinLibraryItem] = []
     @State private var pendingDeletion: SkinLibraryItem?
@@ -39,6 +40,7 @@ struct SkinUploadSectionView: View {
         isCapeLoading: Binding<Bool>,
         capeLoadCompleted: Binding<Bool>,
         showingSkinPreview: Binding<Bool>,
+        showSkinLibrary: Bool,
         onSkinDropped: @escaping (NSImage) -> Void,
         onDrop: @escaping ([NSItemProvider]) -> Bool,
         onSelectSkinLibraryItem: @escaping (SkinLibraryItem) -> Void,
@@ -57,6 +59,7 @@ struct SkinUploadSectionView: View {
         _isCapeLoading = isCapeLoading
         _capeLoadCompleted = capeLoadCompleted
         _showingSkinPreview = showingSkinPreview
+        self.showSkinLibrary = showSkinLibrary
         self.onSkinDropped = onSkinDropped
         self.onDrop = onDrop
         self.onSelectSkinLibraryItem = onSelectSkinLibraryItem
@@ -83,22 +86,24 @@ struct SkinUploadSectionView: View {
                 }
                 .padding(.horizontal, 4)
                 Spacer()
-                Button("skin.library.title".localized()) {
-                    showingSkinLibraryPopover = true
-                }
-                .buttonStyle(.bordered)
-                .disabled(skinLibraryItems.isEmpty)
-                .popover(isPresented: $showingSkinLibraryPopover, arrowEdge: .trailing) {
-                    SkinLibraryPopoverContentView(
-                        items: skinLibraryItems,
-                        isPresented: $showingSkinLibraryPopover,
-                        onSelectItem: { item in
-                            onSelectSkinLibraryItem(item)
-                        },
-                        onDeleteItem: { item in
-                            pendingDeletion = item
-                        }
-                    )
+                if showSkinLibrary {
+                    Button("skin.library.title".localized()) {
+                        showingSkinLibraryPopover = true
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(skinLibraryItems.isEmpty)
+                    .popover(isPresented: $showingSkinLibraryPopover, arrowEdge: .trailing) {
+                        SkinLibraryPopoverContentView(
+                            items: skinLibraryItems,
+                            isPresented: $showingSkinLibraryPopover,
+                            onSelectItem: { item in
+                                onSelectSkinLibraryItem(item)
+                            },
+                            onDeleteItem: { item in
+                                pendingDeletion = item
+                            }
+                        )
+                    }
                 }
                 Button {
                     openSkinPreviewWindow()
@@ -110,7 +115,11 @@ struct SkinUploadSectionView: View {
                 .disabled(selectedSkinImage == nil && currentSkinRenderImage == nil && selectedSkinPath == nil)
             }
         }
-        .onAppear(perform: reloadSkinLibraryItems)
+        .onAppear {
+            if showSkinLibrary {
+                reloadSkinLibraryItems()
+            }
+        }
         .confirmationDialog(
             "skin.library.delete.history.title".localized(),
             isPresented: Binding(
