@@ -70,6 +70,16 @@ enum AppServices {
         lock.withLock { frozen }
     }
 
+    /// 获取 MainActor 隔离的 shared 单例（不在持锁状态下切线程，避免优先级反转/死锁风险）。
+    private static func sharedOnMainActor<T>(_ factory: @MainActor () -> T) -> T {
+        if Thread.isMainThread {
+            return MainActor.assumeIsolated(factory)
+        }
+        return DispatchQueue.main.sync {
+            MainActor.assumeIsolated(factory)
+        }
+    }
+
     /// 仅允许在应用启动阶段或测试阶段配置依赖。
     static func configure(_ updates: (inout Dependencies) -> Void) {
         lock.withLock {
@@ -101,67 +111,53 @@ enum AppServices {
 
     // MARK: - Windowing
     static var windowManager: WindowManager {
-        lock.withLock {
-            if let manager = dependencies.windowManager {
-                return manager
-            }
-            return MainActor.assumeIsolated { WindowManager.shared }
+        if let injected = lock.withLock({ dependencies.windowManager }) {
+            return injected
         }
+        return sharedOnMainActor { WindowManager.shared }
     }
     static var windowDataStore: WindowDataStore {
-        lock.withLock {
-            if let dataStore = dependencies.windowDataStore {
-                return dataStore
-            }
-            return MainActor.assumeIsolated { WindowDataStore.shared }
+        if let injected = lock.withLock({ dependencies.windowDataStore }) {
+            return injected
         }
+        return sharedOnMainActor { WindowDataStore.shared }
     }
     static var iconRefreshNotifier: IconRefreshNotifier { lock.withLock { dependencies.iconRefreshNotifier ?? .shared } }
     static var gameDialogsPresenter: GameDialogsPresenter {
-        lock.withLock {
-            if let presenter = dependencies.gameDialogsPresenter {
-                return presenter
-            }
-            return MainActor.assumeIsolated { GameDialogsPresenter.shared }
+        if let injected = lock.withLock({ dependencies.gameDialogsPresenter }) {
+            return injected
         }
+        return sharedOnMainActor { GameDialogsPresenter.shared }
     }
     static var openURLModPackImportPresenter: OpenURLModPackImportPresenter {
-        lock.withLock {
-            if let presenter = dependencies.openURLModPackImportPresenter {
-                return presenter
-            }
-            return MainActor.assumeIsolated { OpenURLModPackImportPresenter.shared }
+        if let injected = lock.withLock({ dependencies.openURLModPackImportPresenter }) {
+            return injected
         }
+        return sharedOnMainActor { OpenURLModPackImportPresenter.shared }
     }
 
     // MARK: - Game orchestration
     static var gameProcessManager: GameProcessManager { lock.withLock { dependencies.gameProcessManager ?? .shared } }
     static var gameStatusManager: GameStatusManager { lock.withLock { dependencies.gameStatusManager ?? .shared } }
     static var gameLogCollector: GameLogCollector {
-        lock.withLock {
-            if let collector = dependencies.gameLogCollector {
-                return collector
-            }
-            return MainActor.assumeIsolated { GameLogCollector.shared }
+        if let injected = lock.withLock({ dependencies.gameLogCollector }) {
+            return injected
         }
+        return sharedOnMainActor { GameLogCollector.shared }
     }
     static var gameActionManager: GameActionManager {
-        lock.withLock {
-            if let manager = dependencies.gameActionManager {
-                return manager
-            }
-            return MainActor.assumeIsolated { GameActionManager.shared }
+        if let injected = lock.withLock({ dependencies.gameActionManager }) {
+            return injected
         }
+        return sharedOnMainActor { GameActionManager.shared }
     }
 
     // MARK: - Settings / state
     static var announcementStateManager: AnnouncementStateManager {
-        lock.withLock {
-            if let manager = dependencies.announcementStateManager {
-                return manager
-            }
-            return MainActor.assumeIsolated { AnnouncementStateManager.shared }
+        if let injected = lock.withLock({ dependencies.announcementStateManager }) {
+            return injected
         }
+        return sharedOnMainActor { AnnouncementStateManager.shared }
     }
     static var generalSettingsManager: GeneralSettingsManager { lock.withLock { dependencies.generalSettingsManager ?? .shared } }
     static var gameSettingsManager: GameSettingsManager { lock.withLock { dependencies.gameSettingsManager ?? .shared } }
@@ -172,72 +168,58 @@ enum AppServices {
 
     // MARK: - External services
     static var gitHubService: GitHubService {
-        lock.withLock {
-            if let service = dependencies.gitHubService {
-                return service
-            }
-            return MainActor.assumeIsolated { GitHubService.shared }
+        if let injected = lock.withLock({ dependencies.gitHubService }) {
+            return injected
         }
+        return sharedOnMainActor { GitHubService.shared }
     }
     static var minecraftAuthService: MinecraftAuthService { lock.withLock { dependencies.minecraftAuthService ?? .shared } }
     static var yggdrasilAuthService: YggdrasilAuthService { lock.withLock { dependencies.yggdrasilAuthService ?? .shared } }
     static var ipLocationService: IPLocationService {
-        lock.withLock {
-            if let service = dependencies.ipLocationService {
-                return service
-            }
-            return MainActor.assumeIsolated { IPLocationService.shared }
+        if let injected = lock.withLock({ dependencies.ipLocationService }) {
+            return injected
         }
+        return sharedOnMainActor { IPLocationService.shared }
     }
 
     // MARK: - Downloads / runtime
     static var javaManager: JavaManager { lock.withLock { dependencies.javaManager ?? .shared } }
     static var javaRuntimeService: JavaRuntimeService { lock.withLock { dependencies.javaRuntimeService ?? .shared } }
     static var javaDownloadManager: JavaDownloadManager {
-        lock.withLock {
-            if let manager = dependencies.javaDownloadManager {
-                return manager
-            }
-            return MainActor.assumeIsolated { JavaDownloadManager.shared }
+        if let injected = lock.withLock({ dependencies.javaDownloadManager }) {
+            return injected
         }
+        return sharedOnMainActor { JavaDownloadManager.shared }
     }
 
     // MARK: - Feature managers
     static var aiSettingsManager: AISettingsManager { lock.withLock { dependencies.aiSettingsManager ?? .shared } }
     static var aiChatManager: AIChatManager {
-        lock.withLock {
-            if let manager = dependencies.aiChatManager {
-                return manager
-            }
-            return MainActor.assumeIsolated { AIChatManager.shared }
+        if let injected = lock.withLock({ dependencies.aiChatManager }) {
+            return injected
         }
+        return sharedOnMainActor { AIChatManager.shared }
     }
     static var sparkleUpdateService: SparkleUpdateService { lock.withLock { dependencies.sparkleUpdateService ?? .shared } }
 
     // MARK: - Misc
     static var serverAddressService: ServerAddressService {
-        lock.withLock {
-            if let service = dependencies.serverAddressService {
-                return service
-            }
-            return ServerAddressService.shared
+        if let injected = lock.withLock({ dependencies.serverAddressService }) {
+            return injected
         }
+        return sharedOnMainActor { ServerAddressService.shared }
     }
     static var litematicaService: LitematicaService {
-        lock.withLock {
-            if let service = dependencies.litematicaService {
-                return service
-            }
-            return MainActor.assumeIsolated { LitematicaService.shared }
+        if let injected = lock.withLock({ dependencies.litematicaService }) {
+            return injected
         }
+        return sharedOnMainActor { LitematicaService.shared }
     }
     static var premiumAccountFlagManager: PremiumAccountFlagManager {
-        lock.withLock {
-            if let manager = dependencies.premiumAccountFlagManager {
-                return manager
-            }
-            return MainActor.assumeIsolated { PremiumAccountFlagManager.shared }
+        if let injected = lock.withLock({ dependencies.premiumAccountFlagManager }) {
+            return injected
         }
+        return sharedOnMainActor { PremiumAccountFlagManager.shared }
     }
     static var gameIconCache: GameIconCache { lock.withLock { dependencies.gameIconCache ?? .shared } }
 }
