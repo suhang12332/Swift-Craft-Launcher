@@ -2,6 +2,10 @@ import SwiftUI
 import Combine
 
 struct GameHeaderListRow: View {
+    private static let iconSize: CGFloat = 80
+    private static let iconPaddingRatio: CGFloat = 0.125
+    private static let iconCornerRadiusRatio: CGFloat = 0.2
+
     let game: GameVersionInfo
     let cacheInfo: CacheInfo
     let query: String
@@ -114,9 +118,9 @@ struct GameHeaderListRow: View {
                     case .empty:
                         ProgressView()
                             .controlSize(.small)
-                            .frame(width: 80, height: 80)
+                            .frame(width: Self.iconSize, height: Self.iconSize)
                     case .success(let image):
-                        styledIcon(image, size: 80)
+                        styledIcon(image, size: Self.iconSize)
                     case .failure:
                         defaultIcon
                     @unknown default:
@@ -158,19 +162,32 @@ struct GameHeaderListRow: View {
     }
 
     private var defaultIcon: some View {
-        Image(nsImage: NSImage(named: "AppIcon") ?? NSImage())
-            .resizable()
-            .interpolation(.none)
-            .frame(width: 80, height: 80)
-            .cornerRadius(16)
+        let padding = Self.iconSize * Self.iconPaddingRatio
+        let innerSize = Self.iconSize - padding * 2
+        let innerCornerRadius = innerSize * Self.iconCornerRadiusRatio
+        let outerCornerRadius = Self.iconSize * Self.iconCornerRadiusRatio
+
+        return RoundedRectangle(cornerRadius: innerCornerRadius, style: .continuous)
+            .fill(Color.secondary.opacity(0.12))
+            .overlay {
+                Image(systemName: "photo.badge.plus")
+                    .symbolRenderingMode(.multicolor)
+                    .symbolVariant(.none)
+                    .font(.system(size: 18, weight: .regular))
+                    .foregroundColor(.secondary)
+            }
+            .frame(width: innerSize, height: innerSize)
+            .padding(padding)
+            .frame(width: Self.iconSize, height: Self.iconSize)
+            .clipShape(RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous))
     }
 
     @ViewBuilder
-    private func styledIcon(_ image: Image, size: Int) -> some View {
-        let padding: CGFloat = CGFloat(size) * 0.125 // padding 为 size 的 12.5%（80 时是 10）
-        let innerSize = CGFloat(size) - padding * 2
-        let innerCornerRadius = innerSize * 0.2 // 内层圆角为内层尺寸的 20%
-        let outerCornerRadius = CGFloat(size) * 0.2 // 外层圆角为外层尺寸的 20%
+    private func styledIcon(_ image: Image, size: CGFloat) -> some View {
+        let padding = size * Self.iconPaddingRatio // padding 为 size 的 12.5%（80 时是 10）
+        let innerSize = size - padding * 2
+        let innerCornerRadius = innerSize * Self.iconCornerRadiusRatio // 内层圆角为内层尺寸的 20%
+        let outerCornerRadius = size * Self.iconCornerRadiusRatio // 外层圆角为外层尺寸的 20%
 
         image
             .resizable()
@@ -179,7 +196,7 @@ struct GameHeaderListRow: View {
             .frame(width: innerSize, height: innerSize)
             .clipShape(RoundedRectangle(cornerRadius: innerCornerRadius, style: .continuous))
             .padding(padding)
-            .frame(width: CGFloat(size), height: CGFloat(size))
+            .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous))
     }
 
