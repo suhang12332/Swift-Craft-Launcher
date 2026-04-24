@@ -10,7 +10,6 @@ import CryptoKit
 
 /// 服务器地址服务
 /// 负责读取和管理 Minecraft 游戏的服务器地址列表
-@MainActor
 class ServerAddressService {
     static let shared = ServerAddressService()
 

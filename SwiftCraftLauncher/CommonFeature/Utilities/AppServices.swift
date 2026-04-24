@@ -220,7 +220,7 @@ enum AppServices {
             if let service = dependencies.serverAddressService {
                 return service
             }
-            return MainActor.assumeIsolated { ServerAddressService.shared }
+            return ServerAddressService.shared
         }
     }
     static var litematicaService: LitematicaService {
