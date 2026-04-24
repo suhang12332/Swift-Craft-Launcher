@@ -11,10 +11,10 @@
       "shouldTranslate" : false
     },
     "(%@)" : {
-      "shouldTranslate" : false
+
     },
     "%@" : {
-      "shouldTranslate" : false
+
     },
     "%@ (%@)" : {
       "localizations" : {
@@ -24,14 +24,13 @@
             "value" : "%1$@ (%2$@)"
           }
         }
-      },
-      "shouldTranslate" : false
+      }
     },
     "%@-" : {
-      "shouldTranslate" : false
+
     },
     "%@:" : {
-      "shouldTranslate" : false
+
     },
     "%@:%@" : {
       "localizations" : {
@@ -41,8 +40,7 @@
             "value" : "%1$@:%2$@"
           }
         }
-      },
-      "shouldTranslate" : false
+      }
     },
     "%lld" : {
       "shouldTranslate" : false
