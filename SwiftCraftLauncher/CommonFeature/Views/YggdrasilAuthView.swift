@@ -78,7 +78,7 @@ struct YggdrasilAuthView: View {
 
     private var notAuthenticatedView: some View {
         statusView(
-            systemImage: "person.crop.circle.badge.questionmark.fill",
+            systemImage: "person.crop.circle.badge.questionmark",
             titleKey: "yggdrasil.auth.ready",
             subtitleKey: "yggdrasil.auth.ready.subtitle",
             subtitleFont: .caption

@@ -124,7 +124,6 @@ struct SwiftCraftLauncherApp: App {
     }
 
     private static func configureNotifications(delegate: UNUserNotificationCenterDelegate) {
-        // 设置通知中心代理，确保前台时也能展示 Banner
         UNUserNotificationCenter.current().delegate = delegate
         Task {
             await NotificationManager.requestAuthorizationIfNeeded()

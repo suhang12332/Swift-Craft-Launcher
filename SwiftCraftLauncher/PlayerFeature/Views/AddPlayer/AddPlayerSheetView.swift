@@ -313,9 +313,9 @@ extension AccountAuthType {
         case .premium:
             return ("person.crop.circle.badge.plus", .multicolor)
         case .yggdrasil:
-            return ("person.crop.circle.badge.questionmark.fill", .multicolor)
+            return ("person.crop.circle.badge.questionmark", .multicolor)
         case .offline:
-            return ("person.crop.circle.badge.minus", .multicolor)
+            return ("person.crop.circle.badge.exclamationmark", .multicolor)
         }
     }
 }
