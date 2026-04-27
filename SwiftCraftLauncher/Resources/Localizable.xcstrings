@@ -1549,133 +1549,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• طول اسم اللاعب من 1-16 حرفًا، ويمكن أن يحتوي فقط على حروف وأرقام وشرطات سفلية"
+            "value" : "• يُوصى بأن يكون طول اسم اللاعب من 1 إلى 16 حرفًا، ويمكن أن يحتوي فقط على أحرف وأرقام وشرطات سفلية"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Spillernavnets længde er 1-16 tegn og kan kun indeholde bogstaver, tal og understreger"
+            "value" : "• Det anbefales, at spillernavnets længde er 1-16 tegn og kun indeholder bogstaver, tal og understreger"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Die Spielernamenlänge beträgt 1-16 Zeichen und darf nur Buchstaben, Zahlen und Unterstriche enthalten"
+            "value" : "• Es wird empfohlen, dass der Spielername 1-16 Zeichen lang ist und nur Buchstaben, Zahlen und Unterstriche enthält"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• The player name length is 1-16 characters, and can only contain letters, numbers, and underscores."
+            "value" : "• It is recommended that the player name be 1-16 characters long, and contain only letters, numbers, and underscores."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• El nombre del jugador tiene 1-16 caracteres y solo puede contener letras, números y guiones bajos"
+            "value" : "• Se recomienda que el nombre del jugador tenga entre 1 y 16 caracteres y solo contenga letras, números y guiones bajos"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Pelaajan nimen pituus on 1-16 merkkiä ja voi sisältää vain kirjaimia, numeroita ja alaviivoja"
+            "value" : "• On suositeltavaa, että pelaajan nimi on 1-16 merkkiä pitkä ja sisältää vain kirjaimia, numeroita ja alaviivoja"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Le nom du joueur fait 1-16 caractères et ne peut contenir que des lettres, chiffres et underscores"
+            "value" : "• Il est recommandé que le nom du joueur comporte 1 à 16 caractères et ne contienne que des lettres, des chiffres et des tirets bas"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• खिलाड़ी नाम की लंबाई 1-16 अक्षर है और इसमें केवल अक्षर, संख्या और अंडरस्कोर हो सकते हैं"
+            "value" : "• खिलाड़ी नाम की लंबाई 1-16 अक्षर रखने की अनुशंसा की जाती है, और इसमें केवल अक्षर, संख्या और अंडरस्कोर हो सकते हैं"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Il nome del giocatore è di 1-16 caratteri e può contenere solo lettere, numeri e underscore"
+            "value" : "• Si consiglia che il nome del giocatore sia lungo 1-16 caratteri e contenga solo lettere, numeri e underscore"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• プレイヤー名の長さは1-16文字で、文字、数字、アンダースコアのみ使用できます"
+            "value" : "• プレイヤー名は1〜16文字にすることを推奨し、使用できるのは文字、数字、アンダースコアのみです"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 플레이어 이름 길이는 1-16자이며 문자, 숫자, 밑줄만 포함할 수 있습니다"
+            "value" : "• 플레이어 이름 길이는 1-16자로 권장되며 문자, 숫자, 밑줄만 포함할 수 있습니다"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Spillernavnets lengde er 1-16 tegn og kan bare inneholde bokstaver, tall og understreker"
+            "value" : "• Det anbefales at spillernavnet er 1-16 tegn langt og bare inneholder bokstaver, tall og understreker"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• De spelernaamlengte is 1-16 tekens en kan alleen letters, cijfers en underscores bevatten"
+            "value" : "• Het wordt aanbevolen dat de spelersnaam 1-16 tekens lang is en alleen letters, cijfers en underscores bevat"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Długość nazwy gracza to 1-16 znaków i może zawierać tylko litery, cyfry i podkreślenia"
+            "value" : "• Zaleca się, aby nazwa gracza miała od 1 do 16 znaków i zawierała tylko litery, cyfry oraz podkreślenia"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• O nome do jogador tem 1-16 caracteres e pode conter apenas letras, números e sublinhados"
+            "value" : "• Recomenda-se que o nome do jogador tenha de 1 a 16 caracteres e contenha apenas letras, números e sublinhados"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Длина имени игрока 1-16 символов и может содержать только буквы, цифры и подчеркивания"
+            "value" : "• Рекомендуется, чтобы длина имени игрока составляла 1-16 символов и содержала только буквы, цифры и подчеркивания"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Spelarnamnet är 1-16 tecken långt och får bara innehålla bokstäver, siffror och understreck"
+            "value" : "• Det rekommenderas att spelarnamnet är 1-16 tecken långt och endast innehåller bokstäver, siffror och understreck"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• ความยาวชื่อผู้เล่นคือ 1-16 ตัวอักษร และสามารถมีได้เฉพาะตัวอักษร ตัวเลข และเครื่องหมายขีดล่าง"
+            "value" : "• แนะนำให้ชื่อผู้เล่นมีความยาว 1-16 ตัวอักษร และมีได้เฉพาะตัวอักษร ตัวเลข และเครื่องหมายขีดล่าง"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Oyuncu adı uzunluğu 1-16 karakterdir ve yalnızca harf, rakam ve alt çizgi içerebilir"
+            "value" : "• Oyuncu adının uzunluğunun 1-16 karakter olması önerilir ve yalnızca harf, rakam ve alt çizgi içerebilir"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Độ dài tên người chơi là 1-16 ký tự và chỉ có thể chứa chữ cái, số và dấu gạch dưới"
+            "value" : "• Khuyến nghị tên người chơi dài 1-16 ký tự và chỉ chứa chữ cái, số và dấu gạch dưới"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 玩家名长度为1-16个字符，只能包含字母、数字和下划线"
+            "value" : "• 建议玩家名称长度为 1-16 个字符，仅可包含字母、数字和下划线"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 玩家名長度為1-16個字符，只能包含字母、數字和下劃線"
+            "value" : "• 建議玩家名稱長度為 1-16 個字元，僅可包含字母、數字和底線"
           }
         }
       }
