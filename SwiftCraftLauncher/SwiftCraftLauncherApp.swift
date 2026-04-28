@@ -107,9 +107,14 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(AppServices.gameStatusManager)
             },
             label: {
-                Image("menu-png").resizable()
-                    .renderingMode(.template)
-                    .scaledToFit()
+                HStack {
+                    Image("menu-png")
+                        .renderingMode(.template)
+                        .scaledToFit()
+                    if !gameRepository.games.isEmpty {
+                        Text(" \(gameRepository.games.count)")
+                    }
+                }
             }
         )
     }

@@ -4,6 +4,9 @@
     "" : {
       "shouldTranslate" : false
     },
+    " %lld" : {
+      "shouldTranslate" : false
+    },
     "-" : {
       "shouldTranslate" : false
     },
@@ -72211,133 +72214,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يتم تخزين مفتاح API محليًا فقط ولن يتم مشاركته"
+            "value" : "يتم تخزين مفتاح API محليًا فقط"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-nøglen gemmes kun lokalt og deles ikke"
+            "value" : "API-nøglen gemmes kun lokalt"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der API-Schlüssel wird nur lokal gespeichert und nicht geteilt"
+            "value" : "Der API-Schlüssel wird nur lokal gespeichert"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API key is stored locally only and will not be shared"
+            "value" : "API key is stored locally only"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La clave API se almacena solo localmente y no se compartirá"
+            "value" : "La clave API se almacena solo localmente"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-avain tallennetaan vain paikallisesti eikä jaeta"
+            "value" : "API-avain tallennetaan vain paikallisesti"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La clé API est stockée uniquement localement et ne sera pas partagée"
+            "value" : "La clé API est stockée uniquement localement"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API कुंजी केवल स्थानीय रूप से संग्रहीत की जाती है और साझा नहीं की जाएगी"
+            "value" : "API कुंजी केवल स्थानीय रूप से संग्रहीत की जाती है"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La chiave API viene memorizzata solo localmente e non verrà condivisa"
+            "value" : "La chiave API viene memorizzata solo localmente"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "APIキーはローカルのみに保存され、共有されません"
+            "value" : "APIキーはローカルのみに保存されます"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 키는 로컬에만 저장되며 공유되지 않습니다"
+            "value" : "API 키는 로컬에만 저장됩니다"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-nøkkelen lagres bare lokalt og deles ikke"
+            "value" : "API-nøkkelen lagres bare lokalt"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-sleutel wordt alleen lokaal opgeslagen en wordt niet gedeeld"
+            "value" : "API-sleutel wordt alleen lokaal opgeslagen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Klucz API jest przechowywany tylko lokalnie i nie będzie udostępniany"
+            "value" : "Klucz API jest przechowywany tylko lokalnie"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A chave API é armazenada apenas localmente e não será compartilhada"
+            "value" : "A chave API é armazenada apenas localmente"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-ключ хранится только локально и не будет передаваться"
+            "value" : "API-ключ хранится только локально"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-nyckeln lagras endast lokalt och delas inte"
+            "value" : "API-nyckeln lagras endast lokalt"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "คีย์ API ถูกเก็บไว้ในเครื่องเท่านั้นและจะไม่ถูกแชร์"
+            "value" : "คีย์ API ถูกเก็บไว้ในเครื่องเท่านั้น"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API anahtarı yalnızca yerel olarak saklanır ve paylaşılmaz"
+            "value" : "API anahtarı yalnızca yerel olarak saklanır"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Khóa API chỉ được lưu trữ cục bộ và sẽ không được chia sẻ"
+            "value" : "Khóa API chỉ được lưu trữ cục bộ"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 密钥仅在本地存储，不会被共享"
+            "value" : "API 密钥仅在本地存储"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 密鑰僅在本地存儲，不會被共享"
+            "value" : "API 密鑰僅在本地存儲"
           }
         }
       }
@@ -82372,6 +82375,417 @@
         }
       }
     },
+    "settings.player.history_skin_library" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مكتبة السكنات السابقة"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historisk skinbibliotek"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historische Skin-Bibliothek"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History Skin Library"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteca de skins históricas"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historiallinen skinkirjasto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliotheque d'historique des skins"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इतिहास स्किन लाइब्रेरी"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libreria cronologia skin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴スキンライブラリ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록 스킨 라이브러리"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historisk skin-bibliotek"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historische skinbibliotheek"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteka historii skinow"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteca de historico de skins"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteka istorii skinov"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historiskt skinbibliotek"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "คลังสกินประวัติ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gecmis skin kutuphanesi"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thu vien skin lich su"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "历史皮肤库"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歷史皮膚庫"
+          }
+        }
+      }
+    },
+    "settings.player.history_skin_library.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذا المفتاح يتحكم فقط في إظهار زر الدخول لمكتبة السكنات السابقة. اذا تم تخزين سكنات سابقة من قبل، فان ايقاف هذا المفتاح لن يحذفها. لمسحها، قم بتشغيل هذا المفتاح ثم امسحها يدويا."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne kontakt styrer kun, om indgangsknappen til det historiske skinbibliotek vises. Hvis historiske skins allerede er gemt, rydder deaktivering af kontakten dem ikke. For at rydde dem skal du sla denne kontakt til og fjerne dem manuelt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Schalter steuert nur, ob der Einstiegsknopf fur die historische Skin-Bibliothek angezeigt wird. Bereits gespeicherte historische Skins werden beim Ausschalten nicht geloscht. Zum Loschen diesen Schalter einschalten und die Eintrage manuell entfernen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This switch only controls whether the History Skin Library entry button is shown. If history skins were already stored before, turning this off will not clear them. To clear them, turn this on and remove them manually."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este interruptor solo controla si se muestra el boton de entrada de la biblioteca historica de skins. Si ya habia skins historicas guardadas, desactivarlo no las eliminara. Para limpiarlas, activalo y eliminalas manualmente."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tama kytkin ohjaa vain sita, naytetaanko historialisen skinkirjaston avauspainike. Jos historiallisia skineja on jo tallennettu, poiskytkenta ei tyhjenna niita. Tyhjentaaksesi ne, kytke tama paalle ja poista ne kasin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce commutateur controle uniquement l'affichage du bouton d'acces a la bibliotheque d'historique des skins. Si des skins historiques ont deja ete enregistres, le desactiver ne les supprimera pas. Pour les effacer, activez-le puis supprimez-les manuellement."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "यह स्विच केवल इतिहास स्किन लाइब्रेरी के प्रवेश बटन को दिखाना है या नहीं, इसे नियंत्रित करता है। अगर पहले से इतिहास स्किन सहेजी गई हैं, तो इसे बंद करने से वे साफ नहीं होंगी। उन्हें साफ करने के लिए इसे चालू करें और मैन्युअली हटाएं।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo interruttore controlla solo se mostrare il pulsante di accesso alla libreria cronologia skin. Se le skin storiche erano gia salvate, disattivarlo non le cancellera. Per cancellarle, attivalo e rimuovile manualmente."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このスイッチは、履歴スキンライブラリの入口ボタンを表示するかどうかだけを制御します。過去に履歴スキンが保存されている場合、オフにしても削除されません。削除するには、オンにして手動で消去してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 스위치는 기록 스킨 라이브러리 진입 버튼 표시 여부만 제어합니다. 이전에 기록 스킨이 저장되어 있다면 이 스위치를 꺼도 삭제되지 않습니다. 삭제하려면 이 스위치를 켠 뒤 수동으로 정리하세요."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne bryteren styrer bare om inngangsknappen til historisk skin-bibliotek vises. Hvis historiske skins allerede er lagret, vil de ikke bli slettet ved a sla av bryteren. For a rydde dem, sla den pa og fjern dem manuelt."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deze schakelaar bepaalt alleen of de knop naar de historische skinbibliotheek wordt getoond. Als er al historische skins zijn opgeslagen, worden die niet gewist wanneer je dit uitschakelt. Zet dit aan en verwijder ze handmatig om op te schonen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten przelacznik kontroluje tylko to, czy wyswietlac przycisk wejscia do biblioteki historii skinow. Jesli historyczne skiny sa juz zapisane, wylaczenie tego nie usunie ich. Aby je wyczyscic, wlacz to i usun je recznie."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este interruptor controla apenas se o botao de entrada da biblioteca de historico de skins sera exibido. Se skins historicas ja estiverem salvas, desativar isso nao as apagara. Para limpar, ative isso e remova-as manualmente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etot pereklyuchatel upravlyaet tolko pokazom knopki vhoda v biblioteku istorii skinov. Esli istoricheskie skiny uzhe sohraneny, otklyuchenie ne udalit ih. Chtoby ochistit, vklyuchite pereklyuchatel i udalite ih vruchnuyu."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denna vaxel styr bara om knappingangen till historiskt skinbibliotek visas. Om historiska skins redan ar sparade rensas de inte nar du stanger av detta. For att rensa dem, sla pa detta och ta bort dem manuellt."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "สวิตช์นี้ควบคุมเฉพาะการแสดงปุ่มทางเข้าคลังสกินประวัติเท่านั้น หากเคยบันทึกสกินประวัติไว้แล้ว การปิดสวิตช์นี้จะไม่ลบข้อมูลดังกล่าว หากต้องการลบ ให้เปิดสวิตช์นี้และลบด้วยตนเอง"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu anahtar yalnizca gecmis skin kutuphanesi giris dugmesinin gosterilmesini kontrol eder. Daha once gecmis skinler kaydedildiyse bunu kapatmak onlari temizlemez. Temizlemek icin bunu acin ve manuel olarak silin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cong tac nay chi kiem soat viec hien nut vao thu vien skin lich su. Neu skin lich su da duoc luu truoc do, tat cong tac nay se khong xoa chung. De xoa, hay bat cong tac nay va xoa thu cong."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前开关仅限于是否显示皮肤库开关入口按钮。对于之前开启过且已经存储了历史皮肤的，关闭此开关不会清理历史皮肤库。如需清理，请开启此开关后手动清理。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前開關僅用於是否顯示皮膚庫入口按鈕。若先前已開啟並儲存過歷史皮膚，關閉此開關不會清理歷史皮膚庫。如需清理，請先開啟此開關後再手動清理。"
+          }
+        }
+      }
+    },
+    "settings.player.history_skin_library.toggle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تفعيل مكتبة السكنات السابقة (لحسابات Microsoft فقط)"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiver historisk skinbibliotek (kun Microsoft-konti)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historische Skin-Bibliothek aktivieren (nur Microsoft-Konten)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable History Skin Library (Microsoft accounts only)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar biblioteca historica de skins (solo cuentas de Microsoft)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ota historiallinen skinkirjasto kayttoon (vain Microsoft-tilit)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer la bibliotheque d'historique des skins (comptes Microsoft uniquement)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इतिहास स्किन लाइब्रेरी सक्षम करें (केवल Microsoft खातों के लिए)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abilita libreria cronologia skin (solo account Microsoft)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴スキンライブラリを有効化（Microsoftアカウントのみ）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록 스킨 라이브러리 사용 (Microsoft 계정 전용)"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiver historisk skin-bibliotek (kun Microsoft-kontoer)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historische skinbibliotheek inschakelen (alleen Microsoft-accounts)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wlacz biblioteke historii skinow (tylko konta Microsoft)"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativar biblioteca de historico de skins (somente contas Microsoft)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vklyuchit biblioteku istorii skinov (tolko akkaunty Microsoft)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera historiskt skinbibliotek (endast Microsoft-konton)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เปิดใช้งานคลังสกินประวัติ (เฉพาะบัญชี Microsoft)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gecmis skin kutuphanesini etkinlestir (yalnizca Microsoft hesaplari)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bat thu vien skin lich su (chi danh cho tai khoan Microsoft)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启历史皮肤库(仅限Microsoft帐户)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟歷史皮膚庫（僅限 Microsoft 帳戶）"
+          }
+        }
+      }
+    },
     "settings.player.offline_login" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -89509,417 +89923,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇 Yggdrasil 登入皮膚站"
-          }
-        }
-      }
-    },
-    "settings.player.history_skin_library" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "مكتبة السكنات السابقة"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historisk skinbibliotek"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historische Skin-Bibliothek"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "History Skin Library"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Biblioteca de skins históricas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historiallinen skinkirjasto"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bibliotheque d'historique des skins"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "इतिहास स्किन लाइब्रेरी"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Libreria cronologia skin"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "履歴スキンライブラリ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기록 스킨 라이브러리"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historisk skin-bibliotek"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historische skinbibliotheek"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Biblioteka historii skinow"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Biblioteca de historico de skins"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Biblioteka istorii skinov"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historiskt skinbibliotek"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "คลังสกินประวัติ"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gecmis skin kutuphanesi"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Thu vien skin lich su"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "历史皮肤库"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "歷史皮膚庫"
-          }
-        }
-      }
-    },
-    "settings.player.history_skin_library.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "هذا المفتاح يتحكم فقط في إظهار زر الدخول لمكتبة السكنات السابقة. اذا تم تخزين سكنات سابقة من قبل، فان ايقاف هذا المفتاح لن يحذفها. لمسحها، قم بتشغيل هذا المفتاح ثم امسحها يدويا."
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Denne kontakt styrer kun, om indgangsknappen til det historiske skinbibliotek vises. Hvis historiske skins allerede er gemt, rydder deaktivering af kontakten dem ikke. For at rydde dem skal du sla denne kontakt til og fjerne dem manuelt."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dieser Schalter steuert nur, ob der Einstiegsknopf fur die historische Skin-Bibliothek angezeigt wird. Bereits gespeicherte historische Skins werden beim Ausschalten nicht geloscht. Zum Loschen diesen Schalter einschalten und die Eintrage manuell entfernen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This switch only controls whether the History Skin Library entry button is shown. If history skins were already stored before, turning this off will not clear them. To clear them, turn this on and remove them manually."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este interruptor solo controla si se muestra el boton de entrada de la biblioteca historica de skins. Si ya habia skins historicas guardadas, desactivarlo no las eliminara. Para limpiarlas, activalo y eliminalas manualmente."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tama kytkin ohjaa vain sita, naytetaanko historialisen skinkirjaston avauspainike. Jos historiallisia skineja on jo tallennettu, poiskytkenta ei tyhjenna niita. Tyhjentaaksesi ne, kytke tama paalle ja poista ne kasin."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ce commutateur controle uniquement l'affichage du bouton d'acces a la bibliotheque d'historique des skins. Si des skins historiques ont deja ete enregistres, le desactiver ne les supprimera pas. Pour les effacer, activez-le puis supprimez-les manuellement."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "यह स्विच केवल इतिहास स्किन लाइब्रेरी के प्रवेश बटन को दिखाना है या नहीं, इसे नियंत्रित करता है। अगर पहले से इतिहास स्किन सहेजी गई हैं, तो इसे बंद करने से वे साफ नहीं होंगी। उन्हें साफ करने के लिए इसे चालू करें और मैन्युअली हटाएं।"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Questo interruttore controlla solo se mostrare il pulsante di accesso alla libreria cronologia skin. Se le skin storiche erano gia salvate, disattivarlo non le cancellera. Per cancellarle, attivalo e rimuovile manualmente."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このスイッチは、履歴スキンライブラリの入口ボタンを表示するかどうかだけを制御します。過去に履歴スキンが保存されている場合、オフにしても削除されません。削除するには、オンにして手動で消去してください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이 스위치는 기록 스킨 라이브러리 진입 버튼 표시 여부만 제어합니다. 이전에 기록 스킨이 저장되어 있다면 이 스위치를 꺼도 삭제되지 않습니다. 삭제하려면 이 스위치를 켠 뒤 수동으로 정리하세요."
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Denne bryteren styrer bare om inngangsknappen til historisk skin-bibliotek vises. Hvis historiske skins allerede er lagret, vil de ikke bli slettet ved a sla av bryteren. For a rydde dem, sla den pa og fjern dem manuelt."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deze schakelaar bepaalt alleen of de knop naar de historische skinbibliotheek wordt getoond. Als er al historische skins zijn opgeslagen, worden die niet gewist wanneer je dit uitschakelt. Zet dit aan en verwijder ze handmatig om op te schonen."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ten przelacznik kontroluje tylko to, czy wyswietlac przycisk wejscia do biblioteki historii skinow. Jesli historyczne skiny sa juz zapisane, wylaczenie tego nie usunie ich. Aby je wyczyscic, wlacz to i usun je recznie."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este interruptor controla apenas se o botao de entrada da biblioteca de historico de skins sera exibido. Se skins historicas ja estiverem salvas, desativar isso nao as apagara. Para limpar, ative isso e remova-as manualmente."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Etot pereklyuchatel upravlyaet tolko pokazom knopki vhoda v biblioteku istorii skinov. Esli istoricheskie skiny uzhe sohraneny, otklyuchenie ne udalit ih. Chtoby ochistit, vklyuchite pereklyuchatel i udalite ih vruchnuyu."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Denna vaxel styr bara om knappingangen till historiskt skinbibliotek visas. Om historiska skins redan ar sparade rensas de inte nar du stanger av detta. For att rensa dem, sla pa detta och ta bort dem manuellt."
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "สวิตช์นี้ควบคุมเฉพาะการแสดงปุ่มทางเข้าคลังสกินประวัติเท่านั้น หากเคยบันทึกสกินประวัติไว้แล้ว การปิดสวิตช์นี้จะไม่ลบข้อมูลดังกล่าว หากต้องการลบ ให้เปิดสวิตช์นี้และลบด้วยตนเอง"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bu anahtar yalnizca gecmis skin kutuphanesi giris dugmesinin gosterilmesini kontrol eder. Daha once gecmis skinler kaydedildiyse bunu kapatmak onlari temizlemez. Temizlemek icin bunu acin ve manuel olarak silin."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cong tac nay chi kiem soat viec hien nut vao thu vien skin lich su. Neu skin lich su da duoc luu truoc do, tat cong tac nay se khong xoa chung. De xoa, hay bat cong tac nay va xoa thu cong."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "当前开关仅限于是否显示皮肤库开关入口按钮。对于之前开启过且已经存储了历史皮肤的，关闭此开关不会清理历史皮肤库。如需清理，请开启此开关后手动清理。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目前開關僅用於是否顯示皮膚庫入口按鈕。若先前已開啟並儲存過歷史皮膚，關閉此開關不會清理歷史皮膚庫。如需清理，請先開啟此開關後再手動清理。"
-          }
-        }
-      }
-    },
-    "settings.player.history_skin_library.toggle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تفعيل مكتبة السكنات السابقة (لحسابات Microsoft فقط)"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktiver historisk skinbibliotek (kun Microsoft-konti)"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historische Skin-Bibliothek aktivieren (nur Microsoft-Konten)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enable History Skin Library (Microsoft accounts only)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activar biblioteca historica de skins (solo cuentas de Microsoft)"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ota historiallinen skinkirjasto kayttoon (vain Microsoft-tilit)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activer la bibliotheque d'historique des skins (comptes Microsoft uniquement)"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "इतिहास स्किन लाइब्रेरी सक्षम करें (केवल Microsoft खातों के लिए)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abilita libreria cronologia skin (solo account Microsoft)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "履歴スキンライブラリを有効化（Microsoftアカウントのみ）"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기록 스킨 라이브러리 사용 (Microsoft 계정 전용)"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktiver historisk skin-bibliotek (kun Microsoft-kontoer)"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historische skinbibliotheek inschakelen (alleen Microsoft-accounts)"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wlacz biblioteke historii skinow (tylko konta Microsoft)"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ativar biblioteca de historico de skins (somente contas Microsoft)"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vklyuchit biblioteku istorii skinov (tolko akkaunty Microsoft)"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktivera historiskt skinbibliotek (endast Microsoft-konton)"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "เปิดใช้งานคลังสกินประวัติ (เฉพาะบัญชี Microsoft)"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gecmis skin kutuphanesini etkinlestir (yalnizca Microsoft hesaplari)"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bat thu vien skin lich su (chi danh cho tai khoan Microsoft)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "开启历史皮肤库(仅限Microsoft帐户)"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "開啟歷史皮膚庫（僅限 Microsoft 帳戶）"
           }
         }
       }
