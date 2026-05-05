@@ -214,6 +214,21 @@ enum ModPackExporter {
         let overridesDir: URL
     }
 
+    private struct CopyFileFailure: Sendable {
+        let filePath: String
+        let reason: String
+
+        var fileName: String { URL(fileURLWithPath: filePath).lastPathComponent }
+    }
+
+    private struct CopyFilesError: LocalizedError {
+        let failures: [CopyFileFailure]
+
+        var errorDescription: String? {
+            return "复制资源文件失败"
+        }
+    }
+
     /// 准备临时目录和 overrides 目录结构
     private static func prepareDirectories() throws -> (tempDir: URL, overridesDir: URL) {
         let tempDir = try createTempDirectory()
@@ -497,43 +512,47 @@ enum ModPackExporter {
             progressCallback?(updatedProgress)
         }
 
-        // 复制资源文件
-        await withTaskGroup(of: Void.self) { group in
+        var failures: [CopyFileFailure] = []
+
+        await withTaskGroup(of: CopyFileFailure?.self) { group in
             for (file, relativePath) in filesToCopy {
                 group.addTask {
-                    if Task.isCancelled { return }
+                    if Task.isCancelled { return nil }
+                    let failure: CopyFileFailure?
                     do {
                         try ResourceProcessor.copyToOverrides(
                             file: file,
                             relativePath: relativePath,
                             overridesDir: overridesDir
                         )
-
-                        // 更新复制进度
-                        let (processed, total) = await copyCounter.increment()
-                        let updatedProgress = await progressUpdater.advanceCopyProgress(
-                            processed: processed,
-                            total: total,
-                            currentFile: file.lastPathComponent
-                        )
-                        progressCallback?(updatedProgress)
+                        failure = nil
                     } catch {
                         Logger.shared.warning("复制资源文件失败: \(file.lastPathComponent), 错误: \(error.localizedDescription)")
-
-                        // 更新进度（即使失败也计入已处理）
-                        let (processed, total) = await copyCounter.increment()
-                        let updatedProgress = await progressUpdater.advanceCopyProgress(
-                            processed: processed,
-                            total: total,
-                            currentFile: file.lastPathComponent
-                        )
-                        progressCallback?(updatedProgress)
+                        failure = CopyFileFailure(filePath: file.path, reason: error.localizedDescription)
                     }
+                    let (processed, total) = await copyCounter.increment()
+                    let updatedProgress = await progressUpdater.advanceCopyProgress(
+                        processed: processed,
+                        total: total,
+                        currentFile: file.lastPathComponent
+                    )
+                    progressCallback?(updatedProgress)
+                    return failure
                 }
             }
 
-            // 等待所有复制任务完成
-            for await _ in group {}
+            for await failure in group {
+                if let failure {
+                    failures.append(failure)
+                }
+            }
+        }
+
+        try Task.checkCancellation()
+
+        if !failures.isEmpty {
+            Logger.shared.error("复制资源文件失败，终止导出:\n\(failures.map { "\($0.filePath) (\($0.reason))" }.joined(separator: "\n"))")
+            throw CopyFilesError(failures: failures)
         }
     }
 
