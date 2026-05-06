@@ -11,7 +11,7 @@ struct CommonSheetGameBody: View {
         ) {
             Text("global_resource.select_game".localized())
         } content: {
-            Text("global_resource.please_select_game".localized()).tag(
+            Text(paddedPickerLabel("global_resource.please_select_game".localized())).tag(
                 GameVersionInfo?(nil)
             )
             ForEach(compatibleGames, id: \.id) { game in
@@ -30,6 +30,6 @@ extension GameVersionInfo {
         + Text("-")
         + Text(modLoader)
         + Text("-")
-        + Text(modVersion).foregroundStyle(.secondary)
+        + Text(paddedPickerLabel(modVersion)).foregroundStyle(.secondary)
     }
 }

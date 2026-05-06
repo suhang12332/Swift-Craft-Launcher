@@ -229,7 +229,7 @@ struct GameCreationView: View {
                 Text("")
             } content: {
                 ForEach(AppConstants.modLoaders, id: \.self) { loader in
-                    Text(paddedLabel(modLoaderDisplayName(for: loader))).tag(loader)
+                    Text(paddedPickerLabel(modLoaderDisplayName(for: loader))).tag(loader)
                 }
             }
             .disabled(viewModel.gameSetupService.downloadState.isDownloading)
@@ -251,7 +251,7 @@ struct GameCreationView: View {
                 Text("")
             } content: {
                 ForEach(viewModel.availableLoaderVersions, id: \.self) { version in
-                    Text(paddedLabel(version)).tag(version)
+                    Text(paddedPickerLabel(version)).tag(version)
                 }
             }
             .disabled(viewModel.gameSetupService.downloadState.isDownloading || viewModel.availableLoaderVersions.isEmpty)
@@ -274,12 +274,6 @@ struct GameCreationView: View {
         default:
             return loader.capitalized
         }
-    }
-
-    // 通过在文本末尾追加大量的空格，从而撑开macOS26下的选择框宽度
-    private func paddedLabel(_ text: String) -> String {
-        let paddingCount = 100
-        return text + String(repeating: " ", count: paddingCount)
     }
 
     private var gameNameSection: some View {

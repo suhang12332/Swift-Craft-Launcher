@@ -36,26 +36,31 @@ public struct GameSettingsView: View {
         VStack {
             Form {
                 LabeledContent("settings.default_api_source.label".localized()) {
-                    Picker("", selection: $gameSettings.defaultAPISource) {
+                    CommonMenuPicker(
+                        selection: $gameSettings.defaultAPISource,
+                        hidesLabel: true
+                    ) {
+                        Text("")
+                    } content: {
                         ForEach(DataSource.allCases, id: \.self) { source in
-                            Text(source.localizedName).tag(source)
+                            Text(paddedPickerLabel(source.localizedName)).tag(source)
                         }
                     }
-
-                    .labelsHidden()
-                    .fixedSize()
                 }
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
 
                 LabeledContent("settings.modpack.export.format.label".localized()) {
-                    Picker("", selection: $gameSettings.defaultModPackExportFormat) {
+                    CommonMenuPicker(
+                        selection: $gameSettings.defaultModPackExportFormat,
+                        hidesLabel: true
+                    ) {
+                        Text("")
+                    } content: {
                         ForEach(ModPackExportFormat.allCases, id: \.self) { format in
-                            Text(format.displayName).tag(format)
+                            Text(paddedPickerLabel(format.displayName)).tag(format)
                         }
                     }
-                    .labelsHidden()
-                    .fixedSize()
                 }
                 .labeledContentStyle(.custom)
                 .padding(.bottom, 10)
@@ -135,18 +140,21 @@ public struct GameSettingsView: View {
                 LabeledContent("settings.game.java.runtimes.section".localized()) {
                     HStack(spacing: 8) {
                         let components = viewModel.installedRuntimeComponents ?? []
-                        Picker("", selection: $viewModel.selectedRuntimeComponent) {
+                        CommonMenuPicker(
+                            selection: $viewModel.selectedRuntimeComponent,
+                            hidesLabel: true
+                        ) {
+                            Text("")
+                        } content: {
                             if components.isEmpty {
-                                Text("settings.game.java.runtime.none".localized())
+                                Text(paddedPickerLabel("settings.game.java.runtime.none".localized()))
                                     .tag("")
                             } else {
                                 ForEach(components, id: \.self) { component in
-                                    Text(component).tag(component)
+                                    Text(paddedPickerLabel(component)).tag(component)
                                 }
                             }
                         }
-                        .labelsHidden()
-                        .fixedSize()
                         .disabled((viewModel.installedRuntimeComponents ?? []).isEmpty)
 
                         Button("settings.game.java.runtime.reinstall".localized()) {

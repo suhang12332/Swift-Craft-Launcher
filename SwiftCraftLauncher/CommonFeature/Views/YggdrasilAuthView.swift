@@ -49,15 +49,17 @@ struct YggdrasilAuthView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text("yggdrasil.server.select".localized())
                 .font(.headline)
-            Picker("yggdrasil.server.picker".localized(), selection: $viewModel.selectedOption) {
-                Text("yggdrasil.server.please_select".localized())
+            CommonMenuPicker(selection: $viewModel.selectedOption) {
+                Text("yggdrasil.server.picker".localized())
+            } content: {
+                Text(paddedPickerLabel("yggdrasil.server.please_select".localized()))
                     .tag(nil as YggdrasilServerConfig?)
 
                 ForEach(servers, id: \.self) { server in
-                    Text(server.name ?? server.baseURL.absoluteString).tag(server as YggdrasilServerConfig?)
+                    Text(paddedPickerLabel(server.name ?? server.baseURL.absoluteString))
+                        .tag(server as YggdrasilServerConfig?)
                 }
             }
-            .pickerStyle(.menu)
         }
     }
 
@@ -182,14 +184,16 @@ struct YggdrasilAuthView: View {
     ) -> some View {
         Group {
             if profiles.count > 1 {
-                Picker("", selection: selection) {
+                CommonMenuPicker(
+                    selection: selection,
+                    hidesLabel: true
+                ) {
+                    Text("")
+                } content: {
                     ForEach(profiles, id: \.id) { p in
-                        Text(p.name).tag(p.id)
+                        Text(paddedPickerLabel(p.name)).tag(p.id)
                     }
                 }
-                .pickerStyle(.menu)
-                .fixedSize()
-                .labelsHidden()
             } else {
                 Text(currentProfile.name)
                     .font(.headline)

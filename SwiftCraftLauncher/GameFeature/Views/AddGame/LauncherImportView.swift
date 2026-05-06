@@ -104,7 +104,7 @@ struct LauncherImportView: View {
                     Text("")
                 } content: {
                     ForEach(ImportLauncherType.allCases, id: \.self) { launcherType in
-                        Text(launcherType.rawValue)
+                        Text(paddedPickerLabel(launcherType.rawValue))
                             .tag(launcherType)
                     }
                 }

@@ -1,5 +1,11 @@
 import SwiftUI
 
+/// 通过在文本末尾追加大量的空格，从而撑开 macOS26 下的选择框宽度。
+func paddedPickerLabel(_ text: String) -> String {
+    let paddingCount = 100
+    return text + String(repeating: " ", count: paddingCount)
+}
+
 /// 通用的菜单样式 Picker，统一 `.pickerStyle(.menu)`，并可选择隐藏标签。
 struct CommonMenuPicker<Label: View, SelectionValue: Hashable, Content: View>: View {
     private let selection: Binding<SelectionValue>
@@ -25,6 +31,7 @@ struct CommonMenuPicker<Label: View, SelectionValue: Hashable, Content: View>: V
         }
         .pickerStyle(.menu)
         .modifier(ConditionalLabelsHidden(isHidden: hidesLabel))
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

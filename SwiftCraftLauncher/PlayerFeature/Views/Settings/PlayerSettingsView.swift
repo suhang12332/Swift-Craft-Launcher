@@ -24,20 +24,20 @@ public struct PlayerSettingsView: View {
                 )
             }.labeledContentStyle(.custom)
             LabeledContent("settings.player.default_skin_server".localized()) {
-                Picker(
-                    "",
-                    selection: $playerSettings.defaultYggdrasilServerBaseURL
+                CommonMenuPicker(
+                    selection: $playerSettings.defaultYggdrasilServerBaseURL,
+                    hidesLabel: true
                 ) {
-                    Text("yggdrasil.server.please_select".localized())
+                    Text("")
+                } content: {
+                    Text(paddedPickerLabel("yggdrasil.server.please_select".localized()))
                         .tag("")
 
                     ForEach(yggdrasilServers, id: \.baseURL) { server in
-                        Text(server.name ?? server.baseURL.absoluteString)
+                        Text(paddedPickerLabel(server.name ?? server.baseURL.absoluteString))
                             .tag(server.baseURL.absoluteString)
                     }
                 }
-                .labelsHidden()
-                .fixedSize()
                 .disabled(!playerSettings.enableOfflineLogin)
             }
             .labeledContentStyle(.custom)

@@ -80,11 +80,10 @@ struct AddPlayerSheetView: View {
                         ) {
                         } content: {
                             ForEach(viewModel.availableAuthTypes) { type in
-                                Text(type.displayName).tag(type)
+                                Text(paddedPickerLabel(type.displayName)).tag(type)
                             }
                         }
                         .labelStyle(.titleOnly)
-                        .fixedSize()
                     }
                 }
             },

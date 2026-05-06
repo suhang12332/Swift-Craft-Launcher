@@ -32,13 +32,13 @@ struct VersionSelectionView: View {
                 Text("")
             } content: {
                 if availableGameVersions.isEmpty {
-                    Text(String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline))
+                    Text(paddedPickerLabel(String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline)))
                         .tag("")
                 } else {
-                    Text("modpack.game.version.placeholder".localized())
+                    Text(paddedPickerLabel("modpack.game.version.placeholder".localized()))
                         .tag("")
                     ForEach(availableGameVersions, id: \.self) { version in
-                        Text(version).tag(version)
+                        Text(paddedPickerLabel(version)).tag(version)
                     }
                 }
             }
@@ -69,7 +69,7 @@ struct VersionSelectionView: View {
                     Text("")
                 } content: {
                     ForEach(filteredModPackVersions, id: \.id) { version in
-                        Text(version.name).tag(
+                        Text(paddedPickerLabel(version.name)).tag(
                             version as ModrinthProjectDetailVersion?
                         )
                     }

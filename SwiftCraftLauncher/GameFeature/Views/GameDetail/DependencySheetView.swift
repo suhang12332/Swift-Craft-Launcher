@@ -75,11 +75,10 @@ struct DependencySheetView: View {
                                         Text("dependency.version.picker".localized())
                                     } content: {
                                         ForEach(versions, id: \.id) { v in
-                                            Text(v.name).tag(v.id)
+                                            Text(paddedPickerLabel(v.name)).tag(v.id)
                                         }
                                     }
                                     .font(.subheadline)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
                                 }
                             }
                         }

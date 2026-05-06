@@ -38,7 +38,7 @@ struct DependencySectionView: View {
                                 Text("global_resource.dependency_version".localized())
                             } content: {
                                 ForEach(versions, id: \.id) { v in
-                                    Text(v.name).tag(Optional(v))
+                                    Text(paddedPickerLabel(v.name)).tag(Optional(v))
                                 }
                             }
                         } else {

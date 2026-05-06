@@ -21,17 +21,15 @@ public struct AISettingsView: View {
     public var body: some View {
         Form {
             LabeledContent("settings.ai.api_type.label".localized()) {
-                Picker("", selection: $aiSettings.selectedProvider) {
+                CommonMenuPicker(
+                    selection: $aiSettings.selectedProvider,
+                    hidesLabel: true
+                ) {
+                    Text("")
+                } content: {
                     ForEach(AIProvider.allCases) { provider in
-                        Text(provider.displayName).tag(provider)
+                        Text(paddedPickerLabel(provider.displayName)).tag(provider)
                     }
-                }
-                .labelsHidden()
-                .if(
-                    ProcessInfo.processInfo.operatingSystemVersion.majorVersion
-                        < 26
-                ) { view in
-                    view.fixedSize()
                 }
             }
             .labeledContentStyle(.custom)

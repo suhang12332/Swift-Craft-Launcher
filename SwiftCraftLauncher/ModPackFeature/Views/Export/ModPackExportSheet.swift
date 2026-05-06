@@ -114,14 +114,16 @@ struct ModPackExportSheet: View {
                 .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            Picker("", selection: $viewModel.currentExportFormat) {
+            CommonMenuPicker(
+                selection: $viewModel.currentExportFormat,
+                hidesLabel: true
+            ) {
+                Text("")
+            } content: {
                 ForEach(ModPackExportFormat.allCases, id: \.self) { format in
-                    Text(format.displayName).tag(format)
+                    Text(paddedPickerLabel(format.displayName)).tag(format)
                 }
             }
-            .labelsHidden()
-            .pickerStyle(.menu)
-            .fixedSize()
             .disabled(viewModel.isExporting)
         }
     }
