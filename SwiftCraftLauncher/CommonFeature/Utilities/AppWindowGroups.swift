@@ -16,7 +16,7 @@ extension SwiftCraftLauncherApp {
         Window("about.contributors".localized(), id: WindowID.contributors.rawValue) {
             AboutView(showingAcknowledgements: false)
                 .environmentObject(generalSettingsManager)
-                .preferredColorScheme(themeManager.currentColorScheme)
+                .preferredColorScheme(nil)
                 .windowStyleConfig(for: .contributors)
                 .windowCleanup(for: .contributors)
         }
@@ -26,7 +26,7 @@ extension SwiftCraftLauncherApp {
         Window("about.acknowledgements".localized(), id: WindowID.acknowledgements.rawValue) {
             AboutView(showingAcknowledgements: true)
                 .environmentObject(generalSettingsManager)
-                .preferredColorScheme(themeManager.currentColorScheme)
+                .preferredColorScheme(nil)
                 .windowStyleConfig(for: .acknowledgements)
                 .windowCleanup(for: .acknowledgements)
         }
@@ -38,7 +38,7 @@ extension SwiftCraftLauncherApp {
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .environmentObject(generalSettingsManager)
-                .preferredColorScheme(themeManager.currentColorScheme)
+                .preferredColorScheme(nil)
                 .windowStyleConfig(for: .aiChat)
                 .windowCleanup(for: .aiChat)
         }
@@ -47,7 +47,7 @@ extension SwiftCraftLauncherApp {
         // Java 下载窗口
         Window("global_resource.download".localized(), id: WindowID.javaDownload.rawValue) {
             JavaDownloadWindowContent()
-                .preferredColorScheme(themeManager.currentColorScheme)
+                .preferredColorScheme(nil)
                 .windowStyleConfig(for: .javaDownload)
                 .windowCleanup(for: .javaDownload)
         }
@@ -56,7 +56,7 @@ extension SwiftCraftLauncherApp {
         // 皮肤预览窗口
         Window("skin.preview".localized(), id: WindowID.skinPreview.rawValue) {
             SkinPreviewWindowContent()
-                .preferredColorScheme(themeManager.currentColorScheme)
+                .preferredColorScheme(nil)
                 .windowStyleConfig(for: .skinPreview)
                 .windowCleanup(for: .skinPreview)
         }
