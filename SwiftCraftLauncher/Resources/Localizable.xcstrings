@@ -81141,139 +81141,139 @@
       }
     },
     "settings.language.picker" : {
-      "comment" : "Settings",
+      "comment" : "Settings label for the language row",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "اللغة"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Sprog"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Sprache"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Language"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Idioma"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Kieli"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Langue"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "भाषा"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Lingua"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "言語"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "언어"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Språk"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Taal"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Język"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Idioma"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Язык"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Språk"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "ภาษา"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Dil"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Ngôn ngữ"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "语言"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "語言"
           }
         }
       }
