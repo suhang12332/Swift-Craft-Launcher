@@ -229,24 +229,12 @@ struct GameCreationView: View {
                 Text("")
             } content: {
                 ForEach(AppConstants.modLoaders, id: \.self) { loader in
-                    switch loader {
-                    case GameLoader.vanilla.displayName:
-                        Text("modloader.vanilla.text".localized()).tag(loader)
-                    case GameLoader.fabric.displayName:
-                        Text("modloader.fabric.text".localized()).tag(loader)
-                    case GameLoader.forge.displayName:
-                        Text("modloader.forge.text".localized()).tag(loader)
-                    case GameLoader.neoforge.displayName:
-                        Text("modloader.neoforge.text".localized()).tag(loader)
-                    case GameLoader.quilt.rawValue:
-                        Text("modloader.quilt.text".localized()).tag(loader)
-                    default:
-                        Text(loader.capitalized).tag(loader)
-                    }
+                    Text(paddedLabel(modLoaderDisplayName(for: loader))).tag(loader)
                 }
             }
             .disabled(viewModel.gameSetupService.downloadState.isDownloading)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .onChange(of: viewModel.selectedModLoader) { _, _ in
             viewModel.availableLoaderVersions = []
         }
@@ -263,11 +251,35 @@ struct GameCreationView: View {
                 Text("")
             } content: {
                 ForEach(viewModel.availableLoaderVersions, id: \.self) { version in
-                    Text(version).tag(version)
+                    Text(paddedLabel(version)).tag(version)
                 }
             }
             .disabled(viewModel.gameSetupService.downloadState.isDownloading || viewModel.availableLoaderVersions.isEmpty)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func modLoaderDisplayName(for loader: String) -> String {
+        switch loader {
+        case GameLoader.vanilla.displayName:
+            return "modloader.vanilla.text".localized()
+        case GameLoader.fabric.displayName:
+            return "modloader.fabric.text".localized()
+        case GameLoader.forge.displayName:
+            return "modloader.forge.text".localized()
+        case GameLoader.neoforge.displayName:
+            return "modloader.neoforge.text".localized()
+        case GameLoader.quilt.rawValue:
+            return "modloader.quilt.text".localized()
+        default:
+            return loader.capitalized
+        }
+    }
+
+    // 通过在文本末尾追加大量的空格，从而撑开macOS26下的选择框宽度
+    private func paddedLabel(_ text: String) -> String {
+        let paddingCount = 80
+        return text + String(repeating: " ", count: paddingCount)
     }
 
     private var gameNameSection: some View {
