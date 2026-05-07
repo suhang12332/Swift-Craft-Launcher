@@ -1,8 +1,9 @@
 import SwiftUI
 
-/// 通过在文本末尾追加大量的空格，从而撑开 macOS26 下的选择框宽度。
+// 通过在文本末尾追加空格，将其补齐到 100 个字符，从而撑开 macOS 26 下的选择框宽度。
 func paddedPickerLabel(_ text: String) -> String {
-    let paddingCount = 100
+    let targetLength = 100
+    let paddingCount = max(0, targetLength - text.count)
     return text + String(repeating: " ", count: paddingCount)
 }
 
