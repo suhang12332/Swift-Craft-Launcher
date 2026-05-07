@@ -37,10 +37,11 @@ enum ResourceFilterMenus {
                 currentResourceTypeTitle(detailState: detailState),
                 systemImage: detailState.gameType
                     ? "tray.and.arrow.down" : "icloud.and.arrow.down"
-            ).foregroundStyle(.primary)
+            )
+            .foregroundStyle(.primary)
+            .applyReplaceTransition()
         }
         .help("resource.content.location.help".localized())
-        .applyReplaceTransition()
     }
 
     /// 资源类型菜单（mod / datapack / resourcepack / shader）

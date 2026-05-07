@@ -71,6 +71,7 @@ struct GameActionButtons: View {
                         systemImage: isRunning
                         ? "stop.fill" : "play.fill"
                     )
+                    .applyReplaceTransition()
                 }
             }
             .id(controlActiveState)
@@ -80,7 +81,6 @@ struct GameActionButtons: View {
                 : (gameStatusManager.isGameLaunching(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? "") ? "" : "play.fill")
             )
             .disabled(gameStatusManager.isGameLaunching(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? ""))
-            .applyReplaceTransition()
 
             Button {
                 selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
