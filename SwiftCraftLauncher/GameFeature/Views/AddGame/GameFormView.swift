@@ -40,8 +40,13 @@ struct GameFormView: View {
     @State private var mode: GameFormMode
     @State private var isModPackParsed = false
     @State private var imagePickerHandler: ((Result<[URL], Error>) -> Void)?
-    @State private var showImportPicker = false
     @StateObject private var importViewModel = GameFormImportViewModel()
+
+    private enum ImportModePickerValue: Hashable {
+        case manual
+        case modPack
+        case launcherImport
+    }
 
     init(initialMode: GameFormMode = .creation) {
         _mode = State(initialValue: initialMode)
@@ -169,37 +174,52 @@ struct GameFormView: View {
         }
     }
 
-    private var importModePicker: some View {
-        Menu {
-            Button {
-                mode = .creation
-            } label: {
-                Label("game.form.mode.manual".localized(), systemImage: "square.and.pencil")
-            }
-
-            Button {
-                // 先切换到非 launcherImport 模式
-                if case .launcherImport = mode {
+    private var importModePickerSelection: Binding<ImportModePickerValue> {
+        Binding(
+            get: {
+                switch mode {
+                case .creation:
+                    return .manual
+                case .modPackImport:
+                    return .modPack
+                case .launcherImport:
+                    return .launcherImport
+                }
+            },
+            set: { newValue in
+                switch newValue {
+                case .manual:
                     mode = .creation
+                case .launcherImport:
+                    mode = .launcherImport
+                case .modPack:
+                    if case .launcherImport = mode {
+                        mode = .creation
+                    }
+                    filePickerType = .modPack
+                    DispatchQueue.main.async {
+                        showFilePicker = true
+                    }
                 }
-                filePickerType = .modPack
-                // 异步等待视图更新
-                DispatchQueue.main.async {
-                    showFilePicker = true
-                }
-            } label: {
-                Label("modpack.import.title".localized(), systemImage: "square.and.arrow.up")
             }
+        )
+    }
 
-            Button {
-                mode = .launcherImport
-            } label: {
-                Label("launcher.import.title".localized(), systemImage: "arrow.down.doc")
-            }
-        } label: {
-            Text(currentModeTitle)
+    private var importModePicker: some View {
+        CommonMenuPicker(
+            selection: importModePickerSelection,
+            hidesLabel: true
+        ) {
+            Text("")
+        } content: {
+            Text("game.form.mode.manual".localized())
+                .tag(ImportModePickerValue.manual)
+            Text("modpack.import.title".localized())
+                .tag(ImportModePickerValue.modPack)
+            Text("launcher.import.title".localized())
+                .tag(ImportModePickerValue.launcherImport)
         }
-        .fixedSize()
+        .fixedSize(horizontal: true, vertical: false)
         .help("game.form.mode.import".localized())
     }
 
