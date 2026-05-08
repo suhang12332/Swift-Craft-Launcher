@@ -25,7 +25,6 @@ extension GameCreationViewModel {
 
         await gameSetupService.saveGame(
             gameName: finalGameName,
-            gameIcon: gameIcon,
             selectedGameVersion: selectedGameVersion,
             selectedModLoader: selectedModLoader,
             specifiedLoaderVersion: loaderVersion,

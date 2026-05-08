@@ -138,8 +138,7 @@ final class ModPackInstallCoordinator {
 
         let gameSuccess = await installGameStep(
             input: input,
-            indexInfo: indexInfo,
-            iconPath: iconPath
+            indexInfo: indexInfo
         )
 
         await handleInstallationResult(
@@ -268,14 +267,12 @@ final class ModPackInstallCoordinator {
 
     private func installGameStep(
         input: RunInput,
-        indexInfo: ModrinthIndexInfo,
-        iconPath: String?
+        indexInfo: ModrinthIndexInfo
     ) async -> Bool {
         await withCheckedContinuation { continuation in
             Task {
                 await input.gameSetupService.saveGame(
                     gameName: input.gameName,
-                    gameIcon: iconPath ?? AppConstants.defaultGameIcon,
                     selectedGameVersion: input.selectedGameVersion,
                     selectedModLoader: indexInfo.loaderType,
                     specifiedLoaderVersion: indexInfo.loaderVersion,
