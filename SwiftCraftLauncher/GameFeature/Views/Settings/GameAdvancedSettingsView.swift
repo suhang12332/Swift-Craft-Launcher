@@ -47,16 +47,13 @@ struct GameAdvancedSettingsView: View {
 
             Group {
                 LabeledContent("settings.game.java.garbage_collector".localized()) {
-                    CommonMenuPicker(
-                        selection: $viewModel.selectedGarbageCollector,
-                        hidesLabel: true
-                    ) {
-                        Text("")
-                    } content: {
+                    Picker("", selection: $viewModel.selectedGarbageCollector) {
                         ForEach(viewModel.availableGarbageCollectors, id: \.self) { gc in
-                            Text(paddedPickerLabel(gc.displayName)).tag(gc)
+                            Text(gc.displayName).tag(gc)
                         }
                     }
+                    .labelsHidden()
+                    .fixedSize()
                     .disabled(viewModel.isUsingCustomArguments)  // 使用自定义参数时禁用
                     .onChange(of: viewModel.selectedGarbageCollector) { _, _ in
                         viewModel.didSelectGarbageCollector()
@@ -69,17 +66,14 @@ struct GameAdvancedSettingsView: View {
 
             Group {
                 LabeledContent("settings.game.java.performance_optimization".localized()) {
-                    CommonMenuPicker(
-                        selection: $viewModel.optimizationPreset,
-                        hidesLabel: true
-                    ) {
-                        Text("")
-                    } content: {
+                    Picker("", selection: $viewModel.optimizationPreset) {
                         // 最大优化仅在 G1GC 时可用
                         ForEach(viewModel.availableOptimizationPresets, id: \.self) { preset in
-                            Text(paddedPickerLabel(preset.displayName)).tag(preset)
+                            Text(preset.displayName).tag(preset)
                         }
                     }
+                    .labelsHidden()
+                    .fixedSize()
                     .disabled(viewModel.isUsingCustomArguments)  // 使用自定义参数时禁用
                     .onChange(of: viewModel.optimizationPreset) { _, newValue in
                         viewModel.didSelectOptimizationPreset(newValue)

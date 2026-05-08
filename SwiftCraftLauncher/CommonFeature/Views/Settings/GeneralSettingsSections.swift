@@ -33,16 +33,13 @@ struct GeneralSettingsInterfaceLayoutRow: View {
 
     var body: some View {
         LabeledContent("settings.interface_style.label".localized()) {
-            CommonMenuPicker(
-                selection: $generalSettings.interfaceLayoutStyle,
-                hidesLabel: true
-            ) {
-                Text("")
-            } content: {
+            Picker("", selection: $generalSettings.interfaceLayoutStyle) {
                 ForEach(InterfaceLayoutStyle.allCases, id: \.self) { style in
-                    Text(paddedPickerLabel(style.localizedName)).tag(style)
+                    Text(style.localizedName).tag(style)
                 }
             }
+            .labelsHidden()
+            .fixedSize()
         }
         .labeledContentStyle(.custom)
         .padding(.bottom, 10)
@@ -58,27 +55,24 @@ struct GeneralSettingsWorkingDirectoryRow: View {
         LabeledContent("settings.launcher_working_directory".localized()) {
             VStack(alignment: .leading, spacing: 8) {
                 if !gameRepository.workingPathOptions.isEmpty {
-                    CommonMenuPicker(
-                        selection: Binding(
-                            get: {
-                                generalSettings.launcherWorkingDirectory.isEmpty
-                                    ? AppPaths.launcherSupportDirectory.path
-                                    : generalSettings.launcherWorkingDirectory
-                            },
-                            set: { generalSettings.launcherWorkingDirectory = $0 }
-                        ),
-                        hidesLabel: true
-                    ) {
-                        Text("")
-                    } content: {
+                    Picker("", selection: Binding(
+                        get: {
+                            generalSettings.launcherWorkingDirectory.isEmpty
+                                ? AppPaths.launcherSupportDirectory.path
+                                : generalSettings.launcherWorkingDirectory
+                        },
+                        set: { generalSettings.launcherWorkingDirectory = $0 }
+                    )) {
                         ForEach(gameRepository.workingPathOptions, id: \.path) { item in
-                            Text(paddedPickerLabel(viewModel.workingPathDisplayString(for: item)))
+                            Text(viewModel.workingPathDisplayString(for: item))
                                 .lineLimit(1)
                                 .truncationMode(.middle)
                                 .tag(item.path)
                                 .help(item.path)
                         }
                     }
+                    .labelsHidden()
+                    .fixedSize()
                 }
                 DirectorySettingRow(
                     title: "settings.launcher_working_directory".localized(),

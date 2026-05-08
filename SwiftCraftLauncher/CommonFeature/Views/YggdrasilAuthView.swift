@@ -184,16 +184,14 @@ struct YggdrasilAuthView: View {
     ) -> some View {
         Group {
             if profiles.count > 1 {
-                CommonMenuPicker(
-                    selection: selection,
-                    hidesLabel: true
-                ) {
-                    Text("")
-                } content: {
+                Picker("", selection: selection) {
                     ForEach(profiles, id: \.id) { p in
-                        Text(paddedPickerLabel(p.name)).tag(p.id)
+                        Text(p.name).tag(p.id)
                     }
                 }
+                .pickerStyle(.menu)
+                .fixedSize()
+                .labelsHidden()
             } else {
                 Text(currentProfile.name)
                     .font(.headline)
