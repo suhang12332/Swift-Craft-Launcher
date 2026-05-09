@@ -206,12 +206,7 @@ struct GameFormView: View {
     }
 
     private var importModePicker: some View {
-        CommonMenuPicker(
-            selection: importModePickerSelection,
-            hidesLabel: true
-        ) {
-            Text("")
-        } content: {
+        Picker("", selection: importModePickerSelection) {
             Text("game.form.mode.manual".localized())
                 .tag(ImportModePickerValue.manual)
             Text("modpack.import.title".localized())
@@ -219,6 +214,8 @@ struct GameFormView: View {
             Text("launcher.import.title".localized())
                 .tag(ImportModePickerValue.launcherImport)
         }
+        .labelsHidden()
+        .pickerStyle(.menu)
         .fixedSize(horizontal: true, vertical: false)
         .help("game.form.mode.import".localized())
     }
