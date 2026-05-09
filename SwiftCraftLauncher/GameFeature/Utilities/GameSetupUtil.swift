@@ -45,7 +45,6 @@ class GameSetupUtil: ObservableObject {
     /// 内部游戏保存方法
     /// - Parameters:
     ///   - gameName: 游戏名称
-    ///   - gameIcon: 游戏图标
     ///   - selectedGameVersion: 选择的游戏版本
     ///   - selectedModLoader: 选择的模组加载器
     ///   - specifiedLoaderVersion: 指定的加载器版本（可选）
@@ -56,7 +55,6 @@ class GameSetupUtil: ObservableObject {
     ///   - onError: 错误回调
     func saveGame( // swiftlint:disable:this function_parameter_count
         gameName: String,
-        gameIcon: String,
         selectedGameVersion: String,
         selectedModLoader: String,
         specifiedLoaderVersion: String,
@@ -97,19 +95,18 @@ class GameSetupUtil: ObservableObject {
             }
         }
 
-        // 保存游戏图标
-        await saveGameIcon(
+        let standardIconPresent = await saveGameIcon(
             gameName: gameName,
             modLoader: selectedModLoader,
-            pendingIconData: pendingIconData,
-            onError: onError
+            pendingIconData: pendingIconData
         )
+        let persistedGameIcon = standardIconPresent ? AppConstants.defaultGameIcon : ""
 
         // 创建初始游戏信息
         var gameInfo = GameVersionInfo(
             id: UUID(),
             gameName: gameName,
-            gameIcon: gameIcon,
+            gameIcon: persistedGameIcon,
             gameVersion: selectedGameVersion,
             assetIndex: "",
             modLoader: selectedModLoader
@@ -138,7 +135,7 @@ class GameSetupUtil: ObservableObject {
                 selectedModLoader: selectedModLoader,
                 selectedGameVersion: selectedGameVersion,
                 gameName: gameName,
-                gameIcon: gameIcon,
+                gameIcon: persistedGameIcon,
                 specifiedLoaderVersion: specifiedLoaderVersion
             )
             // 完善游戏信息
@@ -213,11 +210,10 @@ class GameSetupUtil: ObservableObject {
     private func saveGameIcon(
         gameName: String,
         modLoader: String,
-        pendingIconData: Data?,
-        onError: @escaping (GlobalError, String) -> Void
-    ) async {
+        pendingIconData: Data?
+    ) async -> Bool {
         guard !gameName.isEmpty else {
-            return
+            return false
         }
         let profileDir = AppPaths.profileDirectory(gameName: gameName)
         let iconURL = profileDir.appendingPathComponent(AppConstants.defaultGameIcon)
@@ -227,7 +223,7 @@ class GameSetupUtil: ObservableObject {
 
             if let data = pendingIconData {
                 try data.write(to: iconURL)
-            } else {
+            } else if !standardIconFilePresent(at: iconURL) {
                 let remoteIconURL = URLConfig.API.GitHub.gameIcon(modLoader)
                 _ = try await DownloadManager.downloadFile(
                     urlString: remoteIconURL.absoluteString,
@@ -236,15 +232,28 @@ class GameSetupUtil: ObservableObject {
                 )
             }
         } catch {
-            onError(
+            Logger.shared.warning(
+                "游戏图标保存失败，将继续安装: \(error.localizedDescription)"
+            )
+            errorHandler.handle(
                 GlobalError.fileSystem(
                     chineseMessage: "图片保存失败",
                     i18nKey: "error.filesystem.image_save_failed",
-                    level: .notification
-                ),
-                "error.image.save.failed".localized()
+                    level: .silent
+                )
             )
         }
+
+        return standardIconFilePresent(at: iconURL)
+    }
+
+    private func standardIconFilePresent(at iconURL: URL) -> Bool {
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: iconURL.path, isDirectory: &isDirectory),
+              !isDirectory.boolValue else {
+            return false
+        }
+        return true
     }
 
     private func setupFileManager(manifest: MinecraftVersionManifest, modLoader: String) async throws -> MinecraftFileManager {

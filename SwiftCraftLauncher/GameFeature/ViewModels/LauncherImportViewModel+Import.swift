@@ -113,7 +113,6 @@ extension LauncherImportViewModel {
             Task {
                 await gameSetupService.saveGame(
                     gameName: finalGameName,
-                    gameIcon: AppConstants.defaultGameIcon,
                     selectedGameVersion: instanceInfo.gameVersion,
                     selectedModLoader: instanceInfo.modLoader,
                     specifiedLoaderVersion: instanceInfo.modLoaderVersion,

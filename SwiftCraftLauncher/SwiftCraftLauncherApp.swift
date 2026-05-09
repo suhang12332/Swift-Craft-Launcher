@@ -35,7 +35,6 @@ struct SwiftCraftLauncherApp: App {
     @StateObject var gameRepository = GameRepository()
     @StateObject var gameLaunchUseCase = GameLaunchUseCase()
     @StateObject var generalSettingsManager: GeneralSettingsManager
-    @StateObject var themeManager: ThemeManager
 
     @Environment(\.openSettings)
     private var openSettings
@@ -45,7 +44,6 @@ struct SwiftCraftLauncherApp: App {
 
     init() {
         _generalSettingsManager = StateObject(wrappedValue: AppServices.generalSettingsManager)
-        _themeManager = StateObject(wrappedValue: AppServices.themeManager)
 
         Self.configureURLCache()
         Self.configureNotifications(delegate: notificationCenterDelegate)
@@ -62,7 +60,7 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(gameLaunchUseCase)
                 .environmentObject(AppServices.gameActionManager)
                 .environmentObject(AppServices.gameStatusManager)
-                .preferredColorScheme(themeManager.currentColorScheme)
+                .preferredColorScheme(nil)
                 .errorAlert()
                 .windowOpener()
                 .onOpenURL { url in
@@ -84,7 +82,7 @@ struct SwiftCraftLauncherApp: App {
         Settings {
             SettingsView()
                 .environmentObject(gameRepository)
-                .preferredColorScheme(themeManager.currentColorScheme)
+                .preferredColorScheme(nil)
                 .errorAlert()
         }
 
@@ -107,9 +105,14 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(AppServices.gameStatusManager)
             },
             label: {
-                Image("menu-png").resizable()
-                    .renderingMode(.template)
-                    .scaledToFit()
+                HStack {
+                    Image("menu-png")
+                        .renderingMode(.template)
+                        .scaledToFit()
+                    if !gameRepository.games.isEmpty {
+                        Text(" \(gameRepository.games.count)")
+                    }
+                }
             }
         )
     }
@@ -124,7 +127,6 @@ struct SwiftCraftLauncherApp: App {
     }
 
     private static func configureNotifications(delegate: UNUserNotificationCenterDelegate) {
-        // 设置通知中心代理，确保前台时也能展示 Banner
         UNUserNotificationCenter.current().delegate = delegate
         Task {
             await NotificationManager.requestAuthorizationIfNeeded()

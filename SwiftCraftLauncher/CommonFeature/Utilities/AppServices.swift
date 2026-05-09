@@ -36,7 +36,6 @@ enum AppServices {
         var gameSettingsManager: GameSettingsManager?
         var playerSettingsManager: PlayerSettingsManager?
         var selectedGameManager: SelectedGameManager?
-        var themeManager: ThemeManager?
         var languageManager: LanguageManager?
 
         // MARK: - External services
@@ -163,7 +162,6 @@ enum AppServices {
     static var gameSettingsManager: GameSettingsManager { lock.withLock { dependencies.gameSettingsManager ?? .shared } }
     static var playerSettingsManager: PlayerSettingsManager { lock.withLock { dependencies.playerSettingsManager ?? .shared } }
     static var selectedGameManager: SelectedGameManager { lock.withLock { dependencies.selectedGameManager ?? .shared } }
-    static var themeManager: ThemeManager { lock.withLock { dependencies.themeManager ?? .shared } }
     static var languageManager: LanguageManager { lock.withLock { dependencies.languageManager ?? .shared } }
 
     // MARK: - External services

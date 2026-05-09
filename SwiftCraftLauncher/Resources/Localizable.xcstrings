@@ -4,6 +4,9 @@
     "" : {
       "shouldTranslate" : false
     },
+    " %lld" : {
+      "shouldTranslate" : false
+    },
     "-" : {
       "shouldTranslate" : false
     },
@@ -1549,133 +1552,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• طول اسم اللاعب من 1-16 حرفًا، ويمكن أن يحتوي فقط على حروف وأرقام وشرطات سفلية"
+            "value" : "• يُوصى بأن يكون طول اسم اللاعب من 1 إلى 16 حرفًا، ويمكن أن يحتوي فقط على أحرف وأرقام وشرطات سفلية"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Spillernavnets længde er 1-16 tegn og kan kun indeholde bogstaver, tal og understreger"
+            "value" : "• Det anbefales, at spillernavnets længde er 1-16 tegn og kun indeholder bogstaver, tal og understreger"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Die Spielernamenlänge beträgt 1-16 Zeichen und darf nur Buchstaben, Zahlen und Unterstriche enthalten"
+            "value" : "• Es wird empfohlen, dass der Spielername 1-16 Zeichen lang ist und nur Buchstaben, Zahlen und Unterstriche enthält"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• The player name length is 1-16 characters, and can only contain letters, numbers, and underscores."
+            "value" : "• It is recommended that the player name be 1-16 characters long, and contain only letters, numbers, and underscores."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• El nombre del jugador tiene 1-16 caracteres y solo puede contener letras, números y guiones bajos"
+            "value" : "• Se recomienda que el nombre del jugador tenga entre 1 y 16 caracteres y solo contenga letras, números y guiones bajos"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Pelaajan nimen pituus on 1-16 merkkiä ja voi sisältää vain kirjaimia, numeroita ja alaviivoja"
+            "value" : "• On suositeltavaa, että pelaajan nimi on 1-16 merkkiä pitkä ja sisältää vain kirjaimia, numeroita ja alaviivoja"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Le nom du joueur fait 1-16 caractères et ne peut contenir que des lettres, chiffres et underscores"
+            "value" : "• Il est recommandé que le nom du joueur comporte 1 à 16 caractères et ne contienne que des lettres, des chiffres et des tirets bas"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• खिलाड़ी नाम की लंबाई 1-16 अक्षर है और इसमें केवल अक्षर, संख्या और अंडरस्कोर हो सकते हैं"
+            "value" : "• खिलाड़ी नाम की लंबाई 1-16 अक्षर रखने की अनुशंसा की जाती है, और इसमें केवल अक्षर, संख्या और अंडरस्कोर हो सकते हैं"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Il nome del giocatore è di 1-16 caratteri e può contenere solo lettere, numeri e underscore"
+            "value" : "• Si consiglia che il nome del giocatore sia lungo 1-16 caratteri e contenga solo lettere, numeri e underscore"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• プレイヤー名の長さは1-16文字で、文字、数字、アンダースコアのみ使用できます"
+            "value" : "• プレイヤー名は1〜16文字にすることを推奨し、使用できるのは文字、数字、アンダースコアのみです"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 플레이어 이름 길이는 1-16자이며 문자, 숫자, 밑줄만 포함할 수 있습니다"
+            "value" : "• 플레이어 이름 길이는 1-16자로 권장되며 문자, 숫자, 밑줄만 포함할 수 있습니다"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Spillernavnets lengde er 1-16 tegn og kan bare inneholde bokstaver, tall og understreker"
+            "value" : "• Det anbefales at spillernavnet er 1-16 tegn langt og bare inneholder bokstaver, tall og understreker"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• De spelernaamlengte is 1-16 tekens en kan alleen letters, cijfers en underscores bevatten"
+            "value" : "• Het wordt aanbevolen dat de spelersnaam 1-16 tekens lang is en alleen letters, cijfers en underscores bevat"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Długość nazwy gracza to 1-16 znaków i może zawierać tylko litery, cyfry i podkreślenia"
+            "value" : "• Zaleca się, aby nazwa gracza miała od 1 do 16 znaków i zawierała tylko litery, cyfry oraz podkreślenia"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• O nome do jogador tem 1-16 caracteres e pode conter apenas letras, números e sublinhados"
+            "value" : "• Recomenda-se que o nome do jogador tenha de 1 a 16 caracteres e contenha apenas letras, números e sublinhados"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Длина имени игрока 1-16 символов и может содержать только буквы, цифры и подчеркивания"
+            "value" : "• Рекомендуется, чтобы длина имени игрока составляла 1-16 символов и содержала только буквы, цифры и подчеркивания"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Spelarnamnet är 1-16 tecken långt och får bara innehålla bokstäver, siffror och understreck"
+            "value" : "• Det rekommenderas att spelarnamnet är 1-16 tecken långt och endast innehåller bokstäver, siffror och understreck"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• ความยาวชื่อผู้เล่นคือ 1-16 ตัวอักษร และสามารถมีได้เฉพาะตัวอักษร ตัวเลข และเครื่องหมายขีดล่าง"
+            "value" : "• แนะนำให้ชื่อผู้เล่นมีความยาว 1-16 ตัวอักษร และมีได้เฉพาะตัวอักษร ตัวเลข และเครื่องหมายขีดล่าง"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Oyuncu adı uzunluğu 1-16 karakterdir ve yalnızca harf, rakam ve alt çizgi içerebilir"
+            "value" : "• Oyuncu adının uzunluğunun 1-16 karakter olması önerilir ve yalnızca harf, rakam ve alt çizgi içerebilir"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• Độ dài tên người chơi là 1-16 ký tự và chỉ có thể chứa chữ cái, số và dấu gạch dưới"
+            "value" : "• Khuyến nghị tên người chơi dài 1-16 ký tự và chỉ chứa chữ cái, số và dấu gạch dưới"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 玩家名长度为1-16个字符，只能包含字母、数字和下划线"
+            "value" : "• 建议玩家名称长度为 1-16 个字符，仅可包含字母、数字和下划线"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "• 玩家名長度為1-16個字符，只能包含字母、數字和下劃線"
+            "value" : "• 建議玩家名稱長度為 1-16 個字元，僅可包含字母、數字和底線"
           }
         }
       }
@@ -72211,133 +72214,133 @@
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "يتم تخزين مفتاح API محليًا فقط ولن يتم مشاركته"
+            "value" : "يتم تخزين مفتاح API محليًا فقط"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-nøglen gemmes kun lokalt og deles ikke"
+            "value" : "API-nøglen gemmes kun lokalt"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Der API-Schlüssel wird nur lokal gespeichert und nicht geteilt"
+            "value" : "Der API-Schlüssel wird nur lokal gespeichert"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API key is stored locally only and will not be shared"
+            "value" : "API key is stored locally only"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La clave API se almacena solo localmente y no se compartirá"
+            "value" : "La clave API se almacena solo localmente"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-avain tallennetaan vain paikallisesti eikä jaeta"
+            "value" : "API-avain tallennetaan vain paikallisesti"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La clé API est stockée uniquement localement et ne sera pas partagée"
+            "value" : "La clé API est stockée uniquement localement"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API कुंजी केवल स्थानीय रूप से संग्रहीत की जाती है और साझा नहीं की जाएगी"
+            "value" : "API कुंजी केवल स्थानीय रूप से संग्रहीत की जाती है"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La chiave API viene memorizzata solo localmente e non verrà condivisa"
+            "value" : "La chiave API viene memorizzata solo localmente"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "APIキーはローカルのみに保存され、共有されません"
+            "value" : "APIキーはローカルのみに保存されます"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 키는 로컬에만 저장되며 공유되지 않습니다"
+            "value" : "API 키는 로컬에만 저장됩니다"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-nøkkelen lagres bare lokalt og deles ikke"
+            "value" : "API-nøkkelen lagres bare lokalt"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-sleutel wordt alleen lokaal opgeslagen en wordt niet gedeeld"
+            "value" : "API-sleutel wordt alleen lokaal opgeslagen"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Klucz API jest przechowywany tylko lokalnie i nie będzie udostępniany"
+            "value" : "Klucz API jest przechowywany tylko lokalnie"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A chave API é armazenada apenas localmente e não será compartilhada"
+            "value" : "A chave API é armazenada apenas localmente"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-ключ хранится только локально и не будет передаваться"
+            "value" : "API-ключ хранится только локально"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-nyckeln lagras endast lokalt och delas inte"
+            "value" : "API-nyckeln lagras endast lokalt"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "คีย์ API ถูกเก็บไว้ในเครื่องเท่านั้นและจะไม่ถูกแชร์"
+            "value" : "คีย์ API ถูกเก็บไว้ในเครื่องเท่านั้น"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API anahtarı yalnızca yerel olarak saklanır ve paylaşılmaz"
+            "value" : "API anahtarı yalnızca yerel olarak saklanır"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Khóa API chỉ được lưu trữ cục bộ và sẽ không được chia sẻ"
+            "value" : "Khóa API chỉ được lưu trữ cục bộ"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 密钥仅在本地存储，不会被共享"
+            "value" : "API 密钥仅在本地存储"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API 密鑰僅在本地存儲，不會被共享"
+            "value" : "API 密鑰僅在本地存儲"
           }
         }
       }
@@ -81138,139 +81141,139 @@
       }
     },
     "settings.language.picker" : {
-      "comment" : "Settings",
+      "comment" : "Settings label for the language row",
       "extractionState" : "manual",
       "localizations" : {
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "اللغة"
           }
         },
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Sprog"
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Sprache"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Language"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Idioma"
           }
         },
         "fi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Kieli"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Langue"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "भाषा"
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Lingua"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "言語"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "언어"
           }
         },
         "nb" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Språk"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Taal"
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Język"
           }
         },
         "pt" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Idioma"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Язык"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Språk"
           }
         },
         "th" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "ภาษา"
           }
         },
         "tr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Dil"
           }
         },
         "vi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "Ngôn ngữ"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "语言"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "设置语言"
+            "value" : "語言"
           }
         }
       }
@@ -82372,6 +82375,417 @@
         }
       }
     },
+    "settings.player.history_skin_library" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مكتبة السكنات السابقة"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historisk skinbibliotek"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historische Skin-Bibliothek"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History Skin Library"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteca de skins históricas"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historiallinen skinkirjasto"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliotheque d'historique des skins"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इतिहास स्किन लाइब्रेरी"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Libreria cronologia skin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴スキンライブラリ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록 스킨 라이브러리"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historisk skin-bibliotek"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historische skinbibliotheek"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteka historii skinow"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteca de historico de skins"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Biblioteka istorii skinov"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historiskt skinbibliotek"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "คลังสกินประวัติ"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gecmis skin kutuphanesi"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thu vien skin lich su"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "历史皮肤库"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歷史皮膚庫"
+          }
+        }
+      }
+    },
+    "settings.player.history_skin_library.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هذا المفتاح يتحكم فقط في إظهار زر الدخول لمكتبة السكنات السابقة. اذا تم تخزين سكنات سابقة من قبل، فان ايقاف هذا المفتاح لن يحذفها. لمسحها، قم بتشغيل هذا المفتاح ثم امسحها يدويا."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne kontakt styrer kun, om indgangsknappen til det historiske skinbibliotek vises. Hvis historiske skins allerede er gemt, rydder deaktivering af kontakten dem ikke. For at rydde dem skal du sla denne kontakt til og fjerne dem manuelt."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Schalter steuert nur, ob der Einstiegsknopf fur die historische Skin-Bibliothek angezeigt wird. Bereits gespeicherte historische Skins werden beim Ausschalten nicht geloscht. Zum Loschen diesen Schalter einschalten und die Eintrage manuell entfernen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This switch only controls whether the History Skin Library entry button is shown. If history skins were already stored before, turning this off will not clear them. To clear them, turn this on and remove them manually."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este interruptor solo controla si se muestra el boton de entrada de la biblioteca historica de skins. Si ya habia skins historicas guardadas, desactivarlo no las eliminara. Para limpiarlas, activalo y eliminalas manualmente."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tama kytkin ohjaa vain sita, naytetaanko historialisen skinkirjaston avauspainike. Jos historiallisia skineja on jo tallennettu, poiskytkenta ei tyhjenna niita. Tyhjentaaksesi ne, kytke tama paalle ja poista ne kasin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce commutateur controle uniquement l'affichage du bouton d'acces a la bibliotheque d'historique des skins. Si des skins historiques ont deja ete enregistres, le desactiver ne les supprimera pas. Pour les effacer, activez-le puis supprimez-les manuellement."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "यह स्विच केवल इतिहास स्किन लाइब्रेरी के प्रवेश बटन को दिखाना है या नहीं, इसे नियंत्रित करता है। अगर पहले से इतिहास स्किन सहेजी गई हैं, तो इसे बंद करने से वे साफ नहीं होंगी। उन्हें साफ करने के लिए इसे चालू करें और मैन्युअली हटाएं।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo interruttore controlla solo se mostrare il pulsante di accesso alla libreria cronologia skin. Se le skin storiche erano gia salvate, disattivarlo non le cancellera. Per cancellarle, attivalo e rimuovile manualmente."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このスイッチは、履歴スキンライブラリの入口ボタンを表示するかどうかだけを制御します。過去に履歴スキンが保存されている場合、オフにしても削除されません。削除するには、オンにして手動で消去してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 스위치는 기록 스킨 라이브러리 진입 버튼 표시 여부만 제어합니다. 이전에 기록 스킨이 저장되어 있다면 이 스위치를 꺼도 삭제되지 않습니다. 삭제하려면 이 스위치를 켠 뒤 수동으로 정리하세요."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne bryteren styrer bare om inngangsknappen til historisk skin-bibliotek vises. Hvis historiske skins allerede er lagret, vil de ikke bli slettet ved a sla av bryteren. For a rydde dem, sla den pa og fjern dem manuelt."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deze schakelaar bepaalt alleen of de knop naar de historische skinbibliotheek wordt getoond. Als er al historische skins zijn opgeslagen, worden die niet gewist wanneer je dit uitschakelt. Zet dit aan en verwijder ze handmatig om op te schonen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ten przelacznik kontroluje tylko to, czy wyswietlac przycisk wejscia do biblioteki historii skinow. Jesli historyczne skiny sa juz zapisane, wylaczenie tego nie usunie ich. Aby je wyczyscic, wlacz to i usun je recznie."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este interruptor controla apenas se o botao de entrada da biblioteca de historico de skins sera exibido. Se skins historicas ja estiverem salvas, desativar isso nao as apagara. Para limpar, ative isso e remova-as manualmente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etot pereklyuchatel upravlyaet tolko pokazom knopki vhoda v biblioteku istorii skinov. Esli istoricheskie skiny uzhe sohraneny, otklyuchenie ne udalit ih. Chtoby ochistit, vklyuchite pereklyuchatel i udalite ih vruchnuyu."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denna vaxel styr bara om knappingangen till historiskt skinbibliotek visas. Om historiska skins redan ar sparade rensas de inte nar du stanger av detta. For att rensa dem, sla pa detta och ta bort dem manuellt."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "สวิตช์นี้ควบคุมเฉพาะการแสดงปุ่มทางเข้าคลังสกินประวัติเท่านั้น หากเคยบันทึกสกินประวัติไว้แล้ว การปิดสวิตช์นี้จะไม่ลบข้อมูลดังกล่าว หากต้องการลบ ให้เปิดสวิตช์นี้และลบด้วยตนเอง"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bu anahtar yalnizca gecmis skin kutuphanesi giris dugmesinin gosterilmesini kontrol eder. Daha once gecmis skinler kaydedildiyse bunu kapatmak onlari temizlemez. Temizlemek icin bunu acin ve manuel olarak silin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cong tac nay chi kiem soat viec hien nut vao thu vien skin lich su. Neu skin lich su da duoc luu truoc do, tat cong tac nay se khong xoa chung. De xoa, hay bat cong tac nay va xoa thu cong."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前开关仅限于是否显示皮肤库开关入口按钮。对于之前开启过且已经存储了历史皮肤的，关闭此开关不会清理历史皮肤库。如需清理，请开启此开关后手动清理。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目前開關僅用於是否顯示皮膚庫入口按鈕。若先前已開啟並儲存過歷史皮膚，關閉此開關不會清理歷史皮膚庫。如需清理，請先開啟此開關後再手動清理。"
+          }
+        }
+      }
+    },
+    "settings.player.history_skin_library.toggle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تفعيل مكتبة السكنات السابقة (لحسابات Microsoft فقط)"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiver historisk skinbibliotek (kun Microsoft-konti)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historische Skin-Bibliothek aktivieren (nur Microsoft-Konten)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable History Skin Library (Microsoft accounts only)"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar biblioteca historica de skins (solo cuentas de Microsoft)"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ota historiallinen skinkirjasto kayttoon (vain Microsoft-tilit)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activer la bibliotheque d'historique des skins (comptes Microsoft uniquement)"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इतिहास स्किन लाइब्रेरी सक्षम करें (केवल Microsoft खातों के लिए)"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abilita libreria cronologia skin (solo account Microsoft)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴スキンライブラリを有効化（Microsoftアカウントのみ）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록 스킨 라이브러리 사용 (Microsoft 계정 전용)"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiver historisk skin-bibliotek (kun Microsoft-kontoer)"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Historische skinbibliotheek inschakelen (alleen Microsoft-accounts)"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wlacz biblioteke historii skinow (tylko konta Microsoft)"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ativar biblioteca de historico de skins (somente contas Microsoft)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vklyuchit biblioteku istorii skinov (tolko akkaunty Microsoft)"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivera historiskt skinbibliotek (endast Microsoft-konton)"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "เปิดใช้งานคลังสกินประวัติ (เฉพาะบัญชี Microsoft)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gecmis skin kutuphanesini etkinlestir (yalnizca Microsoft hesaplari)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bat thu vien skin lich su (chi danh cho tai khoan Microsoft)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启历史皮肤库(仅限Microsoft帐户)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開啟歷史皮膚庫（僅限 Microsoft 帳戶）"
+          }
+        }
+      }
+    },
     "settings.player.offline_login" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -83054,554 +83468,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打開設定"
-          }
-        }
-      }
-    },
-    "settings.theme.dark" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "داكن"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mørk"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dunkel"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dark"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oscuro"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tumma"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sombre"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "डार्क"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scuro"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ダーク"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "다크"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mørk"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Donker"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ciemny"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escuro"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Тёмный"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mörk"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "มืด"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Koyu"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tối"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "深色"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "深色"
-          }
-        }
-      }
-    },
-    "settings.theme.light" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "فاتح"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lys"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hell"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Light"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claro"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vaalea"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clair"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "लाइट"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chiaro"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ライト"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "라이트"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lys"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Licht"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jasny"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claro"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Светлый"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ljus"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "สว่าง"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Açık"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sáng"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "浅色"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "淺色"
-          }
-        }
-      }
-    },
-    "settings.theme.picker" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "المظهر"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Udseende"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erscheinungsbild"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Appearance"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apariencia"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ulkoasu"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apparence"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "दिखावट"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aspetto"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "外観"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "모양"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utseende"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uiterlijk"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wygląd"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aparência"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Внешний вид"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Utseende"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "รูปลักษณ์"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Görünüm"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Giao diện"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "外观"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "外觀"
-          }
-        }
-      }
-    },
-    "settings.theme.system" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "اتبع النظام"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Følg system"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "System folgen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Follow System"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seguir Sistema"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seuraa järjestelmää"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Suivre le système"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "सिस्टम का पालन करें"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Segui sistema"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "システムに合わせる"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "시스템 따라가기"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Følg system"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Volg systeem"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Podążaj za systemem"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seguir Sistema"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Следовать системе"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Följ system"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ตามระบบ"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sistemi Takip Et"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Theo hệ thống"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "跟随系统"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "跟隨系統"
           }
         }
       }
@@ -89509,417 +89375,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選擇 Yggdrasil 登入皮膚站"
-          }
-        }
-      }
-    },
-    "settings.player.history_skin_library" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "مكتبة السكنات السابقة"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historisk skinbibliotek"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historische Skin-Bibliothek"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "History Skin Library"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Biblioteca de skins históricas"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historiallinen skinkirjasto"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bibliotheque d'historique des skins"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "इतिहास स्किन लाइब्रेरी"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Libreria cronologia skin"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "履歴スキンライブラリ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기록 스킨 라이브러리"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historisk skin-bibliotek"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historische skinbibliotheek"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Biblioteka historii skinow"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Biblioteca de historico de skins"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Biblioteka istorii skinov"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historiskt skinbibliotek"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "คลังสกินประวัติ"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gecmis skin kutuphanesi"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Thu vien skin lich su"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "历史皮肤库"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "歷史皮膚庫"
-          }
-        }
-      }
-    },
-    "settings.player.history_skin_library.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "هذا المفتاح يتحكم فقط في إظهار زر الدخول لمكتبة السكنات السابقة. اذا تم تخزين سكنات سابقة من قبل، فان ايقاف هذا المفتاح لن يحذفها. لمسحها، قم بتشغيل هذا المفتاح ثم امسحها يدويا."
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Denne kontakt styrer kun, om indgangsknappen til det historiske skinbibliotek vises. Hvis historiske skins allerede er gemt, rydder deaktivering af kontakten dem ikke. For at rydde dem skal du sla denne kontakt til og fjerne dem manuelt."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dieser Schalter steuert nur, ob der Einstiegsknopf fur die historische Skin-Bibliothek angezeigt wird. Bereits gespeicherte historische Skins werden beim Ausschalten nicht geloscht. Zum Loschen diesen Schalter einschalten und die Eintrage manuell entfernen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This switch only controls whether the History Skin Library entry button is shown. If history skins were already stored before, turning this off will not clear them. To clear them, turn this on and remove them manually."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este interruptor solo controla si se muestra el boton de entrada de la biblioteca historica de skins. Si ya habia skins historicas guardadas, desactivarlo no las eliminara. Para limpiarlas, activalo y eliminalas manualmente."
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tama kytkin ohjaa vain sita, naytetaanko historialisen skinkirjaston avauspainike. Jos historiallisia skineja on jo tallennettu, poiskytkenta ei tyhjenna niita. Tyhjentaaksesi ne, kytke tama paalle ja poista ne kasin."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ce commutateur controle uniquement l'affichage du bouton d'acces a la bibliotheque d'historique des skins. Si des skins historiques ont deja ete enregistres, le desactiver ne les supprimera pas. Pour les effacer, activez-le puis supprimez-les manuellement."
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "यह स्विच केवल इतिहास स्किन लाइब्रेरी के प्रवेश बटन को दिखाना है या नहीं, इसे नियंत्रित करता है। अगर पहले से इतिहास स्किन सहेजी गई हैं, तो इसे बंद करने से वे साफ नहीं होंगी। उन्हें साफ करने के लिए इसे चालू करें और मैन्युअली हटाएं।"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Questo interruttore controlla solo se mostrare il pulsante di accesso alla libreria cronologia skin. Se le skin storiche erano gia salvate, disattivarlo non le cancellera. Per cancellarle, attivalo e rimuovile manualmente."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このスイッチは、履歴スキンライブラリの入口ボタンを表示するかどうかだけを制御します。過去に履歴スキンが保存されている場合、オフにしても削除されません。削除するには、オンにして手動で消去してください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이 스위치는 기록 스킨 라이브러리 진입 버튼 표시 여부만 제어합니다. 이전에 기록 스킨이 저장되어 있다면 이 스위치를 꺼도 삭제되지 않습니다. 삭제하려면 이 스위치를 켠 뒤 수동으로 정리하세요."
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Denne bryteren styrer bare om inngangsknappen til historisk skin-bibliotek vises. Hvis historiske skins allerede er lagret, vil de ikke bli slettet ved a sla av bryteren. For a rydde dem, sla den pa og fjern dem manuelt."
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deze schakelaar bepaalt alleen of de knop naar de historische skinbibliotheek wordt getoond. Als er al historische skins zijn opgeslagen, worden die niet gewist wanneer je dit uitschakelt. Zet dit aan en verwijder ze handmatig om op te schonen."
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ten przelacznik kontroluje tylko to, czy wyswietlac przycisk wejscia do biblioteki historii skinow. Jesli historyczne skiny sa juz zapisane, wylaczenie tego nie usunie ich. Aby je wyczyscic, wlacz to i usun je recznie."
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este interruptor controla apenas se o botao de entrada da biblioteca de historico de skins sera exibido. Se skins historicas ja estiverem salvas, desativar isso nao as apagara. Para limpar, ative isso e remova-as manualmente."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Etot pereklyuchatel upravlyaet tolko pokazom knopki vhoda v biblioteku istorii skinov. Esli istoricheskie skiny uzhe sohraneny, otklyuchenie ne udalit ih. Chtoby ochistit, vklyuchite pereklyuchatel i udalite ih vruchnuyu."
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Denna vaxel styr bara om knappingangen till historiskt skinbibliotek visas. Om historiska skins redan ar sparade rensas de inte nar du stanger av detta. For att rensa dem, sla pa detta och ta bort dem manuellt."
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "สวิตช์นี้ควบคุมเฉพาะการแสดงปุ่มทางเข้าคลังสกินประวัติเท่านั้น หากเคยบันทึกสกินประวัติไว้แล้ว การปิดสวิตช์นี้จะไม่ลบข้อมูลดังกล่าว หากต้องการลบ ให้เปิดสวิตช์นี้และลบด้วยตนเอง"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bu anahtar yalnizca gecmis skin kutuphanesi giris dugmesinin gosterilmesini kontrol eder. Daha once gecmis skinler kaydedildiyse bunu kapatmak onlari temizlemez. Temizlemek icin bunu acin ve manuel olarak silin."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cong tac nay chi kiem soat viec hien nut vao thu vien skin lich su. Neu skin lich su da duoc luu truoc do, tat cong tac nay se khong xoa chung. De xoa, hay bat cong tac nay va xoa thu cong."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "当前开关仅限于是否显示皮肤库开关入口按钮。对于之前开启过且已经存储了历史皮肤的，关闭此开关不会清理历史皮肤库。如需清理，请开启此开关后手动清理。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目前開關僅用於是否顯示皮膚庫入口按鈕。若先前已開啟並儲存過歷史皮膚，關閉此開關不會清理歷史皮膚庫。如需清理，請先開啟此開關後再手動清理。"
-          }
-        }
-      }
-    },
-    "settings.player.history_skin_library.toggle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تفعيل مكتبة السكنات السابقة (لحسابات Microsoft فقط)"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktiver historisk skinbibliotek (kun Microsoft-konti)"
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historische Skin-Bibliothek aktivieren (nur Microsoft-Konten)"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enable History Skin Library (Microsoft accounts only)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activar biblioteca historica de skins (solo cuentas de Microsoft)"
-          }
-        },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ota historiallinen skinkirjasto kayttoon (vain Microsoft-tilit)"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activer la bibliotheque d'historique des skins (comptes Microsoft uniquement)"
-          }
-        },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "इतिहास स्किन लाइब्रेरी सक्षम करें (केवल Microsoft खातों के लिए)"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abilita libreria cronologia skin (solo account Microsoft)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "履歴スキンライブラリを有効化（Microsoftアカウントのみ）"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기록 스킨 라이브러리 사용 (Microsoft 계정 전용)"
-          }
-        },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktiver historisk skin-bibliotek (kun Microsoft-kontoer)"
-          }
-        },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Historische skinbibliotheek inschakelen (alleen Microsoft-accounts)"
-          }
-        },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wlacz biblioteke historii skinow (tylko konta Microsoft)"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ativar biblioteca de historico de skins (somente contas Microsoft)"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vklyuchit biblioteku istorii skinov (tolko akkaunty Microsoft)"
-          }
-        },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aktivera historiskt skinbibliotek (endast Microsoft-konton)"
-          }
-        },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "เปิดใช้งานคลังสกินประวัติ (เฉพาะบัญชี Microsoft)"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gecmis skin kutuphanesini etkinlestir (yalnizca Microsoft hesaplari)"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bat thu vien skin lich su (chi danh cho tai khoan Microsoft)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "开启历史皮肤库(仅限Microsoft帐户)"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "開啟歷史皮膚庫（僅限 Microsoft 帳戶）"
           }
         }
       }

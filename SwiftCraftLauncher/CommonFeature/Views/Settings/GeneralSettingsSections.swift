@@ -28,21 +28,6 @@ struct GeneralSettingsLanguageRow: View {
     }
 }
 
-struct GeneralSettingsThemeRow: View {
-    @ObservedObject var themeManager: ThemeManager
-
-    var body: some View {
-        Group {
-            LabeledContent("settings.theme.picker".localized()) {
-                ThemeSelectorView(selectedTheme: $themeManager.themeMode)
-                    .fixedSize()
-            }
-            .labeledContentStyle(.custom)
-            ThemeSelectorLabel()
-        }
-    }
-}
-
 struct GeneralSettingsInterfaceLayoutRow: View {
     @ObservedObject var generalSettings: GeneralSettingsManager
 

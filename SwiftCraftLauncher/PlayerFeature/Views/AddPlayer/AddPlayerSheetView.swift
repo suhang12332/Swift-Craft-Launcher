@@ -74,15 +74,13 @@ struct AddPlayerSheetView: View {
                             .frame(height: 20.5) // 设置固定高度，与 Picker 保持一致
                             .padding(.trailing, 10)
                     } else {
-                        CommonMenuPicker(
-                            selection: $viewModel.selectedAuthType,
-                            hidesLabel: true
-                        ) {
-                        } content: {
+                        Picker("", selection: $viewModel.selectedAuthType) {
                             ForEach(viewModel.availableAuthTypes) { type in
                                 Text(type.displayName).tag(type)
                             }
                         }
+                        .labelsHidden()
+                        .pickerStyle(.menu)
                         .labelStyle(.titleOnly)
                         .fixedSize()
                     }
@@ -313,9 +311,9 @@ extension AccountAuthType {
         case .premium:
             return ("person.crop.circle.badge.plus", .multicolor)
         case .yggdrasil:
-            return ("person.crop.circle.badge.questionmark.fill", .multicolor)
+            return ("person.crop.circle.badge.questionmark", .multicolor)
         case .offline:
-            return ("person.crop.circle.badge.minus", .multicolor)
+            return ("person.crop.circle.badge.exclamationmark", .multicolor)
         }
     }
 }

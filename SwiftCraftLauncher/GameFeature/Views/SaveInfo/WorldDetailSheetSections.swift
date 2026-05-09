@@ -1,16 +1,6 @@
 import AppKit
 import SwiftUI
 
-private struct SeedCopySymbolTransition: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(macOS 15.0, *) {
-            content.contentTransition(.symbolEffect(.replace.magic(fallback: .offUp.byLayer), options: .nonRepeating))
-        } else {
-            content.contentTransition(.symbolEffect(.replace))
-        }
-    }
-}
-
 struct SeedCopyRow: View {
     let seed: Int64
     @State private var isCopied = false
@@ -27,7 +17,7 @@ struct SeedCopyRow: View {
             } label: {
                 Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
                     .font(.system(size: 12))
-                    .modifier(SeedCopySymbolTransition())
+                    .applyReplaceTransition()
             }
             .task(id: isCopied) {
                 guard isCopied else { return }

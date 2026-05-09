@@ -72,6 +72,7 @@ struct GameContextMenu: View {
 
         Button(action: {
             selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
+            windowManager.showAndActivateWindow(id: .main)
             onOpenSettings()
         }, label: {
             Label("settings.game.advanced".localized(), systemImage: "gearshape")

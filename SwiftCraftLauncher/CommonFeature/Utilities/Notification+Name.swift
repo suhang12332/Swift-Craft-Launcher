@@ -3,12 +3,9 @@ import Foundation
 /// 项目内统一管理 Notification.Name 的扩展
 extension Notification.Name {
     // MARK: - 玩家相关
-    /// 玩家信息更新（例如皮肤、昵称等变化）
-    /// 保持原有字符串 key: "PlayerUpdated"
     static let playerUpdated = Notification.Name("PlayerUpdated")
 
     // MARK: - 游戏运行相关
-    /// 游戏崩溃（使用原有 key）
     static let gameCrashed = Notification.Name("SwiftCraftLauncher.GameCrashed")
 
     // MARK: - 应用空闲/冻结相关
