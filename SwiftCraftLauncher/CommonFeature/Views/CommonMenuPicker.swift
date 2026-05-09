@@ -25,6 +25,7 @@ struct CommonMenuPicker<Label: View, SelectionValue: Hashable, Content: View>: V
         }
         .pickerStyle(.menu)
         .modifier(ConditionalLabelsHidden(isHidden: hidesLabel))
+        .modifier(FlexibleButtonSizingModifier())
     }
 }
 
@@ -35,6 +36,17 @@ private struct ConditionalLabelsHidden: ViewModifier {
     func body(content: Content) -> some View {
         if isHidden {
             content.labelsHidden()
+        } else {
+            content
+        }
+    }
+}
+
+private struct FlexibleButtonSizingModifier: ViewModifier {
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if #available(macOS 26, *) {
+            content.buttonSizing(.flexible)
         } else {
             content
         }
