@@ -66,7 +66,6 @@ enum AppServices {
     private static let lock = NSRecursiveLock()
     private static var dependencies = Dependencies()
     private static var frozen = false
-    private static var _minecraftFriendsPresenceMonitor: MinecraftFriendsPresenceMonitor?
 
     private static let defaultMinecraftFriendsService = MinecraftFriendsService()
 
@@ -228,26 +227,6 @@ enum AppServices {
 
     static var minecraftFriendsService: MinecraftFriendsService {
         lock.withLock { dependencies.minecraftFriendsService } ?? defaultMinecraftFriendsService
-    }
-
-    static var minecraftFriendsPresenceMonitor: MinecraftFriendsPresenceMonitor {
-        sharedOnMainActor {
-            lock.withLock {
-                if let m = _minecraftFriendsPresenceMonitor { return m }
-                let fs = dependencies.minecraftFriendsService ?? defaultMinecraftFriendsService
-                let m = MinecraftFriendsPresenceMonitor(
-                    friendsService: fs,
-                    host: MinecraftFriendsPresenceHostAdapter.shared,
-                    preferencesDidChangeNotification: .minecraftFriendsAccountPreferencesDidChange,
-                    localize: MinecraftFriendsSheetLocalize.resolver(
-                        localeIdentifier: { LanguageManager.getDefaultLanguage() },
-                        fallback: { $0.localized() }
-                    )
-                )
-                _minecraftFriendsPresenceMonitor = m
-                return m
-            }
-        }
     }
 }
 private extension NSLocking {

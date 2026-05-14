@@ -6,8 +6,6 @@
 //
 //
 
-import Combine
-import MinecraftFriendsKit
 import SwiftUI
 
 struct MainView: View {
@@ -75,19 +73,6 @@ struct MainView: View {
         }
         .task {
             await loadInitialAppData()
-        }
-        .onAppear {
-            MinecraftFriendsPresenceHostAdapter.shared.attach(playerListViewModel: playerListViewModel)
-        }
-        .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
-            Task {
-                let p = playerListViewModel.currentPlayer
-                let ctx = MinecraftFriendsPresenceTickContext(
-                    playerId: p?.id,
-                    canUseMicrosoftMinecraftServices: p?.canUseMicrosoftMinecraftServices ?? false
-                )
-                await AppServices.minecraftFriendsPresenceMonitor.tick(context: ctx)
-            }
         }
         .mainViewPresentations(detailState: detailState)
         .frame(minWidth: 900, minHeight: 500)
