@@ -118,3 +118,10 @@ struct Player: Identifiable, Equatable {
         self.credential = credential
     }
 }
+
+extension Player {
+    var canUseMicrosoftMinecraftServices: Bool {
+        guard isOnlineAccount else { return false }
+        return OfflineUserServerMap.serverKey(for: id) == nil
+    }
+}

@@ -1,4 +1,5 @@
 import Foundation
+import MinecraftFriendsKit
 
 /// 全局依赖容器
 enum AppServices {
@@ -59,11 +60,15 @@ enum AppServices {
         var litematicaService: LitematicaService?
         var premiumAccountFlagManager: PremiumAccountFlagManager?
         var gameIconCache: GameIconCache?
+        var minecraftFriendsService: MinecraftFriendsService?
     }
 
     private static let lock = NSRecursiveLock()
     private static var dependencies = Dependencies()
     private static var frozen = false
+    private static var _minecraftFriendsPresenceMonitor: MinecraftFriendsPresenceMonitor?
+
+    private static let defaultMinecraftFriendsService = MinecraftFriendsService()
 
     static var isFrozen: Bool {
         lock.withLock { frozen }
@@ -220,6 +225,30 @@ enum AppServices {
         return sharedOnMainActor { PremiumAccountFlagManager.shared }
     }
     static var gameIconCache: GameIconCache { lock.withLock { dependencies.gameIconCache ?? .shared } }
+
+    static var minecraftFriendsService: MinecraftFriendsService {
+        lock.withLock { dependencies.minecraftFriendsService } ?? defaultMinecraftFriendsService
+    }
+
+    static var minecraftFriendsPresenceMonitor: MinecraftFriendsPresenceMonitor {
+        sharedOnMainActor {
+            lock.withLock {
+                if let m = _minecraftFriendsPresenceMonitor { return m }
+                let fs = dependencies.minecraftFriendsService ?? defaultMinecraftFriendsService
+                let m = MinecraftFriendsPresenceMonitor(
+                    friendsService: fs,
+                    host: MinecraftFriendsPresenceHostAdapter.shared,
+                    preferencesDidChangeNotification: .minecraftFriendsAccountPreferencesDidChange,
+                    localize: MinecraftFriendsSheetLocalize.resolver(
+                        localeIdentifier: { LanguageManager.getDefaultLanguage() },
+                        fallback: { $0.localized() }
+                    )
+                )
+                _minecraftFriendsPresenceMonitor = m
+                return m
+            }
+        }
+    }
 }
 private extension NSLocking {
     func withLock<T>(_ body: () -> T) -> T {

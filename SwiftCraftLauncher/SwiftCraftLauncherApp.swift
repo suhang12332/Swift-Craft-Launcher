@@ -81,6 +81,7 @@ struct SwiftCraftLauncherApp: App {
 
         Settings {
             SettingsView()
+                .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .preferredColorScheme(nil)
                 .errorAlert()

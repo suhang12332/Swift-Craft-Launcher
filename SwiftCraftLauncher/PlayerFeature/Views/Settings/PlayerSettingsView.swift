@@ -3,6 +3,7 @@ import SwiftUI
 public struct PlayerSettingsView: View {
     @StateObject private var playerSettings: PlayerSettingsManager
     @StateObject private var viewModel = PlayerSettingsViewModel()
+    @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     private let yggdrasilServers = YggdrasilServerPresets.servers
 
     public init() {
@@ -11,6 +12,21 @@ public struct PlayerSettingsView: View {
 
     init(playerSettings: PlayerSettingsManager) {
         _playerSettings = StateObject(wrappedValue: playerSettings)
+    }
+
+    private var currentPlayer: Player? {
+        playerListViewModel.currentPlayer
+    }
+
+    private var canEditMinecraftFriendAccountSettings: Bool {
+        guard let p = currentPlayer else { return false }
+        return p.canUseMicrosoftMinecraftServices
+    }
+
+    private var minecraftFriendAccountToggleDisabled: Bool {
+        viewModel.minecraftFriendAccountPreferences == nil
+            || viewModel.isLoadingMinecraftFriendAccountPreferences
+            || viewModel.isSavingMinecraftFriendAccountPreferences
     }
 
     public var body: some View {
@@ -51,6 +67,50 @@ public struct PlayerSettingsView: View {
                 .labeledContentStyle(.custom)
                 CommonDescriptionText(text: "settings.player.history_skin_library.description".localized())
             }
+            if canEditMinecraftFriendAccountSettings {
+                Group {
+                    LabeledContent("settings.player.minecraft_friends_account.section".localized()) {
+                        if viewModel.isLoadingMinecraftFriendAccountPreferences {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                                .controlSize(.small)
+                        } else if canEditMinecraftFriendAccountSettings {
+                            Button("settings.player.minecraft_friends_account.reload_from_account".localized()) {
+                                Task { await viewModel.reloadMinecraftFriendAccountPreferences(currentPlayer: currentPlayer) }
+                            }
+                            .disabled(viewModel.isSavingMinecraftFriendAccountPreferences)
+                        }
+                    }
+                    .labeledContentStyle(.custom)
+                    CommonDescriptionText(text: "settings.player.minecraft_friends_account.description".localized())
+                    LabeledContent("") {
+                        Toggle(
+                            "settings.player.minecraft_friends_account.enable_friend_list".localized(),
+                            isOn: Binding(
+                                get: { viewModel.minecraftFriendAccountPreferences?.friends == .enabled },
+                                set: { on in
+                                    Task { await viewModel.setMinecraftFriendListEnabled(on, currentPlayer: currentPlayer) }
+                                }
+                            )
+                        )
+                        .disabled(minecraftFriendAccountToggleDisabled)
+                    }
+                    .labeledContentStyle(.customNoColon)
+                    LabeledContent("") {
+                        Toggle(
+                            "settings.player.minecraft_friends_account.enable_accept_invites".localized(),
+                            isOn: Binding(
+                                get: { viewModel.minecraftFriendAccountPreferences?.acceptInvites == .enabled },
+                                set: { on in
+                                    Task { await viewModel.setMinecraftFriendAcceptInvitesEnabled(on, currentPlayer: currentPlayer) }
+                                }
+                            )
+                        )
+                        .disabled(minecraftFriendAccountToggleDisabled)
+                    }
+                    .labeledContentStyle(.customNoColon)
+                }
+            }
             LabeledContent("settings.player.authlib_injector".localized()) {
                 if viewModel.authlibInjectorExists {
                     PathBreadcrumbView(path: authlibInjectorJarURL.path)
@@ -72,8 +132,13 @@ public struct PlayerSettingsView: View {
             .labeledContentStyle(.custom)
             .padding(.top, 10)
         }
-        .task {
+        .task(id: currentPlayer?.id) {
             viewModel.refreshAuthlibInjectorExists()
+            guard let p = currentPlayer, p.canUseMicrosoftMinecraftServices else {
+                viewModel.clearMinecraftFriendAccountPreferences()
+                return
+            }
+            await viewModel.reloadMinecraftFriendAccountPreferences(currentPlayer: p)
         }
     }
 }

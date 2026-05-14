@@ -11,6 +11,7 @@
 		9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9049FDB02F1151B50070A9E3 /* SkinRenderKit */; };
 		90645F072F6BF80C006AD2D8 /* SwiftMarkDownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 90645F062F6BF80C006AD2D8 /* SwiftMarkDownUI */; };
 		9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9098463E2F688B0400D7876B /* CFModrinthAdapterKit */; };
+		90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +46,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
+				90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */,
 				9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */,
 				90E123456789ABCD0001 /* Sparkle in Frameworks */,
 				90645F072F6BF80C006AD2D8 /* SwiftMarkDownUI in Frameworks */,
@@ -89,6 +91,7 @@
 				9049FDB02F1151B50070A9E3 /* SkinRenderKit */,
 				9098463E2F688B0400D7876B /* CFModrinthAdapterKit */,
 				90645F062F6BF80C006AD2D8 /* SwiftMarkDownUI */,
+				90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */;
@@ -146,6 +149,7 @@
 				9049FDAF2F1151B50070A9E3 /* XCRemoteSwiftPackageReference "NSSkinRender" */,
 				9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */,
 				90645F052F6BF80C006AD2D8 /* XCRemoteSwiftPackageReference "SwiftMarkDownUI" */,
+				90A1DB442FB619CD00DAD886 /* XCLocalSwiftPackageReference "../MinecraftFriendsKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -406,6 +410,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		90A1DB442FB619CD00DAD886 /* XCLocalSwiftPackageReference "../MinecraftFriendsKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../MinecraftFriendsKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		033870FA2E6059570056BDB2 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -482,6 +493,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */;
 			productName = CFModrinthAdapterKit;
+		};
+		90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MinecraftFriendsKit;
 		};
 		90E123456789ABCD0002 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
