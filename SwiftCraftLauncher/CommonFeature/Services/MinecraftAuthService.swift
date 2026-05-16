@@ -552,7 +552,9 @@ extension MinecraftAuthService {
         let isTokenExpired = await isTokenExpiredBasedOnTime(for: player)
 
         if !isTokenExpired {
-            Logger.shared.debug("玩家 \(player.name) 的Token尚未过期，无需刷新")
+            if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
+                Logger.shared.debug("玩家 \(player.name) 的Token尚未过期，无需刷新")
+            }
             return player
         }
 

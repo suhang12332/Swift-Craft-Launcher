@@ -1,4 +1,5 @@
 import Foundation
+import MinecraftFriendsKit
 import SwiftUI
 
 // MARK: - Error Level Enum
@@ -251,6 +252,9 @@ extension GlobalError {
         case let globalError as GlobalError:
             return globalError
 
+        case let mf as MinecraftFriendsServiceError:
+            return fromMinecraftFriendsServiceError(mf)
+
         default:
             if let urlError = error as? URLError {
                 // 如果是取消错误，使用 silent 级别，不显示通知
@@ -277,6 +281,25 @@ extension GlobalError {
                 i18nKey: "error.unknown.generic",
                 level: .silent
             )
+        }
+    }
+
+    private static func minecraftFriendsErrorLevel(_ level: MinecraftFriendsErrorLevel) -> ErrorLevel {
+        switch level {
+        case .popup: return .popup
+        case .notification: return .notification
+        case .silent: return .silent
+        }
+    }
+
+    private static func fromMinecraftFriendsServiceError(_ error: MinecraftFriendsServiceError) -> GlobalError {
+        switch error {
+        case let .network(message, key, level):
+            return .network(chineseMessage: message, i18nKey: key, level: minecraftFriendsErrorLevel(level))
+        case let .authentication(message, key, level):
+            return .authentication(chineseMessage: message, i18nKey: key, level: minecraftFriendsErrorLevel(level))
+        case let .validation(message, key, level):
+            return .validation(chineseMessage: message, i18nKey: key, level: minecraftFriendsErrorLevel(level))
         }
     }
 }

@@ -27,5 +27,11 @@ class PlayerSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    /// 是否启用好友上线 / 下线 / 邀请等系统通知（需选中微软正版账号时才会后台轮询）
+    @AppStorage(AppConstants.UserDefaultsKeys.enableMinecraftFriendsPresenceNotifications)
+    var enableMinecraftFriendsPresenceNotifications: Bool = false {
+        didSet { objectWillChange.send() }
+    }
+
     private init() {}
 }

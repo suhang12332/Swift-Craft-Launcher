@@ -1,4 +1,5 @@
 import Foundation
+import MinecraftFriendsKit
 
 /// 全局依赖容器
 enum AppServices {
@@ -59,11 +60,14 @@ enum AppServices {
         var litematicaService: LitematicaService?
         var premiumAccountFlagManager: PremiumAccountFlagManager?
         var gameIconCache: GameIconCache?
+        var minecraftFriendsService: MinecraftFriendsService?
     }
 
     private static let lock = NSRecursiveLock()
     private static var dependencies = Dependencies()
     private static var frozen = false
+
+    private static let defaultMinecraftFriendsService = MinecraftFriendsService()
 
     static var isFrozen: Bool {
         lock.withLock { frozen }
@@ -220,6 +224,10 @@ enum AppServices {
         return sharedOnMainActor { PremiumAccountFlagManager.shared }
     }
     static var gameIconCache: GameIconCache { lock.withLock { dependencies.gameIconCache ?? .shared } }
+
+    static var minecraftFriendsService: MinecraftFriendsService {
+        lock.withLock { dependencies.minecraftFriendsService } ?? defaultMinecraftFriendsService
+    }
 }
 private extension NSLocking {
     func withLock<T>(_ body: () -> T) -> T {

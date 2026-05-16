@@ -1,5 +1,5 @@
 {
-  "originHash" : "689c8027b9f471582b5f408135014821429676ce9ce1fb9fb83bf34747f7ebae",
+  "originHash" : "5f9c059f5a9d6c83e6ec04905dfea45831e12208b8e2fce365938bbe12fc8c89",
   "pins" : [
     {
       "identity" : "cfmodrinthadapterkit",
@@ -8,6 +8,15 @@
       "state" : {
         "branch" : "release",
         "revision" : "d8ed652fa3459055a18e6aff0ecaf55486a6d97c"
+      }
+    },
+    {
+      "identity" : "minecraftfriendskit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/suhang12332/MinecraftFriendsKit.git",
+      "state" : {
+        "branch" : "release",
+        "revision" : "c82c298e97857c47b02334bedfa2a469ec099560"
       }
     },
     {

@@ -56,10 +56,14 @@ enum KeychainManager {
         let status = SecItemCopyMatching(query as CFDictionary, &result)
 
         if status == errSecSuccess, let data = result as? Data {
-            Logger.shared.debug("Keychain 读取成功 - account: \(account), key: \(key)")
+            if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
+                Logger.shared.debug("Keychain 读取成功 - account: \(account), key: \(key)")
+            }
             return data
         } else if status == errSecItemNotFound {
-            Logger.shared.debug("Keychain 项不存在 - account: \(account), key: \(key)")
+            if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
+                Logger.shared.debug("Keychain 项不存在 - account: \(account), key: \(key)")
+            }
             return nil
         } else {
             Logger.shared.error("Keychain 读取失败 - account: \(account), key: \(key), status: \(status)")

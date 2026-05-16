@@ -68,6 +68,9 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .task {
                     AppServices.sparkleUpdateService.scheduleStartupCheckIfNeeded()
+                    MinecraftFriendsPresencePollingCoordinator.shared.start(
+                        playerListViewModel: playerListViewModel
+                    )
                 }
                 .onAppear(perform: cleanupWindowDataOnLaunch)
         }
@@ -81,6 +84,7 @@ struct SwiftCraftLauncherApp: App {
 
         Settings {
             SettingsView()
+                .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
                 .preferredColorScheme(nil)
                 .errorAlert()

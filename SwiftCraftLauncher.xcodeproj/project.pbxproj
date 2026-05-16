@@ -11,6 +11,8 @@
 		9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9049FDB02F1151B50070A9E3 /* SkinRenderKit */; };
 		90645F072F6BF80C006AD2D8 /* SwiftMarkDownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 90645F062F6BF80C006AD2D8 /* SwiftMarkDownUI */; };
 		9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9098463E2F688B0400D7876B /* CFModrinthAdapterKit */; };
+		90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */; };
+		90A1FC1D2FB6406900DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
 
@@ -45,9 +47,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				9023D91C2E313A67005A53F1 /* ZIPFoundation in Frameworks */,
+				90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */,
 				9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */,
 				90E123456789ABCD0001 /* Sparkle in Frameworks */,
 				90645F072F6BF80C006AD2D8 /* SwiftMarkDownUI in Frameworks */,
+				90A1FC1D2FB6406900DAD886 /* MinecraftFriendsKit in Frameworks */,
 				9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -89,6 +93,8 @@
 				9049FDB02F1151B50070A9E3 /* SkinRenderKit */,
 				9098463E2F688B0400D7876B /* CFModrinthAdapterKit */,
 				90645F062F6BF80C006AD2D8 /* SwiftMarkDownUI */,
+				90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */,
+				90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */,
 			);
 			productName = SwiftCraftLauncher;
 			productReference = 90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */;
@@ -146,6 +152,7 @@
 				9049FDAF2F1151B50070A9E3 /* XCRemoteSwiftPackageReference "NSSkinRender" */,
 				9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */,
 				90645F052F6BF80C006AD2D8 /* XCRemoteSwiftPackageReference "SwiftMarkDownUI" */,
+				90A1FC1B2FB6406900DAD886 /* XCRemoteSwiftPackageReference "MinecraftFriendsKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -220,7 +227,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 74;
+				CURRENT_PROJECT_VERSION = 75;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -244,7 +251,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025-2026 Swift Craft Launcher";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.2.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -289,7 +296,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 74;
+				CURRENT_PROJECT_VERSION = 75;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -307,7 +314,7 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025-2026 Swift Craft Launcher";
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.2.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -326,7 +333,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 74;
+				CURRENT_PROJECT_VERSION = 75;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -339,7 +346,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.2.1;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
@@ -360,7 +367,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 74;
+				CURRENT_PROJECT_VERSION = 75;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -373,7 +380,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 1.2.0;
+				MARKETING_VERSION = 1.2.1;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
@@ -447,6 +454,14 @@
 				kind = branch;
 			};
 		};
+		90A1FC1B2FB6406900DAD886 /* XCRemoteSwiftPackageReference "MinecraftFriendsKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/suhang12332/MinecraftFriendsKit.git";
+			requirement = {
+				branch = release;
+				kind = branch;
+			};
+		};
 		90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
@@ -482,6 +497,15 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */;
 			productName = CFModrinthAdapterKit;
+		};
+		90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MinecraftFriendsKit;
+		};
+		90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 90A1FC1B2FB6406900DAD886 /* XCRemoteSwiftPackageReference "MinecraftFriendsKit" */;
+			productName = MinecraftFriendsKit;
 		};
 		90E123456789ABCD0002 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;

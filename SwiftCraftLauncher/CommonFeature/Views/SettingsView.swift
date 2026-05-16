@@ -97,6 +97,21 @@ struct CustomLabeledContentStyle: LabeledContentStyle {
     }
 }
 
+struct CustomLabeledContentStyleNoColon: LabeledContentStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        LabeledContent {
+            configuration.content
+        } label: {
+            configuration.label
+        }
+        .padding(.vertical, 2)
+    }
+}
+
 extension LabeledContentStyle where Self == CustomLabeledContentStyle {
     static var custom: Self { .init() }
+}
+
+extension LabeledContentStyle where Self == CustomLabeledContentStyleNoColon {
+    static var customNoColon: Self { .init() }
 }
