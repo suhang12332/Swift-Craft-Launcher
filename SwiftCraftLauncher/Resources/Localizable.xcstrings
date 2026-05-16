@@ -90481,133 +90481,133 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "عند التفعيل، يتحقق المشغل من نشاط الأصدقاء في الخلفية ويرسل إشعارات النظام."
+            "value": "عند التفعيل، يتحقق المشغل من نشاط الأصدقاء في الخلفية ويرسل إشعارات النظام. يجب أيضًا تفعيل الإشعارات لهذا التطبيق في إعدادات النظام وتعيين نمط التنبيه إلى «تنبيهات»."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Når funktionen er aktiveret, kontrollerer launcheren venneaktivitet i baggrunden og sender systemnotifikationer."
+            "value": "Når funktionen er aktiveret, kontrollerer launcheren venneaktivitet i baggrunden og sender systemnotifikationer. Du skal også aktivere notifikationer for denne app i Systemindstillinger og vælge advarselsstil som Advarsler."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wenn aktiviert, überprüft der Launcher die Freundesaktivität im Hintergrund und sendet Systembenachrichtigungen."
+            "value": "Wenn aktiviert, überprüft der Launcher die Freundesaktivität im Hintergrund und sendet Systembenachrichtigungen. Aktiviere außerdem in den Systemeinstellungen Benachrichtigungen für diese App und wähle den Stil „Hinweise“."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "When enabled, the launcher checks friend activity in the background and sends system notifications."
+            "value": "When enabled, the launcher checks friend activity in the background and sends system notifications. You must also enable notifications for this app in System Settings and set the alert style to Alerts."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cuando está activado, el launcher comprueba la actividad de amigos en segundo plano y envía notificaciones del sistema."
+            "value": "Cuando está activado, el launcher comprueba la actividad de amigos en segundo plano y envía notificaciones del sistema. También debes activar las notificaciones de esta app en Ajustes del sistema y establecer el estilo de alerta en Alertas."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kun tämä on käytössä, käynnistin tarkistaa kavereiden toiminnan taustalla ja lähettää järjestelmäilmoituksia."
+            "value": "Kun tämä on käytössä, käynnistin tarkistaa kavereiden toiminnan taustalla ja lähettää järjestelmäilmoituksia. Ota myös tämän sovelluksen ilmoitukset käyttöön Järjestelmäasetuksissa ja valitse hälytystyyliksi Hälytykset."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lorsque cette option est activée, le launcher vérifie l’activité des amis en arrière-plan et envoie des notifications système."
+            "value": "Lorsque cette option est activée, le launcher vérifie l’activité des amis en arrière-plan et envoie des notifications système. Activez aussi les notifications pour cette app dans Réglages Système et choisissez le style d’alerte « Alertes »."
           }
         },
         "hi": {
           "stringUnit": {
             "state": "translated",
-            "value": "सक्षम होने पर, लॉन्चर पृष्ठभूमि में मित्र गतिविधि की जाँच करता है और सिस्टम सूचनाएँ भेजता है।"
+            "value": "सक्षम होने पर, लॉन्चर पृष्ठभूमि में मित्र गतिविधि की जाँच करता है और सिस्टम सूचनाएँ भेजता है। सिस्टम सेटिंग्स में इस ऐप के लिए सूचनाएँ सक्षम करें और अलर्ट शैली को अलर्ट पर सेट करें।"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quando attivato, il launcher controlla l’attività degli amici in background e invia notifiche di sistema."
+            "value": "Quando attivato, il launcher controlla l’attività degli amici in background e invia notifiche di sistema. Abilita anche le notifiche per questa app in Impostazioni di Sistema e imposta lo stile di avviso su Avvisi."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "有効にすると、ランチャーがバックグラウンドでフレンドのアクティビティを確認し、システム通知を送信します。"
+            "value": "有効にすると、ランチャーがバックグラウンドでフレンドのアクティビティを確認し、システム通知を送信します。システム設定でこのアプリの通知を有効にし、通知スタイルを「アラート」に設定してください。"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "활성화하면 런처가 백그라운드에서 친구 활동을 확인하고 시스템 알림을 보냅니다."
+            "value": "활성화하면 런처가 백그라운드에서 친구 활동을 확인하고 시스템 알림을 보냅니다. 시스템 설정에서 이 앱의 알림을 켜고 알림 스타일을 '알림'으로 설정해야 합니다."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Når aktivert, sjekker launcheren venners aktivitet i bakgrunnen og sender systemvarsler."
+            "value": "Når aktivert, sjekker launcheren venners aktivitet i bakgrunnen og sender systemvarsler. Du må også aktivere varsler for denne appen i Systeminnstillinger og velge varselstil som Varsler."
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Wanneer ingeschakeld controleert de launcher vriendenactiviteit op de achtergrond en verstuurt systeemmeldingen."
+            "value": "Wanneer ingeschakeld controleert de launcher vriendenactiviteit op de achtergrond en verstuurt systeemmeldingen. Schakel ook meldingen voor deze app in via Systeeminstellingen en stel de meldingsstijl in op Meldingen."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Po włączeniu launcher sprawdza aktywność znajomych w tle i wysyła powiadomienia systemowe."
+            "value": "Po włączeniu launcher sprawdza aktywność znajomych w tle i wysyła powiadomienia systemowe. Włącz też powiadomienia dla tej aplikacji w Ustawieniach systemowych i ustaw styl alertów na Alerty."
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quando ativado, o launcher verifica a atividade dos amigos em segundo plano e envia notificações do sistema."
+            "value": "Quando ativado, o launcher verifica a atividade dos amigos em segundo plano e envia notificações do sistema. Ative também as notificações desta app em Ajustes do Sistema e defina o estilo de alerta como Alertas."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Если параметр включён, лаунчер проверяет активность друзей в фоновом режиме и отправляет системные уведомления."
+            "value": "Если параметр включён, лаунчер проверяет активность друзей в фоновом режиме и отправляет системные уведомления. Также включите уведомления для этого приложения в «Системных настройках» и выберите стиль «Предупреждения»."
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "När funktionen är aktiverad kontrollerar launchern vänaktivitet i bakgrunden och skickar systemaviseringar."
+            "value": "När funktionen är aktiverad kontrollerar launchern vänaktivitet i bakgrunden och skickar systemaviseringar. Aktivera även aviseringar för den här appen i Systeminställningar och välj aviseringsstil som Aviseringar."
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "เมื่อเปิดใช้งาน ตัวเปิดเกมจะตรวจสอบกิจกรรมเพื่อนในเบื้องหลังและส่งการแจ้งเตือนของระบบ"
+            "value": "เมื่อเปิดใช้งาน ตัวเปิดเกมจะตรวจสอบกิจกรรมเพื่อนในเบื้องหลังและส่งการแจ้งเตือนของระบบ คุณต้องเปิดการแจ้งเตือนสำหรับแอปนี้ในการตั้งค่าระบบและตั้งรูปแบบการแจ้งเตือนเป็น \"การแจ้งเตือน\""
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Etkinleştirildiğinde, başlatıcı arka planda arkadaş etkinliklerini kontrol eder ve sistem bildirimleri gönderir."
+            "value": "Etkinleştirildiğinde, başlatıcı arka planda arkadaş etkinliklerini kontrol eder ve sistem bildirimleri gönderir. Sistem Ayarları'nda bu uygulama için bildirimleri etkinleştirmeli ve uyarı stilini Uyarılar olarak ayarlamalısınız."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Khi bật, trình khởi chạy sẽ kiểm tra hoạt động bạn bè trong nền và gửi thông báo hệ thống."
+            "value": "Khi bật, trình khởi chạy sẽ kiểm tra hoạt động bạn bè trong nền và gửi thông báo hệ thống. Bạn cũng cần bật thông báo cho ứng dụng này trong Cài đặt hệ thống và đặt kiểu cảnh báo thành Cảnh báo."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "启用后，启动器会在后台检查好友状态，并在好友上线、离线或发送邀请时通知你。"
+            "value": "启用后，启动器会在后台检查好友状态，并在好友上线、离线或发送邀请时通知你。同时需要在系统设置中为此应用启用通知，并将通知类型设为「提醒」。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "啟用後，啟動器會在背景檢查好友狀態，並在好友上線、離線或傳送邀請時通知你。"
+            "value": "啟用後，啟動器會在背景檢查好友狀態，並在好友上線、離線或傳送邀請時通知你。同時需要在系統設定中為此 App 啟用通知，並將通知類型設為「提醒」。"
           }
         }
       }
