@@ -33,7 +33,9 @@ enum JWTDecoder {
             // 提取exp字段（过期时间戳）
             if let exp = payloadJSON?["exp"] as? TimeInterval {
                 let expirationDate = Date(timeIntervalSince1970: exp)
-                Logger.shared.debug("从JWT中解析到过期时间：\(expirationDate)")
+                if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
+                    Logger.shared.debug("从JWT中解析到过期时间：\(expirationDate)")
+                }
                 return expirationDate
             } else {
                 Logger.shared.warning("JWT payload中未找到exp字段")
@@ -120,11 +122,15 @@ extension JWTDecoder {
     /// - Returns: 过期时间
     static func getMinecraftTokenExpiration(from minecraftToken: String) -> Date {
         if let expirationTime = extractExpirationTime(from: minecraftToken) {
-            Logger.shared.debug("使用JWT解析的Minecraft token过期时间：\(expirationTime)")
+            if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
+                Logger.shared.debug("使用JWT解析的Minecraft token过期时间：\(expirationTime)")
+            }
             return expirationTime
         } else {
             let defaultExpiration = Date().addingTimeInterval(defaultMinecraftTokenExpiration)
-            Logger.shared.debug("使用默认的Minecraft token过期时间：\(defaultExpiration)")
+            if !RoutineAuthDiagnosticsLogContext.shouldSuppressRoutineDebugLogs {
+                Logger.shared.debug("使用默认的Minecraft token过期时间：\(defaultExpiration)")
+            }
             return defaultExpiration
         }
     }

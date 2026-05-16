@@ -90200,6 +90200,417 @@
           }
         }
       }
+    },
+    "settings.player.minecraft_friends_presence_notifications": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إشعارات نشاط الأصدقاء"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifikationer om venneaktivitet"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benachrichtigungen zu Freundesaktivitäten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Friend activity notifications"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notificaciones de actividad de amigos"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaveritoiminnan ilmoitukset"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifications d’activité des amis"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "मित्र गतिविधि सूचनाएँ"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notifiche attività amici"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "フレンドのアクティビティ通知"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "친구 활동 알림"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varsler om venners aktivitet"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meldingen van vriendenactiviteit"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Powiadomienia o aktywności znajomych"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notificações de atividade dos amigos"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уведомления об активности друзей"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aviseringar om vänaktivitet"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "การแจ้งเตือนกิจกรรมเพื่อน"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arkadaş etkinlik bildirimleri"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thông báo hoạt động bạn bè"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好友状态通知"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好友狀態通知"
+          }
+        }
+      }
+    },
+    "settings.player.minecraft_friends_presence_notifications.toggle": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "إعلامي عندما يصبح الأصدقاء متصلين أو غير متصلين أو يرسلون دعوات"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Giv besked når venner går online, offline eller sender invitationer"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benachrichtigen, wenn Freunde online oder offline gehen oder Einladungen senden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notify me when friends come online, go offline, or send invites"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notificarme cuando amigos se conecten, se desconecten o envíen invitaciones"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ilmoita, kun kaverit tulevat onlineen, menevät offlineen tai lähettävät kutsuja"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "M’avertir lorsque des amis se connectent, se déconnectent ou envoient des invitations"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "जब मित्र ऑनलाइन आएँ, ऑफलाइन जाएँ या निमंत्रण भेजें, तो मुझे सूचित करें"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avvisami quando gli amici vanno online, offline o inviano inviti"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "フレンドのオンライン・オフラインや招待を通知"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "친구가 온라인 상태가 되거나 오프라인 상태가 되거나 초대를 보내면 알림 받기"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varsle når venner går pålogget, avlogget eller sender invitasjoner"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meld mij wanneer vrienden online of offline gaan of uitnodigingen sturen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Powiadamiaj, gdy znajomi są online, offline lub wysyłają zaproszenia"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notificar quando amigos ficarem online, offline ou enviarem convites"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Уведомлять, когда друзья входят в сеть, выходят из сети или отправляют приглашения"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meddela mig när vänner går online, offline eller skickar inbjudningar"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "แจ้งเตือนเมื่อเพื่อนออนไลน์ ออฟไลน์ หรือส่งคำเชิญ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arkadaşlar çevrimiçi olduğunda, çevrimdışı olduğunda veya davet gönderdiğinde bildir"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thông báo khi bạn bè trực tuyến, ngoại tuyến hoặc gửi lời mời"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好友上线、离线或邀请时通知我"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好友上線、離線或邀請時通知我"
+          }
+        }
+      }
+    },
+    "settings.player.minecraft_friends_presence_notifications.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عند التفعيل، يتحقق المشغل من نشاط الأصدقاء في الخلفية ويرسل إشعارات النظام."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Når funktionen er aktiveret, kontrollerer launcheren venneaktivitet i baggrunden og sender systemnotifikationer."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn aktiviert, überprüft der Launcher die Freundesaktivität im Hintergrund und sendet Systembenachrichtigungen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When enabled, the launcher checks friend activity in the background and sends system notifications."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuando está activado, el launcher comprueba la actividad de amigos en segundo plano y envía notificaciones del sistema."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kun tämä on käytössä, käynnistin tarkistaa kavereiden toiminnan taustalla ja lähettää järjestelmäilmoituksia."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lorsque cette option est activée, le launcher vérifie l’activité des amis en arrière-plan et envoie des notifications système."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "सक्षम होने पर, लॉन्चर पृष्ठभूमि में मित्र गतिविधि की जाँच करता है और सिस्टम सूचनाएँ भेजता है।"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quando attivato, il launcher controlla l’attività degli amici in background e invia notifiche di sistema."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有効にすると、ランチャーがバックグラウンドでフレンドのアクティビティを確認し、システム通知を送信します。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "활성화하면 런처가 백그라운드에서 친구 활동을 확인하고 시스템 알림을 보냅니다."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Når aktivert, sjekker launcheren venners aktivitet i bakgrunnen og sender systemvarsler."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wanneer ingeschakeld controleert de launcher vriendenactiviteit op de achtergrond en verstuurt systeemmeldingen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Po włączeniu launcher sprawdza aktywność znajomych w tle i wysyła powiadomienia systemowe."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quando ativado, o launcher verifica a atividade dos amigos em segundo plano e envia notificações do sistema."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Если параметр включён, лаунчер проверяет активность друзей в фоновом режиме и отправляет системные уведомления."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "När funktionen är aktiverad kontrollerar launchern vänaktivitet i bakgrunden och skickar systemaviseringar."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เมื่อเปิดใช้งาน ตัวเปิดเกมจะตรวจสอบกิจกรรมเพื่อนในเบื้องหลังและส่งการแจ้งเตือนของระบบ"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etkinleştirildiğinde, başlatıcı arka planda arkadaş etkinliklerini kontrol eder ve sistem bildirimleri gönderir."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khi bật, trình khởi chạy sẽ kiểm tra hoạt động bạn bè trong nền và gửi thông báo hệ thống."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "启用后，启动器会在后台检查好友状态，并在好友上线、离线或发送邀请时通知你。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "啟用後，啟動器會在背景檢查好友狀態，並在好友上線、離線或傳送邀請時通知你。"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

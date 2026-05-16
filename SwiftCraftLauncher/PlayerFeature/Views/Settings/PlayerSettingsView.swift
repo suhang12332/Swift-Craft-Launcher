@@ -67,6 +67,18 @@ public struct PlayerSettingsView: View {
                 .labeledContentStyle(.custom)
                 CommonDescriptionText(text: "settings.player.history_skin_library.description".localized())
             }
+            Group {
+                LabeledContent("settings.player.minecraft_friends_presence_notifications".localized()) {
+                    Toggle(
+                        "settings.player.minecraft_friends_presence_notifications.toggle".localized(),
+                        isOn: $playerSettings.enableMinecraftFriendsPresenceNotifications
+                    )
+                }
+                .labeledContentStyle(.custom)
+                CommonDescriptionText(
+                    text: "settings.player.minecraft_friends_presence_notifications.description".localized()
+                )
+            }
             if canEditMinecraftFriendAccountSettings {
                 Group {
                     LabeledContent("settings.player.minecraft_friends_account.section".localized()) {
