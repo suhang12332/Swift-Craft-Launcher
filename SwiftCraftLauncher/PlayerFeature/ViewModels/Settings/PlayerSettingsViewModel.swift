@@ -70,7 +70,7 @@ final class PlayerSettingsViewModel: ObservableObject {
     }
 
     func reloadMinecraftFriendAccountPreferences(currentPlayer: Player?) async {
-        guard let player = currentPlayer, player.canUseMicrosoftMinecraftServices else {
+        guard let player = currentPlayer, player.isOnlineAccount else {
             clearMinecraftFriendAccountPreferences()
             return
         }
@@ -117,7 +117,7 @@ final class PlayerSettingsViewModel: ObservableObject {
         enableFriendlist: Bool,
         enableFriendInvites: Bool
     ) async {
-        guard let player = currentPlayer, player.canUseMicrosoftMinecraftServices else { return }
+        guard let player = currentPlayer, player.isOnlineAccount else { return }
         guard let tokenPlayer = await preparedTokenPlayer(for: player, onMissingCredential: sideEffects.reportMissingAccessToken) else { return }
 
         isSavingMinecraftFriendAccountPreferences = true

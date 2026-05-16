@@ -151,51 +151,49 @@ public struct ContentToolbarView: ToolbarContent {
                     }
                 }
 
-                if currentPlayer?.canUseMicrosoftMinecraftServices == true {
-                    Button {
-                        Task {
-                            guard let p = currentPlayer else { return }
-                            let host = MinecraftFriendsSheetHostAdapter(player: p)
-                            minecraftFriendsSheetHost = host
-                            minecraftFriendsSheetViewModel.prepare(playerId: p.id, host: host)
-                            await minecraftFriendsSheetViewModel.load(forceRefresh: false)
-                            guard !Task.isCancelled, currentPlayer?.id == p.id else { return }
-                            showingMinecraftFriendsSheet = true
-                        }
-                    } label: {
-                        if minecraftFriendsSheetViewModel.isLoading, !showingMinecraftFriendsSheet {
-                            ProgressView()
-                                .controlSize(.small)
-                        } else {
-                            Label("minecraft.friends.toolbar.title".localized(), systemImage: "person.2")
-                        }
+                Button {
+                    Task {
+                        guard let p = currentPlayer else { return }
+                        let host = MinecraftFriendsSheetHostAdapter(player: p)
+                        minecraftFriendsSheetHost = host
+                        minecraftFriendsSheetViewModel.prepare(playerId: p.id, host: host)
+                        await minecraftFriendsSheetViewModel.load(forceRefresh: false)
+                        guard !Task.isCancelled, currentPlayer?.id == p.id else { return }
+                        showingMinecraftFriendsSheet = true
                     }
-                    .help("minecraft.friends.toolbar.help".localized())
-                    .disabled(minecraftFriendsSheetViewModel.isLoading && !showingMinecraftFriendsSheet)
-                    .sheet(isPresented: $showingMinecraftFriendsSheet) {
-                        if let p = currentPlayer, minecraftFriendsSheetHost != nil {
-                            MinecraftFriendsSheetView(
-                                playerId: p.id,
-                                viewModel: minecraftFriendsSheetViewModel,
-                                localize: MinecraftFriendsSheetLocalize.resolver(
-                                    localeIdentifier: { LanguageManager.getDefaultLanguage() },
-                                    fallback: { $0.localized() }
-                                ),
-                                limitBodyScrollHeight: AppServices.generalSettingsManager.limitCommonSheetHeight
-                            ) { _, url in
-                                Group {
-                                    if let u = url, !u.isEmpty {
-                                        MinecraftSkinUtils(type: .url, src: u, size: 40)
-                                    } else {
-                                        ProgressView()
-                                            .controlSize(.small)
-                                            .frame(width: 40, height: 40)
-                                    }
+                } label: {
+                    if minecraftFriendsSheetViewModel.isLoading, !showingMinecraftFriendsSheet {
+                        ProgressView()
+                            .controlSize(.small)
+                    } else {
+                        Label("minecraft.friends.toolbar.title".localized(), systemImage: "person.2")
+                    }
+                }
+                .help("minecraft.friends.toolbar.help".localized())
+                .disabled(minecraftFriendsSheetViewModel.isLoading && !showingMinecraftFriendsSheet)
+                .sheet(isPresented: $showingMinecraftFriendsSheet) {
+                    if let p = currentPlayer, minecraftFriendsSheetHost != nil {
+                        MinecraftFriendsSheetView(
+                            playerId: p.id,
+                            viewModel: minecraftFriendsSheetViewModel,
+                            localize: MinecraftFriendsSheetLocalize.resolver(
+                                localeIdentifier: { LanguageManager.getDefaultLanguage() },
+                                fallback: { $0.localized() }
+                            ),
+                            limitBodyScrollHeight: AppServices.generalSettingsManager.limitCommonSheetHeight
+                        ) { _, url in
+                            Group {
+                                if let u = url, !u.isEmpty {
+                                    MinecraftSkinUtils(type: .url, src: u, size: 40)
+                                } else {
+                                    ProgressView()
+                                        .controlSize(.small)
+                                        .frame(width: 40, height: 40)
                                 }
                             }
-                            .onDisappear {
-                                minecraftFriendsSheetHost = nil
-                            }
+                        }
+                        .onDisappear {
+                            minecraftFriendsSheetHost = nil
                         }
                     }
                 }

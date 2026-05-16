@@ -20,7 +20,7 @@ public struct PlayerSettingsView: View {
 
     private var canEditMinecraftFriendAccountSettings: Bool {
         guard let p = currentPlayer else { return false }
-        return p.canUseMicrosoftMinecraftServices
+        return p.isOnlineAccount
     }
 
     private var minecraftFriendAccountToggleDisabled: Bool {
@@ -134,7 +134,7 @@ public struct PlayerSettingsView: View {
         }
         .task(id: currentPlayer?.id) {
             viewModel.refreshAuthlibInjectorExists()
-            guard let p = currentPlayer, p.canUseMicrosoftMinecraftServices else {
+            guard let p = currentPlayer, p.isOnlineAccount else {
                 viewModel.clearMinecraftFriendAccountPreferences()
                 return
             }
