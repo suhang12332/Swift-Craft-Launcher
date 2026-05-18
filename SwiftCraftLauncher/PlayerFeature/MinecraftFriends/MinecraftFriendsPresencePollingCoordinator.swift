@@ -9,7 +9,8 @@ final class MinecraftFriendsPresencePollingCoordinator {
     private static let pollingIntervalNanoseconds: UInt64 = 10_000_000_000
 
     private let hostAdapter: MinecraftFriendsPresenceMonitorHostAdapter
-    private let monitor: MinecraftFriendsPresenceMonitor
+    private let presenceMonitor: MinecraftFriendsPresenceMonitor
+    private let friendListMonitor: MinecraftFriendsFriendListMonitor
     private let credentialSideEffects: MinecraftFriendsMicrosoftPlayerSideEffects
 
     private weak var playerListViewModel: PlayerListViewModel?
@@ -28,11 +29,18 @@ final class MinecraftFriendsPresencePollingCoordinator {
             dataManager: PlayerDataManager(),
             errorHandler: AppServices.errorHandler
         )
-        monitor = MinecraftFriendsPresenceMonitor(
+        let localize = Self.makeLocalize()
+        presenceMonitor = MinecraftFriendsPresenceMonitor(
             friendsService: friendsService,
             host: hostAdapter,
             preferencesDidChangeNotification: .minecraftFriendsAccountPreferencesDidChange,
-            localize: Self.makeLocalize()
+            localize: localize
+        )
+        friendListMonitor = MinecraftFriendsFriendListMonitor(
+            friendsService: friendsService,
+            host: hostAdapter,
+            preferencesDidChangeNotification: .minecraftFriendsAccountPreferencesDidChange,
+            localize: localize
         )
     }
 
@@ -119,11 +127,17 @@ final class MinecraftFriendsPresencePollingCoordinator {
 
                 hostAdapter.setBoundPlayer(boundPlayer)
 
-                let context = MinecraftFriendsPresenceTickContext(
+                let presenceContext = MinecraftFriendsPresenceTickContext(
                     playerId: boundPlayer.id,
                     canUseMicrosoftMinecraftServices: true
                 )
-                await monitor.tick(context: context)
+                await presenceMonitor.tick(context: presenceContext)
+
+                let friendListContext = MinecraftFriendsFriendListTickContext(
+                    playerId: boundPlayer.id,
+                    canUseMicrosoftMinecraftServices: true
+                )
+                await friendListMonitor.tick(context: friendListContext)
                 return true
             }
 
