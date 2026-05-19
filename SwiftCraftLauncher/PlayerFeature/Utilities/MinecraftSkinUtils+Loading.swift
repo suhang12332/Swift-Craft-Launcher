@@ -1,0 +1,79 @@
+import Foundation
+import AppKit
+
+extension MinecraftSkinUtils {
+
+    func loadData() async throws -> Data {
+        switch type {
+        case .asset:
+            return try await loadAssetData()
+        case .url:
+            return try await loadURLData()
+        case .local:
+            return try await loadLocalData()
+        }
+    }
+
+    private func loadAssetData() async throws -> Data {
+        guard let image = NSImage(named: src),
+              let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            throw GlobalError.resource(
+                chineseMessage: "Asset 资源未找到: \(src)",
+                i18nKey: "error.resource.asset_not_found",
+                level: .silent
+            )
+        }
+
+        let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
+        guard let data = bitmapRep.representation(using: .png, properties: [:]) else {
+            throw GlobalError.validation(
+                chineseMessage: "无效的图像数据",
+                i18nKey: "error.validation.invalid_image_data",
+                level: .silent
+            )
+        }
+
+        return data
+    }
+
+    private func loadURLData() async throws -> Data {
+        guard let url = URL(string: src) else {
+            throw GlobalError.validation(
+                chineseMessage: "无效的URL: \(src)",
+                i18nKey: "error.validation.invalid_url",
+                level: .silent
+            )
+        }
+
+        let request = URLRequest(url: url)
+        let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
+
+        switch httpResponse.statusCode {
+        case 200:
+            return data
+        case 404:
+            throw GlobalError.resource(
+                chineseMessage: "皮肤资源未找到: \(src)",
+                i18nKey: "error.resource.skin_not_found",
+                level: .silent
+            )
+        case 408, 504:
+            throw GlobalError.download(
+                chineseMessage: "网络请求超时: \(src)",
+                i18nKey: "error.download.network_timeout",
+                level: .silent
+            )
+        default:
+            throw GlobalError.download(
+                chineseMessage: "皮肤下载失败: HTTP \(httpResponse.statusCode)",
+                i18nKey: "error.download.skin_download_failed",
+                level: .silent
+            )
+        }
+    }
+
+    private func loadLocalData() async throws -> Data {
+        let fileURL = URL(fileURLWithPath: src)
+        return try Data(contentsOf: fileURL)
+    }
+}
