@@ -85,7 +85,7 @@ struct ModrinthProjectDetailView: View {
     private func projectInfo(_ project: ModrinthProjectDetail) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(project.title)
-                .font(.title2.bold())
+                .font(.largeTitle.bold())
 
             Text(project.description)
                 .font(.body)
