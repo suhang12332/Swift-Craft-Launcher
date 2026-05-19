@@ -149,4 +149,11 @@ class ModScanner {
     static func sha1HashThrowing(of url: URL) throws -> String? {
         return try SHA1Calculator.sha1(ofFileAt: url)
     }
+
+        Self.sha1Hash(of: url)
+    }
+
+    func sha1HashThrowing(of url: URL) throws -> String? {
+        try Self.sha1HashThrowing(of: url)
+    }
 }

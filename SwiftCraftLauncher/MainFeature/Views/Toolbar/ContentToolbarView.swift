@@ -177,7 +177,7 @@ public struct ContentToolbarView: ToolbarContent {
                             playerId: p.id,
                             viewModel: minecraftFriendsSheetViewModel,
                             localize: MinecraftFriendsSheetLocalize.resolver(
-                                localeIdentifier: { LanguageManager.getDefaultLanguage() },
+                                localeIdentifier: { AppServices.languageManager.selectedLanguage },
                                 fallback: { $0.localized() }
                             ),
                             limitBodyScrollHeight: AppServices.generalSettingsManager.limitCommonSheetHeight

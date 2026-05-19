@@ -26,7 +26,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
     ) {
         hostAdapter = MinecraftFriendsPresenceMonitorHostAdapter()
         credentialSideEffects = MinecraftFriendsMicrosoftPlayerSideEffects(
-            dataManager: PlayerDataManager(),
+            dataManager: AppServices.playerDataManager,
             errorHandler: AppServices.errorHandler
         )
         let localize = Self.makeLocalize()
@@ -163,7 +163,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
 
     private static func makeLocalize() -> (String) -> String {
         MinecraftFriendsSheetLocalize.resolver(
-            localeIdentifier: { LanguageManager.getDefaultLanguage() },
+            localeIdentifier: { AppServices.languageManager.selectedLanguage },
             fallback: { $0.localized() }
         )
     }

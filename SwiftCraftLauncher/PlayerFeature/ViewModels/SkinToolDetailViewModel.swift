@@ -100,7 +100,7 @@ final class SkinToolDetailViewModel: ObservableObject {
         guard let p = player, p.isOnlineAccount else { return player }
         var copy = p
         if copy.credential == nil {
-            if let c = PlayerDataManager().loadCredential(userId: p.id) {
+            if let c = AppServices.playerDataManager.loadCredential(userId: p.id) {
                 copy.credential = c
             }
         }

@@ -51,7 +51,7 @@ extension ModScanner {
                     await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
 
-                    guard let hash = ModScanner.sha1Hash(of: fileURL) else {
+                    guard let hash = self.sha1Hash(of: fileURL) else {
                         return nil
                     }
                     return hash

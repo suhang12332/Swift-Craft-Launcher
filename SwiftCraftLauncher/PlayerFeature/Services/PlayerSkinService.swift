@@ -87,7 +87,7 @@ enum PlayerSkinService {
     /// - Returns: 是否更新成功
     private static func updatePlayerSkinInfo(uuid: String, skinInfo: PublicSkinInfo) async -> Bool {
         do {
-            let dataManager = PlayerDataManager()
+            let dataManager = AppServices.playerDataManager
             let players = try dataManager.loadPlayersThrowing()
 
             guard let player = players.first(where: { $0.id == uuid }) else {

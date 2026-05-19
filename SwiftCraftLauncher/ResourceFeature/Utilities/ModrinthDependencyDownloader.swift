@@ -95,7 +95,7 @@ enum ModrinthDependencyDownloader {
                             detailWithFile.type = query
                             // 新增缓存
                             if let fileURL = fileURL,
-                                let hash = ModScanner.sha1Hash(of: fileURL) {
+                                let hash = AppServices.modScanner.sha1Hash(of: fileURL) {
                                 AppServices.modScanner.saveToCache(
                                     hash: hash,
                                     detail: detailWithFile
@@ -150,7 +150,7 @@ enum ModrinthDependencyDownloader {
                             mainProjectDetail.type = query
                             // 新增缓存
                             if let fileURL = fileURL,
-                                let hash = ModScanner.sha1Hash(of: fileURL) {
+                                let hash = AppServices.modScanner.sha1Hash(of: fileURL) {
                                 AppServices.modScanner.saveToCache(
                                     hash: hash,
                                     detail: mainProjectDetail
@@ -348,7 +348,7 @@ enum ModrinthDependencyDownloader {
                         depCopy.type = query
                         success = true
                         // 新增缓存
-                        if let hash = ModScanner.sha1Hash(of: fileURL) {
+                        if let hash = AppServices.modScanner.sha1Hash(of: fileURL) {
                             AppServices.modScanner.saveToCache(
                                 hash: hash,
                                 detail: depCopy
@@ -442,7 +442,7 @@ enum ModrinthDependencyDownloader {
             mainProjectDetail.fileName = primaryFile.filename
             mainProjectDetail.type = query
             // 新增缓存
-            if let hash = ModScanner.sha1Hash(of: fileURL) {
+            if let hash = AppServices.modScanner.sha1Hash(of: fileURL) {
                 AppServices.modScanner.saveToCache(
                     hash: hash,
                     detail: mainProjectDetail
@@ -509,7 +509,7 @@ enum ModrinthDependencyDownloader {
 
             var hash: String?
             // 新增缓存
-            if let h = ModScanner.sha1Hash(of: fileURL) {
+            if let h = AppServices.modScanner.sha1Hash(of: fileURL) {
                 hash = h
                 AppServices.modScanner.saveToCache(
                     hash: h,

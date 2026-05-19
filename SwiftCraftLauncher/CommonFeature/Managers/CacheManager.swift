@@ -7,6 +7,8 @@
 import SwiftUI
 
 class CacheManager: ObservableObject {
+    static let shared = CacheManager()
+
     @Published var cacheInfo: CacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
     private let errorHandler: GlobalErrorHandler
     private let calculator: CacheCalculator

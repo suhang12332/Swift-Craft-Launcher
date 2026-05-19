@@ -69,7 +69,7 @@ struct MinecraftLaunchCommand {
         // 启动前按需从 Keychain 为该玩家加载认证凭据（只针对当前玩家，避免一次性读取所有账号）
         var playerWithCredential = player
         if playerWithCredential.credential == nil {
-            let dataManager = PlayerDataManager()
+            let dataManager = AppServices.playerDataManager
             if let credential = dataManager.loadCredential(userId: playerWithCredential.id) {
                 playerWithCredential.credential = credential
             }
@@ -90,7 +90,7 @@ struct MinecraftLaunchCommand {
     /// 更新PlayerDataManager中的玩家信息
     /// - Parameter updatedPlayer: 更新后的玩家对象
     private func updatePlayerInDataManager(_ updatedPlayer: Player) async {
-        let dataManager = PlayerDataManager()
+        let dataManager = AppServices.playerDataManager
         let success = dataManager.updatePlayerSilently(updatedPlayer)
         if success {
             Logger.shared.debug("已更新玩家数据管理器中的Token信息")

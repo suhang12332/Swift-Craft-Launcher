@@ -68,7 +68,7 @@ struct SwiftCraftLauncherApp: App {
                 }
                 .task {
                     AppServices.sparkleUpdateService.scheduleStartupCheckIfNeeded()
-                    MinecraftFriendsPresencePollingCoordinator.shared.start(
+                    AppServices.minecraftFriendsPresencePollingCoordinator.start(
                         playerListViewModel: playerListViewModel
                     )
                 }

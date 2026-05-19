@@ -89,7 +89,7 @@ extension ModScanner {
     )] {
         let jarFiles = try readJarZipFiles(from: dir)
         return jarFiles.compactMap { fileURL in
-            guard let hash = ModScanner.sha1Hash(of: fileURL) else {
+            guard let hash = sha1Hash(of: fileURL) else {
                 return nil
             }
 

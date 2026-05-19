@@ -29,7 +29,7 @@ struct GameInfoDetailView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
     @Binding var localResourceFilter: LocalResourceFilter
-    @StateObject private var cacheManager = CacheManager()
+    @StateObject private var cacheManager: CacheManager
     @State private var localRefreshToken = UUID()
     @StateObject private var ioViewModel = GameInfoDetailIOViewModel()
 
@@ -61,9 +61,11 @@ struct GameInfoDetailView: View {
         searchText: Binding<String>,
         localResourceFilter: Binding<LocalResourceFilter>,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier
+        iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier,
+        cacheManager: CacheManager = AppServices.cacheManager
     ) {
         self.game = game
+        _cacheManager = StateObject(wrappedValue: cacheManager)
         _query = query
         _dataSource = dataSource
         _selectedVersions = selectedVersions

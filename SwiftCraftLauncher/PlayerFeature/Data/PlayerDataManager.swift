@@ -3,6 +3,8 @@ import Foundation
 /// 玩家数据管理器
 /// 使用 UserProfileStore (plist) 和 AuthCredentialStore (Keychain) 分离存储
 class PlayerDataManager {
+    static let shared = PlayerDataManager()
+
     private let errorHandler: GlobalErrorHandler
     private let profileStore: UserProfileStore
     private let credentialStore = AuthCredentialStore()

@@ -6,12 +6,16 @@ class PlayerListViewModel: ObservableObject {
     @Published var players: [Player] = []
     @Published var currentPlayer: Player?
 
-    private let dataManager = PlayerDataManager()
+    private let dataManager: PlayerDataManager
     private let errorHandler: GlobalErrorHandler
     private var notificationObserver: NSObjectProtocol?
     private var hasLoadedPlayers = false
 
-    init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
+    init(
+        dataManager: PlayerDataManager = AppServices.playerDataManager,
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+    ) {
+        self.dataManager = dataManager
         self.errorHandler = errorHandler
         setupNotifications()
     }

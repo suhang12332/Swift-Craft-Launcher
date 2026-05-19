@@ -241,7 +241,7 @@ enum ModPackDependencyInstaller {
                 expectedSha1: fileDetail.hash?.value
             )
 
-            if let hash = ModScanner.sha1Hash(of: downloadedFile) {
+            if let hash = AppServices.modScanner.sha1Hash(of: downloadedFile) {
                 if let cfAsModrinth = CFToModrinthAdapter.convertProjectDetail(effectiveModDetail) {
                     var detailWithFile = cfAsModrinth
                     detailWithFile.fileName = fileDetail.fileName
@@ -349,7 +349,7 @@ enum ModPackDependencyInstaller {
             )
 
             // 保存到缓存
-            if let hash = ModScanner.sha1Hash(of: downloadedFile) {
+            if let hash = AppServices.modScanner.sha1Hash(of: downloadedFile) {
                 // 使用fetchModrinthDetail获取真实的项目详情
                 await withCheckedContinuation { continuation in
                     ModrinthService.fetchModrinthDetail(by: hash) { projectDetail in
@@ -720,7 +720,7 @@ enum ModPackDependencyInstaller {
             )
 
             // 保存到缓存
-            if let hash = ModScanner.sha1Hash(of: downloadedFile) {
+            if let hash = AppServices.modScanner.sha1Hash(of: downloadedFile) {
                 // 使用传入的项目详情创建缓存
                 var detailWithFile = projectDetail
                 detailWithFile.fileName = primaryFile.filename
