@@ -150,6 +150,7 @@ class ModScanner {
         return try SHA1Calculator.sha1(ofFileAt: url)
     }
 
+    func sha1Hash(of url: URL) -> String? {
         Self.sha1Hash(of: url)
     }
 
