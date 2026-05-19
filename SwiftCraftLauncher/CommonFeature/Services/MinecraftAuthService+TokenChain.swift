@@ -13,9 +13,9 @@ extension MinecraftAuthService {
             "scope": scope,
         ]
 
-        let bodyString = bodyParameters.map {
-            "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
-        }.joined(separator: "&")
+        let bodyString = bodyParameters
+            .map { "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")" }
+            .joined(separator: "&")
         let bodyData = bodyString.data(using: .utf8)
 
         let headers = APIClient.DefaultHeaders.contentTypeFormURLEncoded
