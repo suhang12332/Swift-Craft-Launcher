@@ -2,18 +2,21 @@ import SwiftUI
 
 public struct GeneralSettingsView: View {
     @StateObject private var generalSettings: GeneralSettingsManager
+    @StateObject private var themeManager: ThemeManager
     @StateObject private var viewModel: GeneralSettingsViewModel
     @EnvironmentObject private var gameRepository: GameRepository
 
     @MainActor
     public init() {
         _generalSettings = StateObject(wrappedValue: AppServices.generalSettingsManager)
+        _themeManager = StateObject(wrappedValue: AppServices.themeManager)
         _viewModel = StateObject(wrappedValue: GeneralSettingsViewModel())
     }
 
     public var body: some View {
         Form {
             GeneralSettingsLanguageRow()
+            GeneralSettingsThemeRow(themeManager: themeManager)
             GeneralSettingsInterfaceLayoutRow(generalSettings: generalSettings)
             GeneralSettingsWorkingDirectoryRow(
                 generalSettings: generalSettings,
