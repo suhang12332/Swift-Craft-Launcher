@@ -2,13 +2,43 @@
 //  ThemeManager.swift
 //  SwiftCraftLauncher
 //
-//
 
 import AppKit
-import Combine
-import Foundation
 import SwiftUI
 
+public enum ThemeMode: String, CaseIterable {
+    case light = "light"
+    case dark = "dark"
+    case system = "system"
+
+    public var localizedName: String {
+        "settings.theme.\(rawValue)".localized()
+    }
+
+    public var preferredColorScheme: ColorScheme? {
+        switch self {
+        case .light: .light
+        case .dark: .dark
+        case .system: Self.resolveSystemColorScheme()
+        }
+    }
+
+    public var nsAppearance: NSAppearance? {
+        switch self {
+        case .light: NSAppearance(named: .aqua)
+        case .dark: NSAppearance(named: .darkAqua)
+        case .system: nil
+        }
+    }
+
+    static func resolveSystemColorScheme() -> ColorScheme {
+        let appearance = NSApp?.effectiveAppearance ?? NSApplication.shared.effectiveAppearance
+        let bestMatch = appearance.bestMatch(from: [.aqua, .darkAqua])
+        return bestMatch == .darkAqua ? .dark : .light
+    }
+}
+
+@MainActor
 final class ThemeManager: ObservableObject {
     static let shared = ThemeManager()
 
@@ -20,12 +50,14 @@ final class ThemeManager: ObservableObject {
         }
     }
 
+    var preferredColorScheme: ColorScheme? { themeMode.preferredColorScheme }
+
     private var appearanceObserver: NSKeyValueObservation?
 
     private init() {
-        DispatchQueue.main.async { [weak self] in
-            self?.applyAppAppearance()
-            self?.setupAppearanceObserver()
+        applyAppAppearance()
+        Task { @MainActor in
+            setupAppearanceObserverIfNeeded()
         }
     }
 
@@ -33,30 +65,17 @@ final class ThemeManager: ObservableObject {
         appearanceObserver?.invalidate()
     }
 
-    var currentColorScheme: ColorScheme? {
-        guard NSApplication.shared.isRunning else {
-            return themeMode == .system ? nil : themeMode.effectiveColorScheme
-        }
-        return themeMode.effectiveColorScheme
-    }
-
-    private func setupAppearanceObserver() {
-        appearanceObserver = NSApp.observe(
-            \.effectiveAppearance,
-            options: [.new, .initial]
-        ) { [weak self] _, _ in
-            guard let self, self.themeMode == .system else { return }
-            self.objectWillChange.send()
-        }
-    }
-
     func applyAppAppearance() {
-        let appearance = themeMode.nsAppearance
-        if Thread.isMainThread {
-            NSApp.appearance = appearance
-        } else {
-            DispatchQueue.main.async {
-                NSApp.appearance = appearance
+        NSApp?.appearance = themeMode.nsAppearance
+    }
+
+    private func setupAppearanceObserverIfNeeded() {
+        appearanceObserver?.invalidate()
+        guard let app = NSApp else { return }
+        appearanceObserver = app.observe(\.effectiveAppearance, options: [.new]) { [weak self] _, _ in
+            Task { @MainActor in
+                guard let self, self.themeMode == .system else { return }
+                self.objectWillChange.send()
             }
         }
     }

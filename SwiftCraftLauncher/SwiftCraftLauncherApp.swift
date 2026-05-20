@@ -62,7 +62,7 @@ struct SwiftCraftLauncherApp: App {
                 .environmentObject(gameLaunchUseCase)
                 .environmentObject(AppServices.gameActionManager)
                 .environmentObject(AppServices.gameStatusManager)
-                .preferredColorScheme(themeManager.currentColorScheme)
+                .preferredColorScheme(themeManager.preferredColorScheme)
                 .errorAlert()
                 .windowOpener()
                 .onOpenURL { url in
@@ -88,7 +88,7 @@ struct SwiftCraftLauncherApp: App {
             SettingsView()
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
-                .preferredColorScheme(themeManager.currentColorScheme)
+                .preferredColorScheme(themeManager.preferredColorScheme)
                 .errorAlert()
         }
 

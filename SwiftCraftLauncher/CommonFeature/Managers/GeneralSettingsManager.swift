@@ -12,44 +12,6 @@ public enum InterfaceLayoutStyle: String, CaseIterable {
     }
 }
 
-public enum ThemeMode: String, CaseIterable {
-    case light = "light"
-    case dark = "dark"
-    case system = "system"
-
-    public var localizedName: String {
-        "settings.theme.\(rawValue)".localized()
-    }
-
-    public var effectiveColorScheme: ColorScheme {
-        switch self {
-        case .light:
-            return .light
-        case .dark:
-            return .dark
-        case .system:
-            if Thread.isMainThread {
-                let appearance = NSApplication.shared.effectiveAppearance
-                let bestMatch = appearance.bestMatch(from: [.aqua, .darkAqua])
-                return bestMatch == .darkAqua ? .dark : .light
-            } else {
-                return .light
-            }
-        }
-    }
-
-    public var nsAppearance: NSAppearance? {
-        switch self {
-        case .light:
-            return NSAppearance(named: .aqua)
-        case .dark:
-            return NSAppearance(named: .darkAqua)
-        case .system:
-            return nil
-        }
-    }
-}
-
 class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     static let shared = GeneralSettingsManager()
 
