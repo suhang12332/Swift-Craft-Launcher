@@ -179,7 +179,12 @@ enum AppServices {
     static var playerSettingsManager: PlayerSettingsManager { lock.withLock { dependencies.playerSettingsManager ?? .shared } }
     static var playerDataManager: PlayerDataManager { lock.withLock { dependencies.playerDataManager ?? .shared } }
     static var selectedGameManager: SelectedGameManager { lock.withLock { dependencies.selectedGameManager ?? .shared } }
-    static var themeManager: ThemeManager { lock.withLock { dependencies.themeManager ?? .shared } }
+    static var themeManager: ThemeManager {
+        if let injected = lock.withLock({ dependencies.themeManager }) {
+            return injected
+        }
+        return sharedOnMainActor { ThemeManager.shared }
+    }
     static var languageManager: LanguageManager { lock.withLock { dependencies.languageManager ?? .shared } }
 
     static var minecraftFriendsPresencePollingCoordinator: MinecraftFriendsPresencePollingCoordinator {
