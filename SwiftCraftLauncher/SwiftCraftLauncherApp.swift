@@ -98,7 +98,7 @@ struct SwiftCraftLauncherApp: App {
             .applyRestorationBehaviorDisabled()
             .windowResizability(.contentSize)
 
-        // 右上角的状态栏(可以显示图标的)
+        // 右上角的状态栏
         MenuBarExtra(
             content: {
                 MenuBarExtraContentView {
@@ -140,7 +140,6 @@ struct SwiftCraftLauncherApp: App {
     }
 
     private func cleanupWindowDataOnLaunch() {
-        // 应用启动时清理所有窗口数据
         AppServices.windowDataStore.cleanup(for: .aiChat)
         AppServices.windowDataStore.cleanup(for: .skinPreview)
     }
