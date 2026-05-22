@@ -87,7 +87,6 @@ public struct SidebarView: View {
         }
         .searchable(text: $searchText, placement: .sidebar, prompt: "sidebar.search.games".localized())
         .safeAreaInset(edge: .bottom) {
-            // 显示玩家列表（如有玩家）
             if !playerListViewModel.players.isEmpty {
                 PlayerListView()
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -102,7 +101,6 @@ public struct SidebarView: View {
             viewModel.onDisappear()
         }
         .onChange(of: gameRepository.games) { _, newGames in
-            // 当游戏列表变化时，为新游戏初始化刷新触发器
             viewModel.onGamesChanged(newGames)
         }
     }

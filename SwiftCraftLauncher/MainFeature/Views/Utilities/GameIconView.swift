@@ -21,7 +21,6 @@ struct GameIconView: View {
     /// 获取图标URL（添加刷新触发器作为查询参数，强制AsyncImage重新加载）
     private var iconURL: URL {
         guard let baseURL = iconFileURL else { return profileDir }
-        // 添加刷新触发器作为查询参数，确保文件更新后能重新加载
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
         components?.queryItems = [URLQueryItem(name: "refresh", value: refreshTrigger.uuidString)]
         return components?.url ?? baseURL
