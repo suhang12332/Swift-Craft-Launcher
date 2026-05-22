@@ -85,7 +85,7 @@ public struct SidebarView: View {
                 }
             }
         }
-        .searchable(text: $searchText, placement: .sidebar, prompt: Localized.Sidebar.Search.games)
+        .searchable(text: $searchText, placement: .sidebar, prompt: "sidebar.search.games".localized())
         .safeAreaInset(edge: .bottom) {
             // 显示玩家列表（如有玩家）
             if !playerListViewModel.players.isEmpty {

@@ -57,7 +57,6 @@ enum DownloadManager {
             case .mod:
                 return AppPaths.modsDirectory(gameName: game.gameName)
             case .datapack:
-                // 优化：缓存小写路径组件，避免重复创建
                 let lowercasedPath = url.lastPathComponent.lowercased()
                 if lowercasedPath.hasSuffix(".\(AppConstants.FileExtensions.jar)") {
                     return AppPaths.modsDirectory(gameName: game.gameName)
@@ -66,7 +65,6 @@ enum DownloadManager {
             case .shader:
                 return AppPaths.shaderpacksDirectory(gameName: game.gameName)
             case .resourcepack:
-                // 优化：缓存小写路径组件，避免重复创建
                 let lowercasedPath = url.lastPathComponent.lowercased()
                 if lowercasedPath.hasSuffix(".\(AppConstants.FileExtensions.jar)") {
                     return AppPaths.modsDirectory(gameName: game.gameName)
@@ -84,7 +82,6 @@ enum DownloadManager {
         }
 
         let destURL = resourceDirUnwrapped.appendingPathComponent(url.lastPathComponent)
-        // 优化：直接传递已创建的 URL，避免在 downloadFile 中重复创建
         return try await downloadFile(url: url, destinationURL: destURL, expectedSha1: expectedSha1)
     }
 

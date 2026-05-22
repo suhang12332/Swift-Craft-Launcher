@@ -18,9 +18,7 @@ public struct ContributorsView: View {
             .padding(.vertical, 8)
         }
         .onAppear {
-            // 每次打开都重新获取GitHub贡献者数据
             Task { await viewModel.fetchContributors() }
-            // 每次打开都重新加载静态贡献者数据
             staticViewModel.load()
         }
         .onDisappear {
@@ -147,7 +145,6 @@ public struct ContributorsView: View {
     /// 清理所有数据
     private func clearAllData() {
         staticViewModel.clearAllData()
-        // 清理 ViewModel 的贡献者数据，释放内存
         viewModel.clearContributors()
         Logger.shared.info("All contributors data cleared")
     }

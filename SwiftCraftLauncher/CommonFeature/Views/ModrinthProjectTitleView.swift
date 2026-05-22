@@ -54,20 +54,16 @@ struct ModrinthProjectTitleView: View {
     // MARK: - Body
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
-            // 项目图标
             iconView
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    // 项目名称
                     Text(title)
                         .font(.headline)
                     Spacer()
-                    // 信息行（地址、玩家数量等）
                     infoRowView
                 }
 
-                // 项目描述
                 if !description.isEmpty {
                     Text(description)
                         .font(.subheadline)
@@ -75,7 +71,6 @@ struct ModrinthProjectTitleView: View {
                         .lineLimit(3)
                 }
 
-                // 标签
                 if !tags.isEmpty {
                     tagsView
                 }

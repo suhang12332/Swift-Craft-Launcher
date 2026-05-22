@@ -38,7 +38,6 @@ class AIChatManager: ObservableObject {
                 i18nKey: "error.configuration.ai_service_not_configured",
                 level: .notification
             )
-            Logger.shared.error("AI 服务未配置，请检查 API Key")
             await MainActor.run {
                 chatState.isSending = false
                 errorHandler.handle(error)
@@ -52,7 +51,6 @@ class AIChatManager: ObservableObject {
                 i18nKey: "error.configuration.ai_model_not_configured",
                 level: .notification
             )
-            Logger.shared.error("AI 模型未配置，请在设置中填写模型名称")
             await MainActor.run {
                 chatState.isSending = false
                 errorHandler.handle(error)
@@ -260,7 +258,6 @@ class AIChatManager: ObservableObject {
         request.httpMethod = "POST"
         request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
 
-        // Ollama 可能不需要 API Key，但如果有就加上
         if !settings.apiKey.isEmpty {
             request.setValue(settings.apiKey, forHTTPHeaderField: "Authorization")
         }
@@ -350,7 +347,6 @@ class AIChatManager: ObservableObject {
 
     private func sendGeminiMessage(messages: [ChatMessage], chatState: ChatState) async throws {
         let model = settings.getModel()
-        // Gemini API 需要将 key 作为查询参数
         let apiURL = "\(settings.selectedProvider.baseURL)/v1/models/\(model):streamGenerateContent?key=\(settings.apiKey.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? settings.apiKey)"
 
         guard let url = URL(string: apiURL) else {
@@ -499,7 +495,6 @@ class AIChatManager: ObservableObject {
                 return nil
             }
 
-            // `.size` 在不同平台/场景下可能是 Int/Int64/NSNumber，做一次兼容解析
             if let size = attributes[.size] as? Int64 { return size }
             if let size = attributes[.size] as? Int { return Int64(size) }
             if let size = attributes[.size] as? NSNumber { return size.int64Value }
@@ -524,7 +519,6 @@ class AIChatManager: ObservableObject {
             guard url.startAccessingSecurityScopedResource() else { return nil }
             defer { url.stopAccessingSecurityScopedResource() }
 
-            // 这里用同步读取，但放到后台线程，避免 @MainActor 阻塞（日志/文本附件会很明显）
             return try? String(contentsOf: url, encoding: .utf8)
         }.value
     }

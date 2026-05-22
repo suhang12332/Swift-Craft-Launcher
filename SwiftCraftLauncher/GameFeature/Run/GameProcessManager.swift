@@ -128,19 +128,13 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
                             return true
                         }
                     }
-
-                    // 如果退出码为0但没有最近的崩溃报告，则认为是正常退出
-                    // （退出码非0的情况已经在上面处理了）
                 } catch {
                     Logger.shared.warning("读取崩溃报告文件夹失败: \(error.localizedDescription)")
                 }
             }
-
-            // 如果退出码为0且没有崩溃报告，则认为是正常退出
             return false
         } catch {
             Logger.shared.error("从数据库查询游戏失败: \(error.localizedDescription)")
-            // 如果无法查询，且退出码非0，则认为是崩溃
             return exitCode != 0
         }
     }
@@ -149,16 +143,12 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
     /// - Parameter gameId: 游戏 ID
     func collectLogsForGameImmediately(gameId: String) async {
         do {
-            // 初始化数据库（如果尚未初始化，可能会失败，可以继续尝试查询）
             try? gameDatabase.initialize()
-
-            // 从数据库查询游戏
             guard let game = try gameDatabase.getGame(by: gameId) else {
                 Logger.shared.warning("无法从数据库找到游戏: \(gameId)")
                 return
             }
 
-            // 创建临时的视图模型和仓库实例用于 AI 窗口
             let playerListViewModel = PlayerListViewModel()
             let gameRepository = GameRepository()
 

@@ -59,7 +59,6 @@ struct GameLocalResourceView: View {
         }
         .onChange(of: query) { oldValue, newValue in
             if oldValue != newValue {
-                // 保持原行为：query 切换后清空搜索
                 searchText = ""
                 viewModel.updateContextOnQueryChanged(
                     game: game,

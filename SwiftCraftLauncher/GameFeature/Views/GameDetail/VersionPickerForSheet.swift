@@ -92,7 +92,6 @@ struct VersionPickerForSheet: View {
             return
         }
 
-        // 使用服务端的过滤方法，减少客户端过滤
         let filtered = try await ModrinthService.fetchProjectVersionsFilter(
             id: project.projectId,
             selectedVersions: [game.gameVersion],

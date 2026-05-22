@@ -35,7 +35,6 @@ extension ModScanner {
                 cached.insert(hash)
                 cache[gameName] = cached
             } else {
-                // 如果缓存不存在，创建一个新的集合
                 cache[gameName] = [hash]
             }
         }

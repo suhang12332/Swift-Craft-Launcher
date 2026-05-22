@@ -34,7 +34,6 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
 
             try updater?.start()
 
-            // 添加这些配置以确保"稍后提示我"功能正常工作
             updater?.automaticallyChecksForUpdates = true
             updater?.updateCheckInterval = 24 * 60 * 60 // 24小时检查一次
             updater?.sendsSystemProfile = false

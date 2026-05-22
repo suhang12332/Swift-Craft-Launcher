@@ -113,7 +113,6 @@ class ServerAddressService {
 
         guard let serversList = nbtData["servers"] as? [[String: Any]] else {
             Logger.shared.debug("未找到 servers 列表，或类型不匹配")
-            // 如果没有 servers 列表，返回空数组
             return []
         }
 
@@ -124,7 +123,6 @@ class ServerAddressService {
         for serverData in serversList {
             guard let name = serverData["name"] as? String,
                   let ip = serverData["ip"] as? String else {
-                // 跳过缺少必要字段的服务器
                 continue
             }
 
@@ -132,7 +130,6 @@ class ServerAddressService {
             let (address, port) = parseIPAndPort(ip)
 
             // 读取可选字段
-            // NBT Byte 类型在解析后可能是 Int8 或其他整数类型
             let hidden: Bool
             if let hiddenValue = serverData["hidden"] as? Int8 {
                 hidden = hiddenValue != 0
@@ -185,7 +182,6 @@ class ServerAddressService {
             return (String(components[0]), port)
         }
 
-        // 如果没有端口或端口无效，返回0表示未设置
         return (ipString, 0)
     }
 
@@ -196,10 +192,8 @@ class ServerAddressService {
     ///   - port: 服务器端口
     /// - Returns: 稳定的 UUID 字符串
     private func generateStableServerId(name: String, address: String, port: Int) -> String {
-        // 使用服务器名称、地址和端口生成稳定的标识符
         let content = "\(name)|\(address)|\(port)"
         guard let data = content.data(using: .utf8) else {
-            // 如果编码失败，使用简单的哈希作为后备
             return UUID().uuidString
         }
 
@@ -241,7 +235,6 @@ class ServerAddressService {
                     for: game.gameName
                 )) ?? []
 
-            // 如果已经存在相同地址的服务器，则跳过该游戏
             let hasSameServer = currentServers.contains {
                 $0.address.lowercased() == normalizedAddress
             }

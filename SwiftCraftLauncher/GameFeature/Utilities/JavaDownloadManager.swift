@@ -123,10 +123,7 @@ class JavaDownloadManager: ObservableObject {
 
     /// 清理取消的下载数据
     func cleanupCancelledDownload() {
-        // 清理已下载的部分文件
-        // 可添加清理逻辑
         Logger.shared.info("Cleaning up cancelled Java download for version: \(downloadState.version)")
-        // 重置状态并关闭窗口
         closeWindow()
     }
 }

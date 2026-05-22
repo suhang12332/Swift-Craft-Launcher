@@ -41865,7 +41865,7 @@
         }
       }
     },
-    "Game search" : {
+    "sidebar.search.games" : {
       "comment" : "[Tip Text] search game",
       "localizations" : {
         "ar" : {

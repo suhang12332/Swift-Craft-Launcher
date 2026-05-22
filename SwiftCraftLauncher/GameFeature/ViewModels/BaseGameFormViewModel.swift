@@ -89,12 +89,10 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
         let newIsDownloading = computeIsDownloading()
         let newIsFormValid = computeIsFormValid()
 
-        // 使用 DispatchQueue.main.async 避免在视图更新期间修改状态
         DispatchQueue.main.async { [weak self] in
             self?.configuration.isDownloading.wrappedValue = newIsDownloading
             self?.configuration.isFormValid.wrappedValue = newIsFormValid
 
-            // 同步本地状态
             self?.isDownloading = newIsDownloading
             self?.isFormValid = newIsFormValid
         }
@@ -108,8 +106,6 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     }
 
     func performCancelCleanup() async {
-        // Override in subclasses for custom cleanup logic
-        // 默认实现：重置下载状态并关闭窗口
         await MainActor.run {
             gameSetupService.downloadState.reset()
             configuration.actions.onCancel()

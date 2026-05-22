@@ -142,10 +142,8 @@ struct GameHeaderListRow: View {
             onIconTap?()
         }
         .onAppear {
-            // 监听图标刷新通知
             cancellable = iconRefreshNotifier.refreshPublisher
                 .sink { refreshedGameName in
-                    // 如果通知的游戏名称匹配，或者通知为 nil（刷新所有），则刷新
                     if refreshedGameName == nil || refreshedGameName == game.gameName {
                         refreshTrigger = UUID()
                     }

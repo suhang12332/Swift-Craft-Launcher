@@ -15,7 +15,6 @@ extension View {
         triggerCancel: Binding<Bool>
     ) -> some View {
         self
-            // 优化：仅在值实际变化时更新，减少不必要的视图更新
             .onChange(of: viewModel.gameNameValidator.gameName) { oldValue, newValue in
                 if oldValue != newValue {
                     viewModel.updateParentState()
@@ -48,7 +47,6 @@ extension View {
 
 // MARK: - Common Error Handling
 extension BaseGameFormViewModel {
-    /// 统一的文件访问错误处理
     func handleFileAccessError(_ error: Error, context: String) {
         let globalError = GlobalError.fileSystem(
             chineseMessage: "无法访问文件: \(context)",
@@ -58,7 +56,6 @@ extension BaseGameFormViewModel {
         handleNonCriticalError(globalError, message: "error.file.access.failed".localized())
     }
 
-    /// 统一的文件读取错误处理
     func handleFileReadError(_ error: Error, context: String) {
         let globalError = GlobalError.fileSystem(
             chineseMessage: "无法读取文件: \(context)",

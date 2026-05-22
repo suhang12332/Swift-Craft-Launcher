@@ -82,7 +82,6 @@ struct PathBreadcrumbView: View {
             var result: [String] = []
             var current = path.hasPrefix("/") ? "/" : ""
             for comp in components {
-                // 使用字符串插值而非字符串拼接
                 let separator = current == "/" ? "" : "/"
                 current = "\(current)\(separator)\(comp)"
                 result.append(current)
@@ -107,7 +106,6 @@ struct PathBreadcrumbView: View {
                         return NSWorkspace.shared.icon(forFileType: NSFileTypeForHFSTypeCode(0))
                     }
                 }
-                // 使用 try-catch 包装，避免潜在的 NSXPC 警告
                 return NSWorkspace.shared.icon(forFile: paths[idx])
             }()
             return HStack(spacing: 2) {
@@ -175,7 +173,6 @@ extension View {
         }
     }
 
-    /// 在支持的系统上应用手型指针样式，低版本自动降级为原样
     @ViewBuilder
     func applyPointerHandIfAvailable() -> some View {
         if #available(macOS 15.0, *) {
@@ -206,7 +203,6 @@ extension Scene {
         }
     }
 
-    /// 禁用窗口恢复行为（在所有支持的 macOS 版本上）
     func applyRestorationBehaviorDisabled() -> some Scene {
         if #available(macOS 15.0, *) {
             return self.restorationBehavior(.disabled)
@@ -245,11 +241,9 @@ struct InfoIconWithPopover<Content: View>: View {
         }
         .onHover { hovering in
             isHovering = hovering
-            // 取消之前的任务
             hoverTask?.cancel()
 
             if hovering {
-                // 延迟显示 popover，避免鼠标快速移动时频繁显示
                 hoverTask = Task {
                     try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
                     if !Task.isCancelled && isHovering {

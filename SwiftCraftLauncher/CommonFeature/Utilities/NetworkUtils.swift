@@ -101,7 +101,6 @@ enum NetworkUtils {
         }
 
         var target = components[3]
-        // 移除末尾的点（如果有）
         if target.hasSuffix(".") {
             target = String(target.dropLast())
         }

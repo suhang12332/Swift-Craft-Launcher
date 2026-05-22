@@ -208,7 +208,6 @@ struct LauncherImportView: View {
     }
 
     private var downloadProgressSection: some View {
-        // 获取选中实例的 modLoader，如果没有则使用 GameLoader.vanilla.displayName
         let selectedModLoader: String = {
             if let info = viewModel.currentInstanceInfo {
                 return info.modLoader

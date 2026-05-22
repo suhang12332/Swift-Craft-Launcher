@@ -60,8 +60,6 @@ struct ContributorCardView: View {
             }
 
             Spacer()
-
-            // 箭头
             Image(systemName: "globe")
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(.secondary)

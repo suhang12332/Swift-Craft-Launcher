@@ -19,7 +19,6 @@ struct AuthorizationCodeResponse {
               let queryItems = components.queryItems else { return nil }
         self.code = queryItems.first { $0.name == "code" }?.value
         self.error = queryItems.first { $0.name == "error" }?.value
-        // 解码 error_description
         if let encodedDescription = queryItems.first(where: { $0.name == "error_description" })?.value {
             self.errorDescription = encodedDescription.removingPercentEncoding
         } else {
@@ -81,7 +80,6 @@ struct MinecraftProfileResponse: Codable, Equatable {
         case name
         case skins
         case capes
-        // accessToken 和 authXuid 不参与解码，因为它们不是从 API 响应中获取的
     }
 
     init(from decoder: Decoder) throws {

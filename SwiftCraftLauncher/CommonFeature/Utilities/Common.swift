@@ -78,7 +78,6 @@ enum CommonUtil {
         ]
         var date = isoFormatter.date(from: isoString)
         if date == nil {
-            // 尝试不带毫秒的格式
             isoFormatter.formatOptions = [.withInternetDateTime]
             date = isoFormatter.date(from: isoString)
         }
@@ -401,7 +400,6 @@ extension ResourceType {
 
 enum SystemSettings {
 
-    /// 打开 System Settings（支持多级 fallback）
     @discardableResult
     static func open(_ paths: [String]) -> Bool {
         for path in paths {

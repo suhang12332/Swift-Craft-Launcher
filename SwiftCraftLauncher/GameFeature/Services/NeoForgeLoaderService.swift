@@ -28,7 +28,6 @@ enum NeoForgeLoaderService {
         }
 
         // 2. 直接下载指定版本的 version.json
-        // 使用统一的 API 客户端
         let url = URLConfig.API.Modrinth.loaderProfile(loader: "neo", version: loaderVersion)
         let data = try await APIClient.get(url: url)
 

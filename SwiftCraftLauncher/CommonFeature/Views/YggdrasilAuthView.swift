@@ -13,7 +13,6 @@ struct YggdrasilAuthView: View {
         playerSettings: PlayerSettingsManager = AppServices.playerSettingsManager,
         onLoginSuccess: ((YggdrasilProfile) -> Void)? = nil
     ) {
-        // 注入通用解析器 Provider（幂等）
         CommonYggdrasilProfileParsersConfigurator.bootstrap()
         _authService = StateObject(wrappedValue: authService)
         _playerSettings = StateObject(wrappedValue: playerSettings)

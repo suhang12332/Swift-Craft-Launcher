@@ -67,9 +67,7 @@ struct JavaDownloadProgressWindow: View {
     }
 
     /// 清理所有数据
-    private func clearAllData() {
-        // 窗口关闭时清理数据
-    }
+    private func clearAllData() {}
 }
 
 // 下载项视图

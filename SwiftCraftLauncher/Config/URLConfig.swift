@@ -1,12 +1,10 @@
 import Foundation
 
 enum URLConfig {
-    /// 安全创建 URL 的辅助方法，无效时记录日志并返回占位 URL，避免生产环境闪退
     private static func url(_ string: String) -> URL {
         URL(string: string) ?? URL(string: "https://localhost") ?? URL(fileURLWithPath: "/")
     }
 
-    /// GitHub 代理设置（从 UserDefaults 读取，避免 UI 依赖）
     private enum GitHubProxySettings {
         static let defaultProxy = "https://gh-proxy.com"
 
@@ -22,7 +20,6 @@ enum URLConfig {
                 .trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
-        /// 返回用于拼接的代理前缀（保证为 http(s) 且不以 / 结尾），无效则返回 nil
         static var normalizedProxyPrefix: String? {
             let proxy = proxyString
             guard !proxy.isEmpty else { return nil }
@@ -32,7 +29,6 @@ enum URLConfig {
         }
     }
 
-    // 常量字符串，避免重复创建
     private static let githubHost = "github.com"
     private static let rawGithubHost = "raw.githubusercontent.com"
 
@@ -41,7 +37,6 @@ enum URLConfig {
     /// - Parameter url: 原始 URL
     /// - Returns: 应用代理后的 URL（如果需要）
     static func applyGitProxyIfNeeded(_ url: URL) -> URL {
-        // 优化：直接使用 URL 的 host 属性，避免转换为 String
         guard let host = url.host else { return url }
         // 仅对 GitHub 相关域名应用代理（排除 api.github.com,suhang12332.github.io）
         let isGitHubURL = host == githubHost || host == rawGithubHost
@@ -50,11 +45,9 @@ enum URLConfig {
         guard GitHubProxySettings.isEnabled else { return url }
         guard let proxy = GitHubProxySettings.normalizedProxyPrefix else { return url }
 
-        // 优化：使用 URL 的 absoluteString 检查是否已有代理前缀
         let urlString = url.absoluteString
         if urlString.hasPrefix("\(proxy)/") { return url }
 
-        // 使用字符串插值而非字符串拼接
         let proxiedString = "\(proxy)/\(urlString)"
         return Self.url(proxiedString)
     }

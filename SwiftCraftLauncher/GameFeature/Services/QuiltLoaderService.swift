@@ -19,7 +19,6 @@ enum QuiltLoaderService {
     /// 获取所有可用 Quilt Loader 版本
     static func fetchAllQuiltLoadersThrowing(for minecraftVersion: String) async throws -> [QuiltLoaderResponse] {
         let url = URLConfig.API.Quilt.loaderBase.appendingPathComponent(minecraftVersion)
-        // 使用统一的 API 客户端
         let data = try await APIClient.get(url: url)
         let decoder = JSONDecoder()
         let allLoaders = try decoder.decode([QuiltLoaderResponse].self, from: data)
@@ -41,7 +40,6 @@ enum QuiltLoaderService {
         }
 
         // 2. 直接下载指定版本的 version.json
-        // 使用统一的 API 客户端
         let url = URLConfig.API.Modrinth.loaderProfile(loader: GameLoader.quilt.rawValue, version: loaderVersion)
         let data = try await APIClient.get(url: url)
 

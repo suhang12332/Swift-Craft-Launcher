@@ -1,7 +1,6 @@
 import Foundation
 
 /// 游戏启动/停止用例
-/// 解耦 UI 与 Run 模块：View 只依赖本 UseCase，不直接依赖 MinecraftLaunchCommand
 final class GameLaunchUseCase: ObservableObject {
 
     /// 启动游戏

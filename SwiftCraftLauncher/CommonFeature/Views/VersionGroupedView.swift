@@ -11,7 +11,6 @@ struct VersionGroupedView: View {
     @State private var visibleItemCounts: [String: Int] = [:]
     @State private var visibleGroupCount: Int = Constants.initialVisibleGroupCount
 
-    // 单选模式的可选绑定
     @Binding var selectedItem: String?
 
     // MARK: - Initializers

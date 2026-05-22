@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-/// 应用日志协议，便于注入与 Mock
+/// 应用日志协议
 public protocol AppLogging: AnyObject {
     func logInfo(_ items: Any..., file: String, function: String, line: Int)
     func logWarning(_ items: Any..., file: String, function: String, line: Int)

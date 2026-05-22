@@ -60,9 +60,6 @@ class LauncherImportViewModel: BaseGameFormViewModel {
         isImporting = false
         selectedLauncherType = .multiMC
 
-        // 清理游戏名（可选，根据需求决定是否保留）
-        // gameNameValidator.gameName = ""
-
         // 重置下载状态
         gameSetupService.downloadState.reset()
 
@@ -102,14 +99,12 @@ class LauncherImportViewModel: BaseGameFormViewModel {
     override func performCancelCleanup() async {
         // 清理已创建的游戏文件夹
         if let instancePath = selectedInstancePath {
-            // 从实例路径推断启动器基础路径
             let basePath = inferBasePath(from: instancePath)
 
             let parser = LauncherInstanceParserFactory.createParser(for: selectedLauncherType)
             if let info = try? parser.parseInstance(at: instancePath, basePath: basePath) {
                 do {
                     let fileManager = MinecraftFileManager()
-                    // 使用用户输入的游戏名（如果有），否则使用实例的游戏名
                     let gameName = gameNameValidator.gameName.isEmpty
                         ? info.gameName
                         : gameNameValidator.gameName

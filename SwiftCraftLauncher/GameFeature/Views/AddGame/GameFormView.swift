@@ -269,10 +269,4 @@ struct GameFormView: View {
         .keyboardShortcut(.defaultAction)
         .disabled(!isFormValid || isDownloading)
     }
-
-    // MARK: - Helper Methods
-}
-
-#Preview {
-    GameFormView()
 }

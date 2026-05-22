@@ -62,7 +62,6 @@ final class SaveInfoManager: ObservableObject {
         let savesPath = AppPaths.profileDirectory(gameName: gameName)
             .appendingPathComponent(AppConstants.DirectoryNames.saves, isDirectory: true)
 
-        // 如果目录不存在，返回 nil（跳过）
         guard FileManager.default.fileExists(atPath: savesPath.path) else {
             return nil
         }
@@ -75,7 +74,6 @@ final class SaveInfoManager: ObservableObject {
         let screenshotsPath = AppPaths.profileDirectory(gameName: gameName)
             .appendingPathComponent(AppConstants.DirectoryNames.screenshots, isDirectory: true)
 
-        // 如果目录不存在，返回 nil（跳过）
         guard FileManager.default.fileExists(atPath: screenshotsPath.path) else {
             return nil
         }
@@ -88,7 +86,6 @@ final class SaveInfoManager: ObservableObject {
         let logsPath = AppPaths.profileDirectory(gameName: gameName)
             .appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
 
-        // 如果目录不存在，返回 nil（跳过）
         guard FileManager.default.fileExists(atPath: logsPath.path) else {
             return nil
         }
@@ -295,7 +292,6 @@ final class SaveInfoManager: ObservableObject {
             servers = try await serverAddressService.loadServerAddresses(for: gameName)
         } catch {
             Logger.shared.error("加载服务器地址信息失败: \(error.localizedDescription)")
-            // 如果加载失败，返回空数组
             servers = []
         }
     }
@@ -309,7 +305,6 @@ final class SaveInfoManager: ObservableObject {
             litematicaFiles = try await litematicaService.loadLitematicaFiles(for: gameName)
         } catch {
             Logger.shared.error("加载 Litematica 文件信息失败: \(error.localizedDescription)")
-            // 如果加载失败，返回空数组
             litematicaFiles = []
         }
     }

@@ -153,13 +153,11 @@ class AISettingsManager: ObservableObject {
         }
     }
 
-    /// 获取当前提供商的 API URL（不包括 Gemini，因为 Gemini 需要特殊处理）
     func getAPIURL() -> String {
         if selectedProvider == .ollama {
             let url = ollamaBaseURL.isEmpty ? selectedProvider.baseURL : ollamaBaseURL
             return url + selectedProvider.apiPath
         } else if selectedProvider.apiFormat == .openAI {
-            // OpenAI 格式支持自定义 URL（可用于 DeepSeek 等兼容服务）
             let url = openAIBaseURL.isEmpty ? selectedProvider.baseURL : openAIBaseURL
             return url + selectedProvider.apiPath
         } else {
@@ -167,7 +165,6 @@ class AISettingsManager: ObservableObject {
         }
     }
 
-    /// 获取当前提供商的模型名称（必填）
     func getModel() -> String {
         return modelOverride.trimmingCharacters(in: .whitespacesAndNewlines)
     }
