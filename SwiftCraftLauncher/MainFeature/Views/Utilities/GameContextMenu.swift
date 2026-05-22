@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// 游戏右键菜单组件，优化内存使用
-/// 使用独立的视图组件和缓存的状态，减少内存占用
 struct GameContextMenu: View {
     let game: GameVersionInfo
     let onDelete: () -> Void

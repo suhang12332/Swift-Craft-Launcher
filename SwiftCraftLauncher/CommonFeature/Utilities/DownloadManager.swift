@@ -15,7 +15,6 @@ enum DownloadManager {
         }
 
         init?(from string: String) {
-            // 优化：使用 caseInsensitiveCompare 避免创建临时小写字符串
             let lowercased = string.lowercased()
             switch lowercased {
             case Self.mod.rawValue: self = .mod
@@ -135,7 +134,6 @@ enum DownloadManager {
                 try? fileManager.removeItem(at: tempFileURL)
             }
 
-            // 优化：直接检查状态码，减少中间变量
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
                     chineseMessage: "HTTP 请求失败",

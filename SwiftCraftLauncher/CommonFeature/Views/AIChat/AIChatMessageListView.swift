@@ -52,7 +52,6 @@ struct AIChatMessageListView: View {
                         .padding()
                     }
                 }
-                // 滚动到底部：优化 - 使用防抖机制避免频繁更新导致的循环
                 .onChange(of: chatState.messages.count) { _, _ in
                     // 新消息时滚动
                     scrollCoordinator.onMessagesCountChanged(

@@ -154,7 +154,6 @@ extension CurseForgeService {
         }
 
         // 获取文件列表
-        // 优化：如果版本数量较少（<=3），为每个版本单独获取；否则一次性获取所有文件然后过滤
         var cfFiles: [CurseForgeModFileDetail] = []
         if !selectedVersions.isEmpty && selectedVersions.count <= 3 {
             // 版本数量较少时，为每个版本获取文件（更精确）

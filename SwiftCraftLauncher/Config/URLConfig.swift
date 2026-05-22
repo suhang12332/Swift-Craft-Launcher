@@ -56,7 +56,6 @@ enum URLConfig {
     /// 为 GitHub 相关的 URL 字符串应用 gitProxyURL 代理
     /// - Parameter urlString: 原始 URL 字符串
     /// - Returns: 应用代理后的 URL 字符串（如果需要）
-    /// 优化：使用 autoreleasepool 及时释放临时 URL 对象
     static func applyGitProxyIfNeeded(_ urlString: String) -> String {
         return autoreleasepool {
             guard let url = URL(string: urlString) else { return urlString }
