@@ -249,13 +249,10 @@ class PlayerListViewModel: ObservableObject {
     /// - Parameter updatedPlayer: 更新后的玩家对象
     /// - Throws: GlobalError 当操作失败时
     func updatePlayerInListThrowing(_ updatedPlayer: Player) throws {
-        // 记录更新前的当前玩家信息
         Logger.shared.info("[updatePlayerInListThrowing] 更新前当前玩家信息:")
-        // 更新本地玩家列表
         if let index = players.firstIndex(where: { $0.id == updatedPlayer.id }) {
             players[index] = updatedPlayer
 
-            // 如果更新的是当前玩家，也要更新 currentPlayer
             if let currentPlayer = currentPlayer, currentPlayer.id == updatedPlayer.id {
                 self.currentPlayer = updatedPlayer
             }

@@ -77,11 +77,9 @@ extension SkinToolDetailViewModel {
             isCapeLoading = false
             capeLoadCompleted = true
         } catch is CancellationError {
-            // 任务被取消，重置状态
             isCapeLoading = false
             capeLoadCompleted = false
         } catch {
-            // 其他错误，重置状态并记录日志
             Logger.shared.error("Failed to load current active cape: \(error)")
             isCapeLoading = false
             capeLoadCompleted = false
@@ -92,12 +90,10 @@ extension SkinToolDetailViewModel {
         if let current = selectedCapeImageURL, current == urlString, selectedCapeLocalPath != nil {
             return
         }
-        // 验证 URL 格式（但不保留 URL 对象，节省内存）
         guard URL(string: urlString.httpToHttps()) != nil else {
             return
         }
         do {
-            // 使用 DownloadManager 下载文件（已包含所有优化）
             let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent("cape_\(UUID().uuidString).png")
             _ = try await DownloadManager.downloadFile(
                 urlString: urlString.httpToHttps(),
@@ -117,7 +113,6 @@ extension SkinToolDetailViewModel {
         from urlString: String,
         resolvedPlayer: Player?
     ) async {
-        // 检查是否已经下载过相同的URL
         if let currentURL = selectedCapeImageURL,
            currentURL == urlString,
            let currentPath = selectedCapeLocalPath,
@@ -152,15 +147,12 @@ extension SkinToolDetailViewModel {
 
             try Task.checkCancellation()
 
-            // 立即更新UI，不等待文件保存
-            // 检查URL是否仍然匹配（防止用户快速切换）
             if selectedCapeImageURL == urlString {
                 selectedCapeImage = image
             }
 
             try Task.checkCancellation()
 
-            // 异步保存到临时文件（不阻塞UI更新）
             let tempFile = FileManager.default.temporaryDirectory.appendingPathComponent("cape_\(UUID().uuidString).png")
             do {
                 try data.write(to: tempFile)
@@ -169,13 +161,11 @@ extension SkinToolDetailViewModel {
                     selectedCapeLocalPath = tempFile.path
                 }
             } catch is CancellationError {
-                // 如果任务被取消，删除刚创建的文件
                 try? FileManager.default.removeItem(at: tempFile)
             } catch {
                 Logger.shared.error("Failed to save cape to temp file: \(error)")
             }
         } catch is CancellationError {
-            // 任务被取消，不需要处理
         } catch {
             Logger.shared.error("Cape download error: \(error.localizedDescription)")
         }

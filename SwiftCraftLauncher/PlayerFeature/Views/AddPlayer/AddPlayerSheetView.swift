@@ -111,7 +111,6 @@ struct AddPlayerSheetView: View {
                     }
                     Spacer()
                     if viewModel.selectedAuthType == .premium {
-                        // 根据认证状态显示不同的按钮
                         switch authService.authState {
                         case .notAuthenticated:
                             Button("addplayer.auth.start_login".localized()) {

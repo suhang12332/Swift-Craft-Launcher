@@ -164,8 +164,6 @@ class PlayerDataManager {
         // 从 UserProfileStore 加载所有 profiles
         let profiles = try profileStore.loadProfilesThrowing()
 
-        // 仅加载基础信息，不在此处访问 Keychain，
-        // 避免启动时对所有玩家的凭据进行一次性读取（会触发多次钥匙串密码弹窗）
         let players = profiles.map { profile in
             Player(profile: profile, credential: nil)
         }

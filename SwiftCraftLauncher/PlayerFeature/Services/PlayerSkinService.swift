@@ -227,7 +227,6 @@ enum PlayerSkinService {
     ) async throws {
         try validateAccessToken(player)
 
-        // 使用字符串插值而非字符串拼接
         let boundary = "Boundary-\(UUID().uuidString)"
         var body = Data()
         func appendField(name: String, value: String) {
@@ -285,7 +284,6 @@ enum PlayerSkinService {
         request.httpBody = body
         request.timeoutInterval = 30
 
-        // 使用统一的 API 客户端（需要处理非 200 状态码）
         let (_, http) = try await APIClient.performRequestWithResponse(request: request)
         switch http.statusCode {
         case 200, 204:
@@ -390,7 +388,6 @@ enum PlayerSkinService {
         )
         request.timeoutInterval = 30
 
-        // 使用统一的 API 客户端（需要处理非 200 状态码）
         let (data, http) = try await APIClient.performRequestWithResponse(request: request)
         switch http.statusCode {
         case 200:
@@ -449,7 +446,6 @@ enum PlayerSkinService {
         request.httpBody = jsonData
         request.timeoutInterval = 30
 
-        // 使用统一的 API 客户端（需要处理非 200 状态码）
         let (_, http) = try await APIClient.performRequestWithResponse(request: request)
         switch http.statusCode {
         case 200, 204:
@@ -516,7 +512,6 @@ enum PlayerSkinService {
         )
         request.timeoutInterval = 30
 
-        // 使用统一的 API 客户端（需要处理非 200 状态码）
         let (_, http) = try await APIClient.performRequestWithResponse(request: request)
         switch http.statusCode {
         case 200, 204:
@@ -547,7 +542,6 @@ enum PlayerSkinService {
             "Bearer \(player.authAccessToken)",
             forHTTPHeaderField: "Authorization"
         )
-        // 使用统一的 API 客户端（需要处理非 200 状态码）
         let (_, http) = try await APIClient.performRequestWithResponse(request: request)
         switch http.statusCode {
         case 200, 204:
