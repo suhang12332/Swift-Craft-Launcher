@@ -74,15 +74,12 @@ final class CategoryContentViewModel: ObservableObject {
             async let categoriesTask = ModrinthService.fetchCategories()
             async let versionsTask = ModrinthService.fetchGameVersions()
 
-            // 光影（shader）的加载器从 API 获取，其他项目类型使用静态列表
             let loadersTask: Task<[Loader], Never>
             if project == ProjectType.shader {
-                // 光影：从 API 获取加载器
                 loadersTask = Task {
                     await ModrinthService.fetchLoaders()
                 }
             } else {
-                // 其他项目类型：使用静态加载器列表
                 loadersTask = Task {
                     Self.getStaticLoaders()
                 }

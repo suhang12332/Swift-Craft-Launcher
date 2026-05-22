@@ -55,11 +55,9 @@ func filterCompatibleGames(
                 )
 
                 if isInstalled {
-                    // 已安装，不返回
                     return nil
                 }
 
-                // 未安装，返回该游戏
                 return game
             }
         }
