@@ -52,7 +52,6 @@ struct ModPackDownloadSheet: View {
             )
         }
         .onDisappear {
-            // 页面关闭后清除所有数据
             clearAllData()
         }
     }
@@ -195,7 +194,6 @@ struct ModPackDownloadSheet: View {
             Task {
                 await viewModel.loadModPackVersions(for: newValue)
             }
-            // 设置默认游戏名称
             setDefaultGameName()
         } else {
             viewModel.filteredModPackVersions = []
@@ -206,7 +204,6 @@ struct ModPackDownloadSheet: View {
         if !viewModel.filteredModPackVersions.isEmpty
             && selectedModPackVersion == nil {
             selectedModPackVersion = viewModel.filteredModPackVersions[0]
-            // 设置默认游戏名称
             setDefaultGameName()
         }
     }
@@ -226,7 +223,6 @@ struct ModPackDownloadSheet: View {
                 viewModel.cancelDownloadAndResetStates(gameSetupService: gameSetupService)
                 await viewModel.cleanupGameDirectoriesForCancel(gameName: gameNameValidator.gameName)
             }
-            // 停止后直接关闭sheet
             dismiss()
         } else {
             dismiss()
