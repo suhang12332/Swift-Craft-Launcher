@@ -1,86 +1,123 @@
 import Foundation
 
 extension LauncherImportViewModel {
-    // MARK: - Helper Methods
-
-    /// 从实例路径推断启动器基础路径
-    /// 向上查找包含 icons 文件夹的目录，如果找不到则使用实例路径的父目录的父目录
-    func inferBasePath(from instancePath: URL) -> URL {
-        let fileManager = FileManager.default
-        var currentPath = instancePath
-
-        // 向上查找，最多查找5层
-        for _ in 0..<5 {
-            let iconsPath = currentPath.appendingPathComponent("icons")
-            if fileManager.fileExists(atPath: iconsPath.path) {
-                return currentPath
-            }
-            let parentPath = currentPath.deletingLastPathComponent()
-            if parentPath.path == currentPath.path {
-                break
-            }
-            currentPath = parentPath
-        }
-
-        // 如果找不到 icons 文件夹，使用实例路径的父目录的父目录作为 fallback
-        return instancePath.deletingLastPathComponent().deletingLastPathComponent()
+    func handleLauncherTypeChange() {
+        selectedLauncherRootPath = nil
+        scannedInstances = []
+        selectedInstanceIDs.removeAll()
+        refreshDetectedRootAndScan()
     }
 
-    /// 下载图标
-    func downloadIcon(from urlString: String, instanceName: String) async -> Data? {
-        do {
-            // 缓存图标
-            let cacheDir = AppPaths.appCache.appendingPathComponent("imported_icons")
-            try FileManager.default.createDirectory(
-                at: cacheDir,
-                withIntermediateDirectories: true
-            )
-            let cachedPath = cacheDir.appendingPathComponent("\(instanceName).png")
-            let downloadedPath = try await DownloadManager.downloadFile(
-                urlString: urlString,
-                destinationURL: cachedPath
-            )
-            let data = try Data(contentsOf: downloadedPath)
-
-            return data
-        } catch {
-            Logger.shared.warning("下载图标失败: \(error.localizedDescription)")
-            return nil
-        }
-    }
-
-    // MARK: - Computed Properties
-
-    /// 获取当前选中实例的信息
-    var currentInstanceInfo: ImportInstanceInfo? {
-        guard let instancePath = selectedInstancePath else { return nil }
-
-        // 从实例路径推断启动器基础路径
-        let basePath = inferBasePath(from: instancePath)
-
-        let parser = LauncherInstanceParserFactory.createParser(for: selectedLauncherType)
-        do {
-            if let info = try parser.parseInstance(at: instancePath, basePath: basePath) {
-                // 验证必须有版本（只记录日志，不显示错误，错误会在导入时显示）
-                guard !info.gameVersion.isEmpty else {
-                    Logger.shared.warning("选中的实例没有游戏版本")
-                    return nil
+    func refreshDetectedRootAndScan() {
+        scanTask?.cancel()
+        let launcherType = selectedLauncherType
+        if launcherType == .hmcl {
+            if let selectedLauncherRootPath {
+                scanTask = Task {
+                    await scanInstances(at: selectedLauncherRootPath)
                 }
-
-                return info
             } else {
-                Logger.shared.warning("解析实例返回 nil")
-                return nil
+                isScanning = false
+                scannedInstances = []
+                selectedInstanceIDs.removeAll()
+                updateParentState()
             }
-        } catch {
-            Logger.shared.error("解析实例失败: \(error.localizedDescription)")
-            return nil
+            return
+        }
+
+        isScanning = true
+        updateParentState()
+
+        scanTask = Task {
+            let detectedRoot = await Task.detached(priority: .userInitiated) {
+                LauncherInstallationScanner.autoDetectedRoot(for: launcherType)
+            }.value
+
+            guard !Task.isCancelled else { return }
+
+            await MainActor.run {
+                self.selectedLauncherRootPath = detectedRoot
+            }
+
+            guard let detectedRoot else {
+                await MainActor.run {
+                    self.scannedInstances = []
+                    self.selectedInstanceIDs.removeAll()
+                    self.isScanning = false
+                    self.updateParentState()
+                }
+                return
+            }
+
+            await scanInstances(at: detectedRoot)
         }
     }
 
-    /// 检查当前选中的实例是否使用了支持的 Mod Loader
-    var isModLoaderSupported: Bool {
-        guard let info = currentInstanceInfo else { return false }
-        return AppConstants.modLoaders.contains(info.modLoader.lowercased())
+    func updateSelectedRoot(_ rootPath: URL) {
+        selectedLauncherRootPath = rootPath
+        scanTask?.cancel()
+        scanTask = Task {
+            await scanInstances(at: rootPath)
+        }
+    }
+
+    func toggleSelection(for instance: ScannedLauncherInstance, isSelected: Bool) {
+        hasAdjustedSelectionDuringScan = true
+        if isSelected {
+            selectedInstanceIDs.insert(instance.id)
+        } else {
+            selectedInstanceIDs.remove(instance.id)
+        }
+        updateParentState()
+    }
+
+    func selectAllInstances() {
+        hasAdjustedSelectionDuringScan = true
+        selectedInstanceIDs = Set(scannedInstances.map(\.id))
+        updateParentState()
+    }
+
+    func clearSelectedInstances() {
+        hasAdjustedSelectionDuringScan = true
+        selectedInstanceIDs.removeAll()
+        updateParentState()
+    }
+
+    func scanInstances(at rootPath: URL) async {
+        let launcherType = selectedLauncherType
+        isScanning = true
+        hasAdjustedSelectionDuringScan = false
+        scannedInstances = []
+        selectedInstanceIDs.removeAll()
+        updateParentState()
+
+        var instancesByID = [String: ScannedLauncherInstance]()
+        let stream: AsyncStream<ScannedLauncherInstance>
+        if launcherType == .hmcl, rootPath.pathExtension.lowercased() == "jar" {
+            stream = LauncherInstallationScanner.scanHMCLInstancesStream(from: rootPath)
+        } else {
+            stream = LauncherInstallationScanner.scanInstancesStream(
+                for: launcherType,
+                rootPath: rootPath
+            )
+        }
+
+        for await instance in stream {
+            guard !Task.isCancelled else { return }
+
+            instancesByID[instance.id] = instance
+            scannedInstances = instancesByID.values.sorted {
+                $0.info.gameName.localizedCaseInsensitiveCompare($1.info.gameName) == .orderedAscending
+            }
+            if !hasAdjustedSelectionDuringScan {
+                selectedInstanceIDs.insert(instance.id)
+            }
+            updateParentState()
+        }
+
+        guard !Task.isCancelled else { return }
+
+        isScanning = false
+        updateParentState()
     }
 }

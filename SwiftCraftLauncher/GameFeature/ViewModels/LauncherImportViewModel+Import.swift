@@ -1,83 +1,67 @@
 import Foundation
 
 extension LauncherImportViewModel {
-    // MARK: - Import Methods
+    func importSelectedInstances() async {
+        guard let gameRepository else { return }
 
-    /// 直接从路径导入实例（所有启动器都使用此方法）
-    func importSelectedInstancePath(_ instancePath: URL) async {
-        guard let gameRepository = gameRepository else { return }
+        let instances = selectedImportInstances
+        guard !instances.isEmpty else { return }
 
         isImporting = true
-        defer { isImporting = false }
+        defer {
+            isImporting = false
+            activeImportGameName = nil
+            currentImportInstanceName = nil
+            importProgress = nil
+        }
 
-        let instanceName = instancePath.lastPathComponent
+        var importedCount = 0
 
-        // 从实例路径推断启动器基础路径
-        let basePath = inferBasePath(from: instancePath)
-
-        let parser = LauncherInstanceParserFactory.createParser(for: selectedLauncherType)
-
-        // 解析实例信息
-        let instanceInfo: ImportInstanceInfo
-        do {
-            guard let parsedInfo = try parser.parseInstance(at: instancePath, basePath: basePath) else {
-                Logger.shared.error("解析实例失败: \(instanceName) - 返回 nil")
-                errorHandler.handle(
-                    GlobalError.fileSystem(
-                        chineseMessage: "解析实例 \(instanceName) 失败：无法获取实例信息",
-                        i18nKey: "error.filesystem.parse_instance_failed",
-                        level: .notification
-                    )
-                )
+        for instance in instances {
+            if Task.isCancelled {
                 return
             }
-            instanceInfo = parsedInfo
-        } catch {
-            Logger.shared.error("解析实例失败: \(instanceName) - \(error.localizedDescription)")
-            errorHandler.handle(
-                GlobalError.fileSystem(
-                    chineseMessage: "解析实例 \(instanceName) 失败: \(error.localizedDescription)",
-                    i18nKey: "error.filesystem.parse_instance_failed",
-                    level: .notification
-                )
+
+            let didImport = await importInstance(
+                instance,
+                gameRepository: gameRepository
             )
+
+            if didImport {
+                importedCount += 1
+            }
+        }
+
+        guard importedCount > 0 else {
             return
         }
 
-        // 验证实例必须有版本
-        guard !instanceInfo.gameVersion.isEmpty else {
-            Logger.shared.error("实例 \(instanceName) 没有游戏版本")
-            errorHandler.handle(
-                GlobalError.fileSystem(
-                    chineseMessage: "实例 \(instanceName) 没有游戏版本，无法导入",
-                    i18nKey: "error.filesystem.instance_no_version",
-                    level: .notification
-                )
-            )
-            return
+        await MainActor.run {
+            gameSetupService.downloadState.reset()
+            configuration.actions.onCancel()
         }
+    }
 
-        // 验证 Mod Loader 支持，错误已显示，此处仅记录日志
-        guard AppConstants.modLoaders.contains(instanceInfo.modLoader.lowercased()) else {
-            Logger.shared.error("实例 \(instanceName) 使用了不支持的 Mod Loader: \(instanceInfo.modLoader)")
-            return
-        }
+    private func importInstance(
+        _ instance: ScannedLauncherInstance,
+        gameRepository: GameRepository
+    ) async -> Bool {
+        currentImportInstanceName = instance.info.gameName
+        activeImportModLoader = instance.info.modLoader
 
-        // 生成游戏名称（如果用户没有自定义）
-        let finalGameName = gameNameValidator.gameName.isEmpty
-            ? instanceInfo.gameName
-            : gameNameValidator.gameName
-
-        // 1. 先复制游戏目录（保留 mods、config 等文件）
+        let finalGameName = await resolvedGameName(
+            for: instance.info.gameName,
+            launcherType: instance.info.launcherType
+        )
+        activeImportGameName = finalGameName
         let targetDirectory = AppPaths.profileDirectory(gameName: finalGameName)
 
         do {
-            // 创建复制任务，以便可以取消
             copyTask = Task {
                 try await InstanceFileCopier.copyGameDirectory(
-                    from: instanceInfo.sourceGameDirectory,
+                    from: instance.info.sourceGameDirectory,
                     to: targetDirectory,
-                    launcherType: instanceInfo.launcherType
+                    launcherType: instance.info.launcherType
                 ) { fileName, completed, total in
                     Task { @MainActor in
                         self.importProgress = (fileName, completed, total)
@@ -87,16 +71,11 @@ extension LauncherImportViewModel {
 
             try await copyTask?.value
             copyTask = nil
-
-            Logger.shared.info("成功复制游戏目录: \(instanceName) -> \(finalGameName)")
         } catch is CancellationError {
-            Logger.shared.info("复制游戏目录已取消: \(instanceName)")
             copyTask = nil
-            // 清理已复制的文件
             await performCancelCleanup()
-            return
+            return false
         } catch {
-            Logger.shared.error("复制游戏目录失败: \(error.localizedDescription)")
             copyTask = nil
             errorHandler.handle(
                 GlobalError.fileSystem(
@@ -105,25 +84,24 @@ extension LauncherImportViewModel {
                     level: .notification
                 )
             )
-            return
+            await cleanupPartialImport(gameName: finalGameName)
+            return false
         }
 
-        // 2. 下载游戏和 Mod Loader（只下载缺失的，不覆盖已有）
-        let downloadSuccess = await withCheckedContinuation { continuation in
+        let didSave = await withCheckedContinuation { continuation in
             Task {
                 await gameSetupService.saveGame(
                     gameName: finalGameName,
-                    selectedGameVersion: instanceInfo.gameVersion,
-                    selectedModLoader: instanceInfo.modLoader,
-                    specifiedLoaderVersion: instanceInfo.modLoaderVersion,
-                    pendingIconData: nil,  // 从启动器导入时不导入图标
+                    selectedGameVersion: instance.info.gameVersion,
+                    selectedModLoader: instance.info.modLoader,
+                    specifiedLoaderVersion: instance.info.modLoaderVersion,
+                    pendingIconData: nil,
                     playerListViewModel: playerListViewModel,
                     gameRepository: gameRepository,
                     onSuccess: {
                         continuation.resume(returning: true)
                     },
-                    onError: { error, message in
-                        Logger.shared.error("游戏下载失败: \(message)")
+                    onError: { error, _ in
                         self.errorHandler.handle(error)
                         continuation.resume(returning: false)
                     }
@@ -131,17 +109,50 @@ extension LauncherImportViewModel {
             }
         }
 
-        if !downloadSuccess {
-            Logger.shared.error("导入实例失败: \(instanceName)")
-            return
+        if !didSave {
+            await cleanupPartialImport(gameName: finalGameName)
+            return false
         }
 
-        Logger.shared.info("成功导入实例: \(instanceName) -> \(finalGameName)")
+        activeImportGameName = nil
+        return true
+    }
 
-        // 导入完成
-        await MainActor.run {
-            gameSetupService.downloadState.reset()
-            configuration.actions.onCancel()
+    private func resolvedGameName(
+        for preferredName: String,
+        launcherType: ImportLauncherType
+    ) async -> String {
+        let trimmedName = preferredName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let baseName = trimmedName.isEmpty
+            ? "launcher.import.default_game_name".localized()
+            : trimmedName
+
+        if !(await gameSetupService.checkGameNameDuplicate(baseName)) {
+            return baseName
         }
+
+        let suffixBase = "\(baseName) (\(launcherType.displayName))"
+        if !(await gameSetupService.checkGameNameDuplicate(suffixBase)) {
+            return suffixBase
+        }
+
+        for index in 2...100 {
+            let candidate = "\(suffixBase) \(index)"
+            if !(await gameSetupService.checkGameNameDuplicate(candidate)) {
+                return candidate
+            }
+        }
+
+        return "\(suffixBase) \(UUID().uuidString.prefix(6))"
+    }
+
+    private func cleanupPartialImport(gameName: String) async {
+        do {
+            let fileManager = MinecraftFileManager()
+            try fileManager.cleanupGameDirectories(gameName: gameName)
+        } catch {
+            Logger.shared.error("清理残留文件失败: \(error.localizedDescription)")
+        }
+        activeImportGameName = nil
     }
 }

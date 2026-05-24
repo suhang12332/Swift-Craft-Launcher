@@ -8,7 +8,7 @@ import Foundation
 
 /// 导入实例信息
 /// 包含从其他启动器解析出的所有必要信息
-struct ImportInstanceInfo {
+struct ImportInstanceInfo: Sendable {
     /// 游戏名称
     let gameName: String
 

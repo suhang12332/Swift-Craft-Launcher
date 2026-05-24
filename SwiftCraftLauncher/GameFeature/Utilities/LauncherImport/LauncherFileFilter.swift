@@ -15,11 +15,29 @@ enum LauncherFileFilter {
     /// - Returns: 文件名过滤规则数组（正则表达式）
     static func getFilterPatterns(for launcherType: ImportLauncherType) -> [String] {
         switch launcherType {
+        case .all:
+            return [
+                ".*\\.log$",
+                "^launcher_.*\\.json$",
+                "^launcher_profiles\\.json$",
+                "^launcher_accounts\\.json$",
+                "^usercache\\.json$",
+            ]
+
+        case .officialLauncher:
+            return [
+                ".*\\.log$",
+                "^launcher_.*\\.json$",
+                "^launcher_profiles\\.json$",
+                "^launcher_accounts\\.json$",
+                "^usercache\\.json$",
+            ]
+
         case .multiMC, .prismLauncher:
             return [
                 // MultiMC/PrismLauncher 特定文件
-                ".*\\.mmc-pack\\.json$",
-                ".*instance\\.cfg$",
+                "^mmc-pack\\.json$",
+                "^instance\\.cfg$",
                 ".*\\.log$",
                 "^pack\\.meta$",
             ]
@@ -27,7 +45,8 @@ enum LauncherFileFilter {
         case .gdLauncher:
             return [
                 // GDLauncher 特定文件
-                ".*config\\.json$",
+                "^config\\.json$",
+                "^instance\\.json$",
                 ".*\\.log$",
                 "^metadata\\.json$",
             ]
@@ -54,9 +73,27 @@ enum LauncherFileFilter {
         case .xmcl:
             return [
                 // XMCL 特定文件
-                ".*instance\\.json$",
+                "^instance\\.json$",
                 ".*\\.log$",
                 "^metadata\\.json$",
+            ]
+
+        case .atLauncher:
+            return [
+                "^instance\\.json$",
+                ".*\\.log$",
+            ]
+
+        case .modrinthApp:
+            return [
+                "^profile\\.json$",
+                ".*\\.log$",
+            ]
+
+        case .curseForgeApp:
+            return [
+                "^minecraftinstance\\.json$",
+                ".*\\.log$",
             ]
         }
     }

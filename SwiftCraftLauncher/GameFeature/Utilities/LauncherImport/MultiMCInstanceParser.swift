@@ -54,7 +54,7 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
             modLoaderVersion: modLoaderVersion,
             gameIconPath: nil,
             iconDownloadUrl: nil,
-            sourceGameDirectory: instancePath,
+            sourceGameDirectory: resolveSourceGameDirectory(for: instancePath),
             launcherType: launcherType
         )
     }
@@ -113,6 +113,24 @@ struct MultiMCInstanceParser: LauncherInstanceParser {
             }
         }
         return (GameLoader.vanilla.displayName, "")
+    }
+
+    private func resolveSourceGameDirectory(for instancePath: URL) -> URL {
+        let fileManager = FileManager.default
+        let candidates = [
+            instancePath.appendingPathComponent("minecraft"),
+            instancePath.appendingPathComponent(".minecraft"),
+        ]
+
+        for candidate in candidates {
+            var isDirectory: ObjCBool = false
+            if fileManager.fileExists(atPath: candidate.path, isDirectory: &isDirectory),
+               isDirectory.boolValue {
+                return candidate
+            }
+        }
+
+        return instancePath
     }
 }
 

@@ -30,6 +30,8 @@ enum LauncherInstanceParserFactory {
     /// 根据启动器类型创建对应的解析器
     static func createParser(for launcherType: ImportLauncherType) -> LauncherInstanceParser {
         switch launcherType {
+        case .all, .officialLauncher:
+            return PlaceholderInstanceParser(launcherType: launcherType)
         case .multiMC, .prismLauncher:
             return MultiMCInstanceParser(launcherType: launcherType)
         case .gdLauncher:
@@ -38,6 +40,12 @@ enum LauncherInstanceParserFactory {
             return XMCLInstanceParser()
         case .hmcl, .sjmcLauncher:
             return SJMCLInstanceParser(launcherType: launcherType)
+        case .atLauncher:
+            return ATLauncherInstanceParser()
+        case .modrinthApp:
+            return ModrinthAppInstanceParser()
+        case .curseForgeApp:
+            return CurseForgeAppInstanceParser()
         }
     }
 }

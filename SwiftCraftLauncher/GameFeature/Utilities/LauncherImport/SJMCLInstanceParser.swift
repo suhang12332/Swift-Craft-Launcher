@@ -134,6 +134,12 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
         let gameVersion = versionInfo.mcVersion ?? ""
         let modLoader = versionInfo.modLoader ?? GameLoader.vanilla.displayName
         let modLoaderVersion = versionInfo.modLoaderVersion ?? ""
+        guard let sourceGameDirectory = resolveHMCLSourceGameDirectory(
+            instancePath: instancePath,
+            basePath: basePath
+        ) else {
+            return nil
+        }
 
         return ImportInstanceInfo(
             gameName: gameName,
@@ -142,7 +148,7 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
             modLoaderVersion: modLoaderVersion,
             gameIconPath: nil,
             iconDownloadUrl: nil,
-            sourceGameDirectory: instancePath,
+            sourceGameDirectory: sourceGameDirectory,
             launcherType: launcherType
         )
     }
@@ -155,8 +161,8 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
         }
 
         let id = json["id"] as? String
+        let instanceDirectory = path.deletingLastPathComponent()
 
-        // 从 arguments.game 中提取 Mod Loader 信息
         var modLoader = GameLoader.vanilla.displayName
         var modLoaderVersion = ""
         var mcVersion = ""
@@ -244,6 +250,70 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
             }
         }
 
+        if let patchMetadata = parseHMCLPatchMetadata(from: json) {
+            if mcVersion.isEmpty,
+               let patchGameVersion = patchMetadata.mcVersion {
+                mcVersion = patchGameVersion
+            }
+            if modLoader == GameLoader.vanilla.displayName,
+               let loader = patchMetadata.modLoader {
+                modLoader = loader
+            }
+            if modLoaderVersion.isEmpty,
+               let version = patchMetadata.modLoaderVersion {
+                modLoaderVersion = version
+            }
+        }
+
+        if let config = try? parseHMCLConfigJson(
+            at: instanceDirectory.appendingPathComponent("hmclversion.cfg")
+        ) {
+            if mcVersion.isEmpty,
+               let gameVersion = config.gameVersion?.trimmingCharacters(in: .whitespacesAndNewlines),
+               !gameVersion.isEmpty {
+                mcVersion = gameVersion
+            }
+            if modLoader == GameLoader.vanilla.displayName,
+               let loader = normalizedHMCLLoaderName(config.modLoader) {
+                modLoader = loader
+            }
+            if modLoaderVersion.isEmpty,
+               let version = config.modLoaderVersion?.trimmingCharacters(in: .whitespacesAndNewlines),
+               !version.isEmpty {
+                modLoaderVersion = version
+            }
+        }
+
+        if let modrinthMetadata = parseHMCLModrinthIndexMetadata(
+            at: instanceDirectory.appendingPathComponent("modrinth.index.json")
+        ) {
+            if mcVersion.isEmpty,
+               let modrinthGameVersion = modrinthMetadata.mcVersion {
+                mcVersion = modrinthGameVersion
+            }
+            if modLoader == GameLoader.vanilla.displayName,
+               let loader = modrinthMetadata.modLoader {
+                modLoader = loader
+            }
+            if modLoaderVersion.isEmpty,
+               let version = modrinthMetadata.modLoaderVersion {
+                modLoaderVersion = version
+            }
+        }
+
+        if modLoader == GameLoader.vanilla.displayName,
+           let mainClass = (json["mainClass"] as? String)?.lowercased() {
+            if mainClass.contains("fabricmc.loader") {
+                modLoader = GameLoader.fabric.displayName
+            } else if mainClass.contains("quiltmc.loader") {
+                modLoader = GameLoader.quilt.rawValue
+            } else if mainClass.contains("neoforge") {
+                modLoader = GameLoader.neoforge.displayName
+            } else if mainClass.contains("fmlloader") || mainClass.contains("forge") {
+                modLoader = GameLoader.forge.displayName
+            }
+        }
+
         return HMCLVersionInfo(
             id: id,
             mcVersion: mcVersion.isEmpty ? nil : mcVersion,
@@ -252,10 +322,180 @@ struct SJMCLInstanceParser: LauncherInstanceParser {
         )
     }
 
+    private func parseHMCLPatchMetadata(from json: [String: Any]) -> HMCLVersionInfo? {
+        guard let patches = json["patches"] as? [[String: Any]] else {
+            return nil
+        }
+
+        var mcVersion = ""
+        var modLoader: String?
+        var modLoaderVersion: String?
+
+        for patch in patches {
+            guard let patchID = (patch["id"] as? String)?.lowercased(),
+                  let version = (patch["version"] as? String)?
+                  .trimmingCharacters(in: .whitespacesAndNewlines),
+                  !version.isEmpty else {
+                continue
+            }
+
+            switch patchID {
+            case "game", "minecraft":
+                if mcVersion.isEmpty {
+                    mcVersion = version
+                }
+            case GameLoader.fabric.displayName:
+                modLoader = GameLoader.fabric.displayName
+                if modLoaderVersion == nil {
+                    modLoaderVersion = version
+                }
+            case GameLoader.forge.displayName:
+                modLoader = GameLoader.forge.displayName
+                if modLoaderVersion == nil {
+                    modLoaderVersion = version
+                }
+            case GameLoader.neoforge.displayName:
+                modLoader = GameLoader.neoforge.displayName
+                if modLoaderVersion == nil {
+                    modLoaderVersion = version
+                }
+            case GameLoader.quilt.rawValue:
+                modLoader = GameLoader.quilt.rawValue
+                if modLoaderVersion == nil {
+                    modLoaderVersion = version
+                }
+            default:
+                continue
+            }
+        }
+
+        guard !mcVersion.isEmpty || modLoader != nil || modLoaderVersion != nil else {
+            return nil
+        }
+
+        return HMCLVersionInfo(
+            id: nil,
+            mcVersion: mcVersion.isEmpty ? nil : mcVersion,
+            modLoader: modLoader,
+            modLoaderVersion: modLoaderVersion
+        )
+    }
+
+    private func parseHMCLModrinthIndexMetadata(at path: URL) -> HMCLVersionInfo? {
+        guard let data = try? Data(contentsOf: path),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let dependencies = json["dependencies"] as? [String: Any] else {
+            return nil
+        }
+
+        let mcVersion = (dependencies["minecraft"] as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        var modLoader: String?
+        var modLoaderVersion: String?
+
+        let loaderMapping: [(String, String)] = [
+            ("fabric-loader", GameLoader.fabric.displayName),
+            ("forge", GameLoader.forge.displayName),
+            ("neoforge", GameLoader.neoforge.displayName),
+            ("quilt-loader", GameLoader.quilt.rawValue),
+        ]
+
+        for (key, loaderName) in loaderMapping {
+            guard let version = (dependencies[key] as? String)?
+                .trimmingCharacters(in: .whitespacesAndNewlines),
+                !version.isEmpty else {
+                continue
+            }
+            modLoader = loaderName
+            modLoaderVersion = version
+            break
+        }
+
+        guard !mcVersion.isEmpty || modLoader != nil || modLoaderVersion != nil else {
+            return nil
+        }
+
+        return HMCLVersionInfo(
+            id: nil,
+            mcVersion: mcVersion.isEmpty ? nil : mcVersion,
+            modLoader: modLoader,
+            modLoaderVersion: modLoaderVersion
+        )
+    }
+
+    private func normalizedHMCLLoaderName(_ rawValue: String?) -> String? {
+        guard let rawValue else {
+            return nil
+        }
+
+        switch rawValue
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .lowercased() {
+        case GameLoader.fabric.displayName:
+            return GameLoader.fabric.displayName
+        case GameLoader.forge.displayName:
+            return GameLoader.forge.displayName
+        case GameLoader.neoforge.displayName:
+            return GameLoader.neoforge.displayName
+        case GameLoader.quilt.rawValue:
+            return GameLoader.quilt.rawValue
+        default:
+            return nil
+        }
+    }
+
     /// 解析 HMCL config.json 文件
     private func parseHMCLConfigJson(at path: URL) throws -> HMCLConfig? {
         let data = try Data(contentsOf: path)
         return try? JSONDecoder().decode(HMCLConfig.self, from: data)
+    }
+
+    private func resolveHMCLSourceGameDirectory(
+        instancePath: URL,
+        basePath: URL
+    ) -> URL? {
+        if hasGameContent(at: instancePath) {
+            return instancePath
+        }
+
+        let configURL = instancePath.appendingPathComponent("hmclversion.cfg")
+        guard let config = try? parseHMCLConfigJson(at: configURL) else {
+            return nil
+        }
+
+        if config.gameDirType == 1 {
+            return hasGameContent(at: instancePath) ? instancePath : nil
+        }
+
+        guard let customGameDir = config.gameDir?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !customGameDir.isEmpty else {
+            return nil
+        }
+
+        let resolvedURL: URL
+        if customGameDir.hasPrefix("/") {
+            resolvedURL = URL(fileURLWithPath: customGameDir)
+        } else {
+            resolvedURL = basePath.appendingPathComponent(customGameDir)
+        }
+
+        return hasGameContent(at: resolvedURL) ? resolvedURL : nil
+    }
+
+    private func hasGameContent(at url: URL) -> Bool {
+        let fileManager = FileManager.default
+        let markers = [
+            AppConstants.DirectoryNames.mods,
+            AppConstants.DirectoryNames.config,
+            AppConstants.DirectoryNames.saves,
+            AppConstants.DirectoryNames.resourcepacks,
+            AppConstants.DirectoryNames.shaderpacks,
+            AppConstants.DirectoryNames.option,
+        ]
+
+        return markers.contains { marker in
+            fileManager.fileExists(atPath: url.appendingPathComponent(marker).path)
+        }
     }
 
     // MARK: - Common Methods
@@ -315,6 +555,8 @@ private struct HMCLConfig: Codable {
     let gameVersion: String?
     let modLoader: String?
     let modLoaderVersion: String?
+    let gameDir: String?
+    let gameDirType: Int?
 }
 
 private struct HMCLVersionInfo {

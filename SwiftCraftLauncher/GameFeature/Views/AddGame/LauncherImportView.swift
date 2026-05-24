@@ -1,93 +1,81 @@
-//
-//  LauncherImportView.swift
-//  SwiftCraftLauncher
-//
-//
-
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - LauncherImportView
 struct LauncherImportView: View {
     @StateObject private var viewModel: LauncherImportViewModel
-    @StateObject private var folderPickerViewModel = LauncherImportFolderPickerViewModel()
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
 
-    // Bindings from parent
     private let triggerConfirm: Binding<Bool>
     private let triggerCancel: Binding<Bool>
-    @Environment(\.dismiss)
-    private var dismiss
 
-    // 文件选择器状态
     @State private var showFolderPicker = false
 
-    // MARK: - Initializer
+    private var selectedImportContentTypes: [UTType] {
+        if viewModel.selectedLauncherType == .hmcl {
+            return [UTType(filenameExtension: "jar") ?? .data]
+        }
+        return [.folder]
+    }
+
     init(configuration: GameFormConfiguration) {
-        self.triggerConfirm = configuration.triggerConfirm
-        self.triggerCancel = configuration.triggerCancel
-
-        self._viewModel = StateObject(wrappedValue: LauncherImportViewModel(
-            configuration: configuration
-        ))
+        triggerConfirm = configuration.triggerConfirm
+        triggerCancel = configuration.triggerCancel
+        _viewModel = StateObject(
+            wrappedValue: LauncherImportViewModel(configuration: configuration)
+        )
     }
 
-    // MARK: - Body
     var body: some View {
-        formContentView
-            .onAppear {
-                viewModel.setup(gameRepository: gameRepository, playerListViewModel: playerListViewModel)
-            }
-            .onDisappear {
-                // Sheet 关闭时清理缓存
-                viewModel.cleanup()
-            }
-            .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
-            .onChange(of: viewModel.selectedLauncherType) { _, _ in
-                // 启动器类型改变时，清除之前的选择
-                viewModel.selectedInstancePath = nil
-            }
-            .onChange(of: viewModel.selectedInstancePath) { _, newValue in
-                // 当选中实例路径变化时，自动填充游戏名到输入框
-                if newValue != nil {
-                    viewModel.autoFillGameNameIfNeeded()
-                    // 检查 Mod Loader 是否支持，如果不支持则显示通知
-                    viewModel.checkAndNotifyUnsupportedModLoader()
-                }
-            }
-            .fileImporter(
-                isPresented: $showFolderPicker,
-                allowedContentTypes: [.folder],
-                allowsMultipleSelection: false
-            ) { result in
-                handleFolderSelection(result)
-            }
-            .fileDialogDefaultDirectory(FileManager.default.homeDirectoryForCurrentUser)
-    }
-
-    // MARK: - View Components
-
-    private var formContentView: some View {
         VStack(spacing: 16) {
             launcherSelectionSection
-            pathSelectionSection
-            if viewModel.currentInstanceInfo != nil {
-                instanceInfoSection
-            }
-            gameNameInputSection
+            rootSelectionSection
+            instanceSelectionSection
             if viewModel.shouldShowProgress {
                 VStack(spacing: 16) {
-                    // 显示复制进度（如果正在复制）
+                    if let currentImportInstanceName = viewModel.currentImportInstanceName {
+                        FormSection {
+                            Text(currentImportInstanceName)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                     if viewModel.isImporting, let progress = viewModel.importProgress {
                         importProgressSection(progress: progress)
                     }
-                    // 显示下载进度
                     downloadProgressSection
                 }
                 .padding(.top, 10)
             }
         }
+        .onAppear {
+            viewModel.setup(
+                gameRepository: gameRepository,
+                playerListViewModel: playerListViewModel
+            )
+        }
+        .onDisappear {
+            viewModel.cleanup()
+        }
+        .gameFormStateListeners(
+            viewModel: viewModel,
+            triggerConfirm: triggerConfirm,
+            triggerCancel: triggerCancel
+        )
+        .onChange(of: viewModel.selectedLauncherType) { _, newValue in
+            viewModel.handleLauncherTypeChange()
+            if newValue == .hmcl {
+                showFolderPicker = true
+            }
+        }
+        .fileImporter(
+            isPresented: $showFolderPicker,
+            allowedContentTypes: selectedImportContentTypes,
+            allowsMultipleSelection: false
+        ) { result in
+            handlePathSelection(result)
+        }
+        .fileDialogDefaultDirectory(FileManager.default.homeDirectoryForCurrentUser)
     }
 
     private var launcherSelectionSection: some View {
@@ -104,7 +92,7 @@ struct LauncherImportView: View {
                     Text("")
                 } content: {
                     ForEach(ImportLauncherType.allCases, id: \.self) { launcherType in
-                        Text(launcherType.rawValue)
+                        Text(launcherType.displayName)
                             .tag(launcherType)
                     }
                 }
@@ -112,76 +100,116 @@ struct LauncherImportView: View {
         }
     }
 
-    private var pathSelectionSection: some View {
+    private var rootSelectionSection: some View {
         FormSection {
             VStack(alignment: .leading, spacing: 8) {
-                Text("launcher.import.select_instance_folder".localized())
+                Text(rootSelectionTitle)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
-                HStack {
-                    if let path = viewModel.selectedInstancePath?.path {
+                HStack(spacing: 12) {
+                    if let path = viewModel.selectedLauncherRootPath?.path {
                         PathBreadcrumbView(path: path)
                     } else {
-                        Text("launcher.import.no_path_selected".localized())
+                        Text(emptyRootSelectionTitle)
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
 
                     Spacer()
 
-                    Button("common.browse".localized()) {
-                        selectLauncherPath()
+                    Button {
+                        viewModel.refreshDetectedRootAndScan()
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
                     }
+                    .buttonStyle(.bordered)
+                    .disabled(viewModel.isScanning || viewModel.isImporting || viewModel.isDownloading)
+
+                    Button("common.browse".localized()) {
+                        showFolderPicker = true
+                    }
+                    .disabled(viewModel.isScanning || viewModel.isImporting || viewModel.isDownloading)
                 }
             }
         }
     }
 
-    @ViewBuilder private var instanceInfoSection: some View {
-        if let info = viewModel.currentInstanceInfo {
-            FormSection {
-                VStack(alignment: .leading, spacing: 12) {
+    private var rootSelectionTitle: String {
+        if viewModel.selectedLauncherType == .hmcl {
+            return "launcher.import.select_hmcl_jar".localized()
+        }
+        return "launcher.import.select_launcher_folder".localized()
+    }
+
+    private var emptyRootSelectionTitle: String {
+        if viewModel.selectedLauncherType == .hmcl {
+            return "launcher.import.no_hmcl_jar_selected".localized()
+        }
+        return "launcher.import.no_path_selected".localized()
+    }
+
+    private var instanceSelectionSection: some View {
+        FormSection {
+            VStack(alignment: .leading, spacing: 10) {
+                if viewModel.selectedLauncherType == .all {
+                    Text("launcher.import.scan_all_hint".localized())
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                HStack {
+                    Text("\(viewModel.selectedImportInstances.count)/\(viewModel.scannedInstances.count)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    Spacer()
+
+                    Button {
+                        viewModel.selectAllInstances()
+                    } label: {
+                        Image(systemName: "checklist.checked")
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(viewModel.scannedInstances.isEmpty)
+
+                    Button {
+                        viewModel.clearSelectedInstances()
+                    } label: {
+                        Image(systemName: "xmark.circle")
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(viewModel.selectedInstanceIDs.isEmpty)
+                }
+
+                if viewModel.scannedInstances.isEmpty, viewModel.isScanning {
+                    HStack {
+                        ProgressView()
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 140, alignment: .leading)
+                } else if viewModel.scannedInstances.isEmpty {
+                    ContentUnavailableView(
+                        viewModel.hasSelectedRoot
+                            ? "launcher.import.no_instances_found".localized()
+                            : "launcher.import.no_path_selected".localized(),
+                        systemImage: "shippingbox"
+                    )
+                    .frame(maxWidth: .infinity, minHeight: 140)
+                } else {
                     VStack(alignment: .leading, spacing: 8) {
-                        // 游戏名称
-                        HStack {
-                            Text("game.form.name".localized())
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Text(info.gameName)
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-
-                        // 游戏版本
-                        HStack {
-                            Text("game.form.version".localized())
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Label(info.gameVersion, systemImage: "gamecontroller.fill")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                        }
-
-                        // Mod 加载器
-                        if !info.modLoader.isEmpty && info.modLoader != GameLoader.vanilla.displayName {
+                        if viewModel.isScanning {
                             HStack {
-                                Text("game.form.modloader".localized())
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                                ProgressView()
                                 Spacer()
-                                HStack(spacing: 4) {
-                                    Label(info.modLoader.capitalized, systemImage: "puzzlepiece.extension.fill")
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                    if !info.modLoaderVersion.isEmpty {
-                                        Text(info.modLoaderVersion)
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
+                            }
+                        }
+
+                        ForEach(viewModel.scannedInstances) { instance in
+                            instanceRow(instance)
+                            if instance.id != viewModel.scannedInstances.last?.id {
+                                Divider()
                             }
                         }
                     }
@@ -190,34 +218,48 @@ struct LauncherImportView: View {
         }
     }
 
-    private var gameNameInputSection: some View {
-        FormSection {
-            GameNameInputView(
-                gameName: Binding(
-                    get: { viewModel.gameNameValidator.gameName },
-                    set: { viewModel.gameNameValidator.gameName = $0 }
-                ),
-                isGameNameDuplicate: Binding(
-                    get: { viewModel.gameNameValidator.isGameNameDuplicate },
-                    set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 }
-                ),
-                isDisabled: viewModel.isImporting || viewModel.isDownloading,
-                gameSetupService: viewModel.gameSetupService
-            )
+    private func instanceRow(_ instance: ScannedLauncherInstance) -> some View {
+        let isSelected = Binding(
+            get: { viewModel.selectedInstanceIDs.contains(instance.id) },
+            set: { viewModel.toggleSelection(for: instance, isSelected: $0) }
+        )
+
+        return Toggle(isOn: isSelected) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(instance.info.gameName)
+                    .font(.headline)
+
+                HStack(spacing: 8) {
+                    Label(instance.info.gameVersion, systemImage: "gamecontroller.fill")
+                    if instance.info.modLoader != GameLoader.vanilla.displayName {
+                        Label(
+                            instance.info.modLoaderVersion.isEmpty
+                                ? instance.info.modLoader.capitalized
+                                : "\(instance.info.modLoader.capitalized) \(instance.info.modLoaderVersion)",
+                            systemImage: "puzzlepiece.extension.fill"
+                        )
+                    }
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+                HStack(spacing: 8) {
+                    Text(instance.info.launcherType.displayName)
+                    Text(instance.instancePath.lastPathComponent)
+                }
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+            }
+            .padding(.vertical, 4)
         }
+        .toggleStyle(.checkbox)
+        .disabled(viewModel.isImporting || viewModel.isDownloading)
     }
 
     private var downloadProgressSection: some View {
-        let selectedModLoader: String = {
-            if let info = viewModel.currentInstanceInfo {
-                return info.modLoader
-            }
-            return GameLoader.vanilla.displayName
-        }()
-
-        return DownloadProgressSection(
+        DownloadProgressSection(
             gameSetupService: viewModel.gameSetupService,
-            selectedModLoader: selectedModLoader,
+            selectedModLoader: viewModel.activeImportModLoader,
             modPackViewModel: nil,
             modPackIndexInfo: nil
         )
@@ -236,48 +278,41 @@ struct LauncherImportView: View {
         }
     }
 
-    // MARK: - Helper Methods
-
-    private func selectLauncherPath() {
-        showFolderPicker = true
-    }
-
-    /// 处理通过 fileImporter 选择的文件夹
-    private func handleFolderSelection(_ result: Result<[URL], Error>) {
-        let launcherName = viewModel.selectedLauncherType.rawValue
-        folderPickerViewModel.handleFolderSelection(
-            result,
-            launcherName: launcherName,
-            validateInstance: { url in viewModel.validateInstance(at: url) },
-            setSelectedInstancePath: { url in viewModel.selectedInstancePath = url },
-            autoFillGameNameIfNeeded: { viewModel.autoFillGameNameIfNeeded() }
-        )
-    }
-
-    #Preview {
-        struct PreviewWrapper: View {
-            @State private var isDownloading = false
-            @State private var isFormValid = false
-            @State private var triggerConfirm = false
-            @State private var triggerCancel = false
-
-            var body: some View {
-                LauncherImportView(
-                    configuration: GameFormConfiguration(
-                        isDownloading: $isDownloading,
-                        isFormValid: $isFormValid,
-                        triggerConfirm: $triggerConfirm,
-                        triggerCancel: $triggerCancel,
-                        onCancel: {},
-                        onConfirm: {}
-                    )
-                )
-                .environmentObject(GameRepository())
-                .environmentObject(PlayerListViewModel())
-                .frame(width: 600, height: 500)
-                .padding()
-            }
+    private func handlePathSelection(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            guard let url = urls.first else { return }
+            viewModel.updateSelectedRoot(url)
+        case .failure(let error):
+            AppServices.errorHandler.handle(GlobalError.from(error))
         }
-        return PreviewWrapper()
     }
+}
+
+#Preview {
+    struct PreviewWrapper: View {
+        @State private var isDownloading = false
+        @State private var isFormValid = false
+        @State private var triggerConfirm = false
+        @State private var triggerCancel = false
+
+        var body: some View {
+            LauncherImportView(
+                configuration: GameFormConfiguration(
+                    isDownloading: $isDownloading,
+                    isFormValid: $isFormValid,
+                    triggerConfirm: $triggerConfirm,
+                    triggerCancel: $triggerCancel,
+                    onCancel: {},
+                    onConfirm: {}
+                )
+            )
+            .environmentObject(GameRepository())
+            .environmentObject(PlayerListViewModel())
+            .frame(width: 640, height: 640)
+            .padding()
+        }
+    }
+
+    return PreviewWrapper()
 }

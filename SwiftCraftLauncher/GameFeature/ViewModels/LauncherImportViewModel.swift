@@ -1,33 +1,27 @@
-//
-//  LauncherImportViewModel.swift
-//  SwiftCraftLauncher
-//
-//
-
 import SwiftUI
 
-/// 启动器导入 ViewModel
 @MainActor
-class LauncherImportViewModel: BaseGameFormViewModel {
-
-    // MARK: - Published Properties
-
+final class LauncherImportViewModel: BaseGameFormViewModel {
     @Published var selectedLauncherType: ImportLauncherType = .multiMC
-    @Published var selectedInstancePath: URL?  // 直接选择的实例路径（所有启动器都使用此方式）
+    @Published var selectedLauncherRootPath: URL?
+    @Published var scannedInstances: [ScannedLauncherInstance] = []
+    @Published var selectedInstanceIDs = Set<String>()
+    @Published var isScanning = false
     @Published var isImporting = false {
         didSet {
             updateParentState()
         }
     }
     @Published var importProgress: (fileName: String, completed: Int, total: Int)?
+    @Published var currentImportInstanceName: String?
+    @Published var activeImportModLoader = GameLoader.vanilla.displayName
 
-    // MARK: - Private Properties
-
+    var hasAdjustedSelectionDuringScan = false
     var gameRepository: GameRepository?
     var playerListViewModel: PlayerListViewModel?
     var copyTask: Task<Void, Error>?
-
-    // MARK: - Initialization
+    var scanTask: Task<Void, Never>?
+    var activeImportGameName: String?
 
     override init(
         configuration: GameFormConfiguration,
@@ -36,60 +30,53 @@ class LauncherImportViewModel: BaseGameFormViewModel {
         super.init(configuration: configuration, errorHandler: errorHandler)
     }
 
-    // MARK: - Setup Methods
-
     func setup(gameRepository: GameRepository, playerListViewModel: PlayerListViewModel) {
         self.gameRepository = gameRepository
         self.playerListViewModel = playerListViewModel
+        refreshDetectedRootAndScan()
         updateParentState()
     }
 
-    // MARK: - Cleanup Methods
-
-    /// 清理缓存和状态（在 sheet 关闭时调用）
     func cleanup() {
-        // 取消正在进行的任务
+        scanTask?.cancel()
+        scanTask = nil
         copyTask?.cancel()
         copyTask = nil
         downloadTask?.cancel()
         downloadTask = nil
 
-        // 重置状态
-        selectedInstancePath = nil
+        selectedLauncherRootPath = nil
+        scannedInstances = []
+        selectedInstanceIDs.removeAll()
         importProgress = nil
+        currentImportInstanceName = nil
+        activeImportGameName = nil
+        activeImportModLoader = GameLoader.vanilla.displayName
+        isScanning = false
         isImporting = false
         selectedLauncherType = .multiMC
-
-        // 重置下载状态
         gameSetupService.downloadState.reset()
-
-        // 清理引用
         gameRepository = nil
         playerListViewModel = nil
     }
 
-    // MARK: - Override Methods
-
     override func performConfirmAction() async {
-        // 所有启动器都直接使用 selectedInstancePath
-        if let instancePath = selectedInstancePath {
-            startDownloadTask {
-                await self.importSelectedInstancePath(instancePath)
-            }
+        startDownloadTask {
+            await self.importSelectedInstances()
         }
     }
 
     override func handleCancel() {
-        if isDownloading || isImporting {
-            // 取消复制任务
+        if isScanning || isDownloading || isImporting {
+            scanTask?.cancel()
+            scanTask = nil
             copyTask?.cancel()
             copyTask = nil
-            // 取消下载任务
             downloadTask?.cancel()
             downloadTask = nil
             gameSetupService.downloadState.cancel()
             Task {
-                await performCancelCleanup()
+                await self.performCancelCleanup()
             }
         } else {
             configuration.actions.onCancel()
@@ -97,51 +84,43 @@ class LauncherImportViewModel: BaseGameFormViewModel {
     }
 
     override func performCancelCleanup() async {
-        // 清理已创建的游戏文件夹
-        if let instancePath = selectedInstancePath {
-            let basePath = inferBasePath(from: instancePath)
-
-            let parser = LauncherInstanceParserFactory.createParser(for: selectedLauncherType)
-            if let info = try? parser.parseInstance(at: instancePath, basePath: basePath) {
-                do {
-                    let fileManager = MinecraftFileManager()
-                    let gameName = gameNameValidator.gameName.isEmpty
-                        ? info.gameName
-                        : gameNameValidator.gameName
-                    try fileManager.cleanupGameDirectories(gameName: gameName)
-                } catch {
-                    Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
-                }
+        if let gameName = activeImportGameName {
+            do {
+                let fileManager = MinecraftFileManager()
+                try fileManager.cleanupGameDirectories(gameName: gameName)
+            } catch {
+                Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
             }
         }
 
         await MainActor.run {
-            isImporting = false
+            activeImportGameName = nil
+            currentImportInstanceName = nil
             importProgress = nil
+            isScanning = false
+            isImporting = false
             gameSetupService.downloadState.reset()
             configuration.actions.onCancel()
         }
     }
 
     override func computeIsDownloading() -> Bool {
-        return gameSetupService.downloadState.isDownloading || isImporting
+        gameSetupService.downloadState.isDownloading || isImporting
     }
 
     override func computeIsFormValid() -> Bool {
-        // 所有启动器都检查 selectedInstancePath
-        guard selectedInstancePath != nil && gameNameValidator.isFormValid else {
-            return false
-        }
-
-        // 检查 Mod Loader 是否支持
-        return isModLoaderSupported
+        !selectedImportInstances.isEmpty && !isScanning && !isImporting
     }
 
     var shouldShowProgress: Bool {
         gameSetupService.downloadState.isDownloading || isImporting
     }
 
-    var hasSelectedInstance: Bool {
-        selectedInstancePath != nil
+    var hasSelectedRoot: Bool {
+        selectedLauncherRootPath != nil
+    }
+
+    var selectedImportInstances: [ScannedLauncherInstance] {
+        scannedInstances.filter { selectedInstanceIDs.contains($0.id) }
     }
 }

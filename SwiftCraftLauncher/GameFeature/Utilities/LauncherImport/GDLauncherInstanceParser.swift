@@ -1,9 +1,3 @@
-//
-//  GDLauncherInstanceParser.swift
-//  SwiftCraftLauncher
-//
-//
-
 import Foundation
 
 /// GDLauncher 实例解析器
@@ -11,16 +5,8 @@ struct GDLauncherInstanceParser: LauncherInstanceParser {
     let launcherType: ImportLauncherType = .gdLauncher
 
     func isValidInstance(at instancePath: URL) -> Bool {
-        let instanceJsonPath = instancePath.appendingPathComponent("instance.json")
-        let fileManager = FileManager.default
-
-        guard fileManager.fileExists(atPath: instanceJsonPath.path) else {
-            return false
-        }
-
-        // 验证 JSON 文件可以解析
         do {
-            _ = try parseInstanceJson(at: instanceJsonPath)
+            _ = try loadConfig(at: instancePath)
             return true
         } catch {
             return false
@@ -28,78 +14,188 @@ struct GDLauncherInstanceParser: LauncherInstanceParser {
     }
 
     func parseInstance(at instancePath: URL, basePath: URL) throws -> ImportInstanceInfo? {
-        let instanceJsonPath = instancePath.appendingPathComponent("instance.json")
-        let instanceConfig = try parseInstanceJson(at: instanceJsonPath)
-
-        // 提取游戏版本
-        let gameVersion = instanceConfig.gameConfiguration.version.release
-
-        // 提取 Mod 加载器信息（取第一个 modloader）
-        var modLoader = GameLoader.vanilla.displayName
-        var modLoaderVersion = ""
-
-        if let firstModLoader = instanceConfig.gameConfiguration.version.modloaders.first {
-            modLoader = firstModLoader.type.lowercased()
-            modLoaderVersion = firstModLoader.version
-        }
-
-        // 提取游戏名称
-        let gameName = instanceConfig.name
-
-        // 提取图标路径
-        var gameIconPath: URL?
-        if let iconName = instanceConfig.icon {
-            let iconPath = instancePath.appendingPathComponent(iconName)
-            let fileManager = FileManager.default
-            if fileManager.fileExists(atPath: iconPath.path) {
-                gameIconPath = iconPath
-            }
-        }
+        let config = try loadConfig(at: instancePath)
+        let modLoader = normalizedLoader(from: config.loaderType)
+        let gameName = config.sourceName ?? instancePath.lastPathComponent
+        let iconPath = resolveIconPath(background: config.background, instancePath: instancePath)
 
         return ImportInstanceInfo(
             gameName: gameName,
-            gameVersion: gameVersion,
+            gameVersion: config.mcVersion,
             modLoader: modLoader,
-            modLoaderVersion: modLoaderVersion,
-            gameIconPath: gameIconPath,
+            modLoaderVersion: config.loaderVersion ?? "",
+            gameIconPath: iconPath,
             iconDownloadUrl: nil,
-            sourceGameDirectory: instancePath,
+            sourceGameDirectory: resolveSourceGameDirectory(for: instancePath),
             launcherType: launcherType
         )
     }
 
-    // MARK: - Private Methods
+    private func loadConfig(at instancePath: URL) throws -> GDLauncherConfig {
+        let decoder = JSONDecoder()
 
-    /// 解析 instance.json 文件
-    private func parseInstanceJson(at path: URL) throws -> GDLauncherInstanceConfig {
-        let data = try Data(contentsOf: path)
-        return try JSONDecoder().decode(GDLauncherInstanceConfig.self, from: data)
+        for fileName in ["config.json", "instance.json"] {
+            let fileURL = instancePath.appendingPathComponent(fileName)
+            guard FileManager.default.fileExists(atPath: fileURL.path) else {
+                continue
+            }
+            let data = try Data(contentsOf: fileURL)
+            if let config = try? decoder.decode(GDLauncherConfig.self, from: data) {
+                return config
+            }
+        }
+
+        throw ImportError.fileNotFound(path: instancePath.appendingPathComponent("config.json").path)
+    }
+
+    private func normalizedLoader(from loaderType: String?) -> String {
+        guard let loaderType else {
+            return GameLoader.vanilla.displayName
+        }
+
+        switch loaderType.lowercased() {
+        case GameLoader.fabric.displayName:
+            return GameLoader.fabric.displayName
+        case GameLoader.forge.displayName:
+            return GameLoader.forge.displayName
+        case GameLoader.neoforge.displayName, "neo_forge":
+            return GameLoader.neoforge.displayName
+        case GameLoader.quilt.rawValue:
+            return GameLoader.quilt.rawValue
+        default:
+            return GameLoader.vanilla.displayName
+        }
+    }
+
+    private func resolveIconPath(background: String?, instancePath: URL) -> URL? {
+        guard let background, !background.isEmpty else {
+            return nil
+        }
+
+        let iconPath = instancePath.appendingPathComponent(background)
+        return FileManager.default.fileExists(atPath: iconPath.path) ? iconPath : nil
+    }
+
+    private func resolveSourceGameDirectory(for instancePath: URL) -> URL {
+        let fileManager = FileManager.default
+        let candidates = [
+            instancePath.appendingPathComponent("instance"),
+            instancePath.appendingPathComponent(".minecraft"),
+            instancePath.appendingPathComponent("minecraft"),
+        ]
+
+        for candidate in candidates {
+            var isDirectory: ObjCBool = false
+            if fileManager.fileExists(atPath: candidate.path, isDirectory: &isDirectory),
+               isDirectory.boolValue {
+                return candidate
+            }
+        }
+
+        return instancePath
     }
 }
 
-// MARK: - GDLauncher Models
-private struct GDLauncherInstanceConfig: Codable {
-    let name: String
-    let icon: String?
-    let gameConfiguration: GDLauncherGameConfiguration
+private struct GDLauncherConfig: Decodable {
+    let background: String?
+    let sourceName: String?
+    let mcVersion: String
+    let loaderType: String?
+    let loaderVersion: String?
 
-    enum CodingKeys: String, CodingKey {
+    private enum CodingKeys: String, CodingKey {
+        case background
         case name
         case icon
+        case loader
+        case loaderType
+        case loaderVersion
+        case mcVersion
+        case sourceName
+        case loaderTypeSnake = "loader_type"
+        case loaderVersionSnake = "loader_version"
+        case mcVersionSnake = "mc_version"
+        case sourceNameSnake = "source_name"
         case gameConfiguration = "game_configuration"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        background = try container.decodeIfPresent(String.self, forKey: .background)
+        let legacyLoader = try container.decodeIfPresent(GDLauncherLegacyLoader.self, forKey: .loader)
+        let modernConfiguration = try container.decodeIfPresent(
+            GDLauncherGameConfiguration.self,
+            forKey: .gameConfiguration
+        )
+
+        sourceName = try container.decodeIfPresent(String.self, forKey: .sourceName)
+            ?? container.decodeIfPresent(String.self, forKey: .sourceNameSnake)
+            ?? container.decodeIfPresent(String.self, forKey: .name)
+            ?? legacyLoader?.sourceName
+
+        if let modernVersion = modernConfiguration?.version {
+            mcVersion = modernVersion.release
+            loaderType = modernVersion.modloaders.first?.type
+            loaderVersion = modernVersion.modloaders.first?.version
+            return
+        }
+
+        if let legacyLoader {
+            mcVersion = legacyLoader.mcVersion
+            loaderType = legacyLoader.loaderType
+            loaderVersion = legacyLoader.loaderVersion
+            return
+        }
+
+        loaderType = try container.decodeIfPresent(String.self, forKey: .loaderType)
+            ?? container.decodeIfPresent(String.self, forKey: .loaderTypeSnake)
+        loaderVersion = try container.decodeIfPresent(String.self, forKey: .loaderVersion)
+            ?? container.decodeIfPresent(String.self, forKey: .loaderVersionSnake)
+        mcVersion = try container.decodeIfPresent(String.self, forKey: .mcVersion)
+            ?? container.decode(String.self, forKey: .mcVersionSnake)
     }
 }
 
-private struct GDLauncherGameConfiguration: Codable {
-    let version: GDLauncherVersion
+private struct GDLauncherLegacyLoader: Decodable {
+    let loaderType: String?
+    let loaderVersion: String?
+    let mcVersion: String
+    let sourceName: String?
+
+    enum CodingKeys: String, CodingKey {
+        case loaderType
+        case loaderVersion
+        case mcVersion
+        case sourceName
+        case loaderTypeSnake = "loader_type"
+        case loaderVersionSnake = "loader_version"
+        case mcVersionSnake = "mc_version"
+        case sourceNameSnake = "source_name"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        loaderType = try container.decodeIfPresent(String.self, forKey: .loaderType)
+            ?? container.decodeIfPresent(String.self, forKey: .loaderTypeSnake)
+        loaderVersion = try container.decodeIfPresent(String.self, forKey: .loaderVersion)
+            ?? container.decodeIfPresent(String.self, forKey: .loaderVersionSnake)
+        mcVersion = try container.decodeIfPresent(String.self, forKey: .mcVersion)
+            ?? container.decode(String.self, forKey: .mcVersionSnake)
+        sourceName = try container.decodeIfPresent(String.self, forKey: .sourceName)
+            ?? container.decodeIfPresent(String.self, forKey: .sourceNameSnake)
+    }
 }
 
-private struct GDLauncherVersion: Codable {
+private struct GDLauncherGameConfiguration: Decodable {
+    let version: GDLauncherVersionConfiguration
+}
+
+private struct GDLauncherVersionConfiguration: Decodable {
     let release: String
     let modloaders: [GDLauncherModLoader]
 }
 
-private struct GDLauncherModLoader: Codable {
+private struct GDLauncherModLoader: Decodable {
     let type: String
     let version: String
 }
