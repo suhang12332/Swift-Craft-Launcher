@@ -95,7 +95,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
             }
 
             webAuthSession?.presentationContextProvider = self
-            webAuthSession?.prefersEphemeralWebBrowserSession = false
+            webAuthSession?.prefersEphemeralWebBrowserSession = AppServices.playerSettingsManager.enableEphemeralWebLogin
             webAuthSession?.start()
         }
     }

@@ -15,6 +15,12 @@ class PlayerSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
+    /// 登录时是否使用无痕浏览器会话（不共享系统浏览器 Cookie）
+    @AppStorage(AppConstants.UserDefaultsKeys.enableEphemeralWebLogin)
+    var enableEphemeralWebLogin: Bool = false {
+        didSet { objectWillChange.send() }
+    }
+
     /// 离线登录默认使用的 Yggdrasil 皮肤站 baseURL（空表示不预设）
     @AppStorage(AppConstants.UserDefaultsKeys.defaultYggdrasilServerBaseURL)
     var defaultYggdrasilServerBaseURL: String = "" {

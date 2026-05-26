@@ -33,6 +33,16 @@ public struct PlayerSettingsView: View {
         let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(AppConstants.AuthlibInjector.jarFileName)
 
         Form {
+            Group {
+                LabeledContent("settings.player.ephemeral_login".localized()) {
+                    Toggle(
+                        "settings.player.ephemeral_login.toggle".localized(),
+                        isOn: $playerSettings.enableEphemeralWebLogin
+                    )
+                }
+                .labeledContentStyle(.custom)
+                CommonDescriptionText(text: "settings.player.ephemeral_login.description".localized())
+            }
             LabeledContent("settings.player.offline_login".localized()) {
                 Toggle(
                     "settings.player.offline_login.toggle".localized(),

@@ -82101,6 +82101,417 @@
         }
       }
     },
+    "settings.player.ephemeral_login": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تسجيل دخول خاص"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privat login"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inkognito-Anmeldung"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incognito Login"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicio de sesión privado"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yksityinen kirjautuminen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connexion privée"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "गुप्त लॉगिन"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accesso privato"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "シークレットログイン"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시크릿 로그인"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privat innlogging"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incognito-inloggen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logowanie incognito"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Login privado"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приватный вход"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privat inloggning"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เข้าสู่ระบบแบบไม่ระบุตัวตน"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gizli giriş"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đăng nhập ẩn danh"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无痕登录"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無痕登入"
+          }
+        }
+      }
+    },
+    "settings.player.ephemeral_login.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "عند التفعيل، يستخدم تسجيل دخول الطرف الثالث وتسجيل دخول Microsoft جلسة متصفح خاصة لا تشارك ملفات تعريف الارتباط مع متصفح النظام. قد تحتاج إلى تسجيل الدخول في كل مرة."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Når aktiveret, bruger tredjepartslogin og Microsoft-login en privat browsersession, der ikke deler cookies med din standardsbrowser. Du skal muligvis logge ind igen hver gang."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn aktiviert, verwenden die Anmeldung über Drittanbieter und die Microsoft-Anmeldung eine private Browsersitzung, die keine Cookies mit deinem Standardbrowser teilt. Du musst dich möglicherweise bei jedem Mal erneut anmelden."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When enabled, third-party login and Microsoft login will use a private browser session that does not share cookies with your default browser. You may need to sign in again each time."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuando está activado, el inicio de sesión de terceros y el inicio de sesión con Microsoft usan una sesión privada del navegador que no comparte cookies con tu navegador predeterminado. Es posible que debas iniciar sesión de nuevo cada vez."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kun käytössä, kolmannen osapuolen kirjautuminen ja Microsoft-kirjautuminen käyttävät yksityistä selainistuntoa, joka ei jaa evästeitä järjestelmän oletusselaimen kanssa. Saatat joutua kirjautumaan uudelleen joka kerta."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lorsque cette option est activée, la connexion via un tiers et la connexion Microsoft utilisent une session de navigateur privée qui ne partage pas les cookies avec votre navigateur par défaut. Vous devrez peut-être vous reconnecter à chaque fois."
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "सक्षम होने पर, थर्ड-पार्टी लॉगिन और Microsoft लॉगिन एक निजी ब्राउज़र सत्र का उपयोग करते हैं जो आपके डिफ़ॉल्ट ब्राउज़र के साथ कुकीज़ साझा नहीं करता। हो सकता है कि आपको हर बार फिर से साइन इन करना पड़े।"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quando attivato, l'accesso di terze parti e l'accesso Microsoft usano una sessione del browser privata che non condivide i cookie con il browser predefinito. Potresti dover accedere di nuovo ogni volta."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有効にすると、サードパーティログインと Microsoft ログインは、システムブラウザと Cookie を共有しないプライベートなブラウザセッションを使用します。毎回サインインし直す必要がある場合があります。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "활성화하면 서드파티 로그인과 Microsoft 로그인 시 시스템 브라우저와 쿠키를 공유하지 않는 비공개 브라우저 세션을 사용합니다. 매번 다시 로그인해야 할 수 있습니다."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Når aktivert, bruker innlogging via tredjepart og Microsoft-innlogging en privat nettleserøkt som ikke deler informasjonskapsler med standardnettleseren. Du må kanskje logge inn på nytt hver gang."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wanneer ingeschakeld, gebruiken inloggen via derde partij en Microsoft-inloggen een privé browsersessie die geen cookies deelt met je standaardbrowser. Mogelijk moet je elke keer opnieuw inloggen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Po włączeniu logowanie przez stronę trzecią i logowanie Microsoft korzystają z prywatnej sesji przeglądarki, która nie udostępnia plików cookie domyślnej przeglądarce. Może być konieczne ponowne logowanie za każdym razem."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quando ativado, o login de terceiros e o login Microsoft usam uma sessão privada do navegador que não compartilha cookies com o navegador padrão. Pode ser necessário entrar novamente a cada vez."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Если параметр включён, вход через сторонний сервис и вход через Microsoft используют приватную сессию браузера, которая не делится cookie с браузером по умолчанию. Возможно, придётся входить заново каждый раз."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "När aktiverat använder inloggning via tredje part och Microsoft-inloggning en privat webbläsarsession som inte delar cookies med din standardwebbläsare. Du kan behöva logga in igen varje gång."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เมื่อเปิดใช้งาน การเข้าสู่ระบบของบุคคลที่สามและการเข้าสู่ระบบ Microsoft จะใช้เซสชันเบราว์เซอร์ส่วนตัวที่ไม่แชร์คุกกี้กับเบราว์เซอร์เริ่มต้นของระบบ คุณอาจต้องลงชื่อเข้าใช้ใหม่ทุกครั้ง"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etkinleştirildiğinde, üçüncü taraf girişi ve Microsoft girişi varsayılan tarayıcınızla çerez paylaşmayan özel bir tarayıcı oturumu kullanır. Her seferinde yeniden oturum açmanız gerekebilir."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Khi bật, đăng nhập bên thứ ba và đăng nhập Microsoft sẽ dùng phiên trình duyệt riêng tư, không chia sẻ cookie với trình duyệt mặc định. Bạn có thể cần đăng nhập lại mỗi lần."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开启后，三方登录和微软登录将使用独立的无痕浏览器会话，不会共享系统浏览器的 Cookie，每次登录可能需要重新输入账号密码。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "啟用後，三方登入和微軟登入將使用獨立的無痕瀏覽器工作階段，不會共享系統瀏覽器的 Cookie，每次登入可能需要重新輸入帳號密碼。"
+          }
+        }
+      }
+    },
+    "settings.player.ephemeral_login.toggle": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "تمكين تسجيل الدخول الخاص"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktivér privat login"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inkognito-Anmeldung aktivieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enable incognito login"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activar inicio de sesión privado"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ota yksityinen kirjautuminen käyttöön"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activer la connexion privée"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "गुप्त लॉगिन सक्षम करें"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abilita accesso privato"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "シークレットログインを有効にする"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시크릿 로그인 사용"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiver privat innlogging"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Incognito-inloggen inschakelen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Włącz logowanie incognito"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ativar login privado"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Включить приватный вход"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktivera privat inloggning"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เปิดใช้งานการเข้าสู่ระบบแบบไม่ระบุตัวตน"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gizli girişi etkinleştir"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bật đăng nhập ẩn danh"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "启用无痕登录"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "啟用無痕登入"
+          }
+        }
+      }
+    },
     "settings.player.authlib_injector" : {
       "extractionState" : "manual",
       "localizations" : {
