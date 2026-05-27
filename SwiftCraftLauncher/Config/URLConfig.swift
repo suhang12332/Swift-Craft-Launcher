@@ -89,11 +89,6 @@ enum URLConfig {
             static let minecraftProfileActiveCape = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/capes/active")
         }
 
-        // Minecraft API
-        enum Minecraft {
-            static let versionList = URLConfig.url("https://launchermeta.mojang.com/mc/game/version_manifest.json")
-        }
-
         /// Minecraft 新闻文章链接生成
         enum MinecraftNews {
             /// 根据版本号生成正式版文章链接，例如 1.26.1 -> minecraft-java-edition-26-1
@@ -113,13 +108,6 @@ enum URLConfig {
         enum JavaRuntime {
             static let baseURL = URLConfig.url("https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871")
             static let allRuntimes = baseURL.appendingPathComponent("all.json")
-
-            /// 获取Java运行时清单
-            /// - Parameter manifestURL: 清单URL
-            /// - Returns: 清单URL
-            static func manifest(_ manifestURL: String) -> URL {
-                return URLConfig.url(manifestURL)
-            }
         }
 
         // ARM平台专用版本的Zulu JDK下载URL
@@ -182,12 +170,6 @@ enum URLConfig {
                     .appendingPathComponent("repos")
                     .appendingPathComponent(repositoryOwner)
                     .appendingPathComponent(repositoryName)
-            }
-
-            static func latestRelease() -> URL {
-                URLConfig.applyGitProxyIfNeeded(
-                    repositoryApiBaseURL.appendingPathComponent("releases/latest")
-                )
             }
 
             static func contributors(perPage: Int = 50) -> URL {
@@ -360,22 +342,8 @@ enum URLConfig {
                 return URLConfig.url("https://launcher-meta.modrinth.com/minecraft/v0/versions/\(version).json")
             }
 
-            static let maven = URLConfig.url("https://launcher-meta.modrinth.com/maven/")
-
             static func loaderProfile(loader: String, version: String) -> URL {
                 return URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/versions/\(version).json")
-            }
-
-            // 下载 URL
-            /// 生成 Modrinth 文件下载 URL
-            /// - Parameters:
-            ///   - projectId: 项目 ID
-            ///   - versionId: 版本 ID
-            ///   - fileName: 文件名（会自动进行 URL 编码）
-            /// - Returns: 下载 URL
-            static func downloadUrl(projectId: String, versionId: String, fileName: String) -> String {
-                let encodedFileName = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? fileName
-                return "https://cdn.modrinth.com/data/\(projectId)/versions/\(versionId)/\(encodedFileName)"
             }
         }
 
