@@ -1,12 +1,10 @@
 import Foundation
 
 enum URLConfig {
-    /// 安全创建 URL 的辅助方法，无效时记录日志并返回占位 URL，避免生产环境闪退
     private static func url(_ string: String) -> URL {
         URL(string: string) ?? URL(string: "https://localhost") ?? URL(fileURLWithPath: "/")
     }
 
-    /// GitHub 代理设置（从 UserDefaults 读取，避免 UI 依赖）
     private enum GitHubProxySettings {
         static let defaultProxy = "https://gh-proxy.com"
 
@@ -22,7 +20,6 @@ enum URLConfig {
                 .trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
-        /// 返回用于拼接的代理前缀（保证为 http(s) 且不以 / 结尾），无效则返回 nil
         static var normalizedProxyPrefix: String? {
             let proxy = proxyString
             guard !proxy.isEmpty else { return nil }
@@ -32,7 +29,6 @@ enum URLConfig {
         }
     }
 
-    // 常量字符串，避免重复创建
     private static let githubHost = "github.com"
     private static let rawGithubHost = "raw.githubusercontent.com"
 
@@ -41,7 +37,6 @@ enum URLConfig {
     /// - Parameter url: 原始 URL
     /// - Returns: 应用代理后的 URL（如果需要）
     static func applyGitProxyIfNeeded(_ url: URL) -> URL {
-        // 优化：直接使用 URL 的 host 属性，避免转换为 String
         guard let host = url.host else { return url }
         // 仅对 GitHub 相关域名应用代理（排除 api.github.com,suhang12332.github.io）
         let isGitHubURL = host == githubHost || host == rawGithubHost
@@ -50,11 +45,9 @@ enum URLConfig {
         guard GitHubProxySettings.isEnabled else { return url }
         guard let proxy = GitHubProxySettings.normalizedProxyPrefix else { return url }
 
-        // 优化：使用 URL 的 absoluteString 检查是否已有代理前缀
         let urlString = url.absoluteString
         if urlString.hasPrefix("\(proxy)/") { return url }
 
-        // 使用字符串插值而非字符串拼接
         let proxiedString = "\(proxy)/\(urlString)"
         return Self.url(proxiedString)
     }
@@ -63,7 +56,6 @@ enum URLConfig {
     /// 为 GitHub 相关的 URL 字符串应用 gitProxyURL 代理
     /// - Parameter urlString: 原始 URL 字符串
     /// - Returns: 应用代理后的 URL 字符串（如果需要）
-    /// 优化：使用 autoreleasepool 及时释放临时 URL 对象
     static func applyGitProxyIfNeeded(_ urlString: String) -> String {
         return autoreleasepool {
             guard let url = URL(string: urlString) else { return urlString }
@@ -97,11 +89,6 @@ enum URLConfig {
             static let minecraftProfileActiveCape = URLConfig.url("https://api.minecraftservices.com/minecraft/profile/capes/active")
         }
 
-        // Minecraft API
-        enum Minecraft {
-            static let versionList = URLConfig.url("https://launchermeta.mojang.com/mc/game/version_manifest.json")
-        }
-
         /// Minecraft 新闻文章链接生成
         enum MinecraftNews {
             /// 根据版本号生成正式版文章链接，例如 1.26.1 -> minecraft-java-edition-26-1
@@ -121,13 +108,6 @@ enum URLConfig {
         enum JavaRuntime {
             static let baseURL = URLConfig.url("https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871")
             static let allRuntimes = baseURL.appendingPathComponent("all.json")
-
-            /// 获取Java运行时清单
-            /// - Parameter manifestURL: 清单URL
-            /// - Returns: 清单URL
-            static func manifest(_ manifestURL: String) -> URL {
-                return URLConfig.url(manifestURL)
-            }
         }
 
         // ARM平台专用版本的Zulu JDK下载URL
@@ -190,12 +170,6 @@ enum URLConfig {
                     .appendingPathComponent("repos")
                     .appendingPathComponent(repositoryOwner)
                     .appendingPathComponent(repositoryName)
-            }
-
-            static func latestRelease() -> URL {
-                URLConfig.applyGitProxyIfNeeded(
-                    repositoryApiBaseURL.appendingPathComponent("releases/latest")
-                )
             }
 
             static func contributors(perPage: Int = 50) -> URL {
@@ -368,22 +342,8 @@ enum URLConfig {
                 return URLConfig.url("https://launcher-meta.modrinth.com/minecraft/v0/versions/\(version).json")
             }
 
-            static let maven = URLConfig.url("https://launcher-meta.modrinth.com/maven/")
-
             static func loaderProfile(loader: String, version: String) -> URL {
                 return URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/versions/\(version).json")
-            }
-
-            // 下载 URL
-            /// 生成 Modrinth 文件下载 URL
-            /// - Parameters:
-            ///   - projectId: 项目 ID
-            ///   - versionId: 版本 ID
-            ///   - fileName: 文件名（会自动进行 URL 编码）
-            /// - Returns: 下载 URL
-            static func downloadUrl(projectId: String, versionId: String, fileName: String) -> String {
-                let encodedFileName = fileName.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? fileName
-                return "https://cdn.modrinth.com/data/\(projectId)/versions/\(versionId)/\(encodedFileName)"
             }
         }
 

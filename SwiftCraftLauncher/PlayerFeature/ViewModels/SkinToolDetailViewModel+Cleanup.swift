@@ -1,8 +1,6 @@
 import Foundation
 
 extension SkinToolDetailViewModel {
-    // MARK: - 清除数据
-
     func clearAllData() {
         loadCapeTask?.cancel()
         loadSkinImageTask?.cancel()

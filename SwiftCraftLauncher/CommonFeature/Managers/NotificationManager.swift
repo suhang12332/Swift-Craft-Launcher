@@ -6,7 +6,6 @@ import os
 
 final class NotificationCenterDelegate: NSObject, UNUserNotificationCenterDelegate {
 
-    /// App 在前台时收到通知，决定如何展示
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
@@ -73,7 +72,6 @@ enum NotificationManager {
             if granted {
                 Logger.shared.info("通知权限已授予")
             } else {
-                Logger.shared.warning("用户拒绝了通知权限")
                 throw GlobalError.configuration(
                     chineseMessage: "用户拒绝了通知权限",
                     i18nKey: "error.configuration.notification_permission_denied",
@@ -81,7 +79,6 @@ enum NotificationManager {
                 )
             }
         } catch {
-            Logger.shared.error("请求通知权限时出错: \(error.localizedDescription)")
             if error is GlobalError {
                 throw error
             } else {

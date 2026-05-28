@@ -201,14 +201,12 @@ struct SkinUploadSectionView: View {
     /// 打开皮肤预览窗口
     private func openSkinPreviewWindow() {
         let playerModel = convertToPlayerModel(currentModel)
-        // 存储到 WindowDataStore
         windowDataStore.skinPreviewData = SkinPreviewData(
             skinImage: selectedSkinImage ?? currentSkinRenderImage,
             skinPath: selectedSkinPath,
             capeImage: selectedCapeImage,
             playerModel: playerModel
         )
-        // 打开窗口
         windowManager.openWindow(id: .skinPreview)
     }
 
@@ -219,7 +217,6 @@ struct SkinUploadSectionView: View {
 
 // MARK: - View Extension for Conditional Drop
 extension View {
-    /// 条件性地应用拖拽处理修饰符
     @ViewBuilder
     func conditionalDrop(isEnabled: Bool, perform: @escaping ([NSItemProvider]) -> Bool) -> some View {
         if isEnabled {

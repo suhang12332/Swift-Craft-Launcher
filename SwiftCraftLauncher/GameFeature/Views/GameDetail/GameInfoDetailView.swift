@@ -29,16 +29,14 @@ struct GameInfoDetailView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
     @Binding var localResourceFilter: LocalResourceFilter
-    @StateObject private var cacheManager = CacheManager()
+    @StateObject private var cacheManager: CacheManager
     @State private var localRefreshToken = UUID()
     @StateObject private var ioViewModel = GameInfoDetailIOViewModel()
 
     // 扫描结果：detailId Set，用于快速查找（O(1)）
     @State private var scannedResources: Set<String> = []
 
-    // 使用稳定的 header，避免因 cacheInfo 更新导致重建
-    @State private var remoteHeader: AnyView?
-    @State private var localHeader: AnyView?
+    @State private var header: AnyView?
 
     // 文件选择器状态
     @State private var showIconFilePicker = false
@@ -61,9 +59,11 @@ struct GameInfoDetailView: View {
         searchText: Binding<String>,
         localResourceFilter: Binding<LocalResourceFilter>,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier
+        iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier,
+        cacheManager: CacheManager = AppServices.cacheManager
     ) {
         self.game = game
+        _cacheManager = StateObject(wrappedValue: cacheManager)
         _query = query
         _dataSource = dataSource
         _selectedVersions = selectedVersions
@@ -96,7 +96,7 @@ struct GameInfoDetailView: View {
                     selectedLoaders: $selectedLoaders,
                     selectedItem: $selectedItem,
                     gameType: $gameType,
-                    header: remoteHeader,
+                    header: header,
                     scannedDetailIds: $scannedResources,
                     dataSource: $dataSource,
                     searchText: $searchText
@@ -105,7 +105,7 @@ struct GameInfoDetailView: View {
                 GameLocalResourceView(
                     game: game,
                     query: query,
-                    header: localHeader,
+                    header: header,
                     selectedItem: $selectedItem,
                     selectedProjectId: $selectedProjectId,
                     refreshToken: localRefreshToken,
@@ -180,25 +180,11 @@ struct GameInfoDetailView: View {
     }
 
     // MARK: - 更新 Header
-    /// 更新 header 视图，但不重建整个 GameRemoteResourceView
     private func updateHeaders() {
         // 尝试从 gameRepository 获取最新的游戏信息，如果找不到则使用传入的 game
         let currentGame = gameRepository.games.first { $0.id == game.id } ?? game
 
-        remoteHeader = AnyView(
-            GameHeaderListRow(
-                game: currentGame,
-                cacheInfo: cacheManager.cacheInfo,
-                query: query,
-                onImport: {
-                    triggerLocalRefresh()
-                },
-                onIconTap: {
-                    showIconFilePicker = true
-                }
-            )
-        )
-        localHeader = AnyView(
+        header = AnyView(
             GameHeaderListRow(
                 game: currentGame,
                 cacheInfo: cacheManager.cacheInfo,

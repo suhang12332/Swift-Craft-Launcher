@@ -122,56 +122,12 @@ extension LocalResourceInstaller {
                         types.append(.zip)
                         return types
                     }(),
-                    allowsMultipleSelection: false
+                    allowsMultipleSelection: true
                 ) { result in
                     switch result {
                     case .success(let urls):
-                        guard let fileURL = urls.first else { return }
-
-                        // 检查 query 是否是有效的资源类型
-                        let queryLowercased = query.lowercased()
-
-                        // 如果 query 是 modpack 或无效的资源类型，显示错误
-                        if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
-                            errorHandler.handle(GlobalError.configuration(
-                                chineseMessage: "不支持导入此类型的资源",
-                                i18nKey: "error.configuration.resource_directory_not_found",
-                                level: .notification
-                            ))
-                            return
-                        }
-
-                        let gameRootOpt = AppPaths.resourceDirectory(for: query, gameName: gameName)
-                        guard let gameRoot = gameRootOpt else {
-                            errorHandler.handle(GlobalError.fileSystem(
-                                chineseMessage: "找不到游戏目录",
-                                i18nKey: "error.filesystem.game_directory_not_found",
-                                level: .notification
-                            ))
-                            return
-                        }
-
-                        // 简化扩展名校验 - 统一支持 jar 和 zip
-                        let allowedExtensions = ["jar", "zip"]
-
-                        do {
-                            guard let ext = fileURL.pathExtension.lowercased() as String?, allowedExtensions.contains(ext) else {
-                                throw GlobalError.resource(
-                                    chineseMessage: "不支持的文件类型。请导入 .jar 或 .zip 文件。",
-                                    i18nKey: "error.resource.invalid_file_type",
-                                    level: .notification
-                                )
-                            }
-
-                            try LocalResourceInstaller.install(
-                                fileURL: fileURL,
-                                resourceType: .mod, // 仅用于 allowedExtensions 校验，已手动校验
-                                gameRoot: gameRoot
-                            )
-                            onResourceChanged()
-                        } catch {
-                            errorHandler.handle(error)
-                        }
+                        guard !urls.isEmpty else { return }
+                        importSelectedFiles(urls)
                     case .failure(let error):
                         errorHandler.handle(GlobalError.fileSystem(
                             chineseMessage: "文件选择失败：\(error.localizedDescription)",
@@ -180,6 +136,59 @@ extension LocalResourceInstaller {
                         ))
                     }
                 }
+            }
+        }
+
+        private func importSelectedFiles(_ urls: [URL]) {
+            let queryLowercased = query.lowercased()
+
+            if queryLowercased == ResourceType.modpack.rawValue
+                || !AppConstants.validResourceTypes.contains(queryLowercased) {
+                errorHandler.handle(GlobalError.configuration(
+                    chineseMessage: "不支持导入此类型的资源",
+                    i18nKey: "error.configuration.resource_directory_not_found",
+                    level: .notification
+                ))
+                return
+            }
+
+            guard let gameRoot = AppPaths.resourceDirectory(for: query, gameName: gameName) else {
+                errorHandler.handle(GlobalError.fileSystem(
+                    chineseMessage: "找不到游戏目录",
+                    i18nKey: "error.filesystem.game_directory_not_found",
+                    level: .notification
+                ))
+                return
+            }
+
+            let allowedExtensions = ["jar", "zip"]
+            var importedCount = 0
+
+            for fileURL in urls {
+                do {
+                    guard let ext = fileURL.pathExtension.lowercased() as String?,
+                          allowedExtensions.contains(ext)
+                    else {
+                        throw GlobalError.resource(
+                            chineseMessage: "不支持的文件类型。请导入 .jar 或 .zip 文件。",
+                            i18nKey: "error.resource.invalid_file_type",
+                            level: .notification
+                        )
+                    }
+
+                    try LocalResourceInstaller.install(
+                        fileURL: fileURL,
+                        resourceType: .mod,
+                        gameRoot: gameRoot
+                    )
+                    importedCount += 1
+                } catch {
+                    errorHandler.handle(error)
+                }
+            }
+
+            if importedCount > 0 {
+                onResourceChanged()
             }
         }
     }

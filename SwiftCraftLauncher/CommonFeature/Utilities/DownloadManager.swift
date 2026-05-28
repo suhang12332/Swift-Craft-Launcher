@@ -15,7 +15,6 @@ enum DownloadManager {
         }
 
         init?(from string: String) {
-            // 优化：使用 caseInsensitiveCompare 避免创建临时小写字符串
             let lowercased = string.lowercased()
             switch lowercased {
             case Self.mod.rawValue: self = .mod
@@ -57,7 +56,6 @@ enum DownloadManager {
             case .mod:
                 return AppPaths.modsDirectory(gameName: game.gameName)
             case .datapack:
-                // 优化：缓存小写路径组件，避免重复创建
                 let lowercasedPath = url.lastPathComponent.lowercased()
                 if lowercasedPath.hasSuffix(".\(AppConstants.FileExtensions.jar)") {
                     return AppPaths.modsDirectory(gameName: game.gameName)
@@ -66,7 +64,6 @@ enum DownloadManager {
             case .shader:
                 return AppPaths.shaderpacksDirectory(gameName: game.gameName)
             case .resourcepack:
-                // 优化：缓存小写路径组件，避免重复创建
                 let lowercasedPath = url.lastPathComponent.lowercased()
                 if lowercasedPath.hasSuffix(".\(AppConstants.FileExtensions.jar)") {
                     return AppPaths.modsDirectory(gameName: game.gameName)
@@ -84,7 +81,6 @@ enum DownloadManager {
         }
 
         let destURL = resourceDirUnwrapped.appendingPathComponent(url.lastPathComponent)
-        // 优化：直接传递已创建的 URL，避免在 downloadFile 中重复创建
         return try await downloadFile(url: url, destinationURL: destURL, expectedSha1: expectedSha1)
     }
 
@@ -138,7 +134,6 @@ enum DownloadManager {
                 try? fileManager.removeItem(at: tempFileURL)
             }
 
-            // 优化：直接检查状态码，减少中间变量
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
                 throw GlobalError.download(
                     chineseMessage: "HTTP 请求失败",

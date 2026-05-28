@@ -116,7 +116,6 @@ class GameSetupUtil: ObservableObject {
             // 下载 Mojang manifest
             let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
 
-            // 确保并获取 Java 路径，避免后续再次重复校验
             let javaPath = await javaManager.ensureJavaExists(
                 version: downloadedManifest.javaVersion.component
             )
@@ -150,9 +149,7 @@ class GameSetupUtil: ObservableObject {
                 neoForgeResult: selectedModLoader.lowercased() == GameLoader.neoforge.displayName ? modLoaderResult : nil,
                 quiltResult: selectedModLoader.lowercased() == GameLoader.quilt.rawValue ? modLoaderResult : nil
             )
-            // 使用 ensureJavaExists 返回的结果，避免再次触发 Java 校验
             gameInfo.javaPath = javaPath
-            // 保存游戏配置
             gameRepository.addGameSilently(gameInfo)
 
             // 根据设置决定是否为新创建的游戏写入/更新 options.txt 的语言设置

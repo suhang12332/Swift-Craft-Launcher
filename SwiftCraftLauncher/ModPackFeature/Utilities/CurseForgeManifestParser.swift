@@ -17,7 +17,6 @@ enum CurseForgeManifestParser {
             Logger.shared.info("尝试解析 CurseForge manifest.json: \(manifestPath.path)")
 
             guard FileManager.default.fileExists(atPath: manifestPath.path) else {
-                // 列出解压目录中的文件，帮助调试
                 do {
                     let contents = try FileManager.default.contentsOfDirectory(
                         at: extractedPath,
@@ -52,7 +51,7 @@ enum CurseForgeManifestParser {
             // 提取加载器信息
             let loaderInfo = determineLoaderInfo(from: manifest.minecraft.modLoaders)
 
-            // 生成版本信息（如果缺少版本字段）
+            // 生成版本信息
             let modPackVersion = manifest.version ?? generateAutoVersion(
                 modPackName: manifest.name,
                 gameVersion: manifest.minecraft.version,
@@ -69,8 +68,6 @@ enum CurseForgeManifestParser {
             Logger.shared.info("解析 CurseForge manifest.json 成功: \(manifest.name) v\(modPackVersion)")
             if manifest.version == nil {
                 Logger.shared.info("⚠️ 整合包缺少version字段，已自动生成版本: \(modPackVersion)")
-                // 也可以使用本地化消息（如果需要显示给用户）
-                // Logger.shared.info("modpack.version.auto_generated".localized(modPackVersion))
             }
             Logger.shared.info("游戏版本: \(manifest.minecraft.version), 加载器: \(loaderInfo.type) \(loaderInfo.version)")
             Logger.shared.info("文件数量: \(manifest.files.count)")
@@ -79,7 +76,6 @@ enum CurseForgeManifestParser {
         } catch {
             Logger.shared.error("解析 CurseForge manifest.json 详细错误: \(error)")
 
-            // 如果是 JSON 解析错误，尝试显示部分内容
             if let jsonError = error as? DecodingError {
                 Logger.shared.error("JSON 解析错误: \(jsonError)")
             }
@@ -183,13 +179,9 @@ enum CurseForgeManifestParser {
     ) async -> ModrinthIndexInfo {
         Logger.shared.info("转换 CurseForge 格式到 Modrinth 格式，模组数量: \(manifest.files.count)")
 
-        // 优化：不在这里获取文件详情，而是创建延迟解析的文件对象
-        // 将真实的文件详情获取延迟到下载阶段，提高导入速度
         var modrinthFiles: [ModrinthIndexFile] = []
 
         for file in manifest.files {
-            // 创建一个占位符文件对象，包含基本信息
-            // 真实的文件名、路径和下载URL将在下载时获取
             let placeholderPath = "mods/curseforge_\(file.projectID)_\(file.fileID).jar" // 临时路径
 
             modrinthFiles.append(ModrinthIndexFile(
@@ -199,7 +191,6 @@ enum CurseForgeManifestParser {
                 fileSize: 0, // 文件大小将在下载时获取
                 env: nil, // 默认环境
                 source: .curseforge, // 标记来源为 CurseForge
-                // 保存原始的 CurseForge 文件信息用于后续处理
                 curseForgeProjectId: file.projectID,
                 curseForgeFileId: file.fileID
             ))

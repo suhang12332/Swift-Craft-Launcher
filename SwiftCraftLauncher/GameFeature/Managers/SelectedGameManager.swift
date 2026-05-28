@@ -10,7 +10,6 @@ class SelectedGameManager: ObservableObject {
     /// 当前选中的游戏ID
     @Published var selectedGameId: String? {
         didSet {
-            // 当游戏ID变化时，自动通知观察者
             objectWillChange.send()
         }
     }

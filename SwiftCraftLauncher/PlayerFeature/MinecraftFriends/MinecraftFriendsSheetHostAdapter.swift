@@ -10,7 +10,7 @@ final class MinecraftFriendsSheetHostAdapter: MinecraftFriendsSheetHost {
     init(
         player: Player,
         authService: MinecraftAuthService = AppServices.minecraftAuthService,
-        dataManager: PlayerDataManager = PlayerDataManager(),
+        dataManager: PlayerDataManager = AppServices.playerDataManager,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler
     ) {
         self.player = player

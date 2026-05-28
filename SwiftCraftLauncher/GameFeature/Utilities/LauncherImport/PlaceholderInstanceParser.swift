@@ -12,12 +12,10 @@ struct PlaceholderInstanceParser: LauncherInstanceParser {
     let launcherType: ImportLauncherType
 
     func isValidInstance(at instancePath: URL) -> Bool {
-        // 暂未实现，返回 false
         return false
     }
 
     func parseInstance(at instancePath: URL, basePath: URL) throws -> ImportInstanceInfo? {
-        // 暂未实现，抛出错误
         throw LauncherImportError.parserNotImplemented(launcherType: launcherType.rawValue)
     }
 }

@@ -60,11 +60,9 @@ class GameRepository: ObservableObject {
 
     /// 初始化数据库
     private func initializeDatabase() async throws {
-        // 创建数据库目录
         let dataDir = AppPaths.dataDirectory
         try? FileManager.default.createDirectory(at: dataDir, withIntermediateDirectories: true)
 
-        // 初始化数据库
         try database.initialize()
     }
 
@@ -83,22 +81,17 @@ class GameRepository: ObservableObject {
             .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
                 guard let self = self else { return }
-                // 检查工作路径是否真的改变了
                 let newPath = self.currentWorkingPath
                 if newPath != self.lastWorkingPath {
                     self.lastWorkingPath = newPath
-                    // 通知工作路径已改变（用于触发UI切换）
                     self.workingPathChanged = true
-                    // 当工作路径改变时，重新加载当前工作路径的游戏并扫描 mods 目录
                     Task { @MainActor in
                         do {
                             try await self.loadGamesThrowing()
                             await self.scanAllGamesModsDirectory()
-                            // 重置通知标志
                             self.workingPathChanged = false
                         } catch {
                             self.errorHandler.handle(error)
-                            // 即使出错也要重置标志
                             self.workingPathChanged = false
                         }
                     }
@@ -403,7 +396,6 @@ class GameRepository: ObservableObject {
             do {
                 try await loadGamesThrowing()
 
-                // 加载完成后，扫描所有游戏的 mods 目录
                 await scanAllGamesModsDirectory()
             } catch {
                 self.errorHandler.handle(error)
@@ -477,9 +469,7 @@ class GameRepository: ObservableObject {
             }
             let valid = games.filter { localGameNames.contains($0.gameName) }
             let dbGameNames = Set(games.map { $0.gameName })
-            // 数据库存在但文件夹不存在
             let missingFolders = dbGameNames.subtracting(localGameNames)
-            // 文件夹存在但数据库不存在
             let missingDatabase = localGameNames.subtracting(dbGameNames)
             let corrupted = Array(missingFolders.union(missingDatabase)).sorted()
             return (valid, corrupted, workingPath)

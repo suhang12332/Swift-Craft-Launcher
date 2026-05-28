@@ -67,7 +67,6 @@ struct ModPackImportView: View {
     // MARK: - 清除数据
     /// 清除页面所有数据
     private func clearAllData() {
-        // 如果正在下载，取消下载任务以避免资源泄漏
         if viewModel.isDownloading {
             viewModel.cancelDownloadIfNeeded()
         }
@@ -85,7 +84,8 @@ struct ModPackImportView: View {
             }
 
             if viewModel.shouldShowProgress {
-                downloadProgressSection.padding(.top, 10)
+                EmptyView()
+                    .padding(.top, 10)
             }
         }
     }
@@ -154,7 +154,6 @@ struct ModPackImportView: View {
     private var selectedModPackView: some View {
         VStack(alignment: .leading, spacing: 4) {
             if viewModel.modPackIndexInfo != nil {
-                // 解析完成，显示完整信息
                 HStack {
                     VStack(alignment: .leading) {
                         Text(viewModel.modPackName)
@@ -213,10 +212,5 @@ struct ModPackImportView: View {
             lastParsedIndexInfo: viewModel.modPackIndexInfo,
             shouldShowProgress: viewModel.shouldShowProgress
         )
-    }
-
-    private var downloadProgressSection: some View {
-        // progress 已包含在 ModPackInstallSharedSections 中
-        EmptyView()
     }
 }

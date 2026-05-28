@@ -22,7 +22,6 @@ enum FabricLoaderService {
     /// - Throws: GlobalError 当操作失败时
     static func fetchAllLoaderVersionsThrowing(for minecraftVersion: String) async throws -> [FabricLoader] {
         let url = URLConfig.API.Fabric.loader.appendingPathComponent(minecraftVersion)
-        // 使用统一的 API 客户端
         let data = try await APIClient.get(url: url)
 
         var result: [FabricLoader] = []
@@ -61,7 +60,6 @@ enum FabricLoaderService {
         }
 
         // 2. 直接下载指定版本的 version.json
-        // 使用统一的 API 客户端
         let url = URLConfig.API.Modrinth.loaderProfile(loader: GameLoader.fabric.displayName, version: loaderVersion)
         let data = try await APIClient.get(url: url)
 

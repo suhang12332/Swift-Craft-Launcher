@@ -106,7 +106,6 @@ class JavaManager {
 
     // 检查Java是否存在，不存在则使用进度窗口下载
     func ensureJavaExists(version: String) async -> String {
-        // 优先使用已经存在并且可运行的 Java
         let existingPath = findJavaExecutable(version: version)
         if !existingPath.isEmpty {
             Logger.shared.info("Java版本 \(version) 已存在")

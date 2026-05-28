@@ -41,7 +41,6 @@ struct ResourcePrimaryActionButton: View {
                     : "resource.installed".localized())
             )
         case .update:
-            // 当有更新时，主按钮显示删除（更新按钮已单独显示在左边）
             Text("common.delete".localized())
         }
     }

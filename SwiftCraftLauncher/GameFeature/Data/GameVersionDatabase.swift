@@ -76,7 +76,6 @@ class GameVersionDatabase {
     func saveGame(_ game: GameVersionInfo, workingPath: String) throws {
         try db.transaction {
             let encoder = JSONEncoder()
-            // 使用秒级时间戳编码日期（与 UserDefaults 存储兼容）
             encoder.dateEncodingStrategy = .secondsSince1970
             let jsonData = try encoder.encode(game)
             guard let jsonString = String(data: jsonData, encoding: .utf8) else {
@@ -128,7 +127,6 @@ class GameVersionDatabase {
     func saveGames(_ games: [GameVersionInfo], workingPath: String) throws {
         try db.transaction {
             let encoder = JSONEncoder()
-            // 使用秒级时间戳编码日期（与 UserDefaults 存储兼容）
             encoder.dateEncodingStrategy = .secondsSince1970
             let now = Date()
 
@@ -190,7 +188,6 @@ class GameVersionDatabase {
 
         var games: [GameVersionInfo] = []
         let decoder = JSONDecoder()
-        // 使用秒级时间戳解码日期（与 UserDefaults 存储兼容）
         decoder.dateDecodingStrategy = .secondsSince1970
 
         while sqlite3_step(statement) == SQLITE_ROW {
@@ -225,7 +222,6 @@ class GameVersionDatabase {
 
         var gamesByPath: [String: [GameVersionInfo]] = [:]
         let decoder = JSONDecoder()
-        // 使用秒级时间戳解码日期（与 UserDefaults 存储兼容）
         decoder.dateDecodingStrategy = .secondsSince1970
 
         while sqlite3_step(statement) == SQLITE_ROW {
@@ -289,7 +285,6 @@ class GameVersionDatabase {
         }
 
         let decoder = JSONDecoder()
-        // 使用秒级时间戳解码日期（与 UserDefaults 存储兼容）
         decoder.dateDecodingStrategy = .secondsSince1970
         return try decoder.decode(GameVersionInfo.self, from: jsonData)
     }
@@ -402,7 +397,6 @@ class GameVersionDatabase {
         }
     }
 
-    /// 关闭数据库连接
     func close() {
         db.close()
     }

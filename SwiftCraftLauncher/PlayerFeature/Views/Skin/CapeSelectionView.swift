@@ -154,7 +154,6 @@ struct CapeSelectionView: View {
             }
         }
         .buttonStyle(.plain)
-        // 仅禁用当前已选中的披风按钮，其它仍可选择
         .disabled(isSelected)
     }
 
@@ -172,7 +171,6 @@ struct CapeSelectionView: View {
                 )
 
             if let imageURL = imageURL {
-                // 披风展示默认使用 URL 加载
                 CapeTextureView(imageURL: imageURL)
                     .id(imageURL).frame(width: 42, height: 62).clipped().cornerRadius(6)
             } else if isSystemOption {

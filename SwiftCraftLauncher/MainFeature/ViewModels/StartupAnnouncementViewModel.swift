@@ -40,7 +40,7 @@ final class StartupAnnouncementViewModel: ObservableObject {
 
         let version = Bundle.main.appVersion
         let language = languageManager.selectedLanguage.isEmpty
-            ? LanguageManager.getDefaultLanguage()
+            ? AppServices.languageManager.selectedLanguage
             : languageManager.selectedLanguage
 
         do {

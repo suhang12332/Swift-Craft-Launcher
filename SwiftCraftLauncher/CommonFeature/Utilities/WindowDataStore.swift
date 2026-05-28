@@ -24,26 +24,21 @@ class WindowDataStore: ObservableObject {
 
     private init() {}
 
-    // AI Chat 窗口数据
     @Published var aiChatState: ChatState?
 
-    // Skin Preview 窗口数据
     @Published var skinPreviewData: SkinPreviewData?
 
     /// 清理指定窗口的数据
     func cleanup(for windowID: WindowID) {
         switch windowID {
         case .aiChat:
-            // 清理 AI Chat 数据
             if let chatState = aiChatState {
                 chatState.clear()
             }
             aiChatState = nil
         case .skinPreview:
-            // 清理 Skin Preview 数据
             skinPreviewData = nil
         default:
-            // 其他窗口不需要清理 WindowDataStore
             break
         }
     }

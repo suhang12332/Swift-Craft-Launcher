@@ -40,7 +40,6 @@ final class ModrinthSearchViewModel: ObservableObject {
         append: Bool = false,
         dataSource: DataSource = .modrinth
     ) async {
-        // Cancel any existing search task
         searchTask?.cancel()
 
         searchTask = Task {
@@ -127,7 +126,6 @@ final class ModrinthSearchViewModel: ObservableObject {
                     }
                 }
             } catch is CancellationError {
-                // 任务被取消，不需要处理
                 return
             } catch {
                 let globalError = GlobalError.from(error)

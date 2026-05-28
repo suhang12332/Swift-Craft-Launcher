@@ -3,6 +3,8 @@ import Foundation
 /// 玩家数据管理器
 /// 使用 UserProfileStore (plist) 和 AuthCredentialStore (Keychain) 分离存储
 class PlayerDataManager {
+    static let shared = PlayerDataManager()
+
     private let errorHandler: GlobalErrorHandler
     private let profileStore: UserProfileStore
     private let credentialStore = AuthCredentialStore()
@@ -162,8 +164,6 @@ class PlayerDataManager {
         // 从 UserProfileStore 加载所有 profiles
         let profiles = try profileStore.loadProfilesThrowing()
 
-        // 仅加载基础信息，不在此处访问 Keychain，
-        // 避免启动时对所有玩家的凭据进行一次性读取（会触发多次钥匙串密码弹窗）
         let players = profiles.map { profile in
             Player(profile: profile, credential: nil)
         }

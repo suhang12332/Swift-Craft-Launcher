@@ -71,18 +71,10 @@ struct AddPlayerSheetView: View {
                     if viewModel.isCheckingFlag {
                         ProgressView()
                             .controlSize(.small)
-                            .frame(height: 20.5) // 设置固定高度，与 Picker 保持一致
+                            .frame(height: 20.5) // 设置固定高度，与 Menu 保持一致
                             .padding(.trailing, 10)
                     } else {
-                        Picker("", selection: $viewModel.selectedAuthType) {
-                            ForEach(viewModel.availableAuthTypes) { type in
-                                Text(type.displayName).tag(type)
-                            }
-                        }
-                        .labelsHidden()
-                        .pickerStyle(.menu)
-                        .labelStyle(.titleOnly)
-                        .fixedSize()
+                        authTypePicker
                     }
                 }
             },
@@ -111,7 +103,6 @@ struct AddPlayerSheetView: View {
                     }
                     Spacer()
                     if viewModel.selectedAuthType == .premium {
-                        // 根据认证状态显示不同的按钮
                         switch authService.authState {
                         case .notAuthenticated:
                             Button("addplayer.auth.start_login".localized()) {
@@ -188,6 +179,19 @@ struct AddPlayerSheetView: View {
             // 页面关闭后清除所有数据
             clearAllData()
         }
+    }
+
+    private var authTypePicker: some View {
+        Menu {
+            ForEach(viewModel.availableAuthTypes) { type in
+                Button(type.displayName) {
+                    viewModel.selectedAuthType = type
+                }
+            }
+        } label: {
+            Text(viewModel.selectedAuthType.displayName)
+        }
+        .fixedSize()
     }
 
     // MARK: - 清除数据

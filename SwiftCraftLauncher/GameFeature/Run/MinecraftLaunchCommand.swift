@@ -66,10 +66,10 @@ struct MinecraftLaunchCommand {
 
         Logger.shared.info("启动游戏前验证玩家 \(player.name) 的Token")
 
-        // 启动前按需从 Keychain 为该玩家加载认证凭据（只针对当前玩家，避免一次性读取所有账号）
+        // 启动前按需从 Keychain 为该玩家加载认证凭据
         var playerWithCredential = player
         if playerWithCredential.credential == nil {
-            let dataManager = PlayerDataManager()
+            let dataManager = AppServices.playerDataManager
             if let credential = dataManager.loadCredential(userId: playerWithCredential.id) {
                 playerWithCredential.credential = credential
             }
@@ -90,11 +90,10 @@ struct MinecraftLaunchCommand {
     /// 更新PlayerDataManager中的玩家信息
     /// - Parameter updatedPlayer: 更新后的玩家对象
     private func updatePlayerInDataManager(_ updatedPlayer: Player) async {
-        let dataManager = PlayerDataManager()
+        let dataManager = AppServices.playerDataManager
         let success = dataManager.updatePlayerSilently(updatedPlayer)
         if success {
             Logger.shared.debug("已更新玩家数据管理器中的Token信息")
-            // 同步更新内存中的玩家列表（避免下次启动仍使用旧 token）
             NotificationCenter.default.post(
                 name: .playerUpdated,
                 object: nil,
@@ -109,7 +108,6 @@ struct MinecraftLaunchCommand {
             return replaceGameParameters(command: command)
         }
 
-        // 使用 NSMutableString 避免链式调用创建多个临时字符串
         let authReplacedCommand = command.map { arg -> String in
             let mutableArg = NSMutableString(string: arg)
             mutableArg.replaceOccurrences(
@@ -152,7 +150,6 @@ struct MinecraftLaunchCommand {
         let xms = game.xms > 0 ? game.xms : settings.globalXms
         let xmx = game.xmx > 0 ? game.xmx : settings.globalXmx
 
-        // 使用 NSMutableString 避免链式调用创建多个临时字符串
         var replacedCommand = command.map { arg -> String in
             let mutableArg = NSMutableString(string: arg)
             let xmsString = "\(xms)"

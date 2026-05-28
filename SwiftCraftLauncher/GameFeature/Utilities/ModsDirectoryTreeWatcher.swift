@@ -28,7 +28,6 @@ final class ModsDirectoryTreeWatcher {
                 let watcher = Unmanaged<ModsDirectoryTreeWatcher>
                     .fromOpaque(info)
                     .takeUnretainedValue()
-                // 将 C 数组的路径转换为 [String]
                 let paths = eventPathsPointer.assumingMemoryBound(
                     to: UnsafePointer<CChar>?.self
                 )
@@ -63,7 +62,6 @@ final class ModsDirectoryTreeWatcher {
             let standardized = (fullPath as NSString).standardizingPath
             guard standardized.hasPrefix(prefix) else { return false }
             let relative = String(standardized.dropFirst(prefix.count))
-            // 只接受形如 "file.jar" 的路径，过滤掉 "subdir/file.jar"
             return !relative.isEmpty && !relative.contains("/")
         }
 

@@ -64,25 +64,21 @@ struct GameCreationView: View {
         }
         .gameFormStateListeners(viewModel: viewModel, triggerConfirm: triggerConfirm, triggerCancel: triggerCancel)
         .onChange(of: viewModel.selectedLoaderVersion) { oldValue, newValue in
-            // 优化：仅在值实际变化时更新
             if oldValue != newValue {
                 viewModel.updateParentState()
             }
         }
         .onChange(of: viewModel.selectedModLoader) { oldValue, newLoader in
-            // 优化：仅在值实际变化时处理
             if oldValue != newLoader {
                 viewModel.handleModLoaderChange(newLoader)
             }
         }
         .onChange(of: viewModel.selectedGameVersion) { oldValue, newVersion in
-            // 优化：仅在值实际变化时处理
             if oldValue != newVersion {
                 viewModel.handleGameVersionChange(newVersion)
             }
         }
         .onDisappear {
-            // 页面关闭后清除所有数据
             clearAllData()
         }
     }

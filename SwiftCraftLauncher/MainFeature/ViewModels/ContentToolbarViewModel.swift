@@ -31,7 +31,7 @@ final class ContentToolbarViewModel: ObservableObject {
 
         var playerWithCredential = player
         if playerWithCredential.credential == nil {
-            let dataManager = PlayerDataManager()
+            let dataManager = AppServices.playerDataManager
             if let credential = dataManager.loadCredential(userId: playerWithCredential.id) {
                 playerWithCredential.credential = credential
             }
@@ -43,7 +43,7 @@ final class ContentToolbarViewModel: ObservableObject {
 
             if validatedPlayer.authAccessToken != player.authAccessToken {
                 Logger.shared.info("玩家 \(player.name) 的Token已更新，保存到数据管理器")
-                let dataManager = PlayerDataManager()
+                let dataManager = AppServices.playerDataManager
                 let success = dataManager.updatePlayerSilently(validatedPlayer)
                 if success {
                     Logger.shared.debug("已更新玩家数据管理器中的Token信息")

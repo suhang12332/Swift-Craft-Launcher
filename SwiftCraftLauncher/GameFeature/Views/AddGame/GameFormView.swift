@@ -174,48 +174,37 @@ struct GameFormView: View {
         }
     }
 
-    private var importModePickerSelection: Binding<ImportModePickerValue> {
-        Binding(
-            get: {
-                switch mode {
-                case .creation:
-                    return .manual
-                case .modPackImport:
-                    return .modPack
-                case .launcherImport:
-                    return .launcherImport
-                }
-            },
-            set: { newValue in
-                switch newValue {
-                case .manual:
-                    mode = .creation
-                case .launcherImport:
-                    mode = .launcherImport
-                case .modPack:
-                    if case .launcherImport = mode {
-                        mode = .creation
-                    }
-                    filePickerType = .modPack
-                    DispatchQueue.main.async {
-                        showFilePicker = true
-                    }
-                }
+    private func selectImportMode(_ newValue: ImportModePickerValue) {
+        switch newValue {
+        case .manual:
+            mode = .creation
+        case .launcherImport:
+            mode = .launcherImport
+        case .modPack:
+            if case .launcherImport = mode {
+                mode = .creation
             }
-        )
+            filePickerType = .modPack
+            DispatchQueue.main.async {
+                showFilePicker = true
+            }
+        }
     }
 
     private var importModePicker: some View {
-        Picker("", selection: importModePickerSelection) {
-            Text("game.form.mode.manual".localized())
-                .tag(ImportModePickerValue.manual)
-            Text("modpack.import.title".localized())
-                .tag(ImportModePickerValue.modPack)
-            Text("launcher.import.title".localized())
-                .tag(ImportModePickerValue.launcherImport)
+        Menu {
+            Button("game.form.mode.manual".localized()) {
+                selectImportMode(.manual)
+            }
+            Button("modpack.import.title".localized()) {
+                selectImportMode(.modPack)
+            }
+            Button("launcher.import.title".localized()) {
+                selectImportMode(.launcherImport)
+            }
+        } label: {
+            Text(currentModeTitle)
         }
-        .labelsHidden()
-        .pickerStyle(.menu)
         .fixedSize(horizontal: true, vertical: false)
         .help("game.form.mode.import".localized())
     }
@@ -269,10 +258,4 @@ struct GameFormView: View {
         .keyboardShortcut(.defaultAction)
         .disabled(!isFormValid || isDownloading)
     }
-
-    // MARK: - Helper Methods
-}
-
-#Preview {
-    GameFormView()
 }

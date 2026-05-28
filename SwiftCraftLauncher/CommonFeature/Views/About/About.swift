@@ -70,7 +70,3 @@ public struct AboutView: View {
         .padding(.horizontal)
     }
 }
-
-#Preview {
-    AboutView()
-}

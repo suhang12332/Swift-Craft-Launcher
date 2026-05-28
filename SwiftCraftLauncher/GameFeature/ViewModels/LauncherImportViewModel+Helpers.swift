@@ -17,7 +17,6 @@ extension LauncherImportViewModel {
             }
             let parentPath = currentPath.deletingLastPathComponent()
             if parentPath.path == currentPath.path {
-                // 已经到达根目录
                 break
             }
             currentPath = parentPath

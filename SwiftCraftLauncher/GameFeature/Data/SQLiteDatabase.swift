@@ -65,16 +65,8 @@ class SQLiteDatabase {
             }
 
             self.db = openedDb
-
-            // 启用 WAL 模式
             try enableWALMode()
-
-            // 启用 mmap
             try enableMmap()
-
-            // 启用 JSON1 扩展（SQLite 3.9.0+ 内置）
-            // JSON1 扩展默认已启用，无需额外操作
-
             Logger.shared.debug("SQLite 数据库已打开: \(dbPath)")
         }
     }

@@ -100,7 +100,7 @@ final class SkinToolDetailViewModel: ObservableObject {
         guard let p = player, p.isOnlineAccount else { return player }
         var copy = p
         if copy.credential == nil {
-            if let c = PlayerDataManager().loadCredential(userId: p.id) {
+            if let c = AppServices.playerDataManager.loadCredential(userId: p.id) {
                 copy.credential = c
             }
         }
@@ -142,8 +142,6 @@ final class SkinToolDetailViewModel: ObservableObject {
         loadCapeTask = nil
 
         if let imageURL = imageURL, id != nil {
-            // 切换披风时立即清空旧图片，避免显示错误的预览图
-            // 新图片会在异步下载完成后更新
             selectedCapeImage = nil
             downloadCapeTask?.cancel()
             downloadCapeTask = Task {
@@ -156,7 +154,6 @@ final class SkinToolDetailViewModel: ObservableObject {
         } else {
             selectedCapeLocalPath = nil
             selectedCapeImage = nil
-            // 取消选择披风时，立即完成（因为没有披风需要加载）
             capeLoadCompleted = true
             isCapeLoading = false
         }

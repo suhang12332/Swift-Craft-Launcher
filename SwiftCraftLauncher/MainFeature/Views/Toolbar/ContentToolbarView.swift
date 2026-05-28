@@ -87,7 +87,6 @@ public struct ContentToolbarView: ToolbarContent {
                         isPlayerNameValid = false
 
                         showingAddPlayerSheet = false
-                        // 延迟清理认证状态，避免影响对话框关闭动画
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             minecraftAuthService.clearAuthenticationData()
                         }
@@ -177,7 +176,7 @@ public struct ContentToolbarView: ToolbarContent {
                             playerId: p.id,
                             viewModel: minecraftFriendsSheetViewModel,
                             localize: MinecraftFriendsSheetLocalize.resolver(
-                                localeIdentifier: { LanguageManager.getDefaultLanguage() },
+                                localeIdentifier: { AppServices.languageManager.selectedLanguage },
                                 fallback: { $0.localized() }
                             ),
                             limitBodyScrollHeight: AppServices.generalSettingsManager.limitCommonSheetHeight

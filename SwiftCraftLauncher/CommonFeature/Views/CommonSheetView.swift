@@ -62,7 +62,6 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
 
 // MARK: - Convenience Initializers
 extension CommonSheetView where Header == EmptyView, Footer == EmptyView {
-    /// 只有主体内容的初始化方法
     init(
         generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder body: @escaping () -> BodyContent
@@ -75,7 +74,6 @@ extension CommonSheetView where Header == EmptyView, Footer == EmptyView {
 }
 
 extension CommonSheetView where Footer == EmptyView {
-    /// 有头部和主体的初始化方法
     init(
         generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder header: @escaping () -> Header,
@@ -89,7 +87,6 @@ extension CommonSheetView where Footer == EmptyView {
 }
 
 extension CommonSheetView where Header == EmptyView {
-    /// 有主体和底部的初始化方法
     init(
         generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder body: @escaping () -> BodyContent,

@@ -211,11 +211,8 @@ enum MinecraftLaunchCommandBuilder {
         guard let basePath = extractBasePath(from: relativePath) else { return nil }
 
         if existingModBasePaths.contains(basePath) {
-            return nil // mod 路径已存在，跳过
+            return nil
         }
-
-        // 只返回 artifact 路径，不包含 classifiers
-        // classifiers 是原生库，不应该添加到 classpath 中
         return [libraryPath]
     }
 

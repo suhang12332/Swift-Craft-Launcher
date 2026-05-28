@@ -12,7 +12,7 @@ struct AIAvatarView: View {
     let size: CGFloat
     let url: String
 
-    init(size: CGFloat, url: String = "https://mcskins.top/assets/snippets/download/skin.php?n=7050") {
+    init(size: CGFloat, url: String) {
         self.size = size
         self.url = url
     }

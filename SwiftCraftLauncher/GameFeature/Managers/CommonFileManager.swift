@@ -152,7 +152,6 @@ class CommonFileManager {
 
         Logger.shared.info("找到 \(clientProcessors.count) 个client端processor，开始执行")
 
-        // 使用version.json中的原始data字段，并添加必要的环境变量
         var processorData: [String: String] = [:]
 
         // 添加基础环境变量
@@ -176,7 +175,6 @@ class CommonFileManager {
             }
         }
 
-        // 通过gameVersion获取对应的Java版本，只获取一次，避免在每个processor中重复请求和校验
         let versionInfo = try await ModrinthService.fetchVersionInfo(from: gameVersion)
         let javaPath = javaManager.findJavaExecutable(version: versionInfo.javaVersion.component)
 

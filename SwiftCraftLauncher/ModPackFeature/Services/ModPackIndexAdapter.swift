@@ -1,7 +1,7 @@
 import Foundation
 
 protocol ModPackIndexAdapter {
-    /// 适配器标识（用于日志）
+    /// 适配器标识
     var id: String { get }
 
     /// 判断该解压目录是否可由此适配器解析

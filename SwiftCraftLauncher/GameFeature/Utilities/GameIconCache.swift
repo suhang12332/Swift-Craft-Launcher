@@ -91,7 +91,6 @@ final class GameIconCache: @unchecked Sendable {
     func iconExistsAsync(gameName: String, iconName: String) async -> Bool {
         let cacheKeyString = "\(gameName)/\(iconName)"
 
-        // 先检查缓存（在主线程同步检查，避免 Sendable 问题）
         let cacheKey = cacheKeyString as NSString
         let cached = cacheQueue.sync {
             existenceCache.object(forKey: cacheKey)
@@ -109,8 +108,6 @@ final class GameIconCache: @unchecked Sendable {
             return FileManager.default.fileExists(atPath: iconURL.path)
         }.value
 
-        // 更新缓存（在主线程或队列中执行，避免 Sendable 问题）
-        // 使用 String 而不是 NSString，在闭包内部转换，避免 Sendable 问题
         let existsValue = exists
         cacheQueue.async(flags: .barrier) {
             let cacheKey = cacheKeyString as NSString
@@ -124,9 +121,6 @@ final class GameIconCache: @unchecked Sendable {
     /// - Parameter gameName: 游戏名称
     func invalidateCache(for gameName: String) {
         cacheQueue.async(flags: .barrier) {
-            // NSCache 没有 allKeys，需要手动维护键列表或使用其他方式
-            // 简化处理：直接清空缓存
-            // 如果需要更精细的控制，可以维护一个单独的键集合
             self.existenceCache.removeAllObjects()
             self.urlCache.removeAllObjects()
 
@@ -143,7 +137,6 @@ final class GameIconCache: @unchecked Sendable {
             self.existenceCache.removeAllObjects()
             self.urlCache.removeAllObjects()
 
-            // 发送缓存失效通知（nil 表示清除所有缓存）
             DispatchQueue.main.async {
                 self.cacheInvalidationSubject.send(nil)
             }

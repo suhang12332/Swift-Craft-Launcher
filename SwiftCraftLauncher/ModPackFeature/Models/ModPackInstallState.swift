@@ -40,20 +40,17 @@ class ModPackInstallState: ObservableObject {
     ) {
         self.filesTotal = filesTotal
         self.dependenciesTotal = dependenciesTotal
-        // 只有在 overrides 还没有开始时才设置 total，避免覆盖已完成的进度
         if self.overridesTotal == 0 {
             self.overridesTotal = overridesTotal
         }
         self.isInstalling = true
         self.filesProgress = 0
         self.dependenciesProgress = 0
-        // 只有在 overrides 还没有完成时才重置进度，保留已完成的 overrides 进度
         if self.overridesCompleted == 0 {
             self.overridesProgress = 0
         }
         self.filesCompleted = 0
         self.dependenciesCompleted = 0
-        // 保留已完成的 overrides 进度，不重置
     }
 
     func updateFilesProgress(fileName: String, completed: Int, total: Int) {

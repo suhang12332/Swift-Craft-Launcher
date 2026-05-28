@@ -26,7 +26,6 @@ enum ModrinthDependencyDownloader {
                 gameName: gameInfo.gameName
             )
             guard let resourceDirUnwrapped = resourceDir else { return }
-            // 1. 获取所有依赖
 
             // 新逻辑：用ModScanner判断对应资源目录下是否已安装
             let dependencies =
@@ -38,7 +37,6 @@ enum ModrinthDependencyDownloader {
                     selectedLoaders: [gameInfo.modLoader]
                 )
 
-            // 2. 获取主mod详情
             guard
                 await ModrinthService.fetchProjectDetails(id: projectId) != nil
             else {
@@ -46,22 +44,18 @@ enum ModrinthDependencyDownloader {
                 return
             }
 
-            // 3. 读取最大并发数，最少为1
             let semaphore = AsyncSemaphore(
                 value: AppServices.generalSettingsManager.concurrentDownloads
-            )  // 控制最大并发数
+            )
 
-            // 4. 并发下载所有依赖和主mod，收集结果
             let allDownloaded: [ModrinthProjectDetail] = await withTaskGroup(
                 of: ModrinthProjectDetail?.self
             ) { group in
-                // 依赖
                 for depVersion in dependencies.projects {
                     group.addTask {
                         await semaphore.wait()  // 限制并发
                         defer { Task { await semaphore.signal() } }
 
-                        // 获取项目详情
                         guard
                             let projectDetail =
                                 await ModrinthService.fetchProjectDetails(
@@ -72,13 +66,9 @@ enum ModrinthDependencyDownloader {
                             Logger.shared.error(
                                 "无法获取依赖项目详情 (ID: \(depVersion.projectId))"
                             )
-                            Logger.shared.error(
-                                "无法获取sss项目详情 (ID: \(depVersion.projectId))"
-                            )
                             return nil
                         }
 
-                        // 使用版本中的文件信息
                         let result = ModrinthService.filterPrimaryFiles(
                             from: depVersion.files
                         )
@@ -93,14 +83,12 @@ enum ModrinthDependencyDownloader {
                             var detailWithFile = projectDetail
                             detailWithFile.fileName = file.filename
                             detailWithFile.type = query
-                            // 新增缓存
                             if let fileURL = fileURL,
-                                let hash = ModScanner.sha1Hash(of: fileURL) {
+                                let hash = AppServices.modScanner.sha1Hash(of: fileURL) {
                                 AppServices.modScanner.saveToCache(
                                     hash: hash,
                                     detail: detailWithFile
                                 )
-                                // 如果是 mod，添加到安装缓存
                                 if query.lowercased() == ResourceType.mod.rawValue {
                                     AppServices.modScanner.addModHash(
                                         hash,
@@ -148,14 +136,12 @@ enum ModrinthDependencyDownloader {
                                 )
                             mainProjectDetail.fileName = file.filename
                             mainProjectDetail.type = query
-                            // 新增缓存
                             if let fileURL = fileURL,
-                                let hash = ModScanner.sha1Hash(of: fileURL) {
+                                let hash = AppServices.modScanner.sha1Hash(of: fileURL) {
                                 AppServices.modScanner.saveToCache(
                                     hash: hash,
                                     detail: mainProjectDetail
                                 )
-                                // 如果是 mod，添加到安装缓存
                                 if query.lowercased() == ResourceType.mod.rawValue {
                                     AppServices.modScanner.addModHash(
                                         hash,
@@ -225,9 +211,6 @@ enum ModrinthDependencyDownloader {
                         return nil
                     }
 
-                    // 使用服务端的过滤方法，和全局资源安装逻辑一致
-                    // 预置游戏版本和加载器
-                    // fetchProjectVersionsFilter 内部处理 CurseForge 项目
                     let filteredVersions: [ModrinthProjectDetailVersion]
                     do {
                         filteredVersions = try await ModrinthService.fetchProjectVersionsFilter(
@@ -237,7 +220,6 @@ enum ModrinthDependencyDownloader {
                             type: ResourceType.mod.rawValue
                         )
                     } catch {
-                        // 如果版本获取失败，返回空列表
                         Logger.shared.error("获取依赖 \(projectDetail.title) 的版本失败: \(error.localizedDescription)")
                         filteredVersions = []
                     }
@@ -347,13 +329,11 @@ enum ModrinthDependencyDownloader {
                         depCopy.fileName = primaryFile.filename
                         depCopy.type = query
                         success = true
-                        // 新增缓存
-                        if let hash = ModScanner.sha1Hash(of: fileURL) {
+                        if let hash = AppServices.modScanner.sha1Hash(of: fileURL) {
                             AppServices.modScanner.saveToCache(
                                 hash: hash,
                                 detail: depCopy
                             )
-                            // 如果是 mod，添加到安装缓存
                             if query.lowercased() == ResourceType.mod.rawValue {
                                 AppServices.modScanner.addModHash(
                                     hash,
@@ -387,11 +367,9 @@ enum ModrinthDependencyDownloader {
         }
 
         guard allSuccess else {
-            // 如果依赖下载失败，就不再继续下载主mod，直接返回失败
             return false
         }
 
-        // 所有依赖都成功了，现在下载主 mod
         do {
             guard
                 var mainProjectDetail =
@@ -441,13 +419,11 @@ enum ModrinthDependencyDownloader {
             )
             mainProjectDetail.fileName = primaryFile.filename
             mainProjectDetail.type = query
-            // 新增缓存
-            if let hash = ModScanner.sha1Hash(of: fileURL) {
+            if let hash = AppServices.modScanner.sha1Hash(of: fileURL) {
                 AppServices.modScanner.saveToCache(
                     hash: hash,
                     detail: mainProjectDetail
                 )
-                // 如果是 mod，添加到安装缓存
                 if query.lowercased() == ResourceType.mod.rawValue {
                     AppServices.modScanner.addModHash(
                         hash,
@@ -508,14 +484,12 @@ enum ModrinthDependencyDownloader {
             mainProjectDetail.type = query
 
             var hash: String?
-            // 新增缓存
-            if let h = ModScanner.sha1Hash(of: fileURL) {
+            if let h = AppServices.modScanner.sha1Hash(of: fileURL) {
                 hash = h
                 AppServices.modScanner.saveToCache(
                     hash: h,
                     detail: mainProjectDetail
                 )
-                // 如果是 mod，添加到安装缓存
                 if query.lowercased() == ResourceType.mod.rawValue {
                     AppServices.modScanner.addModHash(
                         h,

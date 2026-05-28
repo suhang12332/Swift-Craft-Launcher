@@ -128,7 +128,6 @@ struct ModrinthDetailView: View {
             coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
         }
         .onChange(of: query) { _, _ in
-            // 清理之前的旧数据
             viewModel.clearResults()
             coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
             searchText = ""
@@ -140,7 +139,6 @@ struct ModrinthDetailView: View {
         )
 
         .onChange(of: searchText) { oldValue, newValue in
-            // 优化：仅在搜索文本实际变化时触发防抖搜索
             if oldValue != newValue {
                 coordinator.resetPagination()
                 coordinator.debounceSearch(

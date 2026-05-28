@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-/// 主窗口级游戏相关浮层状态（整合包导出 sheet、删除确认对话框等），由 `MainView` 统一挂载 UI。
+/// 主窗口级游戏相关浮层状态（整合包导出 sheet、删除确认对话框等
 @MainActor
 final class GameDialogsPresenter: ObservableObject {
     static let shared = GameDialogsPresenter()

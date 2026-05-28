@@ -65,7 +65,6 @@ public class GitHubService: ObservableObject {
             language: language
         )
 
-        // 使用统一的 API 客户端
         let headers = APIClient.DefaultHeaders.acceptJSON
         let data = try await APIClient.get(url: url, headers: headers)
 

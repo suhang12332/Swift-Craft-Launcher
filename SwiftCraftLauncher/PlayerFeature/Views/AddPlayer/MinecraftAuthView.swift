@@ -14,7 +14,6 @@ struct MinecraftAuthView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            // 认证状态显示
             switch authService.authState {
             case .notAuthenticated:
                 notAuthenticatedView
@@ -33,7 +32,6 @@ struct MinecraftAuthView: View {
         }
         .padding()
         .onDisappear {
-            // 页面关闭后清除所有数据
             clearAllData()
         }
     }
@@ -41,11 +39,9 @@ struct MinecraftAuthView: View {
     // MARK: - 清除数据
     /// 清除页面所有数据
     private func clearAllData() {
-        // 重置认证服务状态（如果未完成认证）
         if case .notAuthenticated = authService.authState {
             authService.isLoading = false
         }
-        // 认证成功时不清除状态，可能仍需认证信息
     }
 
     // MARK: - 未认证状态
@@ -70,7 +66,6 @@ struct MinecraftAuthView: View {
     // MARK: - 等待浏览器授权状态
     private var waitingForBrowserAuthView: some View {
         VStack(spacing: 16) {
-            // 浏览器图标
             Image(systemName: "person.crop.circle.badge.clock")
                 .font(.system(size: 46))
                 .foregroundColor(.secondary)
@@ -107,7 +102,6 @@ struct MinecraftAuthView: View {
         profile: MinecraftProfileResponse
     ) -> some View {
         VStack(spacing: 20) {
-            // 用户头像
             if let skinUrl = profile.skins.first?.url {
                 MinecraftSkinUtils(type: .url, src: skinUrl.httpToHttps())
             } else {
@@ -170,8 +164,4 @@ struct MinecraftAuthView: View {
                 .multilineTextAlignment(.center)
         }
     }
-}
-
-#Preview {
-    MinecraftAuthView()
 }

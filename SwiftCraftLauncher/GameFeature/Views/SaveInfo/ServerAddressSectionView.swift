@@ -102,7 +102,6 @@ struct ServerAddressSectionView: View {
         VStack(alignment: .leading, spacing: 0) {
             ScrollView {
                 FlowLayout {
-                    // 显示所有服务器
                     ForEach(servers) { server in
                         ServerAddressChip(
                             title: server.name,

@@ -135,7 +135,6 @@ enum ProcessorExecutor {
                 coordinate
             )
         } else {
-            // 对于标准坐标，使用原有方法
             guard
                 let path = CommonService.mavenCoordinateToRelativePath(
                     coordinate
@@ -192,12 +191,10 @@ enum ProcessorExecutor {
         librariesDir: URL,
         data: [String: String]?
     ) -> String {
-        // 快速检查：如果字符串不包含任何占位符，直接返回
         guard arg.contains("{") else {
             return arg
         }
 
-        // 使用 NSMutableString 避免在循环中创建大量临时字符串
         let processedArg = NSMutableString(string: arg)
 
         // 基础占位符替换
@@ -210,7 +207,6 @@ enum ProcessorExecutor {
         ]
 
         for (placeholder, value) in basicReplacements where processedArg.range(of: placeholder).location != NSNotFound {
-            // 先检查是否包含占位符，避免不必要的替换操作
             processedArg.replaceOccurrences(
                 of: placeholder,
                 with: value,
@@ -223,7 +219,6 @@ enum ProcessorExecutor {
         if let data = data {
             for (key, value) in data {
                 let placeholder = "{\(key)}"
-                // 先检查是否包含占位符，避免不必要的处理
                 if processedArg.range(of: placeholder).location != NSNotFound {
                     let replacementValue =
                         value.contains(":") && !value.hasPrefix("/")
@@ -299,14 +294,12 @@ enum ProcessorExecutor {
         outputPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             if !data.isEmpty, String(data: data, encoding: .utf8) != nil {
-                // 输出数据已读取，防止管道阻塞
             }
         }
 
         errorPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             if !data.isEmpty, String(data: data, encoding: .utf8) != nil {
-                // 错误输出数据已读取，防止管道阻塞
             }
         }
     }

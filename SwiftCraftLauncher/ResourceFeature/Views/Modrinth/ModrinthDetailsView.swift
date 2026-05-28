@@ -11,7 +11,6 @@ struct ModrinthDetailsSection: View, Equatable {
     let project: ModrinthProjectDetail?
     let isLoading: Bool
 
-    // 缓存日期格式化结果，避免每次渲染都重新计算
     private var publishedDateString: String? {
         project?.published.formatted(.relative(presentation: .named))
     }

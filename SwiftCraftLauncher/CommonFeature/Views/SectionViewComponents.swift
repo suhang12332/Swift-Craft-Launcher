@@ -101,14 +101,12 @@ struct ContentWithOverflow<Item: Identifiable, Content: View>: View {
 
 // MARK: - Array Extension
 extension Array {
-    /// 基于最大项目数计算可见和溢出项
     func computeVisibleAndOverflowItems(maxItems: Int) -> ([Element], [Element]) {
         let visibleItems = Array(prefix(maxItems))
         let overflowItems = Array(dropFirst(maxItems))
         return (visibleItems, overflowItems)
     }
 
-    /// 基于行数和宽度计算可见和溢出项（用于 CategorySectionView）
     func computeVisibleAndOverflowItemsByRows(
         maxRows: Int = SectionViewConstants.defaultMaxRows,
         maxWidth: CGFloat = SectionViewConstants.defaultMaxWidth,

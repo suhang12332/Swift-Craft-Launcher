@@ -46,7 +46,6 @@ struct ModrinthDetailCardView: View {
         }
         .frame(maxWidth: .infinity)
         .onAppear {
-            // 从数据源同步禁用状态，避免列表滚动复用行时显示错误
             isResourceDisabled = ResourceEnableDisableManager.isDisabled(fileName: project.fileName)
         }
         .onChange(of: project.fileName) { _, newFileName in
@@ -57,9 +56,7 @@ struct ModrinthDetailCardView: View {
     // MARK: - View Components
     private var iconView: some View {
         Group {
-            // 使用 id 前缀判断本地资源，更可靠
             if project.projectId.hasPrefix("local_") || project.projectId.hasPrefix("file_") {
-                // 本地资源显示 questionmark.circle 图标
                 localResourceIcon
             } else if let iconUrl = project.iconUrl,
                 let url = URL(string: iconUrl) {

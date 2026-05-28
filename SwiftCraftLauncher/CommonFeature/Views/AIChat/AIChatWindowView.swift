@@ -93,21 +93,17 @@ struct AIChatWindowView: View {
             }
         }
         .onChange(of: gameRepository.games) { _, newGames in
-            // 当游戏列表加载完成且未选择游戏时，自动选择第一个游戏
             viewModel.onGamesChanged(newGames)
         }
         .onChange(of: playerListViewModel.currentPlayer?.id) { _, _ in
-            // 当当前玩家变化时，更新用户头像缓存（仅监听 ID 变化，减少不必要的更新）
             viewModel.onPlayerChanged(playerListViewModel.currentPlayer)
         }
         .onChange(of: aiSettings.aiAvatarURL) { oldValue, newValue in
-            // 当 AI 头像 URL 变化时，更新 AI 头像缓存（仅在 URL 实际变化时更新）
             if oldValue != newValue {
                 viewModel.onAIAvatarURLChanged(newValue)
             }
         }
         .onDisappear {
-            // 页面关闭后清除所有数据
             clearAllData()
         }
     }

@@ -10,6 +10,7 @@ enum AppServices {
         // MARK: - Cache
         var appCacheManager: AppCacheManager?
         var cacheCalculator: CacheCalculator?
+        var cacheManager: CacheManager?
 
         // MARK: - Resource / scanning
         var modScanner: ModScanner?
@@ -36,8 +37,13 @@ enum AppServices {
         var generalSettingsManager: GeneralSettingsManager?
         var gameSettingsManager: GameSettingsManager?
         var playerSettingsManager: PlayerSettingsManager?
+        var playerDataManager: PlayerDataManager?
         var selectedGameManager: SelectedGameManager?
+        var themeManager: ThemeManager?
         var languageManager: LanguageManager?
+
+        // MARK: - Player / friends
+        var minecraftFriendsPresencePollingCoordinator: MinecraftFriendsPresencePollingCoordinator?
 
         // MARK: - External services
         var gitHubService: GitHubService?
@@ -104,6 +110,12 @@ enum AppServices {
     // MARK: - Cache
     static var appCacheManager: AppCacheManager { lock.withLock { dependencies.appCacheManager ?? .shared } }
     static var cacheCalculator: CacheCalculator { lock.withLock { dependencies.cacheCalculator ?? .shared } }
+    static var cacheManager: CacheManager {
+        if let injected = lock.withLock({ dependencies.cacheManager }) {
+            return injected
+        }
+        return sharedOnMainActor { CacheManager.shared }
+    }
 
     // MARK: - Resource / scanning
     static var modScanner: ModScanner { lock.withLock { dependencies.modScanner ?? .shared } }
@@ -165,8 +177,22 @@ enum AppServices {
     static var generalSettingsManager: GeneralSettingsManager { lock.withLock { dependencies.generalSettingsManager ?? .shared } }
     static var gameSettingsManager: GameSettingsManager { lock.withLock { dependencies.gameSettingsManager ?? .shared } }
     static var playerSettingsManager: PlayerSettingsManager { lock.withLock { dependencies.playerSettingsManager ?? .shared } }
+    static var playerDataManager: PlayerDataManager { lock.withLock { dependencies.playerDataManager ?? .shared } }
     static var selectedGameManager: SelectedGameManager { lock.withLock { dependencies.selectedGameManager ?? .shared } }
+    static var themeManager: ThemeManager {
+        if let injected = lock.withLock({ dependencies.themeManager }) {
+            return injected
+        }
+        return sharedOnMainActor { ThemeManager.shared }
+    }
     static var languageManager: LanguageManager { lock.withLock { dependencies.languageManager ?? .shared } }
+
+    static var minecraftFriendsPresencePollingCoordinator: MinecraftFriendsPresencePollingCoordinator {
+        if let injected = lock.withLock({ dependencies.minecraftFriendsPresencePollingCoordinator }) {
+            return injected
+        }
+        return sharedOnMainActor { MinecraftFriendsPresencePollingCoordinator.shared }
+    }
 
     // MARK: - External services
     static var gitHubService: GitHubService {

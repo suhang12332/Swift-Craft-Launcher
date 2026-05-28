@@ -156,7 +156,7 @@ extension AddOrDeleteResourceButtonViewModel {
         var gameName: String?
         if fileURL.deletingLastPathComponent().lastPathComponent.lowercased() == "mods" {
             gameName = fileURL.deletingLastPathComponent().deletingLastPathComponent().lastPathComponent
-            hash = ModScanner.sha1Hash(of: fileURL)
+            hash = AppServices.modScanner.sha1Hash(of: fileURL)
         }
 
         do {

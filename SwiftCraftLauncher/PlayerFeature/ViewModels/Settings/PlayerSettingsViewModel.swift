@@ -17,8 +17,8 @@ final class PlayerSettingsViewModel: ObservableObject {
 
     init(
         friendsService: MinecraftFriendsService = AppServices.minecraftFriendsService,
-        authService: MinecraftAuthService = .shared,
-        dataManager: PlayerDataManager = PlayerDataManager(),
+        authService: MinecraftAuthService = AppServices.minecraftAuthService,
+        dataManager: PlayerDataManager = AppServices.playerDataManager,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler
     ) {
         self.friendsService = friendsService
