@@ -1,102 +1,123 @@
-# Contributing Guide 📘
-  [简体中文](../CONTRIBUTING.md) | English
+# Contributing Guide
 
-Welcome to **SwiftCraftLauncher**! We’re so glad you’re here 🙌. This guide will help you contribute effectively and ensure your work is smoothly integrated.
+[简体中文](../CONTRIBUTING.md) | English
 
----
+Welcome to **Swift Craft Launcher**! Thank you for wanting to contribute. Please read this guide first — it helps us collaborate smoothly and makes it easier for your contributions to be accepted.
 
-## 1. Code of Conduct ✨
+### 1. Code of Conduct
 
-* **Be respectful**: stay kind, constructive, and professional.
-* **Inclusive**: all backgrounds and skill levels are welcome.
-* **Clear communication**: describe issues and PRs in a way others can easily understand.
+Respect others: stay kind, constructive, and non-confrontational.
 
----
+Open and inclusive: contributors from all backgrounds are welcome.
 
-## 2. Reporting Issues 🐞
-
-When you find a bug or have a suggestion:
-
-1. Open a new issue on GitHub.
-2. Use a clear title, e.g.:
-
-   > “\[BUG] Crash on macOS 14.1 – Java path not found”
-3. Include:
-
-   * OS version (e.g. macOS 14.1)
-   * SwiftCraftLauncher version (release or commit hash)
-   * Steps to reproduce → Expected behavior → Actual behavior
-   * Logs, screenshots, or crash reports if available
+Clear communication: keep issue and PR descriptions as clear as possible to avoid misunderstandings.
 
 ---
 
-## 3. Submitting Code (Pull Requests) 🚀
+### 2. Reporting Issues
 
-1. **Fork** the repository and sync your fork with the latest `dev` branch.
-2. **Create a feature branch** from `dev`:
+When you find a bug or have a suggestion for improvement:
 
-   ```
-   dev → feature/short-description
-   ```
+Open a new issue on GitHub.
 
-   Example: `feature/fix-java-path` or `feature/add-mod-support`
-3. Make your changes in that branch. Keep changes focused and small.
-4. Write clear commit messages:
+Use a concise, descriptive title, for example:
 
-   * Start with a verb: “Fix …”, “Add …”, “Improve …”
-   * Example: `Fix Java detection on macOS`
-5. Test locally to ensure nothing is broken.
-6. Push the branch to your fork.
-7. Open a **Pull Request**:
+“[BUG] Crash on launch on macOS 14.1 – Java path not found”
 
-   * **Base repository**: original SwiftCraftLauncher repo
-   * **Base branch**: `dev`
-   * **Compare branch**: your feature branch
-8. In your PR description, include:
+Include:
 
-   * Motivation: why this change is needed
-   * Summary: what has changed
-   * Screenshots/logs if relevant
+OS version (macOS + version number)
+
+Swift Craft Launcher version (release or commit hash)
+
+What you did → what you expected → what actually happened
+
+Error logs or screenshots, if possible
 
 ---
 
-## 4. Code Style & Quality 🌱
+### 3. Contributing Code (Pull Request) Workflow
 
-* Language: **Swift** with **SwiftUI**
-* Follow Swift naming conventions (CamelCase, clear identifiers)
-* Add comments for public APIs or complex logic
-* Respect project structure (don’t scatter files randomly)
-* Write tests when appropriate
-* Handle edge cases gracefully (avoid crashes)
+Make sure you have forked the project and synced the latest `dev` branch from the upstream repo into your fork.
+
+Create a feature branch from the latest `dev`:
+
+```
+dev → feature/your-description
+```
+
+For example: `feature/fix-java-path` or `feature/add-mod-support`.
+
+Make your changes on the feature branch. Keep each change focused on one thing — small and well-defined.
+
+Write clear commit messages:
+
+Explain clearly what you did, in English or a mix of Chinese and English
+
+Start with a verb, such as “Fix …”, “Add …”, “Improve …”, etc.
+
+After local testing passes, push the branch to your fork.
+
+Open a PR on GitHub: base repository is the upstream repo, base branch is `dev`, compare branch is your feature branch.
+
+In the PR description, include:
+
+Why this change is needed
+
+What changed
+
+Screenshots or logs, if applicable
+
+Wait for review. Maintainers may suggest changes — please address feedback patiently.
 
 ---
 
-## 5. Branching Rules 🌲
+### 4. Code Style and Quality
 
-* `dev`: the main development branch (all features merge here)
-* Always create feature branches from `dev`
-* All PRs should target `dev` as the base branch
+Language is Swift; UI uses SwiftUI. Follow Swift naming conventions (CamelCase, clear variable/function names).
 
----
+Add comments where appropriate: public APIs and complex logic should ideally be documented.
 
-## 6. Local Development Setup 💻
+Follow the existing project structure — do not place files arbitrarily.
 
-* Use the latest stable **Xcode** (version specified by project)
-* Ensure your Swift version matches project requirements
-* Install the required **Java runtime** if needed (for Minecraft launching features)
-* Build, run, and test before submitting your contribution
+Write tests when appropriate, and make sure your changes do not break existing behavior.
+
+Handle edge cases; avoid crashing on unexpected conditions.
 
 ---
 
-## 7. Merging & Releases 📦
+### 5. Branching Rules
 
-* Maintainers will review PRs before merging into `dev`
-* Stable versions are tagged and released from `dev`
-* Releases are tested to confirm no major bugs remain
+`dev` is the main development branch. Features and fixes are merged here before release/packaging.
+
+Create feature branches for new work and fixes from `dev`.
+
+Always open PRs with `dev` as the base branch.
 
 ---
 
-## 8. Thank You! 💖
+### 6. Local Development Environment
 
-Every issue, PR, or suggestion makes this project better.
-We deeply appreciate your time and effort in contributing.
+Use Xcode (version >= project requirement).
+
+Ensure your local Swift version meets project requirements.
+
+You may need to install the appropriate Java version (if launcher-related features depend on it).
+
+Build, run, and manually test that everything works as expected.
+
+---
+
+### 7. Merging and Releases
+
+Maintainers will review PRs. If approved, changes are merged into `dev`.
+
+When `dev` reaches a stable state or a release is planned, a release tag is created.
+
+Before a release, testing is performed to confirm there are no major bugs.
+
+---
+
+### 8. Thank You!
+
+Thank you for contributing your time and effort. Every issue, every PR, and every suggestion is valuable.

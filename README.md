@@ -27,16 +27,16 @@
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?logo=gnu)](https://www.gnu.org/licenses/agpl-3.0)
 
   
-  🌐 [Website](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/) • 💾 [Download](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • 📚 [Documentation](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/)
+  [Website](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/) • [Download](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest) • [Documentation](https://suhang12332.github.io/Swift-Craft-Launcher-Assets/web/) • [Zread Documentation](https://zread.ai/suhang12332/Swift-Craft-Launcher)
   
   **English** | [简体中文](doc/README_zh-CN.md) | [繁體中文](doc/README_zh-TW.md)
 </div>
 
 ---
 
-## 🎯 Overview
+## Overview
 
-Swift Craft Launcher is a native macOS Minecraft launcher 🍎 built with SwiftUI, offering a streamlined and efficient gaming experience. Designed for modern macOS systems, it provides comprehensive mod loader support, Microsoft account authentication, and intuitive game management.
+Swift Craft Launcher is a native macOS Minecraft launcher built with SwiftUI, offering a streamlined and efficient gaming experience. Designed for modern macOS systems, it provides comprehensive mod loader support, Microsoft account authentication, and intuitive game management.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-Assets/refs/heads/main/imagebed/readme/screenshot2026-01-29-01.17.31.gif" alt="SwiftCraftLauncher Screenshot" width="800">
@@ -45,33 +45,14 @@ Swift Craft Launcher is a native macOS Minecraft launcher 🍎 built with SwiftU
   <img src="https://raw.githubusercontent.com/suhang12332/Swift-Craft-Launcher-Assets/refs/heads/main/imagebed/readme/screenshot2026-01-29-01.14.06.gif" alt="SwiftCraftLauncher Screenshot" width="800">
 </div>
 
-## ✨ Key Features
 
-### 🧩 Core Functionality
-- **🔄 Multi-version Minecraft Support** - ARM: 1.13+, Intel: untested
-- **🔐 Microsoft Account Authentication** - Secure OAuth integration with device code flow
-- **🧰 Mod Loader Support** - Fabric, Quilt, Forge, and NeoForge with automatic installation
-- **📦 Resource Management** - One-click installation of mods, datapacks, shaders, and resource packs
+## System Requirements
 
-### 💻 User Experience
-- **🎨 Native macOS Design** - SwiftUI-based interface following Apple Human Interface Guidelines
-- **🌍 Multi-language Support** - Localized interface with flag indicators
-- **🗂️ Smart Path Management** - Finder-style breadcrumb navigation with auto-truncation of long paths
-- **⚡ Performance Optimization** - Efficient caching and memory management mechanisms
+- **macOS**: 14.0 or later
 
-### ⚙️ Advanced Configuration
-- **☕ Java Management** - Per-profile Java path configuration with automatic version detection
-- **🧠 Memory Allocation** - Visual range slider for Xms/Xmx parameter settings
-- **🔧 Custom Launch Parameters** - JVM and game argument customization
+## Installation
 
-## 📋 System Requirements
-
-- **💻 macOS**: 14.0 or later
-- **☕️ Java**: 8 or later (for Minecraft runtime)
-
-## 📥 Installation
-
-### 🍺 Using Homebrew Tap (Recommended)
+### Using Homebrew Tap (Recommended)
 ```bash
 # Method 1: One-command install
 brew install --cask suhang12332/swiftcraftlauncher/swift-craft-launcher
@@ -81,44 +62,10 @@ brew tap suhang12332/swiftcraftlauncher
 brew install --cask swift-craft-launcher
 ```
 
-> **💡 Tip**: We created a dedicated [Homebrew Tap](https://github.com/suhang12332/homebrew-swiftcraftlauncher) for Swift Craft Launcher
-
-### 💾 Pre-built Release
+### GitHub Release
 Download the latest version from [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest).
 
-> **⚠️ Note**: The current available downloads are test versions. Stable releases are coming soon.
-
-### ❓ Frequently Asked Questions
-Please visit [FAQ](doc/FAQ.md)
-
-### 🔨 Build from Source
-1. **⏬ Clone the repository**
-   ```bash
-   git clone https://github.com/suhang12332/Swift-Craft-Launcher.git
-   cd Swift-Craft-Launcher
-   ```
-
-2. **🛠️ Open in Xcode**
-   ```bash
-   open SwiftCraftLauncher.xcodeproj
-   ```
-
-3. **🚀 Build and run** using Xcode (⌘R)
-
-**Build Requirements:**
-- Xcode 13.0+
-- Swift 5.5+
-
-## 🧪 Technical Architecture
-
-| Component | Technology |
-|----------|------------|
-| **🎨 UI Framework** | SwiftUI |
-| **💻 Language** | Swift |
-| **🔄 Reactive Programming** | Combine |
-| **📱 Target Platform** | macOS 14.0+ |
-
-## 📜 License
+## License
 
 This project is licensed under the GNU Affero General Public License v3.0. See [LICENSE](LICENSE) for details.
 
@@ -127,30 +74,17 @@ This project is licensed under the GNU Affero General Public License v3.0. See [
 - [繁體中文](doc/ADDITIONAL_TERMS_zh-TW.md)
 - [English](doc/ADDITIONAL_TERMS_en.md)
 
-## 🤝 Community & Support
+## Community & Support
 
-- **👥 Official QQ Group**: [1057517524](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
+- **Official QQ Group**: [1057517524](https://qm.qq.com/cgi-bin/qm/qr?k=1057517524)
 - **Discord**: [Discord](https://discord.gg/gYESVa3CZd)
-- **🐛 Issue Reports**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
-- **💡 Feature Suggestions**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
+- **Issue Reports**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
+- **Feature Suggestions**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
 
-## 🌟 Contributing
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on:
-- Code style and standards
-- Pull request process
-- Issue reporting guidelines
-
-## 🙏 Acknowledgments
+## Acknowledgments
 
 Special thanks to the following projects that have contributed to this launcher:
 
 - **[Archify](https://github.com/Oct4Pie/archify)** - Universal binary optimization tool for macOS applications
 
 - **[curseforge-fingerprint](https://github.com/meza/curseforge-fingerprint)** - CurseForge mod file fingerprinting algorithm binding
-
----
-
-<div align="center">
-  <strong>🎮 Made with ❤️ for the Minecraft community</strong>
-</div>

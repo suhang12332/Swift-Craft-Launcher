@@ -63,6 +63,8 @@ struct SwiftCraftLauncherAppCommands: Commands {
 
             Divider()
 
+            Link("menu.ai.documentation".localized(), destination: URLConfig.API.Community.aiDocumentation())
+
             Button("ai.assistant.title".localized()) {
                 AppServices.aiChatManager.openChatWindow()
             }

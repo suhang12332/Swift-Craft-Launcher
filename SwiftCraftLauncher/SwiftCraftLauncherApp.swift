@@ -55,7 +55,7 @@ struct SwiftCraftLauncherApp: App {
 
     // MARK: - Body
     var body: some Scene {
-        Window(Bundle.main.appName, id: WindowID.main.rawValue) {
+        Window(Bundle.main.appName, id: AppWindowID.main.rawValue) {
             MainView()
                 .environmentObject(playerListViewModel)
                 .environmentObject(gameRepository)
@@ -92,13 +92,11 @@ struct SwiftCraftLauncherApp: App {
                 .errorAlert()
         }
 
-        // 应用窗口组
-        appWindowGroups()
+        auxiliaryWindowGroup()
             .windowStyle(.titleBar)
             .applyRestorationBehaviorDisabled()
             .windowResizability(.contentSize)
 
-        // 右上角的状态栏
         MenuBarExtra(
             content: {
                 MenuBarExtraContentView {

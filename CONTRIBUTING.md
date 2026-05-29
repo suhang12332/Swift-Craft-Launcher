@@ -1,9 +1,10 @@
-# 贡献指南 📘
+# 贡献指南
+
   简体中文 | [🇬🇧English](/doc/CONTRIBUTING_en.md)
 
-#### 欢迎你为 SwiftCraftLauncher 贡献！谢谢你愿意参与 🙌。请先看这份指南，可以让我们协作更顺畅，也能让你的贡献更容易被接纳。
+#### 欢迎你为 Swift Craft Launcher 贡献！谢谢你愿意参与。请先看这份指南，可以让我们协作更顺畅，也能让你的贡献更容易被接纳。
 
-### 1. 行为准则 （Code of Conduct）✨
+### 1. 行为准则 （Code of Conduct）
 
 尊重他人：保持友善、建设性、不攻击。
 
@@ -13,7 +14,7 @@
 
 ---
 
-### 2. 如何报告问题（Issue）🐞
+### 2. 如何报告问题（Issue）
 
 当你发现 bug 或者有改进建议：
 
@@ -27,7 +28,7 @@
 
 操作系统版本（macOS + 版本号）
 
-SwiftCraftLauncher 的版本（release 或者 commit hash）
+Swift Craft Launcher 的版本（release 或者 commit hash）
 
 你做了什么 → 期望是什么 → 实际发生什么
 
@@ -35,14 +36,13 @@ SwiftCraftLauncher 的版本（release 或者 commit hash）
 
 ---
 
-### 3. 贡献代码（Pull Request）流程 🚀
+### 3. 贡献代码（Pull Request）流程
 
 确保你 Fork 了项目，并把原作者最新 dev 分支同步到你的仓库。
 
 从最新的 dev 分支创建一个功能分支（feature branch）：
 
 dev → feature/你的描述
-
 
 例如 feature/fix-java-path 或 feature/add-mod-support。
 
@@ -70,7 +70,7 @@ dev → feature/你的描述
 
 ---
 
-### 4. 代码风格和质量 🌱
+### 4. 代码风格和质量
 
 语言是 Swift，UI 用 SwiftUI。请遵守 Swift 的命名规范（CamelCase、清晰的变量／函数名）
 
@@ -84,7 +84,7 @@ dev → feature/你的描述
 
 ---
 
-### 5. 分支管理规则 🌲
+### 5. 分支管理规则
 
 dev 是开发主分支，用于合并所有功能／修复之后再发布／打包
 
@@ -94,7 +94,7 @@ PR 永远以 dev 为 base 分支提交
 
 ---
 
-### 6. 本地开发环境 💻
+### 6. 本地开发环境
 
 使用 Xcode（版本 >= 项目要求）
 
@@ -106,7 +106,7 @@ PR 永远以 dev 为 base 分支提交
 
 ---
 
-### 7. 合并与发布 📦
+### 7. 合并与发布
 
 项目维护者会 Review PR，如果通过，会合并到 dev
 
@@ -116,6 +116,6 @@ PR 永远以 dev 为 base 分支提交
 
 ---
 
-### 8. 感谢你！💖
+### 8. 感谢你！
 
 感谢你愿意贡献时间、精力。每一个 issue、每一个 PR、每一点建议都很宝贵。
