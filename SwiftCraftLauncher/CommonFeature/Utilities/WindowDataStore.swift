@@ -29,7 +29,7 @@ class WindowDataStore: ObservableObject {
     @Published var skinPreviewData: SkinPreviewData?
 
     /// 清理指定窗口的数据
-    func cleanup(for windowID: WindowID) {
+    func cleanup(for windowID: AuxiliaryWindowID) {
         switch windowID {
         case .aiChat:
             if let chatState = aiChatState {

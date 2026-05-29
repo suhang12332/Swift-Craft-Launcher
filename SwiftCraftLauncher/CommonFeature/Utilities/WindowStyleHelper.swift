@@ -20,18 +20,18 @@ enum WindowStyleHelper {
 
 /// 窗口样式配置修饰符
 struct WindowStyleConfig: ViewModifier {
-    let windowID: WindowID
+    let windowID: AuxiliaryWindowID
 
     func body(content: Content) -> some View {
         content
             .background(
                 WindowAccessor(synchronous: false) { window in
-                    // 确保窗口 identifier 被正确设置（用于单例查找）
                     if window.identifier?.rawValue != windowID.rawValue {
                         window.identifier = NSUserInterfaceItemIdentifier(windowID.rawValue)
                     }
-
-                    // 统一使用标准窗口样式
+                    if window.title != windowID.localizedTitle {
+                        window.title = windowID.localizedTitle
+                    }
                     WindowStyleHelper.configureStandardWindow(window)
                 }
             )
@@ -39,18 +39,16 @@ struct WindowStyleConfig: ViewModifier {
 }
 
 extension View {
-    /// 应用窗口样式配置
-    func windowStyleConfig(for windowID: WindowID) -> some View {
+    func windowStyleConfig(for windowID: AuxiliaryWindowID) -> some View {
         modifier(WindowStyleConfig(windowID: windowID))
     }
 }
 
-/// 窗口清理修饰符
 struct WindowCleanup: ViewModifier {
-    let windowID: WindowID
+    let windowID: AuxiliaryWindowID
     private let windowDataStore: WindowDataStore
 
-    init(windowID: WindowID, windowDataStore: WindowDataStore = AppServices.windowDataStore) {
+    init(windowID: AuxiliaryWindowID, windowDataStore: WindowDataStore = AppServices.windowDataStore) {
         self.windowID = windowID
         self.windowDataStore = windowDataStore
     }
@@ -64,8 +62,7 @@ struct WindowCleanup: ViewModifier {
 }
 
 extension View {
-    /// 应用窗口清理配置
-    func windowCleanup(for windowID: WindowID) -> some View {
+    func windowCleanup(for windowID: AuxiliaryWindowID) -> some View {
         modifier(WindowCleanup(windowID: windowID))
     }
 }
