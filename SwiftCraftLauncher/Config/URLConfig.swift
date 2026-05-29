@@ -282,6 +282,10 @@ enum URLConfig {
             static func qq() -> URL {
                 URLConfig.url("https://qm.qq.com/cgi-bin/qm/qr?k=1057517524")
             }
+
+            static func aiDocumentation() -> URL {
+                URLConfig.url("https://zread.ai/suhang12332/Swift-Craft-Launcher")
+            }
         }
 
         // Modrinth API
