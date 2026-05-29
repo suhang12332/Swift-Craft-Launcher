@@ -81,16 +81,10 @@ brew install --cask swift-craft-launcher
 - **問題回報**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
 - **功能建議**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
 
-## 🙏 致謝
+## 致謝
 
 特別感謝以下專案對本啟動器的貢獻：
 
 - **[Archify](https://github.com/Oct4Pie/archify)** - macOS 應用程式通用二進位最佳化工具
 
 - **[curseforge-fingerprint](https://github.com/meza/curseforge-fingerprint)** - CurseForge 模組檔案指紋演算法封裝
-
----
-
-<div align="center">
-  <strong>🎮 為 Minecraft 社群用心製作 ❤️</strong>
-</div>

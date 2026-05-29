@@ -81,16 +81,10 @@ This project is licensed under the GNU Affero General Public License v3.0. See [
 - **Issue Reports**: [GitHub Issues](https://github.com/suhang12332/Swift-Craft-Launcher/issues)
 - **Feature Suggestions**: [GitHub Discussions](https://github.com/suhang12332/Swift-Craft-Launcher/discussions)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 Special thanks to the following projects that have contributed to this launcher:
 
 - **[Archify](https://github.com/Oct4Pie/archify)** - Universal binary optimization tool for macOS applications
 
 - **[curseforge-fingerprint](https://github.com/meza/curseforge-fingerprint)** - CurseForge mod file fingerprinting algorithm binding
-
----
-
-<div align="center">
-  <strong>🎮 Made with ❤️ for the Minecraft community</strong>
-</div>
