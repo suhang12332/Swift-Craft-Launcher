@@ -1,54 +1,55 @@
-# Security Policy 🔒
+# Security Policy
+
 *[中文](../SECURITY.md)*
 
-Thank you for your interest in the security of **SwiftCraftLauncher**!
-Although this project is mainly for development and learning purposes, we still take security seriously.
+Thank you for caring about the security of **SwiftCraftLauncher**!
+Although this project is mainly for development and learning, we still take security seriously.
 
 ---
 
-## Supported Versions ✅
+## Supported Versions
 
 We currently provide security updates only for the following branches:
 
-* `dev`
-* `main`
+- dev
+- main
 
 ---
 
-## Reporting a Vulnerability 🐞
+## Reporting a Vulnerability
 
-⚠️ **Please do not publicly report security vulnerabilities in Issues!**
-Doing so may expose other users to unnecessary risks.
+**Please do not report security vulnerabilities in public Issues!**
+Doing so may put other users at risk.
 
 If you discover a vulnerability, please contact us privately through one of the following methods:
 
-* ✨ Recommended: Join our QQ group and report directly to the group owner or send email to `swiftcraftlauncher@outlook.com`
-* Use GitHub’s **Security Advisories** feature to submit a report
-* Contact one of the repository contributors
+- Recommended: join our QQ group and report to the group owner, or use the official Swift Craft Launcher email: `swiftcraftlauncher@outlook.com`
+- Use GitHub's **Security Advisories** feature to submit a report
+- Contact a repository contributor
 
 ---
 
-## What to Include in a Report 📋
+## Suggested Report Contents
 
-To help us resolve the issue quickly, please provide as much of the following as possible:
+To help us fix the issue quickly, please provide as much of the following as possible:
 
-1. **Vulnerability Description**: What the problem is and its potential impact
-2. **Steps to Reproduce**: How to trigger the vulnerability (stable reproduction is ideal)
-3. **Environment Details**: OS version, SwiftCraftLauncher version
-4. **Logs/Screenshots**: Any relevant information that may help us understand the issue
-
----
-
-## Our Commitment 🤝
-
-* We will acknowledge receipt of your report as soon as possible
-* We will work to resolve the issue within a reasonable timeframe
-* Once fixed, we will release an update and note it in the changelog
-* We will not disclose details publicly until a fix has been released
+1. **Vulnerability description**: what the problem is and its potential impact
+2. **Steps to reproduce**: how to trigger the vulnerability (stable reproduction is ideal)
+3. **Environment**: OS version, Swift Craft Launcher version
+4. **Logs/screenshots**: any information that helps us understand the issue
 
 ---
 
-## Acknowledgments 💖
+## Our Commitment
 
-Security depends on the efforts of every user!
-Thank you for contributing to the security of SwiftCraftLauncher 🙏.
+- We will acknowledge your report as soon as possible
+- We will fix the vulnerability within a reasonable timeframe
+- After the fix is complete, we will release an update and note it in the changelog
+- We will not publicly disclose details before a fix is available
+
+---
+
+## Acknowledgments
+
+Security depends on the help of every user!
+Thank you for contributing to the security of Swift Craft Launcher.
