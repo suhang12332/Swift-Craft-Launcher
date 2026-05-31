@@ -24,6 +24,7 @@ enum AppServices {
         var windowDataStore: WindowDataStore?
         var iconRefreshNotifier: IconRefreshNotifier?
         var gameDialogsPresenter: GameDialogsPresenter?
+        var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter?
         var openURLModPackImportPresenter: OpenURLModPackImportPresenter?
 
         // MARK: - Game orchestration
@@ -143,6 +144,12 @@ enum AppServices {
             return injected
         }
         return sharedOnMainActor { GameDialogsPresenter.shared }
+    }
+    static var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter {
+        if let injected = lock.withLock({ dependencies.authlibInjectorMissingPresenter }) {
+            return injected
+        }
+        return sharedOnMainActor { AuthlibInjectorMissingPresenter.shared }
     }
     static var openURLModPackImportPresenter: OpenURLModPackImportPresenter {
         if let injected = lock.withLock({ dependencies.openURLModPackImportPresenter }) {

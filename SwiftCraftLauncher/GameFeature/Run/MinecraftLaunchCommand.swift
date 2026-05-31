@@ -47,7 +47,9 @@ struct MinecraftLaunchCommand {
         let validatedPlayer = try await validatePlayerTokenBeforeLaunch()
 
         let command = game.launchCommand
-        try await launchGameProcess(command: replaceAuthParameters(command: command, with: validatedPlayer))
+        try await launchGameProcess(
+            command: try await replaceAuthParameters(command: command, with: validatedPlayer)
+        )
     }
 
     /// 在启动游戏前验证玩家Token
@@ -102,7 +104,7 @@ struct MinecraftLaunchCommand {
         }
     }
 
-    private func replaceAuthParameters(command: [String], with validatedPlayer: Player?) -> [String] {
+    private func replaceAuthParameters(command: [String], with validatedPlayer: Player?) async throws -> [String] {
         guard let player = validatedPlayer else {
             Logger.shared.warning("没有验证的玩家，使用默认认证参数")
             return replaceGameParameters(command: command)
@@ -138,7 +140,7 @@ struct MinecraftLaunchCommand {
         }
 
         var commandWithAuth = authReplacedCommand
-        commandWithAuth = injectAuthlibAgentIfNeeded(command: commandWithAuth, player: player)
+        commandWithAuth = try await injectAuthlibAgentIfNeeded(command: commandWithAuth, player: player)
 
         return replaceGameParameters(command: commandWithAuth)
     }
@@ -190,17 +192,22 @@ struct MinecraftLaunchCommand {
 
     /// 为第三方（Yggdrasil）玩家按需注入 authlib-injector 的 -javaagent 启动参数
     /// 条件：头像为远程 URL（isRemote == true）且非微软正版在线账号（isOnlineAccount == false）
-    private func injectAuthlibAgentIfNeeded(command: [String], player: Player) -> [String] {
+    private func injectAuthlibAgentIfNeeded(command: [String], player: Player) async throws -> [String] {
         // 非三方用户直接返回原命令
         guard player.isRemote, !player.isOnlineAccount else {
             return command
         }
 
-        // 如果 authlib-injector.jar 不存在，则不注入参数，避免启动失败
         let jarPath = AppConstants.AuthlibInjector.jarPath
         if !FileManager.default.fileExists(atPath: jarPath) {
-            Logger.shared.warning("Authlib Injector JAR 不存在，跳过 -javaagent 参数: \(jarPath)")
-            return command
+            Logger.shared.warning("Authlib Injector JAR 不存在，等待用户选择: \(jarPath)")
+            let choice = await AppServices.authlibInjectorMissingPresenter.requestUserChoice()
+            switch choice {
+            case .continueWithoutInjector:
+                return command
+            case .cancel:
+                throw AuthlibInjectorLaunchCancelled()
+            }
         }
 
         // 仅使用为该用户绑定的服务器标识（通常为某个 YggdrasilServerConfig.baseURL）
