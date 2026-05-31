@@ -118,7 +118,7 @@ struct ResourceToolbarItems: View {
                         filterState.selectedTab = 0
                     }
                 } label: {
-                    Label("return".localized(), systemImage: "arrow.backward")
+                    Label("return".localized(), systemImage: "chevron.backward")
                 }
                 .help("return".localized())
                 .id(controlActiveState)
