@@ -85,7 +85,6 @@ enum ModrinthService {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error("通过哈希获取项目详情失败 (Hash: \(hash)): \(globalError.chineseMessage)")
-                AppServices.errorHandler.handle(globalError)
                 await MainActor.run {
                     completion(nil)
                 }
