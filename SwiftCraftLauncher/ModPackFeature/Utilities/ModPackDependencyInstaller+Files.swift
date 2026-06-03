@@ -222,36 +222,29 @@ extension ModPackDependencyInstaller {
             return false
         }
 
-        do {
-            let destinationPath = autoreleasepool {
-                resourceDir.appendingPathComponent(file.path)
-            }
+        let destinationPath = autoreleasepool {
+            resourceDir.appendingPathComponent(file.path)
+        }
 
-            let downloadedFile = try await DownloadManager.downloadFile(
+        let downloadedFile: URL
+        do {
+            downloadedFile = try await DownloadManager.downloadFile(
                 urlString: urlString,
                 destinationURL: destinationPath,
                 expectedSha1: file.hashes["sha1"]
             )
-
-            if let hash = AppServices.modScanner.sha1Hash(of: downloadedFile) {
-                await withCheckedContinuation { continuation in
-                    ModrinthService.fetchModrinthDetail(by: hash) { projectDetail in
-                        if let detail = projectDetail {
-                            var detailWithFile = detail
-                            let fileUrl = URL(fileURLWithPath: file.path)
-                            detailWithFile.fileName = fileUrl.lastPathComponent
-                            detailWithFile.type = AppPaths.resourceType(for: fileUrl)
-                            AppServices.modScanner.saveToCache(hash: hash, detail: detailWithFile)
-                        }
-                        continuation.resume()
-                    }
-                }
-            }
-
-            return true
         } catch {
             Logger.shared.error("下载文件失败: \(file.path)")
             return false
         }
+
+        if let hash = AppServices.modScanner.sha1Hash(of: downloadedFile),
+           var detailWithFile = try? await ModrinthService.fetchModrinthDetailThrowing(by: hash) {
+            let fileUrl = URL(fileURLWithPath: file.path)
+            detailWithFile.fileName = fileUrl.lastPathComponent
+            detailWithFile.type = AppPaths.resourceType(for: fileUrl)
+            AppServices.modScanner.saveToCache(hash: hash, detail: detailWithFile)
+        }
+        return true
     }
 }
