@@ -10,12 +10,16 @@ import SwiftUI
 
 /// 应用日志协议
 public protocol AppLogging: AnyObject {
+    func logDebug(_ items: Any..., file: String, function: String, line: Int)
     func logInfo(_ items: Any..., file: String, function: String, line: Int)
     func logWarning(_ items: Any..., file: String, function: String, line: Int)
     func logError(_ items: Any..., file: String, function: String, line: Int)
 }
 
 public extension AppLogging {
+    func debug(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
+        logDebug(items, file: file, function: function, line: line)
+    }
     func info(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         logInfo(items, file: file, function: function, line: line)
     }

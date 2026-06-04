@@ -133,73 +133,11 @@ class Logger: AppLogging {
         }
     }
 
-    // MARK: - Public Logging Methods
-
-    func debug(
-        _ items: Any...,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        log(
-            items,
-            type: .debug,
-            prefix: "🔍",
-            file: file,
-            function: function,
-            line: line
-        )
-    }
-
-    func info(
-        _ items: Any...,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        log(
-            items,
-            type: .info,
-            prefix: "ℹ️",
-            file: file,
-            function: function,
-            line: line
-        )
-    }
-
-    func warning(
-        _ items: Any...,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        log(
-            items,
-            type: .default,
-            prefix: "⚠️",
-            file: file,
-            function: function,
-            line: line
-        )
-    }
-
-    func error(
-        _ items: Any...,
-        file: String = #file,
-        function: String = #function,
-        line: Int = #line
-    ) {
-        log(
-            items,
-            type: .error,
-            prefix: "❌",
-            file: file,
-            function: function,
-            line: line
-        )
-    }
-
     // MARK: - AppLogging
+
+    func logDebug(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
+        log(items, type: .debug, prefix: "🔍", file: file, function: function, line: line)
+    }
 
     func logInfo(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         log(items, type: .info, prefix: "ℹ️", file: file, function: function, line: line)
