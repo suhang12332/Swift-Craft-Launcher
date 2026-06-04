@@ -67,29 +67,29 @@ public struct PlayerSettingsView: View {
                 .disabled(!playerSettings.enableOfflineLogin)
             }
             .labeledContentStyle(.custom)
-            Group {
-                LabeledContent("settings.player.history_skin_library".localized()) {
-                    Toggle(
-                        "settings.player.history_skin_library.toggle".localized(),
-                        isOn: $playerSettings.enableHistorySkinLibrary
-                    )
-                }
-                .labeledContentStyle(.custom)
-                CommonDescriptionText(text: "settings.player.history_skin_library.description".localized())
-            }
-            Group {
-                LabeledContent("settings.player.minecraft_friends_presence_notifications".localized()) {
-                    Toggle(
-                        "settings.player.minecraft_friends_presence_notifications.toggle".localized(),
-                        isOn: $playerSettings.enableMinecraftFriendsPresenceNotifications
-                    )
-                }
-                .labeledContentStyle(.custom)
-                CommonDescriptionText(
-                    text: "settings.player.minecraft_friends_presence_notifications.description".localized()
-                )
-            }
             if canEditMinecraftFriendAccountSettings {
+                Group {
+                    LabeledContent("settings.player.history_skin_library".localized()) {
+                        Toggle(
+                            "settings.player.history_skin_library.toggle".localized(),
+                            isOn: $playerSettings.enableHistorySkinLibrary
+                        )
+                    }
+                    .labeledContentStyle(.custom)
+                    CommonDescriptionText(text: "settings.player.history_skin_library.description".localized())
+                }
+                Group {
+                    LabeledContent("settings.player.minecraft_friends_presence_notifications".localized()) {
+                        Toggle(
+                            "settings.player.minecraft_friends_presence_notifications.toggle".localized(),
+                            isOn: $playerSettings.enableMinecraftFriendsPresenceNotifications
+                        )
+                    }
+                    .labeledContentStyle(.custom)
+                    CommonDescriptionText(
+                        text: "settings.player.minecraft_friends_presence_notifications.description".localized()
+                    )
+                }
                 Group {
                     LabeledContent("settings.player.minecraft_friends_account.section".localized()) {
                         if viewModel.isLoadingMinecraftFriendAccountPreferences {

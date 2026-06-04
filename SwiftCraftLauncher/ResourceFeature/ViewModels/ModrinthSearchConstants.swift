@@ -17,6 +17,7 @@ enum ModrinthConstants {
         static let descriptionLineLimit = 1
         static let maxTags = 3
         static let contentSpacing: CGFloat = 8
+        static let skeletonPlaceholderCount = 20
     }
 
     // MARK: - API Constants

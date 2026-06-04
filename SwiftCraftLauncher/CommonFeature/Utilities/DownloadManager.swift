@@ -1,5 +1,4 @@
 import Foundation
-import CommonCrypto
 
 enum DownloadManager {
     enum ResourceType: String {
@@ -81,7 +80,11 @@ enum DownloadManager {
         }
 
         let destURL = resourceDirUnwrapped.appendingPathComponent(url.lastPathComponent)
-        return try await downloadFile(url: url, destinationURL: destURL, expectedSha1: expectedSha1)
+        return try await downloadFile(
+            urlString: url.absoluteString,
+            destinationURL: destURL,
+            expectedSha1: expectedSha1
+        )
     }
 
     /// 通用下载文件到指定路径（不做任何目录结构拼接）
@@ -96,82 +99,37 @@ enum DownloadManager {
         destinationURL: URL,
         expectedSha1: String? = nil
     ) async throws -> URL {
-        let url = try FileDownloadCore.parseURL(from: urlString)
-        return try await downloadFile(url: url, destinationURL: destinationURL, expectedSha1: expectedSha1)
-    }
-
-    /// 通用下载文件到指定路径（内部方法，接受 URL 对象）
-    /// - Parameters:
-    ///   - url: 下载地址（URL 对象）
-    ///   - destinationURL: 目标文件路径
-    ///   - expectedSha1: 预期 SHA1 值
-    /// - Returns: 下载到的本地文件 URL
-    /// - Throws: GlobalError 当操作失败时
-    private static func downloadFile(
-        url: URL,
-        destinationURL: URL,
-        expectedSha1: String? = nil
-    ) async throws -> URL {
-        let finalURL = FileDownloadCore.normalizedDownloadURL(from: url)
-
-        let fileManager = FileManager.default
-
-        try FileDownloadCore.ensureParentDirectory(for: destinationURL, fileManager: fileManager)
-
-        if FileDownloadCore.existingFileSizeIfReusable(
-            at: destinationURL,
-            expectedSha1: expectedSha1,
-            fileManager: fileManager
-        ) != nil {
-            return destinationURL
-        }
-
-        // 下载文件到临时位置（异步操作在 autoreleasepool 外部）
         do {
-            let (tempFileURL, response) = try await URLSession.shared.download(from: finalURL)
-            defer {
-                // 确保临时文件被清理
-                try? fileManager.removeItem(at: tempFileURL)
-            }
-
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw GlobalError.download(
-                    chineseMessage: "HTTP 请求失败",
-                    i18nKey: "error.download.http_status_error",
-                    level: .notification
-                )
-            }
-
-            try FileDownloadCore.validateSHA1IfNeeded(for: tempFileURL, expectedSha1: expectedSha1)
-            try FileDownloadCore.moveDownloadedFile(from: tempFileURL, to: destinationURL, fileManager: fileManager)
-
-            return destinationURL
+            return try await ProgressDownloadManager.downloadFile(
+                urlString: urlString,
+                destinationURL: destinationURL,
+                expectedSha1: expectedSha1,
+                progressHandler: nil
+            )
         } catch {
-            // 转换错误为 GlobalError
-            if let globalError = error as? GlobalError {
-                throw globalError
-            } else if error is URLError {
-                throw GlobalError.download(
-                    chineseMessage: "网络请求失败",
-                    i18nKey: "error.download.network_request_failed",
-                    level: .notification
-                )
-            } else {
-                throw GlobalError.download(
-                    chineseMessage: "下载失败",
-                    i18nKey: "error.download.general_failure",
-                    level: .notification
-                )
-            }
+            throw mapDownloadError(error)
         }
     }
 
-    /// 计算文件的 SHA1 哈希值
-    /// - Parameter url: 文件路径
-    /// - Returns: SHA1 哈希字符串
-    /// - Throws: GlobalError 当操作失败时
-    static func calculateFileSHA1(at url: URL) throws -> String {
-        return try SHA1Calculator.sha1(ofFileAt: url)
+    private static func mapDownloadError(_ error: Error) -> Error {
+        if error is CancellationError {
+            return error
+        }
+        if let globalError = error as? GlobalError {
+            return globalError
+        }
+        if error is URLError {
+            return GlobalError.download(
+                chineseMessage: "网络请求失败",
+                i18nKey: "error.download.network_request_failed",
+                level: .notification
+            )
+        }
+        return GlobalError.download(
+            chineseMessage: "下载失败",
+            i18nKey: "error.download.general_failure",
+            level: .notification
+        )
     }
 
     /// 下载 URL 对应的原始数据

@@ -41,6 +41,7 @@ struct MainViewPresentationModifier: ViewModifier {
                 gamePendingDeletion: $gameDialogsPresenter.gamePendingDeletion,
                 detailState: detailState
             )
+            .authlibInjectorMissingAlert()
     }
 }
 

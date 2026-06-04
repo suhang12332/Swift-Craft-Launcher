@@ -10,7 +10,7 @@ enum AppServices {
         // MARK: - Cache
         var appCacheManager: AppCacheManager?
         var cacheCalculator: CacheCalculator?
-        var cacheManager: CacheManager?
+        var cacheInfoManager: CacheInfoManager?
 
         // MARK: - Resource / scanning
         var modScanner: ModScanner?
@@ -24,6 +24,7 @@ enum AppServices {
         var windowDataStore: WindowDataStore?
         var iconRefreshNotifier: IconRefreshNotifier?
         var gameDialogsPresenter: GameDialogsPresenter?
+        var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter?
         var openURLModPackImportPresenter: OpenURLModPackImportPresenter?
 
         // MARK: - Game orchestration
@@ -110,11 +111,11 @@ enum AppServices {
     // MARK: - Cache
     static var appCacheManager: AppCacheManager { lock.withLock { dependencies.appCacheManager ?? .shared } }
     static var cacheCalculator: CacheCalculator { lock.withLock { dependencies.cacheCalculator ?? .shared } }
-    static var cacheManager: CacheManager {
-        if let injected = lock.withLock({ dependencies.cacheManager }) {
+    static var cacheInfoManager: CacheInfoManager {
+        if let injected = lock.withLock({ dependencies.cacheInfoManager }) {
             return injected
         }
-        return sharedOnMainActor { CacheManager.shared }
+        return sharedOnMainActor { CacheInfoManager.shared }
     }
 
     // MARK: - Resource / scanning
@@ -143,6 +144,12 @@ enum AppServices {
             return injected
         }
         return sharedOnMainActor { GameDialogsPresenter.shared }
+    }
+    static var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter {
+        if let injected = lock.withLock({ dependencies.authlibInjectorMissingPresenter }) {
+            return injected
+        }
+        return sharedOnMainActor { AuthlibInjectorMissingPresenter.shared }
     }
     static var openURLModPackImportPresenter: OpenURLModPackImportPresenter {
         if let injected = lock.withLock({ dependencies.openURLModPackImportPresenter }) {

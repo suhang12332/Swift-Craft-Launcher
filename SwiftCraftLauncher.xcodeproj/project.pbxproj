@@ -17,7 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		90AB34242FD18EFC003224B4 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -63,7 +63,6 @@
 			isa = PBXGroup;
 			children = (
 				9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */,
-				90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -97,7 +96,7 @@
 				90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */,
 			);
 			productName = SwiftCraftLauncher;
-			productReference = 90CE44FE2E7D65A5007C6F30 /* Swift Craft Launcher.app */;
+			productReference = 90AB34242FD18EFC003224B4 /* Swift Craft Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

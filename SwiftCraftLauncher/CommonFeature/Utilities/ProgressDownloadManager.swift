@@ -24,8 +24,13 @@ enum ProgressDownloadManager {
             return destinationURL
         }
 
-        let fileSize = try await getRemoteFileSize(from: finalURL)
-        progressHandler?(0, fileSize)
+        let fileSize: Int64
+        if let progressHandler {
+            fileSize = try await getRemoteFileSize(from: finalURL)
+            progressHandler(0, fileSize)
+        } else {
+            fileSize = 0
+        }
 
         let tracker = ProgressDownloadTracker(totalSize: fileSize, progressCallback: progressHandler)
         let session = URLSession(configuration: .default, delegate: tracker, delegateQueue: nil)

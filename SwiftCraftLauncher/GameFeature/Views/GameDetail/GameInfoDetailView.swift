@@ -29,7 +29,7 @@ struct GameInfoDetailView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
     @Binding var localResourceFilter: LocalResourceFilter
-    @StateObject private var cacheManager: CacheManager
+    @StateObject private var cacheInfoManager: CacheInfoManager
     @State private var localRefreshToken = UUID()
     @StateObject private var ioViewModel = GameInfoDetailIOViewModel()
 
@@ -60,10 +60,10 @@ struct GameInfoDetailView: View {
         localResourceFilter: Binding<LocalResourceFilter>,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
         iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier,
-        cacheManager: CacheManager = AppServices.cacheManager
+        cacheInfoManager: CacheInfoManager = AppServices.cacheInfoManager
     ) {
         self.game = game
-        _cacheManager = StateObject(wrappedValue: cacheManager)
+        _cacheInfoManager = StateObject(wrappedValue: cacheInfoManager)
         _query = query
         _dataSource = dataSource
         _selectedVersions = selectedVersions
@@ -140,9 +140,9 @@ struct GameInfoDetailView: View {
         .onAppear {
             // 初始化 header
             updateHeaders()
-            cacheManager.calculateGameCacheInfo(game.gameName)
+            cacheInfoManager.calculateGameCacheInfo(game.gameName)
         }
-        .onChange(of: cacheManager.cacheInfo) { _, _ in
+        .onChange(of: cacheInfoManager.cacheInfo) { _, _ in
             // 当 cacheInfo 更新时，更新 header（但不重建整个视图）
             updateHeaders()
         }
@@ -163,7 +163,7 @@ struct GameInfoDetailView: View {
     /// 执行刷新操作（游戏名变化或 gameType 变化且游戏名不变时调用）
     private func performRefresh() {
         updateHeaders()
-        cacheManager.calculateGameCacheInfo(game.gameName)
+        cacheInfoManager.calculateGameCacheInfo(game.gameName)
         // 仅在本地视图时刷新本地资源
         if !gameType {
             triggerLocalRefresh()
@@ -187,7 +187,7 @@ struct GameInfoDetailView: View {
         header = AnyView(
             GameHeaderListRow(
                 game: currentGame,
-                cacheInfo: cacheManager.cacheInfo,
+                cacheInfo: cacheInfoManager.cacheInfo,
                 query: query,
                 onImport: {
                     triggerLocalRefresh()
@@ -203,7 +203,7 @@ struct GameInfoDetailView: View {
     /// 清除页面所有数据
     private func clearAllData() {
         // 重置缓存信息为默认值
-        cacheManager.cacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
+        cacheInfoManager.cacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
         // 仅在本地视图时重置刷新令牌
         if !gameType {
             localRefreshToken = UUID()

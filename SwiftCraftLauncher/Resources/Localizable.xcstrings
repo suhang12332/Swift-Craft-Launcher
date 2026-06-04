@@ -41865,6 +41865,280 @@
         }
       }
     },
+    "game_launch.authlib_injector_missing.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "أنت تستخدم حسابًا تابعًا لجهة خارجية. يتطلب authlib-injector الاتصال بخادم المصادقة عند تشغيل اللعبة.\n\nاضغط على متابعة لتشغيل اللعبة بدون authlib-injector؛ قد يفشل تسجيل الدخول أو مزامنة المظهر.\n\nلاستخدام authlib-injector، قم بتنزيله من إعدادات اللاعب في إعدادات المشغّل."
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du bruger en tredjepartskonto. authlib-injector er påkrævet for at oprette forbindelse til godkendelsesserveren, når spillet startes.\n\nTryk på Fortsæt for at starte uden authlib-injector; login eller synkronisering af skin kan mislykkes.\n\nFor at bruge authlib-injector skal du downloade det fra Spiller i launcherindstillingerne."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du verwendest ein Drittanbieter-Konto. authlib-injector ist erforderlich, um beim Starten des Spiels eine Verbindung zum Authentifizierungsserver herzustellen.\n\nTippe auf Fortfahren, um ohne authlib-injector zu starten; Anmeldung oder Skin-Synchronisierung können fehlschlagen.\n\nUm authlib-injector zu verwenden, lade es im Tab „Spieler“ in den Einstellungen herunter."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You are using a third-party account. authlib-injector is required to connect to the authentication server when launching the game.\n\nTap Continue to launch without authlib-injector; login or skin sync may fail.\n\nTo use authlib-injector, download it from Player Settings in Launcher Settings."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estás usando una cuenta de terceros. authlib-injector es necesario para conectarse al servidor de autenticación al iniciar el juego.\n\nPulsa Continuar para iniciar sin authlib-injector; el inicio de sesión o la sincronización de skins puede fallar.\n\nPara usar authlib-injector, descárgalo desde Jugador en los ajustes del launcher."
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käytät kolmannen osapuolen tiliä. authlib-injector tarvitaan yhteyden muodostamiseen todennuspalvelimeen peliä käynnistettäessä.\n\nNapauta Jatka käynnistääksesi ilman authlib-injectoria; kirjautuminen tai ulkoasun synkronointi voi epäonnistua.\n\nLataa authlib-injector Pelaaja-välilehdeltä launcherin asetuksista."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous utilisez un compte tiers. authlib-injector est requis pour se connecter au serveur d'authentification lors du lancement du jeu.\n\nAppuyez sur Continuer pour lancer sans authlib-injector ; la connexion ou la synchronisation des skins peut échouer.\n\nPour utiliser authlib-injector, téléchargez-le depuis Joueur dans les paramètres du lanceur."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आप तृतीय-पक्ष खाते का उपयोग कर रहे हैं। गेम लॉन्च करते समय प्रमाणीकरण सर्वर से कनेक्ट करने के लिए authlib-injector आवश्यक है।\n\nauthlib-injector के बिना लॉन्च करने के लिए जारी रखें पर टैप करें; लॉगिन या स्किन सिंक विफल हो सकता है।\n\nauthlib-injector का उपयोग करने के लिए, लॉन्चर सेटिंग्स में खिलाड़ी सेटिंग्स से इसे डाउनलोड करें।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stai usando un account di terze parti. authlib-injector è necessario per connettersi al server di autenticazione all'avvio del gioco.\n\nTocca Continua per avviare senza authlib-injector; l'accesso o la sincronizzazione delle skin potrebbe non riuscire.\n\nPer usare authlib-injector, scaricalo da Giocatore nelle impostazioni del launcher."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サードパーティアカウントを使用しています。ゲーム起動時に認証サーバーへ接続するには authlib-injector が必要です。\n\n「続行」をタップすると authlib-injector なしで起動します。ログインやスキンの同期が失敗する場合があります。\n\nauthlib-injector を使用するには、ランチャー設定のプレイヤー設定からダウンロードしてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서드파티 계정을 사용 중입니다. 게임 실행 시 인증 서버에 연결하려면 authlib-injector가 필요합니다.\n\n계속을 누르면 authlib-injector 없이 실행됩니다. 로그인 또는 스킨 동기화가 실패할 수 있습니다.\n\nauthlib-injector를 사용하려면 런처 설정의 플레이어 설정에서 다운로드하세요."
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du bruker en tredjepartskonto. authlib-injector kreves for å koble til autentiseringsserveren når spillet startes.\n\nTrykk Fortsett for å starte uten authlib-injector; innlogging eller synkronisering av skin kan mislykkes.\n\nFor å bruke authlib-injector, last det ned fra Spiller i launcher-innstillingene."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je gebruikt een account van een derde partij. authlib-injector is vereist om verbinding te maken met de authenticatieserver bij het starten van het spel.\n\nTik op Doorgaan om te starten zonder authlib-injector; inloggen of skins synchroniseren kan mislukken.\n\nOm authlib-injector te gebruiken, download het via Speler in de launcherinstellingen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korzystasz z konta zewnętrznego. authlib-injector jest wymagany, aby połączyć się z serwerem uwierzytelniania podczas uruchamiania gry.\n\nNaciśnij Kontynuuj, aby uruchomić bez authlib-injectora; logowanie lub synchronizacja skina może się nie powieść.\n\nAby używać authlib-injectora, pobierz go w zakładce Gracz w ustawieniach launchera."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Você está usando uma conta de terceiros. authlib-injector é necessário para conectar-se ao servidor de autenticação ao iniciar o jogo.\n\nToque em Continuar para iniciar sem authlib-injector; o login ou a sincronização de skins pode falhar.\n\nPara usar authlib-injector, baixe-o em Jogador nas configurações do launcher."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы используете сторонний аккаунт. authlib-injector необходим для подключения к серверу аутентификации при запуске игры.\n\nНажмите «Продолжить», чтобы запустить без authlib-injector; вход или синхронизация скина могут не работать.\n\nЧтобы использовать authlib-injector, загрузите его во вкладке «Игрок» в настройках лаунчера."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du använder ett tredjepartskonto. authlib-injector krävs för att ansluta till autentiseringsservern när spelet startas.\n\nTryck på Fortsätt för att starta utan authlib-injector; inloggning eller synkronisering av skin kan misslyckas.\n\nFör att använda authlib-injector, ladda ner det från Spelare i launcherinställningarna."
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "คุณกำลังใช้บัญชีบุคคลที่สาม ต้องใช้ authlib-injector เพื่อเชื่อมต่อกับเซิร์ฟเวอร์ยืนยันตัวตนเมื่อเปิดเกม\n\nแตะ ดำเนินการต่อ เพื่อเปิดเกมโดยไม่ใช้ authlib-injector การเข้าสู่ระบบหรือการซิงก์สกินอาจล้มเหลว\n\nหากต้องการใช้ authlib-injector ให้ดาวน์โหลดจาก ผู้เล่น ในการตั้งค่า launcher"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Üçüncü taraf bir hesap kullanıyorsunuz. Oyunu başlatırken kimlik doğrulama sunucusuna bağlanmak için authlib-injector gereklidir.\n\nauthlib-injector olmadan başlatmak için Devam et'e dokunun; giriş veya skin senkronizasyonu başarısız olabilir.\n\nauthlib-injector kullanmak için launcher ayarlarındaki Oyuncu bölümünden indirin."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bạn đang sử dụng tài khoản bên thứ ba. authlib-injector là bắt buộc để kết nối với máy chủ xác thực khi khởi chạy trò chơi.\n\nNhấn Tiếp tục để khởi chạy mà không dùng authlib-injector; đăng nhập hoặc đồng bộ skin có thể thất bại.\n\nĐể sử dụng authlib-injector, hãy tải xuống từ Người chơi trong cài đặt launcher."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当前为第三方账号，启动游戏时需要 authlib-injector 才能连接认证服务器。\n\n点击继续则不使用 authlib-injector 启动游戏，可能无法登录或同步皮肤。\n\n如果要使用 authlib-injector，则前往启动器设置的玩家设置中进行下载"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "您正在使用第三方帳號。啟動遊戲時需要 authlib-injector 才能連接認證伺服器。\n\n點擊繼續則不使用 authlib-injector 啟動遊戲，可能無法登入或同步皮膚。\n\n若要使用 authlib-injector，請前往啟動器設定中的玩家設定進行下載。"
+          }
+        }
+      }
+    },
+    "game_launch.authlib_injector_missing.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector غير موجود"
+          }
+        },
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector ikke fundet"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector nicht gefunden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector Not Found"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector no encontrado"
+          }
+        },
+        "fi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injectoria ei löytynyt"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector introuvable"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector नहीं मिला"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector non trovato"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector が見つかりません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector를 찾을 수 없습니다"
+          }
+        },
+        "nb" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector ikke funnet"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector niet gevonden"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie znaleziono Authlib Injector"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector não encontrado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector не найден"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector hittades inte"
+          }
+        },
+        "th" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ไม่พบ Authlib Injector"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authlib Injector Bulunamadı"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Không tìm thấy Authlib Injector"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到 Authlib Injector"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到 Authlib Injector"
+          }
+        }
+      }
+    },
     "game.form.icon" : {
       "extractionState" : "manual",
       "localizations" : {

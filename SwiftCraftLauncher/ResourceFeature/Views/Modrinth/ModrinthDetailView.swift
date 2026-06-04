@@ -179,12 +179,7 @@ struct ModrinthDetailView: View {
     @ViewBuilder private var listContent: some View {
         Group {
             if viewModel.isLoading {
-                HStack {
-                    ProgressView()
-                        .controlSize(.small)
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-                .listRowSeparator(.hidden)
+                ModrinthDetailListSkeletonRows()
             } else {
                 ForEach(viewModel.results, id: \.projectId) { mod in
                     ModrinthDetailCardView(

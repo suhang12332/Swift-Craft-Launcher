@@ -13,13 +13,11 @@ extension MinecraftAuthService {
             "scope": scope,
         ]
 
-        let bodyString = bodyParameters
-            .map { "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")" }
-            .joined(separator: "&")
-        let bodyData = bodyString.data(using: .utf8)
-
-        let headers = APIClient.DefaultHeaders.contentTypeFormURLEncoded
-        let data = try await APIClient.post(url: url, body: bodyData, headers: headers)
+        let data = try await APIClient.post(
+            url: url,
+            body: APIClient.formURLEncodedBody(from: bodyParameters),
+            headers: APIClient.DefaultHeaders.contentTypeFormURLEncoded
+        )
 
         do {
             return try JSONDecoder().decode(TokenResponse.self, from: data)
