@@ -4,39 +4,6 @@ import SwiftUI
 /// 语言管理器
 /// 只负责语言列表与当前生效语言读取（不在 App 内修改语言）
 public class LanguageManager {
-    private static let languageFlagByCode: [String: String] = [
-        "zh-Hans": "🇨🇳",
-        "zh-Hant": "🇨🇳",
-        "ar": "🇸🇦",
-        "da": "🇩🇰",
-        "de": "🇩🇪",
-        "en": "🇺🇸/🇬🇧",
-        "es": "🇪🇸",
-        "fi": "🇫🇮",
-        "fr": "🇫🇷",
-        "hi": "🇮🇳",
-        "it": "🇮🇹",
-        "ja": "🇯🇵",
-        "ko": "🇰🇷",
-        "nb": "🇳🇴",
-        "nl": "🇳🇱",
-        "pl": "🇵🇱",
-        "pt": "🇵🇹/🇧🇷",
-        "ru": "🇷🇺",
-        "sv": "🇸🇪",
-        "th": "🇹🇭",
-        "tr": "🇹🇷",
-        "vi": "🇻🇳",
-    ]
-
-    private static func flagEmoji(for code: String) -> String? {
-        if let flag = languageFlagByCode[code] { return flag }
-        if let base = code.split(separator: "-").first.map(String.init),
-           let flag = languageFlagByCode[base] {
-            return flag
-        }
-        return nil
-    }
 
     public var selectedLanguage: String {
         Self.getDefaultLanguage()
@@ -61,10 +28,6 @@ public class LanguageManager {
         let name = locale.localizedString(forIdentifier: code)
             ?? locale.localizedString(forIdentifier: "en")
             ?? "English"
-
-        if let flag = flagEmoji(for: code) {
-            return "\(flag) \(name)"
-        }
         return name
     }
 
