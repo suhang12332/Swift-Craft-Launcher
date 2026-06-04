@@ -10,7 +10,7 @@ enum AppServices {
         // MARK: - Cache
         var appCacheManager: AppCacheManager?
         var cacheCalculator: CacheCalculator?
-        var cacheManager: CacheManager?
+        var cacheInfoManager: CacheInfoManager?
 
         // MARK: - Resource / scanning
         var modScanner: ModScanner?
@@ -111,11 +111,11 @@ enum AppServices {
     // MARK: - Cache
     static var appCacheManager: AppCacheManager { lock.withLock { dependencies.appCacheManager ?? .shared } }
     static var cacheCalculator: CacheCalculator { lock.withLock { dependencies.cacheCalculator ?? .shared } }
-    static var cacheManager: CacheManager {
-        if let injected = lock.withLock({ dependencies.cacheManager }) {
+    static var cacheInfoManager: CacheInfoManager {
+        if let injected = lock.withLock({ dependencies.cacheInfoManager }) {
             return injected
         }
-        return sharedOnMainActor { CacheManager.shared }
+        return sharedOnMainActor { CacheInfoManager.shared }
     }
 
     // MARK: - Resource / scanning

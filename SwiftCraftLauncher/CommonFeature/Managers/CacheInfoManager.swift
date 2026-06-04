@@ -1,13 +1,13 @@
 //
-//  CacheManager.swift
+//  CacheInfoManager.swift
 //  SwiftCraftLauncher
 //
 //  Created by su on 2025/7/31.
 //
 import SwiftUI
 
-class CacheManager: ObservableObject {
-    static let shared = CacheManager()
+class CacheInfoManager: ObservableObject {
+    static let shared = CacheInfoManager()
 
     @Published var cacheInfo: CacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
     private let errorHandler: GlobalErrorHandler
