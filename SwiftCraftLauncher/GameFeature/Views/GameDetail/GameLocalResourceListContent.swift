@@ -15,12 +15,6 @@ struct GameLocalResourceListContent: View {
                 VStack { Text(error.chineseMessage) }
                     .frame(maxWidth: .infinity, alignment: .center)
                     .listRowSeparator(.hidden)
-            } else if viewModel.isLoadingResources && viewModel.displayedResources.isEmpty {
-                HStack { ProgressView().controlSize(.small) }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .listRowSeparator(.hidden)
-            } else if viewModel.hasLoaded && viewModel.displayedResources.isEmpty {
-                EmptyView()
             } else {
                 ForEach(
                     viewModel.displayedResources.map { ModrinthProject.from(detail: $0) },

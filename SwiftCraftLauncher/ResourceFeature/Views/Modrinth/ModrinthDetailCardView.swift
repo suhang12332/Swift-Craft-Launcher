@@ -1,6 +1,43 @@
 import Foundation
 import SwiftUI
 
+struct ModrinthDetailCardLayout<Icon: View, Title: View, Description: View, Tags: View, Trailing: View>: View {
+    var contentOpacity: CGFloat = 1
+    @ViewBuilder let icon: () -> Icon
+    @ViewBuilder let title: () -> Title
+    @ViewBuilder let description: () -> Description
+    @ViewBuilder let tags: () -> Tags
+    @ViewBuilder let trailing: () -> Trailing
+
+    var body: some View {
+        HStack(spacing: ModrinthConstants.UIConstants.contentSpacing) {
+            Group {
+                icon()
+                VStack(alignment: .leading, spacing: ModrinthConstants.UIConstants.spacing) {
+                    title()
+                    description()
+                    tags()
+                }
+            }
+            .opacity(contentOpacity)
+            Spacer(minLength: 8)
+            trailing()
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct ModrinthDetailCardPlaceholderIcon: View {
+    var body: some View {
+        Color.gray.opacity(0.2)
+            .frame(
+                width: ModrinthConstants.UIConstants.iconSize,
+                height: ModrinthConstants.UIConstants.iconSize
+            )
+            .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
+    }
+}
+
 struct ModrinthDetailCardView: View {
     // MARK: - Properties
     var project: ModrinthProject
@@ -31,20 +68,14 @@ struct ModrinthDetailCardView: View {
 
     // MARK: - Body
     var body: some View {
-        HStack(spacing: ModrinthConstants.UIConstants.contentSpacing) {
-            Group {
-                iconView
-                VStack(alignment: .leading, spacing: ModrinthConstants.UIConstants.spacing) {
-                    titleView
-                    descriptionView
-                    tagsView
-                }
-            }
-            .opacity(isResourceDisabled ? 0.5 : 1.0)  // 禁用时置灰
-            Spacer(minLength: 8)
-            infoView
-        }
-        .frame(maxWidth: .infinity)
+        ModrinthDetailCardLayout(
+            contentOpacity: isResourceDisabled ? 0.5 : 1,
+            icon: { iconView },
+            title: { titleView },
+            description: { descriptionView },
+            tags: { tagsView },
+            trailing: { infoView }
+        )
         .onAppear {
             isResourceDisabled = ResourceEnableDisableManager.isDisabled(fileName: project.fileName)
         }
@@ -98,12 +129,7 @@ struct ModrinthDetailCardView: View {
     }
 
     private var placeholderIcon: some View {
-        Color.gray.opacity(0.2)
-            .frame(
-                width: ModrinthConstants.UIConstants.iconSize,
-                height: ModrinthConstants.UIConstants.iconSize
-            )
-            .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
+        ModrinthDetailCardPlaceholderIcon()
     }
 
     private var localResourceIcon: some View {
@@ -156,7 +182,7 @@ struct ModrinthDetailCardView: View {
                 ),
                 id: \.self
             ) { tag in
-                TagView(text: tag)
+                ModrinthDetailCardTagView(text: tag)
             }
             if project.displayCategories.count > ModrinthConstants.UIConstants.maxTags {
                 Text(
@@ -192,14 +218,14 @@ struct ModrinthDetailCardView: View {
     }
 
     private var downloadInfoView: some View {
-        InfoRowView(
+        ModrinthDetailCardInfoRowView(
             icon: "arrow.down.circle",
             text: Self.formatNumber(project.downloads)
         )
     }
 
     private var followerInfoView: some View {
-        InfoRowView(
+        ModrinthDetailCardInfoRowView(
             icon: "heart",
             text: Self.formatNumber(project.follows)
         )
@@ -218,7 +244,7 @@ struct ModrinthDetailCardView: View {
 }
 
 // MARK: - Supporting Views
-private struct TagView: View {
+struct ModrinthDetailCardTagView: View {
     let text: String
 
     var body: some View {
@@ -231,7 +257,7 @@ private struct TagView: View {
     }
 }
 
-private struct InfoRowView: View {
+struct ModrinthDetailCardInfoRowView: View {
     let icon: String
     let text: String
 
