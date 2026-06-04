@@ -39,18 +39,10 @@ class GameCreationViewModel: BaseGameFormViewModel {
     var playerListViewModel: PlayerListViewModel?
 
     // MARK: - Initialization
-    override init(
-        configuration: GameFormConfiguration,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
-    ) {
-        self.gameSettingsManager = AppServices.gameSettingsManager
-        super.init(configuration: configuration, errorHandler: errorHandler)
-    }
-
     init(
         configuration: GameFormConfiguration,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        gameSettingsManager: GameSettingsManager
+        gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager
     ) {
         self.gameSettingsManager = gameSettingsManager
         super.init(configuration: configuration, errorHandler: errorHandler)

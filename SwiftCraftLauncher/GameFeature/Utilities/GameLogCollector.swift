@@ -24,15 +24,8 @@ class GameLogCollector {
     }
 
     /// 收集游戏日志并打开 AI 窗口
-    /// - Parameters:
-    ///   - gameName: 游戏名称
-    ///   - playerListViewModel: 玩家列表视图模型
-    ///   - gameRepository: 游戏仓库
-    func collectAndOpenAIWindow(
-        gameName: String,
-        playerListViewModel: PlayerListViewModel,
-        gameRepository: GameRepository
-    ) async {
+    /// - Parameter gameName: 游戏名称
+    func collectAndOpenAIWindow(gameName: String) async {
         // 收集日志文件
         let logFiles = await collectLogFiles(gameName: gameName)
 
@@ -48,12 +41,7 @@ class GameLogCollector {
         }
 
         // 打开 AI 窗口并发送日志
-        await openAIWindowWithLogs(
-            logFiles: logFiles,
-            gameName: gameName,
-            playerListViewModel: playerListViewModel,
-            gameRepository: gameRepository
-        )
+        await openAIWindowWithLogs(logFiles: logFiles, gameName: gameName)
     }
 
     /// 收集日志文件
@@ -107,14 +95,7 @@ class GameLogCollector {
     /// - Parameters:
     ///   - logFiles: 日志文件 URL 数组
     ///   - gameName: 游戏名称
-    ///   - playerListViewModel: 玩家列表视图模型
-    ///   - gameRepository: 游戏仓库
-    private func openAIWindowWithLogs(
-        logFiles: [URL],
-        gameName: String,
-        playerListViewModel: PlayerListViewModel,
-        gameRepository: GameRepository
-    ) async {
+    private func openAIWindowWithLogs(logFiles: [URL], gameName: String) async {
         // 创建 ChatState
         let chatState = ChatState()
 

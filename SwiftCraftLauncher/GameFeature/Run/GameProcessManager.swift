@@ -149,14 +149,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
                 return
             }
 
-            let playerListViewModel = PlayerListViewModel()
-            let gameRepository = GameRepository()
-
-            await AppServices.gameLogCollector.collectAndOpenAIWindow(
-                gameName: game.gameName,
-                playerListViewModel: playerListViewModel,
-                gameRepository: gameRepository
-            )
+            await AppServices.gameLogCollector.collectAndOpenAIWindow(gameName: game.gameName)
         } catch {
             Logger.shared.error("从数据库查询游戏失败: \(error.localizedDescription)")
         }

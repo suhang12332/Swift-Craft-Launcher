@@ -90,15 +90,10 @@ extension MinecraftAuthService {
             "client_id": clientId,
             "refresh_token": refreshToken,
         ]
-        let bodyString = bodyParameters
-            .map { "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")" }
-            .joined(separator: "&")
-        let bodyData = bodyString.data(using: .utf8)
-
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue(APIClient.MimeType.formURLEncodedUTF8, forHTTPHeaderField: APIClient.Header.contentType)
-        request.httpBody = bodyData
+        request.httpBody = APIClient.formURLEncodedBody(from: bodyParameters)
 
         let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
 

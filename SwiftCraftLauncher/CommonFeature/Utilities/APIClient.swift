@@ -17,6 +17,16 @@ enum APIClient {
         static let acceptJSON: [String: String] = [Header.accept: MimeType.json]
         static let contentTypeJSON: [String: String] = [Header.contentType: MimeType.json]
         static let contentTypeFormURLEncoded: [String: String] = [Header.contentType: MimeType.formURLEncoded]
+        static let contentTypeFormURLEncodedUTF8: [String: String] = [Header.contentType: MimeType.formURLEncodedUTF8]
+    }
+
+    static func formURLEncodedBody(from parameters: [String: String]) -> Data {
+        guard !parameters.isEmpty else { return Data() }
+
+        var components = URLComponents()
+        components.queryItems = parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
+        guard let query = components.percentEncodedQuery else { return Data() }
+        return Data(query.utf8)
     }
 
     private static let sharedDecoder: JSONDecoder = {

@@ -247,17 +247,11 @@ private extension YggdrasilAuthService {
             parameters["client_secret"] = clientSecret
         }
 
-        let bodyString = parameters
-            .map { key, value in
-                let encoded = value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-                return "\(key)=\(encoded)"
-            }
-            .joined(separator: "&")
-
-        let bodyData = bodyString.data(using: .utf8)
-        let headers = APIClient.DefaultHeaders.contentTypeFormURLEncoded
-
-        let data = try await APIClient.post(url: tokenURL, body: bodyData, headers: headers)
+        let data = try await APIClient.post(
+            url: tokenURL,
+            body: APIClient.formURLEncodedBody(from: parameters),
+            headers: APIClient.DefaultHeaders.contentTypeFormURLEncoded
+        )
 
         do {
             return try JSONDecoder().decode(TokenResponse.self, from: data)
