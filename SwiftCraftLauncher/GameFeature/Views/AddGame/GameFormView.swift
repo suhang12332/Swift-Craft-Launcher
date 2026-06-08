@@ -5,13 +5,12 @@ import UniformTypeIdentifiers
 enum GameFormMode {
     case creation
     case modPackImport(file: URL, shouldProcess: Bool)
-    case launcherImport
 
     var isImportMode: Bool {
         switch self {
         case .creation:
             return false
-        case .modPackImport, .launcherImport:
+        case .modPackImport:
             return true
         }
     }
@@ -45,7 +44,6 @@ struct GameFormView: View {
     private enum ImportModePickerValue: Hashable {
         case manual
         case modPack
-        case launcherImport
     }
 
     init(initialMode: GameFormMode = .creation) {
@@ -54,10 +52,9 @@ struct GameFormView: View {
 
     // MARK: - Body
     @ViewBuilder var body: some View {
-        let content = CommonSheetView(
+        CommonSheetView(
             header: { headerView },
             body: {
-
                 VStack {
                     switch mode {
                     case .creation:
@@ -97,57 +94,38 @@ struct GameFormView: View {
                             }
                         }
                         .id(file)
-                    case .launcherImport:
-                        LauncherImportView(
-                            configuration: GameFormConfiguration(
-                                isDownloading: $isDownloading,
-                                isFormValid: $isFormValid,
-                                triggerConfirm: $triggerConfirm,
-                                triggerCancel: $triggerCancel,
-                                onCancel: { dismiss() },
-                                onConfirm: { dismiss() }
-                            )
-                        )
                     }
                 }
             },
             footer: { footerView }
         )
-
-        // 当处于“导入启动器”模式时，避免在父视图再挂一个 fileImporter，
-        // 让子视图的 fileImporter 正常工作
-        if case .launcherImport = mode {
-            content
-        } else {
-            content
-                .fileImporter(
-                    isPresented: $showFilePicker,
-                    allowedContentTypes: {
-                        switch filePickerType {
-                        case .modPack:
-                            return [
-                                UTType(filenameExtension: AppConstants.FileExtensions.mrpack) ?? UTType.data,
-                                .zip,
-                                UTType(filenameExtension: AppConstants.FileExtensions.zip) ?? UTType.zip,
-                            ]
-                        case .gameIcon:
-                            return [.png, .jpeg, .gif]
-                        }
-                    }(),
-                    allowsMultipleSelection: false
-                ) { result in
-                    switch filePickerType {
-                    case .modPack:
-                        Task {
-                            if let newMode = await importViewModel.prepareModPackImportMode(from: result) {
-                                mode = newMode
-                                isModPackParsed = false
-                            }
-                        }
-                    case .gameIcon:
-                        imagePickerHandler?(result)
+        .fileImporter(
+            isPresented: $showFilePicker,
+            allowedContentTypes: {
+                switch filePickerType {
+                case .modPack:
+                    return [
+                        UTType(filenameExtension: AppConstants.FileExtensions.mrpack) ?? UTType.data,
+                        .zip,
+                        UTType(filenameExtension: AppConstants.FileExtensions.zip) ?? UTType.zip,
+                    ]
+                case .gameIcon:
+                    return [.png, .jpeg, .gif]
+                }
+            }(),
+            allowsMultipleSelection: false
+        ) { result in
+            switch filePickerType {
+            case .modPack:
+                Task {
+                    if let newMode = await importViewModel.prepareModPackImportMode(from: result) {
+                        mode = newMode
+                        isModPackParsed = false
                     }
                 }
+            case .gameIcon:
+                imagePickerHandler?(result)
+            }
         }
     }
 
@@ -169,21 +147,15 @@ struct GameFormView: View {
             return "game.form.mode.manual".localized()
         case .modPackImport:
             return "modpack.import.title".localized()
-        case .launcherImport:
-            return "launcher.import.title".localized()
         }
     }
 
     private func selectImportMode(_ newValue: ImportModePickerValue) {
+        isFormValid = false
         switch newValue {
         case .manual:
             mode = .creation
-        case .launcherImport:
-            mode = .launcherImport
         case .modPack:
-            if case .launcherImport = mode {
-                mode = .creation
-            }
             filePickerType = .modPack
             DispatchQueue.main.async {
                 showFilePicker = true
@@ -198,9 +170,6 @@ struct GameFormView: View {
             }
             Button("modpack.import.title".localized()) {
                 selectImportMode(.modPack)
-            }
-            Button("launcher.import.title".localized()) {
-                selectImportMode(.launcherImport)
             }
         } label: {
             Text(currentModeTitle)
@@ -245,8 +214,6 @@ struct GameFormView: View {
                         switch mode {
                         case .modPackImport:
                             return "modpack.import.button".localized()
-                        case .launcherImport:
-                            return "launcher.import.button".localized()
                         case .creation:
                             return "common.confirm".localized()
                         }

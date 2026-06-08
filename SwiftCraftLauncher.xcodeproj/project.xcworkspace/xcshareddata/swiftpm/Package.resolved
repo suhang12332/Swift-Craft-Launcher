@@ -1,5 +1,5 @@
 {
-  "originHash" : "10ad0f3c32377b92b7b10735d3245da0def77ca9197dac9c0c86788eef75c84d",
+  "originHash" : "ff54c8501a7049b253a99d332fdc5e226dd1b71e5509dfcd2eb17c722d5979f7",
   "pins" : [
     {
       "identity" : "cfmodrinthadapterkit",
@@ -8,15 +8,6 @@
       "state" : {
         "branch" : "release",
         "revision" : "d8ed652fa3459055a18e6aff0ecaf55486a6d97c"
-      }
-    },
-    {
-      "identity" : "launcherimportkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/suhang12332/LauncherImportKit.git",
-      "state" : {
-        "branch" : "release",
-        "revision" : "4146089b0af1044a38cd8da8b43962d6e6ca7f6e"
       }
     },
     {
