@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/suhang12332/CFModrinthAdapterKit.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "349b707f4a5d87acd24519b5a49de7caad941036"
+        "branch" : "release",
+        "revision" : "d8ed652fa3459055a18e6aff0ecaf55486a6d97c"
       }
     },
     {
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/suhang12332/LauncherImportKit.git",
       "state" : {
-        "branch" : "main",
-        "revision" : "651339315a2e50b578b3c3c9db5f2c895de14cc2"
+        "branch" : "release",
+        "revision" : "4146089b0af1044a38cd8da8b43962d6e6ca7f6e"
       }
     },
     {
@@ -43,7 +43,7 @@
       "location" : "https://github.com/suhang12332/NSSkinRender.git",
       "state" : {
         "branch" : "release",
-        "revision" : "6177141260f167eb0fc42924edab0202452b24d0"
+        "revision" : "4443a5413b3638ef5141c7f0d0a8aff18d8925a6"
       }
     },
     {

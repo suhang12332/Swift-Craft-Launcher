@@ -17,6 +17,10 @@
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXFileReference section */
+		90AB34242FD18EFC003224B4 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		90EE06B82F9A4DA800F471F5 /* Exceptions for "SwiftCraftLauncher" folder in "SwiftCraftLauncher" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -95,6 +99,7 @@
 				90B1A2B42FB6506900DAD887 /* LauncherImportKit */,
 			);
 			productName = SwiftCraftLauncher;
+			productReference = 90AB34242FD18EFC003224B4 /* Swift Craft Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

@@ -58,6 +58,9 @@ struct LauncherImportView: View {
             bridge.gameRepository = gameRepository
             bridge.playerListViewModel = playerListViewModel
         }
+        .onDisappear {
+            bridge.cleanup()
+        }
     }
 
     private var launcherSelectionSection: some View {
@@ -96,6 +99,11 @@ private final class LauncherImportAppBridge: ObservableObject {
     init(formConfiguration: GameFormConfiguration) {
         self.formConfiguration = formConfiguration
         self.gameNameValidator = GameNameValidator(gameSetupService: gameSetupService)
+    }
+
+    func cleanup() {
+        hostCallbacks.handleCleanup?()
+        gameNameValidator.reset()
     }
 
     func configuration(
