@@ -13,12 +13,9 @@
 		9098463F2F688B0400D7876B /* CFModrinthAdapterKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9098463E2F688B0400D7876B /* CFModrinthAdapterKit */; };
 		90A1DB462FB619CD00DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */; };
 		90A1FC1D2FB6406900DAD886 /* MinecraftFriendsKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */; };
+		90B1A2B52FB6506900DAD887 /* LauncherImportKit in Frameworks */ = {isa = PBXBuildFile; productRef = 90B1A2B42FB6506900DAD887 /* LauncherImportKit */; };
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXFileReference section */
-		90AB34242FD18EFC003224B4 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-/* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		90EE06B82F9A4DA800F471F5 /* Exceptions for "SwiftCraftLauncher" folder in "SwiftCraftLauncher" target */ = {
@@ -53,6 +50,7 @@
 				90645F072F6BF80C006AD2D8 /* SwiftMarkDownUI in Frameworks */,
 				90A1FC1D2FB6406900DAD886 /* MinecraftFriendsKit in Frameworks */,
 				9049FDB12F1151B50070A9E3 /* SkinRenderKit in Frameworks */,
+				90B1A2B52FB6506900DAD887 /* LauncherImportKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,9 +92,9 @@
 				90645F062F6BF80C006AD2D8 /* SwiftMarkDownUI */,
 				90A1DB452FB619CD00DAD886 /* MinecraftFriendsKit */,
 				90A1FC1C2FB6406900DAD886 /* MinecraftFriendsKit */,
+				90B1A2B42FB6506900DAD887 /* LauncherImportKit */,
 			);
 			productName = SwiftCraftLauncher;
-			productReference = 90AB34242FD18EFC003224B4 /* Swift Craft Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -152,6 +150,7 @@
 				9098463D2F688B0400D7876B /* XCRemoteSwiftPackageReference "CFModrinthAdapterKit" */,
 				90645F052F6BF80C006AD2D8 /* XCRemoteSwiftPackageReference "SwiftMarkDownUI" */,
 				90A1FC1B2FB6406900DAD886 /* XCRemoteSwiftPackageReference "MinecraftFriendsKit" */,
+				90B1A2B32FB6506900DAD887 /* XCRemoteSwiftPackageReference "LauncherImportKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9023D8282E3139B5005A53F1;
@@ -461,6 +460,14 @@
 				kind = branch;
 			};
 		};
+		90B1A2B32FB6506900DAD887 /* XCRemoteSwiftPackageReference "LauncherImportKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/suhang12332/LauncherImportKit.git";
+			requirement = {
+				branch = release;
+				kind = branch;
+			};
+		};
 		90E123456789ABCD0003 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
@@ -505,6 +512,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 90A1FC1B2FB6406900DAD886 /* XCRemoteSwiftPackageReference "MinecraftFriendsKit" */;
 			productName = MinecraftFriendsKit;
+		};
+		90B1A2B42FB6506900DAD887 /* LauncherImportKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 90B1A2B32FB6506900DAD887 /* XCRemoteSwiftPackageReference "LauncherImportKit" */;
+			productName = LauncherImportKit;
 		};
 		90E123456789ABCD0002 /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;

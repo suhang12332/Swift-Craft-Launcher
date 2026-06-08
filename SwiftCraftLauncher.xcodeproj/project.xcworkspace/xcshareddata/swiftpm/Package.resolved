@@ -1,13 +1,22 @@
 {
-  "originHash" : "5f9c059f5a9d6c83e6ec04905dfea45831e12208b8e2fce365938bbe12fc8c89",
+  "originHash" : "10ad0f3c32377b92b7b10735d3245da0def77ca9197dac9c0c86788eef75c84d",
   "pins" : [
     {
       "identity" : "cfmodrinthadapterkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/suhang12332/CFModrinthAdapterKit.git",
       "state" : {
-        "branch" : "release",
-        "revision" : "d8ed652fa3459055a18e6aff0ecaf55486a6d97c"
+        "branch" : "main",
+        "revision" : "349b707f4a5d87acd24519b5a49de7caad941036"
+      }
+    },
+    {
+      "identity" : "launcherimportkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/suhang12332/LauncherImportKit.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "651339315a2e50b578b3c3c9db5f2c895de14cc2"
       }
     },
     {
