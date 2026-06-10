@@ -35,16 +35,23 @@ struct GameActionButtons: View {
         _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
     }
 
-    private func isGameRunning(gameId: String, userId: String) -> Bool {
-        gameStatusManager.isGameRunning(gameId: gameId, userId: userId)
+    private var currentUserId: String {
+        playerListViewModel.currentPlayer?.id ?? ""
+    }
+
+    private func cachedIsGameRunning(userId: String = "") -> Bool {
+        gameStatusManager.cachedIsGameRunning(
+            gameId: game.id,
+            userId: userId.isEmpty ? currentUserId : userId
+        )
     }
 
     var body: some View {
         Group {
             Button {
                 Task {
-                    let userId = playerListViewModel.currentPlayer?.id ?? ""
-                    let isRunning = isGameRunning(gameId: game.id, userId: userId)
+                    let userId = currentUserId
+                    let isRunning = gameStatusManager.isGameRunning(gameId: game.id, userId: userId)
                     if isRunning {
                         await gameLaunchUseCase.stopGame(player: playerListViewModel.currentPlayer, game: game)
                     } else {
@@ -57,8 +64,8 @@ struct GameActionButtons: View {
                     }
                 }
             } label: {
-                let userId = playerListViewModel.currentPlayer?.id ?? ""
-                let isRunning = isGameRunning(gameId: game.id, userId: userId)
+                let userId = currentUserId
+                let isRunning = cachedIsGameRunning(userId: userId)
                 let isLaunchingGame = gameStatusManager.isGameLaunching(gameId: game.id, userId: userId)
                 if isLaunchingGame && !isRunning {
                     ProgressView()
@@ -76,11 +83,11 @@ struct GameActionButtons: View {
             }
             .id(controlActiveState)
             .help(
-                isGameRunning(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? "")
+                cachedIsGameRunning()
                 ? "stop.fill"
-                : (gameStatusManager.isGameLaunching(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? "") ? "" : "play.fill")
+                : (gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId) ? "" : "play.fill")
             )
-            .disabled(gameStatusManager.isGameLaunching(gameId: game.id, userId: playerListViewModel.currentPlayer?.id ?? ""))
+            .disabled(gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId))
 
             Button {
                 selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
@@ -137,6 +144,12 @@ struct GameActionButtons: View {
                 crashDirectory = directory
                 showCrashAlert = true
             }
+        }
+        .onAppear {
+            gameStatusManager.refreshGameStatus(gameId: game.id, userId: currentUserId)
+        }
+        .onChange(of: currentUserId) { _, newUserId in
+            gameStatusManager.refreshGameStatus(gameId: game.id, userId: newUserId)
         }
     }
 }

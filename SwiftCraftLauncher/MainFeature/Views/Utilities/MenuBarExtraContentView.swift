@@ -31,7 +31,7 @@ struct MenuBarExtraContentView: View {
 
     private func gameStatusSymbolName(for game: GameVersionInfo) -> String {
         let userId = playerListViewModel.currentPlayer?.id ?? ""
-        let isRunning = gameStatusManager.isGameRunning(gameId: game.id, userId: userId)
+        let isRunning = gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: userId)
         let isLaunching = gameStatusManager.isGameLaunching(gameId: game.id, userId: userId)
 
         if isLaunching && !isRunning {
@@ -44,58 +44,74 @@ struct MenuBarExtraContentView: View {
     }
 
     var body: some View {
-        if !gameRepository.games.isEmpty {
-            Text("sidebar.games.title".localized())
-                .font(.headline)
-            ForEach(gameRepository.games) { game in
-                Menu {
-                    GameContextMenu(
-                        game: game,
-                        onDelete: { gameDialogsPresenter.requestGameDeletion(of: game) },
-                        onOpenSettings: { openSettings() },
-                        onExport: { gameDialogsPresenter.presentModPackExport(for: game) },
-                        showsShowInLauncher: true
-                    )
-                    .environmentObject(playerListViewModel)
-                    .environmentObject(gameRepository)
-                    .environmentObject(gameLaunchUseCase)
-                } label: {
-                    Image(systemName: gameStatusSymbolName(for: game))
-                    Text(game.gameName)
+        Group {
+            if !gameRepository.games.isEmpty {
+                Text("sidebar.games.title".localized())
+                    .font(.headline)
+                ForEach(gameRepository.games) { game in
+                    Menu {
+                        GameContextMenu(
+                            game: game,
+                            onDelete: { gameDialogsPresenter.requestGameDeletion(of: game) },
+                            onOpenSettings: { openSettings() },
+                            onExport: { gameDialogsPresenter.presentModPackExport(for: game) },
+                            showsShowInLauncher: true
+                        )
+                        .environmentObject(playerListViewModel)
+                        .environmentObject(gameRepository)
+                        .environmentObject(gameLaunchUseCase)
+                    } label: {
+                        Image(systemName: gameStatusSymbolName(for: game))
+                        Text(game.gameName)
+                    }
                 }
             }
-        }
 
-        Divider()
+            Divider()
 
-        if !playerListViewModel.players.isEmpty {
-            Text("menu.player.list".localized())
-                .font(.headline)
-            if let currentPlayer = playerListViewModel.currentPlayer {
-                Menu(currentPlayer.name) {
-                    let otherPlayers = playerListViewModel.players.filter { $0.id != currentPlayer.id }
-                    if !otherPlayers.isEmpty {
-                        ForEach(otherPlayers) { player in
-                            Button {
-                                playerListViewModel.setCurrentPlayer(byID: player.id)
-                            } label: {
-                                Label(player.name, systemImage: "person")
+            if !playerListViewModel.players.isEmpty {
+                Text("menu.player.list".localized())
+                    .font(.headline)
+                if let currentPlayer = playerListViewModel.currentPlayer {
+                    Menu(currentPlayer.name) {
+                        let otherPlayers = playerListViewModel.players.filter { $0.id != currentPlayer.id }
+                        if !otherPlayers.isEmpty {
+                            ForEach(otherPlayers) { player in
+                                Button {
+                                    playerListViewModel.setCurrentPlayer(byID: player.id)
+                                } label: {
+                                    Label(player.name, systemImage: "person")
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        Divider()
+            Divider()
 
-        Button("ai.assistant.title".localized()) {
-            aiChatManager.openChatWindow()
-        }
+            Button("ai.assistant.title".localized()) {
+                aiChatManager.openChatWindow()
+            }
 
-        Button("menu.quit".localized()) {
-            NSApplication.shared.terminate(nil)
+            Button("menu.quit".localized()) {
+                NSApplication.shared.terminate(nil)
+            }
+            .keyboardShortcut("q", modifiers: .command)
         }
-        .keyboardShortcut("q", modifiers: .command)
+        .onAppear(perform: syncMenuBarGameStatuses)
+        .onChange(of: playerListViewModel.currentPlayer?.id) { _, _ in
+            syncMenuBarGameStatuses()
+        }
+        .onChange(of: gameRepository.games.count) { _, _ in
+            syncMenuBarGameStatuses()
+        }
+    }
+
+    private func syncMenuBarGameStatuses() {
+        gameStatusManager.syncRunningStates(
+            for: gameRepository.games,
+            userId: playerListViewModel.currentPlayer?.id ?? ""
+        )
     }
 }

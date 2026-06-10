@@ -11,32 +11,57 @@ class GameStatusManager: ObservableObject {
 
     private init() {}
 
-    /// 检查指定 gameId+userId 是否正在运行
-    /// - Parameters:
-    ///   - gameId: 游戏ID
-    ///   - userId: 玩家ID
-    /// - Returns: 是否正在运行
+    func cachedIsGameRunning(gameId: String, userId: String) -> Bool {
+        let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
+        return gameRunningStates[key] ?? false
+    }
+
+    func syncRunningStates(for games: [GameVersionInfo], userId: String) {
+        guard !games.isEmpty else { return }
+
+        applyOnMain { [self] in
+            var updated = self.gameRunningStates
+            var changed = false
+            let processManager = AppServices.gameProcessManager
+
+            for game in games {
+                let key = GameProcessManager.processKey(gameId: game.id, userId: userId)
+                let actuallyRunning = processManager.isGameRunning(gameId: game.id, userId: userId)
+                if updated[key] != actuallyRunning {
+                    updated[key] = actuallyRunning
+                    changed = true
+                }
+            }
+
+            if changed {
+                self.gameRunningStates = updated
+            }
+        }
+    }
+
     func isGameRunning(gameId: String, userId: String) -> Bool {
         let actuallyRunning = AppServices.gameProcessManager.isGameRunning(gameId: gameId, userId: userId)
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
 
-        DispatchQueue.main.async {
+        applyOnMain { [self] in
             self.updateGameStatusIfNeeded(key: key, actuallyRunning: actuallyRunning)
         }
 
         return actuallyRunning
     }
 
-    /// 更新游戏状态（如果需要）
-    /// - Parameters:
-    ///   - key: processKey(gameId, userId)
-    ///   - actuallyRunning: 实际运行状态
+    private func applyOnMain(_ block: @escaping () -> Void) {
+        if Thread.isMainThread {
+            block()
+        } else {
+            DispatchQueue.main.async(execute: block)
+        }
+    }
+
     private func updateGameStatusIfNeeded(key: String, actuallyRunning: Bool) {
-        if let cachedState = gameRunningStates[key], cachedState != actuallyRunning {
+        if gameRunningStates[key] != actuallyRunning {
             gameRunningStates[key] = actuallyRunning
             Logger.shared.debug("游戏状态同步更新: \(key) -> \(actuallyRunning ? "运行中" : "已停止")")
-        } else if gameRunningStates[key] == nil {
-            gameRunningStates[key] = actuallyRunning
         }
     }
 
@@ -47,8 +72,8 @@ class GameStatusManager: ObservableObject {
     func refreshGameStatus(gameId: String, userId: String) {
         let actuallyRunning = AppServices.gameProcessManager.isGameRunning(gameId: gameId, userId: userId)
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+        applyOnMain { [weak self] in
+            guard let self else { return }
             self.gameRunningStates[key] = actuallyRunning
             Logger.shared.debug("强制刷新游戏状态: \(key) -> \(actuallyRunning ? "运行中" : "已停止")")
         }
@@ -60,8 +85,8 @@ class GameStatusManager: ObservableObject {
     ///   - isRunning: 是否正在运行
     func setGameRunning(gameId: String, userId: String, isRunning: Bool) {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+        applyOnMain { [weak self] in
+            guard let self else { return }
             let currentState = self.gameRunningStates[key]
             if currentState != isRunning {
                 self.gameRunningStates[key] = isRunning
@@ -74,8 +99,8 @@ class GameStatusManager: ObservableObject {
     func cleanupStoppedGames() {
         let processManager = AppServices.gameProcessManager
 
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+        applyOnMain { [weak self] in
+            guard let self else { return }
             self.gameRunningStates = self.gameRunningStates.filter { key, isRunning in
                 guard isRunning else { return false }
                 if let idx = key.firstIndex(of: "_") {
@@ -108,8 +133,8 @@ class GameStatusManager: ObservableObject {
     ///   - isLaunching: 是否正在启动
     func setGameLaunching(gameId: String, userId: String, isLaunching: Bool) {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+        applyOnMain { [weak self] in
+            guard let self else { return }
             let currentState = self.gameLaunchingStates[key] ?? false
             if currentState != isLaunching {
                 self.gameLaunchingStates[key] = isLaunching
@@ -131,8 +156,8 @@ class GameStatusManager: ObservableObject {
     /// - Parameter gameId: 游戏ID
     func removeGameState(gameId: String) {
         let prefix = "\(gameId)_"
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+        applyOnMain { [weak self] in
+            guard let self else { return }
             let keysToRemove = self.gameRunningStates.keys.filter { $0.hasPrefix(prefix) }
                 + self.gameLaunchingStates.keys.filter { $0.hasPrefix(prefix) }
             for key in keysToRemove {
