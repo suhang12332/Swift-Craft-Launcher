@@ -16,8 +16,19 @@
 		90E123456789ABCD0001 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 90E123456789ABCD0002 /* Sparkle */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		90TEST00B2E3139B5005A53F1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9023D8292E3139B5005A53F1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9023D8302E3139B5005A53F1;
+			remoteInfo = SwiftCraftLauncher;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		90D620D12FD7083C00108105 /* Swift Craft Launcher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Swift Craft Launcher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		90TEST0062E3139B5005A53F1 /* SwiftCraftLauncherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftCraftLauncherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -39,6 +50,11 @@
 			path = SwiftCraftLauncher;
 			sourceTree = "<group>";
 		};
+		90TEST0012E3139B5005A53F1 /* SwiftCraftLauncherTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SwiftCraftLauncherTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +72,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		90TEST0042E3139B5005A53F1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -63,7 +86,9 @@
 			isa = PBXGroup;
 			children = (
 				9023D8332E3139B5005A53F1 /* SwiftCraftLauncher */,
+				90TEST0012E3139B5005A53F1 /* SwiftCraftLauncherTests */,
 				90D620D12FD7083C00108105 /* Swift Craft Launcher.app */,
+				90TEST0062E3139B5005A53F1 /* SwiftCraftLauncherTests.xctest */,
 			);
 			sourceTree = "<group>";
 		};
@@ -100,6 +125,27 @@
 			productReference = 90D620D12FD7083C00108105 /* Swift Craft Launcher.app */;
 			productType = "com.apple.product-type.application";
 		};
+		90TEST0022E3139B5005A53F1 /* SwiftCraftLauncherTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 90TEST0072E3139B7005A53F1 /* Build configuration list for PBXNativeTarget "SwiftCraftLauncherTests" */;
+			buildPhases = (
+				90TEST0032E3139B5005A53F1 /* Sources */,
+				90TEST0042E3139B5005A53F1 /* Frameworks */,
+				90TEST0052E3139B5005A53F1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				90TEST00A2E3139B5005A53F1 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				90TEST0012E3139B5005A53F1 /* SwiftCraftLauncherTests */,
+			);
+			name = SwiftCraftLauncherTests;
+			productName = SwiftCraftLauncherTests;
+			productReference = 90TEST0062E3139B5005A53F1 /* SwiftCraftLauncherTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -112,6 +158,10 @@
 				TargetAttributes = {
 					9023D8302E3139B5005A53F1 = {
 						CreatedOnToolsVersion = 16.3;
+					};
+					90TEST0022E3139B5005A53F1 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = 9023D8302E3139B5005A53F1;
 					};
 				};
 			};
@@ -160,12 +210,20 @@
 			projectRoot = "";
 			targets = (
 				9023D8302E3139B5005A53F1 /* SwiftCraftLauncher */,
+				90TEST0022E3139B5005A53F1 /* SwiftCraftLauncherTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		9023D82F2E3139B5005A53F1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		90TEST0052E3139B5005A53F1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -182,12 +240,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		90TEST0032E3139B5005A53F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
 		033870FC2E6059610056BDB2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			productRef = 033870FB2E6059610056BDB2 /* SwiftLintBuildToolPlugin */;
+		};
+		90TEST00A2E3139B5005A53F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9023D8302E3139B5005A53F1 /* SwiftCraftLauncher */;
+			targetProxy = 90TEST00B2E3139B5005A53F1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -349,6 +419,7 @@
 				MARKETING_VERSION = 1.2.2;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
+				PRODUCT_MODULE_NAME = SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -383,10 +454,57 @@
 				MARKETING_VERSION = 1.2.2;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncher;
+				PRODUCT_MODULE_NAME = SwiftCraftLauncher;
 				PRODUCT_NAME = "Swift Craft Launcher";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		90TEST0082E3139B7005A53F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 76;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.2.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncherTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Swift Craft Launcher.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Swift Craft Launcher";
+			};
+			name = Debug;
+		};
+		90TEST0092E3139B7005A53F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 76;
+				DEAD_CODE_STRIPPING = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.2.2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.su.code.SwiftCraftLauncherTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Swift Craft Launcher.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Swift Craft Launcher";
 			};
 			name = Release;
 		};
@@ -407,6 +525,15 @@
 			buildConfigurations = (
 				9023D83E2E3139B7005A53F1 /* Debug */,
 				9023D83F2E3139B7005A53F1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		90TEST0072E3139B7005A53F1 /* Build configuration list for PBXNativeTarget "SwiftCraftLauncherTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				90TEST0082E3139B7005A53F1 /* Debug */,
+				90TEST0092E3139B7005A53F1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

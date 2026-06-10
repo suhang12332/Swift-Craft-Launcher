@@ -1,0 +1,24 @@
+{
+  "author": "",
+  "files": [
+    {
+      "fileID": 789,
+      "projectID": 321,
+      "required": true
+    }
+  ],
+  "manifestType": "minecraftModpack",
+  "manifestVersion": 1,
+  "minecraft": {
+    "modLoaders": [
+      {
+        "id": "fabric-0.14.21",
+        "primary": true
+      }
+    ],
+    "version": "1.20.1"
+  },
+  "name": "Fabric Pack",
+  "overrides": "overrides",
+  "version": "2.0.0"
+}
