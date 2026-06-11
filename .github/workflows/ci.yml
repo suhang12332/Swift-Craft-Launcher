@@ -21,6 +21,12 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint
+        run: swiftlint lint --strict
+
       - name: Run unit tests
         run: |
           xcodebuild test \
