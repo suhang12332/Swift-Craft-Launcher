@@ -78,7 +78,7 @@ final class ModrinthModelMappersTests: XCTestCase {
         var title: String
         var description: String
         var categories: [String]
-        var additionalCategories: [String]? = nil
+        var additionalCategories: [String]?
         var projectType: String
         var downloads: Int
         var team: String
