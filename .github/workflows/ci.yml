@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, master, dev]
+  push:
+    branches: [main, master, dev]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Xcode
+        uses: JohnTitor/setup-xcode@v0.1.1
+        with:
+          xcode-version: latest-stable
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint
+        run: swiftlint lint --strict
+
+      - name: Run unit tests
+        run: |
+          xcodebuild test \
+            -project SwiftCraftLauncher.xcodeproj \
+            -scheme SwiftCraftLauncher \
+            -destination 'platform=macOS' \
+            -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO \
+            -resultBundlePath TestResults.xcresult
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xcresult
+          path: TestResults.xcresult
+          retention-days: 7
