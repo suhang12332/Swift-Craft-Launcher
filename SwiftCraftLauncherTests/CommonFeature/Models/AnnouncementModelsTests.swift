@@ -34,7 +34,7 @@ final class AnnouncementModelsTests: XCTestCase {
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(AnnouncementResponse.self, from: data)
 
-        XCTAssertEqual(decoded.success, true)
+        XCTAssertTrue(decoded.success)
         XCTAssertEqual(decoded.data?.title, "Update")
         XCTAssertEqual(decoded.data?.content, "New features")
         XCTAssertEqual(decoded.data?.author, "Dev")

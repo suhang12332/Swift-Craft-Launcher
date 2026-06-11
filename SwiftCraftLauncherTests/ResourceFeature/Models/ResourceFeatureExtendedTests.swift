@@ -225,8 +225,5 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         let loaderFacets = facets.first { $0.contains("categories:minecraft") }
         XCTAssertNotNil(loaderFacets)
     }
-
-
 }
-
 

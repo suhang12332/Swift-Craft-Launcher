@@ -80,7 +80,7 @@ final class CommonFeatureModelsTests: XCTestCase {
         let date = Date(timeIntervalSince1970: 1000)
         let profile = UserProfile(id: "id-2", name: "Alex", avatar: "alex", lastPlayed: date, isCurrent: true)
 
-        XCTAssertEqual(profile.isCurrent, true)
+        XCTAssertTrue(profile.isCurrent)
         XCTAssertEqual(profile.lastPlayed, date)
     }
 

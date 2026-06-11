@@ -162,8 +162,8 @@ final class GameFeatureModelsTests: XCTestCase {
             seed: 12345
         )
 
-        XCTAssertEqual(world.hardcore, true)
-        XCTAssertEqual(world.cheats, true)
+        XCTAssertTrue(world.hardcore)
+        XCTAssertTrue(world.cheats)
         XCTAssertEqual(world.version, "1.20.1")
         XCTAssertEqual(world.seed, 12345)
     }

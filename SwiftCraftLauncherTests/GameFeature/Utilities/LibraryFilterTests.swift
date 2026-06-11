@@ -14,8 +14,8 @@ final class LibraryFilterTests: XCTestCase {
                     "path": "org/example/lib-1.0.jar",
                     "sha1": "abc",
                     "size": 100,
-                    "url": "https://example.com/lib.jar"
-                ]
+                    "url": "https://example.com/lib.jar",
+                ],
             ],
             "name": "test:lib:1.0",
             "include_in_classpath": includeInClasspath,

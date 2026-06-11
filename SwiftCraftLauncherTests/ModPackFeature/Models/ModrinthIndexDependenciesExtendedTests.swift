@@ -204,7 +204,7 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
             hashes: ModrinthIndexFileHashes(from: ["sha1": "abc"]),
             downloads: [
                 "https://modrinth.com/test.jar",
-                "https://cdn.example.com/test.jar"
+                "https://cdn.example.com/test.jar",
             ],
             fileSize: 2048
         )

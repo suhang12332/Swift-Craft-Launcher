@@ -6,7 +6,7 @@ final class APIKeyObfuscatorTests: XCTestCase {
     // MARK: - decryptClientID
 
     func testDecryptClientID_emptyString() {
-        let _ = Obfuscator.decryptClientID("")
+        _ = Obfuscator.decryptClientID("")
     }
 
     func testDecryptClientID_consistentResults() {
@@ -27,6 +27,6 @@ final class APIKeyObfuscatorTests: XCTestCase {
 
     func testDecryptAPIKey_longString() {
         let input = String(repeating: "A", count: 64)
-        let _ = Obfuscator.decryptAPIKey(input)
+        _ = Obfuscator.decryptAPIKey(input)
     }
 }

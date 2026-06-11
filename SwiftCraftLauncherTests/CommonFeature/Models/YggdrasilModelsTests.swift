@@ -228,12 +228,22 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testYggdrasilProfile_equatable() {
         let a = YggdrasilProfile(
-            id: "id", name: "A", skins: [], capes: nil,
-            accessToken: "at", refreshToken: "rt", serverBaseURL: "url"
+            id: "id",
+            name: "A",
+            skins: [],
+            capes: nil,
+            accessToken: "at",
+            refreshToken: "rt",
+            serverBaseURL: "url"
         )
         let b = YggdrasilProfile(
-            id: "id", name: "A", skins: [], capes: nil,
-            accessToken: "at", refreshToken: "rt", serverBaseURL: "url"
+            id: "id",
+            name: "A",
+            skins: [],
+            capes: nil,
+            accessToken: "at",
+            refreshToken: "rt",
+            serverBaseURL: "url"
         )
         XCTAssertEqual(a, b)
     }
@@ -268,8 +278,13 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testAuthState_authenticated() {
         let profile = YggdrasilProfile(
-            id: "id", name: "A", skins: [], capes: nil,
-            accessToken: "at", refreshToken: "rt", serverBaseURL: "url"
+            id: "id",
+            name: "A",
+            skins: [],
+            capes: nil,
+            accessToken: "at",
+            refreshToken: "rt",
+            serverBaseURL: "url"
         )
         let state = YggdrasilAuthState.authenticated(profile: profile)
         if case .authenticated(let p) = state {

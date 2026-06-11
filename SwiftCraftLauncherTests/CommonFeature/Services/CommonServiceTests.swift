@@ -83,21 +83,21 @@ final class CommonServiceTests: XCTestCase {
             "include_in_classpath": true,
             "downloadable": true,
             "downloads": [
-                "artifact": ["path": "a/b/c.jar", "sha1": "abc", "size": 100, "url": ""]
-            ]
+                "artifact": ["path": "a/b/c.jar", "sha1": "abc", "size": 100, "url": ""],
+            ],
         ]
         let lib2Json: [String: Any] = [
             "name": "test:lib2:1.0",
             "include_in_classpath": false,
             "downloadable": true,
             "downloads": [
-                "artifact": ["path": "d/e/f.jar", "sha1": "def", "size": 100, "url": ""]
-            ]
+                "artifact": ["path": "d/e/f.jar", "sha1": "def", "size": 100, "url": ""],
+            ],
         ]
         let lib3Json: [String: Any] = [
             "name": "test:lib3:1.0",
             "include_in_classpath": true,
-            "downloadable": true
+            "downloadable": true,
         ]
 
         let lib1 = try! JSONDecoder().decode(ModrinthLoaderLibrary.self, from: JSONSerialization.data(withJSONObject: lib1Json))
@@ -107,7 +107,7 @@ final class CommonServiceTests: XCTestCase {
         let loaderJson: [String: Any] = [
             "mainClass": "Main",
             "arguments": [:],
-            "libraries": [lib1Json, lib2Json, lib3Json]
+            "libraries": [lib1Json, lib2Json, lib3Json],
         ]
         let loader = try! JSONDecoder().decode(ModrinthLoader.self, from: JSONSerialization.data(withJSONObject: loaderJson))
 
@@ -124,13 +124,13 @@ final class CommonServiceTests: XCTestCase {
         let libJson: [String: Any] = [
             "name": "net.fabricmc:fabric-loom:${modrinth.gameVersion}",
             "include_in_classpath": true,
-            "downloadable": true
+            "downloadable": true,
         ]
         let lib = try! JSONDecoder().decode(ModrinthLoaderLibrary.self, from: JSONSerialization.data(withJSONObject: libJson))
         let loaderJson: [String: Any] = [
             "mainClass": "Main",
             "arguments": [:],
-            "libraries": [libJson]
+            "libraries": [libJson],
         ]
         let loader = try! JSONDecoder().decode(ModrinthLoader.self, from: JSONSerialization.data(withJSONObject: loaderJson))
 
@@ -143,13 +143,13 @@ final class CommonServiceTests: XCTestCase {
         let libJson: [String: Any] = [
             "name": "net.fabricmc:fabric-loom:0.14.21",
             "include_in_classpath": true,
-            "downloadable": true
+            "downloadable": true,
         ]
         let lib = try! JSONDecoder().decode(ModrinthLoaderLibrary.self, from: JSONSerialization.data(withJSONObject: libJson))
         let loaderJson2: [String: Any] = [
             "mainClass": "Main",
             "arguments": [:],
-            "libraries": [libJson]
+            "libraries": [libJson],
         ]
         let loader = try! JSONDecoder().decode(ModrinthLoader.self, from: JSONSerialization.data(withJSONObject: loaderJson2))
 

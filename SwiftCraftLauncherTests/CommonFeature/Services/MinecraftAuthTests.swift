@@ -10,7 +10,7 @@ final class MinecraftAuthTests: XCTestCase {
         XCTAssertNotNil(response)
         XCTAssertEqual(response?.code, "abc123")
         XCTAssertNil(response?.error)
-        XCTAssertTrue(response?.isSuccess == true)
+        XCTAssertEqual(response?.isSuccess, true)
     }
 
     func testAuthorizationCodeResponse_userDenied() {
@@ -20,7 +20,7 @@ final class MinecraftAuthTests: XCTestCase {
         XCTAssertNotNil(response)
         XCTAssertNil(response?.code)
         XCTAssertEqual(response?.error, "access_denied")
-        XCTAssertTrue(response?.isUserDenied == true)
+        XCTAssertEqual(response?.isUserDenied, true)
     }
 
     func testAuthorizationCodeResponse_errorWithDescription() {
@@ -37,7 +37,7 @@ final class MinecraftAuthTests: XCTestCase {
         let response = AuthorizationCodeResponse(from: url)
 
         XCTAssertNotNil(response)
-        XCTAssertFalse(response?.isSuccess == true)
+        XCTAssertNotEqual(response?.isSuccess, true)
     }
 
     func testTokenResponse_codable() throws {
