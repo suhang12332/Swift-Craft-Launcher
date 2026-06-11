@@ -38,7 +38,7 @@ final class ResourceEnableDisableManagerTests: XCTestCase {
 
         let testFile = "test.jar"
         let fileURL = tmpDir.appendingPathComponent(testFile)
-        try "test".data(using: .utf8)!.write(to: fileURL)
+        try Data("test".utf8).write(to: fileURL)
 
         let result = try ResourceEnableDisableManager.toggleDisableState(
             fileName: testFile,
@@ -56,7 +56,7 @@ final class ResourceEnableDisableManagerTests: XCTestCase {
 
         let testFile = "test.jar.disable"
         let fileURL = tmpDir.appendingPathComponent(testFile)
-        try "test".data(using: .utf8)!.write(to: fileURL)
+        try Data("test".utf8).write(to: fileURL)
 
         let result = try ResourceEnableDisableManager.toggleDisableState(
             fileName: testFile,

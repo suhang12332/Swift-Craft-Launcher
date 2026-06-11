@@ -44,7 +44,7 @@ final class AnnouncementModelsTests: XCTestCase {
         let json = """
         {"success": true, "data": {"title": "T", "content": "C", "author": "A"}}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(AnnouncementResponse.self, from: data)
 
         XCTAssertTrue(decoded.success)

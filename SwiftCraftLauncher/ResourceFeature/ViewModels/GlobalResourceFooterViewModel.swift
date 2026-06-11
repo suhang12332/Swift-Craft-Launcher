@@ -158,14 +158,16 @@ final class GlobalResourceFooterViewModel: ObservableObject {
 
         let success =
             await ModrinthDependencyDownloader.downloadManualDependenciesAndMain(
-                dependencies: dependencyState.dependencies,
-                selectedVersions: dependencyState.selected.compactMapValues { $0?.id },
-                dependencyVersions: dependencyState.versions,
-                mainProjectId: project.projectId,
-                mainProjectVersionId: mainVersionId.isEmpty ? nil : mainVersionId,
-                gameInfo: game,
-                query: resourceType,
-                gameRepository: gameRepository,
+                input: .init(
+                    dependencies: dependencyState.dependencies,
+                    selectedVersions: dependencyState.selected.compactMapValues { $0?.id },
+                    dependencyVersions: dependencyState.versions,
+                    mainProjectId: project.projectId,
+                    mainProjectVersionId: mainVersionId.isEmpty ? nil : mainVersionId,
+                    gameInfo: game,
+                    resourceType: resourceType,
+                    gameRepository: gameRepository
+                ),
                 onDependencyDownloadStart: { _ in },
                 onDependencyDownloadFinish: { _, _ in }
             )

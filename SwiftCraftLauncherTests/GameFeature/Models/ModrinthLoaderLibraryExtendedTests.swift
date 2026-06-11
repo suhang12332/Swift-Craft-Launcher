@@ -13,7 +13,7 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
             "downloadable": true
         }
         """
-        let lib = try JSONDecoder().decode(ModrinthLoaderLibrary.self, from: json.data(using: .utf8)!)
+        let lib = try JSONDecoder().decode(ModrinthLoaderLibrary.self, from: Data(json.utf8))
 
         XCTAssertFalse(lib.includeInClasspath)
         XCTAssertTrue(lib.downloadable)
@@ -28,7 +28,7 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
             "url": "https://example.com/lib.jar"
         }
         """
-        let lib = try JSONDecoder().decode(ModrinthLoaderLibrary.self, from: json.data(using: .utf8)!)
+        let lib = try JSONDecoder().decode(ModrinthLoaderLibrary.self, from: Data(json.utf8))
 
         XCTAssertEqual(lib.url?.absoluteString, "https://example.com/lib.jar")
     }
@@ -78,7 +78,7 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
             }
         }
         """
-        let loader = try JSONDecoder().decode(ModrinthLoader.self, from: json.data(using: .utf8)!)
+        let loader = try JSONDecoder().decode(ModrinthLoader.self, from: Data(json.utf8))
 
         XCTAssertEqual(loader.mainClass, "Main")
         XCTAssertEqual(loader.version, "1.0")
@@ -97,7 +97,7 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
             "libraries": []
         }
         """
-        let loader = try JSONDecoder().decode(ModrinthLoader.self, from: json.data(using: .utf8)!)
+        let loader = try JSONDecoder().decode(ModrinthLoader.self, from: Data(json.utf8))
 
         XCTAssertEqual(loader.mainClass, "Main")
         XCTAssertNil(loader.version)
@@ -119,7 +119,7 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
             ]
         }
         """
-        let version = try JSONDecoder().decode(LoaderVersion.self, from: json.data(using: .utf8)!)
+        let version = try JSONDecoder().decode(LoaderVersion.self, from: Data(json.utf8))
 
         XCTAssertEqual(version.loaders.count, 2)
         XCTAssertTrue(version.loaders[0].stable)
@@ -138,7 +138,7 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
             "outputs": {"output1.jar": "sha1:abc", "output2.jar": "sha1:def"}
         }
         """
-        let processor = try JSONDecoder().decode(Processor.self, from: json.data(using: .utf8)!)
+        let processor = try JSONDecoder().decode(Processor.self, from: Data(json.utf8))
 
         XCTAssertEqual(processor.sides?.count, 2)
         XCTAssertEqual(processor.classpath?.count, 2)
@@ -150,7 +150,7 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
         let json = """
         {"sides": ["client"], "jar": "p.jar"}
         """
-        let processor = try JSONDecoder().decode(Processor.self, from: json.data(using: .utf8)!)
+        let processor = try JSONDecoder().decode(Processor.self, from: Data(json.utf8))
 
         XCTAssertEqual(processor.sides, ["client"])
         XCTAssertNil(processor.classpath)

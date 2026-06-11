@@ -6,7 +6,7 @@ final class PlayerSkinServiceTests: XCTestCase {
     // MARK: - hasSkinChanges
 
     func testHasSkinChanges_withSelectedData_alwaysTrue() {
-        let data = "skin".data(using: .utf8)!
+        let data = Data("skin".utf8)
         XCTAssertTrue(PlayerSkinService.hasSkinChanges(
             selectedSkinData: data,
             currentModel: .classic,

@@ -26,16 +26,10 @@ final class ModrinthSearchViewModel: ObservableObject {
     }
 
     // MARK: - Public Methods
-    // swiftlint:disable:next function_parameter_count
     func search(
         query: String,
         projectType: String,
-        versions: [String],
-        categories: [String],
-        features: [String],
-        resolutions: [String],
-        performanceImpact: [String],
-        loaders: [String],
+        filterOptions: FilterOptions,
         page: Int = 1,
         append: Bool = false,
         dataSource: DataSource = .modrinth
@@ -55,16 +49,8 @@ final class ModrinthSearchViewModel: ObservableObject {
                 try Task.checkCancellation()
 
                 let offset = (page - 1) * pageSize
-                let filterOptions = FilterOptions(
-                    resolutions: resolutions,
-                    performanceImpact: performanceImpact,
-                    loaders: loaders
-                )
                 let facets = buildFacets(
                     projectType: projectType,
-                    versions: versions,
-                    categories: categories,
-                    features: features,
                     filterOptions: filterOptions
                 )
 
@@ -83,10 +69,10 @@ final class ModrinthSearchViewModel: ObservableObject {
                     // 使用 CurseForge 服务并转换为 Modrinth 格式
                     let cfParams = ModrinthToCurseForgeSearchAdapter.convertToSearchParams(
                         projectType: projectType,
-                        versions: versions,
-                        categories: categories,
-                        resolutions: resolutions,
-                        loaders: loaders,
+                        versions: filterOptions.versions,
+                        categories: filterOptions.categories,
+                        resolutions: filterOptions.resolutions,
+                        loaders: filterOptions.loaders,
                         query: query
                     )
                     let cfResult = await CurseForgeService.searchProjects(

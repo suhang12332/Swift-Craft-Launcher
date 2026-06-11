@@ -24,11 +24,13 @@ extension GameCreationViewModel {
         }
 
         await gameSetupService.saveGame(
-            gameName: finalGameName,
-            selectedGameVersion: selectedGameVersion,
-            selectedModLoader: selectedModLoader,
-            specifiedLoaderVersion: loaderVersion,
-            pendingIconData: pendingIconData,
+            input: .init(
+                gameName: finalGameName,
+                selectedGameVersion: selectedGameVersion,
+                selectedModLoader: selectedModLoader,
+                specifiedLoaderVersion: loaderVersion,
+                pendingIconData: pendingIconData
+            ),
             playerListViewModel: playerListViewModel,
             gameRepository: gameRepository,
             onSuccess: {

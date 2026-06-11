@@ -31,7 +31,7 @@ final class LoggerStringifyTests: XCTestCase {
     }
 
     func testStringify_data_utf8() {
-        let data = "hello".data(using: .utf8)!
+        let data = Data("hello".utf8)
         let result = Logger.stringify(data)
         XCTAssertEqual(result, "hello")
     }

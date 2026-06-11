@@ -15,7 +15,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             }
         ]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = CommonYggdrasilProfileListParser.parse(data: data)
 
         XCTAssertNotNil(result)
@@ -33,7 +33,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             ]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = CommonYggdrasilProfileListParser.parse(data: data)
 
         XCTAssertNotNil(result)
@@ -50,7 +50,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             ]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = CommonYggdrasilProfileListParser.parse(data: data)
 
         XCTAssertNotNil(result)
@@ -64,12 +64,12 @@ final class YggdrasilProfileListParserTests: XCTestCase {
     }
 
     func testParse_invalidJSON_returnsNil() {
-        let result = CommonYggdrasilProfileListParser.parse(data: "not json".data(using: .utf8)!)
+        let result = CommonYggdrasilProfileListParser.parse(data: Data("not json".utf8))
         XCTAssertNil(result)
     }
 
     func testParse_emptyArray_returnsNil() {
-        let result = CommonYggdrasilProfileListParser.parse(data: "[]".data(using: .utf8)!)
+        let result = CommonYggdrasilProfileListParser.parse(data: Data("[]".utf8))
         XCTAssertNil(result)
     }
 
@@ -77,7 +77,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
         let json = """
         {"data": []}
         """
-        let result = CommonYggdrasilProfileListParser.parse(data: json.data(using: .utf8)!)
+        let result = CommonYggdrasilProfileListParser.parse(data: Data(json.utf8))
         XCTAssertNil(result)
     }
 
@@ -104,7 +104,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             }
         ]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = CommonYggdrasilProfileListParser.parse(data: data)
 
         XCTAssertNotNil(result)
@@ -134,7 +134,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             }
         ]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = CommonYggdrasilProfileListParser.parse(data: data)
 
         XCTAssertNotNil(result)
@@ -152,7 +152,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             }
         ]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = CommonYggdrasilProfileListParser.parse(data: data)
 
         XCTAssertNotNil(result)
@@ -182,7 +182,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             }
         ]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = CommonYggdrasilProfileListParser.parse(data: data)
 
         XCTAssertNotNil(result)
@@ -203,7 +203,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             }
         ]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
 
         XCTAssertNotNil(result)
@@ -219,7 +219,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             {"pid": 2, "name": "SkinOnly", "tid_skin": 55, "tid_cape": 0}
         ]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
@@ -233,7 +233,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             {"pid": 3, "name": "NoSkin", "tid_skin": 0, "tid_cape": 0}
         ]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
 
         XCTAssertNotNil(result)
@@ -242,12 +242,12 @@ final class YggdrasilProfileListParserTests: XCTestCase {
     }
 
     func testBlessingSkinParse_emptyArray_returnsNil() {
-        let result = BlessingSkinProfileListParser.parse(data: "[]".data(using: .utf8)!, baseURL: "https://example.com")
+        let result = BlessingSkinProfileListParser.parse(data: Data("[]".utf8), baseURL: "https://example.com")
         XCTAssertNil(result)
     }
 
     func testBlessingSkinParse_invalidJSON_returnsNil() {
-        let result = BlessingSkinProfileListParser.parse(data: "invalid".data(using: .utf8)!, baseURL: "https://example.com")
+        let result = BlessingSkinProfileListParser.parse(data: Data("invalid".utf8), baseURL: "https://example.com")
         XCTAssertNil(result)
     }
 
@@ -257,7 +257,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             {"name": "DeterministicPlayer", "tid_skin": 10}
         ]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result1 = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
         let result2 = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
 

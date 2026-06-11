@@ -86,13 +86,13 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
     }
 
     func testModrinthIndexDependencies_codingKeys() throws {
-        let json = """
+        let json = Data("""
         {
             "minecraft": "1.20.1",
             "forge-loader": "47.2.0",
             "fabric-loader": "0.14.0"
         }
-        """.data(using: .utf8)!
+        """.utf8)
         let decoded = try JSONDecoder().decode(ModrinthIndexDependencies.self, from: json)
         XCTAssertEqual(decoded.forgeLoader, "47.2.0")
         XCTAssertEqual(decoded.fabricLoader, "0.14.0")
@@ -114,13 +114,13 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
     }
 
     func testModrinthIndexProjectDependency_codingKeys() throws {
-        let json = """
+        let json = Data("""
         {
             "project_id": "abc",
             "version_id": "def",
             "dependency_type": "optional"
         }
-        """.data(using: .utf8)!
+        """.utf8)
         let decoded = try JSONDecoder().decode(ModrinthIndexProjectDependency.self, from: json)
         XCTAssertEqual(decoded.projectId, "abc")
         XCTAssertEqual(decoded.versionId, "def")

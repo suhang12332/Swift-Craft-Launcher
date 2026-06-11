@@ -3,12 +3,7 @@ import XCTest
 
 final class ModScannerFallbackTests: XCTestCase {
 
-    private var modScanner: ModScanner!
-
-    override func setUp() {
-        super.setUp()
-        modScanner = ModScanner(errorHandler: GlobalErrorHandler.shared)
-    }
+    private lazy var modScanner = ModScanner(errorHandler: GlobalErrorHandler.shared)
 
     // MARK: - createFallbackDetailFromFileName
 

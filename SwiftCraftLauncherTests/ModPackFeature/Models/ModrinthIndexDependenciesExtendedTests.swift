@@ -40,7 +40,7 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
         let json = """
         {"minecraft": "1.20.1", "quilt-loader": "0.22.0"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(ModrinthIndexDependencies.self, from: data)
 
         XCTAssertEqual(decoded.minecraft, "1.20.1")
@@ -53,7 +53,7 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
         let json = """
         {"minecraft": "1.20.4", "neoforge-loader": "21.0.0"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(ModrinthIndexDependencies.self, from: data)
 
         XCTAssertEqual(decoded.minecraft, "1.20.4")
@@ -70,7 +70,7 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
             "neoforge-loader": "21.0.0"
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(ModrinthIndexDependencies.self, from: data)
 
         XCTAssertEqual(decoded.forgeLoader, "47.2.0")
@@ -89,7 +89,7 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
             ]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(ModrinthIndexDependencies.self, from: data)
 
         XCTAssertEqual(decoded.dependencies?.count, 2)
@@ -104,7 +104,7 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
         let json = """
         {"project_id": null, "version_id": "ver1", "dependency_type": "required"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(ModrinthIndexProjectDependency.self, from: data)
 
         XCTAssertNil(decoded.projectId)
@@ -263,7 +263,7 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
             "fileSize": 1024
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let file = try JSONDecoder().decode(ModrinthIndexFile.self, from: data)
 
         XCTAssertEqual(file.path, "mods/test.jar")
@@ -302,7 +302,7 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
             "dependencies": {"minecraft": "1.20.1"}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let index = try JSONDecoder().decode(ModrinthIndex.self, from: data)
 
         XCTAssertEqual(index.formatVersion, 1)
@@ -322,7 +322,7 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
             "dependencies": {}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let index = try JSONDecoder().decode(ModrinthIndex.self, from: data)
 
         XCTAssertEqual(index.formatVersion, 1)

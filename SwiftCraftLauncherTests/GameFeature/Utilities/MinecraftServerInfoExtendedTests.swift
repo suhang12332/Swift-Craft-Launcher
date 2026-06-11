@@ -112,7 +112,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
             "players": {"max": 20, "online": 5, "sample": []}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(MinecraftServerInfo.self, from: data)
 
         XCTAssertEqual(info.description.text, "A Server")
@@ -128,7 +128,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
             "description": {"text": "Server"}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(MinecraftServerInfo.self, from: data)
 
         XCTAssertNil(info.version)
@@ -149,7 +149,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
             }
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(MinecraftServerInfo.self, from: data)
 
         XCTAssertEqual(info.players?.sample?.count, 2)
@@ -171,7 +171,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
             }
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(MinecraftServerInfo.self, from: data)
 
         XCTAssertEqual(info.modinfo?.type, "forge")
@@ -209,7 +209,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
             }
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(MinecraftServerInfo.self, from: data)
 
         XCTAssertEqual(info.description.extra?.count, 2)
@@ -226,7 +226,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
             }
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(MinecraftServerInfo.self, from: data)
 
         XCTAssertEqual(info.description.extra?.count, 2)

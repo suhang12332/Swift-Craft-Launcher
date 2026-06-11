@@ -3,6 +3,11 @@ import XCTest
 
 final class CommonServiceTests: XCTestCase {
 
+    private func decode<T: Decodable>(_ type: T.Type, from jsonObject: Any) throws -> T {
+        let data = try JSONSerialization.data(withJSONObject: jsonObject)
+        return try JSONDecoder().decode(type, from: data)
+    }
+
     // MARK: - mavenCoordinateToRelativePath
 
     func testMavenCoordinateToRelativePath_threeParts() {
@@ -77,7 +82,7 @@ final class CommonServiceTests: XCTestCase {
 
     // MARK: - generateClasspath
 
-    func testGenerateClasspath_filtersNonClasspathLibraries() {
+    func testGenerateClasspath_filtersNonClasspathLibraries() throws {
         let lib1Json: [String: Any] = [
             "name": "test:lib:1.0",
             "include_in_classpath": true,
@@ -100,16 +105,16 @@ final class CommonServiceTests: XCTestCase {
             "downloadable": true,
         ]
 
-        let lib1 = try! JSONDecoder().decode(ModrinthLoaderLibrary.self, from: JSONSerialization.data(withJSONObject: lib1Json))
-        let lib2 = try! JSONDecoder().decode(ModrinthLoaderLibrary.self, from: JSONSerialization.data(withJSONObject: lib2Json))
-        let lib3 = try! JSONDecoder().decode(ModrinthLoaderLibrary.self, from: JSONSerialization.data(withJSONObject: lib3Json))
+        let lib1 = try decode(ModrinthLoaderLibrary.self, from: lib1Json)
+        let lib2 = try decode(ModrinthLoaderLibrary.self, from: lib2Json)
+        let lib3 = try decode(ModrinthLoaderLibrary.self, from: lib3Json)
 
         let loaderJson: [String: Any] = [
             "mainClass": "Main",
             "arguments": [:],
             "libraries": [lib1Json, lib2Json, lib3Json],
         ]
-        let loader = try! JSONDecoder().decode(ModrinthLoader.self, from: JSONSerialization.data(withJSONObject: loaderJson))
+        let loader = try decode(ModrinthLoader.self, from: loaderJson)
 
         let librariesDir = URL(fileURLWithPath: "/tmp/libraries")
         let classpath = CommonService.generateClasspath(from: loader, librariesDir: librariesDir)
@@ -120,38 +125,38 @@ final class CommonServiceTests: XCTestCase {
 
     // MARK: - processGameVersionPlaceholders
 
-    func testProcessGameVersionPlaceholders_replacesModrinthGameVersion() {
+    func testProcessGameVersionPlaceholders_replacesModrinthGameVersion() throws {
         let libJson: [String: Any] = [
             "name": "net.fabricmc:fabric-loom:${modrinth.gameVersion}",
             "include_in_classpath": true,
             "downloadable": true,
         ]
-        let lib = try! JSONDecoder().decode(ModrinthLoaderLibrary.self, from: JSONSerialization.data(withJSONObject: libJson))
+        let lib = try decode(ModrinthLoaderLibrary.self, from: libJson)
         let loaderJson: [String: Any] = [
             "mainClass": "Main",
             "arguments": [:],
             "libraries": [libJson],
         ]
-        let loader = try! JSONDecoder().decode(ModrinthLoader.self, from: JSONSerialization.data(withJSONObject: loaderJson))
+        let loader = try decode(ModrinthLoader.self, from: loaderJson)
 
         let result = CommonService.processGameVersionPlaceholders(loader: loader, gameVersion: "1.20.1")
 
         XCTAssertEqual(result.libraries.first?.name, "net.fabricmc:fabric-loom:1.20.1")
     }
 
-    func testProcessGameVersionPlaceholders_noPlaceholder() {
+    func testProcessGameVersionPlaceholders_noPlaceholder() throws {
         let libJson: [String: Any] = [
             "name": "net.fabricmc:fabric-loom:0.14.21",
             "include_in_classpath": true,
             "downloadable": true,
         ]
-        let lib = try! JSONDecoder().decode(ModrinthLoaderLibrary.self, from: JSONSerialization.data(withJSONObject: libJson))
+        let lib = try decode(ModrinthLoaderLibrary.self, from: libJson)
         let loaderJson2: [String: Any] = [
             "mainClass": "Main",
             "arguments": [:],
             "libraries": [libJson],
         ]
-        let loader = try! JSONDecoder().decode(ModrinthLoader.self, from: JSONSerialization.data(withJSONObject: loaderJson2))
+        let loader = try decode(ModrinthLoader.self, from: loaderJson2)
 
         let result = CommonService.processGameVersionPlaceholders(loader: loader, gameVersion: "1.20.1")
 

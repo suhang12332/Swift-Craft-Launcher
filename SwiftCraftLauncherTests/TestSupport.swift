@@ -3,6 +3,16 @@ import XCTest
 
 private final class BundleToken {}
 
+extension URL {
+    static func require(_ string: String, file: StaticString = #filePath, line: UInt = #line) -> URL {
+        guard let url = URL(string: string) else {
+            XCTFail("Invalid URL: \(string)", file: file, line: line)
+            return URL(fileURLWithPath: "/dev/null")
+        }
+        return url
+    }
+}
+
 enum TestSupport {
     static var bundle: Bundle {
         Bundle(for: BundleToken.self)

@@ -87,7 +87,7 @@ final class ConstantsAndPresetsTests: XCTestCase {
     func testYggdrasilServerConfig_authorizeURL() {
         let config = YggdrasilServerConfig(
             name: "Test",
-            baseURL: URL(string: "https://example.com")!,
+            baseURL: URL.require("https://example.com"),
             redirectURI: "test://callback",
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
@@ -103,7 +103,7 @@ final class ConstantsAndPresetsTests: XCTestCase {
 
     func testYggdrasilServerConfig_scopeTrimmed() {
         let config = YggdrasilServerConfig(
-            baseURL: URL(string: "https://example.com")!,
+            baseURL: URL.require("https://example.com"),
             redirectURI: "test://callback",
             authorizePath: "/auth",
             tokenPath: "/token",

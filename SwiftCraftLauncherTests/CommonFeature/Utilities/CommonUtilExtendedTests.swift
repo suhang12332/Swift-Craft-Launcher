@@ -6,19 +6,19 @@ final class CommonUtilExtendedTests: XCTestCase {
     // MARK: - URL.forceHTTPS
 
     func testForceHTTPS_httpToHttps() {
-        let url = URL(string: "http://example.com/path")!
+        let url = URL.require("http://example.com/path")
         let result = url.forceHTTPS()
         XCTAssertEqual(result?.scheme, "https")
     }
 
     func testForceHTTPS_alreadyHttps() {
-        let url = URL(string: "https://example.com/path")!
+        let url = URL.require("https://example.com/path")
         let result = url.forceHTTPS()
         XCTAssertEqual(result, url)
     }
 
     func testForceHTTPS_otherScheme() {
-        let url = URL(string: "ftp://example.com/path")!
+        let url = URL.require("ftp://example.com/path")
         let result = url.forceHTTPS()
         XCTAssertEqual(result, url)
     }

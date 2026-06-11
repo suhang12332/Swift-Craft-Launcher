@@ -6,13 +6,13 @@ final class BlessingSkinParserTests: XCTestCase {
     // MARK: - BlessingSkinProfileListParser.parse
 
     func testParse_emptyArray_returnsNil() async {
-        let data = "[]".data(using: .utf8)!
+        let data = Data("[]".utf8)
         let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
         XCTAssertNil(result)
     }
 
     func testParse_invalidJSON_returnsNil() async {
-        let data = "not json".data(using: .utf8)!
+        let data = Data("not json".utf8)
         let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
         XCTAssertNil(result)
     }
@@ -27,7 +27,7 @@ final class BlessingSkinParserTests: XCTestCase {
         let json = """
         [{"name": "Steve", "tid_skin": 42, "tid_cape": null}]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
@@ -43,7 +43,7 @@ final class BlessingSkinParserTests: XCTestCase {
         let json = """
         [{"name": "Alex", "tid_skin": 10, "tid_cape": 20}]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
@@ -57,7 +57,7 @@ final class BlessingSkinParserTests: XCTestCase {
         let json = """
         [{"name": "Noor", "tid_skin": null, "tid_cape": null}]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
@@ -69,7 +69,7 @@ final class BlessingSkinParserTests: XCTestCase {
         let json = """
         [{"name": "TestPlayer", "tid_skin": 1}]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
@@ -86,7 +86,7 @@ final class BlessingSkinParserTests: XCTestCase {
             {"name": "Noor", "tid_skin": null, "tid_cape": 5}
         ]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
@@ -105,7 +105,7 @@ final class BlessingSkinParserTests: XCTestCase {
         let json = """
         [{"name": "Steve", "tid_skin": 1}]
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let result = await parser.parse(data: data)
 
         XCTAssertNotNil(result)
@@ -114,7 +114,7 @@ final class BlessingSkinParserTests: XCTestCase {
 
     func testParser_parse_invalidData_returnsNil() async {
         let parser = CommonBlessingSkinStyleProfileListParser(baseURL: "https://bs.example.com")
-        let data = "invalid".data(using: .utf8)!
+        let data = Data("invalid".utf8)
         let result = await parser.parse(data: data)
 
         XCTAssertNil(result)

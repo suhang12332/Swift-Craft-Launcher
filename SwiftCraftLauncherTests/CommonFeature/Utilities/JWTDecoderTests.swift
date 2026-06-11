@@ -5,9 +5,9 @@ final class JWTDecoderTests: XCTestCase {
 
     // MARK: - extractExpirationTime
 
-    func testExtractExpirationTime_validJWT() {
+    func testExtractExpirationTime_validJWT() throws {
         let payload: [String: Any] = ["exp": 1700000000.0]
-        let jwt = Self.makeJWT(payload: payload)
+        let jwt = try Self.makeJWT(payload: payload)
 
         let result = JWTDecoder.extractExpirationTime(from: jwt)
         XCTAssertEqual(result, Date(timeIntervalSince1970: 1700000000))
@@ -26,25 +26,25 @@ final class JWTDecoderTests: XCTestCase {
         XCTAssertNil(JWTDecoder.extractExpirationTime(from: jwt))
     }
 
-    func testExtractExpirationTime_missingExpField() {
+    func testExtractExpirationTime_missingExpField() throws {
         let payload: [String: Any] = ["sub": "1234567890"]
-        let jwt = Self.makeJWT(payload: payload)
+        let jwt = try Self.makeJWT(payload: payload)
 
         XCTAssertNil(JWTDecoder.extractExpirationTime(from: jwt))
     }
 
-    func testExtractExpirationTime_emptyPayload() {
+    func testExtractExpirationTime_emptyPayload() throws {
         let payload: [String: Any] = [:]
-        let jwt = Self.makeJWT(payload: payload)
+        let jwt = try Self.makeJWT(payload: payload)
 
         XCTAssertNil(JWTDecoder.extractExpirationTime(from: jwt))
     }
 
     // MARK: - extractAllInfo
 
-    func testExtractAllInfo_validJWT() {
+    func testExtractAllInfo_validJWT() throws {
         let payload: [String: Any] = ["sub": "1234567890", "name": "TestUser", "exp": 1700000000.0]
-        let jwt = Self.makeJWT(payload: payload)
+        let jwt = try Self.makeJWT(payload: payload)
 
         let info = JWTDecoder.extractAllInfo(from: jwt)
         XCTAssertNotNil(info)
@@ -63,33 +63,33 @@ final class JWTDecoderTests: XCTestCase {
 
     // MARK: - isTokenExpiringSoon
 
-    func testIsTokenExpiringSoon_alreadyExpired() {
+    func testIsTokenExpiringSoon_alreadyExpired() throws {
         let payload: [String: Any] = ["exp": 1000000000.0]
-        let jwt = Self.makeJWT(payload: payload)
+        let jwt = try Self.makeJWT(payload: payload)
 
         XCTAssertTrue(JWTDecoder.isTokenExpiringSoon(jwt))
     }
 
-    func testIsTokenExpiringSoon_validToken() {
+    func testIsTokenExpiringSoon_validToken() throws {
         let futureTimestamp = Date().timeIntervalSince1970 + 7200
         let payload: [String: Any] = ["exp": futureTimestamp]
-        let jwt = Self.makeJWT(payload: payload)
+        let jwt = try Self.makeJWT(payload: payload)
 
         XCTAssertFalse(JWTDecoder.isTokenExpiringSoon(jwt))
     }
 
-    func testIsTokenExpiringSoon_withBuffer_expiringIn4Minutes() {
+    func testIsTokenExpiringSoon_withBuffer_expiringIn4Minutes() throws {
         let futureTimestamp = Date().timeIntervalSince1970 + 240
         let payload: [String: Any] = ["exp": futureTimestamp]
-        let jwt = Self.makeJWT(payload: payload)
+        let jwt = try Self.makeJWT(payload: payload)
 
         XCTAssertTrue(JWTDecoder.isTokenExpiringSoon(jwt, bufferTime: 300))
     }
 
-    func testIsTokenExpiringSoon_withBuffer_validToken() {
+    func testIsTokenExpiringSoon_withBuffer_validToken() throws {
         let futureTimestamp = Date().timeIntervalSince1970 + 600
         let payload: [String: Any] = ["exp": futureTimestamp]
-        let jwt = Self.makeJWT(payload: payload)
+        let jwt = try Self.makeJWT(payload: payload)
 
         XCTAssertFalse(JWTDecoder.isTokenExpiringSoon(jwt, bufferTime: 300))
     }
@@ -100,9 +100,9 @@ final class JWTDecoderTests: XCTestCase {
 
     // MARK: - getMinecraftTokenExpiration
 
-    func testGetMinecraftTokenExpiration_validJWT() {
+    func testGetMinecraftTokenExpiration_validJWT() throws {
         let payload: [String: Any] = ["exp": 1700000000.0]
-        let jwt = Self.makeJWT(payload: payload)
+        let jwt = try Self.makeJWT(payload: payload)
 
         let expiration = JWTDecoder.getMinecraftTokenExpiration(from: jwt)
         XCTAssertEqual(expiration, Date(timeIntervalSince1970: 1700000000))
@@ -122,15 +122,15 @@ final class JWTDecoderTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private static func makeJWT(payload: [String: Any]) -> String {
-        let header = Self.base64Encode(["alg": "HS256", "typ": "JWT"])
-        let body = Self.base64Encode(payload)
-        let signature = Self.base64Encode(["sig": "test"])
+    private static func makeJWT(payload: [String: Any]) throws -> String {
+        let header = try base64Encode(["alg": "HS256", "typ": "JWT"])
+        let body = try base64Encode(payload)
+        let signature = try base64Encode(["sig": "test"])
         return "\(header).\(body).\(signature)"
     }
 
-    private static func base64Encode(_ value: Any) -> String {
-        let data = try! JSONSerialization.data(withJSONObject: value)
+    private static func base64Encode(_ value: Any) throws -> String {
+        let data = try JSONSerialization.data(withJSONObject: value)
         return data.base64EncodedString()
             .replacingOccurrences(of: "+", with: "-")
             .replacingOccurrences(of: "/", with: "_")

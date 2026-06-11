@@ -9,7 +9,7 @@ final class ModrinthLoaderVersionTests: XCTestCase {
         let json = """
         {"id": "fabric", "url": "https://example.com", "stable": true}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(LoaderInfo.self, from: data)
 
         XCTAssertEqual(info.id, "fabric")
@@ -21,7 +21,7 @@ final class ModrinthLoaderVersionTests: XCTestCase {
         let json = """
         {"id": "quilt", "url": "https://example.com", "stable": false}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(LoaderInfo.self, from: data)
 
         XCTAssertEqual(info.id, "quilt")
@@ -41,7 +41,7 @@ final class ModrinthLoaderVersionTests: XCTestCase {
             ]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let version = try JSONDecoder().decode(LoaderVersion.self, from: data)
 
         XCTAssertEqual(version.id, "0.14.21")
@@ -60,7 +60,7 @@ final class ModrinthLoaderVersionTests: XCTestCase {
             "loaders": []
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let version = try JSONDecoder().decode(LoaderVersion.self, from: data)
 
         XCTAssertEqual(version.id, "1.0.0")
@@ -82,7 +82,7 @@ final class ModrinthLoaderVersionTests: XCTestCase {
             ]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let version = try JSONDecoder().decode(ModrinthLoaderVersion.self, from: data)
 
         XCTAssertEqual(version.gameVersions.count, 1)
@@ -98,7 +98,7 @@ final class ModrinthLoaderVersionTests: XCTestCase {
             ]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let version = try JSONDecoder().decode(ModrinthLoaderVersion.self, from: data)
 
         XCTAssertEqual(version.gameVersions.count, 2)

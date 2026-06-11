@@ -23,7 +23,7 @@ final class MinecraftManifestTests: XCTestCase {
             "type": "release"
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let manifest = try JSONDecoder().decode(MinecraftVersionManifest.self, from: data)
 
         XCTAssertEqual(manifest.id, "1.20.1")
@@ -53,7 +53,7 @@ final class MinecraftManifestTests: XCTestCase {
             "type": "release"
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let manifest = try JSONDecoder().decode(MinecraftVersionManifest.self, from: data)
         XCTAssertNil(manifest.complianceLevel)
     }
@@ -62,7 +62,7 @@ final class MinecraftManifestTests: XCTestCase {
 
     func testArgumentValue_string() throws {
         let json = "\"--width\""
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let value = try JSONDecoder().decode(ArgumentValue.self, from: data)
 
         if case .string(let s) = value {
@@ -79,7 +79,7 @@ final class MinecraftManifestTests: XCTestCase {
             "value": "-XstartOnFirstThread"
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let value = try JSONDecoder().decode(ArgumentValue.self, from: data)
 
         if case .objectWithRules(let obj) = value {
@@ -94,7 +94,7 @@ final class MinecraftManifestTests: XCTestCase {
 
     func testArgumentValueArrayOrString_string() throws {
         let json = "\"hello\""
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let value = try JSONDecoder().decode(ArgumentValueArrayOrString.self, from: data)
 
         if case .string(let s) = value {
@@ -106,7 +106,7 @@ final class MinecraftManifestTests: XCTestCase {
 
     func testArgumentValueArrayOrString_array() throws {
         let json = "[\"a\", \"b\", \"c\"]"
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let value = try JSONDecoder().decode(ArgumentValueArrayOrString.self, from: data)
 
         if case .array(let arr) = value {
@@ -120,7 +120,7 @@ final class MinecraftManifestTests: XCTestCase {
 
     func testFeatures_missingKeys_defaultsFalse() throws {
         let json = "{}"
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let features = try JSONDecoder().decode(Features.self, from: data)
 
         XCTAssertFalse(features.is_demo_user)
@@ -138,7 +138,7 @@ final class MinecraftManifestTests: XCTestCase {
             "has_custom_resolution": false
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let features = try JSONDecoder().decode(Features.self, from: data)
 
         XCTAssertTrue(features.is_demo_user)
@@ -155,7 +155,7 @@ final class MinecraftManifestTests: XCTestCase {
             "name": "org.example:lib:1.0"
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let library = try JSONDecoder().decode(Library.self, from: data)
 
         XCTAssertEqual(library.name, "org.example:lib:1.0")
@@ -176,7 +176,7 @@ final class MinecraftManifestTests: XCTestCase {
             "natives": {"osx": "natives-osx"}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let library = try JSONDecoder().decode(Library.self, from: data)
 
         XCTAssertFalse(library.includeInClasspath)
@@ -191,7 +191,7 @@ final class MinecraftManifestTests: XCTestCase {
         let json = """
         {"sha1": "abc", "size": 100, "url": ""}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let artifact = try JSONDecoder().decode(LibraryArtifact.self, from: data)
 
         XCTAssertNil(artifact.url)
@@ -203,7 +203,7 @@ final class MinecraftManifestTests: XCTestCase {
         let json = """
         {"path": "org/example/lib.jar", "sha1": "abc", "size": 100, "url": "https://example.com/lib.jar"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let artifact = try JSONDecoder().decode(LibraryArtifact.self, from: data)
 
         XCTAssertEqual(artifact.path, "org/example/lib.jar")
@@ -235,7 +235,7 @@ final class MinecraftManifestTests: XCTestCase {
             "os": {"name": "osx", "version": "10.15", "arch": "x86_64"}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let rule = try JSONDecoder().decode(Rule.self, from: data)
 
         XCTAssertEqual(rule.action, "allow")
@@ -251,7 +251,7 @@ final class MinecraftManifestTests: XCTestCase {
             "features": {"is_demo_user": true}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let rule = try JSONDecoder().decode(Rule.self, from: data)
 
         XCTAssertEqual(rule.action, "allow")

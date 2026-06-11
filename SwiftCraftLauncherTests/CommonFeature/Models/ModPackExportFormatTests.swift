@@ -63,7 +63,7 @@ final class ModPackExportFormatTests: XCTestCase {
 
     func testCodable_fromRawString() throws {
         let json = "\"curseforge\""
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(ModPackExportFormat.self, from: data)
         XCTAssertEqual(decoded, .curseforge)
     }

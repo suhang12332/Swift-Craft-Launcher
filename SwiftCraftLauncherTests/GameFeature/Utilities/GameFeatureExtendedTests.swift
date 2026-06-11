@@ -54,9 +54,11 @@ final class GameFeatureExtendedTests: XCTestCase {
 
     func testMavenCoordinateToRelativePath_basic() {
         let result = CommonService.mavenCoordinateToRelativePath("com.google.guava:guava:31.1-jre")
-        XCTAssertNotNil(result)
-        XCTAssertTrue(result!.contains("com/google/guava"))
-        XCTAssertTrue(result!.contains("guava-31.1-jre.jar"))
+        guard let result else {
+            XCTFail("Expected non-nil result"); return
+        }
+        XCTAssertTrue(result.contains("com/google/guava"))
+        XCTAssertTrue(result.contains("guava-31.1-jre.jar"))
     }
 
     func testMavenCoordinateToRelativePath_withClassifier() {
@@ -92,41 +94,41 @@ final class GameFeatureExtendedTests: XCTestCase {
     // MARK: - LibraryFilter (via JSON construction)
 
     func testIsLibraryAllowed_noRules_returnsTrue() throws {
-        let json = """
+        let json = Data("""
         {"name": "test", "downloads": {"artifact": {"path": "test.jar", "sha1": "", "size": 0, "url": ""}}, "rules": null}
-        """.data(using: .utf8)!
+        """.utf8)
         let library = try JSONDecoder().decode(Library.self, from: json)
         XCTAssertTrue(LibraryFilter.isLibraryAllowed(library))
     }
 
     func testIsLibraryAllowed_emptyRules_returnsTrue() throws {
-        let json = """
+        let json = Data("""
         {"name": "test", "downloads": {"artifact": {"path": "test.jar", "sha1": "", "size": 0, "url": ""}}, "rules": []}
-        """.data(using: .utf8)!
+        """.utf8)
         let library = try JSONDecoder().decode(Library.self, from: json)
         XCTAssertTrue(LibraryFilter.isLibraryAllowed(library))
     }
 
     func testShouldDownloadLibrary_notDownloadable_returnsFalse() throws {
-        let json = """
+        let json = Data("""
         {"name": "test", "downloads": {"artifact": {"path": "test.jar", "sha1": "", "size": 0, "url": ""}}, "downloadable": false}
-        """.data(using: .utf8)!
+        """.utf8)
         let library = try JSONDecoder().decode(Library.self, from: json)
         XCTAssertFalse(LibraryFilter.shouldDownloadLibrary(library))
     }
 
     func testShouldIncludeInClasspath_notDownloadable_returnsFalse() throws {
-        let json = """
+        let json = Data("""
         {"name": "test", "downloads": {"artifact": {"path": "test.jar", "sha1": "", "size": 0, "url": ""}}, "downloadable": false, "include_in_classpath": true}
-        """.data(using: .utf8)!
+        """.utf8)
         let library = try JSONDecoder().decode(Library.self, from: json)
         XCTAssertFalse(LibraryFilter.shouldIncludeInClasspath(library))
     }
 
     func testShouldIncludeInClasspath_notInClasspath_returnsFalse() throws {
-        let json = """
+        let json = Data("""
         {"name": "test", "downloads": {"artifact": {"path": "test.jar", "sha1": "", "size": 0, "url": ""}}, "downloadable": true, "include_in_classpath": false}
-        """.data(using: .utf8)!
+        """.utf8)
         let library = try JSONDecoder().decode(Library.self, from: json)
         XCTAssertFalse(LibraryFilter.shouldIncludeInClasspath(library))
     }

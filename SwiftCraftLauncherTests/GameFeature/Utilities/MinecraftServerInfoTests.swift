@@ -9,7 +9,7 @@ final class MinecraftServerInfoTests: XCTestCase {
         let json = """
         {"text": "Hello World"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let desc = try JSONDecoder().decode(MinecraftServerInfo.Description.self, from: data)
 
         XCTAssertEqual(desc.plainText, "Hello World")
@@ -19,7 +19,7 @@ final class MinecraftServerInfoTests: XCTestCase {
         let json = """
         {"text": "§aGreen §cRed"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let desc = try JSONDecoder().decode(MinecraftServerInfo.Description.self, from: data)
 
         XCTAssertEqual(desc.plainText, "Green Red")
@@ -27,7 +27,7 @@ final class MinecraftServerInfoTests: XCTestCase {
 
     func testDescription_plainText_empty() throws {
         let json = "{}"
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let desc = try JSONDecoder().decode(MinecraftServerInfo.Description.self, from: data)
 
         XCTAssertEqual(desc.plainText, "")
@@ -42,7 +42,7 @@ final class MinecraftServerInfoTests: XCTestCase {
             ]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let desc = try JSONDecoder().decode(MinecraftServerInfo.Description.self, from: data)
 
         XCTAssertEqual(desc.plainText, "Hello World")
@@ -56,7 +56,7 @@ final class MinecraftServerInfoTests: XCTestCase {
             ]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let desc = try JSONDecoder().decode(MinecraftServerInfo.Description.self, from: data)
 
         XCTAssertEqual(desc.plainText, "Deep")
@@ -66,7 +66,7 @@ final class MinecraftServerInfoTests: XCTestCase {
         let json = """
         {"text": "Test§"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let desc = try JSONDecoder().decode(MinecraftServerInfo.Description.self, from: data)
 
         XCTAssertEqual(desc.plainText, "Test")
@@ -76,7 +76,7 @@ final class MinecraftServerInfoTests: XCTestCase {
 
     func testDescriptionElement_string() throws {
         let json = "\"hello\""
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let element = try JSONDecoder().decode(MinecraftServerInfo.Description.DescriptionElement.self, from: data)
 
         if case .string(let text) = element {
@@ -90,7 +90,7 @@ final class MinecraftServerInfoTests: XCTestCase {
         let json = """
         {"text": "world"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let element = try JSONDecoder().decode(MinecraftServerInfo.Description.DescriptionElement.self, from: data)
 
         if case .object(let desc) = element {
@@ -102,7 +102,7 @@ final class MinecraftServerInfoTests: XCTestCase {
 
     func testDescriptionElement_plainText_string() throws {
         let json = "\"test\""
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let element = try JSONDecoder().decode(MinecraftServerInfo.Description.DescriptionElement.self, from: data)
 
         XCTAssertEqual(element.plainText, "test")
@@ -112,7 +112,7 @@ final class MinecraftServerInfoTests: XCTestCase {
         let json = """
         {"text": "nested", "extra": [" data"]}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let element = try JSONDecoder().decode(MinecraftServerInfo.Description.DescriptionElement.self, from: data)
 
         XCTAssertEqual(element.plainText, "nested data")
@@ -128,7 +128,7 @@ final class MinecraftServerInfoTests: XCTestCase {
             "description": {"text": "Welcome"}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(MinecraftServerInfo.self, from: data)
 
         XCTAssertEqual(info.version?.name, "1.20.1")
@@ -145,7 +145,7 @@ final class MinecraftServerInfoTests: XCTestCase {
             "description": {"text": "Hi"}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(MinecraftServerInfo.self, from: data)
 
         XCTAssertNil(info.version)
@@ -164,7 +164,7 @@ final class MinecraftServerInfoTests: XCTestCase {
             }
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let info = try JSONDecoder().decode(MinecraftServerInfo.self, from: data)
 
         XCTAssertEqual(info.modinfo?.type, "forge")

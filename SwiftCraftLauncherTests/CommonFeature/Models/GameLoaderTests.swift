@@ -74,7 +74,7 @@ final class GameLoaderTests: XCTestCase {
 
     func testCodable_fromRawString() throws {
         let json = "\"fabric\""
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(GameLoader.self, from: data)
         XCTAssertEqual(decoded, .fabric)
     }

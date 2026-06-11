@@ -222,7 +222,7 @@ final class GameFeatureModelsTests: XCTestCase {
         let json = """
         {"loader": {"version": "0.14.21"}}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let loader = try JSONDecoder().decode(FabricLoader.self, from: data)
 
         XCTAssertEqual(loader.loader.version, "0.14.21")
@@ -242,7 +242,7 @@ final class GameFeatureModelsTests: XCTestCase {
         let json = """
         {"loader": {"version": "0.22.0"}}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let response = try JSONDecoder().decode(QuiltLoaderResponse.self, from: data)
 
         XCTAssertEqual(response.loader.version, "0.22.0")
@@ -272,7 +272,7 @@ final class GameFeatureModelsTests: XCTestCase {
             ]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
 
         XCTAssertEqual(loader.mainClass, "net.fabricmc.loader.impl.launch.knot.KnotClient")
@@ -296,7 +296,7 @@ final class GameFeatureModelsTests: XCTestCase {
             "data": {"mappings": {"client": "mapped", "server": "mapped"}}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let loader = try JSONDecoder().decode(ModrinthLoader.self, from: data)
 
         XCTAssertEqual(loader.version, "0.14.21")
@@ -329,7 +329,7 @@ final class GameFeatureModelsTests: XCTestCase {
             "url": "https://example.com/lib.jar"
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let lib = try JSONDecoder().decode(ModrinthLoaderLibrary.self, from: data)
 
         XCTAssertEqual(lib.name, "org.example:lib:1.0")
@@ -350,7 +350,7 @@ final class GameFeatureModelsTests: XCTestCase {
             "outputs": {"output.jar": "sha1:abc"}
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let processor = try JSONDecoder().decode(Processor.self, from: data)
 
         XCTAssertEqual(processor.sides, ["client"])
@@ -362,7 +362,7 @@ final class GameFeatureModelsTests: XCTestCase {
 
     func testProcessor_allNilOptionals() throws {
         let json = "{}"
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let processor = try JSONDecoder().decode(Processor.self, from: data)
 
         XCTAssertNil(processor.sides)
@@ -378,7 +378,7 @@ final class GameFeatureModelsTests: XCTestCase {
         let json = """
         {"client": "mapped-client", "server": "mapped-server"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let entry = try JSONDecoder().decode(SidedDataEntry.self, from: data)
 
         XCTAssertEqual(entry.client, "mapped-client")
@@ -395,7 +395,7 @@ final class GameFeatureModelsTests: XCTestCase {
             "loaders": [{"id": "fabric", "url": "https://example.com", "stable": true}]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let version = try JSONDecoder().decode(LoaderVersion.self, from: data)
 
         XCTAssertEqual(version.id, "0.14.21")

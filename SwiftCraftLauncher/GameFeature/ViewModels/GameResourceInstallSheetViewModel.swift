@@ -131,14 +131,16 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
 
         let success =
             await ModrinthDependencyDownloader.downloadManualDependenciesAndMain(
-                dependencies: dependencyState.dependencies,
-                selectedVersions: dependencyState.selected.compactMapValues { $0?.id },
-                dependencyVersions: dependencyState.versions,
-                mainProjectId: project.projectId,
-                mainProjectVersionId: mainVersionId.isEmpty ? nil : mainVersionId,
-                gameInfo: gameInfo,
-                query: resourceType,
-                gameRepository: gameRepository,
+                input: .init(
+                    dependencies: dependencyState.dependencies,
+                    selectedVersions: dependencyState.selected.compactMapValues { $0?.id },
+                    dependencyVersions: dependencyState.versions,
+                    mainProjectId: project.projectId,
+                    mainProjectVersionId: mainVersionId.isEmpty ? nil : mainVersionId,
+                    gameInfo: gameInfo,
+                    resourceType: resourceType,
+                    gameRepository: gameRepository
+                ),
                 onDependencyDownloadStart: { _ in },
                 onDependencyDownloadFinish: { _, _ in }
             )

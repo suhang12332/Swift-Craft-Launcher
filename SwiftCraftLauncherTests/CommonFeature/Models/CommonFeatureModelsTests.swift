@@ -113,7 +113,7 @@ final class CommonFeatureModelsTests: XCTestCase {
         let json = """
         {"country_code": "US", "error": false}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let response = try JSONDecoder().decode(IPLocationResponse.self, from: data)
 
         XCTAssertEqual(response.countryCode, "US")
@@ -127,7 +127,7 @@ final class CommonFeatureModelsTests: XCTestCase {
         let json = """
         {"country_code": "CN", "error": false}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let response = try JSONDecoder().decode(IPLocationResponse.self, from: data)
 
         XCTAssertTrue(response.isChina)
@@ -139,7 +139,7 @@ final class CommonFeatureModelsTests: XCTestCase {
         let json = """
         {"error": true, "reason": "Rate limited"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let response = try JSONDecoder().decode(IPLocationResponse.self, from: data)
 
         XCTAssertTrue(response.error)
@@ -151,7 +151,7 @@ final class CommonFeatureModelsTests: XCTestCase {
 
     func testIPLocationResponse_missingFields() throws {
         let json = "{}"
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let response = try JSONDecoder().decode(IPLocationResponse.self, from: data)
 
         XCTAssertNil(response.countryCode)
@@ -171,7 +171,7 @@ final class CommonFeatureModelsTests: XCTestCase {
             "contributions": 42
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let contributor = try JSONDecoder().decode(GitHubContributor.self, from: data)
 
         XCTAssertEqual(contributor.id, 123)
@@ -203,7 +203,7 @@ final class CommonFeatureModelsTests: XCTestCase {
         let json = """
         {"tag_name": "v1.0.0"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
 
         XCTAssertEqual(release.tagName, "v1.0.0")

@@ -308,25 +308,25 @@ class Logger: AppLogging {
             let maxEntries = 50
             let result = NSMutableString()
             result.append("{")
-            var count = 0
+            var entryIndex = 0
 
             for (key, value) in dict {
-                if count >= maxEntries {
+                if entryIndex >= maxEntries {
                     result.append(", ... (\(dict.count - maxEntries) more)")
                     break
                 }
-                if count > 0 {
+                if entryIndex > 0 {
                     result.append(", ")
                 }
                 result.append("\(key): ")
                 result.append(stringify(value))
-                count += 1
+                entryIndex += 1
             }
             result.append("}")
             return result as String
         case let codable as Encodable:
             let encoder = JSONEncoder()
-            encoder.outputFormatting = [] // 不使用 prettyPrinted 以减少字符串大小
+            encoder.outputFormatting = []
             if let data = try? encoder.encode(AnyEncodable(codable)),
                let json = String(data: data, encoding: .utf8) {
                 let maxLength = 1000

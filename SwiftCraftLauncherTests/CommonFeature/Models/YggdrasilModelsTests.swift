@@ -35,7 +35,7 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_init_defaults() {
         let config = YggdrasilServerConfig(
-            baseURL: URL(string: "https://littleskin.cn")!,
+            baseURL: URL.require("https://littleskin.cn"),
             redirectURI: "https://example.com/callback",
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
@@ -53,7 +53,7 @@ final class YggdrasilModelsTests: XCTestCase {
     func testServerConfig_init_allParams() {
         let config = YggdrasilServerConfig(
             name: "LittleSkin",
-            baseURL: URL(string: "https://littleskin.cn")!,
+            baseURL: URL.require("https://littleskin.cn"),
             clientId: "1181",
             clientSecret: "secret",
             redirectURI: "https://example.com/callback",
@@ -72,7 +72,7 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_scope_trimsWhitespace() {
         let config = YggdrasilServerConfig(
-            baseURL: URL(string: "https://example.com")!,
+            baseURL: URL.require("https://example.com"),
             redirectURI: "https://example.com/callback",
             authorizePath: "/auth",
             tokenPath: "/token",
@@ -86,7 +86,7 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_authorizeURL() {
         let config = YggdrasilServerConfig(
-            baseURL: URL(string: "https://littleskin.cn")!,
+            baseURL: URL.require("https://littleskin.cn"),
             redirectURI: "https://example.com/callback",
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
@@ -96,13 +96,13 @@ final class YggdrasilModelsTests: XCTestCase {
         )
 
         let url = config.authorizeURL
-        XCTAssertNotNil(url)
-        XCTAssertTrue(url!.absoluteString.contains("/oauth/authorize"))
+        guard let url else { XCTFail("Expected non-nil URL"); return }
+        XCTAssertTrue(url.absoluteString.contains("/oauth/authorize"))
     }
 
     func testServerConfig_tokenURL() {
         let config = YggdrasilServerConfig(
-            baseURL: URL(string: "https://littleskin.cn")!,
+            baseURL: URL.require("https://littleskin.cn"),
             redirectURI: "https://example.com/callback",
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
@@ -112,13 +112,13 @@ final class YggdrasilModelsTests: XCTestCase {
         )
 
         let url = config.tokenURL
-        XCTAssertNotNil(url)
-        XCTAssertTrue(url!.absoluteString.contains("/oauth/token"))
+        guard let url else { XCTFail("Expected non-nil URL"); return }
+        XCTAssertTrue(url.absoluteString.contains("/oauth/token"))
     }
 
     func testServerConfig_profileURL() {
         let config = YggdrasilServerConfig(
-            baseURL: URL(string: "https://littleskin.cn")!,
+            baseURL: URL.require("https://littleskin.cn"),
             redirectURI: "https://example.com/callback",
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
@@ -128,13 +128,13 @@ final class YggdrasilModelsTests: XCTestCase {
         )
 
         let url = config.profileURL
-        XCTAssertNotNil(url)
-        XCTAssertTrue(url!.absoluteString.contains("/api/profile"))
+        guard let url else { XCTFail("Expected non-nil URL"); return }
+        XCTAssertTrue(url.absoluteString.contains("/api/profile"))
     }
 
     func testServerConfig_equatable() {
         let a = YggdrasilServerConfig(
-            baseURL: URL(string: "https://a.com")!,
+            baseURL: URL.require("https://a.com"),
             redirectURI: "r",
             authorizePath: "/a",
             tokenPath: "/t",
@@ -143,7 +143,7 @@ final class YggdrasilModelsTests: XCTestCase {
             parserId: .littleskin
         )
         let b = YggdrasilServerConfig(
-            baseURL: URL(string: "https://a.com")!,
+            baseURL: URL.require("https://a.com"),
             redirectURI: "r",
             authorizePath: "/a",
             tokenPath: "/t",
@@ -152,7 +152,7 @@ final class YggdrasilModelsTests: XCTestCase {
             parserId: .littleskin
         )
         let c = YggdrasilServerConfig(
-            baseURL: URL(string: "https://b.com")!,
+            baseURL: URL.require("https://b.com"),
             redirectURI: "r",
             authorizePath: "/a",
             tokenPath: "/t",
@@ -168,7 +168,7 @@ final class YggdrasilModelsTests: XCTestCase {
     func testServerConfig_codable_roundTrip() throws {
         let original = YggdrasilServerConfig(
             name: "Test",
-            baseURL: URL(string: "https://test.com")!,
+            baseURL: URL.require("https://test.com"),
             clientId: "id",
             clientSecret: "secret",
             redirectURI: "https://test.com/callback",
@@ -189,7 +189,7 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_hashable() {
         let a = YggdrasilServerConfig(
-            baseURL: URL(string: "https://a.com")!,
+            baseURL: URL.require("https://a.com"),
             redirectURI: "r",
             authorizePath: "/a",
             tokenPath: "/t",

@@ -4,7 +4,7 @@ import XCTest
 final class MinecraftAuthTests: XCTestCase {
 
     func testAuthorizationCodeResponse_success() {
-        let url = URL(string: "swift-craft-launcher://callback?code=abc123")!
+        let url = URL.require("swift-craft-launcher://callback?code=abc123")
         let response = AuthorizationCodeResponse(from: url)
 
         XCTAssertNotNil(response)
@@ -14,7 +14,7 @@ final class MinecraftAuthTests: XCTestCase {
     }
 
     func testAuthorizationCodeResponse_userDenied() {
-        let url = URL(string: "swift-craft-launcher://callback?error=access_denied")!
+        let url = URL.require("swift-craft-launcher://callback?error=access_denied")
         let response = AuthorizationCodeResponse(from: url)
 
         XCTAssertNotNil(response)
@@ -24,7 +24,7 @@ final class MinecraftAuthTests: XCTestCase {
     }
 
     func testAuthorizationCodeResponse_errorWithDescription() {
-        let url = URL(string: "swift-craft-launcher://callback?error=server_error&error_description=Something%20went%20wrong")!
+        let url = URL.require("swift-craft-launcher://callback?error=server_error&error_description=Something%20went%20wrong")
         let response = AuthorizationCodeResponse(from: url)
 
         XCTAssertNotNil(response)
@@ -33,7 +33,7 @@ final class MinecraftAuthTests: XCTestCase {
     }
 
     func testAuthorizationCodeResponse_noQueryParams() {
-        let url = URL(string: "swift-craft-launcher://callback?dummy=value")!
+        let url = URL.require("swift-craft-launcher://callback?dummy=value")
         let response = AuthorizationCodeResponse(from: url)
 
         XCTAssertNotNil(response)
@@ -44,7 +44,7 @@ final class MinecraftAuthTests: XCTestCase {
         let json = """
         {"access_token": "at123", "refresh_token": "rt456"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(TokenResponse.self, from: data)
 
         XCTAssertEqual(decoded.accessToken, "at123")
@@ -55,7 +55,7 @@ final class MinecraftAuthTests: XCTestCase {
         let json = """
         {"access_token": "at123"}
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(TokenResponse.self, from: data)
 
         XCTAssertEqual(decoded.accessToken, "at123")
@@ -80,7 +80,7 @@ final class MinecraftAuthTests: XCTestCase {
             }
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(XboxLiveTokenResponse.self, from: data)
 
         XCTAssertEqual(decoded.token, "xbox-token")
@@ -96,7 +96,7 @@ final class MinecraftAuthTests: XCTestCase {
             "capes": [{"id": "cape-1", "state": "ACTIVE", "url": "https://example.com/cape.png", "alias": "Minecon"}]
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
 
         XCTAssertEqual(decoded.id, "player-uuid")
@@ -114,7 +114,7 @@ final class MinecraftAuthTests: XCTestCase {
             "skins": []
         }
         """
-        let data = json.data(using: .utf8)!
+        let data = Data(json.utf8)
         let decoded = try JSONDecoder().decode(MinecraftProfileResponse.self, from: data)
 
         XCTAssertNil(decoded.capes)

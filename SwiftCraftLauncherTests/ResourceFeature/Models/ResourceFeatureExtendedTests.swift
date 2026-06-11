@@ -70,10 +70,16 @@ final class ResourceFeatureExtendedTests: XCTestCase {
 
     func testFilterOptions_init() {
         let options = FilterOptions(
+            versions: ["1.20.1"],
+            categories: ["technology"],
+            features: ["client"],
             resolutions: ["16x"],
             performanceImpact: ["low"],
             loaders: ["fabric"]
         )
+        XCTAssertEqual(options.versions, ["1.20.1"])
+        XCTAssertEqual(options.categories, ["technology"])
+        XCTAssertEqual(options.features, ["client"])
         XCTAssertEqual(options.resolutions, ["16x"])
         XCTAssertEqual(options.performanceImpact, ["low"])
         XCTAssertEqual(options.loaders, ["fabric"])
@@ -151,12 +157,9 @@ final class ResourceFeatureExtendedTests: XCTestCase {
     @MainActor
     func testBuildFacets_projectTypeOnly() {
         let vm = ModrinthSearchViewModel(errorHandler: GlobalErrorHandler.shared)
-        let options = FilterOptions(resolutions: [], performanceImpact: [], loaders: [])
+        let options = FilterOptions(versions: [], categories: [], features: [], resolutions: [], performanceImpact: [], loaders: [])
         let facets = vm.buildFacets(
             projectType: "mod",
-            versions: [],
-            categories: [],
-            features: [],
             filterOptions: options
         )
         XCTAssertEqual(facets.count, 1)
@@ -166,12 +169,9 @@ final class ResourceFeatureExtendedTests: XCTestCase {
     @MainActor
     func testBuildFacets_withVersions() {
         let vm = ModrinthSearchViewModel(errorHandler: GlobalErrorHandler.shared)
-        let options = FilterOptions(resolutions: [], performanceImpact: [], loaders: [])
+        let options = FilterOptions(versions: ["1.20.1", "1.19.4"], categories: [], features: [], resolutions: [], performanceImpact: [], loaders: [])
         let facets = vm.buildFacets(
             projectType: "mod",
-            versions: ["1.20.1", "1.19.4"],
-            categories: [],
-            features: [],
             filterOptions: options
         )
         XCTAssertEqual(facets.count, 2)
@@ -182,12 +182,9 @@ final class ResourceFeatureExtendedTests: XCTestCase {
     @MainActor
     func testBuildFacets_withCategories() {
         let vm = ModrinthSearchViewModel(errorHandler: GlobalErrorHandler.shared)
-        let options = FilterOptions(resolutions: [], performanceImpact: [], loaders: [])
+        let options = FilterOptions(versions: [], categories: ["technology"], features: [], resolutions: [], performanceImpact: [], loaders: [])
         let facets = vm.buildFacets(
             projectType: "mod",
-            versions: [],
-            categories: ["technology"],
-            features: [],
             filterOptions: options
         )
         XCTAssertEqual(facets.count, 2)
@@ -197,12 +194,9 @@ final class ResourceFeatureExtendedTests: XCTestCase {
     @MainActor
     func testBuildFacets_resourcepack_excludesLoaders() {
         let vm = ModrinthSearchViewModel(errorHandler: GlobalErrorHandler.shared)
-        let options = FilterOptions(resolutions: [], performanceImpact: [], loaders: ["fabric"])
+        let options = FilterOptions(versions: [], categories: [], features: [], resolutions: [], performanceImpact: [], loaders: ["fabric"])
         let facets = vm.buildFacets(
             projectType: "resourcepack",
-            versions: [],
-            categories: [],
-            features: [],
             filterOptions: options
         )
         // Loaders should not be added for resourcepack
@@ -214,12 +208,9 @@ final class ResourceFeatureExtendedTests: XCTestCase {
     @MainActor
     func testBuildFacets_vanillaLoader_mappedToMinecraft() {
         let vm = ModrinthSearchViewModel(errorHandler: GlobalErrorHandler.shared)
-        let options = FilterOptions(resolutions: [], performanceImpact: [], loaders: ["vanilla"])
+        let options = FilterOptions(versions: [], categories: [], features: [], resolutions: [], performanceImpact: [], loaders: ["vanilla"])
         let facets = vm.buildFacets(
             projectType: "mod",
-            versions: [],
-            categories: [],
-            features: [],
             filterOptions: options
         )
         let loaderFacets = facets.first { $0.contains("categories:minecraft") }
