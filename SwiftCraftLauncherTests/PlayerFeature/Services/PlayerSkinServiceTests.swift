@@ -99,8 +99,12 @@ final class PlayerSkinServiceTests: XCTestCase {
 
     func testGetActiveCapeId_noCapes_returnsNil() {
         let profile = MinecraftProfileResponse(
-            id: "uuid", name: "Test", skins: [], capes: [],
-            accessToken: "token", authXuid: "xuid"
+            id: "uuid",
+            name: "Test",
+            skins: [],
+            capes: [],
+            accessToken: "token",
+            authXuid: "xuid"
         )
         XCTAssertNil(PlayerSkinService.getActiveCapeId(from: profile))
     }
@@ -108,11 +112,15 @@ final class PlayerSkinServiceTests: XCTestCase {
     func testGetActiveCapeId_noActiveCape_returnsNil() {
         let capes = [
             Cape(id: "cape-1", state: "INACTIVE", url: "url1", alias: nil),
-            Cape(id: "cape-2", state: "INACTIVE", url: "url2", alias: nil)
+            Cape(id: "cape-2", state: "INACTIVE", url: "url2", alias: nil),
         ]
         let profile = MinecraftProfileResponse(
-            id: "uuid", name: "Test", skins: [], capes: capes,
-            accessToken: "token", authXuid: "xuid"
+            id: "uuid",
+            name: "Test",
+            skins: [],
+            capes: capes,
+            accessToken: "token",
+            authXuid: "xuid"
         )
         XCTAssertNil(PlayerSkinService.getActiveCapeId(from: profile))
     }
@@ -120,11 +128,15 @@ final class PlayerSkinServiceTests: XCTestCase {
     func testGetActiveCapeId_withActiveCape_returnsId() {
         let capes = [
             Cape(id: "cape-1", state: "INACTIVE", url: "url1", alias: nil),
-            Cape(id: "cape-active", state: "ACTIVE", url: "url2", alias: "minecon")
+            Cape(id: "cape-active", state: "ACTIVE", url: "url2", alias: "minecon"),
         ]
         let profile = MinecraftProfileResponse(
-            id: "uuid", name: "Test", skins: [], capes: capes,
-            accessToken: "token", authXuid: "xuid"
+            id: "uuid",
+            name: "Test",
+            skins: [],
+            capes: capes,
+            accessToken: "token",
+            authXuid: "xuid"
         )
         XCTAssertEqual(PlayerSkinService.getActiveCapeId(from: profile), "cape-active")
     }
@@ -132,11 +144,15 @@ final class PlayerSkinServiceTests: XCTestCase {
     func testGetActiveCapeId_multipleCapes_returnsFirstActive() {
         let capes = [
             Cape(id: "cape-active-1", state: "ACTIVE", url: "url1", alias: nil),
-            Cape(id: "cape-active-2", state: "ACTIVE", url: "url2", alias: nil)
+            Cape(id: "cape-active-2", state: "ACTIVE", url: "url2", alias: nil),
         ]
         let profile = MinecraftProfileResponse(
-            id: "uuid", name: "Test", skins: [], capes: capes,
-            accessToken: "token", authXuid: "xuid"
+            id: "uuid",
+            name: "Test",
+            skins: [],
+            capes: capes,
+            accessToken: "token",
+            authXuid: "xuid"
         )
         XCTAssertEqual(PlayerSkinService.getActiveCapeId(from: profile), "cape-active-1")
     }

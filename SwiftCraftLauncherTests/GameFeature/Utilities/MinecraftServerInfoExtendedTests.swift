@@ -33,7 +33,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
     func testDescription_plainText_extraElements() {
         let extra = [
             MinecraftServerInfo.Description.DescriptionElement.string("Hello "),
-            MinecraftServerInfo.Description.DescriptionElement.string("World")
+            MinecraftServerInfo.Description.DescriptionElement.string("World"),
         ]
         let desc = MinecraftServerInfo.Description(text: nil, extra: extra)
         XCTAssertEqual(desc.plainText, "Hello World")
@@ -58,7 +58,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
         let extra: [MinecraftServerInfo.Description.DescriptionElement] = [
             .string("A "),
             .object(obj),
-            .string(" B")
+            .string(" B"),
         ]
         let desc = MinecraftServerInfo.Description(text: nil, extra: extra)
         XCTAssertEqual(desc.plainText, "A Obj B")

@@ -31,7 +31,7 @@ final class CurseForgeServiceExtendedTests: XCTestCase {
                 primary: false,
                 size: 100,
                 fileType: nil
-            )
+            ),
         ]
         let result = ModrinthService.filterPrimaryFiles(from: files)
         XCTAssertNil(result)

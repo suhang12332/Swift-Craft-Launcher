@@ -86,9 +86,9 @@ final class YggdrasilProfileListParserTests: XCTestCase {
             "textures": [
                 "SKIN": [
                     "url": "https://example.com/skin.png",
-                    "metadata": ["model": "slim"]
-                ]
-            ]
+                    "metadata": ["model": "slim"],
+                ],
+            ],
         ]
         let texturesData = try JSONSerialization.data(withJSONObject: texturesDict)
         let texturesBase64 = texturesData.base64EncodedString()
@@ -117,8 +117,8 @@ final class YggdrasilProfileListParserTests: XCTestCase {
         let texturesDict: [String: Any] = [
             "textures": [
                 "SKIN": ["url": "https://example.com/skin.png"],
-                "CAPE": ["url": "https://example.com/cape.png"]
-            ]
+                "CAPE": ["url": "https://example.com/cape.png"],
+            ],
         ]
         let texturesData = try JSONSerialization.data(withJSONObject: texturesDict)
         let texturesBase64 = texturesData.base64EncodedString()
@@ -165,8 +165,8 @@ final class YggdrasilProfileListParserTests: XCTestCase {
     func testParse_withSkinOnlyNoMetadata() throws {
         let texturesDict: [String: Any] = [
             "textures": [
-                "SKIN": ["url": "https://example.com/skin.png"]
-            ]
+                "SKIN": ["url": "https://example.com/skin.png"],
+            ],
         ]
         let texturesData = try JSONSerialization.data(withJSONObject: texturesDict)
         let texturesBase64 = texturesData.base64EncodedString()

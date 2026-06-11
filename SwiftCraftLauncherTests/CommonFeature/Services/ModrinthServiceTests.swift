@@ -23,7 +23,7 @@ final class ModrinthServiceTests: XCTestCase {
         let result = ModrinthService.filterPrimaryFiles(from: files)
 
         XCTAssertEqual(result?.filename, "primary.jar")
-        XCTAssertTrue(result?.primary == true)
+        XCTAssertEqual(result?.primary, true)
     }
 
     func testFilterPrimaryFiles_noPrimary_returnsNil() {

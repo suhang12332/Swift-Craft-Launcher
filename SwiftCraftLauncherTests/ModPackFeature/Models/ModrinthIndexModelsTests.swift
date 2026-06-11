@@ -45,9 +45,16 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
             summary: nil,
             files: [],
             dependencies: ModrinthIndexDependencies(
-                minecraft: "1.20.1", forgeLoader: nil, fabricLoader: nil,
-                quiltLoader: nil, neoforgeLoader: nil, forge: nil, fabric: nil,
-                quilt: nil, neoforge: nil, dependencies: nil
+                minecraft: "1.20.1",
+                forgeLoader: nil,
+                fabricLoader: nil,
+                quiltLoader: nil,
+                neoforgeLoader: nil,
+                forge: nil,
+                fabric: nil,
+                quilt: nil,
+                neoforge: nil,
+                dependencies: nil
             )
         )
         let data = try JSONEncoder().encode(index)
