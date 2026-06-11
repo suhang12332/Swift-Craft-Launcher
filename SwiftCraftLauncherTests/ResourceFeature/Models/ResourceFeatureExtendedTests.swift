@@ -226,4 +226,3 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         XCTAssertNotNil(loaderFacets)
     }
 }
-
