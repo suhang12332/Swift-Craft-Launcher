@@ -37,18 +37,20 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             -resultBundlePath TestResults.xcresult
 
-      - name: Generate HTML test report
+      - name: Export test attachments
         if: always()
         run: |
-          brew install xcresultparser
-          xcresultparser -o html TestResults.xcresult > report.html
+          mkdir -p attachments
+          xcrun xcresulttool export attachments \
+            --path TestResults.xcresult \
+            --output-path attachments || true
 
-      - name: Upload test report
+      - name: Upload test attachments
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: test-report
-          path: report.html
+          name: test-attachments
+          path: attachments
           retention-days: 30
 
       - name: Upload xcresult bundle
