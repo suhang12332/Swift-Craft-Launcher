@@ -105,9 +105,9 @@ final class CommonServiceTests: XCTestCase {
             "downloadable": true,
         ]
 
-        let lib1 = try decode(ModrinthLoaderLibrary.self, from: lib1Json)
-        let lib2 = try decode(ModrinthLoaderLibrary.self, from: lib2Json)
-        let lib3 = try decode(ModrinthLoaderLibrary.self, from: lib3Json)
+        _ = try decode(ModrinthLoaderLibrary.self, from: lib1Json)
+        _ = try decode(ModrinthLoaderLibrary.self, from: lib2Json)
+        _ = try decode(ModrinthLoaderLibrary.self, from: lib3Json)
 
         let loaderJson: [String: Any] = [
             "mainClass": "Main",
@@ -131,7 +131,7 @@ final class CommonServiceTests: XCTestCase {
             "include_in_classpath": true,
             "downloadable": true,
         ]
-        let lib = try decode(ModrinthLoaderLibrary.self, from: libJson)
+        _ = try decode(ModrinthLoaderLibrary.self, from: libJson)
         let loaderJson: [String: Any] = [
             "mainClass": "Main",
             "arguments": [:],
@@ -150,7 +150,7 @@ final class CommonServiceTests: XCTestCase {
             "include_in_classpath": true,
             "downloadable": true,
         ]
-        let lib = try decode(ModrinthLoaderLibrary.self, from: libJson)
+        _ = try decode(ModrinthLoaderLibrary.self, from: libJson)
         let loaderJson2: [String: Any] = [
             "mainClass": "Main",
             "arguments": [:],

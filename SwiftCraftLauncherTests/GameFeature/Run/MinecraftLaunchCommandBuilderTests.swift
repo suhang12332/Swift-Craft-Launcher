@@ -19,7 +19,7 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         jvmArguments: String = "",
         javaPath: String = "/usr/bin/java"
     ) -> GameVersionInfo {
-        var info = GameVersionInfo(
+        let info = GameVersionInfo(
             id: UUID(uuidString: id) ?? UUID(),
             gameName: gameName,
             gameIcon: "",
@@ -176,7 +176,7 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
             assetIndex: "17"
         )
 
-        var variableMap: [String: String] = [
+        let variableMap: [String: String] = [
             "auth_player_name": "${auth_player_name}",
             "version_name": gameInfo.gameVersion,
             "game_directory": "/path/to/game",

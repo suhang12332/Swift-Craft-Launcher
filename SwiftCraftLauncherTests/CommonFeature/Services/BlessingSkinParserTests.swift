@@ -5,30 +5,30 @@ final class BlessingSkinParserTests: XCTestCase {
 
     // MARK: - BlessingSkinProfileListParser.parse
 
-    func testParse_emptyArray_returnsNil() async {
+    func testParse_emptyArray_returnsNil() {
         let data = Data("[]".utf8)
-        let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
+        let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
         XCTAssertNil(result)
     }
 
-    func testParse_invalidJSON_returnsNil() async {
+    func testParse_invalidJSON_returnsNil() {
         let data = Data("not json".utf8)
-        let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
+        let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
         XCTAssertNil(result)
     }
 
-    func testParse_emptyData_returnsNil() async {
+    func testParse_emptyData_returnsNil() {
         let data = Data()
-        let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
+        let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")
         XCTAssertNil(result)
     }
 
-    func testParse_withSkinOnly() async {
+    func testParse_withSkinOnly() {
         let json = """
         [{"name": "Steve", "tid_skin": 42, "tid_cape": null}]
         """
         let data = Data(json.utf8)
-        let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
+        let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
         XCTAssertEqual(result?.count, 1)
@@ -39,12 +39,12 @@ final class BlessingSkinParserTests: XCTestCase {
         XCTAssertNil(result?.first?.capes)
     }
 
-    func testParse_withSkinAndCape() async {
+    func testParse_withSkinAndCape() {
         let json = """
         [{"name": "Alex", "tid_skin": 10, "tid_cape": 20}]
         """
         let data = Data(json.utf8)
-        let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
+        let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
         XCTAssertEqual(result?.count, 1)
@@ -53,24 +53,24 @@ final class BlessingSkinParserTests: XCTestCase {
         XCTAssertEqual(result?.first?.capes?.first?.url, "https://bs.example.com/raw/20")
     }
 
-    func testParse_noSkin_getsDefault() async {
+    func testParse_noSkin_getsDefault() {
         let json = """
         [{"name": "Noor", "tid_skin": null, "tid_cape": null}]
         """
         let data = Data(json.utf8)
-        let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
+        let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
         XCTAssertEqual(result?.first?.skins.count, 1)
         XCTAssertEqual(result?.first?.skins.first?.url, "")
     }
 
-    func testParse_generatesDeterministicUUID() async {
+    func testParse_generatesDeterministicUUID() {
         let json = """
         [{"name": "TestPlayer", "tid_skin": 1}]
         """
         let data = Data(json.utf8)
-        let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
+        let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
         let id = result?.first?.id
@@ -78,7 +78,7 @@ final class BlessingSkinParserTests: XCTestCase {
         XCTAssertEqual(id?.count, 32)
     }
 
-    func testParse_multiplePlayers() async {
+    func testParse_multiplePlayers() {
         let json = """
         [
             {"name": "Steve", "tid_skin": 1},
@@ -87,7 +87,7 @@ final class BlessingSkinParserTests: XCTestCase {
         ]
         """
         let data = Data(json.utf8)
-        let result = await BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
+        let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://bs.example.com")
 
         XCTAssertNotNil(result)
         XCTAssertEqual(result?.count, 3)

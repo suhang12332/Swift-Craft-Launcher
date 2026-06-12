@@ -1,3 +1,7 @@
+excluded:
+  - DerivedData
+  - .build
+
 disabled_rules:
 
   # Rationale: Arbitrary restriction
@@ -207,9 +211,6 @@ opt_in_rules:
 
   # Rationale: Provides consistency in coding style and brevity
   - redundant_objc_attribute
-
-  # Rationale: Provides consistency in coding style and brevity
-  - implicit_optional_initialization
 
   # Rationale: Provides consistency in coding style and brevity
   - redundant_void_return

@@ -33,10 +33,10 @@ final class ConstantsAndPresetsTests: XCTestCase {
 
     func testYggdrasilServerPresets_allHaveRedirectURI() {
         for server in Self.makeTestServers() {
-            XCTAssertFalse(server.redirectURI.isEmpty, "\(server.name) should have redirectURI")
-            XCTAssertFalse(server.authorizePath.isEmpty, "\(server.name) should have authorizePath")
-            XCTAssertFalse(server.tokenPath.isEmpty, "\(server.name) should have tokenPath")
-            XCTAssertFalse(server.profilePath.isEmpty, "\(server.name) should have profilePath")
+            XCTAssertFalse(server.redirectURI.isEmpty, "\(server.name ?? "nil") should have redirectURI")
+            XCTAssertFalse(server.authorizePath.isEmpty, "\(server.name ?? "nil") should have authorizePath")
+            XCTAssertFalse(server.tokenPath.isEmpty, "\(server.name ?? "nil") should have tokenPath")
+            XCTAssertFalse(server.profilePath.isEmpty, "\(server.name ?? "nil") should have profilePath")
         }
     }
 
