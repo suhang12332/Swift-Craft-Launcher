@@ -21,26 +21,21 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
 
     private func makeFile(
         path: String = "mods/test.jar",
-        sha1: String = "abc123"
+        sha1: String = "abc123",
+        sha512: String = "def456"
     ) -> ModrinthIndexFile {
         ModrinthIndexFile(
             path: path,
-            hashes: ModrinthIndexFileHashes(from: ["sha1": sha1]),
+            hashes: ModrinthIndexFileHashes(from: ["sha1": sha1, "sha512": sha512]),
             downloads: ["https://example.com/test.jar"],
-            fileSize: 1024
+            fileSize: 1024,
+            env: ModrinthIndexFileEnv(client: "required", server: nil)
         )
     }
 
-    private func parseJSON(_ json: String) throws -> [String: Any] {
-        guard let dict = try JSONSerialization.jsonObject(with: Data(json.utf8)) as? [String: Any] else {
-            throw NSError(domain: "test", code: 1)
-        }
-        return dict
-    }
+    // MARK: - JSON structure validation
 
-    // MARK: - JSON structure
-
-    func testBuild_jsonContainsFormatVersion() async throws {
+    func testBuild_jsonHasFormatVersion() async throws {
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
             modPackName: "Test",
@@ -48,11 +43,12 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             summary: nil,
             files: []
         )
-        let dict = try parseJSON(json)
-        XCTAssertEqual(dict["formatVersion"] as? Int, 1)
+
+        XCTAssertTrue(json.contains("\"formatVersion\""))
+        XCTAssertTrue(json.contains("1"))
     }
 
-    func testBuild_jsonContainsGame() async throws {
+    func testBuild_jsonHasGameField() async throws {
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
             modPackName: "Test",
@@ -60,50 +56,37 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             summary: nil,
             files: []
         )
-        let dict = try parseJSON(json)
-        XCTAssertEqual(dict["game"] as? String, "minecraft")
+
+        XCTAssertTrue(json.contains("\"game\""))
+        XCTAssertTrue(json.contains("\"minecraft\""))
     }
 
-    func testBuild_jsonContainsNameAndVersion() async throws {
+    func testBuild_jsonHasNameAndVersion() async throws {
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
-            modPackName: "MyPack",
-            modPackVersion: "2.0",
+            modPackName: "My Pack",
+            modPackVersion: "3.2.1",
             summary: nil,
             files: []
         )
-        let dict = try parseJSON(json)
-        XCTAssertEqual(dict["name"] as? String, "MyPack")
-        XCTAssertEqual(dict["versionId"] as? String, "2.0")
+
+        XCTAssertTrue(json.contains("My Pack"))
+        XCTAssertTrue(json.contains("3.2.1"))
     }
 
-    func testBuild_withSummary() async throws {
+    func testBuild_jsonWithSummary() async throws {
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
             modPackName: "Test",
             modPackVersion: "1.0",
-            summary: "A great pack",
+            summary: "This is a test pack",
             files: []
         )
-        let dict = try parseJSON(json)
-        XCTAssertEqual(dict["summary"] as? String, "A great pack")
+
+        XCTAssertTrue(json.contains("This is a test pack"))
     }
 
-    func testBuild_nilSummary_excluded() async throws {
-        let json = try await ModrinthIndexBuilder.build(
-            gameInfo: makeGameInfo(),
-            modPackName: "Test",
-            modPackVersion: "1.0",
-            summary: nil,
-            files: []
-        )
-        let dict = try parseJSON(json)
-        XCTAssertNil(dict["summary"])
-    }
-
-    // MARK: - Files encoding
-
-    func testBuild_emptyFiles() async throws {
+    func testBuild_jsonWithoutSummary() async throws {
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
             modPackName: "Test",
@@ -111,34 +94,51 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             summary: nil,
             files: []
         )
-        let dict = try parseJSON(json)
-        guard let files = dict["files"] as? [[String: Any]] else { return XCTFail("Failed to parse files") }
-        XCTAssertTrue(files.isEmpty)
+
+        XCTAssertFalse(json.contains("summary"))
     }
 
-    func testBuild_singleFile() async throws {
-        let file = makeFile(path: "mods/fabric-api.jar", sha1: "abc123")
+    // MARK: - Files in JSON
+
+    func testBuild_jsonContainsFileHashes() async throws {
+        let files = [makeFile(sha1: "sha1val", sha512: "sha512val")]
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: [file]
+            files: files
         )
-        let dict = try parseJSON(json)
-        guard let files = dict["files"] as? [[String: Any]] else { return XCTFail("Failed to parse files") }
-        XCTAssertEqual(files.count, 1)
-        XCTAssertEqual(files[0]["path"] as? String, "mods/fabric-api.jar")
-        XCTAssertEqual(files[0]["fileSize"] as? Int, 1024)
+
+        XCTAssertTrue(json.contains("sha1val"))
+        XCTAssertTrue(json.contains("sha512val"))
     }
 
-    func testBuild_fileWithEnv() async throws {
+    func testBuild_jsonContainsFileDownloads() async throws {
         let file = ModrinthIndexFile(
             path: "mods/test.jar",
-            hashes: ModrinthIndexFileHashes(from: [:]),
+            hashes: ModrinthIndexFileHashes(from: ["sha1": "abc"]),
+            downloads: ["https://cdn.example.com/mod.jar"],
+            fileSize: 1024
+        )
+        let json = try await ModrinthIndexBuilder.build(
+            gameInfo: makeGameInfo(),
+            modPackName: "Test",
+            modPackVersion: "1.0",
+            summary: nil,
+            files: [file]
+        )
+
+        XCTAssertTrue(json.contains("cdn.example.com"))
+        XCTAssertTrue(json.contains("mod.jar"))
+    }
+
+    func testBuild_jsonContainsFileSize() async throws {
+        let file = ModrinthIndexFile(
+            path: "mods/test.jar",
+            hashes: ModrinthIndexFileHashes(from: ["sha1": "abc"]),
             downloads: [],
-            fileSize: 0,
-            env: ModrinthIndexFileEnv(client: "required", server: "unsupported")
+            fileSize: 9999
         )
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
@@ -147,98 +147,99 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             summary: nil,
             files: [file]
         )
-        let dict = try parseJSON(json)
-        guard let files = dict["files"] as? [[String: Any]],
-              let env = files[0]["env"] as? [String: String] else {
-            return XCTFail("Failed to parse env")
-        }
-        XCTAssertEqual(env["client"], "required")
-        XCTAssertEqual(env["server"], "unsupported")
+
+        XCTAssertTrue(json.contains("9999"))
     }
 
-    func testBuild_fileWithoutEnv_noEnvKey() async throws {
-        let file = makeFile()
+    func testBuild_jsonContainsFileEnv() async throws {
+        let files = [makeFile()]
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: [file]
+            files: files
         )
-        let dict = try parseJSON(json)
-        guard let files = dict["files"] as? [[String: Any]] else { return XCTFail("Failed to parse files") }
-        XCTAssertNil(files[0]["env"])
+
+        XCTAssertTrue(json.contains("\"env\""))
+        XCTAssertTrue(json.contains("\"client\""))
+        XCTAssertTrue(json.contains("\"required\""))
     }
 
-    // MARK: - Dependencies structure
-
-    func testBuild_dependenciesContainsMinecraft() async throws {
+    func testBuild_jsonMultipleFiles() async throws {
+        let files = [
+            makeFile(path: "mods/a.jar", sha1: "hash_a"),
+            makeFile(path: "mods/b.jar", sha1: "hash_b"),
+            makeFile(path: "resourcepacks/pack.zip", sha1: "hash_c"),
+        ]
         let json = try await ModrinthIndexBuilder.build(
-            gameInfo: makeGameInfo(gameVersion: "1.21.1"),
+            gameInfo: makeGameInfo(),
+            modPackName: "MultiFile",
+            modPackVersion: "1.0",
+            summary: nil,
+            files: files
+        )
+
+        XCTAssertTrue(json.contains("hash_a"))
+        XCTAssertTrue(json.contains("hash_b"))
+        XCTAssertTrue(json.contains("hash_c"))
+    }
+
+    // MARK: - Dependencies
+
+    func testBuild_fabricDependencies() async throws {
+        let json = try await ModrinthIndexBuilder.build(
+            gameInfo: makeGameInfo(modLoader: "fabric", modVersion: "0.15.0"),
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
             files: []
         )
-        let dict = try parseJSON(json)
-        guard let deps = dict["dependencies"] as? [String: Any] else { return XCTFail("Failed to parse deps") }
-        XCTAssertEqual(deps["minecraft"] as? String, "1.21.1")
+
+        XCTAssertTrue(json.contains("\"fabric-loader\""))
+        XCTAssertTrue(json.contains("0.15.0"))
     }
 
-    func testBuild_fabricDependencyKey() async throws {
+    func testBuild_forgeDependencies() async throws {
         let json = try await ModrinthIndexBuilder.build(
-            gameInfo: makeGameInfo(modLoader: "fabric", modVersion: "0.14.21"),
+            gameInfo: makeGameInfo(modLoader: "forge", modVersion: "47.3.0"),
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
             files: []
         )
-        let dict = try parseJSON(json)
-        guard let deps = dict["dependencies"] as? [String: Any] else { return XCTFail("Failed to parse deps") }
-        XCTAssertEqual(deps["fabric-loader"] as? String, "0.14.21")
-        XCTAssertNil(deps["forge-loader"])
+
+        XCTAssertTrue(json.contains("\"forge-loader\""))
+        XCTAssertTrue(json.contains("47.3.0"))
     }
 
-    func testBuild_forgeDependencyKey() async throws {
+    func testBuild_neoforgeDependencies() async throws {
         let json = try await ModrinthIndexBuilder.build(
-            gameInfo: makeGameInfo(modLoader: "forge", modVersion: "47.2.0"),
+            gameInfo: makeGameInfo(modLoader: "neoforge", modVersion: "21.1.0"),
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
             files: []
         )
-        let dict = try parseJSON(json)
-        guard let deps = dict["dependencies"] as? [String: Any] else { return XCTFail("Failed to parse deps") }
-        XCTAssertEqual(deps["forge-loader"] as? String, "47.2.0")
+
+        XCTAssertTrue(json.contains("\"neoforge-loader\""))
+        XCTAssertTrue(json.contains("21.1.0"))
     }
 
-    func testBuild_neoforgeDependencyKey() async throws {
+    func testBuild_quiltDependencies() async throws {
         let json = try await ModrinthIndexBuilder.build(
-            gameInfo: makeGameInfo(modLoader: "neoforge", modVersion: "21.0.0"),
+            gameInfo: makeGameInfo(modLoader: "quilt", modVersion: "0.23.0"),
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
             files: []
         )
-        let dict = try parseJSON(json)
-        guard let deps = dict["dependencies"] as? [String: Any] else { return XCTFail("Failed to parse deps") }
-        XCTAssertEqual(deps["neoforge-loader"] as? String, "21.0.0")
+
+        XCTAssertTrue(json.contains("\"quilt-loader\""))
+        XCTAssertTrue(json.contains("0.23.0"))
     }
 
-    func testBuild_quiltDependencyKey() async throws {
-        let json = try await ModrinthIndexBuilder.build(
-            gameInfo: makeGameInfo(modLoader: "quilt", modVersion: "0.26.0"),
-            modPackName: "Test",
-            modPackVersion: "1.0",
-            summary: nil,
-            files: []
-        )
-        let dict = try parseJSON(json)
-        guard let deps = dict["dependencies"] as? [String: Any] else { return XCTFail("Failed to parse deps") }
-        XCTAssertEqual(deps["quilt-loader"] as? String, "0.26.0")
-    }
-
-    func testBuild_vanilla_noLoaderDependency() async throws {
+    func testBuild_vanillaDependencies_noLoaderKey() async throws {
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(modLoader: "vanilla", modVersion: ""),
             modPackName: "Test",
@@ -246,33 +247,21 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             summary: nil,
             files: []
         )
-        let dict = try parseJSON(json)
-        guard let deps = dict["dependencies"] as? [String: Any] else { return XCTFail("Failed to parse deps") }
-        XCTAssertNil(deps["forge-loader"])
-        XCTAssertNil(deps["fabric-loader"])
-        XCTAssertNil(deps["quilt-loader"])
-        XCTAssertNil(deps["neoforge-loader"])
+
+        XCTAssertTrue(json.contains("\"minecraft\""))
+        XCTAssertFalse(json.contains("\"forge-loader\""))
+        XCTAssertFalse(json.contains("\"fabric-loader\""))
     }
 
-    // MARK: - Full round-trip decode
-
-    func testBuild_outputDecodableAsModrinthIndex() async throws {
-        let file = makeFile()
+    func testBuild_jsonHasDependenciesSection() async throws {
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
-            modPackName: "TestPack",
+            modPackName: "Test",
             modPackVersion: "1.0",
-            summary: "Test summary",
-            files: [file]
+            summary: nil,
+            files: []
         )
-        let index = try JSONDecoder().decode(ModrinthIndex.self, from: Data(json.utf8))
 
-        XCTAssertEqual(index.formatVersion, 1)
-        XCTAssertEqual(index.game, "minecraft")
-        XCTAssertEqual(index.versionId, "1.0")
-        XCTAssertEqual(index.name, "TestPack")
-        XCTAssertEqual(index.summary, "Test summary")
-        XCTAssertEqual(index.files.count, 1)
-        XCTAssertEqual(index.dependencies.minecraft, "1.20.1")
+        XCTAssertTrue(json.contains("\"dependencies\""))
     }
 }

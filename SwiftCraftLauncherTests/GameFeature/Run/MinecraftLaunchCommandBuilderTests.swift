@@ -92,8 +92,6 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
     // MARK: - 路径去重逻辑验证
 
     func testRemoveDuplicatePaths_removesExactDuplicates() throws {
-        // removeDuplicatePaths 是私有方法，通过 buildThrowing 间接测试
-        // 这里验证的是去重逻辑的正确性
         let paths = ["/a/b.jar", "/a/b.jar", "/c/d.jar"]
         let unique = Array(Set(paths))
         XCTAssertEqual(unique.count, 2)
