@@ -118,9 +118,6 @@ xcodebuild test \
 ```
 
 Or use **Product → Test** (`⌘U`) in Xcode.
-
-When adding pure logic, prefer adding unit tests. See [docs/TESTING.md](../docs/TESTING.md).
-
 ---
 
 ### 7. Merging and Releases

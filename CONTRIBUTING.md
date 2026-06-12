@@ -116,9 +116,6 @@ xcodebuild test \
 ```
 
 或在 Xcode 中使用 **Product → Test**（`⌘U`）。
-
-新增纯逻辑代码时，请优先补充单元测试。详见 [docs/TESTING.md](docs/TESTING.md)。
-
 ---
 
 ### 7. 合并与发布

@@ -22,7 +22,8 @@
   [![Repo Size](https://img.shields.io/github/repo-size/suhang12332/Swift-Craft-Launcher?style=flat&logo=github)](https://github.com/suhang12332/Swift-Craft-Launcher)
   [![Contributors](https://img.shields.io/github/contributors/suhang12332/Swift-Craft-Launcher?color=ee8449&logo=githubsponsors)](https://github.com/suhang12332/Swift-Craft-Launcher/graphs/contributors)
   
-  [![CI](https://img.shields.io/github/actions/workflow/status/suhang12332/Swift-Craft-Launcher/build-dmg.yml?branch=main&label=CI&logo=githubactions)](https://github.com/suhang12332/Swift-Craft-Launcher/actions/workflows/build-dmg.yml)
+  [![CI](https://img.shields.io/github/actions/workflow/status/suhang12332/Swift-Craft-Launcher/ci.yml?branch=main&label=CI&logo=githubactions)](https://github.com/suhang12332/Swift-Craft-Launcher/actions/workflows/ci.yml)
+  [![Build](https://img.shields.io/github/actions/workflow/status/suhang12332/Swift-Craft-Launcher/build-dmg.yml?branch=main&label=Build&logo=githubactions)](https://github.com/suhang12332/Swift-Craft-Launcher/actions/workflows/build-dmg.yml)
   [![Homebrew](https://img.shields.io/badge/Homebrew-available-green.svg?logo=homebrew)](https://formulae.brew.sh/cask/swiftcraft-launcher)
   [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg?logo=gnu)](https://www.gnu.org/licenses/agpl-3.0)
 
