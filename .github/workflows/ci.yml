@@ -41,7 +41,7 @@ jobs:
         if: always()
         run: |
           brew install xcresultparser
-          xcresultparser export TestResults.xcresult --output report.html
+          xcresultparser -o html TestResults.xcresult > report.html
 
       - name: Upload test report
         if: always()
