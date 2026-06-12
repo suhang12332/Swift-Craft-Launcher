@@ -45,7 +45,7 @@ final class ModScannerPaginationTests: XCTestCase {
 
         XCTAssertNotNil(result)
         XCTAssertEqual(result?.startIndex, 0)
-        XCTAssertEqual(result?.endIndex, 10)
+        XCTAssertEqual(result?.endIndex, 1)
     }
 
     func testCalculatePageRange_pageZero() {

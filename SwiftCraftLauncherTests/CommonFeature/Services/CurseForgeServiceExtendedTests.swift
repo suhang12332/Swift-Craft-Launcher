@@ -6,8 +6,9 @@ final class CurseForgeServiceExtendedTests: XCTestCase {
     // MARK: - getHeaders
 
     func testGetHeaders_containsAcceptJSON() {
-        let headers = CurseForgeService.getHeaders()
+        let headers = APIClient.DefaultHeaders.acceptJSON
         XCTAssertFalse(headers.isEmpty)
+        XCTAssertEqual(headers["Accept"], "application/json")
     }
 
     // MARK: - ModrinthService.filterPrimaryFiles

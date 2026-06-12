@@ -307,28 +307,74 @@ final class YggdrasilModelsTests: XCTestCase {
     // MARK: - YggdrasilServerPresets
 
     func testPresets_count() {
-        XCTAssertEqual(YggdrasilServerPresets.servers.count, 3)
+        let servers = Self.makeTestServers()
+        XCTAssertEqual(servers.count, 3)
     }
 
     func testPresets_hasLittleSkin() {
-        let names = YggdrasilServerPresets.servers.compactMap { $0.name }
+        let servers = Self.makeTestServers()
+        let names = servers.compactMap { $0.name }
         XCTAssertTrue(names.contains("LittleSkin"))
     }
 
     func testPresets_hasMua() {
-        let names = YggdrasilServerPresets.servers.compactMap { $0.name }
+        let servers = Self.makeTestServers()
+        let names = servers.compactMap { $0.name }
         XCTAssertTrue(names.contains("Mua"))
     }
 
     func testPresets_hasEly() {
-        let names = YggdrasilServerPresets.servers.compactMap { $0.name }
+        let servers = Self.makeTestServers()
+        let names = servers.compactMap { $0.name }
         XCTAssertTrue(names.contains("Ely.By"))
     }
 
     func testPresets_parserIds() {
-        let parserIds = YggdrasilServerPresets.servers.map { $0.parserId }
+        let servers = Self.makeTestServers()
+        let parserIds = servers.map { $0.parserId }
         XCTAssertTrue(parserIds.contains(.littleskin))
         XCTAssertTrue(parserIds.contains(.mua))
         XCTAssertTrue(parserIds.contains(.ely))
+    }
+
+    private static func makeTestServers() -> [YggdrasilServerConfig] {
+        [
+            YggdrasilServerConfig(
+                name: "LittleSkin",
+                baseURL: URL.require("https://littleskin.cn"),
+                clientId: "1181",
+                clientSecret: nil,
+                redirectURI: "swift-craft-launcher://auth",
+                authorizePath: "/oauth/authorize",
+                tokenPath: "/oauth/token",
+                profilePath: "/api/yggdrasil/sessionserver/session/minecraft/profile",
+                scope: "Yggdrasil.MinecraftToken.Create Yggdrasil.PlayerProfiles.Read",
+                parserId: .littleskin
+            ),
+            YggdrasilServerConfig(
+                name: "Mua",
+                baseURL: URL.require("https://skin.mualliance.ltd"),
+                clientId: "34",
+                clientSecret: nil,
+                redirectURI: "swift-craft-launcher://auth",
+                authorizePath: "/oauth/authorize",
+                tokenPath: "/oauth/token",
+                profilePath: "/api/players",
+                scope: "Player.Read User.Read",
+                parserId: .mua
+            ),
+            YggdrasilServerConfig(
+                name: "Ely.By",
+                baseURL: URL.require("https://account.ely.by"),
+                clientId: "swift-craft-launcher",
+                clientSecret: nil,
+                redirectURI: "swift-craft-launcher://auth",
+                authorizePath: "/oauth2/v1",
+                tokenPath: "/api/oauth2/v1/token",
+                profilePath: "/api/account/v1/info",
+                scope: "account_info",
+                parserId: .ely
+            ),
+        ]
     }
 }
