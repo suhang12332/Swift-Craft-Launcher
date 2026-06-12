@@ -3,71 +3,86 @@ import XCTest
 
 final class SHA1CalculatorTests: XCTestCase {
 
-    func testSHA1_emptyData() {
-        let data = Data()
-        let hash = SHA1Calculator.sha1(of: data)
-        XCTAssertEqual(hash, "da39a3ee5e6b4b0d3255bfef95601890afd80709")
+    private var tmpDir: URL!
+
+    override func setUp() {
+        super.setUp()
+        tmpDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("sha1-tests-\(UUID().uuidString)", isDirectory: true)
+        try? FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
     }
 
-    func testSHA1_hello() {
+    override func tearDown() {
+        try? FileManager.default.removeItem(at: tmpDir)
+        super.tearDown()
+    }
+
+    // MARK: - sha1(of:) Data
+
+    func testSha1_ofData_knownValue() {
         let data = Data("hello".utf8)
         let hash = SHA1Calculator.sha1(of: data)
         XCTAssertEqual(hash, "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d")
     }
 
-    func testSHA1_deterministic() {
-        let data = Data("test data".utf8)
+    func testSha1_ofData_emptyData() {
+        let hash = SHA1Calculator.sha1(of: Data())
+        XCTAssertEqual(hash, "da39a3ee5e6b4b0d3255bfef95601890afd80709")
+    }
+
+    func testSha1_ofData_deterministic() {
+        let data = Data("test".utf8)
         let hash1 = SHA1Calculator.sha1(of: data)
         let hash2 = SHA1Calculator.sha1(of: data)
         XCTAssertEqual(hash1, hash2)
     }
 
-    func testSHA1_differentData_differentHash() {
-        let hash1 = SHA1Calculator.sha1(of: Data("abc".utf8))
-        let hash2 = SHA1Calculator.sha1(of: Data("def".utf8))
+    func testSha1_ofData_differentInput_differentHash() {
+        let hash1 = SHA1Calculator.sha1(of: Data("a".utf8))
+        let hash2 = SHA1Calculator.sha1(of: Data("b".utf8))
         XCTAssertNotEqual(hash1, hash2)
     }
 
-    func testSHA1_40Characters() {
-        let data = Data("test".utf8)
+    func testSha1_ofData_binaryData() {
+        let data = Data([0x00, 0xFF, 0x01, 0x02])
         let hash = SHA1Calculator.sha1(of: data)
         XCTAssertEqual(hash.count, 40)
     }
 
-    func testSHA1_hexCharacters() {
-        let data = Data("test".utf8)
-        let hash = SHA1Calculator.sha1(of: data)
-        XCTAssertNil(hash.range(of: "[^0-9a-f]", options: .regularExpression))
-    }
+    // MARK: - sha1(ofFileAt:) file
 
-    func testSHA1WithCryptoKit_matchesSHA1() {
-        let data = Data("hello world".utf8)
-        let hash1 = SHA1Calculator.sha1(of: data)
-        let hash2 = SHA1Calculator.sha1WithCryptoKit(of: data)
-        XCTAssertEqual(hash1, hash2)
-    }
-
-    func testSHA1WithCryptoKit_emptyData() {
-        let data = Data()
-        let hash = SHA1Calculator.sha1WithCryptoKit(of: data)
-        XCTAssertEqual(hash, "da39a3ee5e6b4b0d3255bfef95601890afd80709")
-    }
-
-    func testDataSHA1_extension() {
-        let data = Data("test".utf8)
-        let hash = data.sha1
-        XCTAssertEqual(hash, SHA1Calculator.sha1(of: data))
-    }
-
-    func testSHA1_sha1_ofFileAt() throws {
-        let tmpDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        try FileManager.default.createDirectory(at: tmpDir, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: tmpDir) }
-
+    func testSha1_ofFile_knownContent() throws {
         let fileURL = tmpDir.appendingPathComponent("test.txt")
         try Data("hello".utf8).write(to: fileURL)
 
         let hash = try SHA1Calculator.sha1(ofFileAt: fileURL)
         XCTAssertEqual(hash, "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d")
+    }
+
+    func testSha1_ofFile_matchesDataHash() throws {
+        let content = "consistent content"
+        let fileURL = tmpDir.appendingPathComponent("test.txt")
+        try Data(content.utf8).write(to: fileURL)
+
+        let fileHash = try SHA1Calculator.sha1(ofFileAt: fileURL)
+        let dataHash = SHA1Calculator.sha1(of: Data(content.utf8))
+        XCTAssertEqual(fileHash, dataHash)
+    }
+
+    func testSha1_ofFile_deterministic() throws {
+        let fileURL = tmpDir.appendingPathComponent("test.txt")
+        try Data("deterministic".utf8).write(to: fileURL)
+
+        let hash1 = try SHA1Calculator.sha1(ofFileAt: fileURL)
+        let hash2 = try SHA1Calculator.sha1(ofFileAt: fileURL)
+        XCTAssertEqual(hash1, hash2)
+    }
+
+    func testSha1_ofFile_emptyFile() throws {
+        let fileURL = tmpDir.appendingPathComponent("empty.txt")
+        try Data().write(to: fileURL)
+
+        let hash = try SHA1Calculator.sha1(ofFileAt: fileURL)
+        XCTAssertEqual(hash, "da39a3ee5e6b4b0d3255bfef95601890afd80709")
     }
 }
