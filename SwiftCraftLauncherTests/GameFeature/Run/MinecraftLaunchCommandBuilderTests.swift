@@ -12,28 +12,56 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         gameArgs: [String]? = nil,
         jvmArgs: [String]? = nil
     ) throws -> MinecraftVersionManifest {
-        var arguments: MinecraftArguments
-        if let game = gameArgs, let jvm = jvmArgs {
-            arguments = MinecraftArguments(game: .array(game.map { .string($0) }), jvm: .array(jvm.map { .string($0) }))
-        } else {
-            arguments = MinecraftArguments(game: .array([]), jvm: .array([]))
-        }
+        var json: [String: Any] = [
+            "arguments": [
+                "game": gameArgs ?? [],
+                "jvm": jvmArgs ?? [],
+            ],
+            "assetIndex": [
+                "id": "17",
+                "sha1": "abc",
+                "size": 100,
+                "totalSize": 200,
+                "url": "https://example.com/index.json",
+            ],
+            "assets": "17",
+            "downloads": [
+                "client": [
+                    "sha1": "def",
+                    "size": 300,
+                    "url": "https://example.com/client.jar",
+                ]
+            ],
+            "id": id,
+            "javaVersion": [
+                "component": "java-runtime-gamma",
+                "majorVersion": 17,
+            ],
+            "logging": [
+                "client": [
+                    "argument": "",
+                    "file": [
+                        "id": "log",
+                        "sha1": "ghi",
+                        "size": 400,
+                        "url": "https://example.com/log.xml",
+                    ],
+                    "type": "log4j2-xml",
+                ]
+            ],
+            "mainClass": mainClass,
+            "minimumLauncherVersion": 21,
+            "releaseTime": "2023-06-12T12:41:41+00:00",
+            "time": "2023-06-12T12:41:41+00:00",
+            "type": "release",
+        ]
 
-        return MinecraftVersionManifest(
-            arguments: arguments,
-            assetIndex: MinecraftAssetIndex(id: "17", sha1: "abc", size: 100, totalSize: 200, url: URL.require("https://example.com/index.json")),
-            assets: "17",
-            downloads: MinecraftDownloads(client: LibraryArtifact(sha1: "def", size: 300, url: URL.require("https://example.com/client.jar"))),
-            id: id,
-            javaVersion: JavaVersion(component: "java-runtime-gamma", majorVersion: 17),
-            libraries: libraries,
-            logging: MinecraftLogging(client: MinecraftLoggingClient(argument: "", file: MinecraftLoggingFile(id: "log", sha1: "ghi", size: 400, url: URL.require("https://example.com/log.xml")), type: "log4j2-xml")),
-            mainClass: mainClass,
-            minimumLauncherVersion: 21,
-            releaseTime: "2023-06-12T12:41:41+00:00",
-            time: "2023-06-12T12:41:41+00:00",
-            type: "release"
-        )
+        let librariesData = try JSONEncoder().encode(libraries)
+        let librariesObj = try JSONSerialization.jsonObject(with: librariesData)
+        json["libraries"] = librariesObj
+
+        let data = try JSONSerialization.data(withJSONObject: json)
+        return try JSONDecoder().decode(MinecraftVersionManifest.self, from: data)
     }
 
     private func makeGameInfo(
@@ -173,7 +201,7 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         // 这里测试的是变量映射是否正确构建
 
         let manifest = try makeManifest(
-            jvmArgs: ["-Dauth_player_name=\${auth_player_name}"]
+            jvmArgs: ["-Dauth_player_name=${auth_player_name}"]
         )
         let gameInfo = makeGameInfo()
 
@@ -291,9 +319,9 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
 
     func testVariableMap_containsRequiredKeys() throws {
         let gameInfo = makeGameInfo(
+            gameName: "TestGame",
             gameVersion: "1.20.1",
-            assetIndex: "17",
-            gameName: "TestGame"
+            assetIndex: "17"
         )
 
         var variableMap: [String: String] = [
