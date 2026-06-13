@@ -43,11 +43,11 @@ public enum ResourceType: String, CaseIterable {
         case .mod:
             return "puzzlepiece.extension"
         case .datapack:
-            return "doc.on.doc"
+            return "doc.text"
         case .shader:
             return "sparkles"
         case .resourcepack:
-            return "photo.stack"
+            return "paintpalette"
         case .modpack:
             return "cube.box"
         case .minecraftJavaServer:

@@ -54,8 +54,7 @@ enum ResourceFilterMenus {
                 }
             }
         } label: {
-            Label(currentResourceTitle(detailState: detailState), systemImage: "")
-                .labelStyle(.titleOnly)
+            Label(currentResourceTitle(detailState: detailState), systemImage: ResourceType(rawValue: detailState.gameResourcesType)?.systemImage ?? "folder")
         }
     }
 
