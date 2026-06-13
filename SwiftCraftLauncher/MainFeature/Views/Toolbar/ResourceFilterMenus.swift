@@ -84,8 +84,7 @@ enum ResourceFilterMenus {
                 }
             }
         } label: {
-            Label(filterState.localResourceFilter.title, systemImage: "")
-                .labelStyle(.titleOnly)
+            Label(filterState.localResourceFilter.title, systemImage: filterState.localResourceFilter.icon)
         }
     }
 }

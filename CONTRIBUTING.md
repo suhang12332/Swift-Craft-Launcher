@@ -104,6 +104,18 @@ PR 永远以 dev 为 base 分支提交
 
 编译、运行、手动测试功能是否一切正常
 
+### 6.1 运行单元测试
+
+```bash
+xcodebuild test \
+  -project SwiftCraftLauncher.xcodeproj \
+  -scheme SwiftCraftLauncher \
+  -destination 'platform=macOS' \
+  -skipPackagePluginValidation \
+  CODE_SIGNING_ALLOWED=NO
+```
+
+或在 Xcode 中使用 **Product → Test**（`⌘U`）。
 ---
 
 ### 7. 合并与发布

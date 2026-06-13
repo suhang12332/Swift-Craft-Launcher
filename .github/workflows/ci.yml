@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, master, dev]
+  push:
+    branches: [main, master, dev]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  test:
+    runs-on: macos-15
+
+    steps:
+      # =========================
+      # Checkout
+      # =========================
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      # =========================
+      # Xcode
+      # =========================
+      - name: Setup Xcode
+        uses: JohnTitor/setup-xcode@v0.1.1
+        with:
+          xcode-version: latest-stable
+
+      # =========================
+      # SwiftLint
+      # =========================
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint
+        run: swiftlint lint --strict
+
+      # =========================
+      # Run Tests
+      # =========================
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project SwiftCraftLauncher.xcodeproj \
+            -scheme SwiftCraftLauncher \
+            -destination 'platform=macOS' \
+            -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO \
+            -resultBundlePath TestResults.xcresult | tee xcodebuild.log
+
+      # =========================
+      # HTML Report
+      # =========================
+      - name: Generate HTML report
+        if: always()
+        run: |
+          brew install xcresultparser
+          xcresultparser -o html TestResults.xcresult > report.html
+
+      # =========================
+      # PDF Report
+      # =========================
+      - name: Generate PDF report
+        if: always()
+        run: |
+          "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+            --headless \
+            --disable-gpu \
+            --print-to-pdf=report.pdf \
+            report.html
+
+      # =========================
+      # Export Attachments
+      # =========================
+      - name: Export test attachments
+        if: always()
+        run: |
+          mkdir -p attachments
+          xcrun xcresulttool export attachments \
+            --path TestResults.xcresult \
+            --output-path attachments || true
+
+      # =========================
+      # Upload HTML + PDF
+      # =========================
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-report
+          path: |
+            report.html
+            report.pdf
+          retention-days: 30
+
+      # =========================
+      # Upload screenshots
+      # =========================
+      - name: Upload attachments
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-attachments
+          path: attachments
+          retention-days: 30
+
+      # =========================
+      # Upload xcresult (fail only)
+      # =========================
+      - name: Upload xcresult
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xcresult
+          path: TestResults.xcresult
+          retention-days: 7
+
+      # =========================
+      # Upload logs
+      # =========================
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xcodebuild-log
+          path: xcodebuild.log
+          retention-days: 7

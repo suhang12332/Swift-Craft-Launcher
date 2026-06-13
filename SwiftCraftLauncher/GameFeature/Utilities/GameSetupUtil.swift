@@ -42,23 +42,16 @@ class GameSetupUtil: ObservableObject {
 
     // MARK: - Public Methods
 
-    /// 内部游戏保存方法
-    /// - Parameters:
-    ///   - gameName: 游戏名称
-    ///   - selectedGameVersion: 选择的游戏版本
-    ///   - selectedModLoader: 选择的模组加载器
-    ///   - specifiedLoaderVersion: 指定的加载器版本（可选）
-    ///   - pendingIconData: 待保存的图标数据
-    ///   - playerListViewModel: 玩家列表视图模型（可选，为 nil 时跳过玩家校验）
-    ///   - gameRepository: 游戏仓库
-    ///   - onSuccess: 成功回调
-    ///   - onError: 错误回调
-    func saveGame( // swiftlint:disable:this function_parameter_count
-        gameName: String,
-        selectedGameVersion: String,
-        selectedModLoader: String,
-        specifiedLoaderVersion: String,
-        pendingIconData: Data?,
+    struct GameSaveInput {
+        let gameName: String
+        let selectedGameVersion: String
+        let selectedModLoader: String
+        let specifiedLoaderVersion: String
+        let pendingIconData: Data?
+    }
+
+    func saveGame(
+        input: GameSaveInput,
         playerListViewModel: PlayerListViewModel?,
         gameRepository: GameRepository,
         onSuccess: @escaping () -> Void,
@@ -96,25 +89,25 @@ class GameSetupUtil: ObservableObject {
         }
 
         let standardIconPresent = await saveGameIcon(
-            gameName: gameName,
-            modLoader: selectedModLoader,
-            pendingIconData: pendingIconData
+            gameName: input.gameName,
+            modLoader: input.selectedModLoader,
+            pendingIconData: input.pendingIconData
         )
         let persistedGameIcon = standardIconPresent ? AppConstants.defaultGameIcon : ""
 
         // 创建初始游戏信息
         var gameInfo = GameVersionInfo(
             id: UUID(),
-            gameName: gameName,
+            gameName: input.gameName,
             gameIcon: persistedGameIcon,
-            gameVersion: selectedGameVersion,
+            gameVersion: input.selectedGameVersion,
             assetIndex: "",
-            modLoader: selectedModLoader
+            modLoader: input.selectedModLoader
         )
 
         do {
             // 下载 Mojang manifest
-            let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: selectedGameVersion)
+            let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: input.selectedGameVersion)
 
             let javaPath = await javaManager.ensureJavaExists(
                 version: downloadedManifest.javaVersion.component
@@ -127,27 +120,27 @@ class GameSetupUtil: ObservableObject {
             try await startDownloadProcess(
                 fileManager: fileManager,
                 manifest: downloadedManifest,
-                gameName: gameName
+                gameName: input.gameName
             )
             // 设置模组加载器
             let modLoaderResult = try await setupModLoaderIfNeeded(
-                selectedModLoader: selectedModLoader,
-                selectedGameVersion: selectedGameVersion,
-                gameName: gameName,
+                selectedModLoader: input.selectedModLoader,
+                selectedGameVersion: input.selectedGameVersion,
+                gameName: input.gameName,
                 gameIcon: persistedGameIcon,
-                specifiedLoaderVersion: specifiedLoaderVersion
+                specifiedLoaderVersion: input.specifiedLoaderVersion
             )
             // 完善游戏信息
             gameInfo = await finalizeGameInfo(
                 gameInfo: gameInfo,
                 manifest: downloadedManifest,
-                selectedModLoader: selectedModLoader,
-                selectedGameVersion: selectedGameVersion,
-                specifiedLoaderVersion: specifiedLoaderVersion,
-                fabricResult: selectedModLoader.lowercased() == GameLoader.fabric.displayName ? modLoaderResult : nil,
-                forgeResult: selectedModLoader.lowercased() == GameLoader.forge.displayName ? modLoaderResult : nil,
-                neoForgeResult: selectedModLoader.lowercased() == GameLoader.neoforge.displayName ? modLoaderResult : nil,
-                quiltResult: selectedModLoader.lowercased() == GameLoader.quilt.rawValue ? modLoaderResult : nil
+                selectedModLoader: input.selectedModLoader,
+                selectedGameVersion: input.selectedGameVersion,
+                specifiedLoaderVersion: input.specifiedLoaderVersion,
+                fabricResult: input.selectedModLoader.lowercased() == GameLoader.fabric.displayName ? modLoaderResult : nil,
+                forgeResult: input.selectedModLoader.lowercased() == GameLoader.forge.displayName ? modLoaderResult : nil,
+                neoForgeResult: input.selectedModLoader.lowercased() == GameLoader.neoforge.displayName ? modLoaderResult : nil,
+                quiltResult: input.selectedModLoader.lowercased() == GameLoader.quilt.rawValue ? modLoaderResult : nil
             )
             gameInfo.javaPath = javaPath
             gameRepository.addGameSilently(gameInfo)
@@ -171,14 +164,14 @@ class GameSetupUtil: ObservableObject {
         } catch {
             if isSaveGameDownloadCancelled(error) {
                 Logger.shared.info("游戏下载任务已取消")
-                await cleanupGameDirectories(gameName: gameName)
+                await cleanupGameDirectories(gameName: input.gameName)
                 await MainActor.run {
                     self.objectWillChange.send()
                     self.downloadState.reset()
                 }
                 return
             }
-            await cleanupGameDirectories(gameName: gameName)
+            await cleanupGameDirectories(gameName: input.gameName)
             errorHandler.handle(error)
         }
         return

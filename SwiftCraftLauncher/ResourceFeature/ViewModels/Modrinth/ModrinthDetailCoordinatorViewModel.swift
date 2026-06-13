@@ -192,12 +192,14 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
         await searchViewModel.search(
             query: context.searchText,
             projectType: context.query,
-            versions: context.selectedVersions,
-            categories: context.selectedCategories,
-            features: context.selectedFeatures,
-            resolutions: context.selectedResolutions,
-            performanceImpact: context.selectedPerformanceImpact,
-            loaders: context.selectedLoader,
+            filterOptions: FilterOptions(
+                versions: context.selectedVersions,
+                categories: context.selectedCategories,
+                features: context.selectedFeatures,
+                resolutions: context.selectedResolutions,
+                performanceImpact: context.selectedPerformanceImpact,
+                loaders: context.selectedLoader
+            ),
             page: page,
             append: append,
             dataSource: context.dataSource

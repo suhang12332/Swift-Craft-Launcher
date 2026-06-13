@@ -4,9 +4,6 @@ extension ModrinthSearchViewModel {
     // MARK: - Private Methods
     func buildFacets(
         projectType: String,
-        versions: [String],
-        categories: [String],
-        features: [String],
         filterOptions: FilterOptions
     ) -> [[String]] {
         var facets: [[String]] = []
@@ -17,25 +14,25 @@ extension ModrinthSearchViewModel {
         ])
 
         // Add versions if any
-        if !versions.isEmpty {
+        if !filterOptions.versions.isEmpty {
             facets.append(
-                versions.map {
+                filterOptions.versions.map {
                     "\(ModrinthConstants.API.FacetType.versions):\($0)"
                 }
             )
         }
 
         // Add categories if any
-        if !categories.isEmpty {
+        if !filterOptions.categories.isEmpty {
             facets.append(
-                categories.map {
+                filterOptions.categories.map {
                     "\(ModrinthConstants.API.FacetType.categories):\($0)"
                 }
             )
         }
 
         // Handle client_side and server_side based on features selection
-        let (clientFacets, serverFacets) = buildEnvironmentFacets(features: features)
+        let (clientFacets, serverFacets) = buildEnvironmentFacets(features: filterOptions.features)
         if !clientFacets.isEmpty {
             facets.append(clientFacets)
         }

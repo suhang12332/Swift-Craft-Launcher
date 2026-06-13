@@ -272,11 +272,13 @@ final class ModPackInstallCoordinator {
         await withCheckedContinuation { continuation in
             Task {
                 await input.gameSetupService.saveGame(
-                    gameName: input.gameName,
-                    selectedGameVersion: input.selectedGameVersion,
-                    selectedModLoader: indexInfo.loaderType,
-                    specifiedLoaderVersion: indexInfo.loaderVersion,
-                    pendingIconData: nil,
+                    input: .init(
+                        gameName: input.gameName,
+                        selectedGameVersion: input.selectedGameVersion,
+                        selectedModLoader: indexInfo.loaderType,
+                        specifiedLoaderVersion: indexInfo.loaderVersion,
+                        pendingIconData: nil
+                    ),
                     playerListViewModel: nil,
                     gameRepository: input.gameRepository,
                     onSuccess: {

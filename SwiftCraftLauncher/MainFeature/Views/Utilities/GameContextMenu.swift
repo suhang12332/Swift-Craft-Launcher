@@ -39,8 +39,7 @@ struct GameContextMenu: View {
     /// key 为 processKey(gameId, userId)，当前选中的玩家决定 userId
     private var isRunning: Bool {
         let userId = playerListViewModel.currentPlayer?.id ?? ""
-        let key = GameProcessManager.processKey(gameId: game.id, userId: userId)
-        return gameStatusManager.allGameStates[key] ?? false
+        return gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: userId)
     }
 
     var body: some View {

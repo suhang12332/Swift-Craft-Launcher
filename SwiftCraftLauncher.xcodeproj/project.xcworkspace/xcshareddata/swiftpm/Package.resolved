@@ -1,5 +1,5 @@
 {
-  "originHash" : "5f9c059f5a9d6c83e6ec04905dfea45831e12208b8e2fce365938bbe12fc8c89",
+  "originHash" : "ff54c8501a7049b253a99d332fdc5e226dd1b71e5509dfcd2eb17c722d5979f7",
   "pins" : [
     {
       "identity" : "cfmodrinthadapterkit",
@@ -34,7 +34,7 @@
       "location" : "https://github.com/suhang12332/NSSkinRender.git",
       "state" : {
         "branch" : "release",
-        "revision" : "6177141260f167eb0fc42924edab0202452b24d0"
+        "revision" : "4443a5413b3638ef5141c7f0d0a8aff18d8925a6"
       }
     },
     {

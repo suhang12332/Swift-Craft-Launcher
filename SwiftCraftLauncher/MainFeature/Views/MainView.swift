@@ -208,5 +208,9 @@ struct MainView: View {
     private func loadInitialAppData() async {
         playerListViewModel.loadPlayersIfNeeded()
         await gameRepository.loadInitialDataIfNeeded()
+
+        if let firstGame = gameRepository.games.first {
+            detailState.selectedItem = .game(firstGame.id)
+        }
     }
 }

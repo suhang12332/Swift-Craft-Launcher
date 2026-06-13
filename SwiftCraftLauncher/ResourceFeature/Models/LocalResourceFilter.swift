@@ -15,4 +15,13 @@ enum LocalResourceFilter: String, CaseIterable, Identifiable {
             return "resource.local_filter.disabled".localized()
         }
     }
+
+    var icon: String {
+        switch self {
+        case .all:
+            return "list.bullet"
+        case .disabled:
+            return "nosign"
+        }
+    }
 }

@@ -274,17 +274,20 @@ enum ModrinthDependencyDownloader {
         return projectDetails
     }
 
+    struct ManualDownloadInput {
+        let dependencies: [ModrinthProjectDetail]
+        let selectedVersions: [String: String]
+        let dependencyVersions: [String: [ModrinthProjectDetailVersion]]
+        let mainProjectId: String
+        let mainProjectVersionId: String?
+        let gameInfo: GameVersionInfo
+        let resourceType: String
+        let gameRepository: GameRepository
+    }
+
     // 手动下载依赖和主mod（不递归，仅当前依赖和主mod）
-    // swiftlint:disable:next function_parameter_count
     static func downloadManualDependenciesAndMain(
-        dependencies: [ModrinthProjectDetail],
-        selectedVersions: [String: String],
-        dependencyVersions: [String: [ModrinthProjectDetailVersion]],
-        mainProjectId: String,
-        mainProjectVersionId: String?,
-        gameInfo: GameVersionInfo,
-        query: String,
-        gameRepository: GameRepository,
+        input: ManualDownloadInput,
         onDependencyDownloadStart: @escaping (String) -> Void,
         onDependencyDownloadFinish: @escaping (String, Bool) -> Void
     ) async -> Bool {
@@ -295,9 +298,9 @@ enum ModrinthDependencyDownloader {
         )
 
         await withTaskGroup(of: (String, Bool, ModrinthProjectDetail?).self) { group in
-            for dep in dependencies {
-                guard let versionId = selectedVersions[dep.id],
-                    let versions = dependencyVersions[dep.id],
+            for dep in input.dependencies {
+                guard let versionId = input.selectedVersions[dep.id],
+                    let versions = input.dependencyVersions[dep.id],
                     let version = versions.first(where: { $0.id == versionId }),
                     let primaryFile = ModrinthService.filterPrimaryFiles(
                         from: version.files
@@ -321,23 +324,23 @@ enum ModrinthDependencyDownloader {
                     do {
                         let fileURL =
                             try await DownloadManager.downloadResource(
-                                for: gameInfo,
+                                for: input.gameInfo,
                                 urlString: primaryFile.url,
-                                resourceType: query,
+                                resourceType: input.resourceType,
                                 expectedSha1: primaryFile.hashes.sha1
                             )
                         depCopy.fileName = primaryFile.filename
-                        depCopy.type = query
+                        depCopy.type = input.resourceType
                         success = true
                         if let hash = AppServices.modScanner.sha1Hash(of: fileURL) {
                             AppServices.modScanner.saveToCache(
                                 hash: hash,
                                 detail: depCopy
                             )
-                            if query.lowercased() == ResourceType.mod.rawValue {
+                            if input.resourceType.lowercased() == ResourceType.mod.rawValue {
                                 AppServices.modScanner.addModHash(
                                     hash,
-                                    to: gameInfo.gameName
+                                    to: input.gameInfo.gameName
                                 )
                             }
                         }
@@ -373,24 +376,24 @@ enum ModrinthDependencyDownloader {
         do {
             guard
                 var mainProjectDetail =
-                    await ModrinthService.fetchProjectDetails(id: mainProjectId)
+                    await ModrinthService.fetchProjectDetails(id: input.mainProjectId)
             else {
-                Logger.shared.error("无法获取主项目详情 (ID: \(mainProjectId))")
+                Logger.shared.error("无法获取主项目详情 (ID: \(input.mainProjectId))")
                 return false
             }
 
-            let selectedLoaders = [gameInfo.modLoader]
+            let selectedLoaders = [input.gameInfo.modLoader]
             let filteredVersions =
                 try await ModrinthService.fetchProjectVersionsFilter(
-                    id: mainProjectId,
-                    selectedVersions: [gameInfo.gameVersion],
+                    id: input.mainProjectId,
+                    selectedVersions: [input.gameInfo.gameVersion],
                     selectedLoaders: selectedLoaders,
-                    type: query
+                    type: input.resourceType
                 )
 
             // 如果指定了版本ID，使用指定版本；否则使用最新版本
             let targetVersion: ModrinthProjectDetailVersion
-            if let mainProjectVersionId = mainProjectVersionId,
+            if let mainProjectVersionId = input.mainProjectVersionId,
                 let specifiedVersion = filteredVersions.first(where: {
                     $0.id == mainProjectVersionId
                 }) {
@@ -412,22 +415,22 @@ enum ModrinthDependencyDownloader {
             }
 
             let fileURL = try await DownloadManager.downloadResource(
-                for: gameInfo,
+                for: input.gameInfo,
                 urlString: primaryFile.url,
-                resourceType: query,
+                resourceType: input.resourceType,
                 expectedSha1: primaryFile.hashes.sha1
             )
             mainProjectDetail.fileName = primaryFile.filename
-            mainProjectDetail.type = query
+            mainProjectDetail.type = input.resourceType
             if let hash = AppServices.modScanner.sha1Hash(of: fileURL) {
                 AppServices.modScanner.saveToCache(
                     hash: hash,
                     detail: mainProjectDetail
                 )
-                if query.lowercased() == ResourceType.mod.rawValue {
+                if input.resourceType.lowercased() == ResourceType.mod.rawValue {
                     AppServices.modScanner.addModHash(
                         hash,
-                        to: gameInfo.gameName
+                        to: input.gameInfo.gameName
                     )
                 }
             }
@@ -435,7 +438,7 @@ enum ModrinthDependencyDownloader {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error(
-                "下载主资源 \(mainProjectId) 失败: \(globalError.chineseMessage)"
+                "下载主资源 \(input.mainProjectId) 失败: \(globalError.chineseMessage)"
             )
             AppServices.errorHandler.handle(globalError)
             return false

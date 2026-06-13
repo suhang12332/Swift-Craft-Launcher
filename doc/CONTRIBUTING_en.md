@@ -106,6 +106,18 @@ You may need to install the appropriate Java version (if launcher-related featur
 
 Build, run, and manually test that everything works as expected.
 
+### 6.1 Running Unit Tests
+
+```bash
+xcodebuild test \
+  -project SwiftCraftLauncher.xcodeproj \
+  -scheme SwiftCraftLauncher \
+  -destination 'platform=macOS' \
+  -skipPackagePluginValidation \
+  CODE_SIGNING_ALLOWED=NO
+```
+
+Or use **Product → Test** (`⌘U`) in Xcode.
 ---
 
 ### 7. Merging and Releases

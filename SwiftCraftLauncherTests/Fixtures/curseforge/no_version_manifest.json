@@ -1,0 +1,17 @@
+{
+  "author": "",
+  "files": [],
+  "manifestType": "minecraftModpack",
+  "manifestVersion": 1,
+  "minecraft": {
+    "modLoaders": [
+      {
+        "id": "forge-47.2.0",
+        "primary": true
+      }
+    ],
+    "version": "1.20.1"
+  },
+  "name": "Auto Version Pack",
+  "overrides": "overrides"
+}

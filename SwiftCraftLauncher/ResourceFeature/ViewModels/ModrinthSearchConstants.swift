@@ -44,6 +44,9 @@ enum ModrinthConstants {
 // MARK: - Filter Options
 /// 过滤选项结构体，用于减少函数参数数量
 struct FilterOptions {
+    let versions: [String]
+    let categories: [String]
+    let features: [String]
     let resolutions: [String]
     let performanceImpact: [String]
     let loaders: [String]

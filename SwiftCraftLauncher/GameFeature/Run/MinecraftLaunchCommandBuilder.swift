@@ -88,13 +88,18 @@ enum MinecraftLaunchCommandBuilder {
         return allArgs
     }
 
+    private struct GamePaths {
+        let nativesDir: String
+        let librariesDir: URL
+        let assetsDir: String
+        let gameDir: String
+        let clientJarPath: String
+    }
+
     private static func validateAndGetPaths(
         gameInfo: GameVersionInfo,
         manifest: MinecraftVersionManifest
-        // swiftlint:disable:next large_tuple
-    ) throws -> (nativesDir: String, librariesDir: URL, assetsDir: String, gameDir: String, clientJarPath: String) {
-        // 验证游戏目录
-
+    ) throws -> GamePaths {
         // 验证客户端 JAR 文件
         let clientJarPath = AppPaths.versionsDirectory.appendingPathComponent(manifest.id).appendingPathComponent("\(manifest.id).jar").path
         let fileManager = FileManager.default
@@ -106,7 +111,13 @@ enum MinecraftLaunchCommandBuilder {
             )
         }
 
-        return (nativesDir: AppPaths.nativesDirectory.path, librariesDir: AppPaths.librariesDirectory, assetsDir: AppPaths.assetsDirectory.path, gameDir: AppPaths.profileDirectory(gameName: gameInfo.gameName).path, clientJarPath: clientJarPath)
+        return GamePaths(
+            nativesDir: AppPaths.nativesDirectory.path,
+            librariesDir: AppPaths.librariesDirectory,
+            assetsDir: AppPaths.assetsDirectory.path,
+            gameDir: AppPaths.profileDirectory(gameName: gameInfo.gameName).path,
+            clientJarPath: clientJarPath
+        )
     }
 
     private static func substituteVariables(_ arg: String, with map: [String: String]) -> String {

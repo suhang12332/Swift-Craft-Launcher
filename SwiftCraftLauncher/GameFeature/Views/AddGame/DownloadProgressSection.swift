@@ -168,7 +168,7 @@ private struct ModPackProgressView: View {
                 // 显示 overrides 进度条（只有在有文件需要合并时才显示）
                 if modPackViewModel.modPackInstallState.overridesTotal > 0 {
                     modPackProgressSection(
-                        title: "launcher.import.copying_files".localized(),
+                        title: "modpack.copying_files".localized(),
                         state: modPackViewModel.modPackInstallState,
                         type: .overrides
                     )

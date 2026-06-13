@@ -93,23 +93,7 @@ enum InstanceFileCopier {
         Logger.shared.info("目录合并完成: \(completed)/\(totalFiles) 个文件")
     }
 
-    static func copyGameDirectory(
-        from sourceDirectory: URL,
-        to targetDirectory: URL,
-        launcherType: ImportLauncherType,
-        onProgress: ((String, Int, Int) -> Void)?
-    ) async throws {
-        try await copyDirectory(
-            from: sourceDirectory,
-            to: targetDirectory,
-            fileFilter: { relativePath in
-                !LauncherFileFilter.shouldFilter(fileName: relativePath, launcherType: launcherType)
-            },
-            onProgress: onProgress
-        )
-    }
-
-    internal static func getAllFiles(in directory: URL) throws -> [URL] {
+    static func getAllFiles(in directory: URL) throws -> [URL] {
         let fileManager = FileManager.default
         var files: [URL] = []
 
