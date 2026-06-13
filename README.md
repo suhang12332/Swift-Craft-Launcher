@@ -66,6 +66,10 @@ brew install --cask swift-craft-launcher
 ### GitHub Release
 Download the latest version from [GitHub Releases](https://github.com/suhang12332/Swift-Craft-Launcher/releases/latest).
 
+## Changelog
+
+See the [Version History](https://web.scl.isiah.top/history) for a detailed list of changes in each release.
+
 ## License
 
 This project is licensed under the GNU Affero General Public License v3.0. See [LICENSE](LICENSE) for details.
