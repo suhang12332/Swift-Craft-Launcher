@@ -1,9 +1,4 @@
-excluded:
-  - DerivedData
-  - .build
-
 disabled_rules:
-
   # Rationale: Arbitrary restriction
   - cyclomatic_complexity
 
@@ -13,10 +8,7 @@ disabled_rules:
   # Rationale: There are cases where you may want to declare the string enum value explicitly
   - redundant_string_enum_value
 
-
-
 opt_in_rules:
-
   # Rationale: When using map, we think of it being used to transform a current array into something else
   - array_init
 
@@ -417,7 +409,15 @@ opt_in_rules:
   - xct_specific_matcher
 
 attributes:
-  always_on_same_line: ["@IBAction", "@IBSegueAction", "@NSManaged", "@escaping", "@objc", "@frozen"]
+  always_on_same_line:
+    [
+      "@IBAction",
+      "@IBSegueAction",
+      "@NSManaged",
+      "@escaping",
+      "@objc",
+      "@frozen",
+    ]
 
 file_length:
   warning: 1000
