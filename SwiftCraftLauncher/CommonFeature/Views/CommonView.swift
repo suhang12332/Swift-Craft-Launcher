@@ -183,10 +183,10 @@ extension View {
     }
 
     @ViewBuilder
-    func `if`<Content: View>(
+    func `if`<Content>(
         _ condition: Bool,
         transform: (Self) -> Content
-    ) -> some View {
+    ) -> some View where Content: View {
         if condition {
             transform(self)
         } else {
