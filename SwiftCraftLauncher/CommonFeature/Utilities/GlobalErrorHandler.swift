@@ -227,6 +227,7 @@ extension GlobalError {
     /// 从其他错误类型转换为全局错误
     static func from(_ error: Error) -> GlobalError {
         switch error {
+        // swiftlint:disable:next prefer_self_in_static_references
         case let globalError as GlobalError:
             return globalError
 
@@ -236,7 +237,7 @@ extension GlobalError {
         default:
             if let urlError = error as? URLError {
                 let level: ErrorLevel = urlError.code == .cancelled ? .silent : .notification
-                return GlobalError.network(
+                return Self.network(
                     chineseMessage: urlError.localizedDescription,
                     i18nKey: "error.network.url",
                     level: level
@@ -245,14 +246,14 @@ extension GlobalError {
 
             let nsError = error as NSError
             if nsError.domain == NSCocoaErrorDomain {
-                return GlobalError.fileSystem(
+                return Self.fileSystem(
                     chineseMessage: nsError.localizedDescription,
                     i18nKey: "error.filesystem.cocoa",
                     level: .notification
                 )
             }
 
-            return GlobalError.unknown(
+            return Self.unknown(
                 chineseMessage: error.localizedDescription,
                 i18nKey: "error.unknown.generic",
                 level: .silent
@@ -271,19 +272,19 @@ extension GlobalError {
     private static func fromMinecraftFriendsServiceError(_ error: MinecraftFriendsServiceError) -> GlobalError {
         switch error {
         case let .network(message, key, level):
-            return GlobalError.network(
+            return Self.network(
                 chineseMessage: message,
                 i18nKey: key,
                 level: minecraftFriendsErrorLevel(level)
             )
         case let .authentication(message, key, level):
-            return GlobalError.authentication(
+            return Self.authentication(
                 chineseMessage: message,
                 i18nKey: key,
                 level: minecraftFriendsErrorLevel(level)
             )
         case let .validation(message, key, level):
-            return GlobalError.validation(
+            return Self.validation(
                 chineseMessage: message,
                 i18nKey: key,
                 level: minecraftFriendsErrorLevel(level)
