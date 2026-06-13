@@ -182,11 +182,10 @@ extension View {
         }
     }
 
-    // swiftlint:disable:next prefer_self_in_static_references
     @ViewBuilder
-    func `if`<Content: View>(
+    func `if`(
         _ condition: Bool,
-        transform: (Self) -> Content
+        transform: (Self) -> some View
     ) -> some View {
         if condition {
             transform(self)
