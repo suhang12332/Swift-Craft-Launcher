@@ -210,7 +210,7 @@ class AIChatManager: ObservableObject {
 
             // 处理文件附件（跳过图片）
             for attachment in message.attachments {
-                if case .file(let url, let fileName) = attachment {
+                if case let .file(url, fileName) = attachment {
                     let fileText = await processFile(url: url, fileName: fileName)
                     contentParts.append(fileText)
                 }
@@ -324,7 +324,7 @@ class AIChatManager: ObservableObject {
 
             // 处理文件附件（跳过图片）
             for attachment in message.attachments {
-                if case .file(let url, let fileName) = attachment {
+                if case let .file(url, fileName) = attachment {
                     let fileText = await processFile(url: url, fileName: fileName)
                     contentParts.append(fileText)
                 }
@@ -422,7 +422,7 @@ class AIChatManager: ObservableObject {
 
             // 处理文件附件
             for attachment in message.attachments {
-                if case .file(let url, let fileName) = attachment {
+                if case let .file(url, fileName) = attachment {
                     let fileText = await processFile(url: url, fileName: fileName)
                     parts.append(["text": fileText])
                 }
