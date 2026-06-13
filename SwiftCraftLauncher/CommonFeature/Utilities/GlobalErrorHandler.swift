@@ -227,7 +227,6 @@ extension GlobalError {
     /// 从其他错误类型转换为全局错误
     static func from(_ error: Error) -> GlobalError {
         switch error {
-        // swiftlint:disable:next prefer_self_in_static_references
         case let globalError as GlobalError:
             return globalError
 

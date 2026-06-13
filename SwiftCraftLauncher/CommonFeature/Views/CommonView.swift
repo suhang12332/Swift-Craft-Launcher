@@ -182,7 +182,6 @@ extension View {
         }
     }
 
-    // swiftlint:disable:next prefer_self_in_static_references
     @ViewBuilder
     func `if`<Content: View>(
         _ condition: Bool,
