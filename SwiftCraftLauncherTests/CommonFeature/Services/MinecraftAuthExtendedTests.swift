@@ -48,9 +48,9 @@ final class MinecraftAuthExtendedTests: XCTestCase {
     // MARK: - TokenResponse
 
     func testTokenResponse_codable_withRefreshToken() throws {
-        let json = """
+        let json = Data("""
         {"access_token": "at", "refresh_token": "rt"}
-        """.data(using: .utf8)!
+        """.utf8)
         let decoded = try JSONDecoder().decode(TokenResponse.self, from: json)
 
         XCTAssertEqual(decoded.accessToken, "at")
@@ -58,9 +58,9 @@ final class MinecraftAuthExtendedTests: XCTestCase {
     }
 
     func testTokenResponse_codable_withoutRefreshToken() throws {
-        let json = """
+        let json = Data("""
         {"access_token": "at"}
-        """.data(using: .utf8)!
+        """.utf8)
         let decoded = try JSONDecoder().decode(TokenResponse.self, from: json)
 
         XCTAssertEqual(decoded.accessToken, "at")
@@ -68,15 +68,15 @@ final class MinecraftAuthExtendedTests: XCTestCase {
     }
 
     func testTokenResponse_codable_invalidJSON() {
-        let json = "not json".data(using: .utf8)!
+        let json = Data("not json".utf8)
         let decoded = try? JSONDecoder().decode(TokenResponse.self, from: json)
         XCTAssertNil(decoded)
     }
 
     func testTokenResponse_codable_missingAccessToken() {
-        let json = """
+        let json = Data("""
         {"refresh_token": "rt"}
-        """.data(using: .utf8)!
+        """.utf8)
         let decoded = try? JSONDecoder().decode(TokenResponse.self, from: json)
         XCTAssertNil(decoded)
     }
@@ -98,9 +98,9 @@ final class MinecraftAuthExtendedTests: XCTestCase {
     }
 
     func testXboxLiveTokenResponse_codable_emptyXui() throws {
-        let json = """
+        let json = Data("""
         {"Token": "tok", "DisplayClaims": {"xui": []}}
-        """.data(using: .utf8)!
+        """.utf8)
         let decoded = try JSONDecoder().decode(XboxLiveTokenResponse.self, from: json)
 
         XCTAssertEqual(decoded.token, "tok")
@@ -110,7 +110,7 @@ final class MinecraftAuthExtendedTests: XCTestCase {
     // MARK: - MinecraftProfileResponse
 
     func testMinecraftProfileResponse_codable_withSkinsAndCapes() throws {
-        let json = """
+        let json = Data("""
         {
             "id": "uuid-123",
             "name": "TestPlayer",
@@ -122,7 +122,7 @@ final class MinecraftAuthExtendedTests: XCTestCase {
                 {"id": "cape-1", "state": "ACTIVE", "url": "https://example.com/cape.png", "alias": "minecon"}
             ]
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let decoded = try JSONDecoder().decode(MinecraftProfileResponse.self, from: json)
 
@@ -137,13 +137,13 @@ final class MinecraftAuthExtendedTests: XCTestCase {
     }
 
     func testMinecraftProfileResponse_codable_noSkins() throws {
-        let json = """
+        let json = Data("""
         {
             "id": "uuid",
             "name": "NoSkin",
             "skins": []
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let decoded = try JSONDecoder().decode(MinecraftProfileResponse.self, from: json)
 
@@ -240,7 +240,7 @@ final class MinecraftAuthExtendedTests: XCTestCase {
     // MARK: - MinecraftEntitlementsResponse
 
     func testMinecraftEntitlementsResponse_codable() throws {
-        let json = """
+        let json = Data("""
         {
             "items": [
                 {"name": "product_minecraft", "signature": "sig1"},
@@ -249,7 +249,7 @@ final class MinecraftAuthExtendedTests: XCTestCase {
             "signature": "main-sig",
             "keyId": "key-1"
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let decoded = try JSONDecoder().decode(MinecraftEntitlementsResponse.self, from: json)
 
@@ -260,9 +260,9 @@ final class MinecraftAuthExtendedTests: XCTestCase {
     }
 
     func testMinecraftEntitlementsResponse_emptyItems() throws {
-        let json = """
+        let json = Data("""
         {"items": [], "signature": "sig", "keyId": "k"}
-        """.data(using: .utf8)!
+        """.utf8)
 
         let decoded = try JSONDecoder().decode(MinecraftEntitlementsResponse.self, from: json)
         XCTAssertTrue(decoded.items.isEmpty)
@@ -301,12 +301,20 @@ final class MinecraftAuthExtendedTests: XCTestCase {
 
     func testAuthenticationState_authenticated_equatable() {
         let profile1 = MinecraftProfileResponse(
-            id: "id", name: "A", skins: [], capes: nil,
-            accessToken: "", authXuid: ""
+            id: "id",
+            name: "A",
+            skins: [],
+            capes: nil,
+            accessToken: "",
+            authXuid: ""
         )
         let profile2 = MinecraftProfileResponse(
-            id: "id", name: "A", skins: [], capes: nil,
-            accessToken: "", authXuid: ""
+            id: "id",
+            name: "A",
+            skins: [],
+            capes: nil,
+            accessToken: "",
+            authXuid: ""
         )
 
         XCTAssertEqual(
@@ -317,12 +325,20 @@ final class MinecraftAuthExtendedTests: XCTestCase {
 
     func testAuthenticationState_authenticated_notEqual_differentProfile() {
         let profile1 = MinecraftProfileResponse(
-            id: "id1", name: "A", skins: [], capes: nil,
-            accessToken: "", authXuid: ""
+            id: "id1",
+            name: "A",
+            skins: [],
+            capes: nil,
+            accessToken: "",
+            authXuid: ""
         )
         let profile2 = MinecraftProfileResponse(
-            id: "id2", name: "B", skins: [], capes: nil,
-            accessToken: "", authXuid: ""
+            id: "id2",
+            name: "B",
+            skins: [],
+            capes: nil,
+            accessToken: "",
+            authXuid: ""
         )
 
         XCTAssertNotEqual(

@@ -68,8 +68,10 @@ final class PlayerAuthTests: XCTestCase {
         let encoded = try JSONEncoder().encode(credential)
         let decoded = try JSONDecoder().decode(AuthCredential.self, from: encoded)
 
-        XCTAssertNotNil(decoded.expiresAt)
-        XCTAssertEqual(decoded.expiresAt!.timeIntervalSince1970, futureDate.timeIntervalSince1970, accuracy: 1.0)
+        guard let expiresAt = decoded.expiresAt else {
+            return XCTFail("expiresAt should not be nil")
+        }
+        XCTAssertEqual(expiresAt.timeIntervalSince1970, futureDate.timeIntervalSince1970, accuracy: 1.0)
     }
 
     func testAuthCredential_codable_pastDate() throws {
@@ -306,21 +308,21 @@ final class PlayerAuthTests: XCTestCase {
     }
 
     func testAuthCredential_decode_invalidJSON() {
-        let invalidJSON = "not valid json".data(using: .utf8)!
+        let invalidJSON = Data("not valid json".utf8)
         let decoded = try? JSONDecoder().decode(AuthCredential.self, from: invalidJSON)
         XCTAssertNil(decoded)
     }
 
     func testAuthCredential_decode_missingRequiredField() {
-        let json = """
+        let json = Data("""
         {"userId": "u", "accessToken": "a"}
-        """.data(using: .utf8)!
+        """.utf8)
         let decoded = try? JSONDecoder().decode(AuthCredential.self, from: json)
         XCTAssertNil(decoded)
     }
 
     func testAuthCredential_decode_emptyJSON() {
-        let json = "{}".data(using: .utf8)!
+        let json = Data("{}".utf8)
         let decoded = try? JSONDecoder().decode(AuthCredential.self, from: json)
         XCTAssertNil(decoded)
     }

@@ -4,15 +4,15 @@ import XCTest
 final class OfflineUserServerMapTests: XCTestCase {
 
     private let suiteName = "OfflineUserServerMapTests_\(UUID().uuidString)"
-    private var defaults: UserDefaults!
+    private var defaults: UserDefaults?
 
     override func setUp() {
         super.setUp()
-        defaults = UserDefaults(suiteName: suiteName)!
+        defaults = UserDefaults(suiteName: suiteName)
     }
 
     override func tearDown() {
-        defaults.removePersistentDomain(forName: suiteName)
+        defaults?.removePersistentDomain(forName: suiteName)
         super.tearDown()
     }
 

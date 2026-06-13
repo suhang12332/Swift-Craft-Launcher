@@ -162,9 +162,9 @@ final class CurseForgeExportTests: XCTestCase {
     }
 
     func testManifestFile_codable_decodeFromJSON() throws {
-        let json = """
+        let json = Data("""
         {"projectID": 100, "fileID": 200, "required": true, "isLocked": false}
-        """.data(using: .utf8)!
+        """.utf8)
 
         let decoded = try JSONDecoder().decode(CurseForgeManifestBuilder.ManifestFile.self, from: json)
 

@@ -125,15 +125,15 @@ final class ModrinthModelTests: XCTestCase {
     }
 
     func testModrinthProjectDetail_decode_invalidJSON() {
-        let json = "not valid".data(using: .utf8)!
+        let json = Data("not valid".utf8)
         let decoded = try? JSONDecoder().decode(ModrinthProjectDetail.self, from: json)
         XCTAssertNil(decoded)
     }
 
     func testModrinthProjectDetail_decode_missingRequiredField() {
-        let json = """
+        let json = Data("""
         {"slug": "s", "title": "T"}
-        """.data(using: .utf8)!
+        """.utf8)
         let decoded = try? JSONDecoder().decode(ModrinthProjectDetail.self, from: json)
         XCTAssertNil(decoded)
     }
@@ -388,10 +388,22 @@ final class ModrinthModelTests: XCTestCase {
 
     func testModrinthResult_codable_roundTrip() throws {
         let project = ModrinthProject(
-            projectId: "p1", projectType: "mod", slug: "s", author: "a",
-            title: "T", description: "d", categories: [], displayCategories: [],
-            versions: [], downloads: 10, follows: 5, iconUrl: nil,
-            license: "", clientSide: "required", serverSide: "optional", fileName: nil
+            projectId: "p1",
+            projectType: "mod",
+            slug: "s",
+            author: "a",
+            title: "T",
+            description: "d",
+            categories: [],
+            displayCategories: [],
+            versions: [],
+            downloads: 10,
+            follows: 5,
+            iconUrl: nil,
+            license: "",
+            clientSide: "required",
+            serverSide: "optional",
+            fileName: nil
         )
         let result = ModrinthResult(hits: [project], offset: 0, limit: 10, totalHits: 100)
 
@@ -432,6 +444,7 @@ final class ModrinthModelTests: XCTestCase {
 
     // MARK: - Helpers
 
+    // swiftlint:disable:next function_parameter_count
     private func makeDetail(
         id: String,
         slug: String,

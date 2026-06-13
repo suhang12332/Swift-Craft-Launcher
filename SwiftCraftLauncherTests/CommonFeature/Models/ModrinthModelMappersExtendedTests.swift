@@ -162,10 +162,11 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
                         "description": "A Server",
                         "players_online": 10,
                         "players_max": 100,
-                    ] as [String: Any]
-                ] as [String: Any]
-            ] as [String: Any]
+                    ] as [String: Any],
+                ] as [String: Any],
+            ] as [String: Any],
         ]
+        // swiftlint:disable:next force_try
         let data = try! JSONSerialization.data(withJSONObject: dict)
         let decoder = JSONDecoder()
         let formatter = ISO8601DateFormatter()
@@ -178,6 +179,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             fallback.formatOptions = [.withInternetDateTime]
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)
         }
+        // swiftlint:disable:next force_try
         let v3 = try! decoder.decode(ModrinthProjectDetailV3.self, from: data)
 
         let detail = ModrinthProjectDetail.fromV3(v3)
@@ -296,6 +298,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
 
     // MARK: - Helpers
 
+    // swiftlint:disable:next function_parameter_count
     private func makeV3(
         id: String,
         slug: String,
@@ -346,6 +349,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
                 dict["minecraft_java_server"] = jsonObj
             }
         }
+        // swiftlint:disable:next force_try
         let data = try! JSONSerialization.data(withJSONObject: dict)
         let decoder = JSONDecoder()
         let formatter = ISO8601DateFormatter()
@@ -358,6 +362,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             fallback.formatOptions = [.withInternetDateTime]
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)
         }
+        // swiftlint:disable:next force_try
         return try! decoder.decode(ModrinthProjectDetailV3.self, from: data)
     }
 
@@ -415,9 +420,10 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
                     "description": "A Server",
                     "players_online": online,
                     "players_max": max,
-                ] as [String: Any]
+                ] as [String: Any],
             ] as [String: Any]
         }
+        // swiftlint:disable:next force_try
         let data = try! JSONSerialization.data(withJSONObject: dict)
         let decoder = JSONDecoder()
         let formatter = ISO8601DateFormatter()
@@ -430,6 +436,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             fallback.formatOptions = [.withInternetDateTime]
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)
         }
+        // swiftlint:disable:next force_try
         return try! decoder.decode(ModrinthMinecraftJavaServerInfo.self, from: data)
     }
 }

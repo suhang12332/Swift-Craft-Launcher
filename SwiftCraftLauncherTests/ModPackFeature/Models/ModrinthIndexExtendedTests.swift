@@ -47,9 +47,9 @@ final class ModrinthIndexExtendedTests: XCTestCase {
     }
 
     func testModrinthIndexFileHashes_decode_fromJSON() throws {
-        let json = """
+        let json = Data("""
         {"sha1": "a1b2c3", "sha512": "d4e5f6", "custom_hash": "abc123"}
-        """.data(using: .utf8)!
+        """.utf8)
         let decoded = try JSONDecoder().decode(ModrinthIndexFileHashes.self, from: json)
 
         XCTAssertEqual(decoded.sha1, "a1b2c3")
@@ -186,8 +186,8 @@ final class ModrinthIndexExtendedTests: XCTestCase {
                 ModrinthIndexProjectDependency(
                     projectId: "abc123",
                     versionId: "def456",
-                    dependencyType: "required"
-                )
+                    dependencyType: "required",
+                ),
             ]
         )
 
@@ -240,7 +240,7 @@ final class ModrinthIndexExtendedTests: XCTestCase {
     }
 
     func testModrinthIndexDependencies_decode_fromJSON() throws {
-        let json = """
+        let json = Data("""
         {
             "minecraft": "1.20.1",
             "forge-loader": "47.2.0",
@@ -248,7 +248,7 @@ final class ModrinthIndexExtendedTests: XCTestCase {
             "quilt-loader": "0.22.0",
             "neoforge-loader": "21.0.0"
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         let decoded = try JSONDecoder().decode(ModrinthIndexDependencies.self, from: json)
 
