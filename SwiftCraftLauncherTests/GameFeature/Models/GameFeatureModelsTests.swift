@@ -124,9 +124,9 @@ final class GameFeatureModelsTests: XCTestCase {
 
     func testResourceType_systemImage() {
         XCTAssertEqual(ResourceType.mod.systemImage, "puzzlepiece.extension")
-        XCTAssertEqual(ResourceType.datapack.systemImage, "doc.on.doc")
+        XCTAssertEqual(ResourceType.datapack.systemImage, "doc.text")
         XCTAssertEqual(ResourceType.shader.systemImage, "sparkles")
-        XCTAssertEqual(ResourceType.resourcepack.systemImage, "photo.stack")
+        XCTAssertEqual(ResourceType.resourcepack.systemImage, "paintpalette")
         XCTAssertEqual(ResourceType.modpack.systemImage, "cube.box")
         XCTAssertEqual(ResourceType.minecraftJavaServer.systemImage, "server.rack")
     }
