@@ -11,7 +11,7 @@ env:
 
 jobs:
   test:
-    runs-on: macos-15
+    runs-on: macos-26
 
     steps:
       # =========================
@@ -36,6 +36,12 @@ jobs:
 
       - name: Run SwiftLint
         run: swiftlint lint --strict
+
+      # =========================
+      # Localization Check
+      # =========================
+      - name: Check localization completeness
+        run: python3 .github/scripts/check_localization.py
 
       # =========================
       # Run Tests

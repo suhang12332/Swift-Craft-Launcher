@@ -24,6 +24,7 @@ struct GameActionButtons: View {
     @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
     @State private var showCrashAlert = false
     @State private var crashDirectory: URL?
+    @State private var activeAlert: ResourceButtonAlertType?
 
     init(
         game: GameVersionInfo,
@@ -55,6 +56,12 @@ struct GameActionButtons: View {
                     if isRunning {
                         await gameLaunchUseCase.stopGame(player: playerListViewModel.currentPlayer, game: game)
                     } else {
+                        // 检查是否有当前玩家
+                        if playerListViewModel.currentPlayer == nil {
+                            activeAlert = .noPlayerForLaunch
+                            return
+                        }
+
                         gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: true)
                         defer { gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false) }
                         await gameLaunchUseCase.launchGame(
@@ -124,6 +131,9 @@ struct GameActionButtons: View {
                 Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
             }
             .help("sidebar.context_menu.delete_game".localized())
+            .alert(item: $activeAlert) { alertType in
+                alertType.alert
+            }
             .alert(
                 "error.game_launch.game_crashed".localized(),
                 isPresented: $showCrashAlert

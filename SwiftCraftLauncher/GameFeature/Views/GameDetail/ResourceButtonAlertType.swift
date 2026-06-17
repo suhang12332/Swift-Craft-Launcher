@@ -11,8 +11,15 @@ import SwiftUI
 enum ResourceButtonAlertType: Identifiable {
     case noGame
     case noPlayer
+    case noPlayerForLaunch
 
-    var id: Self { self }
+    var id: String {
+        switch self {
+        case .noGame: return "noGame"
+        case .noPlayer: return "noPlayer"
+        case .noPlayerForLaunch: return "noPlayerForLaunch"
+        }
+    }
 
     /// 创建对应的 Alert
     var alert: Alert {
@@ -27,6 +34,12 @@ enum ResourceButtonAlertType: Identifiable {
             return Alert(
                 title: Text("sidebar.alert.no_player.title".localized()),
                 message: Text("sidebar.alert.no_player.message".localized()),
+                dismissButton: .default(Text("common.confirm".localized()))
+            )
+        case .noPlayerForLaunch:
+            return Alert(
+                title: Text("sidebar.alert.no_player.title".localized()),
+                message: Text("sidebar.alert.no_player_for_launch.message".localized()),
                 dismissButton: .default(Text("common.confirm".localized()))
             )
         }
