@@ -38,6 +38,12 @@ jobs:
         run: swiftlint lint --strict
 
       # =========================
+      # Localization Check
+      # =========================
+      - name: Check localization completeness
+        run: python3 .github/scripts/check_localization.py
+
+      # =========================
       # Run Tests
       # =========================
       - name: Run unit tests
