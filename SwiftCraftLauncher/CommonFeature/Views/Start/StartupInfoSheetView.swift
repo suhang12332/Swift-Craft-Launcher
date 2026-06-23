@@ -21,13 +21,10 @@ struct StartupInfoSheetView: View {
     var body: some View {
         CommonSheetView(
             header: {
-                VStack(spacing: 12) {
-                    // 标题
-                    if let title = announcementData?.title {
-                        Text(title)
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                    }
+                if let title = announcementData?.title {
+                    Text(title)
+                        .font(.title2)
+                        .fontWeight(.semibold)
                 }
             },
             body: {

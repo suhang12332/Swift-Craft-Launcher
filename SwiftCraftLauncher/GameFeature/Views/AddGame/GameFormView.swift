@@ -131,13 +131,11 @@ struct GameFormView: View {
 
     // MARK: - View Components
     private var headerView: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Text(currentModeTitle)
-                    .font(.headline)
-                Spacer()
-                importModePicker
-            }
+        HStack {
+            Text(currentModeTitle)
+                .font(.headline)
+            Spacer()
+            importModePicker
         }
     }
 

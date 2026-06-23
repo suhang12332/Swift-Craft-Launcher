@@ -77,6 +77,7 @@ struct AddPlayerSheetView: View {
                         authTypePicker
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             },
             body: {
                 switch viewModel.selectedAuthType {
