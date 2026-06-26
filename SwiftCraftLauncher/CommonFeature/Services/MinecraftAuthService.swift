@@ -150,7 +150,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
             let globalError = GlobalError.from(error)
             Logger.shared.error("Minecraft 认证失败: \(globalError.chineseMessage)")
             isLoading = false
-            authState = .error(globalError.chineseMessage)
+            authState = .error(globalError.localizedDescription)
         }
     }
 

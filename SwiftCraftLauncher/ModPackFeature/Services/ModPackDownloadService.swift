@@ -56,7 +56,7 @@ final class ModPackDownloadService {
                     return nil
                 }
                 let globalError = GlobalError.from(error)
-                onError?(globalError.chineseMessage, globalError.i18nKey)
+                onError?(globalError.localizedDescription, globalError.i18nKey)
                 return nil
             }
         } catch {

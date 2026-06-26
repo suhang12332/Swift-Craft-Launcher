@@ -149,7 +149,7 @@ struct MinecraftSkinUtils: View {
             } catch {
                 let globalError = GlobalError.from(error)
                 await MainActor.run {
-                    self.error = globalError.chineseMessage
+                    self.error = globalError.localizedDescription
                     self.isLoading = false
                 }
                 Logger.shared.error("❌ 皮肤加载失败: \(globalError.chineseMessage)")
