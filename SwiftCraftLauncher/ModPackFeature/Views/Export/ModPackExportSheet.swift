@@ -114,16 +114,19 @@ struct ModPackExportSheet: View {
                 .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            Picker("", selection: $viewModel.currentExportFormat) {
+            Menu {
                 ForEach(ModPackExportFormat.allCases, id: \.self) { format in
-                    Text(format.displayName).tag(format)
+                    Button(format.displayName) {
+                        viewModel.currentExportFormat = format
+                    }
                 }
+            } label: {
+                Text(viewModel.currentExportFormat.displayName)
             }
-            .labelsHidden()
-            .pickerStyle(.menu)
-            .fixedSize()
             .disabled(viewModel.isExporting)
+            .fixedSize()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder private var bodyView: some View {

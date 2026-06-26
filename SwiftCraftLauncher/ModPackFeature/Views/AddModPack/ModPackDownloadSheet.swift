@@ -72,11 +72,9 @@ struct ModPackDownloadSheet: View {
     // MARK: - View Components
 
     private var headerView: some View {
-        HStack {
-            Text("modpack.download.title".localized())
-                .font(.headline)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
+        Text("modpack.download.title".localized())
+            .font(.headline)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var processView: some View {

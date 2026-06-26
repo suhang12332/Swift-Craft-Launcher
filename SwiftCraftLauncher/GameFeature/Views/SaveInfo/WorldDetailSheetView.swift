@@ -57,6 +57,7 @@ struct WorldDetailSheetView: View {
                 .bold()
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Body View
