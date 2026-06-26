@@ -261,6 +261,10 @@ jobs:
             echo "❌ archify 处理失败，使用原始应用"
           fi
 
+      - name: Remove untrusted taps
+        run: |
+          brew untap aws/tap || true
+
       - name: Install create-dmg
         run: |
           # Install create-dmg using Homebrew
