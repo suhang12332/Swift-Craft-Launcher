@@ -121,28 +121,4 @@ final class GeneralSettingsViewModel: ObservableObject {
         errorHandler.handle(globalError)
         error = globalError
     }
-
-    // MARK: - Restart
-
-    private func restartAppSafely() {
-        do {
-            try restartApp()
-        } catch {
-            present(GlobalError.from(error))
-        }
-    }
-
-    private func restartApp() throws {
-        let appURL = Bundle.main.bundleURL
-
-        let task = Process()
-        task.executableURL = URL(fileURLWithPath: "/usr/bin/open")
-        task.arguments = [appURL.path]
-
-        try task.run()
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            NSApplication.shared.terminate(nil)
-        }
-    }
 }

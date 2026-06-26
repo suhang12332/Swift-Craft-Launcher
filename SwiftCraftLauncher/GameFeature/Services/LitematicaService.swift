@@ -34,15 +34,6 @@ class LitematicaService {
         }
     }
 
-    /// 解析 Litematica 文件的元数据（用于列表显示）
-    /// - Parameter filePath: 文件路径
-    /// - Returns: 元数据信息
-    private func parseLitematicaMetadata(filePath: URL) async throws -> LitematicaMetadata? {
-        try await Task.detached(priority: .userInitiated) {
-            try parseLitematicaMetadataSync(filePath: filePath)
-        }.value
-    }
-
     /// 读取完整的 Litematica 投影元数据
     /// - Parameter filePath: 文件路径
     /// - Returns: 完整的元数据信息
@@ -58,30 +49,30 @@ class LitematicaService {
     }
 }
 
-// MARK: - 文件内同步辅助（在 Task.detached 中调用，避免主线程文件 I/O）
-private func parseLitematicaMetadataSync(filePath: URL) throws -> LitematicaMetadata? {
-    let data = try Data(contentsOf: filePath)
-    let parser = NBTParser(data: data)
-    let nbtData = try parser.parse()
-    guard let metadata = nbtData["Metadata"] as? [String: Any] else { return nil }
-    let author = metadata["Author"] as? String
-    let description = metadata["Description"] as? String
-    let version = metadata["Version"] as? String
+private struct ListMetadata {
+    let author: String?
+    let description: String?
+    let version: String?
+    let regionCount: Int?
+    let totalBlocks: Int?
+}
+
+private func parseListMetadata(filePath: URL) -> ListMetadata? {
+    guard let data = try? Data(contentsOf: filePath),
+          let nbtData = try? NBTParser(data: data).parse(),
+          let meta = nbtData["Metadata"] as? [String: Any] else { return nil }
+    let author = meta["Author"] as? String
+    let description = meta["Description"] as? String
+    let version = meta["Version"] as? String
     var regionCount: Int?
     var totalBlocks: Int?
-    if let rc = metadata["RegionCount"] {
+    if let rc = meta["RegionCount"] {
         if let rcInt = rc as? Int32 { regionCount = Int(rcInt) } else if let rcInt = rc as? Int { regionCount = rcInt }
     }
-    if let tb = metadata["TotalBlocks"] {
+    if let tb = meta["TotalBlocks"] {
         if let tbInt = tb as? Int32 { totalBlocks = Int(tbInt) } else if let tbInt = tb as? Int { totalBlocks = tbInt }
     }
-    return LitematicaMetadata(
-        author: author,
-        description: description,
-        version: version,
-        regionCount: regionCount,
-        totalBlocks: totalBlocks
-    )
+    return ListMetadata(author: author, description: description, version: version, regionCount: regionCount, totalBlocks: totalBlocks)
 }
 
 private func loadLitematicaFilesSync(schematicsDir: URL) throws -> [LitematicaInfo] {
@@ -98,7 +89,7 @@ private func loadLitematicaFilesSync(schematicsDir: URL) throws -> [LitematicaIn
         let fileName = filePath.lastPathComponent
         let creationDate = try? filePath.resourceValues(forKeys: [.creationDateKey]).creationDate
         let fileSize = (try? filePath.resourceValues(forKeys: [.fileSizeKey]).fileSize) ?? 0
-        let metadata = try? parseLitematicaMetadataSync(filePath: filePath)
+        let metadata = parseListMetadata(filePath: filePath)
         litematicaFiles.append(LitematicaInfo(
             name: fileName,
             path: filePath,

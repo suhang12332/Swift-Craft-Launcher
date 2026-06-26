@@ -44,15 +44,6 @@ struct LitematicaInfo: Identifiable, Equatable {
     }
 }
 
-/// Litematica 投影元数据结构（用于列表显示）
-struct LitematicaMetadata {
-    let author: String?
-    let description: String?
-    let version: String?
-    let regionCount: Int?
-    let totalBlocks: Int?
-}
-
 /// Litematica 投影完整元数据结构（用于详情显示）
 struct LitematicMetadata {
     let name: String

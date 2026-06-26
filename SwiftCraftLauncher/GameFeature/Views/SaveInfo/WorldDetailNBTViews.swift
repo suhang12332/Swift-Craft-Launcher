@@ -28,7 +28,6 @@ struct NBTEntryView: View {
     @Binding var expandedKeys: Set<String>
     let indentLevel: Int
     let fullKey: String
-    private let indentWidth: CGFloat = 20
     @State private var isHovered = false
 
     init(key: String, value: Any, expandedKeys: Binding<Set<String>>, indentLevel: Int, fullKey: String? = nil) {

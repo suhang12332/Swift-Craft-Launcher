@@ -9,7 +9,6 @@ import Foundation
 class CommonFileManager {
     let librariesDir: URL
     var onProgressUpdate: ((String, Int, Int) -> Void)?
-    private let fileManager = FileManager.default
     private let errorHandler: GlobalErrorHandler
     private let javaManager: JavaManager
 

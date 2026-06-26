@@ -521,7 +521,7 @@ enum URLConfig {
         }
 
         /// AI 服务相关
-        enum AI {
+        enum AIService {
             /// OpenAI API 基础 URL
             static let openAIBaseURL = "https://api.openai.com"
             /// Ollama 默认本地地址

@@ -9,10 +9,6 @@ class MinecraftFileManager {
     let resourceFilesCount = NSLockingCounter()
     var coreTotalFiles = 0
     var resourceTotalFiles = 0
-    private let downloadQueue = DispatchQueue(
-        label: "com.launcher.download",
-        qos: .userInitiated
-    )
     private let errorHandler: GlobalErrorHandler
 
     var onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?

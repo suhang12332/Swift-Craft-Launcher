@@ -12,7 +12,6 @@ final class SkinLibraryStore {
     private let upsertSQL: String
     private let deleteSQL: String
     private let selectAllSQL: String
-    private let findBySHA1SQL: String
 
     init(fileManager: FileManager = .default) {
         self.fileManager = fileManager
@@ -35,12 +34,6 @@ final class SkinLibraryStore {
         SELECT \(selectColumns)
         FROM \(tableName)
         ORDER BY last_used_at DESC
-        """
-        self.findBySHA1SQL = """
-        SELECT \(selectColumns)
-        FROM \(tableName)
-        WHERE sha1 = ?
-        LIMIT 1
         """
     }
 
@@ -182,14 +175,6 @@ final class SkinLibraryStore {
         try? database.execute(
             "CREATE INDEX IF NOT EXISTS idx_skin_library_sha1 ON \(tableName)(sha1);"
         )
-    }
-
-    private func findItem(sha1: String) throws -> SkinLibraryItem? {
-        try withPreparedStatement(findBySHA1SQL) { statement in
-            SQLiteDatabase.bind(statement, index: 1, value: sha1)
-            guard sqlite3_step(statement) == SQLITE_ROW else { return nil }
-            return decodeItem(from: statement)
-        }
     }
 
     private func upsert(_ item: SkinLibraryItem) throws {

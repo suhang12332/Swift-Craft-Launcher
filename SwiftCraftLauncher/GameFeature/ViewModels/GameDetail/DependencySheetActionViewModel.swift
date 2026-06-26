@@ -34,11 +34,4 @@ final class DependencySheetActionViewModel: ObservableObject {
             isDownloadingAllDependencies.wrappedValue = false
         }
     }
-
-    private func handleDownloadError(_ error: Error) {
-        let globalError = GlobalError.from(error)
-        Logger.shared.error("依赖下载错误: \(globalError.chineseMessage)")
-        errorHandler.handle(globalError)
-        self.error = globalError
-    }
 }

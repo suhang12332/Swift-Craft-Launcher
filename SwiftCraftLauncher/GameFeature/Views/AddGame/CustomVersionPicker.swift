@@ -149,11 +149,4 @@ struct CustomVersionPicker: View {
         errorHandler.handle(globalError)
         error = globalError
     }
-
-    private func handleVersionSelectionError(_ error: Error) {
-        let globalError = GlobalError.from(error)
-        Logger.shared.error("版本选择错误: \(globalError.chineseMessage)")
-        errorHandler.handle(globalError)
-        self.error = globalError
-    }
 }
