@@ -30,7 +30,7 @@ enum YggdrasilServerPresets {
         YggdrasilServerConfig(
             name: "Ely.By",
             baseURL: URLConfig.API.Yggdrasil.elyBaseURL,
-            clientId: "swift-craft-launcher",
+            clientId: AppConstants.callbackURLScheme,
             clientSecret: AppConstants.elyClientSecret,
             redirectURI: URLConfig.API.Authentication.redirectUri,
             authorizePath: "/oauth2/v1",
