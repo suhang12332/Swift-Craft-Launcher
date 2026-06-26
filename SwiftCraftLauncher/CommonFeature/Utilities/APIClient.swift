@@ -34,14 +34,7 @@ enum APIClient {
         return decoder
     }()
 
-    private static let sharedSession: URLSession = {
-        let configuration = URLSessionConfiguration.default
-        configuration.requestCachePolicy = .useProtocolCachePolicy
-        configuration.timeoutIntervalForRequest = 30
-        configuration.timeoutIntervalForResource = 60
-        configuration.httpMaximumConnectionsPerHost = 6
-        return URLSession(configuration: configuration)
-    }()
+    private static let sharedSession: URLSession = NetworkSession.makeSession()
 
     private static let httpMethodGET = "GET"
     private static let httpMethodPOST = "POST"

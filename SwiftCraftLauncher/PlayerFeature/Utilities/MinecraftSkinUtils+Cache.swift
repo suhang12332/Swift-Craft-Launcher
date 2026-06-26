@@ -23,15 +23,6 @@ extension MinecraftSkinUtils {
         return cache
     }()
 
-    static let sharedURLSession: URLSession = {
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = MinecraftSkinConstants.networkTimeout
-        config.timeoutIntervalForResource = MinecraftSkinConstants.networkTimeout
-        config.requestCachePolicy = .useProtocolCachePolicy
-        config.urlCache = .shared
-        return URLSession(configuration: config)
-    }()
-
     static var cacheStats = CacheStats()
 
     static var memoryObserverSetup = false

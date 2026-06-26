@@ -62,9 +62,7 @@ enum ProgressDownloadManager {
     }
 
     private static func getRemoteFileSize(from url: URL) async throws -> Int64 {
-        var request = URLRequest(url: url)
-        request.httpMethod = "HEAD"
-        let (_, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
+        let (_, httpResponse) = try await ProgressDownloadSession.shared.head(url: url)
 
         guard httpResponse.statusCode == 200,
               let contentLength = httpResponse.value(forHTTPHeaderField: "Content-Length"),
@@ -127,9 +125,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
 
     private let lock = NSLock()
     private var handlers: [Int: ProgressDownloadTracker] = [:]
-    private lazy var session: URLSession = {
-        URLSession(configuration: .default, delegate: self, delegateQueue: nil)
-    }()
+    private lazy var session: URLSession = NetworkSession.makeSession(delegate: self)
 
     func download(
         from url: URL,
@@ -157,6 +153,20 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
         }, onCancel: {
             context.cancel()
         })
+    }
+
+    func head(url: URL) async throws -> (Data, HTTPURLResponse) {
+        var request = URLRequest(url: url)
+        request.httpMethod = "HEAD"
+        let (data, response) = try await session.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw GlobalError.network(
+                chineseMessage: "无效的 HTTP 响应",
+                i18nKey: "error.network.invalid_response",
+                level: .notification
+            )
+        }
+        return (data, httpResponse)
     }
 
     func urlSession(

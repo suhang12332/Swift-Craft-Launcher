@@ -138,15 +138,7 @@ enum DownloadManager {
     /// - Throws: GlobalError 当操作失败时
     static func downloadData(from url: URL) async throws -> Data {
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
-            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                throw GlobalError.download(
-                    chineseMessage: "HTTP 请求失败",
-                    i18nKey: "error.download.http_status_error",
-                    level: .notification
-                )
-            }
-            return data
+            return try await APIClient.get(url: url)
         } catch {
             if let globalError = error as? GlobalError {
                 throw globalError
