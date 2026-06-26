@@ -3,6 +3,10 @@ import Foundation
 enum ProgressDownloadManager {
     private static let maxRetryCount = 3
 
+    static func cleanup() {
+        ProgressDownloadSession.shared.finishTasksAndInvalidate()
+    }
+
     static func downloadFile(
         urlString: String,
         destinationURL: URL,
@@ -169,6 +173,32 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
         return (data, httpResponse)
     }
 
+    func invalidateAndCancel() {
+        lock.lock()
+        let pendingHandlers = handlers
+        handlers.removeAll()
+        lock.unlock()
+
+        for (_, tracker) in pendingHandlers {
+            tracker.complete(.failure(CancellationError()))
+        }
+
+        session.invalidateAndCancel()
+    }
+
+    func finishTasksAndInvalidate() {
+        lock.lock()
+        let pendingHandlers = handlers
+        handlers.removeAll()
+        lock.unlock()
+
+        for (_, tracker) in pendingHandlers {
+            tracker.complete(.failure(CancellationError()))
+        }
+
+        session.finishTasksAndInvalidate()
+    }
+
     func urlSession(
         _ session: URLSession,
         downloadTask: URLSessionDownloadTask,
@@ -191,6 +221,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
         if let httpResponse = downloadTask.response as? HTTPURLResponse,
            !(200...299).contains(httpResponse.statusCode) {
             tracker.complete(.failure(ProgressDownloadError.httpStatus(httpResponse.statusCode)))
+            removeTracker(for: downloadTask)
             return
         }
 
@@ -202,6 +233,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
         } catch {
             tracker.complete(.failure(error))
         }
+        removeTracker(for: downloadTask)
     }
 
     func urlSession(

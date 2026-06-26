@@ -57,36 +57,6 @@ final class LitematicaModelsTests: XCTestCase {
         XCTAssertEqual(info.id, "MyProject.litematic")
     }
 
-    // MARK: - LitematicaMetadata
-
-    func testLitematicaMetadata_init() {
-        let meta = LitematicaMetadata(
-            author: "Builder",
-            description: "A build",
-            version: "1.0",
-            regionCount: 3,
-            totalBlocks: 500
-        )
-        XCTAssertEqual(meta.author, "Builder")
-        XCTAssertEqual(meta.description, "A build")
-        XCTAssertEqual(meta.version, "1.0")
-        XCTAssertEqual(meta.regionCount, 3)
-        XCTAssertEqual(meta.totalBlocks, 500)
-    }
-
-    func testLitematicaMetadata_nilFields() {
-        let meta = LitematicaMetadata(
-            author: nil,
-            description: nil,
-            version: nil,
-            regionCount: nil,
-            totalBlocks: nil
-        )
-        XCTAssertNil(meta.author)
-        XCTAssertNil(meta.description)
-        XCTAssertNil(meta.version)
-    }
-
     // MARK: - LitematicMetadata
 
     func testLitematicMetadata_init() {

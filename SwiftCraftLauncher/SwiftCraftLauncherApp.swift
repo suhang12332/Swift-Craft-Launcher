@@ -75,6 +75,9 @@ struct SwiftCraftLauncherApp: App {
                     )
                 }
                 .onAppear(perform: cleanupWindowDataOnLaunch)
+                .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in
+                    ProgressDownloadManager.cleanup()
+                }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified(showsTitle: false))
