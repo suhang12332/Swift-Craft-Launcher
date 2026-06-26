@@ -29,9 +29,9 @@ enum AIProvider: String, CaseIterable, Identifiable {
     var baseURL: String {
         switch self {
         case .openai:
-            return "https://api.openai.com"
+            return URLConfig.API.AI.openAIBaseURL
         case .ollama:
-            return "http://localhost:11434"
+            return URLConfig.API.AI.ollamaDefaultBaseURL
 //        case .gemini:
 //            return "https://generativelanguage.googleapis.com"
         }
@@ -126,7 +126,7 @@ class AISettingsManager: ObservableObject {
     }
 
     @AppStorage(AppConstants.UserDefaultsKeys.aiOllamaBaseURL)
-    var ollamaBaseURL: String = "http://localhost:11434" {
+    var ollamaBaseURL: String = URLConfig.API.AI.ollamaDefaultBaseURL {
         didSet {
             objectWillChange.send()
         }
@@ -147,7 +147,7 @@ class AISettingsManager: ObservableObject {
     }
 
     @AppStorage(AppConstants.UserDefaultsKeys.aiAvatarURL)
-    var aiAvatarURL: String = "https://mcskins.top/assets/snippets/download/skin.php?n=7050" {
+    var aiAvatarURL: String = URLConfig.API.AI.defaultAvatarURL {
         didSet {
             objectWillChange.send()
         }

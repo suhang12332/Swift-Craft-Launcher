@@ -104,7 +104,7 @@ extension MinecraftFileManager {
         let destinationURL = assetDirectory.appendingPathComponent(asset.hash)
 
         do {
-            let urlString = "https://resources.download.minecraft.net/\(hashPrefix)/\(asset.hash)"
+            let urlString = URLConfig.API.MinecraftResources.asset(hashPrefix: hashPrefix, hash: asset.hash).absoluteString
             _ = try await DownloadManager.downloadFile(
                 urlString: urlString,
                 destinationURL: destinationURL,

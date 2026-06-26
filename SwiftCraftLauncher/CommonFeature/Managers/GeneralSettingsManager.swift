@@ -22,7 +22,7 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     }
 
     @AppStorage(AppConstants.UserDefaultsKeys.gitProxyURL)
-    var gitProxyURL: String = "https://gh-proxy.com" {
+    var gitProxyURL: String = URLConfig.Defaults.gitProxyURL {
         didSet { objectWillChange.send() }
     }
 

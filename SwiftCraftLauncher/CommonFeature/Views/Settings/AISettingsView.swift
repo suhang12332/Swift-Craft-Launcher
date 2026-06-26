@@ -65,7 +65,7 @@ public struct AISettingsView: View {
             // Ollama 地址设置（仅在选择 Ollama 时显示）
             if aiSettings.selectedProvider == .ollama {
                 LabeledContent("settings.ai.ollama.url.label".localized()) {
-                    TextField("http://localhost:11434", text: $aiSettings.ollamaBaseURL)
+                    TextField(URLConfig.API.AI.ollamaDefaultBaseURL, text: $aiSettings.ollamaBaseURL)
                         .textFieldStyle(.roundedBorder)
                         .labelsHidden()
                         .frame(maxWidth: 300)

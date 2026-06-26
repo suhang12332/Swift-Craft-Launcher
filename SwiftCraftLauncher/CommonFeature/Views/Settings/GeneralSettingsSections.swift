@@ -174,7 +174,7 @@ struct GeneralSettingsGitHubProxyRow: View {
                         .focusable(false)
                         .disabled(!generalSettings.enableGitHubProxy)
                     Button("settings.github_proxy.reset_default".localized()) {
-                        generalSettings.gitProxyURL = "https://gh-proxy.com"
+                        generalSettings.gitProxyURL = URLConfig.Defaults.gitProxyURL
                     }
                     .disabled(!generalSettings.enableGitHubProxy)
                 }
