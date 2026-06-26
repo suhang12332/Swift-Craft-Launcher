@@ -183,7 +183,7 @@ struct DependencySheetView: View {
             }
         } message: {
             if let error = actionViewModel.error {
-                Text(error.chineseMessage)
+                Text(error.localizedDescription)
             }
         }
     }

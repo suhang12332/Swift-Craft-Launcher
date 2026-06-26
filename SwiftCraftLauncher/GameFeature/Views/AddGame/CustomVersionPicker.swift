@@ -64,7 +64,7 @@ struct CustomVersionPicker: View {
             }
         } message: {
             if let error = error {
-                Text(error.chineseMessage)
+                Text(error.localizedDescription)
             }
         }
     }

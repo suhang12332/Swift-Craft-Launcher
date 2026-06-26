@@ -94,7 +94,7 @@ struct GameLocalResourceView: View {
             }
         } message: {
             if let error = viewModel.error {
-                Text(error.chineseMessage)
+                Text(error.localizedDescription)
             }
         }
     }

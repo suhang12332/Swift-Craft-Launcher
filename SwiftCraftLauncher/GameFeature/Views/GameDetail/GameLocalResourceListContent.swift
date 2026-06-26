@@ -12,7 +12,7 @@ struct GameLocalResourceListContent: View {
     var body: some View {
         Group {
             if let error = viewModel.error {
-                VStack { Text(error.chineseMessage) }
+                VStack { Text(error.localizedDescription) }
                     .frame(maxWidth: .infinity, alignment: .center)
                     .listRowSeparator(.hidden)
             } else {

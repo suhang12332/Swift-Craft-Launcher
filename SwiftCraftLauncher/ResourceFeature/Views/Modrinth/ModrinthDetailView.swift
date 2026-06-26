@@ -159,7 +159,7 @@ struct ModrinthDetailView: View {
             }
         } message: {
             if let error = coordinator.error {
-                Text(error.chineseMessage)
+                Text(error.localizedDescription)
             }
         }
         .onDisappear {
