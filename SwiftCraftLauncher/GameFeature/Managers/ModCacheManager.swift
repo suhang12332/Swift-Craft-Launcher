@@ -70,105 +70,13 @@ class ModCacheManager {
         }
     }
 
-    /// 获取所有 mod 缓存数据
-    /// - Returns: hash -> JSON Data 的字典
-    func getAll() -> [String: Data] {
-        return queue.sync {
-            do {
-                try ensureInitialized()
-                return try modCacheDB.getAllModCaches()
-            } catch {
-                errorHandler.handle(error)
-                return [:]
-            }
-        }
-    }
-
-    /// 移除 mod 缓存项
-    /// - Parameter hash: mod 文件的 hash 值
-    /// - Throws: GlobalError 当操作失败时
-    func remove(hash: String) throws {
-        try queue.sync {
-            try ensureInitialized()
-            try modCacheDB.deleteModCache(hash: hash)
-        }
-    }
-
-    /// 移除 mod 缓存项（静默版本）
-    /// - Parameter hash: mod 文件的 hash 值
-    func removeSilently(hash: String) {
-        do {
-            try remove(hash: hash)
-        } catch {
-            errorHandler.handle(error)
-        }
-    }
-
-    /// 批量移除 mod 缓存项
-    /// - Parameter hashes: 要删除的 hash 数组
-    /// - Throws: GlobalError 当操作失败时
-    func remove(hashes: [String]) throws {
-        try queue.sync {
-            try ensureInitialized()
-            try modCacheDB.deleteModCaches(hashes: hashes)
-        }
-    }
-
-    /// 批量移除 mod 缓存项（静默版本）
-    /// - Parameter hashes: 要删除的 hash 数组
-    func removeSilently(hashes: [String]) {
-        do {
-            try remove(hashes: hashes)
-        } catch {
-            errorHandler.handle(error)
-        }
-    }
-
-    /// 清空所有 mod 缓存
-    /// - Throws: GlobalError 当操作失败时
-    func clear() throws {
-        try queue.sync {
-            try ensureInitialized()
-            try modCacheDB.clearAllModCaches()
-        }
-    }
-
     /// 清空所有 mod 缓存（静默版本）
     func clearSilently() {
         do {
-            try clear()
-        } catch {
-            errorHandler.handle(error)
-        }
-    }
-
-    /// - Parameter hash: mod 文件的 hash 值
-    /// - Returns: 是否存在
-    func has(hash: String) -> Bool {
-        return queue.sync {
-            do {
+            try queue.sync {
                 try ensureInitialized()
-                return try modCacheDB.hasModCache(hash: hash)
-            } catch {
-                errorHandler.handle(error)
-                return false
+                try modCacheDB.clearAllModCaches()
             }
-        }
-    }
-
-    /// - Parameter data: hash -> JSON Data 的字典
-    /// - Throws: GlobalError 当操作失败时
-    func setAll(_ data: [String: Data]) throws {
-        try queue.sync {
-            try ensureInitialized()
-            try modCacheDB.saveModCaches(data)
-        }
-    }
-
-    /// - Parameter data: hash -> JSON Data 的字典
-    func setAllSilently(_ data: [String: Data]) {
-        do {
-            try setAll(data)
         } catch {
             errorHandler.handle(error)
         }

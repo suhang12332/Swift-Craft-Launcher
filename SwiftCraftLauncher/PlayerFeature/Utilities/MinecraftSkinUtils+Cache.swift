@@ -4,17 +4,6 @@ import Foundation
 
 extension MinecraftSkinUtils {
 
-    struct CacheStats {
-        var hits: Int = 0
-        var misses: Int = 0
-        var evictions: Int = 0
-
-        var hitRate: Double {
-            let total = hits + misses
-            return total > 0 ? Double(hits) / Double(total) : 0.0
-        }
-    }
-
     static let imageCache: NSCache<NSString, RenderedImageCache> = {
         let cache = NSCache<NSString, RenderedImageCache>()
         cache.countLimit = MinecraftSkinConstants.maxCacheSize
@@ -23,31 +12,18 @@ extension MinecraftSkinUtils {
         return cache
     }()
 
-    static var cacheStats = CacheStats()
-
-    static var memoryObserverSetup = false
-    static let memoryObserverQueue = DispatchQueue(label: "com.swiftcraftlauncher.skincache.memory")
-
     static let ciContext: CIContext = {
         let options: [CIContextOption: Any] = [
             .useSoftwareRenderer: true,
             .cacheIntermediates: false,
             .name: "MinecraftSkinProcessor",
         ]
-        let context = CIContext(options: options)
-        setupMemoryPressureObserverOnce()
-        return context
+        return CIContext(options: options)
     }()
 
     static func getCachedRenderedImage(for key: String) -> RenderedImageCache? {
         let nsKey = key as NSString
-        if let cache = imageCache.object(forKey: nsKey) {
-            cacheStats.hits += 1
-            return cache
-        } else {
-            cacheStats.misses += 1
-            return nil
-        }
+        return imageCache.object(forKey: nsKey)
     }
 
     static func hasNonTransparentPixels(_ cgImage: CGImage) -> Bool {
@@ -123,30 +99,6 @@ extension MinecraftSkinUtils {
 
     static func clearCache() {
         imageCache.removeAllObjects()
-        cacheStats = CacheStats()
         Logger.shared.debug("🧹 MinecraftSkinUtils 缓存已清理")
-    }
-
-    static func getCacheInfo() -> (countLimit: Int, memoryLimit: Int, hitRate: Double) {
-        (
-            countLimit: imageCache.countLimit,
-            memoryLimit: imageCache.totalCostLimit,
-            hitRate: cacheStats.hitRate
-        )
-    }
-
-    static func getCacheStats() -> (hits: Int, misses: Int, hitRate: Double) {
-        (
-            hits: cacheStats.hits,
-            misses: cacheStats.misses,
-            hitRate: cacheStats.hitRate
-        )
-    }
-
-    static func setupMemoryPressureObserverOnce() {
-        memoryObserverQueue.sync {
-            guard !memoryObserverSetup else { return }
-            memoryObserverSetup = true
-        }
     }
 }

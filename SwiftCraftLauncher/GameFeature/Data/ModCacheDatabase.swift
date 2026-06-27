@@ -150,77 +150,6 @@ class ModCacheDatabase {
         return jsonData
     }
 
-    /// 获取所有 mod 缓存数据
-    /// - Returns: hash -> JSON Data 的字典
-    /// - Throws: GlobalError 当操作失败时
-    func getAllModCaches() throws -> [String: Data] {
-        let sql = "SELECT hash, json_data FROM \(tableName)"
-
-        let statement = try db.prepare(sql)
-        defer { sqlite3_finalize(statement) }
-
-        var result: [String: Data] = [:]
-
-        while sqlite3_step(statement) == SQLITE_ROW {
-            guard let hash = SQLiteDatabase.stringColumn(statement, index: 0),
-                  let jsonData = SQLiteDatabase.dataColumn(statement, index: 1) else {
-                continue
-            }
-            result[hash] = jsonData
-        }
-
-        return result
-    }
-
-    /// 删除 mod 缓存数据
-    /// - Parameter hash: mod 文件的 hash 值
-    /// - Throws: GlobalError 当操作失败时
-    func deleteModCache(hash: String) throws {
-        try db.transaction {
-            let sql = "DELETE FROM \(tableName) WHERE hash = ?"
-            let statement = try db.prepare(sql)
-            defer { sqlite3_finalize(statement) }
-
-            SQLiteDatabase.bind(statement, index: 1, value: hash)
-
-            let result = sqlite3_step(statement)
-            guard result == SQLITE_DONE else {
-                let errorMessage = String(cString: sqlite3_errmsg(db.database))
-                throw GlobalError.validation(
-                    chineseMessage: "删除 mod 缓存失败: \(errorMessage)",
-                    i18nKey: "error.validation.mod_cache_delete_failed",
-                    level: .notification
-                )
-            }
-        }
-    }
-
-    /// 批量删除 mod 缓存数据
-    /// - Parameter hashes: 要删除的 hash 数组
-    /// - Throws: GlobalError 当操作失败时
-    func deleteModCaches(hashes: [String]) throws {
-        try db.transaction {
-            let sql = "DELETE FROM \(tableName) WHERE hash = ?"
-            let statement = try db.prepare(sql)
-            defer { sqlite3_finalize(statement) }
-
-            for hash in hashes {
-                sqlite3_reset(statement)
-                SQLiteDatabase.bind(statement, index: 1, value: hash)
-
-                let result = sqlite3_step(statement)
-                guard result == SQLITE_DONE else {
-                    let errorMessage = String(cString: sqlite3_errmsg(db.database))
-                    throw GlobalError.validation(
-                        chineseMessage: "批量删除 mod 缓存失败: \(errorMessage)",
-                        i18nKey: "error.validation.mod_cache_batch_delete_failed",
-                        level: .notification
-                    )
-                }
-            }
-        }
-    }
-
     /// 清空所有 mod 缓存数据
     /// - Throws: GlobalError 当操作失败时
     func clearAllModCaches() throws {
@@ -228,19 +157,5 @@ class ModCacheDatabase {
             let sql = "DELETE FROM \(tableName)"
             try db.execute(sql)
         }
-    }
-
-    /// - Parameter hash: mod 文件的 hash 值
-    /// - Returns: 是否存在
-    /// - Throws: GlobalError 当操作失败时
-    func hasModCache(hash: String) throws -> Bool {
-        let sql = "SELECT 1 FROM \(tableName) WHERE hash = ? LIMIT 1"
-
-        let statement = try db.prepare(sql)
-        defer { sqlite3_finalize(statement) }
-
-        SQLiteDatabase.bind(statement, index: 1, value: hash)
-
-        return sqlite3_step(statement) == SQLITE_ROW
     }
 }

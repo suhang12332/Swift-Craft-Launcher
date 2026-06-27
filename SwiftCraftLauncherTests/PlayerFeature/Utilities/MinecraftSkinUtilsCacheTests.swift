@@ -13,63 +13,39 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - CacheStats
-
-    func testCacheStats_initialHitRate_isZero() {
-        let stats = MinecraftSkinUtils.CacheStats()
-        XCTAssertEqual(stats.hitRate, 0.0)
-    }
-
-    func testCacheStats_hitsOnly_hitRateIsOne() {
-        var stats = MinecraftSkinUtils.CacheStats()
-        stats.hits = 10
-        XCTAssertEqual(stats.hitRate, 1.0)
-    }
-
-    func testCacheStats_mixedHitsMisses_correctRate() {
-        var stats = MinecraftSkinUtils.CacheStats()
-        stats.hits = 3
-        stats.misses = 7
-        XCTAssertEqual(stats.hitRate, 0.3, accuracy: 0.001)
-    }
-
-    func testCacheStats_allMisses_hitRateIsZero() {
-        var stats = MinecraftSkinUtils.CacheStats()
-        stats.misses = 5
-        XCTAssertEqual(stats.hitRate, 0.0)
-    }
-
     // MARK: - Cache Operations
 
-    func testClearCache_resetsStats() {
-        MinecraftSkinUtils.cacheStats.hits = 5
-        MinecraftSkinUtils.cacheStats.misses = 3
+    func testClearCache_removesAllObjects() {
+        let headSize = CGSize(width: 8, height: 8)
+        let layerSize = CGSize(width: 8, height: 8)
+        guard let headImage = createTestCGImage(size: headSize),
+              let layerImage = createTestCGImage(size: layerSize) else {
+            XCTFail("Failed to create test images")
+            return
+        }
+        let cacheEntry = RenderedImageCache(
+            headImage: headImage,
+            layerImage: layerImage,
+            hasLayerContent: false
+        )
+        let key = "test-clear-key"
+        MinecraftSkinUtils.imageCache.setObject(
+            cacheEntry,
+            forKey: key as NSString,
+            cost: cacheEntry.cost
+        )
+
+        XCTAssertNotNil(MinecraftSkinUtils.getCachedRenderedImage(for: key))
         MinecraftSkinUtils.clearCache()
-        let stats = MinecraftSkinUtils.getCacheStats()
-        XCTAssertEqual(stats.hits, 0)
-        XCTAssertEqual(stats.misses, 0)
-        XCTAssertEqual(stats.hitRate, 0.0)
+        XCTAssertNil(MinecraftSkinUtils.getCachedRenderedImage(for: key))
     }
 
-    func testGetCacheInfo_returnsCorrectLimits() {
-        let info = MinecraftSkinUtils.getCacheInfo()
-        XCTAssertEqual(info.countLimit, MinecraftSkinConstants.maxCacheSize)
-        XCTAssertEqual(info.memoryLimit, MinecraftSkinConstants.maxCacheMemory)
+    func testGetCachedRenderedImage_missReturnsNil() {
+        let result = MinecraftSkinUtils.getCachedRenderedImage(for: "nonexistent-key")
+        XCTAssertNil(result)
     }
 
-    func testGetCacheStats_initialValues() {
-        let stats = MinecraftSkinUtils.getCacheStats()
-        XCTAssertEqual(stats.hits, 0)
-        XCTAssertEqual(stats.misses, 0)
-    }
-
-    func testGetCachedRenderedImage_missIncrementsMissCount() {
-        _ = MinecraftSkinUtils.getCachedRenderedImage(for: "nonexistent-key")
-        let stats = MinecraftSkinUtils.getCacheStats()
-        XCTAssertEqual(stats.misses, 1)
-    }
-
-    func testGetCachedRenderedImage_hitIncrementsHitCount() {
+    func testGetCachedRenderedImage_hitReturnsCached() {
         let headSize = CGSize(width: 8, height: 8)
         let layerSize = CGSize(width: 8, height: 8)
         guard let headImage = createTestCGImage(size: headSize),
@@ -89,9 +65,9 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
             cost: cacheEntry.cost
         )
 
-        _ = MinecraftSkinUtils.getCachedRenderedImage(for: key)
-        let stats = MinecraftSkinUtils.getCacheStats()
-        XCTAssertEqual(stats.hits, 1)
+        let result = MinecraftSkinUtils.getCachedRenderedImage(for: key)
+        XCTAssertNotNil(result)
+        XCTAssertEqual(result?.headImage.width, 8)
     }
 
     // MARK: - RenderedImageCache
