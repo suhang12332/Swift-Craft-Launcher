@@ -91,8 +91,7 @@ class GameActionManager: ObservableObject {
                     Logger.shared.warning("删除游戏时未找到游戏目录，跳过文件删除: \(profileDir.path)")
                 }
 
-                // 清除该游戏相关的所有内存缓存（路径、mod 扫描结果）
-                AppPaths.invalidatePaths(forGameName: game.gameName)
+                // 清除该游戏相关的所有内存缓存（mod 扫描结果）
                 await modScanner.clearModCache(for: game.gameName)
 
                 // 删除游戏记录
@@ -129,7 +128,6 @@ class GameActionManager: ObservableObject {
                     try FileManager.default.removeItem(at: profileDir)
                 }
 
-                AppPaths.invalidatePaths(forGameName: name)
                 await modScanner.clearModCache(for: name)
 
                 // 删除当前工作路径下该名称的所有数据库记录

@@ -1,38 +1,16 @@
 import Foundation
 
 enum AppPaths {
-    // MARK: - Path Cache
-    /// 路径缓存，避免重复创建相同的 URL 对象
-    private static let pathCache = NSCache<NSString, NSURL>()
-    private static let cacheQueue = DispatchQueue(label: "com.swiftcraftlauncher.apppaths.cache", attributes: .concurrent)
-
-    // MARK: - Cached Path Helper
-    /// 获取缓存的 URL 路径，如果不存在则创建并缓存
-    private static func cachedURL(key: String, factory: () -> URL) -> URL {
-        return cacheQueue.sync {
-            if let cached = pathCache.object(forKey: key as NSString) {
-                return cached as URL
-            }
-            let url = factory()
-            pathCache.setObject(url as NSURL, forKey: key as NSString)
-            return url
-        }
-    }
-
     static var launcherSupportDirectory: URL {
     // guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
     //     return nil
     // }
-        return cachedURL(key: "launcherSupportDirectory") {
-            .applicationSupportDirectory.appendingPathComponent(Bundle.main.appName)
-        }
+        .applicationSupportDirectory.appendingPathComponent(Bundle.main.appName)
     }
 
     /// 认证相关文件根目录（Application Support/.../auth）
     static var authDirectory: URL {
-        cachedURL(key: "authDirectory") {
-            launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.auth, isDirectory: true)
-        }
+        launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.auth, isDirectory: true)
     }
 
     static var runtimeDirectory: URL {
@@ -68,64 +46,32 @@ enum AppPaths {
     }
 
     static func profileDirectory(gameName: String) -> URL {
-        cachedURL(key: "profileDirectory:\(gameName)") {
-            profileRootDirectory.appendingPathComponent(gameName)
-        }
+        profileRootDirectory.appendingPathComponent(gameName)
     }
 
     /// 某个游戏实例的 options.txt 路径
     static func optionsFile(gameName: String) -> URL {
-        cachedURL(key: "optionsFile:\(gameName)") {
-            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.option)
-        }
+        profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.option)
     }
 
     static func modsDirectory(gameName: String) -> URL {
-        cachedURL(key: "modsDirectory:\(gameName)") {
-            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.mods)
-        }
+        profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.mods)
     }
 
     static func datapacksDirectory(gameName: String) -> URL {
-        cachedURL(key: "datapacksDirectory:\(gameName)") {
-            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.datapacks)
-        }
+        profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.datapacks)
     }
 
     static func shaderpacksDirectory(gameName: String) -> URL {
-        cachedURL(key: "shaderpacksDirectory:\(gameName)") {
-            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.shaderpacks)
-        }
+        profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.shaderpacks)
     }
 
     static func resourcepacksDirectory(gameName: String) -> URL {
-        cachedURL(key: "resourcepacksDirectory:\(gameName)") {
-            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.resourcepacks)
-        }
+        profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.resourcepacks)
     }
 
     static func schematicsDirectory(gameName: String) -> URL {
-        cachedURL(key: "schematicsDirectory:\(gameName)") {
-            profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.schematics, isDirectory: true)
-        }
-    }
-
-    /// 清除指定游戏相关的路径缓存（删除游戏时调用）
-    /// - Parameter gameName: 游戏名称
-    static func invalidatePaths(forGameName gameName: String) {
-        let keys = [
-            "profileDirectory:\(gameName)",
-            "modsDirectory:\(gameName)",
-            "datapacksDirectory:\(gameName)",
-            "shaderpacksDirectory:\(gameName)",
-            "resourcepacksDirectory:\(gameName)",
-            "schematicsDirectory:\(gameName)",
-        ] as [NSString]
-        cacheQueue.sync(flags: .barrier) {
-            for key in keys {
-                pathCache.removeObject(forKey: key)
-            }
-        }
+        profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.schematics, isDirectory: true)
     }
 
     static let profileSubdirectories = [
@@ -188,16 +134,12 @@ extension AppPaths {
 
     /// 数据目录路径
     static var dataDirectory: URL {
-        cachedURL(key: "dataDirectory") {
-            launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.data, isDirectory: true)
-        }
+        launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.data, isDirectory: true)
     }
 
     /// 本地皮肤库存储目录
     static var skinsDirectory: URL {
-        cachedURL(key: "skinsDirectory") {
-            dataDirectory.appendingPathComponent("skins", isDirectory: true)
-        }
+        dataDirectory.appendingPathComponent("skins", isDirectory: true)
     }
 
     /// 游戏版本数据库路径

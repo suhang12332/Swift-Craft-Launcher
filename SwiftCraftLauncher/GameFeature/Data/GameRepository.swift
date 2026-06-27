@@ -34,6 +34,7 @@ class GameRepository: ObservableObject {
     private var workingPathCancellable: AnyCancellable?
     private var lastWorkingPath: String = ""
     private var initialLoadTask: Task<Void, Never>?
+    private var workspaceSwitchTask: Task<Void, Never>?
     private var hasLoadedInitialData = false
 
     @Published var workingPathChanged: Bool = false
@@ -85,13 +86,19 @@ class GameRepository: ObservableObject {
                 if newPath != self.lastWorkingPath {
                     self.lastWorkingPath = newPath
                     self.workingPathChanged = true
-                    Task { @MainActor in
+                    // 取消上一个切换任务
+                    self.workspaceSwitchTask?.cancel()
+                    self.workspaceSwitchTask = Task { @MainActor in
                         do {
                             try await self.loadGamesThrowing()
-                            await self.scanAllGamesModsDirectory()
+                            if !Task.isCancelled {
+                                await self.scanAllGamesModsDirectory()
+                            }
                             self.workingPathChanged = false
                         } catch {
-                            self.errorHandler.handle(error)
+                            if !(error is CancellationError) {
+                                self.errorHandler.handle(error)
+                            }
                             self.workingPathChanged = false
                         }
                     }
