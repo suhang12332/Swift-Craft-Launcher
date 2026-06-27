@@ -3,20 +3,6 @@ import SwiftUI
 // MARK: - ViewModel
 @MainActor
 final class CategoryContentViewModel: ObservableObject {
-    private struct CategoryContentCachePayload: Codable {
-        let categories: [Category]
-        let features: [Category]
-        let resolutions: [Category]
-        let performanceImpacts: [Category]
-        let versions: [GameVersion]
-        let loaders: [Loader]
-        let plays: [Category]
-        let metas: [Category]
-        let serverFeatures: [Category]
-        let communitys: [Category]
-        let updatedAt: Date
-    }
-
     // MARK: - Published Properties
     @Published private(set) var categories: [Category] = []
     @Published private(set) var features: [Category] = []
