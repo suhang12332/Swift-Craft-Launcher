@@ -6,19 +6,16 @@
 import SwiftUI
 import AppKit
 
-/// 详情工具栏中与当前游戏相关的操作按钮（启动/停止、设置、在访达中显示、导出、删除）
+/// 详情工具栏中与当前游戏相关的操作按钮（启动/停止、设置、在访达中显示、导入、导出、删除）
 struct GameActionButtons: View {
     let game: GameVersionInfo
     @Environment(\.controlActiveState)
     private var controlActiveState
 
-    @Environment(\.openSettings)
-    private var openSettings
     @EnvironmentObject private var detailState: ResourceDetailState
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
-    @ObservedObject private var selectedGameManager: SelectedGameManager
     @EnvironmentObject private var gameStatusManager: GameStatusManager
     @EnvironmentObject private var gameActionManager: GameActionManager
     @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
@@ -28,11 +25,9 @@ struct GameActionButtons: View {
 
     init(
         game: GameVersionInfo,
-        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
         gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter
     ) {
         self.game = game
-        _selectedGameManager = ObservedObject(wrappedValue: selectedGameManager)
         _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
     }
 
@@ -96,41 +91,21 @@ struct GameActionButtons: View {
             )
             .disabled(gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId))
 
-            Button {
-                selectedGameManager.setSelectedGameAndOpenAdvancedSettings(game.id)
-                openSettings()
-            } label: {
-                Label(
-                    "settings.game.advanced".localized(),
-                    systemImage: "gearshape"
+            if detailState.gameType == false && game.modLoader != GameLoader.vanilla.displayName {
+                ResourceImportButton(
+                    game: game,
+                    gameResourcesType: detailState.gameResourcesType
                 )
             }
-            .id(controlActiveState)
-            .help("settings.game.advanced".localized())
 
             Button {
                 gameActionManager.showInFinder(game: game)
             } label: {
                 Label("game.path".localized(), systemImage: "folder")
             }
-            .id(controlActiveState)
             .help("game.path".localized())
 
-            if game.modLoader != GameLoader.vanilla.displayName {
-                Button {
-                    gameDialogsPresenter.presentModPackExport(for: game)
-                } label: {
-                    Label("modpack.export.button".localized(), systemImage: "square.and.arrow.up")
-                }
-                .help("modpack.export.button".localized())
-            }
-
-            Button(role: .destructive) {
-                gameDialogsPresenter.requestGameDeletion(of: game)
-            } label: {
-                Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
-            }
-            .help("sidebar.context_menu.delete_game".localized())
+            GameMoreMenu(game: game)
             .alert(item: $activeAlert) { alertType in
                 alertType.alert
             }

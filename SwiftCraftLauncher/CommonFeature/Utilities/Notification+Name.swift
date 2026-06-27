@@ -11,6 +11,9 @@ extension Notification.Name {
     // MARK: - 游戏运行相关
     static let gameCrashed = Notification.Name("SwiftCraftLauncher.GameCrashed")
 
+    // MARK: - 资源相关
+    static let localResourceImported = Notification.Name("SwiftCraftLauncher.LocalResourceImported")
+
     // MARK: - 应用空闲/冻结相关
     static let appDidEnterIdleFreeze = Notification.Name("app.didEnterIdleFreeze")
     static let appDidExitIdleFreeze = Notification.Name("app.didExitIdleFreeze")

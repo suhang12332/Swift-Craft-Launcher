@@ -57,6 +57,14 @@ struct GameLocalResourceView: View {
                 searchText: searchText
             )
         }
+        .onReceive(NotificationCenter.default.publisher(for: .localResourceImported)) { _ in
+            viewModel.updateContextOnRefreshToken(
+                game: game,
+                query: query,
+                localFilter: localFilter,
+                searchText: searchText
+            )
+        }
         .onChange(of: query) { oldValue, newValue in
             if oldValue != newValue {
                 searchText = ""
