@@ -197,18 +197,6 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
         XCTAssertEqual(file.downloads.count, 1)
     }
 
-    func testModrinthIndexFile_init_withDict() {
-        let file = ModrinthIndexFile(
-            path: "mods/test.jar",
-            hashes: ["sha1": "abc"],
-            downloads: [],
-            fileSize: 512
-        )
-        XCTAssertEqual(file.path, "mods/test.jar")
-        XCTAssertEqual(file.hashes.sha1, "abc")
-        XCTAssertEqual(file.fileSize, 512)
-    }
-
     func testModrinthIndexFile_codable_roundtrip() throws {
         let hashes = ModrinthIndexFileHashes(from: ["sha1": "abc", "sha512": "def"])
         let file = ModrinthIndexFile(

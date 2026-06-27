@@ -22,8 +22,6 @@ struct ModrinthIndex: Codable {
     }
 }
 
-// MARK: - File Hashes (优化内存使用)
-/// 优化的文件哈希结构，使用结构体替代字典以减少内存占用
 /// 常用哈希（sha1, sha512）作为属性存储，其他哈希存储在可选字典中
 struct ModrinthIndexFileHashes: Codable {
     /// SHA1 哈希（最常用）
@@ -105,7 +103,6 @@ struct ModrinthIndexFile: Codable {
         case curseForgeFileId
     }
 
-    // 为兼容性提供默认初始化器
     init(
         path: String,
         hashes: ModrinthIndexFileHashes,
@@ -118,27 +115,6 @@ struct ModrinthIndexFile: Codable {
     ) {
         self.path = path
         self.hashes = hashes
-        self.downloads = downloads
-        self.fileSize = fileSize
-        self.env = env
-        self.source = source
-        self.curseForgeProjectId = curseForgeProjectId
-        self.curseForgeFileId = curseForgeFileId
-    }
-
-    // 兼容旧版本字典格式的初始化器
-    init(
-        path: String,
-        hashes: [String: String],
-        downloads: [String],
-        fileSize: Int,
-        env: ModrinthIndexFileEnv? = nil,
-        source: FileSource? = nil,
-        curseForgeProjectId: Int? = nil,
-        curseForgeFileId: Int? = nil
-    ) {
-        self.path = path
-        self.hashes = ModrinthIndexFileHashes(from: hashes)
         self.downloads = downloads
         self.fileSize = fileSize
         self.env = env

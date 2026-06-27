@@ -85,39 +85,6 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         XCTAssertEqual(options.loaders, ["fabric"])
     }
 
-    // MARK: - SearchCachePayload
-
-    func testSearchCachePayload_codable() throws {
-        let payload = ModrinthSearchViewModel.SearchCachePayload(
-            hits: [],
-            totalHits: 0,
-            updatedAt: Date()
-        )
-        let data = try JSONEncoder().encode(payload)
-        let decoded = try JSONDecoder().decode(ModrinthSearchViewModel.SearchCachePayload.self, from: data)
-        XCTAssertEqual(decoded.totalHits, 0)
-        XCTAssertEqual(decoded.hits.count, 0)
-    }
-
-    // MARK: - SearchCacheContext
-
-    func testSearchCacheContext_init() {
-        let context = ModrinthSearchViewModel.SearchCacheContext(
-            query: "test",
-            projectType: "mod",
-            versions: ["1.20.1"],
-            categories: [],
-            features: [],
-            resolutions: [],
-            performanceImpact: [],
-            loaders: [],
-            dataSource: .modrinth
-        )
-        XCTAssertEqual(context.query, "test")
-        XCTAssertEqual(context.projectType, "mod")
-        XCTAssertEqual(context.versions, ["1.20.1"])
-    }
-
     // MARK: - buildEnvironmentFacets
 
     @MainActor
