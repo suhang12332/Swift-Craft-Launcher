@@ -13,13 +13,15 @@ struct DetailView: View {
     @EnvironmentObject private var gameRepository: GameRepository
 
     @ViewBuilder var body: some View {
-        switch detailState.selectedItem {
-        case .game(let gameId):
-            gameDetailView(gameId: gameId).frame(maxWidth: .infinity, alignment: .leading)
-        case .resource(let type):
-            resourceDetailView(type: type)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        Group {
+            switch detailState.selectedItem {
+            case .game(let gameId):
+                gameDetailView(gameId: gameId)
+            case .resource(let type):
+                resourceDetailView(type: type)
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder

@@ -18,7 +18,7 @@ public struct PlayerSettingsView: View {
         playerListViewModel.currentPlayer
     }
 
-    private var canEditMinecraftFriendAccountSettings: Bool {
+    private var isMinecraftAccount: Bool {
         guard let p = currentPlayer else { return false }
         return p.isOnlineAccount
     }
@@ -67,7 +67,7 @@ public struct PlayerSettingsView: View {
                 .disabled(!playerSettings.enableOfflineLogin)
             }
             .labeledContentStyle(.custom)
-            if canEditMinecraftFriendAccountSettings {
+            if isMinecraftAccount {
                 Group {
                     LabeledContent("settings.player.history_skin_library".localized()) {
                         Toggle(
@@ -96,7 +96,7 @@ public struct PlayerSettingsView: View {
                             ProgressView()
                                 .scaleEffect(0.8)
                                 .controlSize(.small)
-                        } else if canEditMinecraftFriendAccountSettings {
+                        } else if isMinecraftAccount {
                             Button("settings.player.minecraft_friends_account.reload_from_account".localized()) {
                                 Task { await viewModel.reloadMinecraftFriendAccountPreferences(currentPlayer: currentPlayer) }
                             }
