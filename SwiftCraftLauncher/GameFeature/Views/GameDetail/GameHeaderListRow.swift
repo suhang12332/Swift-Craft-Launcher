@@ -33,23 +33,12 @@ struct GameHeaderListRow: View {
         HStack {
             gameIcon
             VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(game.gameName)
-                        .font(.title)
-                        .bold()
-                        .truncationMode(.tail)
-                        .lineLimit(1)
-                        .frame(minWidth: 0, maxWidth: 200)
-                        .fixedSize(horizontal: true, vertical: false)
-                    HStack {
-                        Label("\(cacheInfo.fileCount)", systemImage: "text.document")
-                        Divider().frame(height: 16)
-                        Label(cacheInfo.formattedSize, systemImage: "externaldrive")
-                    }
-                    .foregroundStyle(.secondary)
-                    .font(.headline)
-                    .padding(.leading, 6)
-                }
+                Text(game.gameName)
+                    .font(.title)
+                    .bold()
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .frame(maxWidth: 400, alignment: .leading)
 
                 HStack(spacing: 8) {
                     Label(game.gameVersion, systemImage: "gamecontroller.fill")
@@ -76,6 +65,14 @@ struct GameHeaderListRow: View {
                 }
             }
             Spacer()
+            HStack {
+                Label("\(cacheInfo.fileCount)", systemImage: "text.document")
+                Divider()
+                    .frame(height: 12)
+                Label(cacheInfo.formattedSize, systemImage: "externaldrive")
+            }
+            .foregroundStyle(.secondary)
+            .font(.headline)
         }
         .listRowSeparator(.hidden)
         .listRowInsets(
