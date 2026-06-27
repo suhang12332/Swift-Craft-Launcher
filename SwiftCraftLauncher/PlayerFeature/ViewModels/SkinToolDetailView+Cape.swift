@@ -33,13 +33,12 @@ extension SkinToolDetailViewModel {
 
             try Task.checkCancellation()
 
-            // 否则从 profile 中查找激活的披风
             guard let activeCapeId = PlayerSkinService.getActiveCapeId(from: profile) else {
                 selectedCapeImageURL = nil
                 selectedCapeLocalPath = nil
                 selectedCapeImage = nil
                 isCapeLoading = false
-                capeLoadCompleted = true  // 没有披风，可以立即渲染皮肤
+                capeLoadCompleted = true
                 return
             }
 
@@ -50,7 +49,7 @@ extension SkinToolDetailViewModel {
                 selectedCapeLocalPath = nil
                 selectedCapeImage = nil
                 isCapeLoading = false
-                capeLoadCompleted = true  // 没有披风，可以立即渲染皮肤
+                capeLoadCompleted = true
                 return
             }
 
@@ -61,7 +60,7 @@ extension SkinToolDetailViewModel {
                 selectedCapeLocalPath = nil
                 selectedCapeImage = nil
                 isCapeLoading = false
-                capeLoadCompleted = true  // 没有激活的披风，可以立即渲染皮肤
+                capeLoadCompleted = true
                 return
             }
 

@@ -47,7 +47,6 @@ struct CategorySectionView: View {
         )
     }
 
-    // MARK: - Helper Methods
     private func computeVisibleAndOverflowItems() -> ([FilterItem], [FilterItem]) {
         return items.computeVisibleAndOverflowItemsByRows(
             maxRows: SectionViewConstants.defaultMaxRows,
@@ -58,7 +57,6 @@ struct CategorySectionView: View {
         }
     }
 
-    // MARK: - Actions
     private func clearSelection() {
         selectedItems.removeAll()
     }

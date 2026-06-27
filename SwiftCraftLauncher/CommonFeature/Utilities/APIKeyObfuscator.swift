@@ -24,7 +24,6 @@ enum Obfuscator {
 
         for i in 0..<6 {
             let startOffset = i * partLength
-            // 添加了越界保护
             // clientid和cf的key是加密的，将在github action期间替换到代码中的
             guard startOffset < encryptedString.count else {
                 parts.append("")

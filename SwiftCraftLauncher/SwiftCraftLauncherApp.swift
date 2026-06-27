@@ -124,7 +124,6 @@ struct SwiftCraftLauncherApp: App {
         )
     }
 
-    // MARK: - Helpers
     private static func configureURLCache() {
         URLCache.shared = URLCache(
             memoryCapacity: AppConstants.URLCacheConfig.memoryCapacity,

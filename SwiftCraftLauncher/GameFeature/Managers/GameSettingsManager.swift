@@ -21,7 +21,6 @@ enum DataSource: String, CaseIterable, Codable {
 }
 
 class GameSettingsManager: ObservableObject {
-    // MARK: - 单例实例
     static let shared = GameSettingsManager()
 
     private init() {}

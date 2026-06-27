@@ -64,7 +64,6 @@ final class SkinToolDetailViewModel: ObservableObject {
         publicSkinInfo?.model
     }
 
-    // MARK: - Lifecycle (给 View 调用)
     func onAppear(resolvedPlayer: Player?) -> Bool {
         guard let skinInfo = preloadedSkinInfo, let profile = preloadedProfile else {
             return false
@@ -106,8 +105,6 @@ final class SkinToolDetailViewModel: ObservableObject {
         }
         return copy
     }
-
-    // MARK: - 状态变更
 
     func updateHasChanges() {
         let skinDataChanged = selectedSkinData != lastSelectedSkinData

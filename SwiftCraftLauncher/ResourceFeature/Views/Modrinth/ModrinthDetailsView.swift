@@ -46,7 +46,6 @@ struct ModrinthDetailsSection: View, Equatable {
         }
     }
 
-    // 实现 Equatable，避免不必要的重新渲染
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.isLoading == rhs.isLoading &&
         lhs.project?.id == rhs.project?.id &&
@@ -72,7 +71,7 @@ private struct ModrinthDetailRow: View, Equatable {
                 isSelected: false
             ) {}
         }
-        .frame(minHeight: 20) // 设置最小高度，减少布局计算
+        .frame(minHeight: 20)
     }
 
     static func == (lhs: Self, rhs: Self) -> Bool {

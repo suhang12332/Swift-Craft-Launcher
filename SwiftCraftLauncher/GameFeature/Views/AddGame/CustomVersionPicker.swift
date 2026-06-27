@@ -10,7 +10,7 @@ struct CustomVersionPicker: View {
     @Binding var selected: String
     let availableVersions: [String]
     @Binding var time: String
-    let onVersionSelected: (String) async -> String  // 新增：版本选择回调，返回时间信息
+    let onVersionSelected: (String) async -> String
     @State private var showMenu = false
     @State private var error: GlobalError?
     private let errorHandler: GlobalErrorHandler

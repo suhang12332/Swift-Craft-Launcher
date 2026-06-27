@@ -7,10 +7,8 @@
 
 import SwiftUI
 
-/// 资源筛选与列表相关状态（可观测）
 final class ResourceFilterState: ObservableObject {
 
-    // MARK: - 筛选
     @Published var selectedVersions: [String] = []
     @Published var selectedLicenses: [String] = []
     @Published var selectedCategories: [String] = []
@@ -20,12 +18,10 @@ final class ResourceFilterState: ObservableObject {
     @Published var selectedLoaders: [String] = []
     @Published var sortIndex: String = AppConstants.modrinthIndex
 
-    // MARK: - 分页与 Tab
     @Published var versionCurrentPage: Int = 1
     @Published var versionTotal: Int = 0
     @Published var selectedTab: Int = 0
 
-    // MARK: - 数据源与搜索
     @Published var dataSource: DataSource
     @Published var searchText: String = ""
     @Published var localResourceFilter: LocalResourceFilter = .all
@@ -37,9 +33,6 @@ final class ResourceFilterState: ObservableObject {
         self.dataSource = dataSource ?? gameSettingsManager.defaultAPISource
     }
 
-    // MARK: - 便捷方法
-
-    /// 清空所有筛选与分页（保留 dataSource / searchText 等按需可在此扩展）
     func clearFiltersAndPagination() {
         selectedVersions.removeAll()
         selectedLicenses.removeAll()
@@ -58,8 +51,6 @@ final class ResourceFilterState: ObservableObject {
     func clearSearchText() {
         searchText = ""
     }
-
-    // MARK: - Bindings（供子视图需要 Binding 时使用）
 
     var selectedVersionsBinding: Binding<[String]> {
         Binding(get: { [weak self] in self?.selectedVersions ?? [] }, set: { [weak self] in self?.selectedVersions = $0 })

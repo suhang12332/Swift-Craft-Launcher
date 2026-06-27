@@ -1,8 +1,6 @@
 import Foundation
 
 extension SkinToolDetailViewModel {
-    // MARK: - Apply & Reset
-
     func resetSkin(resolvedPlayer: Player?) {
         guard let resolved = resolvedPlayer else { return }
         let player = playerWithCredentialIfNeeded(resolved) ?? resolved

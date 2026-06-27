@@ -1,7 +1,6 @@
 import Foundation
 
 extension ModrinthSearchViewModel {
-    // MARK: - Private Methods
     func buildFacets(
         projectType: String,
         filterOptions: FilterOptions

@@ -119,10 +119,8 @@ struct ModrinthDetailView: View {
             coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
         }
         .onChange(of: dataSource) { _, _ in
-            // 清理之前的旧数据
             viewModel.clearResults()
             coordinator.resetPagination()
-//            searchText = ""
             coordinator.clearError()
             coordinator.hasLoaded = false
             coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)

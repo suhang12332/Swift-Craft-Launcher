@@ -37,7 +37,6 @@ struct MinecraftAuthView: View {
     }
 
     // MARK: - 清除数据
-    /// 清除页面所有数据
     private func clearAllData() {
         if case .notAuthenticated = authService.authState {
             authService.isLoading = false

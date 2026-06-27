@@ -8,9 +8,6 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - Window Delegate
-// 已移除 NSWindowDelegate 相关代码，纯 SwiftUI 不再需要
-
 // MARK: - Views
 struct GameInfoDetailView: View {
     let game: GameVersionInfo

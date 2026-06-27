@@ -19,7 +19,6 @@ struct WindowAccessor: NSViewRepresentable {
     }
 
     func updateNSView(_ nsView: NSView, context: Context) {
-        // 在更新时也尝试获取窗口（如果之前没有获取到）
         if let accessorView = nsView as? WindowAccessorView, let window = nsView.window {
             accessorView.configureWindow(window)
         }
@@ -38,7 +37,6 @@ private class WindowAccessorView: NSView {
         super.init(frame: .zero)
     }
 
-    /// 仅用于从 xib/storyboard 加载（本视图仅代码创建），避免生产环境闪退
     required init?(coder: NSCoder) {
         self.callback = { _ in }
         self.synchronous = false
@@ -53,7 +51,6 @@ private class WindowAccessorView: NSView {
             hasConfigured = true
 
             if synchronous {
-                // 同步执行，避免延迟导致的闪烁
                 configureWindow(window)
             } else {
                 // 异步执行

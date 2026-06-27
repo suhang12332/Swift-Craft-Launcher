@@ -61,7 +61,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         cleanupTempFiles()
     }
 
-    /// 清理临时文件（modpack_download 和 modpack_extraction 目录），在后台执行避免主线程阻塞
     func cleanupTempFiles() {
         downloadService.cleanupTempFiles()
     }

@@ -71,7 +71,7 @@ struct AddPlayerSheetView: View {
                     if viewModel.isCheckingFlag {
                         ProgressView()
                             .controlSize(.small)
-                            .frame(height: 20.5) // 设置固定高度，与 Menu 保持一致
+                            .frame(height: 20.5)
                             .padding(.trailing, 10)
                     } else {
                         authTypePicker
@@ -278,7 +278,6 @@ struct AddPlayerSheetView: View {
         if playerListViewModel.playerExists(name: trimmedName) {
             return "addplayer.name.error.duplicate".localized()
         }
-        // 可添加其他校验规则
         return nil
     }
 

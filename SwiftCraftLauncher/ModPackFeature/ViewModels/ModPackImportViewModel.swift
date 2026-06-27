@@ -65,7 +65,6 @@ class ModPackImportViewModel: BaseGameFormViewModel {
 
             // 取消下载状态
             gameSetupService.downloadState.cancel()
-            // ModPackInstallState没有专门的cancel方法，直接重置状态
             modPackViewModel.modPackInstallState.reset()
 
             // 停止处理状态

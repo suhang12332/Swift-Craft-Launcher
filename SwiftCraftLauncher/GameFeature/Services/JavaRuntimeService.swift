@@ -5,9 +5,9 @@ import ZIPFoundation
 class JavaRuntimeService {
     static let shared = JavaRuntimeService()
 
-    // 进度回调 - 使用actor来确保线程安全
+    // 进度回调
     private let progressActor = ProgressActor()
-    // 取消检查回调 - 使用actor来确保线程安全
+    // 取消检查回调
     private let cancelActor = CancelActor()
     private let generalSettingsManager: GeneralSettingsManager
 

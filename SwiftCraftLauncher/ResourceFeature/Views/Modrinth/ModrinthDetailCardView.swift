@@ -231,7 +231,6 @@ struct ModrinthDetailCardView: View {
         )
     }
 
-    // MARK: - Helper Methods
     static func formatNumber(_ num: Int) -> String {
         if num >= 1_000_000 {
             return String(format: "%.1fM", Double(num) / 1_000_000)
@@ -243,7 +242,6 @@ struct ModrinthDetailCardView: View {
     }
 }
 
-// MARK: - Supporting Views
 struct ModrinthDetailCardTagView: View {
     let text: String
 

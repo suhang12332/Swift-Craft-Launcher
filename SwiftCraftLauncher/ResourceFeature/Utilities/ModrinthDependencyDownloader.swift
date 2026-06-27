@@ -27,7 +27,7 @@ enum ModrinthDependencyDownloader {
             )
             guard let resourceDirUnwrapped = resourceDir else { return }
 
-            // 新逻辑：用ModScanner判断对应资源目录下是否已安装
+            // 用ModScanner判断对应资源目录下是否已安装
             let dependencies =
                 await ModrinthService.fetchProjectDependencies(
                     type: query,

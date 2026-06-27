@@ -135,7 +135,6 @@ struct ModrinthProjectDetailView: View {
     }
 }
 
-// MARK: - Helper Views
 private struct CategoryTag: View {
     let text: String
 

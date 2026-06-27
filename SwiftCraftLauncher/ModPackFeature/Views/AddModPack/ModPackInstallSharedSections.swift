@@ -12,7 +12,6 @@ struct ModPackInstallSharedSections: View {
 
     let lastParsedIndexInfo: ModrinthIndexInfo?
 
-    /// 是否显示进度块
     let shouldShowProgress: Bool
 
     var body: some View {

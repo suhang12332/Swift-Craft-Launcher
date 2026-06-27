@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-/// 资源/游戏详情与导航相关状态（可观测）
 public final class ResourceDetailState: ObservableObject {
 
     @Published public var selectedItem: SidebarItem
@@ -43,8 +42,6 @@ public final class ResourceDetailState: ObservableObject {
         self.loadedProjectDetail = loadedProjectDetail
     }
 
-    // MARK: - 便捷方法
-
     public func selectGame(id: String?) {
         gameId = id
     }
@@ -58,8 +55,6 @@ public final class ResourceDetailState: ObservableObject {
         selectedProjectId = nil
         loadedProjectDetail = nil
     }
-
-    // MARK: - Bindings（供子视图与 GameActionManager 等使用）
 
     public var selectedItemBinding: Binding<SidebarItem> {
         Binding(get: { [weak self] in self?.selectedItem ?? .resource(.mod) }, set: { [weak self] value in

@@ -85,7 +85,6 @@ extension CurseForgeService {
                             // 规范化 projectId：如果是纯数字，添加 "cf-" 前缀（CurseForge 依赖通常是纯数字）
                             let normalizedProjectId: String
                             if !projectId.hasPrefix("cf-") && Int(projectId) != nil {
-                                // 纯数字，应该是 CurseForge 项目
                                 normalizedProjectId = "cf-\(projectId)"
                             } else {
                                 normalizedProjectId = projectId

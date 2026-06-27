@@ -2,7 +2,6 @@
 //  MenuBarExtraContentView.swift
 //  Swift Craft Launcher
 //
-//  Created by Codex on 2026/4/20.
 //
 
 import AppKit

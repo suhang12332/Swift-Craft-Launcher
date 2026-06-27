@@ -1,7 +1,6 @@
 import SwiftUI
 
 /// 本地资源“更新”按钮视图
-/// 仅负责展示 UI 和转发点击事件，具体业务逻辑由外部处理
 struct LocalResourceUpdateButton: View {
     /// 是否显示更新按钮（例如仅在本地模式且有更新时显示）
     let isVisible: Bool

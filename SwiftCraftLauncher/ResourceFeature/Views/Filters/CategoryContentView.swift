@@ -280,7 +280,6 @@ struct CategoryContentView: View {
         )
     }
 
-    // MARK: - Computed Properties
     private var filteredLoaders: [Loader] {
         viewModel.loaders.filter {
             $0.supported_project_types.contains(project)

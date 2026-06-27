@@ -2,7 +2,6 @@
 //  ModPackExportViewModel.swift
 //  SwiftCraftLauncher
 //
-//  Created by Auto on 2025/01/XX.
 //
 
 import Foundation
@@ -138,8 +137,6 @@ class ModPackExportViewModel: ObservableObject {
     }
 
     // MARK: - Save Dialog Actions
-
-    /// 标记保存对话框已显示（防止重复显示）
     func markSaveDialogShown() {
         hasShownSaveDialog = true
     }
