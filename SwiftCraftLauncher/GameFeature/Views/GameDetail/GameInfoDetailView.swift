@@ -189,9 +189,6 @@ struct GameInfoDetailView: View {
                 game: currentGame,
                 cacheInfo: cacheInfoManager.cacheInfo,
                 query: query,
-                onImport: {
-                    triggerLocalRefresh()
-                },
                 onIconTap: {
                     showIconFilePicker = true
                 }

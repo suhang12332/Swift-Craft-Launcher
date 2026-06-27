@@ -9,7 +9,6 @@ struct GameHeaderListRow: View {
     let game: GameVersionInfo
     let cacheInfo: CacheInfo
     let query: String
-    let onImport: () -> Void
     var onIconTap: (() -> Void)?
     private let iconRefreshNotifier: IconRefreshNotifier
 
@@ -20,14 +19,12 @@ struct GameHeaderListRow: View {
         game: GameVersionInfo,
         cacheInfo: CacheInfo,
         query: String,
-        onImport: @escaping () -> Void,
         onIconTap: (() -> Void)? = nil,
         iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier
     ) {
         self.game = game
         self.cacheInfo = cacheInfo
         self.query = query
-        self.onImport = onImport
         self.onIconTap = onIconTap
         self.iconRefreshNotifier = iconRefreshNotifier
     }
@@ -79,9 +76,6 @@ struct GameHeaderListRow: View {
                 }
             }
             Spacer()
-            HStack(spacing: 8) {
-                importButton
-            }
         }
         .listRowSeparator(.hidden)
         .listRowInsets(
@@ -196,12 +190,5 @@ struct GameHeaderListRow: View {
             .padding(padding)
             .frame(width: size, height: size)
             .clipShape(RoundedRectangle(cornerRadius: outerCornerRadius, style: .continuous))
-    }
-
-    private var importButton: some View {
-        LocalResourceInstaller.ImportButton(
-            query: query,
-            gameName: game.gameName
-        ) { onImport() }
     }
 }
