@@ -161,8 +161,6 @@ struct AttachmentPreview: View {
     var body: some View {
         HStack(spacing: Constants.spacing) {
             switch attachment {
-            case .image:
-                EmptyView()
             case let .file(_, fileName):
                 Image(systemName: "doc.fill")
                     .font(.system(size: 16))
@@ -207,9 +205,6 @@ struct AttachmentView: View {
 
     var body: some View {
         switch attachment {
-        case .image:
-            // 图片类型已移除，不应该出现
-            EmptyView()
         case let .file(url, fileName):
             fileItemView(
                 iconName: "doc.fill",

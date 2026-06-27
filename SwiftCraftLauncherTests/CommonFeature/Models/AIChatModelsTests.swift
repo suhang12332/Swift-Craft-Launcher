@@ -20,23 +20,10 @@ final class AIChatModelsTests: XCTestCase {
 
     // MARK: - MessageAttachmentType
 
-    func testMessageAttachmentType_imageId() {
-        let url = URL(fileURLWithPath: "/tmp/test.png")
-        let type = MessageAttachmentType.image(url)
-        XCTAssertEqual(type.id, "image_/tmp/test.png")
-    }
-
     func testMessageAttachmentType_fileId() {
         let url = URL(fileURLWithPath: "/tmp/test.pdf")
         let type = MessageAttachmentType.file(url, "test.pdf")
         XCTAssertEqual(type.id, "file_/tmp/test.pdf")
-    }
-
-    func testMessageAttachmentType_equatable() {
-        let url = URL(fileURLWithPath: "/tmp/test.png")
-        let a = MessageAttachmentType.image(url)
-        let b = MessageAttachmentType.image(url)
-        XCTAssertEqual(a, b)
     }
 
     // MARK: - ChatMessage
@@ -51,8 +38,8 @@ final class AIChatModelsTests: XCTestCase {
     }
 
     func testChatMessage_init_withAttachments() {
-        let url = URL(fileURLWithPath: "/tmp/test.png")
-        let attachment = MessageAttachmentType.image(url)
+        let url = URL(fileURLWithPath: "/tmp/test.pdf")
+        let attachment = MessageAttachmentType.file(url, "test.pdf")
         let message = ChatMessage(role: .user, content: "test", attachments: [attachment])
         XCTAssertEqual(message.attachments.count, 1)
     }

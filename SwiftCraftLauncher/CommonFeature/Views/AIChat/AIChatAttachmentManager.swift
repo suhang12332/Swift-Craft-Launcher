@@ -5,7 +5,6 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
 
 /// AI 聊天附件管理器
 class AIChatAttachmentManager: ObservableObject {
@@ -17,12 +16,6 @@ class AIChatAttachmentManager: ObservableObject {
             guard url.startAccessingSecurityScopedResource() else { continue }
             defer { url.stopAccessingSecurityScopedResource() }
 
-            // 过滤掉图片类型，只允许非图片文件
-            let isImage = UTType(filenameExtension: url.pathExtension)?.conforms(to: .image) ?? false
-            if isImage {
-                continue
-            }
-            // 只添加非图片文件
             let attachment: MessageAttachmentType = .file(url, url.lastPathComponent)
             pendingAttachments.append(attachment)
         }

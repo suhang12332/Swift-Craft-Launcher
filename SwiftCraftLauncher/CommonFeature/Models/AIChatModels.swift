@@ -16,13 +16,10 @@ enum MessageRole: String, Codable {
 
 /// 附件类型
 enum MessageAttachmentType: Identifiable, Equatable {
-    case image(URL)
     case file(URL, String) // URL 和文件名
 
     var id: String {
         switch self {
-        case .image(let url):
-            return "image_\(url.path)"
         case .file(let url, _):
             return "file_\(url.path)"
         }
