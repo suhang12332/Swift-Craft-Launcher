@@ -5255,137 +5255,137 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "استيراد"
+            "value": "استيراد الموارد"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Importer"
+            "value": "Importér ressourcer"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Importieren"
+            "value": "Ressourcen importieren"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Import"
+            "value": "Import Resources"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Importar"
+            "value": "Importar recursos"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tuo"
+            "value": "Tuo resurssit"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Importer"
+            "value": "Importer des ressources"
           }
         },
         "hi": {
           "stringUnit": {
             "state": "translated",
-            "value": "आयात"
+            "value": "संसाधन आयात करें"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Importa"
+            "value": "Importa risorse"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "インポート"
+            "value": "リソースをインポート"
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "가져오기"
+            "value": "리소스 가져오기"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Importer"
+            "value": "Importer ressurser"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Importeren"
+            "value": "Resources importeren"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Importuj"
+            "value": "Importuj zasoby"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Importar"
+            "value": "Importar recursos"
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Импорт"
+            "value": "Импортировать ресурсы"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Importera"
+            "value": "Importera resurser"
           }
         },
         "th": {
           "stringUnit": {
             "state": "translated",
-            "value": "นำเข้า"
+            "value": "นำเข้าทรัพยากร"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "İçe aktar"
+            "value": "Kaynakları içe aktar"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nhập"
+            "value": "Nhập tài nguyên"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "导入"
+            "value": "导入资源"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "導入"
+            "value": "導入資源"
           }
         }
       }
-    },
+    }
     "common.loading": {
       "extractionState": "manual",
       "localizations": {
@@ -55608,139 +55608,139 @@
         }
       }
     },
-    "more" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "المزيد"
+    "more": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "المزيد"
           }
         },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mere"
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mere"
           }
         },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mehr"
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mehr"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "More"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Más"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Más"
           }
         },
-        "fi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lisää"
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lisää"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plus"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus"
           }
         },
-        "hi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "अधिक"
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "अधिक"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Altro"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Altro"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "もっと見る"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "もっと見る"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "더보기"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "더보기"
           }
         },
-        "nb" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mer"
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mer"
           }
         },
-        "nl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Meer"
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Meer"
           }
         },
-        "pl" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Więcej"
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Więcej"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mais"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mais"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ещё"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ещё"
           }
         },
-        "sv" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mer"
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mer"
           }
         },
-        "th" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "เพิ่มเติม"
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "เพิ่มเติม"
           }
         },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Daha fazla"
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daha fazla"
           }
         },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Thêm"
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更多"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更多"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多"
           }
         }
       }
