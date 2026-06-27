@@ -43,7 +43,7 @@ struct SkinPreviewWindowView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .frame(width: 1200, height: 800)
+        .frame(width: AuxiliaryWindowID.skinPreview.defaultSize.width, height: AuxiliaryWindowID.skinPreview.defaultSize.height)
         .onDisappear {
             clearAllData()
         }

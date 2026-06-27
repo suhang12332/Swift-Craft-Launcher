@@ -55,6 +55,7 @@ struct JavaDownloadProgressWindow: View {
             }
         }
         .padding()
+        .frame(width: AuxiliaryWindowID.javaDownload.defaultSize.width, height: AuxiliaryWindowID.javaDownload.defaultSize.height)
         .onAppear {
             // 设置窗口关闭回调
             javaDownloadManager.setDismissCallback {

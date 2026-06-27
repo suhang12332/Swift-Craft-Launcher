@@ -68,7 +68,7 @@ struct AIChatWindowView: View {
                 showFilePicker = true
             }
         }
-        .frame(minWidth: 500, minHeight: 600)
+        .frame(minWidth: AuxiliaryWindowID.aiChat.defaultSize.width, minHeight: AuxiliaryWindowID.aiChat.defaultSize.height)
         .fileImporter(
             isPresented: $showFilePicker,
             allowedContentTypes: [.text, .pdf, .json, .plainText, .log],
