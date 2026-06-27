@@ -8,17 +8,17 @@ class JavaDownloadManager: ObservableObject {
     @Published var downloadState = JavaDownloadState()
     @Published var isWindowVisible = false
 
-    private let javaRuntimeService: JavaRuntimeService
+    private let javaRuntimeDownloader: JavaRuntimeDownloader
     private let windowManager: WindowManager
     private var dismissCallback: (() -> Void)?
     private var currentDownloadTask: Task<Void, Error>?
     private var cancelRequested = false
 
     private init(
-        javaRuntimeService: JavaRuntimeService = AppServices.javaRuntimeService,
+        javaRuntimeDownloader: JavaRuntimeDownloader = .shared,
         windowManager: WindowManager = AppServices.windowManager
     ) {
-        self.javaRuntimeService = javaRuntimeService
+        self.javaRuntimeDownloader = javaRuntimeDownloader
         self.windowManager = windowManager
     }
 
@@ -43,7 +43,7 @@ class JavaDownloadManager: ObservableObject {
             showDownloadWindow()
 
             // 设置进度回调
-            javaRuntimeService.setProgressCallback { [weak self] fileName, completed, total in
+            javaRuntimeDownloader.setProgressCallback { [weak self] fileName, completed, total in
                 Task { @MainActor in
                     // 检查是否已取消
                     guard let self = self, !self.downloadState.isCancelled else { return }
@@ -53,13 +53,13 @@ class JavaDownloadManager: ObservableObject {
             }
 
             // 设置取消检查回调
-            javaRuntimeService.setCancelCallback { [weak self] in
+            javaRuntimeDownloader.setCancelCallback { [weak self] in
                 return self?.cancelRequested ?? false
             }
 
             // 开始下载
-            let task = Task { [javaRuntimeService] in
-                try await javaRuntimeService.downloadJavaRuntime(for: version)
+            let task = Task { [javaRuntimeDownloader] in
+                try await javaRuntimeDownloader.downloadJavaRuntime(for: version)
             }
             currentDownloadTask = task
             try await task.value
