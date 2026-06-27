@@ -53,7 +53,7 @@ struct GameMoreMenu: View {
                 Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")
             }
         } label: {
-            Label("more".localized(), systemImage: "ellipsis.circle")
+            Label("more".localized(), systemImage: "gearshape")
         }
         .help("more".localized())
     }
