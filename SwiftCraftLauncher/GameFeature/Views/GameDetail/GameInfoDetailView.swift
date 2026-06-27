@@ -188,11 +188,10 @@ struct GameInfoDetailView: View {
             GameHeaderListRow(
                 game: currentGame,
                 cacheInfo: cacheInfoManager.cacheInfo,
-                query: query,
-                onIconTap: {
-                    showIconFilePicker = true
-                }
-            )
+                query: query
+            ) {
+                showIconFilePicker = true
+            }
         )
     }
 
