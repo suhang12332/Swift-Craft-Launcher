@@ -51,7 +51,6 @@ class GameActionManager: ObservableObject {
             do {
                 let gameProcessManager = AppServices.gameProcessManager
                 let gameStatusManager = AppServices.gameStatusManager
-                let gameIconCache = AppServices.gameIconCache
                 let modScanner = AppServices.modScanner
 
                 // 游戏运行中不允许删除（任意玩家下该游戏在运行即不允许）
@@ -92,8 +91,7 @@ class GameActionManager: ObservableObject {
                     Logger.shared.warning("删除游戏时未找到游戏目录，跳过文件删除: \(profileDir.path)")
                 }
 
-                // 清除该游戏相关的所有内存缓存（图标、路径、mod 扫描结果）
-                gameIconCache.invalidateCache(for: game.gameName)
+                // 清除该游戏相关的所有内存缓存（路径、mod 扫描结果）
                 AppPaths.invalidatePaths(forGameName: game.gameName)
                 await modScanner.clearModCache(for: game.gameName)
 
@@ -123,7 +121,6 @@ class GameActionManager: ObservableObject {
     ) {
         Task {
             do {
-                let gameIconCache = AppServices.gameIconCache
                 let modScanner = AppServices.modScanner
 
                 // 删除目录（若存在）：可能是“只有目录”的损坏情况
@@ -132,8 +129,6 @@ class GameActionManager: ObservableObject {
                     try FileManager.default.removeItem(at: profileDir)
                 }
 
-                // 清除缓存
-                gameIconCache.invalidateCache(for: name)
                 AppPaths.invalidatePaths(forGameName: name)
                 await modScanner.clearModCache(for: name)
 

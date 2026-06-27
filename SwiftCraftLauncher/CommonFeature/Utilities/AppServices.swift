@@ -66,7 +66,6 @@ enum AppServices {
         var serverAddressService: ServerAddressService?
         var litematicaService: LitematicaService?
         var premiumAccountFlagManager: PremiumAccountFlagManager?
-        var gameIconCache: GameIconCache?
         var minecraftFriendsService: MinecraftFriendsService?
     }
 
@@ -256,8 +255,6 @@ enum AppServices {
         }
         return sharedOnMainActor { PremiumAccountFlagManager.shared }
     }
-    static var gameIconCache: GameIconCache { lock.withLock { dependencies.gameIconCache ?? .shared } }
-
     static var minecraftFriendsService: MinecraftFriendsService {
         lock.withLock { dependencies.minecraftFriendsService } ?? defaultMinecraftFriendsService
     }
