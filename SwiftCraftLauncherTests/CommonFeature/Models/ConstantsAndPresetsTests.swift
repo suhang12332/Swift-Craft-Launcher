@@ -33,10 +33,10 @@ final class ConstantsAndPresetsTests: XCTestCase {
 
     func testYggdrasilServerPresets_allHaveRedirectURI() {
         for server in Self.makeTestServers() {
-            XCTAssertFalse(server.redirectURI.isEmpty, "\(server.name ?? "nil") should have redirectURI")
-            XCTAssertFalse(server.authorizePath.isEmpty, "\(server.name ?? "nil") should have authorizePath")
-            XCTAssertFalse(server.tokenPath.isEmpty, "\(server.name ?? "nil") should have tokenPath")
-            XCTAssertFalse(server.profilePath.isEmpty, "\(server.name ?? "nil") should have profilePath")
+            XCTAssertFalse(server.redirectURI.isEmpty, "\(server.name) should have redirectURI")
+            XCTAssertFalse(server.authorizePath.isEmpty, "\(server.name) should have authorizePath")
+            XCTAssertFalse(server.tokenPath.isEmpty, "\(server.name) should have tokenPath")
+            XCTAssertFalse(server.profilePath.isEmpty, "\(server.name) should have profilePath")
         }
     }
 
@@ -52,7 +52,8 @@ final class ConstantsAndPresetsTests: XCTestCase {
                 tokenPath: "/oauth/token",
                 profilePath: "/api/yggdrasil/sessionserver/session/minecraft/profile",
                 scope: "Yggdrasil.MinecraftToken.Create Yggdrasil.PlayerProfiles.Read",
-                parserId: .littleskin
+                parserId: .littleskin,
+                token: "/api/yggdrasil/authserver/oauth"
             ),
             YggdrasilServerConfig(
                 name: "Mua",
@@ -64,7 +65,8 @@ final class ConstantsAndPresetsTests: XCTestCase {
                 tokenPath: "/oauth/token",
                 profilePath: "/api/players",
                 scope: "Player.Read User.Read",
-                parserId: .mua
+                parserId: .mua,
+                token: "/api/yggdrasil/authserver/oauth"
             ),
             YggdrasilServerConfig(
                 name: "Ely.By",
@@ -76,7 +78,8 @@ final class ConstantsAndPresetsTests: XCTestCase {
                 tokenPath: "/api/oauth2/v1/token",
                 profilePath: "/api/account/v1/info",
                 scope: "account_info",
-                parserId: .ely
+                parserId: .ely,
+                token: "/api/yggdrasil/authserver/oauth"
             ),
         ]
     }
@@ -134,7 +137,8 @@ final class ConstantsAndPresetsTests: XCTestCase {
             tokenPath: "/oauth/token",
             profilePath: "/api/profile",
             scope: "read",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/api/yggdrasil/authserver/oauth"
         )
 
         XCTAssertEqual(config.authorizeURL?.absoluteString, "https://example.com/oauth/authorize")
@@ -144,13 +148,15 @@ final class ConstantsAndPresetsTests: XCTestCase {
 
     func testYggdrasilServerConfig_scopeTrimmed() {
         let config = YggdrasilServerConfig(
+            name: "test",
             baseURL: URL.require("https://example.com"),
             redirectURI: "test://callback",
             authorizePath: "/auth",
             tokenPath: "/token",
             profilePath: "/profile",
             scope: "  read write  ",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/api/yggdrasil/authserver/oauth"
         )
 
         XCTAssertEqual(config.scope, "read write")
