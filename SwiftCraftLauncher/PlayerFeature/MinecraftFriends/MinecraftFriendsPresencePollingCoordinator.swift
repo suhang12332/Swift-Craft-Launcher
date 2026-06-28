@@ -158,7 +158,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
     }
 
     private static func canUseMicrosoftMinecraftServices(for player: Player) -> Bool {
-        player.isOnlineAccount && OfflineUserServerMap.serverKey(for: player.id) == nil
+        player.isOnlineAccount && !OfflineUserServerMap.contains(userId: player.id)
     }
 
     private static func makeLocalize() -> (String) -> String {

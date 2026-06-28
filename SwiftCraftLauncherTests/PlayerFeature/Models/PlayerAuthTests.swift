@@ -143,7 +143,10 @@ final class PlayerAuthTests: XCTestCase {
         let player = Player(profile: profile, credential: nil)
 
         // Simulate offline third-party server mapping
-        OfflineUserServerMap.setServer("yggdrasil-server", for: "uuid-4")
+        OfflineUserServerMap.setServer(
+            YggdrasilProfile(id: "uuid-4", name: "OfflineThirdParty", skins: [], capes: nil, accessToken: "token", refreshToken: "refresh", serverBaseURL: "https://yggdrasil-server.com"),
+            for: "uuid-4"
+        )
 
         // With server map entry, remote avatar player is NOT considered online
         XCTAssertFalse(player.isOnlineAccount)

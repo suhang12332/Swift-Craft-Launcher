@@ -3,7 +3,7 @@ import Foundation
 /// 玩家信息模型
 /// 组合 UserProfile 和可选的 AuthCredential
 /// 不直接存储，而是从 UserProfileStore 和 AuthCredentialStore 加载
-struct Player: Identifiable, Equatable {
+struct Player: Identifiable, Equatable, Codable {
     /// 用户基本信息
     var profile: UserProfile
 
@@ -41,7 +41,7 @@ struct Player: Identifiable, Equatable {
             return true
         }
         guard isRemote else { return false }
-        return OfflineUserServerMap.serverKey(for: id) == nil
+        return !OfflineUserServerMap.contains(userId: id)
     }
 
     var isRemote: Bool {
@@ -49,10 +49,14 @@ struct Player: Identifiable, Equatable {
     }
 
     /// 访问令牌
-    var authAccessToken: String { credential?.accessToken ?? "" }
+    var authAccessToken: String {
+        credential?.accessToken ?? OfflineUserServerMap.serverKey(for: id)?.accessToken ?? ""
+    }
 
     /// 刷新令牌
-    var authRefreshToken: String { credential?.refreshToken ?? "" }
+    var authRefreshToken: String {
+        credential?.refreshToken ?? OfflineUserServerMap.serverKey(for: id)?.refreshToken ?? ""
+    }
 
     /// Xbox 用户ID
     var authXuid: String { credential?.xuid ?? "" }

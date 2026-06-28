@@ -53,7 +53,7 @@ struct YggdrasilAuthView: View {
                     .tag(nil as YggdrasilServerConfig?)
 
                 ForEach(servers, id: \.self) { server in
-                    Text(server.name ?? server.baseURL.absoluteString).tag(server as YggdrasilServerConfig?)
+                    Text(server.name).tag(server as YggdrasilServerConfig?)
                 }
             }
             .pickerStyle(.menu)

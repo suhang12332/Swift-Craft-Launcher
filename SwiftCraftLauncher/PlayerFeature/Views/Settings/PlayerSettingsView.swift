@@ -58,7 +58,7 @@ public struct PlayerSettingsView: View {
                         .tag("")
 
                     ForEach(yggdrasilServers, id: \.baseURL) { server in
-                        Text(server.name ?? server.baseURL.absoluteString)
+                        Text(server.name)
                             .tag(server.baseURL.absoluteString)
                     }
                 }

@@ -103,7 +103,7 @@ public struct ContentToolbarView: ToolbarContent {
                     onYggdrasilLogin: { profile in
                         Logger.shared.debug("Yggdrasil 登录成功，用户: \(profile.name)")
                         // 绑定该三方账号的认证/皮肤服务器基地址，供启动时注入 authlib-injector 使用
-                        OfflineUserServerMap.setServer(profile.serverBaseURL, for: profile.id)
+                        OfflineUserServerMap.setServer(profile, for: profile.id)
                         _ = playerListViewModel.addOnlinePlayer(profile: profile)
                         showingAddPlayerSheet = false
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {

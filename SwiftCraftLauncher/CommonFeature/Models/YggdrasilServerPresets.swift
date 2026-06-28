@@ -13,7 +13,8 @@ enum YggdrasilServerPresets {
             tokenPath: "/oauth/token",
             profilePath: "/api/yggdrasil/sessionserver/session/minecraft/profile",
             scope: "Yggdrasil.MinecraftToken.Create Yggdrasil.PlayerProfiles.Read",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/api/yggdrasil/authserver/oauth"
         ),
         YggdrasilServerConfig(
             name: "Mua",
@@ -25,7 +26,8 @@ enum YggdrasilServerPresets {
             tokenPath: "/oauth/token",
             profilePath: "/api/players",
             scope: "Player.Read User.Read",
-            parserId: .mua
+            parserId: .mua,
+            token: "/api/yggdrasil/authserver/oauth"
         ),
         YggdrasilServerConfig(
             name: "Ely.By",
@@ -37,7 +39,12 @@ enum YggdrasilServerPresets {
             tokenPath: "/api/oauth2/v1/token",
             profilePath: "/api/account/v1/info",
             scope: "account_info",
-            parserId: .ely
+            parserId: .ely,
+            token: "/api/yggdrasil/authserver/oauth"
         ),
     ]
+
+    static func server(for baseURLString: String) -> YggdrasilServerConfig? {
+        servers.first { $0.baseURL.absoluteString == baseURLString }
+    }
 }

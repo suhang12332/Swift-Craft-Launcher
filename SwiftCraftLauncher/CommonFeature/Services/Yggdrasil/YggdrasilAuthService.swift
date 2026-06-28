@@ -144,6 +144,23 @@ extension YggdrasilAuthService {
         currentServer = nil
         authenticatedProfiles = []
     }
+
+    /// 通过 Yggdrasil 服务器获取 Minecraft 令牌
+    /// - Parameters:
+    ///   - profile: 已认证的 Yggdrasil 玩家档案
+    ///   - server: 服务器配置
+    /// - Returns: Minecraft access token
+    func getMinecraftToken(profile: YggdrasilProfile, server: YggdrasilServerConfig) async throws -> String {
+        guard let parser = YggdrasilMinecraftTokenParsers.make(for: server.parserId) else {
+            Logger.shared.warning("TODO: 该服务器（\(server.name)）暂未实现 Minecraft 令牌获取，回退使用 OAuth2 token")
+            return profile.accessToken
+        }
+        return try await parser.fetchMinecraftToken(
+            profileId: profile.id,
+            minecraftTokenURL: server.minecraftTokenURL,
+            oauthToken: profile.accessToken
+        )
+    }
 }
 
 // MARK: - 内部流程

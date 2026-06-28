@@ -5,6 +5,7 @@ struct MinecraftLaunchCommand {
     let player: Player?
     let game: GameVersionInfo
     private let minecraftAuthService: MinecraftAuthService
+    private let yggdrasilAuthService: YggdrasilAuthService
     private let gameSettingsManager: GameSettingsManager
     private let gameProcessManager: GameProcessManager
     private let gameStatusManager: GameStatusManager
@@ -13,6 +14,7 @@ struct MinecraftLaunchCommand {
         player: Player?,
         game: GameVersionInfo,
         minecraftAuthService: MinecraftAuthService = AppServices.minecraftAuthService,
+        yggdrasilAuthService: YggdrasilAuthService = AppServices.yggdrasilAuthService,
         gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager,
         gameProcessManager: GameProcessManager = AppServices.gameProcessManager,
         gameStatusManager: GameStatusManager = AppServices.gameStatusManager
@@ -20,6 +22,7 @@ struct MinecraftLaunchCommand {
         self.player = player
         self.game = game
         self.minecraftAuthService = minecraftAuthService
+        self.yggdrasilAuthService = yggdrasilAuthService
         self.gameSettingsManager = gameSettingsManager
         self.gameProcessManager = gameProcessManager
         self.gameStatusManager = gameStatusManager
@@ -110,7 +113,14 @@ struct MinecraftLaunchCommand {
             return replaceGameParameters(command: command)
         }
 
-        let authReplacedCommand = command.map { arg -> String in
+        let yggdrasilProfile = OfflineUserServerMap.serverKey(for: player.id)
+        let (accessToken, commandWithAgent) = try await handleThirdPartyAuth(
+            command: command,
+            player: player,
+            profile: yggdrasilProfile
+        )
+
+        let authReplacedCommand = commandWithAgent.map { arg -> String in
             let mutableArg = NSMutableString(string: arg)
             mutableArg.replaceOccurrences(
                 of: "${auth_player_name}",
@@ -126,7 +136,7 @@ struct MinecraftLaunchCommand {
             )
             mutableArg.replaceOccurrences(
                 of: "${auth_access_token}",
-                with: player.authAccessToken,
+                with: accessToken,
                 options: [],
                 range: NSRange(location: 0, length: mutableArg.length)
             )
@@ -139,10 +149,48 @@ struct MinecraftLaunchCommand {
             return mutableArg as String
         }
 
-        var commandWithAuth = authReplacedCommand
-        commandWithAuth = try await injectAuthlibAgentIfNeeded(command: commandWithAuth, player: player)
+        return replaceGameParameters(command: authReplacedCommand)
+    }
 
-        return replaceGameParameters(command: commandWithAuth)
+    /// 处理三方登录账户：解析 Minecraft 访问令牌并按需注入 authlib-injector 启动参数
+    private func handleThirdPartyAuth(
+        command: [String],
+        player: Player,
+        profile: YggdrasilProfile?
+    ) async throws -> (accessToken: String, command: [String]) {
+        guard let profile,
+              let server = YggdrasilServerPresets.server(for: profile.serverBaseURL) else {
+            return (player.authAccessToken, command)
+        }
+
+        let accessToken: String
+        do {
+            accessToken = try await yggdrasilAuthService.getMinecraftToken(profile: profile, server: server)
+        } catch {
+            throw GlobalError.authentication(
+                chineseMessage: "获取访问令牌失败",
+                i18nKey: "error.authentication.token_fetch_failed",
+                level: .popup
+            )
+        }
+
+        let jarPath = AppConstants.AuthlibInjector.jarPath
+        if !FileManager.default.fileExists(atPath: jarPath) {
+            Logger.shared.warning("Authlib Injector JAR 不存在，等待用户选择: \(jarPath)")
+            let choice = await AppServices.authlibInjectorMissingPresenter.requestUserChoice()
+            switch choice {
+            case .continueWithoutInjector:
+                return (accessToken, command)
+            case .cancel:
+                throw AuthlibInjectorLaunchCancelled()
+            }
+        }
+
+        let serverApiRoot = URLConfig.API.AuthlibInjector.serverApiRoot(for: profile.serverBaseURL)
+        let agentArg = AppConstants.AuthlibInjector.agentArgument(serverApiRoot: serverApiRoot)
+        var newCommand = command
+        newCommand.insert(agentArg, at: 0)
+        return (accessToken, newCommand)
     }
 
     private func replaceGameParameters(command: [String]) -> [String] {
@@ -188,42 +236,6 @@ struct MinecraftLaunchCommand {
         }
 
         return replacedCommand
-    }
-
-    /// 为第三方（Yggdrasil）玩家按需注入 authlib-injector 的 -javaagent 启动参数
-    /// 条件：头像为远程 URL（isRemote == true）且非微软正版在线账号（isOnlineAccount == false）
-    private func injectAuthlibAgentIfNeeded(command: [String], player: Player) async throws -> [String] {
-        // 非三方用户直接返回原命令
-        guard player.isRemote, !player.isOnlineAccount else {
-            return command
-        }
-
-        let jarPath = AppConstants.AuthlibInjector.jarPath
-        if !FileManager.default.fileExists(atPath: jarPath) {
-            Logger.shared.warning("Authlib Injector JAR 不存在，等待用户选择: \(jarPath)")
-            let choice = await AppServices.authlibInjectorMissingPresenter.requestUserChoice()
-            switch choice {
-            case .continueWithoutInjector:
-                return command
-            case .cancel:
-                throw AuthlibInjectorLaunchCancelled()
-            }
-        }
-
-        // 仅使用为该用户绑定的服务器标识（通常为某个 YggdrasilServerConfig.baseURL）
-        let userId = player.id
-        guard let rawBaseURL = OfflineUserServerMap.serverKey(for: userId) else {
-            Logger.shared.warning("离线用户未绑定 Yggdrasil 服务器基地址，跳过 -javaagent 参数 - userId: \(userId)")
-            return command
-        }
-
-        let serverApiRoot = URLConfig.API.AuthlibInjector.serverApiRoot(for: rawBaseURL)
-        let agentArg = AppConstants.AuthlibInjector.agentArgument(serverApiRoot: serverApiRoot)
-
-        // 在最开头拼接 javaagent 参数
-        var newCommand = command
-        newCommand.insert(agentArg, at: 0)
-        return newCommand
     }
 
     /// 启动游戏进程
