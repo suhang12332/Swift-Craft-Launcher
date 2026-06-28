@@ -272,7 +272,7 @@ enum PlayerSkinService {
         var request = URLRequest(
             url: URLConfig.API.Authentication.minecraftProfileSkins
         )
-        request.httpMethod = APIClient.HTTPMethods.post.rawValue
+        request.httpMethod = APIClient.HTTPMethods.post
         request.setValue(
             "Bearer \(player.authAccessToken)",
             forHTTPHeaderField: "Authorization"
@@ -437,7 +437,7 @@ enum PlayerSkinService {
         var request = URLRequest(
             url: URLConfig.API.Authentication.minecraftProfileActiveCape
         )
-        request.httpMethod = APIClient.HTTPMethods.put.rawValue
+        request.httpMethod = APIClient.HTTPMethods.put
         request.setValue(
             "Bearer \(player.authAccessToken)",
             forHTTPHeaderField: "Authorization"

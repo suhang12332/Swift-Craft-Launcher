@@ -28,7 +28,7 @@ class IPLocationService: ObservableObject {
         // 请求地理位置信息
         let url = URLConfig.API.IPLocation.currentLocation
         var request = URLRequest(url: url)
-        request.httpMethod = APIClient.HTTPMethods.get.rawValue
+        request.httpMethod = APIClient.HTTPMethods.get
         request.timeoutInterval = 10.0
 
         // 使用 performRequestWithResponse 来获取完整的响应信息，包括状态码

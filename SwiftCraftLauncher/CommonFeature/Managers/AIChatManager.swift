@@ -137,7 +137,7 @@ class AIChatManager: ObservableObject {
         ]
 
         var request = URLRequest(url: url)
-        request.httpMethod = APIClient.HTTPMethods.post.rawValue
+        request.httpMethod = APIClient.HTTPMethods.post
         request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
         request.setValue("Bearer \(settings.apiKey)", forHTTPHeaderField: "Authorization")
 
@@ -255,7 +255,7 @@ class AIChatManager: ObservableObject {
         ]
 
         var request = URLRequest(url: url)
-        request.httpMethod = APIClient.HTTPMethods.post.rawValue
+        request.httpMethod = APIClient.HTTPMethods.post
         request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
 
         if !settings.apiKey.isEmpty {
@@ -363,7 +363,7 @@ class AIChatManager: ObservableObject {
         ]
 
         var request = URLRequest(url: url)
-        request.httpMethod = APIClient.HTTPMethods.post.rawValue
+        request.httpMethod = APIClient.HTTPMethods.post
         request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
 
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)

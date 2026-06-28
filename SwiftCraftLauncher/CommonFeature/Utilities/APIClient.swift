@@ -36,16 +36,16 @@ enum APIClient {
 
     private static let sharedSession: URLSession = NetworkSession.makeSession()
 
-    public enum HTTPMethods: String {
-        case get = "GET"
-        case post = "POST"
-        case put = "PUT"
-        case delete = "DELETE"
-        case head = "HEAD"
-        case patch = "PATCH"
-        case options = "OPTIONS"
-        case trace = "TRACE"
-        case connect = "CONNECT"
+    enum HTTPMethods {
+        static let get = "GET"
+        static let post = "POST"
+        static let put = "PUT"
+        static let delete = "DELETE"
+        static let head = "HEAD"
+        static let patch = "PATCH"
+        static let options = "OPTIONS"
+        static let trace = "TRACE"
+        static let connect = "CONNECT"
     }
 
     /// 执行 GET 请求
@@ -59,7 +59,7 @@ enum APIClient {
         headers: [String: String]? = nil
     ) async throws -> Data {
         var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethods.get.rawValue
+        request.httpMethod = HTTPMethods.get
 
         headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
 
@@ -79,7 +79,7 @@ enum APIClient {
         headers: [String: String]? = nil
     ) async throws -> Data {
         var request = URLRequest(url: url)
-        request.httpMethod = HTTPMethods.post.rawValue
+        request.httpMethod = HTTPMethods.post
         request.httpBody = body
 
         var needsContentType = false
@@ -137,7 +137,7 @@ enum APIClient {
     /// - Throws: GlobalError 当请求失败时
     static func requestData(
         url: URL,
-        method: String = HTTPMethods.get.rawValue,
+        method: String = HTTPMethods.get,
         body: Data? = nil,
         headers: [String: String]? = nil
     ) async throws -> Data {
@@ -145,7 +145,7 @@ enum APIClient {
         request.httpMethod = method
         request.httpBody = body
 
-        if body != nil && method == HTTPMethods.post.rawValue {
+        if body != nil && method == HTTPMethods.post {
             request.setValue(MimeType.json, forHTTPHeaderField: Header.contentType)
         }
 
