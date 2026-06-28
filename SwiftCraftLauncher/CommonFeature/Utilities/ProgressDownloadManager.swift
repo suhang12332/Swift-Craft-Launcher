@@ -161,7 +161,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
 
     func head(url: URL) async throws -> (Data, HTTPURLResponse) {
         var request = URLRequest(url: url)
-        request.httpMethod = "HEAD"
+        request.httpMethod = APIClient.HTTPMethods.head.rawValue
         let (data, response) = try await session.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(

@@ -36,8 +36,17 @@ enum APIClient {
 
     private static let sharedSession: URLSession = NetworkSession.makeSession()
 
-    private static let httpMethodGET = "GET"
-    private static let httpMethodPOST = "POST"
+    public enum HTTPMethods: String {
+        case get = "GET"
+        case post = "POST"
+        case put = "PUT"
+        case delete = "DELETE"
+        case head = "HEAD"
+        case patch = "PATCH"
+        case options = "OPTIONS"
+        case trace = "TRACE"
+        case connect = "CONNECT"
+    }
 
     /// 执行 GET 请求
     /// - Parameters:
@@ -50,7 +59,7 @@ enum APIClient {
         headers: [String: String]? = nil
     ) async throws -> Data {
         var request = URLRequest(url: url)
-        request.httpMethod = httpMethodGET
+        request.httpMethod = HTTPMethods.get.rawValue
 
         headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
 
@@ -70,7 +79,7 @@ enum APIClient {
         headers: [String: String]? = nil
     ) async throws -> Data {
         var request = URLRequest(url: url)
-        request.httpMethod = httpMethodPOST
+        request.httpMethod = HTTPMethods.post.rawValue
         request.httpBody = body
 
         var needsContentType = false
@@ -128,7 +137,7 @@ enum APIClient {
     /// - Throws: GlobalError 当请求失败时
     static func requestData(
         url: URL,
-        method: String = "GET",
+        method: String = HTTPMethods.get.rawValue,
         body: Data? = nil,
         headers: [String: String]? = nil
     ) async throws -> Data {
@@ -136,7 +145,7 @@ enum APIClient {
         request.httpMethod = method
         request.httpBody = body
 
-        if body != nil && method == httpMethodPOST {
+        if body != nil && method == HTTPMethods.post.rawValue {
             request.setValue(MimeType.json, forHTTPHeaderField: Header.contentType)
         }
 

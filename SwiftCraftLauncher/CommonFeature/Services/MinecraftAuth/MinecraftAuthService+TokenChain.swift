@@ -124,7 +124,7 @@ extension MinecraftAuthService {
         }
 
         var minecraftRequest = URLRequest(url: minecraftUrl)
-        minecraftRequest.httpMethod = "POST"
+        minecraftRequest.httpMethod = APIClient.HTTPMethods.post.rawValue
         minecraftRequest.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
         minecraftRequest.timeoutInterval = 30.0
         minecraftRequest.httpBody = minecraftBodyData

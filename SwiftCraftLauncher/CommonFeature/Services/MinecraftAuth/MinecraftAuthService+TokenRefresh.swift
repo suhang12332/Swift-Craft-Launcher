@@ -115,7 +115,7 @@ extension MinecraftAuthService {
             "refresh_token": refreshToken,
         ]
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = APIClient.HTTPMethods.post.rawValue
         request.setValue(APIClient.MimeType.formURLEncodedUTF8, forHTTPHeaderField: APIClient.Header.contentType)
         request.httpBody = APIClient.formURLEncodedBody(from: bodyParameters)
 
