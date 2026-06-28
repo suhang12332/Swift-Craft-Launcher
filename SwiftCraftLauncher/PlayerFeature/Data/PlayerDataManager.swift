@@ -25,7 +25,6 @@ class PlayerDataManager {
     ///   - accToken: 访问令牌，默认为空字符串
     ///   - refreshToken: 刷新令牌，默认为空字符串
     ///   - xuid: Xbox用户ID，默认为空字符串
-    ///   - expiresAt: 令牌过期时间，可选
     /// - Throws: GlobalError 当操作失败时
     func addPlayer(
         name: String,
@@ -34,8 +33,7 @@ class PlayerDataManager {
         avatarName: String,
         accToken: String = "",
         refreshToken: String = "",
-        xuid: String = "",
-        expiresAt: Date? = nil
+        xuid: String = ""
     ) throws {
         let players = try loadPlayersThrowing()
 
@@ -62,7 +60,6 @@ class PlayerDataManager {
                     userId: tempId,
                     accessToken: accToken,
                     refreshToken: refreshToken,
-                    expiresAt: expiresAt,
                     xuid: xuid
                 )
             } else {
@@ -112,7 +109,6 @@ class PlayerDataManager {
     ///   - accToken: 访问令牌，默认为空字符串
     ///   - refreshToken: 刷新令牌，默认为空字符串
     ///   - xuid: Xbox用户ID，默认为空字符串
-    ///   - expiresAt: 令牌过期时间，可选
     /// - Returns: 是否成功添加
     func addPlayerSilently(
         name: String,
@@ -121,8 +117,7 @@ class PlayerDataManager {
         avatarName: String,
         accToken: String = "",
         refreshToken: String = "",
-        xuid: String = "",
-        expiresAt: Date? = nil
+        xuid: String = ""
     ) -> Bool {
         do {
             try addPlayer(
@@ -132,8 +127,7 @@ class PlayerDataManager {
                 avatarName: avatarName,
                 accToken: accToken,
                 refreshToken: refreshToken,
-                xuid: xuid,
-                expiresAt: expiresAt
+                xuid: xuid
             )
             return true
         } catch {

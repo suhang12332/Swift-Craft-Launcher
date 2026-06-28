@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import AuthenticationServices
+import os
 
 class MinecraftAuthService: NSObject, ObservableObject {
     static let shared = MinecraftAuthService()
@@ -12,6 +13,8 @@ class MinecraftAuthService: NSObject, ObservableObject {
     let clientId = AppConstants.minecraftClientId
     let scope = AppConstants.minecraftScope
     let redirectUri = URLConfig.API.Authentication.redirectUri
+
+    let refreshTasksLock = OSAllocatedUnfairLock<[String: Task<Player, Error> ]>(initialState: [:])
 
     override private init() {
         super.init()

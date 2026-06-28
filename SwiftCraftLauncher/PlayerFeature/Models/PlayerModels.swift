@@ -57,9 +57,6 @@ struct Player: Identifiable, Equatable {
     /// Xbox 用户ID
     var authXuid: String { credential?.xuid ?? "" }
 
-    /// 令牌过期时间
-    var expiresAt: Date? { credential?.expiresAt }
-
     /// 初始化玩家信息
     /// - Parameters:
     ///   - profile: 用户基本信息

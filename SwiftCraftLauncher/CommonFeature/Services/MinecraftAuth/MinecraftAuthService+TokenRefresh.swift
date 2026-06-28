@@ -51,6 +51,31 @@ extension MinecraftAuthService {
             )
         }
 
+        let (taskToAwait, didCreate): (Task<Player, Error>, Bool) = refreshTasksLock.withLock { tasks in
+            if let existingTask = tasks[player.id] {
+                return (existingTask, false)
+            }
+            let newTask = Task<Player, Error> {
+                try await self.doRefreshPlayerToken(for: player)
+            }
+            tasks[player.id] = newTask
+            return (newTask, true)
+        }
+
+        if !didCreate {
+            return try await taskToAwait.value
+        }
+
+        defer {
+            _ = refreshTasksLock.withLock { tasks in
+                tasks.removeValue(forKey: player.id)
+            }
+        }
+
+        return try await taskToAwait.value
+    }
+
+    private func doRefreshPlayerToken(for player: Player) async throws -> Player {
         let refreshedTokens = try await refreshTokenThrowing(refreshToken: player.authRefreshToken)
 
         let xboxToken = try await getXboxLiveTokenThrowing(accessToken: refreshedTokens.accessToken)
@@ -74,7 +99,6 @@ extension MinecraftAuthService {
                 userId: player.id,
                 accessToken: minecraftToken,
                 refreshToken: refreshedTokens.refreshToken ?? "",
-                expiresAt: nil,
                 xuid: xboxToken.displayClaims.xui.first?.uhs ?? ""
             )
         }
@@ -97,31 +121,30 @@ extension MinecraftAuthService {
 
         let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
 
-        if let errorResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let error = errorResponse["error"] as? String {
-            switch error {
-            case "invalid_grant":
-                Logger.shared.error("刷新令牌已过期或无效")
-                throw GlobalError.authentication(
-                    chineseMessage: "刷新令牌已过期或无效",
-                    i18nKey: "error.authentication.invalid_refresh_token",
-                    level: .notification
-                )
-            default:
-                Logger.shared.error("刷新令牌错误: \(error)")
-                throw GlobalError.authentication(
-                    chineseMessage: "刷新令牌错误: \(error)",
-                    i18nKey: "error.authentication.refresh_token_error",
-                    level: .notification
-                )
-            }
-        }
-
         guard httpResponse.statusCode == 200 else {
+            if let errorResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let error = errorResponse["error"] as? String {
+                switch error {
+                case "invalid_grant":
+                    Logger.shared.error("刷新令牌已过期或无效")
+                    throw GlobalError.authentication(
+                        chineseMessage: "刷新令牌已过期或无效",
+                        i18nKey: "error.authentication.invalid_refresh_token",
+                        level: .notification
+                    )
+                default:
+                    Logger.shared.error("刷新令牌错误: \(error)")
+                    throw GlobalError.authentication(
+                        chineseMessage: "刷新令牌错误: \(error)",
+                        i18nKey: "error.authentication.refresh_token_error",
+                        level: .notification
+                    )
+                }
+            }
             Logger.shared.error("刷新访问令牌失败: HTTP \(httpResponse.statusCode)")
-            throw GlobalError.download(
+            throw GlobalError.authentication(
                 chineseMessage: "刷新访问令牌失败: HTTP \(httpResponse.statusCode)",
-                i18nKey: "error.download.refresh_token_request_failed",
+                i18nKey: "error.authentication.refresh_token_request_failed",
                 level: .notification
             )
         }

@@ -10,7 +10,6 @@ final class PlayerAuthTests: XCTestCase {
             userId: "u1",
             accessToken: "access",
             refreshToken: "refresh",
-            expiresAt: nil,
             xuid: ""
         )
 
@@ -18,7 +17,6 @@ final class PlayerAuthTests: XCTestCase {
         let decoded = try JSONDecoder().decode(AuthCredential.self, from: encoded)
 
         XCTAssertEqual(decoded.userId, "u1")
-        XCTAssertNil(decoded.expiresAt)
         XCTAssertEqual(decoded.xuid, "")
     }
 
@@ -27,7 +25,6 @@ final class PlayerAuthTests: XCTestCase {
             userId: "u2",
             accessToken: "",
             refreshToken: "",
-            expiresAt: nil,
             xuid: ""
         )
 
@@ -43,7 +40,6 @@ final class PlayerAuthTests: XCTestCase {
             userId: "user/with=special&chars",
             accessToken: "at+with/special=chars",
             refreshToken: "rt&with%special",
-            expiresAt: nil,
             xuid: "xuid-123"
         )
 
@@ -56,38 +52,31 @@ final class PlayerAuthTests: XCTestCase {
     }
 
     func testAuthCredential_codable_futureDate() throws {
-        let futureDate = Date(timeIntervalSince1970: 4102444800) // 2100-01-01
         let credential = AuthCredential(
             userId: "u",
             accessToken: "at",
             refreshToken: "rt",
-            expiresAt: futureDate,
             xuid: ""
         )
 
         let encoded = try JSONEncoder().encode(credential)
         let decoded = try JSONDecoder().decode(AuthCredential.self, from: encoded)
 
-        guard let expiresAt = decoded.expiresAt else {
-            return XCTFail("expiresAt should not be nil")
-        }
-        XCTAssertEqual(expiresAt.timeIntervalSince1970, futureDate.timeIntervalSince1970, accuracy: 1.0)
+        XCTAssertEqual(decoded.userId, "u")
     }
 
     func testAuthCredential_codable_pastDate() throws {
-        let pastDate = Date(timeIntervalSince1970: 0)
         let credential = AuthCredential(
             userId: "u",
             accessToken: "at",
             refreshToken: "rt",
-            expiresAt: pastDate,
             xuid: ""
         )
 
         let encoded = try JSONEncoder().encode(credential)
         let decoded = try JSONDecoder().decode(AuthCredential.self, from: encoded)
 
-        XCTAssertEqual(decoded.expiresAt, pastDate)
+        XCTAssertEqual(decoded.userId, "u")
     }
 
     // MARK: - AuthCredential Equatable
@@ -113,18 +102,6 @@ final class PlayerAuthTests: XCTestCase {
     func testAuthCredential_notEqual_differentXuid() {
         let a = AuthCredential(userId: "u", accessToken: "t", refreshToken: "r", xuid: "x1")
         let b = AuthCredential(userId: "u", accessToken: "t", refreshToken: "r", xuid: "x2")
-        XCTAssertNotEqual(a, b)
-    }
-
-    func testAuthCredential_notEqual_differentExpiresAt() {
-        let a = AuthCredential(userId: "u", accessToken: "t", refreshToken: "r", expiresAt: Date(timeIntervalSince1970: 0))
-        let b = AuthCredential(userId: "u", accessToken: "t", refreshToken: "r", expiresAt: Date(timeIntervalSince1970: 1000))
-        XCTAssertNotEqual(a, b)
-    }
-
-    func testAuthCredential_notEqual_nilVsNonNilExpiresAt() {
-        let a = AuthCredential(userId: "u", accessToken: "t", refreshToken: "r", expiresAt: nil)
-        let b = AuthCredential(userId: "u", accessToken: "t", refreshToken: "r", expiresAt: Date(timeIntervalSince1970: 0))
         XCTAssertNotEqual(a, b)
     }
 
@@ -292,7 +269,6 @@ final class PlayerAuthTests: XCTestCase {
             userId: "test-user",
             accessToken: "access-token",
             refreshToken: "refresh-token",
-            expiresAt: Date(timeIntervalSince1970: 1700000000),
             xuid: "test-xuid"
         )
 
@@ -304,7 +280,6 @@ final class PlayerAuthTests: XCTestCase {
         XCTAssertEqual(json?["accessToken"] as? String, "access-token")
         XCTAssertEqual(json?["refreshToken"] as? String, "refresh-token")
         XCTAssertEqual(json?["xuid"] as? String, "test-xuid")
-        XCTAssertNotNil(json?["expiresAt"])
     }
 
     func testAuthCredential_decode_invalidJSON() {

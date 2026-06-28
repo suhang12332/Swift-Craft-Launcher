@@ -15,24 +15,20 @@ final class CommonFeatureModelsTests: XCTestCase {
         XCTAssertEqual(credential.userId, "user-1")
         XCTAssertEqual(credential.accessToken, "at")
         XCTAssertEqual(credential.refreshToken, "rt")
-        XCTAssertNil(credential.expiresAt)
         XCTAssertEqual(credential.xuid, "")
     }
 
     func testAuthCredential_init_allParams() {
-        let date = Date()
         let credential = AuthCredential(
             userId: "user-2",
             accessToken: "token",
             refreshToken: "refresh",
-            expiresAt: date,
             xuid: "xbox-id"
         )
 
         XCTAssertEqual(credential.userId, "user-2")
         XCTAssertEqual(credential.accessToken, "token")
         XCTAssertEqual(credential.refreshToken, "refresh")
-        XCTAssertEqual(credential.expiresAt, date)
         XCTAssertEqual(credential.xuid, "xbox-id")
     }
 
@@ -46,12 +42,10 @@ final class CommonFeatureModelsTests: XCTestCase {
     }
 
     func testAuthCredential_codable_roundTrip() throws {
-        let date = Date(timeIntervalSince1970: 1700000000)
         let original = AuthCredential(
             userId: "uid",
             accessToken: "at123",
             refreshToken: "rt456",
-            expiresAt: date,
             xuid: "xuid789"
         )
 

@@ -12,9 +12,6 @@ struct AuthCredential: Codable, Equatable {
     /// 刷新令牌
     var refreshToken: String
 
-    /// 令牌过期时间
-    var expiresAt: Date?
-
     /// Xbox 用户ID（XUID）
     var xuid: String
 
@@ -23,19 +20,16 @@ struct AuthCredential: Codable, Equatable {
     ///   - userId: 用户ID
     ///   - accessToken: 访问令牌
     ///   - refreshToken: 刷新令牌
-    ///   - expiresAt: 令牌过期时间，可选
     ///   - xuid: Xbox 用户ID，默认为空字符串
     init(
         userId: String,
         accessToken: String,
         refreshToken: String,
-        expiresAt: Date? = nil,
         xuid: String = ""
     ) {
         self.userId = userId
         self.accessToken = accessToken
         self.refreshToken = refreshToken
-        self.expiresAt = expiresAt
         self.xuid = xuid
     }
 }
