@@ -35,16 +35,18 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_init_defaults() {
         let config = YggdrasilServerConfig(
+            name: "test",
             baseURL: URL.require("https://littleskin.cn"),
             redirectURI: "https://example.com/callback",
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
             profilePath: "/api/profile",
             scope: "openid",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/api/yggdrasil/authserver/oauth"
         )
 
-        XCTAssertNil(config.name)
+        XCTAssertEqual(config.name, "test")
         XCTAssertNil(config.clientId)
         XCTAssertNil(config.clientSecret)
         XCTAssertEqual(config.scope, "openid")
@@ -61,7 +63,8 @@ final class YggdrasilModelsTests: XCTestCase {
             tokenPath: "/oauth/token",
             profilePath: "/api/profile",
             scope: "openid",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/api/yggdrasil/authserver/oauth"
         )
 
         XCTAssertEqual(config.name, "LittleSkin")
@@ -72,13 +75,15 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_scope_trimsWhitespace() {
         let config = YggdrasilServerConfig(
+            name: "Test",
             baseURL: URL.require("https://example.com"),
             redirectURI: "https://example.com/callback",
             authorizePath: "/auth",
             tokenPath: "/token",
             profilePath: "/profile",
             scope: "  openid  ",
-            parserId: .mua
+            parserId: .mua,
+            token: "/token/path"
         )
 
         XCTAssertEqual(config.scope, "openid")
@@ -86,13 +91,15 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_authorizeURL() {
         let config = YggdrasilServerConfig(
+            name: "LittleSkin",
             baseURL: URL.require("https://littleskin.cn"),
             redirectURI: "https://example.com/callback",
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
             profilePath: "/api/profile",
             scope: "openid",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/api/yggdrasil/authserver/oauth"
         )
 
         let url = config.authorizeURL
@@ -102,13 +109,15 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_tokenURL() {
         let config = YggdrasilServerConfig(
+            name: "LittleSkin",
             baseURL: URL.require("https://littleskin.cn"),
             redirectURI: "https://example.com/callback",
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
             profilePath: "/api/profile",
             scope: "openid",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/api/yggdrasil/authserver/oauth"
         )
 
         let url = config.tokenURL
@@ -118,13 +127,15 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_profileURL() {
         let config = YggdrasilServerConfig(
+            name: "LittleSkin",
             baseURL: URL.require("https://littleskin.cn"),
             redirectURI: "https://example.com/callback",
             authorizePath: "/oauth/authorize",
             tokenPath: "/oauth/token",
             profilePath: "/api/profile",
             scope: "openid",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/api/yggdrasil/authserver/oauth"
         )
 
         let url = config.profileURL
@@ -134,31 +145,37 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_equatable() {
         let a = YggdrasilServerConfig(
+            name: "A",
             baseURL: URL.require("https://a.com"),
             redirectURI: "r",
             authorizePath: "/a",
             tokenPath: "/t",
             profilePath: "/p",
             scope: "s",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/token"
         )
         let b = YggdrasilServerConfig(
+            name: "A",
             baseURL: URL.require("https://a.com"),
             redirectURI: "r",
             authorizePath: "/a",
             tokenPath: "/t",
             profilePath: "/p",
             scope: "s",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/token"
         )
         let c = YggdrasilServerConfig(
+            name: "C",
             baseURL: URL.require("https://b.com"),
             redirectURI: "r",
             authorizePath: "/a",
             tokenPath: "/t",
             profilePath: "/p",
             scope: "s",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/token"
         )
 
         XCTAssertEqual(a, b)
@@ -176,7 +193,8 @@ final class YggdrasilModelsTests: XCTestCase {
             tokenPath: "/token",
             profilePath: "/profile",
             scope: "openid",
-            parserId: .ely
+            parserId: .ely,
+            token: "/token/path"
         )
 
         let data = try JSONEncoder().encode(original)
@@ -189,13 +207,15 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testServerConfig_hashable() {
         let a = YggdrasilServerConfig(
+            name: "A",
             baseURL: URL.require("https://a.com"),
             redirectURI: "r",
             authorizePath: "/a",
             tokenPath: "/t",
             profilePath: "/p",
             scope: "s",
-            parserId: .littleskin
+            parserId: .littleskin,
+            token: "/token"
         )
         let b = a
         var set = Set<YggdrasilServerConfig>()
@@ -349,7 +369,8 @@ final class YggdrasilModelsTests: XCTestCase {
                 tokenPath: "/oauth/token",
                 profilePath: "/api/yggdrasil/sessionserver/session/minecraft/profile",
                 scope: "Yggdrasil.MinecraftToken.Create Yggdrasil.PlayerProfiles.Read",
-                parserId: .littleskin
+                parserId: .littleskin,
+                token: "/api/yggdrasil/authserver/oauth"
             ),
             YggdrasilServerConfig(
                 name: "Mua",
@@ -361,7 +382,8 @@ final class YggdrasilModelsTests: XCTestCase {
                 tokenPath: "/oauth/token",
                 profilePath: "/api/players",
                 scope: "Player.Read User.Read",
-                parserId: .mua
+                parserId: .mua,
+                token: "/token"
             ),
             YggdrasilServerConfig(
                 name: "Ely.By",
@@ -373,7 +395,8 @@ final class YggdrasilModelsTests: XCTestCase {
                 tokenPath: "/api/oauth2/v1/token",
                 profilePath: "/api/account/v1/info",
                 scope: "account_info",
-                parserId: .ely
+                parserId: .ely,
+                token: "/api/oauth2/v1/token"
             ),
         ]
     }
