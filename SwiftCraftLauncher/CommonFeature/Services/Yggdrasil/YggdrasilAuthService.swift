@@ -44,7 +44,6 @@ extension YggdrasilAuthService {
     /// 启动 Yggdrasil OAuth2 授权码登录流程
     @MainActor
     func startAuthentication() async {
-        // 清理旧会话
         webAuthSession?.cancel()
         webAuthSession = nil
         authenticatedProfiles = []
@@ -82,7 +81,6 @@ extension YggdrasilAuthService {
 
                     defer { continuation.resume() }
 
-                    // 用户取消或系统错误
                     if let error = error {
                         if let authError = error as? ASWebAuthenticationSessionError,
                            authError.code == .canceledLogin {
@@ -102,14 +100,12 @@ extension YggdrasilAuthService {
                         return
                     }
 
-                    // 用户拒绝授权
                     if authResponse.isUserDenied {
                         Logger.shared.info("用户拒绝了 Yggdrasil 授权")
                         finish(.idle)
                         return
                     }
 
-                    // 授权过程中出现错误
                     if let error = authResponse.error {
                         let description = authResponse.errorDescription ?? error
                         Logger.shared.error("Yggdrasil 授权失败: \(description)")
@@ -117,7 +113,6 @@ extension YggdrasilAuthService {
                         return
                     }
 
-                    // 获取授权码
                     guard authResponse.isSuccess, let code = authResponse.code else {
                         Logger.shared.error("未获取到 Yggdrasil 授权码")
                         finish(.failed("yggdrasil.error.no_auth_code".localized()))
@@ -144,28 +139,10 @@ extension YggdrasilAuthService {
         currentServer = nil
         authenticatedProfiles = []
     }
-
-    /// 通过 Yggdrasil 服务器获取 Minecraft 令牌
-    /// - Parameters:
-    ///   - profile: 已认证的 Yggdrasil 玩家档案
-    ///   - server: 服务器配置
-    /// - Returns: Minecraft access token
-    func getMinecraftToken(profile: YggdrasilProfile, server: YggdrasilServerConfig) async throws -> String {
-        guard let parser = YggdrasilMinecraftTokenParsers.make(for: server.parserId) else {
-            Logger.shared.warning("TODO: 该服务器（\(server.name)）暂未实现 Minecraft 令牌获取，回退使用 OAuth2 token")
-            return profile.accessToken
-        }
-        return try await parser.fetchMinecraftToken(
-            profileId: profile.id,
-            minecraftTokenURL: server.minecraftTokenURL,
-            oauthToken: profile.accessToken
-        )
-    }
 }
 
 // MARK: - 内部流程
 private extension YggdrasilAuthService {
-    /// 构建授权 URL
     func buildAuthorizationURL(for server: YggdrasilServerConfig) -> URL? {
         guard let authorizeURL = server.authorizeURL,
               var components = URLComponents(url: authorizeURL, resolvingAgainstBaseURL: false) else {
@@ -190,7 +167,6 @@ private extension YggdrasilAuthService {
         return components.url
     }
 
-    /// 处理授权码：换取 token 并拉取玩家列表；默认选择第一个玩家资料完成认证
     @MainActor
     func handleAuthorizationCode(_ code: String, server: YggdrasilServerConfig) async {
         authState = .exchangingCode
@@ -239,87 +215,5 @@ private extension YggdrasilAuthService {
             isLoading = false
             authState = .failed(globalError.localizedDescription)
         }
-    }
-
-    /// 使用授权码换取访问令牌
-    func exchangeCodeForToken(code: String, server: YggdrasilServerConfig) async throws -> TokenResponse {
-        guard let tokenURL = server.tokenURL else {
-            throw GlobalError.validation(
-                chineseMessage: "Token 地址无效",
-                i18nKey: "error.validation.yggdrasil_token_url_invalid",
-                level: .notification
-            )
-        }
-
-        var parameters: [String: String] = [
-            "grant_type": "authorization_code",
-            "code": code,
-            "redirect_uri": server.redirectURI,
-        ]
-
-        if let clientId = server.clientId {
-            parameters["client_id"] = clientId
-        }
-        if let clientSecret = server.clientSecret {
-            parameters["client_secret"] = clientSecret
-        }
-
-        let data = try await APIClient.post(
-            url: tokenURL,
-            body: APIClient.formURLEncodedBody(from: parameters),
-            headers: APIClient.DefaultHeaders.contentTypeFormURLEncoded
-        )
-
-        do {
-            return try JSONDecoder().decode(TokenResponse.self, from: data)
-        } catch {
-            throw GlobalError.validation(
-                chineseMessage: "解析 Yggdrasil Token 响应失败: \(error.localizedDescription)",
-                i18nKey: "error.validation.yggdrasil_token_response_parse_failed",
-                level: .notification
-            )
-        }
-    }
-
-    /// 拉取玩家资料列表：优先按 LittleSkin 多用户格式解析，否则尝试单用户兼容格式
-    func fetchProfileList(
-        accessToken: String,
-        server: YggdrasilServerConfig
-    ) async throws -> [YggdrasilProfileCandidate] {
-        guard let profileURL = server.profileURL else {
-            throw GlobalError.validation(
-                chineseMessage: "玩家资料地址无效",
-                i18nKey: "error.validation.yggdrasil_profile_url_invalid",
-                level: .notification
-            )
-        }
-
-        let headers = ["Authorization": "Bearer \(accessToken)"]
-        let data = try await APIClient.get(url: profileURL, headers: headers)
-
-        guard let parser = YggdrasilProfileParsers.make(server.parserId, baseURL: server.baseURL.absoluteString) else {
-            throw GlobalError.validation(
-                chineseMessage: "未找到对应的 Yggdrasil 玩家资料解析器",
-                i18nKey: "error.validation.yggdrasil_profile_parse_failed",
-                level: .notification
-            )
-        }
-
-        if let candidates = await parser.parse(data: data) {
-            return candidates
-        }
-
-        throw GlobalError.validation(
-            chineseMessage: "解析 Yggdrasil 玩家资料失败：格式无法识别",
-            i18nKey: "error.validation.yggdrasil_profile_parse_failed",
-            level: .notification
-        )
-    }
-}
-
-// MARK: - ASWebAuthenticationPresentationContextProviding
-extension YggdrasilAuthService: ASWebAuthenticationPresentationContextProviding {
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        NSApplication.shared.windows.first ?? ASPresentationAnchor()
     }
 }
