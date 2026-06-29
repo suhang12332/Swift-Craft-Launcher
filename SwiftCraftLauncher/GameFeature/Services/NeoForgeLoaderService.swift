@@ -87,27 +87,29 @@ enum NeoForgeLoaderService {
         let neoForgeProfile = try await fetchSpecificNeoForgeProfile(for: gameVersion, loaderVersion: loaderVersion)
         let librariesDirectory = AppPaths.librariesDirectory
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
-        fileManager.onProgressUpdate = onProgressUpdate
+
+        // 预计算总任务数（下载 + 处理器），从一开始就使用统一的 total
+        let totalDownloads = neoForgeProfile.libraries.filter { $0.downloads != nil }.count
+        let totalProcessors = (neoForgeProfile.processors ?? []).filter {
+            ($0.sides ?? [AppConstants.EnvironmentTypes.client]).contains(AppConstants.EnvironmentTypes.client)
+        }.count
+        let totalTasks = totalDownloads + totalProcessors
+
+        fileManager.onProgressUpdate = { name, completed, _ in onProgressUpdate(name, completed, totalTasks) }
 
         // 第一步：下载所有downloadable=true的库文件
-        let downloadableLibraries = neoForgeProfile.libraries.filter { $0.downloads != nil }
-        let totalDownloads = downloadableLibraries.count
         await fileManager.downloadForgeJars(libraries: neoForgeProfile.libraries)
 
         // 第二步：执行processors（如果存在）
-        if let processors = neoForgeProfile.processors, !processors.isEmpty {
+        if let processors = neoForgeProfile.processors, totalProcessors > 0 {
             try await fileManager.executeProcessors(
                 processors: processors,
                 librariesDir: librariesDirectory,
                 gameVersion: gameVersion,
                 data: neoForgeProfile.data,
                 gameName: gameInfo.gameName
-            ) { message, currentProcessor, totalProcessors in
-                // 将处理器进度消息转换为下载进度格式
-                // 总任务数 = 下载数 + 处理器数
-                let totalTasks = totalDownloads + totalProcessors
-                let completedTasks = totalDownloads + currentProcessor
-                onProgressUpdate(message, completedTasks, totalTasks)
+            ) { message, current, _ in
+                onProgressUpdate(message, totalDownloads + current, totalTasks)
             }
         }
 
