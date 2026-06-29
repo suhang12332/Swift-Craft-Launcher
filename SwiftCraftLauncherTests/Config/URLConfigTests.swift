@@ -55,7 +55,7 @@ final class URLConfigTests: XCTestCase {
         let profile = URLConfig.API.Authentication.minecraftProfile
         XCTAssertTrue(profile.absoluteString.contains("api.minecraftservices.com"))
 
-        XCTAssertEqual(URLConfig.API.Authentication.redirectUri, "swift-craft-launcher://auth")
+        XCTAssertEqual(URLConfig.API.Authentication.redirectUri, "com.su.code.swiftcraftlauncher://oauth")
     }
 
     func testAPIJavaRuntime_urls() {
