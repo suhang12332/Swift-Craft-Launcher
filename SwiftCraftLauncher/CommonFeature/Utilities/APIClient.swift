@@ -5,12 +5,20 @@ enum APIClient {
     enum Header {
         static let accept = "Accept"
         static let contentType = "Content-Type"
+        static let authorization = "Authorization"
+        static let xAPIKey = "x-api-key"
+        static let contentLength = "Content-Length"
     }
 
     enum MimeType {
         static let json = "application/json"
         static let formURLEncoded = "application/x-www-form-urlencoded"
         static let formURLEncodedUTF8 = "application/x-www-form-urlencoded; charset=utf-8"
+        static let multipart = "multipart/form-data"
+    }
+
+    static func bearer(_ token: String) -> String {
+        "Bearer \(token)"
     }
 
     enum DefaultHeaders {

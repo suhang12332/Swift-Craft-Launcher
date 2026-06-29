@@ -69,7 +69,7 @@ enum ProgressDownloadManager {
         let (_, httpResponse) = try await ProgressDownloadSession.shared.head(url: url)
 
         guard httpResponse.statusCode == 200,
-              let contentLength = httpResponse.value(forHTTPHeaderField: "Content-Length"),
+              let contentLength = httpResponse.value(forHTTPHeaderField: APIClient.Header.contentLength),
               let fileSize = Int64(contentLength) else {
             throw GlobalError.download(
                 chineseMessage: "无法获取文件大小",

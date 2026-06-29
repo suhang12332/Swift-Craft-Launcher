@@ -176,7 +176,7 @@ extension MinecraftAuthService {
     func checkMinecraftOwnership(accessToken: String) async throws {
         let url = URLConfig.API.Authentication.minecraftEntitlements
         let headers = [
-            "Authorization": "Bearer \(accessToken)",
+            APIClient.Header.authorization: APIClient.bearer(accessToken),
             APIClient.Header.accept: APIClient.MimeType.json,
         ]
         let data: Data
@@ -241,7 +241,7 @@ extension MinecraftAuthService {
         refreshToken: String = ""
     ) async throws -> MinecraftProfileResponse {
         let url = URLConfig.API.Authentication.minecraftProfile
-        let headers = ["Authorization": "Bearer \(accessToken)"]
+        let headers = [APIClient.Header.authorization: APIClient.bearer(accessToken)]
         let data = try await APIClient.get(url: url, headers: headers)
 
         do {

@@ -134,7 +134,7 @@ extension SkinToolDetailViewModel {
             }
             var headers: [String: String]?
             if !p.authAccessToken.isEmpty {
-                headers = ["Authorization": "Bearer \(p.authAccessToken)"]
+                headers = [APIClient.Header.authorization: APIClient.bearer(p.authAccessToken)]
             } else {
                 headers = nil
             }

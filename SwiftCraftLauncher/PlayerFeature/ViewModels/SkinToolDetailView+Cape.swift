@@ -132,7 +132,7 @@ extension SkinToolDetailViewModel {
             let p = playerWithCredentialIfNeeded(resolvedPlayer)
             var headers: [String: String]?
             if let t = p?.authAccessToken, !t.isEmpty {
-                headers = ["Authorization": "Bearer \(t)"]
+                headers = [APIClient.Header.authorization: APIClient.bearer(t)]
             } else {
                 headers = nil
             }

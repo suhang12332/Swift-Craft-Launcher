@@ -53,7 +53,7 @@ extension YggdrasilAuthService {
             )
         }
 
-        let headers = ["Authorization": "Bearer \(accessToken)"]
+        let headers = [APIClient.Header.authorization: APIClient.bearer(accessToken)]
         let data = try await APIClient.get(url: profileURL, headers: headers)
 
         guard let parser = YggdrasilProfileParsers.make(server.parserId, baseURL: server.baseURL.absoluteString) else {

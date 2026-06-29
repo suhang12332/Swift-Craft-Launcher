@@ -10,7 +10,7 @@ enum CurseForgeService {
     static func getHeaders() -> [String: String] {
         var headers: [String: String] = APIClient.DefaultHeaders.acceptJSON
         if let apiKey = AppConstants.curseForgeAPIKey {
-            headers["x-api-key"] = apiKey
+            headers[APIClient.Header.xAPIKey] = apiKey
         }
         return headers
     }

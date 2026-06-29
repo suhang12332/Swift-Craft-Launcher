@@ -35,7 +35,7 @@ struct LittleSkinMinecraftTokenParser: YggdrasilMinecraftTokenParser {
             url: minecraftTokenURL,
             body: bodyData,
             headers: [
-                "Authorization": "Bearer \(oauthToken)",
+                APIClient.Header.authorization: APIClient.bearer(oauthToken),
                 APIClient.Header.contentType: APIClient.MimeType.json,
             ]
         )

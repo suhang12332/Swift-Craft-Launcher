@@ -269,8 +269,8 @@ enum PlayerSkinService {
                 url: URLConfig.API.Authentication.minecraftProfileSkins,
                 body: body,
                 headers: [
-                    "Authorization": "Bearer \(player.authAccessToken)",
-                    APIClient.Header.contentType: "multipart/form-data; boundary=\(boundary)",
+                    APIClient.Header.authorization: APIClient.bearer(player.authAccessToken),
+                    APIClient.Header.contentType: "\(APIClient.MimeType.multipart); boundary=\(boundary)",
                 ]
             )
         } catch let error as GlobalError where error.kind == .network {
@@ -369,7 +369,7 @@ enum PlayerSkinService {
         do {
             data = try await APIClient.get(
                 url: URLConfig.API.Authentication.minecraftProfile,
-                headers: ["Authorization": "Bearer \(player.authAccessToken)"]
+                headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)]
             )
         } catch let error as GlobalError where error.kind == .network {
             try handleHTTPError(error, operation: "获取个人资料")
@@ -418,7 +418,7 @@ enum PlayerSkinService {
                 url: URLConfig.API.Authentication.minecraftProfileActiveCape,
                 body: jsonData,
                 headers: [
-                    "Authorization": "Bearer \(player.authAccessToken)",
+                    APIClient.Header.authorization: APIClient.bearer(player.authAccessToken),
                     APIClient.Header.contentType: APIClient.MimeType.json,
                 ]
             )
@@ -456,7 +456,7 @@ enum PlayerSkinService {
         do {
             _ = try await APIClient.delete(
                 url: URLConfig.API.Authentication.minecraftProfileActiveCape,
-                headers: ["Authorization": "Bearer \(player.authAccessToken)"]
+                headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)]
             )
         } catch let error as GlobalError where error.kind == .network {
             try handleHTTPError(error, operation: "隐藏斗篷")
@@ -468,7 +468,7 @@ enum PlayerSkinService {
         do {
             _ = try await APIClient.delete(
                 url: URLConfig.API.Authentication.minecraftProfileActiveSkin,
-                headers: ["Authorization": "Bearer \(player.authAccessToken)"]
+                headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)]
             )
         } catch let error as GlobalError where error.kind == .network {
             try handleHTTPError(error, operation: "重置皮肤")
