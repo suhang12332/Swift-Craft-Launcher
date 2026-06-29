@@ -62,11 +62,9 @@ extension YggdrasilAuthService {
         authState = .waitingForBrowser
 
         await withCheckedContinuation { continuation in
-            let scheme = URL(string: server.redirectURI)?.scheme
-
             webAuthSession = ASWebAuthenticationSession(
                 url: authURL,
-                callbackURLScheme: scheme
+                callbackURLScheme: URL(string: server.redirectURI)?.scheme
             ) { [weak self] callbackURL, error in
                 Task { @MainActor in
                     func finish(_ state: YggdrasilAuthState) {

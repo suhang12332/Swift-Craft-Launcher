@@ -37,7 +37,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
         await withCheckedContinuation { continuation in
             webAuthSession = ASWebAuthenticationSession(
                 url: authURL,
-                callbackURLScheme: AppConstants.callbackURLScheme
+                callbackURLScheme: URL(string: redirectUri)?.scheme
             ) { [weak self] callbackURL, error in
                 Task { @MainActor in
                     if let error = error {

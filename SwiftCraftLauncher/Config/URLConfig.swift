@@ -71,8 +71,7 @@ enum URLConfig {
             /// Microsoft OAuth Token
             static let token = URLConfig.url("https://login.microsoftonline.com/consumers/oauth2/v2.0/token")
             /// OAuth 回调 URI
-            static let redirectUri = "swift-craft-launcher://auth"
-
+            static let redirectUri = "com.su.code.swiftcraftlauncher://oauth"
             /// Xbox Live 认证
             static let xboxLiveAuth = URLConfig.url("https://user.auth.xboxlive.com/user/authenticate")
             /// XSTS 授权
