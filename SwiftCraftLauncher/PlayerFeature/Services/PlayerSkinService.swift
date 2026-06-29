@@ -365,15 +365,10 @@ enum PlayerSkinService {
         -> MinecraftProfileResponse {
         try validateAccessToken(player)
 
-        let data: Data
-        do {
-            data = try await APIClient.get(
-                url: URLConfig.API.Authentication.minecraftProfile,
-                headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)]
-            )
-        } catch let error as GlobalError where error.kind == .network {
-            try handleHTTPError(error, operation: "获取个人资料")
-        }
+        let data = try await APIClient.get(
+            url: URLConfig.API.Authentication.minecraftProfile,
+            headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)]
+        )
 
         let profile = try JSONDecoder().decode(
             MinecraftProfileResponse.self,
