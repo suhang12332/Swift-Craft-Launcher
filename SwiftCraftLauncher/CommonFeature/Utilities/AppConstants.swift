@@ -72,7 +72,6 @@ enum AppConstants {
         return Obfuscator.decryptClientID(encrypted)
     }()
     static let minecraftScope = "XboxLive.signin offline_access"
-    static let callbackURLScheme = "swift-craft-launcher"
     static let validResourceTypes = [ResourceType.mod.rawValue, ResourceType.datapack.rawValue, ResourceType.shader.rawValue, ResourceType.resourcepack.rawValue]
     // CurseForge API Key - 构建时会被替换
     static let curseForgeAPIKey: String? = {
