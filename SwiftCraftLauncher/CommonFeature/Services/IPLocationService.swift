@@ -25,8 +25,7 @@ class IPLocationService: ObservableObject {
     /// - Returns: 是否为国外IP
     /// - Throws: GlobalError 当检测失败时
     func isForeignIPThrowing() async throws -> Bool {
-        let url = URLConfig.API.IPLocation.currentLocation
-        let (data, statusCode) = try await APIClient.getUnchecked(url: url)
+        let (data, statusCode) = try await APIClient.getUnchecked(url: URLConfig.API.IPLocation.currentLocation)
 
         // 即使状态码不是200，也尝试解析响应（因为某些API可能返回429但仍在响应体中包含数据）
         let locationResponse: IPLocationResponse
