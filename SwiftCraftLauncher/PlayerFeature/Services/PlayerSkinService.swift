@@ -30,8 +30,8 @@ enum PlayerSkinService {
         }
     }
 
-    private static func handleHTTPError(_ http: HTTPURLResponse, operation: String) throws {
-        switch http.statusCode {
+    private static func handleHTTPError(_ error: GlobalError, operation: String) throws {
+        switch error.statusCode {
         case 400:
             throw GlobalError.validation(
                 chineseMessage: "无效的请求参数",
@@ -59,15 +59,10 @@ enum PlayerSkinService {
         case 429:
             throw GlobalError.network(
                 chineseMessage: "请求过于频繁，请稍后再试",
-                i18nKey: "error.network.rate_limited",
-                level: .notification
+                i18nKey: "error.network.rate_limited"
             )
         default:
-            throw GlobalError.network(
-                chineseMessage: "\(operation)失败: HTTP \(http.statusCode)",
-                i18nKey: "error.network.\(operation)_http_error",
-                level: .notification
-            )
+            throw error
         }
     }
 
@@ -269,37 +264,28 @@ enum PlayerSkinService {
             body.append(closing)
         }
 
-        var request = URLRequest(
-            url: URLConfig.API.Authentication.minecraftProfileSkins
-        )
-        request.httpMethod = APIClient.HTTPMethods.post
-        request.setValue(
-            "Bearer \(player.authAccessToken)",
-            forHTTPHeaderField: "Authorization"
-        )
-        request.setValue(
-            "multipart/form-data; boundary=\(boundary)",
-            forHTTPHeaderField: APIClient.Header.contentType
-        )
-        request.httpBody = body
-        request.timeoutInterval = 30
-
-        let (_, http) = try await APIClient.performRequestWithResponse(request: request)
-        switch http.statusCode {
-        case 200, 204:
-            Logger.shared.info("Skin upload successful with variant: \(variantValue)")
-            return
-        case 400:
-            Logger.shared.error("Skin upload failed with 400: Invalid skin file or variant")
-            throw GlobalError.validation(
-                chineseMessage: "无效的皮肤文件",
-                i18nKey: "error.validation.skin_invalid_file",
-                level: .popup
+        do {
+            _ = try await APIClient.post(
+                url: URLConfig.API.Authentication.minecraftProfileSkins,
+                body: body,
+                headers: [
+                    "Authorization": "Bearer \(player.authAccessToken)",
+                    APIClient.Header.contentType: "multipart/form-data; boundary=\(boundary)",
+                ]
             )
-        default:
-            Logger.shared.error("Skin upload failed with HTTP \(http.statusCode)")
-            try handleHTTPError(http, operation: "皮肤上传")
+        } catch let error as GlobalError where error.kind == .network {
+            switch error.statusCode {
+            case 400:
+                throw GlobalError.validation(
+                    chineseMessage: "无效的皮肤文件",
+                    i18nKey: "error.validation.skin_invalid_file",
+                    level: .popup
+                )
+            default:
+                try handleHTTPError(error, operation: "皮肤上传")
+            }
         }
+        Logger.shared.info("Skin upload successful with variant: \(variantValue)")
     }
 
     // MARK: - Reset Skin (delete active)
@@ -379,21 +365,14 @@ enum PlayerSkinService {
         -> MinecraftProfileResponse {
         try validateAccessToken(player)
 
-        var request = URLRequest(
-            url: URLConfig.API.Authentication.minecraftProfile
-        )
-        request.setValue(
-            "Bearer \(player.authAccessToken)",
-            forHTTPHeaderField: "Authorization"
-        )
-        request.timeoutInterval = 30
-
-        let (data, http) = try await APIClient.performRequestWithResponse(request: request)
-        switch http.statusCode {
-        case 200:
-            break
-        default:
-            try handleHTTPError(http, operation: "获取个人资料")
+        let data: Data
+        do {
+            data = try await APIClient.get(
+                url: URLConfig.API.Authentication.minecraftProfile,
+                headers: ["Authorization": "Bearer \(player.authAccessToken)"]
+            )
+        } catch let error as GlobalError where error.kind == .network {
+            try handleHTTPError(error, operation: "获取个人资料")
         }
 
         let profile = try JSONDecoder().decode(
@@ -434,53 +413,26 @@ enum PlayerSkinService {
         let payload = ["capeId": capeId]
         let jsonData = try JSONSerialization.data(withJSONObject: payload)
 
-        var request = URLRequest(
-            url: URLConfig.API.Authentication.minecraftProfileActiveCape
-        )
-        request.httpMethod = APIClient.HTTPMethods.put
-        request.setValue(
-            "Bearer \(player.authAccessToken)",
-            forHTTPHeaderField: "Authorization"
-        )
-        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
-        request.httpBody = jsonData
-        request.timeoutInterval = 30
-
-        let (_, http) = try await APIClient.performRequestWithResponse(request: request)
-        switch http.statusCode {
-        case 200, 204:
-            return
-        case 400:
-            throw GlobalError.validation(
-                chineseMessage: "无效的斗篷ID或请求",
-                i18nKey: "error.validation.cape_invalid_id",
-                level: .notification
+        do {
+            _ = try await APIClient.put(
+                url: URLConfig.API.Authentication.minecraftProfileActiveCape,
+                body: jsonData,
+                headers: [
+                    "Authorization": "Bearer \(player.authAccessToken)",
+                    APIClient.Header.contentType: APIClient.MimeType.json,
+                ]
             )
-        case 401:
-            throw GlobalError.authentication(
-                chineseMessage:
-                    "访问令牌无效或已过期，请重新登录",
-                i18nKey: "error.authentication.token_invalid_or_expired",
-                level: .popup
-            )
-        case 403:
-            throw GlobalError.authentication(
-                chineseMessage: "没有装备斗篷的权限 (403)",
-                i18nKey: "error.authentication.cape_equip_forbidden",
-                level: .notification
-            )
-        case 404:
-            throw GlobalError.resource(
-                chineseMessage: "未找到斗篷或未拥有",
-                i18nKey: "error.resource.cape_not_found",
-                level: .notification
-            )
-        default:
-            throw GlobalError.network(
-                chineseMessage: "显示斗篷失败: HTTP \(http.statusCode)",
-                i18nKey: "error.network.cape_show_http_error",
-                level: .notification
-            )
+        } catch let error as GlobalError where error.kind == .network {
+            switch error.statusCode {
+            case 404:
+                throw GlobalError.resource(
+                    chineseMessage: "未找到斗篷或未拥有",
+                    i18nKey: "error.resource.cape_not_found",
+                    level: .notification
+                )
+            default:
+                try handleHTTPError(error, operation: "装备斗篷")
+            }
         }
     }
 
@@ -501,64 +453,25 @@ enum PlayerSkinService {
     /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#hide-cape specification
     static func hideCapeThrowing(player: Player) async throws {
         try validateAccessToken(player)
-
-        var request = URLRequest(
-            url: URLConfig.API.Authentication.minecraftProfileActiveCape
-        )
-        request.httpMethod = "DELETE"
-        request.setValue(
-            "Bearer \(player.authAccessToken)",
-            forHTTPHeaderField: "Authorization"
-        )
-        request.timeoutInterval = 30
-
-        let (_, http) = try await APIClient.performRequestWithResponse(request: request)
-        switch http.statusCode {
-        case 200, 204:
-            return
-        case 401:
-            throw GlobalError.authentication(
-                chineseMessage:
-                    "访问令牌无效或已过期，请重新登录",
-                i18nKey: "error.authentication.token_invalid_or_expired",
-                level: .popup
+        do {
+            _ = try await APIClient.delete(
+                url: URLConfig.API.Authentication.minecraftProfileActiveCape,
+                headers: ["Authorization": "Bearer \(player.authAccessToken)"]
             )
-        default:
-            throw GlobalError.network(
-                chineseMessage: "隐藏斗篷失败: HTTP \(http.statusCode)",
-                i18nKey: "error.network.cape_hide_http_error",
-                level: .notification
-            )
+        } catch let error as GlobalError where error.kind == .network {
+            try handleHTTPError(error, operation: "隐藏斗篷")
         }
     }
 
     static func resetSkinThrowing(player: Player) async throws {
         try validateAccessToken(player)
-        var request = URLRequest(
-            url: URLConfig.API.Authentication.minecraftProfileActiveSkin
-        )
-        request.httpMethod = "DELETE"
-        request.setValue(
-            "Bearer \(player.authAccessToken)",
-            forHTTPHeaderField: "Authorization"
-        )
-        let (_, http) = try await APIClient.performRequestWithResponse(request: request)
-        switch http.statusCode {
-        case 200, 204:
-            return
-        case 401:
-            throw GlobalError.authentication(
-                chineseMessage:
-                    "访问令牌无效或已过期，请重新登录",
-                i18nKey: "error.authentication.token_invalid_or_expired",
-                level: .popup
+        do {
+            _ = try await APIClient.delete(
+                url: URLConfig.API.Authentication.minecraftProfileActiveSkin,
+                headers: ["Authorization": "Bearer \(player.authAccessToken)"]
             )
-        default:
-            throw GlobalError.network(
-                chineseMessage: "重置皮肤失败: HTTP \(http.statusCode)",
-                i18nKey: "error.network.skin_reset_http_error",
-                level: .notification
-            )
+        } catch let error as GlobalError where error.kind == .network {
+            try handleHTTPError(error, operation: "重置皮肤")
         }
     }
 }

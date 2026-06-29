@@ -95,17 +95,20 @@ struct GlobalError: Error, LocalizedError, Identifiable {
     let chineseMessage: String
     let i18nKey: String
     let level: ErrorLevel
+    let statusCode: Int?
 
     init(
         kind: GlobalErrorKind,
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel? = nil
+        level: ErrorLevel? = nil,
+        statusCode: Int? = nil
     ) {
         self.kind = kind
         self.chineseMessage = chineseMessage
         self.i18nKey = i18nKey
         self.level = level ?? kind.defaultLevel
+        self.statusCode = statusCode
     }
 
     var id: String {
@@ -135,9 +138,10 @@ extension GlobalError {
     static func network(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .notification
+        level: ErrorLevel = .notification,
+        statusCode: Int? = nil
     ) -> GlobalError {
-        GlobalError(kind: .network, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .network, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level, statusCode: statusCode)
     }
 
     static func fileSystem(

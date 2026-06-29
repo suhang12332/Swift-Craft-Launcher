@@ -123,19 +123,15 @@ extension MinecraftAuthService {
             )
         }
 
-        var minecraftRequest = URLRequest(url: minecraftUrl)
-        minecraftRequest.httpMethod = APIClient.HTTPMethods.post
-        minecraftRequest.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
-        minecraftRequest.timeoutInterval = 30.0
-        minecraftRequest.httpBody = minecraftBodyData
-
-        let (minecraftData, minecraftHttpResponse) = try await APIClient.performRequestWithResponse(request: minecraftRequest)
-
-        guard minecraftHttpResponse.statusCode == 200 else {
-            let statusCode = minecraftHttpResponse.statusCode
-            Logger.shared.error("Minecraft 认证失败: HTTP \(statusCode)")
-
-            switch statusCode {
+        let minecraftData: Data
+        do {
+            minecraftData = try await APIClient.post(
+                url: minecraftUrl,
+                body: minecraftBodyData,
+                headers: APIClient.DefaultHeaders.contentTypeJSON
+            )
+        } catch let error as GlobalError where error.kind == .network {
+            switch error.statusCode {
             case 401:
                 throw GlobalError.authentication(
                     chineseMessage: "Minecraft 认证失败: Xbox Live 令牌无效或已过期",
@@ -148,24 +144,18 @@ extension MinecraftAuthService {
                     i18nKey: "error.authentication.minecraft_not_owned",
                     level: .notification
                 )
-            case 503:
-                throw GlobalError.network(
-                    chineseMessage: "Minecraft 认证服务暂时不可用，请稍后重试",
-                    i18nKey: "error.network.minecraft_service_unavailable",
-                    level: .notification
-                )
             case 429:
                 throw GlobalError.network(
                     chineseMessage: "请求过于频繁，请稍后重试",
-                    i18nKey: "error.network.rate_limited",
-                    level: .notification
+                    i18nKey: "error.network.rate_limited"
+                )
+            case 503:
+                throw GlobalError.network(
+                    chineseMessage: "Minecraft 认证服务暂时不可用，请稍后重试",
+                    i18nKey: "error.network.minecraft_service_unavailable"
                 )
             default:
-                throw GlobalError.download(
-                    chineseMessage: "获取 Minecraft 访问令牌失败: HTTP \(statusCode)",
-                    i18nKey: "error.download.minecraft_token_failed",
-                    level: .notification
-                )
+                throw error
             }
         }
 
@@ -185,17 +175,15 @@ extension MinecraftAuthService {
 
     func checkMinecraftOwnership(accessToken: String) async throws {
         let url = URLConfig.API.Authentication.minecraftEntitlements
-        var request = URLRequest(url: url)
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.accept)
-        request.timeoutInterval = 30.0
-
-        let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
-
-        guard httpResponse.statusCode == 200 else {
-            let statusCode = httpResponse.statusCode
-
-            switch statusCode {
+        let headers = [
+            "Authorization": "Bearer \(accessToken)",
+            APIClient.Header.accept: APIClient.MimeType.json,
+        ]
+        let data: Data
+        do {
+            data = try await APIClient.get(url: url, headers: headers)
+        } catch let error as GlobalError where error.kind == .network {
+            switch error.statusCode {
             case 401:
                 throw GlobalError.authentication(
                     chineseMessage: "Minecraft 访问令牌无效或已过期",
@@ -209,11 +197,7 @@ extension MinecraftAuthService {
                     level: .popup
                 )
             default:
-                throw GlobalError.download(
-                    chineseMessage: "检查游戏拥有情况失败: HTTP \(statusCode)",
-                    i18nKey: "error.download.entitlements_check_failed",
-                    level: .notification
-                )
+                throw error
             }
         }
 

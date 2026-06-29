@@ -45,30 +45,29 @@ extension MinecraftSkinUtils {
             )
         }
 
-        let request = URLRequest(url: url)
-        let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
-
-        switch httpResponse.statusCode {
-        case 200:
-            return data
-        case 404:
-            throw GlobalError.resource(
-                chineseMessage: "皮肤资源未找到: \(src)",
-                i18nKey: "error.resource.skin_not_found",
-                level: .silent
-            )
-        case 408, 504:
-            throw GlobalError.download(
-                chineseMessage: "网络请求超时: \(src)",
-                i18nKey: "error.download.network_timeout",
-                level: .silent
-            )
-        default:
-            throw GlobalError.download(
-                chineseMessage: "皮肤下载失败: HTTP \(httpResponse.statusCode)",
-                i18nKey: "error.download.skin_download_failed",
-                level: .silent
-            )
+        do {
+            return try await APIClient.get(url: url)
+        } catch let error as GlobalError where error.kind == .network {
+            switch error.statusCode {
+            case 404:
+                throw GlobalError.resource(
+                    chineseMessage: "皮肤资源未找到: \(src)",
+                    i18nKey: "error.resource.skin_not_found",
+                    level: .silent
+                )
+            case 408, 504:
+                throw GlobalError.download(
+                    chineseMessage: "网络请求超时: \(src)",
+                    i18nKey: "error.download.network_timeout",
+                    level: .silent
+                )
+            default:
+                throw GlobalError.download(
+                    chineseMessage: "皮肤下载失败: HTTP \(error.statusCode ?? 0)",
+                    i18nKey: "error.download.skin_download_failed",
+                    level: .silent
+                )
+            }
         }
     }
 

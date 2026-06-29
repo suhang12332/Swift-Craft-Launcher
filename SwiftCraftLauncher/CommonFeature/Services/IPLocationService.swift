@@ -25,22 +25,15 @@ class IPLocationService: ObservableObject {
     /// - Returns: 是否为国外IP
     /// - Throws: GlobalError 当检测失败时
     func isForeignIPThrowing() async throws -> Bool {
-        // 请求地理位置信息
         let url = URLConfig.API.IPLocation.currentLocation
-        var request = URLRequest(url: url)
-        request.httpMethod = APIClient.HTTPMethods.get
-        request.timeoutInterval = 10.0
-
-        // 使用 performRequestWithResponse 来获取完整的响应信息，包括状态码
-        let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
+        let (data, statusCode) = try await APIClient.getUnchecked(url: url)
 
         // 即使状态码不是200，也尝试解析响应（因为某些API可能返回429但仍在响应体中包含数据）
         let locationResponse: IPLocationResponse
         do {
             locationResponse = try JSONDecoder().decode(IPLocationResponse.self, from: data)
         } catch {
-            // 如果解析失败，记录状态码以便调试
-            Logger.shared.error("解析IP地理位置响应失败: HTTP \(httpResponse.statusCode), error: \(error.localizedDescription)")
+            Logger.shared.error("解析IP地理位置响应失败: HTTP \(statusCode), error: \(error.localizedDescription)")
             if let responseString = String(data: data, encoding: .utf8) {
                 Logger.shared.error("响应内容: \(responseString)")
             }
@@ -51,12 +44,10 @@ class IPLocationService: ObservableObject {
             )
         }
 
-        // 如果状态码不是200，记录警告但继续处理（因为可能仍然有有效数据）
-        if httpResponse.statusCode != 200 {
-            Logger.shared.warning("IP地理位置API返回非200状态码: \(httpResponse.statusCode)")
+        if statusCode != 200 {
+            Logger.shared.warning("IP地理位置API返回非200状态码: \(statusCode)")
         }
 
-        // 检查请求是否成功
         guard locationResponse.isSuccess else {
             let errorMessage = locationResponse.reason ?? "IP地理位置检测失败"
             Logger.shared.error("IP地理位置检测失败: \(errorMessage), 国家代码: \(locationResponse.countryCode ?? "未知")")

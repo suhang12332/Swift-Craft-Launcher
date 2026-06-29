@@ -30,13 +30,15 @@ struct LittleSkinMinecraftTokenParser: YggdrasilMinecraftTokenParser {
     }
 
     func fetchMinecraftToken(profileId: String, minecraftTokenURL: URL, oauthToken: String) async throws -> String {
-        var request = URLRequest(url: minecraftTokenURL)
-        request.httpMethod = APIClient.HTTPMethods.post
-        request.setValue("Bearer \(oauthToken)", forHTTPHeaderField: "Authorization")
-        request.setValue(APIClient.MimeType.json, forHTTPHeaderField: APIClient.Header.contentType)
-        request.httpBody = try JSONSerialization.data(withJSONObject: ["uuid": profileId])
-
-        let (data, _) = try await APIClient.performRequestWithResponse(request: request)
+        let bodyData = try JSONSerialization.data(withJSONObject: ["uuid": profileId])
+        let data = try await APIClient.post(
+            url: minecraftTokenURL,
+            body: bodyData,
+            headers: [
+                "Authorization": "Bearer \(oauthToken)",
+                APIClient.Header.contentType: APIClient.MimeType.json,
+            ]
+        )
         return try JSONDecoder().decode(Response.self, from: data).accessToken
     }
 }

@@ -114,26 +114,23 @@ extension MinecraftAuthService {
             "client_id": clientId,
             "refresh_token": refreshToken,
         ]
-        var request = URLRequest(url: url)
-        request.httpMethod = APIClient.HTTPMethods.post
-        request.setValue(APIClient.MimeType.formURLEncodedUTF8, forHTTPHeaderField: APIClient.Header.contentType)
-        request.httpBody = APIClient.formURLEncodedBody(from: bodyParameters)
+        let (data, statusCode) = try await APIClient.postUnchecked(
+            url: url,
+            body: APIClient.formURLEncodedBody(from: bodyParameters),
+            headers: APIClient.DefaultHeaders.contentTypeFormURLEncodedUTF8
+        )
 
-        let (data, httpResponse) = try await APIClient.performRequestWithResponse(request: request)
-
-        guard httpResponse.statusCode == 200 else {
+        guard statusCode == 200 else {
             if let errorResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                let error = errorResponse["error"] as? String {
                 switch error {
                 case "invalid_grant":
-                    Logger.shared.error("刷新令牌已过期或无效")
                     throw GlobalError.authentication(
                         chineseMessage: "刷新令牌已过期或无效",
                         i18nKey: "error.authentication.invalid_refresh_token",
                         level: .notification
                     )
                 default:
-                    Logger.shared.error("刷新令牌错误: \(error)")
                     throw GlobalError.authentication(
                         chineseMessage: "刷新令牌错误: \(error)",
                         i18nKey: "error.authentication.refresh_token_error",
@@ -141,9 +138,8 @@ extension MinecraftAuthService {
                     )
                 }
             }
-            Logger.shared.error("刷新访问令牌失败: HTTP \(httpResponse.statusCode)")
             throw GlobalError.authentication(
-                chineseMessage: "刷新访问令牌失败: HTTP \(httpResponse.statusCode)",
+                chineseMessage: "刷新访问令牌失败: HTTP \(statusCode)",
                 i18nKey: "error.authentication.refresh_token_request_failed",
                 level: .notification
             )

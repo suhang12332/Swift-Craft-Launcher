@@ -102,6 +102,66 @@ enum APIClient {
         return try await performRequest(request: request)
     }
 
+    /// 执行 PUT 请求
+    static func put(
+        url: URL,
+        body: Data? = nil,
+        headers: [String: String]? = nil
+    ) async throws -> Data {
+        try await requestData(url: url, method: HTTPMethods.put, body: body, headers: headers)
+    }
+
+    /// 执行 DELETE 请求
+    static func delete(
+        url: URL,
+        headers: [String: String]? = nil
+    ) async throws -> Data {
+        try await requestData(url: url, method: HTTPMethods.delete, headers: headers)
+    }
+
+    /// 执行 GET 请求，不检查状态码，返回 (Data, statusCode)
+    /// 用于需要在非200时仍解析响应体的场景
+    static func getUnchecked(
+        url: URL,
+        headers: [String: String]? = nil
+    ) async throws -> (Data, Int) {
+        var request = URLRequest(url: url)
+        request.httpMethod = HTTPMethods.get
+        headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
+        return try await performRequestUnchecked(request: request)
+    }
+
+    /// 执行 POST 请求，不检查状态码，返回 (Data, statusCode)
+    /// 用于需要在非200时仍解析响应体的场景
+    static func postUnchecked(
+        url: URL,
+        body: Data? = nil,
+        headers: [String: String]? = nil
+    ) async throws -> (Data, Int) {
+        var request = URLRequest(url: url)
+        request.httpMethod = HTTPMethods.post
+        request.httpBody = body
+
+        var needsContentType = false
+        if body != nil {
+            if let headers = headers {
+                needsContentType = !headers.keys.contains { key in
+                    key.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame
+                }
+            } else {
+                needsContentType = true
+            }
+        }
+
+        headers?.forEach { request.setValue($0.value, forHTTPHeaderField: $0.key) }
+
+        if needsContentType {
+            request.setValue(MimeType.json, forHTTPHeaderField: Header.contentType)
+        }
+
+        return try await performRequestUnchecked(request: request)
+    }
+
     /// 执行请求并返回解码后的对象
     /// - Parameters:
     ///   - url: 请求 URL
@@ -171,30 +231,27 @@ enum APIClient {
 
         guard httpResponse.statusCode == 200 else {
             throw GlobalError.network(
-                chineseMessage: "API 请求失败",
+                chineseMessage: "API 请求失败: HTTP \(httpResponse.statusCode)",
                 i18nKey: "error.network.api_request_failed",
-                level: .notification
+                statusCode: httpResponse.statusCode
             )
         }
 
         return data
     }
 
-    /// - Parameter request: URLRequest
-    /// - Returns: (数据, HTTP响应)
-    /// - Throws: GlobalError 当请求失败时
-    static func performRequestWithResponse(request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+    /// 执行请求（不检查状态码），返回 (Data, statusCode)
+    private static func performRequestUnchecked(request: URLRequest) async throws -> (Data, Int) {
         let (data, response) = try await sharedSession.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
-                i18nKey: "error.network.invalid_response",
-                level: .notification
+                i18nKey: "error.network.invalid_response"
             )
         }
 
-        return (data, httpResponse)
+        return (data, httpResponse.statusCode)
     }
 
     /// 执行流式请求并返回字节流与响应
