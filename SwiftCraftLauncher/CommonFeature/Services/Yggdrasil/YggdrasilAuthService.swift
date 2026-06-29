@@ -156,9 +156,8 @@ private extension YggdrasilAuthService {
             items.append(URLQueryItem(name: "client_id", value: clientId))
         }
 
-        let scope = server.scope.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !scope.isEmpty {
-            items.append(URLQueryItem(name: "scope", value: scope))
+        if !server.scope.isEmpty {
+            items.append(URLQueryItem(name: "scope", value: server.scope))
         }
 
         components.queryItems = items
