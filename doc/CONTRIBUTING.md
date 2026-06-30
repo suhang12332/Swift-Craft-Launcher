@@ -74,13 +74,17 @@ dev → feature/你的描述
 
 本项目使用 [SwiftLint](https://github.com/realm/SwiftLint) 进行代码风格检查，提交前请确保代码通过 Lint。
 
-#### 4.1 本地运行 SwiftLint
+#### 4.1 本地运行 SwiftLint 和 SwiftFormat
 
 ```bash
 # 安装（若未安装）
 brew install swiftlint
+brew install swiftformat
 
-# 检查全部文件
+# 运行 SwiftLint
+swiftlint lint 2>&1 | grep "warning:" | sed 's/.*(\(.*\))/\1/' | sort | uniq -c | sort -rn
+
+# 运行 SwiftFormat（自动格式化所有文件）
 swiftformat . --swift-version 6.1
 
 # 仅检查有改动的文件（推荐，速度快）
@@ -105,7 +109,7 @@ git diff --cached --name-only | grep '\.swift$' | xargs swiftformat
 所有 Pull Request 在合并前必须通过 CI 流水线检查。CI 包含以下内容：
 
 - **SwiftLint**：代码必须通过 `swiftlint lint --strict`，不能有违规
-- **SwiftFormat**：代码必须通过 `swiftformat . --swift-version 6.1` 格式检查
+- **SwiftFormat**：代码必须格式化正确。CI 会运行 `swiftformat . --swift-version 6.1` 并检查是否有文件被修改——如果有，CI 将失败。推送前请务必在本地运行 `swiftformat .`
 - **本地化**：所有语言的本地化字符串必须完整
 - **单元测试**：所有单元测试必须通过
 
@@ -115,8 +119,9 @@ git diff --cached --name-only | grep '\.swift$' | xargs swiftformat
 # SwiftLint
 swiftlint lint --strict
 
-# SwiftFormat
+# SwiftFormat（自动格式化，然后检查）
 swiftformat . --swift-version 6.1
+# 如果输出显示 "N/M files formatted" 且 N > 0，请再次运行直到 0/xxx files formatted
 
 # 单元测试
 xcodebuild test \

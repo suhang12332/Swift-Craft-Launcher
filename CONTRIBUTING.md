@@ -76,13 +76,17 @@ Wait for review. Maintainers may suggest changes — please address feedback pat
 
 This project uses [SwiftLint](https://github.com/realm/SwiftLint) for code style checking. Please make sure your code passes lint before submitting.
 
-#### 4.1 Running SwiftLint Locally
+#### 4.1 Running SwiftLint and SwiftFormat Locally
 
 ```bash
 # Install (if not already installed)
 brew install swiftlint
+brew install swiftformat
 
-# Check all files
+# Run SwiftLint
+swiftlint lint 2>&1 | grep "warning:" | sed 's/.*(\(.*\))/\1/' | sort | uniq -c | sort -rn
+
+# Run SwiftFormat (auto-format all files)
 swiftformat . --swift-version 6.1
 
 # Check only modified files (recommended, faster)
@@ -107,7 +111,7 @@ Full configuration is in `.swiftlint.yml` at the project root.
 All pull requests must pass the CI pipeline before merging. The CI runs the following checks:
 
 - **SwiftLint**: Code must pass `swiftlint lint --strict` with no violations
-- **SwiftFormat**: Code must pass `swiftformat . --swift-version 6.1` formatting check
+- **SwiftFormat**: Code must be properly formatted. CI runs `swiftformat . --swift-version 6.1` and checks if any files were modified — if so, the CI fails. You must run `swiftformat .` locally before pushing.
 - **Localization**: All localization strings must be complete across supported languages
 - **Unit Tests**: All unit tests must pass
 
@@ -117,8 +121,9 @@ You can run these checks locally before pushing:
 # SwiftLint
 swiftlint lint --strict
 
-# SwiftFormat
+# SwiftFormat (auto-format, then check)
 swiftformat . --swift-version 6.1
+# If the output shows "N/M files formatted" where N > 0, run again until 0/xxx files formatted
 
 # Unit tests
 xcodebuild test \
