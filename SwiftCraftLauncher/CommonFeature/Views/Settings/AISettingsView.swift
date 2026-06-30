@@ -29,12 +29,7 @@ public struct AISettingsView: View {
                     }
                 }
                 .labelsHidden()
-                .if(
-                    ProcessInfo.processInfo.operatingSystemVersion.majorVersion
-                        < 26,
-                ) { view in
-                    view.fixedSize()
-                }
+                .fixedSize()
             }
             .labeledContentStyle(.custom)
 
