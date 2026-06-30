@@ -123,12 +123,14 @@ enum AppServices {
         }
         return sharedOnMainActor { WindowManager.shared }
     }
+
     static var windowDataStore: WindowDataStore {
         if let injected = lock.withLock({ dependencies.windowDataStore }) {
             return injected
         }
         return sharedOnMainActor { WindowDataStore.shared }
     }
+
     static var iconRefreshNotifier: IconRefreshNotifier { lock.withLock { dependencies.iconRefreshNotifier ?? .shared } }
     static var gameDialogsPresenter: GameDialogsPresenter {
         if let injected = lock.withLock({ dependencies.gameDialogsPresenter }) {
@@ -136,12 +138,14 @@ enum AppServices {
         }
         return sharedOnMainActor { GameDialogsPresenter.shared }
     }
+
     static var authlibInjectorMissingPresenter: AuthlibInjectorMissingPresenter {
         if let injected = lock.withLock({ dependencies.authlibInjectorMissingPresenter }) {
             return injected
         }
         return sharedOnMainActor { AuthlibInjectorMissingPresenter.shared }
     }
+
     static var openURLModPackImportPresenter: OpenURLModPackImportPresenter {
         if let injected = lock.withLock({ dependencies.openURLModPackImportPresenter }) {
             return injected
@@ -157,6 +161,7 @@ enum AppServices {
         }
         return sharedOnMainActor { GameLogCollector.shared }
     }
+
     static var gameActionManager: GameActionManager {
         if let injected = lock.withLock({ dependencies.gameActionManager }) {
             return injected
@@ -170,6 +175,7 @@ enum AppServices {
         }
         return sharedOnMainActor { AnnouncementStateManager.shared }
     }
+
     static var generalSettingsManager: GeneralSettingsManager { lock.withLock { dependencies.generalSettingsManager ?? .shared } }
     static var gameSettingsManager: GameSettingsManager { lock.withLock { dependencies.gameSettingsManager ?? .shared } }
     static var playerSettingsManager: PlayerSettingsManager { lock.withLock { dependencies.playerSettingsManager ?? .shared } }
@@ -181,6 +187,7 @@ enum AppServices {
         }
         return sharedOnMainActor { ThemeManager.shared }
     }
+
     static var languageManager: LanguageManager { lock.withLock { dependencies.languageManager ?? .shared } }
 
     static var minecraftFriendsPresencePollingCoordinator: MinecraftFriendsPresencePollingCoordinator {
@@ -196,6 +203,7 @@ enum AppServices {
         }
         return sharedOnMainActor { GitHubService.shared }
     }
+
     static var minecraftAuthService: MinecraftAuthService { lock.withLock { dependencies.minecraftAuthService ?? .shared } }
     static var yggdrasilAuthService: YggdrasilAuthService { lock.withLock { dependencies.yggdrasilAuthService ?? .shared } }
     static var ipLocationService: IPLocationService {
@@ -221,6 +229,7 @@ enum AppServices {
         }
         return sharedOnMainActor { AIChatManager.shared }
     }
+
     static var sparkleUpdateService: SparkleUpdateService { lock.withLock { dependencies.sparkleUpdateService ?? .shared } }
 
     static var serverAddressService: ServerAddressService {
@@ -229,22 +238,26 @@ enum AppServices {
         }
         return sharedOnMainActor { ServerAddressService.shared }
     }
+
     static var litematicaService: LitematicaService {
         if let injected = lock.withLock({ dependencies.litematicaService }) {
             return injected
         }
         return sharedOnMainActor { LitematicaService.shared }
     }
+
     static var premiumAccountFlagManager: PremiumAccountFlagManager {
         if let injected = lock.withLock({ dependencies.premiumAccountFlagManager }) {
             return injected
         }
         return sharedOnMainActor { PremiumAccountFlagManager.shared }
     }
+
     static var minecraftFriendsService: MinecraftFriendsService {
         lock.withLock { dependencies.minecraftFriendsService } ?? defaultMinecraftFriendsService
     }
 }
+
 private extension NSLocking {
     func withLock<T>(_ body: () -> T) -> T {
         lock()

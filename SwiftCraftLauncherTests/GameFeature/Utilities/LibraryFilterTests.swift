@@ -5,15 +5,14 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class LibraryFilterTests: XCTestCase {
-
     private func makeLibrary(
-        rules: [Rule]? = nil,
+        rules _: [Rule]? = nil,
         downloadable: Bool = true,
-        includeInClasspath: Bool = true
+        includeInClasspath: Bool = true,
     ) throws -> Library {
         let json: [String: Any] = [
             "downloads": [
@@ -45,7 +44,7 @@ final class LibraryFilterTests: XCTestCase {
 
     func testIsLibraryAllowed_allowAll() throws {
         let library = try makeLibrary(rules: [
-            Rule(action: "allow", features: nil, os: nil)
+            Rule(action: "allow", features: nil, os: nil),
         ])
         XCTAssertTrue(LibraryFilter.isLibraryAllowed(library))
     }

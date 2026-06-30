@@ -33,7 +33,7 @@ struct WindowStyleConfig: ViewModifier {
                         window.title = windowID.localizedTitle
                     }
                     WindowStyleHelper.configureStandardWindow(window)
-                }
+                },
             )
     }
 }

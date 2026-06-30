@@ -16,7 +16,7 @@ extension ModPackExporter {
     /// - Returns: A result describing how the resource should be processed.
     static func identifyModrinthResource(
         file: URL,
-        relativePath: String
+        relativePath: String,
     ) async -> SelectedResourceProcessResult {
         let result = await ResourceProcessor.identify(file: file, relativePath: relativePath)
         return SelectedResourceProcessResult(
@@ -25,7 +25,7 @@ extension ModPackExporter {
             curseForgeModListItem: nil,
             shouldCopyToOverrides: result.shouldCopyToOverrides,
             sourceFile: result.sourceFile,
-            relativePath: result.relativePath
+            relativePath: result.relativePath,
         )
     }
 
@@ -37,14 +37,14 @@ extension ModPackExporter {
     /// - Returns: The list of filenames written to the temporary directory.
     static func writeModrinthManifest(
         params: IndexBuildParams,
-        tempDir: URL
+        tempDir: URL,
     ) async throws -> [String] {
         let indexJson = try await ModrinthIndexBuilder.build(
             gameInfo: params.gameInfo,
             modPackName: params.modPackName,
             modPackVersion: params.modPackVersion,
             summary: params.summary,
-            files: params.indexFiles
+            files: params.indexFiles,
         )
 
         let indexPath = tempDir.appendingPathComponent(AppConstants.modrinthIndexFileName)

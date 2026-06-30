@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Section views for displaying world detail metadata including game settings, seed, and path.
+// Section views for displaying world detail metadata including game settings, seed, and path.
 import AppKit
 import SwiftUI
 
@@ -106,11 +106,11 @@ struct WorldDetailGameSettingsSectionView: View {
             WorldDetailInfoRow(label: "saveinfo.world.detail.label.difficulty".localized(), value: metadata.difficulty)
             WorldDetailInfoRow(
                 label: "saveinfo.world.detail.label.hardcore".localized(),
-                value: metadata.hardcore ? "common.yes".localized() : "common.no".localized()
+                value: metadata.hardcore ? "common.yes".localized() : "common.no".localized(),
             )
             WorldDetailInfoRow(
                 label: "saveinfo.world.detail.label.cheats".localized(),
-                value: metadata.cheats ? "common.yes".localized() : "common.no".localized()
+                value: metadata.cheats ? "common.yes".localized() : "common.no".localized(),
             )
         }
     }
@@ -140,7 +140,7 @@ struct WorldDetailOtherInfoSectionView: View {
                 WorldDetailInfoRow(
                     label: "saveinfo.world.detail.label.world_border".localized(),
                     value: border,
-                    isMultiline: true
+                    isMultiline: true,
                 )
             }
         }

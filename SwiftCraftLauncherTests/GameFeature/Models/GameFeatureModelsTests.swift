@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class GameFeatureModelsTests: XCTestCase {
-
     func testServerAddress_init_defaults() {
         let server = ServerAddress(name: "My Server", address: "play.example.com")
 
@@ -30,7 +29,7 @@ final class GameFeatureModelsTests: XCTestCase {
             port: 25566,
             hidden: true,
             icon: "server-icon.png",
-            acceptTextures: true
+            acceptTextures: true,
         )
 
         XCTAssertEqual(server.id, "custom-id")
@@ -56,7 +55,7 @@ final class GameFeatureModelsTests: XCTestCase {
             port: 25566,
             hidden: true,
             icon: "icon.png",
-            acceptTextures: true
+            acceptTextures: true,
         )
 
         let encoded = try JSONEncoder().encode(original)
@@ -158,7 +157,7 @@ final class GameFeatureModelsTests: XCTestCase {
             hardcore: true,
             cheats: true,
             version: "1.20.1",
-            seed: 12345
+            seed: 12345,
         )
 
         XCTAssertTrue(world.hardcore)
@@ -298,7 +297,7 @@ final class GameFeatureModelsTests: XCTestCase {
             downloads: nil,
             name: "test:lib:1.0",
             includeInClasspath: true,
-            downloadable: true
+            downloadable: true,
         )
 
         XCTAssertEqual(lib.name, "test:lib:1.0")
@@ -393,7 +392,7 @@ final class GameFeatureModelsTests: XCTestCase {
             modVersion: "0.14.21",
             assetIndex: "17",
             modLoader: "fabric",
-            mainClass: "net.minecraft.client.main.Main"
+            mainClass: "net.minecraft.client.main.Main",
         )
 
         let encoded = try JSONEncoder().encode(original)

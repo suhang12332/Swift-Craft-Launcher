@@ -9,7 +9,6 @@ import Foundation
 
 /// Provides dependency resolution for CurseForge projects.
 extension CurseForgeService {
-
     /// Fetches project dependencies mapped to Modrinth format.
     /// - Parameters:
     ///   - type: The project type (e.g., "mod", "resourcepack").
@@ -23,7 +22,7 @@ extension CurseForgeService {
         cachePath: URL,
         id: String,
         selectedVersions: [String],
-        selectedLoaders: [String]
+        selectedLoaders: [String],
     ) async -> ModrinthProjectDependency {
         do {
             return try await fetchProjectDependenciesThrowingAsModrinth(
@@ -31,7 +30,7 @@ extension CurseForgeService {
                 cachePath: cachePath,
                 id: id,
                 selectedVersions: selectedVersions,
-                selectedLoaders: selectedLoaders
+                selectedLoaders: selectedLoaders,
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -55,13 +54,13 @@ extension CurseForgeService {
         cachePath: URL,
         id: String,
         selectedVersions: [String],
-        selectedLoaders: [String]
+        selectedLoaders: [String],
     ) async throws -> ModrinthProjectDependency {
         let versions = try await fetchProjectVersionsFilterAsModrinth(
             id: id,
             selectedVersions: selectedVersions,
             selectedLoaders: selectedLoaders,
-            type: type
+            type: type,
         )
 
         guard let firstVersion = versions.first else {
@@ -75,7 +74,7 @@ extension CurseForgeService {
         var currentIndex = 0
         while currentIndex < requiredDeps.count {
             let endIndex = min(currentIndex + maxConcurrentTasks, requiredDeps.count)
-            let batch = Array(requiredDeps[currentIndex..<endIndex])
+            let batch = Array(requiredDeps[currentIndex ..< endIndex])
             currentIndex = endIndex
 
             let batchResults: [ModrinthProjectDetailVersion] = await withTaskGroup(of: ModrinthProjectDetailVersion?.self) { group in
@@ -86,7 +85,7 @@ extension CurseForgeService {
                             let depVersion: ModrinthProjectDetailVersion
 
                             let normalizedProjectId: String
-                            if !projectId.hasPrefix("cf-") && Int(projectId) != nil {
+                            if !projectId.hasPrefix("cf-"), Int(projectId) != nil {
                                 normalizedProjectId = "cf-\(projectId)"
                             } else {
                                 normalizedProjectId = projectId
@@ -110,7 +109,7 @@ extension CurseForgeService {
                                         id: normalizedProjectId,
                                         selectedVersions: selectedVersions,
                                         selectedLoaders: selectedLoaders,
-                                        type: type
+                                        type: type,
                                     )
                                     guard let firstDepVersion = depVersions.first else {
                                         return nil
@@ -121,7 +120,7 @@ extension CurseForgeService {
                                         id: normalizedProjectId,
                                         selectedVersions: selectedVersions,
                                         selectedLoaders: selectedLoaders,
-                                        type: type
+                                        type: type,
                                     )
                                     guard let firstDepVersion = depVersions.first else {
                                         return nil
@@ -160,7 +159,7 @@ extension CurseForgeService {
                 selectedVersions: selectedVersions,
                 selectedLoaders: selectedLoaders,
                 type: type,
-                modsDir: cachePath
+                modsDir: cachePath,
             )
 
             if !isInstalled {

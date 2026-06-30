@@ -16,7 +16,7 @@ final class GameDialogsPresenter: ObservableObject {
     @Published var gameForExport: GameVersionInfo?
     @Published var gamePendingDeletion: GameVersionInfo?
 
-    private init() {}
+    private init() { }
 
     func presentModPackExport(for game: GameVersionInfo) {
         gameForExport = game

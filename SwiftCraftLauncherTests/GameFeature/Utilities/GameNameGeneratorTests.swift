@@ -5,16 +5,15 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class GameNameGeneratorExtendedTests: XCTestCase {
-
     func testGenerateModPackName_withTitle_noTimestamp() {
         let result = GameNameGenerator.generateModPackName(
             projectTitle: "MyModPack",
             gameVersion: "1.20.1",
-            includeTimestamp: false
+            includeTimestamp: false,
         )
         XCTAssertEqual(result, "MyModPack-1.20.1")
     }
@@ -23,7 +22,7 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
         let result = GameNameGenerator.generateModPackName(
             projectTitle: nil,
             gameVersion: "1.20.1",
-            includeTimestamp: false
+            includeTimestamp: false,
         )
         XCTAssertEqual(result, "ModPack-1.20.1")
     }
@@ -32,7 +31,7 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
         let result = GameNameGenerator.generateModPackName(
             projectTitle: "Test",
             gameVersion: "1.20.1",
-            includeTimestamp: true
+            includeTimestamp: true,
         )
         XCTAssertTrue(result.hasPrefix("Test-1.20.1-"))
         XCTAssertTrue(result.count > "Test-1.20.1-".count)
@@ -42,7 +41,7 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
         let result = GameNameGenerator.generateImportName(
             modPackName: "AllTheMods",
             modPackVersion: "9.1",
-            includeTimestamp: false
+            includeTimestamp: false,
         )
         XCTAssertEqual(result, "AllTheMods-9.1")
     }
@@ -51,7 +50,7 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
         let result = GameNameGenerator.generateImportName(
             modPackName: "Test",
             modPackVersion: "1.0",
-            includeTimestamp: true
+            includeTimestamp: true,
         )
         XCTAssertTrue(result.hasPrefix("Test-1.0-"))
     }
@@ -61,7 +60,7 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
             gameVersion: "1.20.1",
             loaderVersion: "",
             modLoader: "vanilla",
-            includeTimestamp: false
+            includeTimestamp: false,
         )
         XCTAssertEqual(result, "1.20.1-vanilla")
     }
@@ -71,7 +70,7 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
             gameVersion: "1.20.1",
             loaderVersion: "0.14.0",
             modLoader: "fabric",
-            includeTimestamp: false
+            includeTimestamp: false,
         )
         XCTAssertEqual(result, "1.20.1-fabric-0.14.0")
     }
@@ -81,7 +80,7 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
             gameVersion: "1.20.1",
             loaderVersion: "47.2.0",
             modLoader: "forge",
-            includeTimestamp: false
+            includeTimestamp: false,
         )
         XCTAssertEqual(result, "1.20.1-forge-47.2.0")
     }
@@ -91,7 +90,7 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
             gameVersion: "1.20.1",
             loaderVersion: "0.14.0",
             modLoader: "fabric",
-            includeTimestamp: true
+            includeTimestamp: true,
         )
         XCTAssertTrue(result.hasPrefix("1.20.1-fabric-0.14.0-"))
     }
@@ -101,7 +100,7 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
             gameVersion: "1.20.1",
             loaderVersion: "",
             modLoader: "Vanilla",
-            includeTimestamp: false
+            includeTimestamp: false,
         )
         XCTAssertEqual(result, "1.20.1-vanilla")
     }

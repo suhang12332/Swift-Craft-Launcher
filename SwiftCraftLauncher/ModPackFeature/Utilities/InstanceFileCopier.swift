@@ -19,13 +19,13 @@ enum InstanceFileCopier {
         from sourceDirectory: URL,
         to targetDirectory: URL,
         fileFilter: ((String) -> Bool)? = nil,
-        onProgress: ((String, Int, Int) -> Void)?
+        onProgress: ((String, Int, Int) -> Void)?,
     ) async throws {
         let fileManager = FileManager.default
 
         try fileManager.createDirectory(
             at: targetDirectory,
-            withIntermediateDirectories: true
+            withIntermediateDirectories: true,
         )
 
         let allFiles = try getAllFiles(in: sourceDirectory)
@@ -34,7 +34,7 @@ enum InstanceFileCopier {
         let sourcePath = getNormalizedPath(standardizedSourceURL.path)
 
         let filesToCopy: [(sourceURL: URL, relativePath: String, targetURL: URL)]
-        if let fileFilter = fileFilter {
+        if let fileFilter {
             filesToCopy = allFiles.compactMap { fileURL in
                 let standardizedFileURL = fileURL.resolvingSymlinksInPath()
                 let filePath = standardizedFileURL.path
@@ -84,7 +84,7 @@ enum InstanceFileCopier {
             let targetDir = targetURL.deletingLastPathComponent()
             try fileManager.createDirectory(
                 at: targetDir,
-                withIntermediateDirectories: true
+                withIntermediateDirectories: true,
             )
 
             if fileManager.fileExists(atPath: targetURL.path) {
@@ -111,7 +111,7 @@ enum InstanceFileCopier {
         guard let enumerator = fileManager.enumerator(
             at: directory,
             includingPropertiesForKeys: [.isRegularFileKey],
-            options: [.skipsHiddenFiles, .skipsPackageDescendants]
+            options: [.skipsHiddenFiles, .skipsPackageDescendants],
         ) else {
             return []
         }
@@ -127,6 +127,6 @@ enum InstanceFileCopier {
     }
 
     private static func getNormalizedPath(_ path: String) -> String {
-        return path.hasSuffix("/") ? path : path + "/"
+        path.hasSuffix("/") ? path : path + "/"
     }
 }

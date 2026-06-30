@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Tracks the loading and selection state of resource dependencies.
+// Tracks the loading and selection state of resource dependencies.
 import SwiftUI
 
 struct DependencyState {
@@ -39,8 +39,8 @@ struct DependencySectionView: View {
                                     get: {
                                         state.selected[dep.id] ?? versions.first
                                     },
-                                    set: { state.selected[dep.id] = $0 }
-                                )
+                                    set: { state.selected[dep.id] = $0 },
+                                ),
                             ) {
                                 Text("global_resource.dependency_version".localized())
                             } content: {

@@ -8,7 +8,7 @@
 import Foundation
 import XCTest
 
-private final class BundleToken {}
+private final class BundleToken { }
 
 extension URL {
     static func require(_ string: String, file: StaticString = #filePath, line: UInt = #line) -> URL {
@@ -29,7 +29,7 @@ enum TestSupport {
         if let url = bundle.url(
             forResource: name,
             withExtension: ext,
-            subdirectory: subdirectory
+            subdirectory: subdirectory,
         ) {
             return url
         }

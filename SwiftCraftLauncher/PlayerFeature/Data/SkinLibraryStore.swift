@@ -27,8 +27,8 @@ final class SkinLibraryStore {
 
     init(fileManager: FileManager = .default) {
         self.fileManager = fileManager
-        self.database = SQLiteDatabase(path: AppPaths.gameVersionDatabase.path)
-        self.createTableSQL = """
+        database = SQLiteDatabase(path: AppPaths.gameVersionDatabase.path)
+        createTableSQL = """
         CREATE TABLE IF NOT EXISTS \(AppConstants.DatabaseTables.skinLibrary) (
             original_file_name TEXT NOT NULL,
             sha1 TEXT NOT NULL PRIMARY KEY,
@@ -36,13 +36,13 @@ final class SkinLibraryStore {
             last_used_at REAL NOT NULL
         );
         """
-        self.upsertSQL = """
+        upsertSQL = """
         INSERT OR REPLACE INTO \(AppConstants.DatabaseTables.skinLibrary)
         (original_file_name, sha1, model, last_used_at)
         VALUES (?, ?, ?, ?)
         """
-        self.deleteSQL = "DELETE FROM \(AppConstants.DatabaseTables.skinLibrary) WHERE sha1 = ?"
-        self.selectAllSQL = """
+        deleteSQL = "DELETE FROM \(AppConstants.DatabaseTables.skinLibrary) WHERE sha1 = ?"
+        selectAllSQL = """
         SELECT \(selectColumns)
         FROM \(tableName)
         ORDER BY last_used_at DESC
@@ -84,7 +84,7 @@ final class SkinLibraryStore {
     func saveSkin(
         data: Data,
         model: PlayerSkinService.PublicSkinInfo.SkinModel,
-        originalFileName: String?
+        originalFileName: String?,
     ) -> SkinLibraryItem? {
         do {
             try initializeIfNeeded()
@@ -102,7 +102,7 @@ final class SkinLibraryStore {
                 originalFileName: normalizedFileName(from: originalFileName),
                 sha1: sha1,
                 model: model,
-                lastUsedAt: now
+                lastUsedAt: now,
             )
 
             try upsert(item)
@@ -150,7 +150,7 @@ final class SkinLibraryStore {
         try fileManager.createDirectory(
             at: AppPaths.skinsDirectory,
             withIntermediateDirectories: true,
-            attributes: nil
+            attributes: nil,
         )
     }
 
@@ -196,10 +196,10 @@ final class SkinLibraryStore {
 
     private func createIndexesIfNeeded() throws {
         try? database.execute(
-            "CREATE INDEX IF NOT EXISTS idx_skin_library_last_used_at ON \(tableName)(last_used_at DESC);"
+            "CREATE INDEX IF NOT EXISTS idx_skin_library_last_used_at ON \(tableName)(last_used_at DESC);",
         )
         try? database.execute(
-            "CREATE INDEX IF NOT EXISTS idx_skin_library_sha1 ON \(tableName)(sha1);"
+            "CREATE INDEX IF NOT EXISTS idx_skin_library_sha1 ON \(tableName)(sha1);",
         )
     }
 
@@ -220,7 +220,7 @@ final class SkinLibraryStore {
 
     private func withPreparedStatement<T>(
         _ sql: String,
-        _ body: (OpaquePointer) throws -> T
+        _ body: (OpaquePointer) throws -> T,
     ) throws -> T {
         let statement = try database.prepare(sql)
         defer { sqlite3_finalize(statement) }
@@ -230,7 +230,7 @@ final class SkinLibraryStore {
     private func executeUpdate(
         _ sql: String,
         errorPrefix: String = "SQL execution failed",
-        bind: (OpaquePointer) throws -> Void
+        bind: (OpaquePointer) throws -> Void,
     ) throws {
         try database.transaction {
             try withPreparedStatement(sql) { statement in
@@ -239,7 +239,7 @@ final class SkinLibraryStore {
                     throw GlobalError.validation(
                         chineseMessage: "\(errorPrefix): \(sqliteErrorMessage())",
                         i18nKey: "error.validation.sql_execution_failed",
-                        level: .notification
+                        level: .notification,
                     )
                 }
             }
@@ -263,7 +263,7 @@ final class SkinLibraryStore {
             originalFileName: originalFileName,
             sha1: sha1,
             model: model,
-            lastUsedAt: SQLiteDatabase.dateColumn(statement, index: 3)
+            lastUsedAt: SQLiteDatabase.dateColumn(statement, index: 3),
         )
     }
 

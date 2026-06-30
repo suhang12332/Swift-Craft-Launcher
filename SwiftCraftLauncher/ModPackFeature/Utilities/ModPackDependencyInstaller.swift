@@ -23,8 +23,8 @@ enum ModPackDependencyInstaller {
     static func installVersionDependencies(
         indexInfo: ModrinthIndexInfo,
         gameInfo: GameVersionInfo,
-        extractedPath: URL? = nil,
-        onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)? = nil
+        extractedPath _: URL? = nil,
+        onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)? = nil,
     ) async -> Bool {
         let resourceDir = AppPaths.profileDirectory(gameName: gameInfo.gameName)
 
@@ -32,14 +32,14 @@ enum ModPackDependencyInstaller {
             files: indexInfo.files,
             resourceDir: resourceDir,
             gameInfo: gameInfo,
-            onProgressUpdate: onProgressUpdate
+            onProgressUpdate: onProgressUpdate,
         )
 
         async let dependenciesResult = installModPackDependencies(
             dependencies: indexInfo.dependencies,
             gameInfo: gameInfo,
             resourceDir: resourceDir,
-            onProgressUpdate: onProgressUpdate
+            onProgressUpdate: onProgressUpdate,
         )
 
         let (filesSuccess, dependenciesSuccess) = await (filesResult, dependenciesResult)

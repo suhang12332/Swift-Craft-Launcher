@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class PlayerUtilsTests: XCTestCase {
-
     func testGenerateOfflineUUID_steve_produces32CharHex() throws {
         let uuid = try PlayerUtils.generateOfflineUUID(for: "Steve")
         XCTAssertEqual(uuid.count, 32)
@@ -60,7 +59,7 @@ final class PlayerUtilsTests: XCTestCase {
         XCTAssertNil(PlayerUtils.avatarName(for: "abc123"))
     }
 
-    func testAvatarName_withDashes() throws {
+    func testAvatarName_withDashes() {
         let uuid = "0c6ecd5a-db74-3f56-a5b1-5b7b2a7a4a23"
         let name = PlayerUtils.avatarName(for: uuid)
         XCTAssertNotNil(name)

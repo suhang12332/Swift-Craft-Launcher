@@ -26,7 +26,7 @@ enum ResourceInstallationChecker {
         installedHashes: Set<String>,
         selectedVersions: [String],
         selectedLoaders: [String],
-        gameInfo: GameVersionInfo?
+        gameInfo: GameVersionInfo?,
     ) async -> Bool {
         guard !installedHashes.isEmpty else { return false }
 
@@ -35,7 +35,7 @@ enum ResourceInstallationChecker {
             if !selectedVersions.isEmpty {
                 return selectedVersions
             }
-            if let gameInfo = gameInfo {
+            if let gameInfo {
                 return [gameInfo.gameVersion]
             }
             return []
@@ -45,7 +45,7 @@ enum ResourceInstallationChecker {
             if !selectedLoaders.isEmpty {
                 return selectedLoaders.map { $0.lowercased() }
             }
-            if let gameInfo = gameInfo {
+            if let gameInfo {
                 return [gameInfo.modLoader.lowercased()]
             }
             return []
@@ -56,13 +56,13 @@ enum ResourceInstallationChecker {
                 id: project.projectId,
                 selectedVersions: versionFilters,
                 selectedLoaders: loaderFilters,
-                type: resourceType
+                type: resourceType,
             )
 
             for version in versions {
                 guard
                     let primaryFile = ModrinthService.filterPrimaryFiles(
-                        from: version.files
+                        from: version.files,
                     )
                 else { continue }
 
@@ -72,7 +72,7 @@ enum ResourceInstallationChecker {
             }
         } catch {
             Logger.shared.error(
-                "获取项目版本以检查安装状态失败: \(error.localizedDescription)"
+                "获取项目版本以检查安装状态失败: \(error.localizedDescription)",
             )
         }
 

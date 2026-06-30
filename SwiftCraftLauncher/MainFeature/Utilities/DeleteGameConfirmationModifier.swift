@@ -18,9 +18,9 @@ struct DeleteGameConfirmationModifier: ViewModifier {
     init(
         gamePendingDeletion: Binding<GameVersionInfo?>,
         detailState: ResourceDetailState,
-        gameActionManager: GameActionManager = AppServices.gameActionManager
+        gameActionManager: GameActionManager = AppServices.gameActionManager,
     ) {
-        self._gamePendingDeletion = gamePendingDeletion
+        _gamePendingDeletion = gamePendingDeletion
         self.detailState = detailState
         self.gameActionManager = gameActionManager
     }
@@ -28,7 +28,7 @@ struct DeleteGameConfirmationModifier: ViewModifier {
     private var isDialogPresented: Binding<Bool> {
         Binding(
             get: { gamePendingDeletion != nil },
-            set: { if !$0 { gamePendingDeletion = nil } }
+            set: { if !$0 { gamePendingDeletion = nil } },
         )
     }
 
@@ -37,7 +37,7 @@ struct DeleteGameConfirmationModifier: ViewModifier {
             .confirmationDialog(
                 "delete.title".localized(),
                 isPresented: isDialogPresented,
-                titleVisibility: .visible
+                titleVisibility: .visible,
             ) {
                 Button("common.delete".localized(), role: .destructive) {
                     if let game = gamePendingDeletion {
@@ -45,13 +45,13 @@ struct DeleteGameConfirmationModifier: ViewModifier {
                             game: game,
                             gameRepository: gameRepository,
                             selectedItem: detailState.selectedItemBinding,
-                            gameType: detailState.gameTypeBinding
+                            gameType: detailState.gameTypeBinding,
                         )
                         gamePendingDeletion = nil
                     }
                 }
                 .keyboardShortcut(.defaultAction)
-                Button("common.cancel".localized(), role: .cancel) {}
+                Button("common.cancel".localized(), role: .cancel) { }
             } message: {
                 if let game = gamePendingDeletion {
                     Text(String(format: "delete.game.confirm".localized(), game.gameName))
@@ -63,13 +63,13 @@ struct DeleteGameConfirmationModifier: ViewModifier {
 extension View {
     func deleteGameConfirmationDialog(
         gamePendingDeletion: Binding<GameVersionInfo?>,
-        detailState: ResourceDetailState
+        detailState: ResourceDetailState,
     ) -> some View {
         modifier(
             DeleteGameConfirmationModifier(
                 gamePendingDeletion: gamePendingDeletion,
-                detailState: detailState
-            )
+                detailState: detailState,
+            ),
         )
     }
 }

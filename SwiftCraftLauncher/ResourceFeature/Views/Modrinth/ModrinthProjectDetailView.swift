@@ -63,7 +63,7 @@ struct ModrinthProjectDetailView: View {
                         ProgressView()
                             .controlSize(.small)
                             .frame(width: 80, height: 80)
-                    case .success(let image):
+                    case let .success(image):
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -79,7 +79,7 @@ struct ModrinthProjectDetailView: View {
                 .clipped()
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(
-                        for: URLRequest(url: url)
+                        for: URLRequest(url: url),
                     )
                 }
             }

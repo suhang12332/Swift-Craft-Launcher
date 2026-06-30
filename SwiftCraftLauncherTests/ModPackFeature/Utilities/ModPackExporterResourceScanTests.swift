@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModPackExporterResourceScanTests: XCTestCase {
-
     private let gameDirectory = URL(fileURLWithPath: "/tmp/testgame")
 
     func testTopLevelDirectoryName_modsFolder() {

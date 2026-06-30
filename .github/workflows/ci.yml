@@ -38,6 +38,15 @@ jobs:
         run: swiftlint lint --strict
 
       # =========================
+      # SwiftFormat
+      # =========================
+      - name: Install SwiftFormat
+        run: brew install swiftformat
+
+      - name: Run SwiftFormat lint
+        run: swiftformat . --swift-version 6.1
+
+      # =========================
       # Localization Check
       # =========================
       - name: Check localization completeness

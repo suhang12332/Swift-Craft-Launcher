@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModScannerFallbackTests: XCTestCase {
-
     private lazy var modScanner = ModScanner(errorHandler: GlobalErrorHandler.shared)
 
     func testCreateFallbackDetail_jarFile() {

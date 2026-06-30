@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class SHA1CalculatorTests: XCTestCase {
-
     private var tmpDir: URL?
 
     override func setUp() {
@@ -50,7 +49,7 @@ final class SHA1CalculatorTests: XCTestCase {
     func testSha1_ofData_differentInput_differentHash() {
         XCTAssertNotEqual(
             SHA1Calculator.sha1(of: Data("a".utf8)),
-            SHA1Calculator.sha1(of: Data("b".utf8))
+            SHA1Calculator.sha1(of: Data("b".utf8)),
         )
     }
 

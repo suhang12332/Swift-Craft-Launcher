@@ -22,7 +22,7 @@ enum YggdrasilServerPresets {
             profilePath: "/api/yggdrasil/sessionserver/session/minecraft/profile",
             scope: "Yggdrasil.MinecraftToken.Create Yggdrasil.PlayerProfiles.Read",
             parserId: .littleskin,
-            token: "/api/yggdrasil/authserver/oauth"
+            token: "/api/yggdrasil/authserver/oauth",
         ),
         YggdrasilServerConfig(
             name: "Mua",
@@ -36,7 +36,7 @@ enum YggdrasilServerPresets {
             profilePath: "/api/players",
             scope: "Player.Read User.Read",
             parserId: .mua,
-            token: "/api/yggdrasil/authserver/oauth"
+            token: "/api/yggdrasil/authserver/oauth",
         ),
         YggdrasilServerConfig(
             name: "Ely.By",
@@ -50,7 +50,7 @@ enum YggdrasilServerPresets {
             profilePath: "/api/account/v1/info",
             scope: "account_info",
             parserId: .ely,
-            token: "/api/yggdrasil/authserver/oauth"
+            token: "/api/yggdrasil/authserver/oauth",
         ),
     ]
 

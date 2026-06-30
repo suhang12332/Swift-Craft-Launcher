@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A toggle switch for enabling or disabling a local resource.
+// A toggle switch for enabling or disabling a local resource.
 import SwiftUI
 
 struct LocalResourceToggle: View {
@@ -23,8 +23,8 @@ struct LocalResourceToggle: View {
                     "",
                     isOn: Binding(
                         get: { !isDisabled },
-                        set: { _ in onToggle() }
-                    )
+                        set: { _ in onToggle() },
+                    ),
                 )
                 .toggleStyle(.switch)
                 .labelsHidden()

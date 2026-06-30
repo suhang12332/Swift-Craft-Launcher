@@ -20,7 +20,7 @@ enum BatchJarDownloader {
     static func download(
         tasks: [JarDownloadTask],
         metaLibrariesDir: URL,
-        onProgressUpdate: ((String, Int, Int) -> Void)? = nil
+        onProgressUpdate: ((String, Int, Int) -> Void)? = nil,
     ) async throws {
         let total = tasks.count
         let counter = Counter()
@@ -39,7 +39,7 @@ enum BatchJarDownloader {
                     _ = try await DownloadManager.downloadFile(
                         urlString: task.url.absoluteString,
                         destinationURL: destinationURL,
-                        expectedSha1: task.expectedSha1
+                        expectedSha1: task.expectedSha1,
                     )
                     let completed = await counter.increment()
                     await MainActor.run {

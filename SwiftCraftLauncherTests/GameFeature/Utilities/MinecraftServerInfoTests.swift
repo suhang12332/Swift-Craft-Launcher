@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class MinecraftServerInfoTests: XCTestCase {
-
     func testDescription_plainText_textOnly() throws {
         let json = """
         {"text": "Hello World"}
@@ -82,7 +81,7 @@ final class MinecraftServerInfoTests: XCTestCase {
         let data = Data(json.utf8)
         let element = try JSONDecoder().decode(MinecraftServerInfo.Description.DescriptionElement.self, from: data)
 
-        if case .string(let text) = element {
+        if case let .string(text) = element {
             XCTAssertEqual(text, "hello")
         } else {
             XCTFail("Expected string element")
@@ -96,7 +95,7 @@ final class MinecraftServerInfoTests: XCTestCase {
         let data = Data(json.utf8)
         let element = try JSONDecoder().decode(MinecraftServerInfo.Description.DescriptionElement.self, from: data)
 
-        if case .object(let desc) = element {
+        if case let .object(desc) = element {
             XCTAssertEqual(desc.plainText, "world")
         } else {
             XCTFail("Expected object element")

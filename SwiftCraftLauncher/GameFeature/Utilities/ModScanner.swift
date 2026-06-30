@@ -20,23 +20,23 @@ class ModScanner {
     /// Schedules an asynchronous rebuild of directory hashes.
     nonisolated func scheduleDirectoryHashRebuild(
         standardizedDirectoryURL: URL,
-        gameNameHint: String?
+        gameNameHint: String?,
     ) {
         Task.detached(priority: .utility) { [modScanner = self] in
             do {
                 _ = try await modScanner.rebuildDirectoryHashes(
                     dir: standardizedDirectoryURL,
-                    gameNameHint: gameNameHint
+                    gameNameHint: gameNameHint,
                 )
             } catch {
                 let globalError = GlobalError.from(error)
                 if let gameNameHint {
                     Logger.shared.warning(
-                        "FSEvents 重新扫描游戏 \(gameNameHint) 的 mods 目录失败: \(globalError.chineseMessage)"
+                        "FSEvents 重新扫描游戏 \(gameNameHint) 的 mods 目录失败: \(globalError.chineseMessage)",
                     )
                 } else {
                     Logger.shared.warning(
-                        "FSEvents 重新扫描目录 \(standardizedDirectoryURL.lastPathComponent) 失败: \(globalError.chineseMessage)"
+                        "FSEvents 重新扫描目录 \(standardizedDirectoryURL.lastPathComponent) 失败: \(globalError.chineseMessage)",
                     )
                 }
             }
@@ -46,18 +46,18 @@ class ModScanner {
     /// Retrieves a Modrinth project detail for the given file, returning the result via a completion handler.
     func getModrinthProjectDetail(
         for fileURL: URL,
-        completion: @escaping (ModrinthProjectDetail?) -> Void
+        completion: @escaping (ModrinthProjectDetail?) -> Void,
     ) {
         Task {
             do {
                 let detail = try await getModrinthProjectDetailThrowing(
-                    for: fileURL
+                    for: fileURL,
                 )
                 completion(detail)
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error(
-                    "获取 Modrinth 项目详情失败: \(globalError.chineseMessage)"
+                    "获取 Modrinth 项目详情失败: \(globalError.chineseMessage)",
                 )
                 errorHandler.handle(globalError)
                 completion(nil)
@@ -67,13 +67,13 @@ class ModScanner {
 
     /// Retrieves a Modrinth project detail for the given file.
     func getModrinthProjectDetailThrowing(
-        for fileURL: URL
+        for fileURL: URL,
     ) async throws -> ModrinthProjectDetail? {
         guard let hash = try Self.sha1HashThrowing(of: fileURL) else {
             throw GlobalError.validation(
                 chineseMessage: "无法计算文件哈希值",
                 i18nKey: "error.validation.file_hash_calculation_failed",
-                level: .silent
+                level: .silent,
             )
         }
 
@@ -90,7 +90,7 @@ class ModScanner {
             }
         }
 
-        if var detail = detail {
+        if var detail {
             detail.type = inferredType
             var detailWithFileName = detail
             detailWithFileName.fileName = fileURL.lastPathComponent
@@ -100,7 +100,7 @@ class ModScanner {
 
         let fingerprint = try CurseForgeFingerprint.fingerprint(fileAt: fileURL)
         if let cfAsModrinth = await CurseForgeService.fetchProjectDetailsAsModrinthByFingerprint(
-            fingerprint: fingerprint
+            fingerprint: fingerprint,
         ) {
             var detailWithFileName = cfAsModrinth
             detailWithFileName.type = inferredType
@@ -110,7 +110,7 @@ class ModScanner {
         }
 
         let fallbackDetail = createFallbackDetailFromFileName(
-            fileURL: fileURL
+            fileURL: fileURL,
         )
         saveToCache(hash: hash, detail: fallbackDetail)
         return fallbackDetail
@@ -140,19 +140,19 @@ class ModScanner {
             errorHandler.handle(GlobalError.validation(
                 chineseMessage: "保存 mod 缓存失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.mod_cache_encode_failed",
-                level: .silent
+                level: .silent,
             ))
         }
     }
 
     /// Computes the SHA-1 hash of the file at the given URL, returning `nil` on failure.
     static func sha1Hash(of url: URL) -> String? {
-        return SHA1Calculator.sha1Silent(ofFileAt: url)
+        SHA1Calculator.sha1Silent(ofFileAt: url)
     }
 
     /// Computes the SHA-1 hash of the file at the given URL, throwing on I/O errors.
     static func sha1HashThrowing(of url: URL) throws -> String? {
-        return try SHA1Calculator.sha1(ofFileAt: url)
+        try SHA1Calculator.sha1(ofFileAt: url)
     }
 
     func sha1Hash(of url: URL) -> String? {

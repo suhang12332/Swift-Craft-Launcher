@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CommonUtilExtendedTests: XCTestCase {
-
     func testForceHTTPS_httpToHttps() {
         let url = URL.require("http://example.com/path")
         let result = url.forceHTTPS()

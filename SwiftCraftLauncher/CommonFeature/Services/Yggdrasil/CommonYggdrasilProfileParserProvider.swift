@@ -11,7 +11,7 @@ import Foundation
 struct CommonYggdrasilProfileParserProvider: YggdrasilProfileParserProvider {
     func makeParser(
         for id: YggdrasilProfileParserID,
-        baseURL: String
+        baseURL: String,
     ) -> (any YggdrasilProfileListParser)? {
         switch id {
         case .littleskin:

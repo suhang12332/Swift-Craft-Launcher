@@ -8,13 +8,12 @@
 import Foundation
 
 extension ModPackDependencyInstaller {
-
     /// Installs all required dependencies for the modpack.
     static func installModPackDependencies(
         dependencies: [ModrinthIndexProjectDependency],
         gameInfo: GameVersionInfo,
         resourceDir: URL,
-        onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
+        onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?,
     ) async -> Bool {
         let requiredDependencies = dependencies.filter { $0.dependencyType == "required" }
 
@@ -22,7 +21,7 @@ extension ModPackDependencyInstaller {
             "modpack.progress.dependencies_installation_started".localized(),
             0,
             requiredDependencies.count,
-            .dependencies
+            .dependencies,
         )
 
         let semaphore = AsyncSemaphore(value: downloadSemaphoreValue)
@@ -40,7 +39,7 @@ extension ModPackDependencyInstaller {
                             "modpack.progress.dependency_skipped".localized(),
                             currentCount,
                             requiredDependencies.count,
-                            .dependencies
+                            .dependencies,
                         )
                         return (index, true)
                     }
@@ -64,7 +63,7 @@ extension ModPackDependencyInstaller {
             return results.sorted { $0.0 < $1.0 }
         }
 
-        let failedCount = results.count - results.filter { $0.1 }.count
+        let failedCount = results.count - results.count { $0.1 }
 
         if failedCount > 0 {
             Logger.shared.error("有 \(failedCount) 个依赖安装失败")
@@ -75,7 +74,7 @@ extension ModPackDependencyInstaller {
             "modpack.progress.dependencies_installation_completed".localized(),
             requiredDependencies.count,
             requiredDependencies.count,
-            .dependencies
+            .dependencies,
         )
 
         return true
@@ -84,9 +83,9 @@ extension ModPackDependencyInstaller {
     private static func shouldSkipDependency(
         dep: ModrinthIndexProjectDependency,
         gameInfo: GameVersionInfo,
-        resourceDir: URL
+        resourceDir: URL,
     ) async -> Bool {
-        if dep.projectId == "P7dR8mSH" && gameInfo.modLoader.lowercased() == GameLoader.quilt.rawValue {
+        if dep.projectId == "P7dR8mSH", gameInfo.modLoader.lowercased() == GameLoader.quilt.rawValue {
             return true
         }
 
@@ -103,7 +102,7 @@ extension ModPackDependencyInstaller {
                     id: projectId,
                     selectedVersions: [gameInfo.gameVersion],
                     selectedLoaders: [gameInfo.modLoader],
-                    type: ResourceType.mod.rawValue
+                    type: ResourceType.mod.rawValue,
                 )
                 if let version = versions?.first,
                    let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) {
@@ -120,7 +119,7 @@ extension ModPackDependencyInstaller {
     private static func installDependency(
         dep: ModrinthIndexProjectDependency,
         gameInfo: GameVersionInfo,
-        resourceDir: URL
+        resourceDir: URL,
     ) async -> Bool {
         guard let projectId = dep.projectId else {
             Logger.shared.error("依赖缺少项目ID")
@@ -132,13 +131,13 @@ extension ModPackDependencyInstaller {
                 projectId: projectId,
                 versionId: versionId,
                 gameInfo: gameInfo,
-                resourceDir: resourceDir
+                resourceDir: resourceDir,
             )
         }
         return await addProjectFromLatestVersion(
             projectId: projectId,
             gameInfo: gameInfo,
-            resourceDir: resourceDir
+            resourceDir: resourceDir,
         )
     }
 
@@ -146,7 +145,7 @@ extension ModPackDependencyInstaller {
         projectId: String,
         versionId: String,
         gameInfo: GameVersionInfo,
-        resourceDir: URL
+        resourceDir: URL,
     ) async -> Bool {
         do {
             let version = try await ModrinthService.fetchProjectVersionThrowing(id: versionId)
@@ -163,7 +162,7 @@ extension ModPackDependencyInstaller {
                 version: version,
                 projectDetail: projectDetail,
                 gameInfo: gameInfo,
-                resourceDir: resourceDir
+                resourceDir: resourceDir,
             )
         } catch {
             Logger.shared.error("获取版本详情失败")
@@ -174,7 +173,7 @@ extension ModPackDependencyInstaller {
     private static func addProjectFromLatestVersion(
         projectId: String,
         gameInfo: GameVersionInfo,
-        resourceDir: URL
+        resourceDir: URL,
     ) async -> Bool {
         do {
             let projectDetail = try await ModrinthService.fetchProjectDetailsThrowing(id: projectId)
@@ -193,7 +192,7 @@ extension ModPackDependencyInstaller {
                 version: latestVersion,
                 projectDetail: projectDetail,
                 gameInfo: gameInfo,
-                resourceDir: resourceDir
+                resourceDir: resourceDir,
             )
         } catch {
             Logger.shared.error("获取项目详情失败")
@@ -205,7 +204,7 @@ extension ModPackDependencyInstaller {
         version: ModrinthProjectDetailVersion,
         projectDetail: ModrinthProjectDetail,
         gameInfo: GameVersionInfo,
-        resourceDir: URL
+        resourceDir _: URL,
     ) async -> Bool {
         do {
             guard let primaryFile = ModrinthService.filterPrimaryFiles(from: version.files) else {
@@ -217,7 +216,7 @@ extension ModPackDependencyInstaller {
                 for: gameInfo,
                 urlString: primaryFile.url,
                 resourceType: ResourceType.mod.rawValue,
-                expectedSha1: primaryFile.hashes.sha1
+                expectedSha1: primaryFile.hashes.sha1,
             )
 
             if let hash = AppServices.modScanner.sha1Hash(of: downloadedFile) {

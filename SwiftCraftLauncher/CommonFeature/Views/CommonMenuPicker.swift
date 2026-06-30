@@ -18,7 +18,7 @@ struct CommonMenuPicker<Label: View, SelectionValue: Hashable, Content: View>: V
         selection: Binding<SelectionValue>,
         hidesLabel: Bool = false,
         @ViewBuilder label: @escaping () -> Label,
-        @ViewBuilder content: @escaping () -> Content
+        @ViewBuilder content: @escaping () -> Content,
     ) {
         self.selection = selection
         self.hidesLabel = hidesLabel
@@ -39,7 +39,6 @@ struct CommonMenuPicker<Label: View, SelectionValue: Hashable, Content: View>: V
 private struct ConditionalLabelsHidden: ViewModifier {
     let isHidden: Bool
 
-    @ViewBuilder
     func body(content: Content) -> some View {
         if isHidden {
             content.labelsHidden()
@@ -50,7 +49,6 @@ private struct ConditionalLabelsHidden: ViewModifier {
 }
 
 private struct FlexibleButtonSizingModifier: ViewModifier {
-    @ViewBuilder
     func body(content: Content) -> some View {
         if #available(macOS 26, *) {
             content.buttonSizing(.flexible)

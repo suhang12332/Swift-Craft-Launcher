@@ -28,27 +28,27 @@ struct ModPackDownloadSheet: View {
         projectId: String,
         gameInfo: GameVersionInfo?,
         query: String,
-        preloadedDetail: ModrinthProjectDetail? = nil
+        preloadedDetail: ModrinthProjectDetail? = nil,
     ) {
         self.projectId = projectId
         self.gameInfo = gameInfo
         self.query = query
         self.preloadedDetail = preloadedDetail
-        self._gameNameValidator = StateObject(wrappedValue: GameNameValidator(gameSetupService: GameSetupUtil()))
+        _gameNameValidator = StateObject(wrappedValue: GameNameValidator(gameSetupService: GameSetupUtil()))
     }
 
     var body: some View {
         CommonSheetView(
             header: { headerView },
             body: { bodyView },
-            footer: { footerView }
+            footer: { footerView },
         )
         .onAppear {
             coordinator.onAppear(
                 sheetViewModel: viewModel,
                 gameRepository: gameRepository,
                 projectId: projectId,
-                preloadedDetail: preloadedDetail
+                preloadedDetail: preloadedDetail,
             )
         }
         .onDisappear {
@@ -61,7 +61,7 @@ struct ModPackDownloadSheet: View {
         selectedModPackVersion = nil
         coordinator.onDisappear(
             sheetViewModel: viewModel,
-            gameSetupService: gameSetupService
+            gameSetupService: gameSetupService,
         )
     }
 
@@ -75,7 +75,7 @@ struct ModPackDownloadSheet: View {
         VStack(spacing: 24) {
             ProgressView(
                 value: Double(max(viewModel.modPackDownloadProgress, 0)),
-                total: Double(max(viewModel.modPackTotalSize, 100))
+                total: Double(max(viewModel.modPackTotalSize, 100)),
             )
             .progressViewStyle(.circular)
             .controlSize(.extraLarge)
@@ -110,10 +110,10 @@ struct ModPackDownloadSheet: View {
                     isLoadingModPackVersions: viewModel.isLoadingModPackVersions,
                     isProcessing: viewModel.isProcessing,
                     onGameVersionChange: handleGameVersionChange,
-                    onModPackVersionAppear: selectFirstModPackVersion
+                    onModPackVersionAppear: selectFirstModPackVersion,
                 )
 
-                if !selectedGameVersion.isEmpty && selectedModPackVersion != nil {
+                if !selectedGameVersion.isEmpty, selectedModPackVersion != nil {
                     ModPackInstallSharedSections(
                         gameName: $gameNameValidator.gameName,
                         isGameNameDuplicate: $gameNameValidator.isGameNameDuplicate,
@@ -122,7 +122,7 @@ struct ModPackDownloadSheet: View {
                         gameSetupService: gameSetupService,
                         modPackInstallState: viewModel.modPackInstallState,
                         lastParsedIndexInfo: viewModel.lastParsedIndexInfo,
-                        shouldShowProgress: shouldShowProgress
+                        shouldShowProgress: shouldShowProgress,
                     )
                 }
             }
@@ -189,8 +189,8 @@ struct ModPackDownloadSheet: View {
     }
 
     private func selectFirstModPackVersion() {
-        if !viewModel.filteredModPackVersions.isEmpty
-            && selectedModPackVersion == nil {
+        if !viewModel.filteredModPackVersions.isEmpty,
+            selectedModPackVersion == nil {
             selectedModPackVersion = viewModel.filteredModPackVersions[0]
             setDefaultGameName()
         }
@@ -200,7 +200,7 @@ struct ModPackDownloadSheet: View {
         let defaultName = GameNameGenerator.generateModPackName(
             projectTitle: viewModel.projectDetail?.title,
             gameVersion: selectedGameVersion,
-            includeTimestamp: true
+            includeTimestamp: true,
         )
         gameNameValidator.setDefaultName(defaultName)
     }
@@ -228,7 +228,7 @@ struct ModPackDownloadSheet: View {
             projectDetail: projectDetail,
             gameName: gameNameValidator.gameName,
             selectedGameVersion: selectedGameVersion,
-            gameSetupService: gameSetupService
+            gameSetupService: gameSetupService,
         ) { success in
             if success {
                 dismiss()

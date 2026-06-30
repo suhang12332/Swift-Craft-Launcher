@@ -37,8 +37,8 @@ struct ContributorCardView: View {
                             .system(
                                 size: 13,
                                 weight: isTopContributor
-                                ? .semibold : .regular
-                            )
+                                ? .semibold : .regular,
+                            ),
                         )
                         .foregroundColor(.primary)
 

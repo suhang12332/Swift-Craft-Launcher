@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class MinecraftManifestTests: XCTestCase {
-
     func testMinecraftVersionManifest_decodeMinimal() throws {
         let json = """
         {
@@ -68,7 +67,7 @@ final class MinecraftManifestTests: XCTestCase {
         let data = Data(json.utf8)
         let value = try JSONDecoder().decode(ArgumentValue.self, from: data)
 
-        if case .string(let s) = value {
+        if case let .string(s) = value {
             XCTAssertEqual(s, "--width")
         } else {
             XCTFail("Expected string")
@@ -85,7 +84,7 @@ final class MinecraftManifestTests: XCTestCase {
         let data = Data(json.utf8)
         let value = try JSONDecoder().decode(ArgumentValue.self, from: data)
 
-        if case .objectWithRules(let obj) = value {
+        if case let .objectWithRules(obj) = value {
             XCTAssertEqual(obj.rules.count, 1)
             XCTAssertEqual(obj.rules.first?.action, "allow")
         } else {
@@ -98,7 +97,7 @@ final class MinecraftManifestTests: XCTestCase {
         let data = Data(json.utf8)
         let value = try JSONDecoder().decode(ArgumentValueArrayOrString.self, from: data)
 
-        if case .string(let s) = value {
+        if case let .string(s) = value {
             XCTAssertEqual(s, "hello")
         } else {
             XCTFail("Expected string")
@@ -110,7 +109,7 @@ final class MinecraftManifestTests: XCTestCase {
         let data = Data(json.utf8)
         let value = try JSONDecoder().decode(ArgumentValueArrayOrString.self, from: data)
 
-        if case .array(let arr) = value {
+        if case let .array(arr) = value {
             XCTAssertEqual(arr, ["a", "b", "c"])
         } else {
             XCTFail("Expected array")
@@ -210,7 +209,7 @@ final class MinecraftManifestTests: XCTestCase {
             path: "org/example/lib.jar",
             sha1: "abc123",
             size: 200,
-            url: URL(string: "https://example.com/lib.jar")
+            url: URL(string: "https://example.com/lib.jar"),
         )
         let encoded = try JSONEncoder().encode(artifact)
         let decoded = try JSONDecoder().decode(LibraryArtifact.self, from: encoded)

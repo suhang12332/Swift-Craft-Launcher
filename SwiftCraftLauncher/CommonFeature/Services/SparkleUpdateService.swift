@@ -54,19 +54,19 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         setupUpdater()
     }
 
-    func feedURLString(for updater: SPUUpdater) -> String? {
+    func feedURLString(for _: SPUUpdater) -> String? {
         let architecture = getSystemArchitecture()
         let appcastURL = URLConfig.API.GitHub.appcastURL(architecture: architecture)
         return appcastURL.absoluteString
     }
 
-    func updaterDidNotFindUpdate(_ updater: SPUUpdater) {
+    func updaterDidNotFindUpdate(_: SPUUpdater) {
         Logger.shared.info("检查完成，未发现新版本")
         isCheckingForUpdates = false
         updateAvailable = false
     }
 
-    func updater(_ updater: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
+    func updater(_: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
         Logger.shared.info("发现新版本：\(item.versionString)")
         isCheckingForUpdates = false
         updateAvailable = true
@@ -75,33 +75,33 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         updateDescription = item.itemDescription ?? ""
     }
 
-    func updater(_ updater: SPUUpdater, didFailToCheckForUpdatesWithError error: Error) {
+    func updater(_: SPUUpdater, didFailToCheckForUpdatesWithError error: Error) {
         Logger.shared.error("更新检查失败：\(error.localizedDescription)")
         isCheckingForUpdates = false
         updateAvailable = false
     }
 
-    func updater(_ updater: SPUUpdater, willInstallUpdate item: SUAppcastItem) {
+    func updater(_: SPUUpdater, willInstallUpdate item: SUAppcastItem) {
         Logger.shared.info("开始安装更新：\(item.versionString)")
         isCheckingForUpdates = false
     }
 
-    func updater(_ updater: SPUUpdater, didFinishLoading appcast: SUAppcast) {
+    func updater(_: SPUUpdater, didFinishLoading _: SUAppcast) {
         Logger.shared.info("更新清单加载完成")
     }
 
     private func getSystemArchitecture() -> String {
-        return Architecture.current.sparkleArch
+        Architecture.current.sparkleArch
     }
 
     /// Returns the current system architecture identifier.
     func getCurrentArchitecture() -> String {
-        return getSystemArchitecture()
+        getSystemArchitecture()
     }
 
     /// Returns the current updater state.
     func getUpdaterStatus() -> (isInitialized: Bool, sessionInProgress: Bool, isChecking: Bool) {
-        guard let updater = updater else {
+        guard let updater else {
             return (isInitialized: false, sessionInProgress: false, isChecking: isCheckingForUpdates)
         }
         return (isInitialized: true, sessionInProgress: updater.sessionInProgress, isChecking: isCheckingForUpdates)
@@ -118,7 +118,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     /// Checks for updates and displays the standard Sparkle UI.
     func checkForUpdatesWithUI() {
         ensureUpdaterStarted()
-        guard let updater = updater else {
+        guard let updater else {
             Logger.shared.error("更新器尚未初始化")
             return
         }
@@ -136,7 +136,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     /// Checks for updates silently without showing any UI.
     func checkForUpdatesSilently() {
         ensureUpdaterStarted()
-        guard let updater = updater else {
+        guard let updater else {
             Logger.shared.error("更新器尚未初始化")
             return
         }
@@ -154,7 +154,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
 
 /// Intercepts download requests to apply proxy prefix for GitHub resource URLs when needed.
 extension SparkleUpdateService {
-    func updater(_ updater: SPUUpdater, willDownloadUpdate item: SUAppcastItem, with request: NSMutableURLRequest) {
+    func updater(_: SPUUpdater, willDownloadUpdate _: SUAppcastItem, with request: NSMutableURLRequest) {
         guard let originalURL = request.url else { return }
 
         let proxiedURL = URLConfig.applyGitProxyIfNeeded(originalURL)

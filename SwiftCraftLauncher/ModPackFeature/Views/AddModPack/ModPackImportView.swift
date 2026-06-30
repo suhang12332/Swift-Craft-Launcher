@@ -23,16 +23,16 @@ struct ModPackImportView: View {
         configuration: GameFormConfiguration,
         preselectedFile: URL? = nil,
         shouldStartProcessing: Bool = false,
-        onProcessingStateChanged: @escaping (Bool) -> Void = { _ in }
+        onProcessingStateChanged: @escaping (Bool) -> Void = { _ in },
     ) {
-        self.triggerConfirm = configuration.triggerConfirm
-        self.triggerCancel = configuration.triggerCancel
+        triggerConfirm = configuration.triggerConfirm
+        triggerCancel = configuration.triggerCancel
 
-        self._viewModel = StateObject(wrappedValue: ModPackImportViewModel(
+        _viewModel = StateObject(wrappedValue: ModPackImportViewModel(
             configuration: configuration,
             preselectedFile: preselectedFile,
             shouldStartProcessing: shouldStartProcessing,
-            onProcessingStateChanged: onProcessingStateChanged
+            onProcessingStateChanged: onProcessingStateChanged,
         ))
     }
 
@@ -76,9 +76,9 @@ struct ModPackImportView: View {
     private var formContentView: some View {
         VStack {
             modPackImportContentView.padding(.bottom, 10)
-            if viewModel.hasSelectedModPack
-                && viewModel.isGameVersionSupported
-                && viewModel.modPackIndexInfo != nil {
+            if viewModel.hasSelectedModPack,
+                viewModel.isGameVersionSupported,
+                viewModel.modPackIndexInfo != nil {
                 modPackGameNameInputSection
             }
 
@@ -91,13 +91,13 @@ struct ModPackImportView: View {
 
     private var gameVersionUnsupportedHint: some View {
         modPackErrorView(
-            message: String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline)
+            message: String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline),
         )
     }
 
     private var modPackImportContentView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if viewModel.isProcessingModPack && !viewModel.shouldShowProgress {
+            if viewModel.isProcessingModPack, !viewModel.shouldShowProgress {
                 modPackProcessingView
             } else if !viewModel.isGameVersionSupported {
                 gameVersionUnsupportedHint
@@ -128,9 +128,9 @@ struct ModPackImportView: View {
     }
 
     private func modPackErrorView(
-        message: String
+        message: String,
     ) -> some View {
-        return VStack(spacing: 24) {
+        VStack(spacing: 24) {
             Image(systemName: "square.and.arrow.up.trianglebadge.exclamationmark")
                 .symbolRenderingMode(.multicolor)
                 .symbolVariant(.none)
@@ -170,7 +170,7 @@ struct ModPackImportView: View {
         HStack(spacing: 8) {
             Label(
                 viewModel.modPackVersion,
-                systemImage: "text.document.fill"
+                systemImage: "text.document.fill",
             )
             .font(.subheadline)
             .foregroundColor(.secondary)
@@ -195,18 +195,18 @@ struct ModPackImportView: View {
         ModPackInstallSharedSections(
             gameName: Binding(
                 get: { viewModel.gameNameValidator.gameName },
-                set: { viewModel.gameNameValidator.gameName = $0 }
+                set: { viewModel.gameNameValidator.gameName = $0 },
             ),
             isGameNameDuplicate: Binding(
                 get: { viewModel.gameNameValidator.isGameNameDuplicate },
-                set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 }
+                set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 },
             ),
             isGameNameInputDisabled: viewModel.isProcessingModPack || viewModel.isDownloading,
             showGameNameInput: true,
             gameSetupService: viewModel.gameSetupService,
             modPackInstallState: viewModel.modPackViewModelForProgress.modPackInstallState,
             lastParsedIndexInfo: viewModel.modPackIndexInfo,
-            shouldShowProgress: viewModel.shouldShowProgress
+            shouldShowProgress: viewModel.shouldShowProgress,
         )
     }
 }

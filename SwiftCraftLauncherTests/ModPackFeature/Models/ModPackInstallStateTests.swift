@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 @MainActor
 final class ModPackInstallStateTests: XCTestCase {
-
     func testReset_clearsAllProperties() {
         let state = ModPackInstallState()
         state.isInstalling = true

@@ -5,15 +5,14 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CurseForgeManifestBuilderTests: XCTestCase {
-
     private func makeGameInfo(
         gameVersion: String = "1.20.1",
         modLoader: String = "forge",
-        modVersion: String = "47.2.0"
+        modVersion: String = "47.2.0",
     ) -> GameVersionInfo {
         GameVersionInfo(
             gameName: "TestGame",
@@ -22,7 +21,7 @@ final class CurseForgeManifestBuilderTests: XCTestCase {
             modVersion: modVersion,
             assetIndex: "17",
             modLoader: modLoader,
-            mainClass: "net.minecraft.client.main.Main"
+            mainClass: "net.minecraft.client.main.Main",
         )
     }
 
@@ -33,7 +32,7 @@ final class CurseForgeManifestBuilderTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "FabricPack",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("fabric-0.14.21"))
@@ -46,7 +45,7 @@ final class CurseForgeManifestBuilderTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "QuiltPack",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("quilt-0.22.0"))
@@ -59,7 +58,7 @@ final class CurseForgeManifestBuilderTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "NeoForgePack",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("neoforge-21.0.0"))
@@ -76,7 +75,7 @@ final class CurseForgeManifestBuilderTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "MultiFile",
             modPackVersion: "1.0",
-            files: files
+            files: files,
         )
 
         XCTAssertTrue(json.contains("1"))

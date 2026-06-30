@@ -41,7 +41,7 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
         profilePath: String,
         scope: String,
         parserId: YggdrasilProfileParserID,
-        token: String
+        token: String,
     ) {
         self.name = name
         self.baseURL = baseURL
@@ -72,7 +72,7 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
     }
 
     var minecraftTokenURL: URL {
-        return baseURL.appendingPathComponent(token)
+        baseURL.appendingPathComponent(token)
     }
 }
 

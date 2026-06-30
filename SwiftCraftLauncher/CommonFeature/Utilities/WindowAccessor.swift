@@ -5,20 +5,19 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 /// A SwiftUI wrapper that provides access to the underlying `NSWindow` instance.
 struct WindowAccessor: NSViewRepresentable {
     var synchronous: Bool = false
     var callback: (NSWindow) -> Void
 
-    func makeNSView(context: Context) -> NSView {
-        let view = WindowAccessorView(callback: callback, synchronous: synchronous)
-        return view
+    func makeNSView(context _: Context) -> NSView {
+        WindowAccessorView(callback: callback, synchronous: synchronous)
     }
 
-    func updateNSView(_ nsView: NSView, context: Context) {
+    func updateNSView(_ nsView: NSView, context _: Context) {
         if let accessorView = nsView as? WindowAccessorView, let window = nsView.window {
             accessorView.configureWindow(window)
         }
@@ -37,15 +36,15 @@ private class WindowAccessorView: NSView {
     }
 
     required init?(coder: NSCoder) {
-        self.callback = { _ in }
-        self.synchronous = false
+        callback = { _ in }
+        synchronous = false
         super.init(coder: coder)
     }
 
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
 
-        if let window = window, !hasConfigured {
+        if let window, !hasConfigured {
             hasConfigured = true
 
             if synchronous {

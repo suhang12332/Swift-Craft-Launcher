@@ -9,7 +9,6 @@ import Foundation
 
 /// Provides search operations for CurseForge projects.
 extension CurseForgeService {
-
     /// Searches CurseForge projects.
     /// - Parameters:
     ///   - gameId: The game identifier (432 for Minecraft).
@@ -35,7 +34,7 @@ extension CurseForgeService {
         modLoaderType: Int? = nil,
         modLoaderTypes: [Int]? = nil,
         index: Int = 0,
-        pageSize: Int = 20
+        pageSize: Int = 20,
     ) async -> CurseForgeSearchResult {
         do {
             return try await searchProjectsThrowing(
@@ -49,7 +48,7 @@ extension CurseForgeService {
                 modLoaderType: modLoaderType,
                 modLoaderTypes: modLoaderTypes,
                 index: index,
-                pageSize: pageSize
+                pageSize: pageSize,
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -85,14 +84,14 @@ extension CurseForgeService {
         modLoaderType: Int? = nil,
         modLoaderTypes: [Int]? = nil,
         index: Int = 0,
-        pageSize: Int = 20
+        pageSize: Int = 20,
     ) async throws -> CurseForgeSearchResult {
         let effectiveSortField = 6
         let effectiveSortOrder = "desc"
 
         var components = URLComponents(
             url: URLConfig.API.CurseForge.search,
-            resolvingAgainstBaseURL: true
+            resolvingAgainstBaseURL: true,
         )
 
         var queryItems: [URLQueryItem] = [
@@ -101,11 +100,11 @@ extension CurseForgeService {
             URLQueryItem(name: "pageSize", value: String(min(pageSize, 50))),
         ]
 
-        if let classId = classId {
+        if let classId {
             queryItems.append(URLQueryItem(name: "classId", value: String(classId)))
         }
 
-        if let categoryIds = categoryIds, !categoryIds.isEmpty {
+        if let categoryIds, !categoryIds.isEmpty {
             let limitedCategoryIds = Array(categoryIds.prefix(10))
             let stringIds = limitedCategoryIds.map { String($0) }
             let data = try JSONEncoder().encode(stringIds)
@@ -113,26 +112,26 @@ extension CurseForgeService {
                 throw GlobalError.validation(
                     chineseMessage: "编码 categoryIds 失败",
                     i18nKey: "error.validation.encode_category_ids_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
             queryItems.append(URLQueryItem(name: "categoryIds", value: jsonArrayString))
-        } else if let categoryId = categoryId {
+        } else if let categoryId {
             queryItems.append(URLQueryItem(name: "categoryId", value: String(categoryId)))
         }
 
-        if let gameVersions = gameVersions, !gameVersions.isEmpty {
+        if let gameVersions, !gameVersions.isEmpty {
             let limitedGameVersions = Array(gameVersions.prefix(4))
             let data = try JSONEncoder().encode(limitedGameVersions)
             guard let jsonArrayString = String(data: data, encoding: .utf8) else {
                 throw GlobalError.validation(
                     chineseMessage: "编码 gameVersions 失败",
                     i18nKey: "error.validation.encode_game_versions_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
             queryItems.append(URLQueryItem(name: "gameVersions", value: jsonArrayString))
-        } else if let gameVersion = gameVersion {
+        } else if let gameVersion {
             queryItems.append(URLQueryItem(name: "gameVersion", value: gameVersion))
         }
 
@@ -149,7 +148,7 @@ extension CurseForgeService {
         queryItems.append(URLQueryItem(name: "sortField", value: String(effectiveSortField)))
         queryItems.append(URLQueryItem(name: "sortOrder", value: effectiveSortOrder))
 
-        if let modLoaderTypes = modLoaderTypes, !modLoaderTypes.isEmpty {
+        if let modLoaderTypes, !modLoaderTypes.isEmpty {
             let limitedModLoaderTypes = Array(modLoaderTypes.prefix(5))
             let stringTypes = limitedModLoaderTypes.map { String($0) }
             let data = try JSONEncoder().encode(stringTypes)
@@ -157,11 +156,11 @@ extension CurseForgeService {
                 throw GlobalError.validation(
                     chineseMessage: "编码 modLoaderTypes 失败",
                     i18nKey: "error.validation.encode_mod_loader_types_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
             queryItems.append(URLQueryItem(name: "modLoaderTypes", value: jsonArrayString))
-        } else if let modLoaderType = modLoaderType {
+        } else if let modLoaderType {
             queryItems.append(URLQueryItem(name: "modLoaderType", value: String(modLoaderType)))
         }
 
@@ -170,14 +169,12 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 chineseMessage: "构建搜索URL失败",
                 i18nKey: "error.validation.search_url_build_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
         let headers = getHeaders()
         let data = try await APIClient.get(url: url, headers: headers)
-        let result = try JSONDecoder().decode(CurseForgeSearchResult.self, from: data)
-
-        return result
+        return try JSONDecoder().decode(CurseForgeSearchResult.self, from: data)
     }
 }

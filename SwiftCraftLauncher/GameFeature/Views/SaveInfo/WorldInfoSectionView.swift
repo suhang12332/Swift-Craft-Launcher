@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Displays world save files as selectable chips with detail sheet support.
+// Displays world save files as selectable chips with detail sheet support.
 import SwiftUI
 
 struct WorldInfoSectionView: View {
@@ -22,7 +22,7 @@ struct WorldInfoSectionView: View {
             title: "saveinfo.worlds",
             items: worlds,
             isLoading: isLoading,
-            iconName: "folder.fill"
+            iconName: "folder.fill",
         ) { world in
             worldChip(for: world)
         }
@@ -33,8 +33,8 @@ struct WorldInfoSectionView: View {
                     if !isPresented {
                         preparedViewModel = nil
                     }
-                }
-            )
+                },
+            ),
         ) {
             if let viewModel = preparedViewModel {
                 WorldDetailSheetView(viewModel: viewModel)
@@ -60,7 +60,7 @@ struct WorldInfoSectionView: View {
             },
             iconName: "folder.fill",
             isLoading: false,
-            maxTextWidth: 150
+            maxTextWidth: 150,
         )
     }
 }

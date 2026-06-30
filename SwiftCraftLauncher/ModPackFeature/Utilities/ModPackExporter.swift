@@ -9,7 +9,6 @@ import Foundation
 
 /// Exports a game instance as a Modpack (.mrpack) or CurseForge archive.
 enum ModPackExporter {
-
     struct ExportResult {
         let success: Bool
         let outputPath: URL?
@@ -38,7 +37,7 @@ enum ModPackExporter {
         summary: String? = nil,
         exportFormat: ModPackExportFormat = .modrinth,
         selectedFiles: [URL],
-        progressCallback: ((ExportProgress) -> Void)? = nil
+        progressCallback: ((ExportProgress) -> Void)? = nil,
     ) async -> ExportResult {
         do {
             try Task.checkCancellation()
@@ -68,7 +67,7 @@ enum ModPackExporter {
                     progress: 0.0,
                     currentFile: "",
                     completed: 0,
-                    total: totalScanResources
+                    total: totalScanResources,
                 )
             }
             progressCallback?(initialProgress)
@@ -81,7 +80,7 @@ enum ModPackExporter {
                 totalResources: totalScanResources,
                 exportFormat: exportFormat,
                 progressUpdater: progressUpdater,
-                progressCallback: progressCallback
+                progressCallback: progressCallback,
             )
 
             try Task.checkCancellation()
@@ -91,11 +90,11 @@ enum ModPackExporter {
             try await copyFiles(
                 params: CopyFilesParams(
                     filesToCopy: selectedResourcesResult.filesToCopy,
-                    overridesDir: overridesDir
+                    overridesDir: overridesDir,
                 ),
                 copyCounter: copyCounter,
                 progressUpdater: progressUpdater,
-                progressCallback: progressCallback
+                progressCallback: progressCallback,
             )
 
             try Task.checkCancellation()
@@ -109,19 +108,19 @@ enum ModPackExporter {
                     indexFiles: selectedResourcesResult.indexFiles,
                     curseForgeFiles: selectedResourcesResult.curseForgeFiles,
                     curseForgeModListItems: selectedResourcesResult.curseForgeModListItems,
-                    exportFormat: exportFormat
+                    exportFormat: exportFormat,
                 ),
                 tempDir: tempDir,
                 outputPath: outputPath,
                 progressUpdater: progressUpdater,
-                progressCallback: progressCallback
+                progressCallback: progressCallback,
             )
 
             return ExportResult(
                 success: true,
                 outputPath: outputPath,
                 error: nil,
-                message: ""
+                message: "",
             )
         } catch {
             if error is CancellationError {
@@ -129,7 +128,7 @@ enum ModPackExporter {
                     success: false,
                     outputPath: nil,
                     error: error,
-                    message: "已取消"
+                    message: "已取消",
                 )
             }
             Logger.shared.error("导出整合包失败: \(error.localizedDescription)")
@@ -137,7 +136,7 @@ enum ModPackExporter {
                 success: false,
                 outputPath: nil,
                 error: error,
-                message: "导出失败: \(error.localizedDescription)"
+                message: "导出失败: \(error.localizedDescription)",
             )
         }
     }

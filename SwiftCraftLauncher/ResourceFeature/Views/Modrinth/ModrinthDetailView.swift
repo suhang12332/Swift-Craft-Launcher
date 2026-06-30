@@ -43,7 +43,7 @@ struct ModrinthDetailView: View {
         header: AnyView? = nil,
         scannedDetailIds: Binding<Set<String>> = .constant([]),
         dataSource: Binding<DataSource> = .constant(.modrinth),
-        searchText: Binding<String> = .constant("")
+        searchText: Binding<String> = .constant(""),
     ) {
         self.query = query
         _selectedVersions = selectedVersions
@@ -94,7 +94,7 @@ struct ModrinthDetailView: View {
                 await coordinator.initialLoadIfNeeded(
                     gameType: gameType,
                     searchViewModel: viewModel,
-                    context: currentSearchContext
+                    context: currentSearchContext,
                 )
             }
         }
@@ -138,7 +138,7 @@ struct ModrinthDetailView: View {
         .searchable(
             text: $searchText,
             placement: .toolbar,
-            prompt: "search.resources".localized()
+            prompt: "search.resources".localized(),
         )
 
         .onChange(of: searchText) { oldValue, newValue in
@@ -146,7 +146,7 @@ struct ModrinthDetailView: View {
                 coordinator.resetPagination()
                 coordinator.debounceSearch(
                     searchViewModel: viewModel,
-                    context: currentSearchContext
+                    context: currentSearchContext,
                 )
             }
         }
@@ -154,8 +154,8 @@ struct ModrinthDetailView: View {
             "error.notification.search.title".localized(),
             isPresented: Binding(
                 get: { coordinator.error != nil },
-                set: { if !$0 { coordinator.clearError() } }
-            )
+                set: { if !$0 { coordinator.clearError() } },
+            ),
         ) {
             Button("common.close".localized()) {
                 coordinator.clearError()
@@ -178,7 +178,7 @@ struct ModrinthDetailView: View {
         viewModel.clearResults()
     }
 
-    @ViewBuilder private var listContent: some View {
+    private var listContent: some View {
         Group {
             if viewModel.isLoading {
                 ModrinthDetailListSkeletonRows()
@@ -192,11 +192,11 @@ struct ModrinthDetailView: View {
                         query: query,
                         type: true,
                         selectedItem: $selectedItem,
-                        scannedDetailIds: $scannedDetailIds
+                        scannedDetailIds: $scannedDetailIds,
                     )
                     .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                     .listRowInsets(
-                        EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8)
+                        EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8),
                     )
                     .listRowSeparator(.hidden)
                     .contentShape(Rectangle())
@@ -210,7 +210,7 @@ struct ModrinthDetailView: View {
                         coordinator.loadNextPageIfNeeded(
                             currentItem: mod,
                             searchViewModel: viewModel,
-                            context: currentSearchContext
+                            context: currentSearchContext,
                         )
                     }
                 }
@@ -229,7 +229,7 @@ struct ModrinthDetailView: View {
             selectedLoader: selectedLoader,
             gameType: gameType,
             dataSource: dataSource,
-            searchText: searchText
+            searchText: searchText,
         )
     }
 

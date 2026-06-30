@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Provides Minecraft server address resolution and connectivity checks.
+// Provides Minecraft server address resolution and connectivity checks.
 import Foundation
 import Network
 
@@ -19,11 +19,11 @@ enum ServerConnectionStatus {
 }
 
 /// A resolved server address containing both the connection target and the original user input.
-internal struct ResolvedServerAddress {
-    internal let address: String
-    internal let port: Int
-    internal let originalAddress: String
-    internal let originalPort: Int
+struct ResolvedServerAddress {
+    let address: String
+    let port: Int
+    let originalAddress: String
+    let originalPort: Int
 }
 
 /// Provides network utilities for Minecraft server address resolution and connectivity checks.
@@ -31,7 +31,7 @@ enum NetworkUtils {
     /// Resolves a server address using the default Minecraft port.
     /// - Parameter input: The user-provided address string, optionally including a port.
     /// - Returns: The resolved address and port information.
-    internal static func resolveServerAddress(_ input: String) async -> ResolvedServerAddress {
+    static func resolveServerAddress(_ input: String) async -> ResolvedServerAddress {
         await resolveServerAddress(input, explicitPort: 25565)
     }
 
@@ -40,14 +40,14 @@ enum NetworkUtils {
     ///   - input: The user-provided address string, optionally including a port.
     ///   - explicitPort: The port specified by the caller.
     /// - Returns: The resolved address and port information.
-    internal static func resolveServerAddress(_ input: String, explicitPort: Int) async -> ResolvedServerAddress {
+    static func resolveServerAddress(_ input: String, explicitPort: Int) async -> ResolvedServerAddress {
         let trimmed = input.trimmingCharacters(in: .whitespaces)
         var originalAddress = trimmed
         var originalPort = 25565
 
         if let colonIndex = trimmed.lastIndex(of: ":") {
             let afterColon = String(trimmed[trimmed.index(after: colonIndex)...])
-            if let port = Int(afterColon), port > 0 && port <= 65535 {
+            if let port = Int(afterColon), port > 0, port <= 65535 {
                 let address = String(trimmed[..<colonIndex])
                 originalAddress = address
                 originalPort = port
@@ -55,17 +55,17 @@ enum NetworkUtils {
                     address: address,
                     port: port,
                     originalAddress: originalAddress,
-                    originalPort: originalPort
+                    originalPort: originalPort,
                 )
             }
         }
 
-        if explicitPort > 0 && explicitPort <= 65535 && explicitPort != 25565 {
+        if explicitPort > 0, explicitPort <= 65535, explicitPort != 25565 {
             return ResolvedServerAddress(
                 address: trimmed,
                 port: explicitPort,
                 originalAddress: trimmed,
-                originalPort: explicitPort
+                originalPort: explicitPort,
             )
         }
 
@@ -74,7 +74,7 @@ enum NetworkUtils {
                 address: srvResult.address,
                 port: srvResult.port,
                 originalAddress: trimmed,
-                originalPort: 25565
+                originalPort: 25565,
             )
         }
 
@@ -82,7 +82,7 @@ enum NetworkUtils {
             address: trimmed,
             port: 25565,
             originalAddress: trimmed,
-            originalPort: 25565
+            originalPort: 25565,
         )
     }
 
@@ -104,7 +104,7 @@ enum NetworkUtils {
             return nil
         }
 
-        guard let port = Int(components[2]), port > 0 && port <= 65535 else {
+        guard let port = Int(components[2]), port > 0, port <= 65535 else {
             return nil
         }
 
@@ -181,7 +181,7 @@ enum NetworkUtils {
     static func checkServerConnectionStatus(
         address: String,
         port: Int,
-        timeout: TimeInterval = 5.0
+        timeout: TimeInterval = 5.0,
     ) async -> ServerConnectionStatus {
         let resolved = await resolveServerAddress(address, explicitPort: port)
 
@@ -190,7 +190,7 @@ enum NetworkUtils {
             connectPort: resolved.port,
             originalAddress: resolved.originalAddress,
             originalPort: resolved.originalPort,
-            timeout: timeout
+            timeout: timeout,
         ) {
             return .success(serverInfo: serverInfo)
         } else {
@@ -207,7 +207,7 @@ enum NetworkUtils {
     static func checkServerConnection(
         address: String,
         port: Int,
-        timeout: TimeInterval = 5.0
+        timeout: TimeInterval = 5.0,
     ) async throws -> Bool {
         let status = await checkServerConnectionStatus(address: address, port: port, timeout: timeout)
         if case .success = status {

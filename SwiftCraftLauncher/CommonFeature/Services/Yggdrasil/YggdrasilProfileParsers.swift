@@ -18,7 +18,7 @@ protocol YggdrasilProfileListParser {
 protocol YggdrasilProfileParserProvider {
     func makeParser(
         for id: YggdrasilProfileParserID,
-        baseURL: String
+        baseURL: String,
     ) -> (any YggdrasilProfileListParser)?
 }
 

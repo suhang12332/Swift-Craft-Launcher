@@ -10,7 +10,6 @@ import Foundation
 /// View model for the Java runtime settings view, managing installed runtime detection and Java version info.
 @MainActor
 final class GameSettingsJavaRuntimeViewModel: ObservableObject {
-
     /// The installed runtime component names, or `nil` while scanning is in progress.
     @Published private(set) var installedRuntimeComponents: [String]?
     @Published var selectedRuntimeComponent: String = ""
@@ -30,7 +29,7 @@ final class GameSettingsJavaRuntimeViewModel: ObservableObject {
     var javaDetailsDescription: String {
         JavaDetailsFormatting.description(
             javaExecutablePath: javaExecutablePath,
-            versionOutput: javaVersionInfo
+            versionOutput: javaVersionInfo,
         )
     }
 
@@ -58,8 +57,8 @@ final class GameSettingsJavaRuntimeViewModel: ObservableObject {
             let info = await Task.detached {
                 javaManager.getJavaVersionInfo(at: path) ?? ""
             }.value
-            guard generation == self.loadGeneration else { return }
-            self.javaVersionInfo = info
+            guard generation == loadGeneration else { return }
+            javaVersionInfo = info
         }
     }
 

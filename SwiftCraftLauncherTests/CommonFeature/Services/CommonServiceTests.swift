@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CommonServiceTests: XCTestCase {
-
     private func decode<T: Decodable>(_ type: T.Type, from jsonObject: Any) throws -> T {
         let data = try JSONSerialization.data(withJSONObject: jsonObject)
         return try JSONDecoder().decode(type, from: data)

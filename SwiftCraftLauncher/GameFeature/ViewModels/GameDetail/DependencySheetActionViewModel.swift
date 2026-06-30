@@ -20,7 +20,7 @@ final class DependencySheetActionViewModel: ObservableObject {
     init(
         isDownloadingAllDependencies: Binding<Bool>,
         isDownloadingMainResourceOnly: Binding<Bool>,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.isDownloadingAllDependencies = isDownloadingAllDependencies
         self.isDownloadingMainResourceOnly = isDownloadingMainResourceOnly

@@ -22,7 +22,7 @@ extension ModPackImportViewModel {
             do {
                 try FileManager.default.createDirectory(
                     at: dir,
-                    withIntermediateDirectories: true
+                    withIntermediateDirectories: true,
                 )
             } catch {
                 Logger.shared.error("创建目录失败: \(dir.path), 错误: \(error.localizedDescription)")
@@ -30,8 +30,8 @@ extension ModPackImportViewModel {
                     GlobalError.fileSystem(
                         chineseMessage: "创建目录失败: \(dir.path)",
                         i18nKey: "error.filesystem.directory_creation_failed",
-                        level: .notification
-                    )
+                        level: .notification,
+                    ),
                 )
                 return false
             }
@@ -44,7 +44,7 @@ extension ModPackImportViewModel {
     /// - Parameter indexInfo: The parsed modpack index.
     /// - Returns: A tuple of downloadable files and required dependencies.
     func calculateInstallationCounts(
-        from indexInfo: ModrinthIndexInfo
+        from indexInfo: ModrinthIndexInfo,
     ) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
         let filesToDownload = indexInfo.files.filter { file in
             if let env = file.env, let client = env.client,

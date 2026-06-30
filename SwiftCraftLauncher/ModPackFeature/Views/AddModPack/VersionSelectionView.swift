@@ -35,7 +35,7 @@ struct VersionSelectionView: View {
                 .foregroundColor(.primary)
             CommonMenuPicker(
                 selection: $selectedGameVersion,
-                hidesLabel: true
+                hidesLabel: true,
             ) {
                 Text("")
             } content: {
@@ -72,13 +72,13 @@ struct VersionSelectionView: View {
                     .foregroundColor(.primary)
                 CommonMenuPicker(
                     selection: $selectedModPackVersion,
-                    hidesLabel: true
+                    hidesLabel: true,
                 ) {
                     Text("")
                 } content: {
                     ForEach(filteredModPackVersions, id: \.id) { version in
                         Text(version.name).tag(
-                            version as ModrinthProjectDetailVersion?
+                            version as ModrinthProjectDetailVersion?,
                         )
                     }
                 }

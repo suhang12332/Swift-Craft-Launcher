@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Protocols and configuration types for game form state management.
+// Protocols and configuration types for game form state management.
 import SwiftUI
 
 @MainActor
@@ -51,12 +51,12 @@ struct GameFormConfiguration {
         triggerConfirm: Binding<Bool>,
         triggerCancel: Binding<Bool>,
         onCancel: @escaping () -> Void,
-        onConfirm: @escaping () -> Void
+        onConfirm: @escaping () -> Void,
     ) {
         self.isDownloading = isDownloading
         self.isFormValid = isFormValid
         self.triggerConfirm = triggerConfirm
         self.triggerCancel = triggerCancel
-        self.actions = GameFormActions(onCancel: onCancel, onConfirm: onConfirm)
+        actions = GameFormActions(onCancel: onCancel, onConfirm: onConfirm)
     }
 }

@@ -19,7 +19,7 @@ class ModCacheManager {
     private init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
         self.errorHandler = errorHandler
         let dbPath = AppPaths.gameVersionDatabase.path
-        self.modCacheDB = ModCacheDatabase(dbPath: dbPath)
+        modCacheDB = ModCacheDatabase(dbPath: dbPath)
     }
 
     /// Ensures the database connection is open.
@@ -62,7 +62,7 @@ class ModCacheManager {
     /// - Parameter hash: The hash of the mod file.
     /// - Returns: The cached JSON data, or `nil` if not found.
     func get(hash: String) -> Data? {
-        return queue.sync {
+        queue.sync {
             do {
                 try ensureInitialized()
                 return try modCacheDB.getModCache(hash: hash)

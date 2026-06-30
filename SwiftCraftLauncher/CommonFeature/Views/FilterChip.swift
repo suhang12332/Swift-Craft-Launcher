@@ -24,14 +24,14 @@ struct FilterChip: View {
     init(
         title: String,
         isSelected: Bool = false,
-        action: @escaping () -> Void = {},
+        action: @escaping () -> Void = { },
         iconName: String? = nil,
         isLoading: Bool = false,
         customBackgroundColor: Color? = nil,
         customBorderColor: Color? = nil,
         verticalPadding: CGFloat = 4,
         maxTextWidth: CGFloat? = nil,
-        iconColor: Color? = nil
+        iconColor: Color? = nil,
     ) {
         self.title = title
         self.isSelected = isSelected
@@ -48,7 +48,7 @@ struct FilterChip: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: iconName != nil ? 4 : 0) {
-                if let iconName = iconName {
+                if let iconName {
                     Image(systemName: iconName)
                         .font(.caption)
                         .foregroundColor(iconColor ?? (isSelected ? .white : .primary))
@@ -62,12 +62,12 @@ struct FilterChip: View {
             .padding(.vertical, verticalPadding)
             .background(
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(backgroundColor)
+                    .fill(backgroundColor),
             )
             .foregroundStyle(isSelected ? .white : .primary)
             .overlay(
                 RoundedRectangle(cornerRadius: 4)
-                    .stroke(borderColor, lineWidth: 1)
+                    .stroke(borderColor, lineWidth: 1),
             )
         }
         .buttonStyle(.plain)
@@ -75,14 +75,14 @@ struct FilterChip: View {
     }
 
     private var backgroundColor: Color {
-        if let customBackgroundColor = customBackgroundColor {
+        if let customBackgroundColor {
             return customBackgroundColor
         }
         return isSelected ? Color.accentColor : Color.clear
     }
 
     private var borderColor: Color {
-        if let customBorderColor = customBorderColor {
+        if let customBorderColor {
             return customBorderColor
         }
         return Color.secondary.opacity(0.2)

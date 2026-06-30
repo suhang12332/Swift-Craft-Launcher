@@ -22,7 +22,7 @@ public enum CurseForgeFingerprint {
             throw GlobalError.fileSystem(
                 chineseMessage: "Jar 文件为空",
                 i18nKey: "error.resource.client_jar_not_found",
-                level: .notification
+                level: .notification,
             )
         }
         return try computeHash(fileAt: url, normalizedLength: normalizedLength)
@@ -65,10 +65,10 @@ public enum CurseForgeFingerprint {
 
     private static func hashFilteredBytes(
         normalizedLength: UInt32,
-        using byteProducer: (_ consume: (UInt8) -> Void) throws -> Void
+        using byteProducer: (_ consume: (UInt8) -> Void) throws -> Void,
     ) rethrows -> UInt32 {
         let seed: UInt32 = 1
-        let m: UInt32 = 1540483477
+        let m: UInt32 = 1_540_483_477
         var hash: UInt32 = seed ^ normalizedLength
         var chunk: UInt32 = 0
         var shift: UInt32 = 0
@@ -99,7 +99,7 @@ public enum CurseForgeFingerprint {
             throw GlobalError.fileSystem(
                 chineseMessage: "无法读取文件",
                 i18nKey: "error.resource.client_jar_not_found",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -116,13 +116,13 @@ public enum CurseForgeFingerprint {
                 throw stream.streamError ?? GlobalError.fileSystem(
                     chineseMessage: "读取文件失败",
                     i18nKey: "error.resource.client_jar_not_found",
-                    level: .notification
+                    level: .notification,
                 )
             }
             if bytesRead == 0 {
                 break
             }
-            for i in 0..<bytesRead {
+            for i in 0 ..< bytesRead {
                 handler(buffer[i])
             }
         }

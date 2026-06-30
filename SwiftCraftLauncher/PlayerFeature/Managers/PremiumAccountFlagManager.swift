@@ -14,11 +14,11 @@ import Foundation
 class PremiumAccountFlagManager {
     static let shared = PremiumAccountFlagManager()
 
-    private init() {}
+    private init() { }
 
     /// A Boolean value indicating whether a premium account has been added previously.
     func hasAddedPremiumAccount() -> Bool {
-        return UserDefaults.standard.bool(forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
+        UserDefaults.standard.bool(forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
     }
 
     /// Marks that a premium account has been added.

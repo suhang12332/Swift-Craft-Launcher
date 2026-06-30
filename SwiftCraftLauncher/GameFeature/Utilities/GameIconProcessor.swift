@@ -5,9 +5,9 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import AppKit
 import CoreGraphics
+import Foundation
 import ImageIO
 
 /// Provides image optimization utilities for game icons.

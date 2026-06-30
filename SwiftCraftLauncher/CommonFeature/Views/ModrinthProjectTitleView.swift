@@ -37,7 +37,7 @@ struct ModrinthProjectTitleView: View {
         description: String,
         icon: ProjectIcon,
         infoItems: [InfoItem],
-        tags: [String] = []
+        tags: [String] = [],
     ) {
         self.title = title
         self.description = description
@@ -75,8 +75,8 @@ struct ModrinthProjectTitleView: View {
 
     @ViewBuilder private var iconView: some View {
         switch icon {
-        case .favicon(let base64):
-            if let base64 = base64,
+        case let .favicon(base64):
+            if let base64,
                let imageData = CommonUtil.imageDataFromBase64(base64),
                let nsImage = NSImage(data: imageData) {
                 Image(nsImage: nsImage)
@@ -88,8 +88,8 @@ struct ModrinthProjectTitleView: View {
                 defaultIcon(systemName: "server.rack")
             }
 
-        case .asyncImage(let url):
-            if let url = url {
+        case let .asyncImage(url):
+            if let url {
                 AsyncImage(url: url) { image in
                     image
                         .resizable()
@@ -102,14 +102,14 @@ struct ModrinthProjectTitleView: View {
                 .cornerRadius(8)
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(
-                        for: URLRequest(url: url)
+                        for: URLRequest(url: url),
                     )
                 }
             } else {
                 defaultIcon(systemName: "server.rack")
             }
 
-        case .systemImage(let name):
+        case let .systemImage(name):
             defaultIcon(systemName: name)
         }
     }
@@ -120,7 +120,7 @@ struct ModrinthProjectTitleView: View {
             .frame(width: 64, height: 64)
             .overlay(
                 Image(systemName: systemName)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.secondary),
             )
     }
 
@@ -160,11 +160,11 @@ extension ModrinthProjectTitleView {
         serverName: String,
         serverAddress: String,
         serverPort: Int?,
-        serverInfo: MinecraftServerInfo
+        serverInfo: MinecraftServerInfo,
     ) {
-        self.title = serverName
-        self.description = serverInfo.description.plainText
-        self.icon = .favicon(base64: serverInfo.favicon)
+        title = serverName
+        description = serverInfo.description.plainText
+        icon = .favicon(base64: serverInfo.favicon)
 
         var items: [InfoItem] = [
             InfoItem(
@@ -180,37 +180,37 @@ extension ModrinthProjectTitleView {
             ))
         }
 
-        self.infoItems = items
+        infoItems = items
 
         if let version = serverInfo.version {
-            self.tags = [version.name]
+            tags = [version.name]
         } else {
-            self.tags = []
+            tags = []
         }
     }
 
     /// Creates a title card from a Modrinth project detail.
     init(projectDetail: ModrinthProjectDetail) {
-        self.title = projectDetail.title
-        self.description = projectDetail.description
-        self.icon = .asyncImage(url: projectDetail.iconUrl.flatMap { URL(string: $0) })
+        title = projectDetail.title
+        description = projectDetail.description
+        icon = .asyncImage(url: projectDetail.iconUrl.flatMap { URL(string: $0) })
 
         if let serverInfo = projectDetail.fileName, !serverInfo.isEmpty {
             let parsed = CommonUtil.parseMinecraftJavaServerInfo(from: serverInfo)
             var items: [InfoItem] = [
-                InfoItem(text: parsed.address, systemImage: "server.rack")
+                InfoItem(text: parsed.address, systemImage: "server.rack"),
             ]
             if let playersText = parsed.playersText, !playersText.isEmpty {
                 items.append(InfoItem(text: playersText, systemImage: "person.2"))
             }
-            self.infoItems = items
+            infoItems = items
         } else {
-            self.infoItems = [
+            infoItems = [
                 InfoItem(text: "\(projectDetail.downloads)", systemImage: "arrow.down.circle"),
                 InfoItem(text: "\(projectDetail.followers)", systemImage: "heart"),
             ]
         }
 
-        self.tags = projectDetail.categories
+        tags = projectDetail.categories
     }
 }

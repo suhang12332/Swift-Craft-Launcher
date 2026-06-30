@@ -13,7 +13,7 @@ public struct AcknowledgementsView: View {
     private let avatarSize: CGFloat = 40
     private let avatarCornerRadius: CGFloat = 8
 
-    public init() {}
+    public init() { }
 
     public var body: some View {
         ScrollView {
@@ -111,7 +111,7 @@ public struct AcknowledgementsView: View {
             .clipped()
             .onDisappear {
                 URLCache.shared.removeCachedResponse(
-                    for: URLRequest(url: url)
+                    for: URLRequest(url: url),
                 )
             }
         } else {
@@ -126,7 +126,7 @@ public struct AcknowledgementsView: View {
         switch phase {
         case .empty:
             avatarPlaceholder(showLoading: true)
-        case .success(let image):
+        case let .success(image):
             image
                 .resizable()
                 .aspectRatio(contentMode: .fill)

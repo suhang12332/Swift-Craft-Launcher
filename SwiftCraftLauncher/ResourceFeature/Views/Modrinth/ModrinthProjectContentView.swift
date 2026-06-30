@@ -20,7 +20,7 @@ struct ModrinthProjectContentView: View {
         projectDetail: Binding<ModrinthProjectDetail?>,
         projectId: String,
         resourceType: String,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         _projectDetail = projectDetail
         self.projectId = projectId
@@ -30,13 +30,13 @@ struct ModrinthProjectContentView: View {
 
     var body: some View {
         VStack {
-            if let error = error {
+            if let error {
                 errorView(error)
             } else {
                 ModrinthCompatibilitySection(
                     project: projectDetail,
                     isLoading: isLoading,
-                    resourceType: resourceType
+                    resourceType: resourceType,
                 )
                 ModrinthLinksSection(project: projectDetail, isLoading: isLoading)
                 ModrinthDetailsSection(project: projectDetail, isLoading: isLoading)
@@ -74,7 +74,7 @@ struct ModrinthProjectContentView: View {
             throw GlobalError.validation(
                 chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
-                level: .notification
+                level: .notification,
             )
         }
         let result = await ModrinthService.fetchProjectDetails(id: projectId, type: resourceType == ProjectType.minecraftJavaServer ? resourceType : "")

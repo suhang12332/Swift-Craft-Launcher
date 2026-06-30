@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Displays a game's icon with automatic cache-busting on refresh.
+// Displays a game's icon with automatic cache-busting on refresh.
 
 import SwiftUI
 
@@ -41,7 +41,7 @@ struct GameIconView: View {
                     switch phase {
                     case .empty:
                         ProgressView().controlSize(.mini)
-                    case .success(let image):
+                    case let .success(image):
                         image
                             .resizable()
                             .interpolation(.none)
@@ -56,7 +56,7 @@ struct GameIconView: View {
                 }
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(
-                        for: URLRequest(url: iconURL)
+                        for: URLRequest(url: iconURL),
                     )
                 }
             } else {

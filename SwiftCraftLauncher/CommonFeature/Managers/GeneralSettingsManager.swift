@@ -11,8 +11,8 @@ import SwiftUI
 
 /// The interface layout style for the main window.
 public enum InterfaceLayoutStyle: String, CaseIterable {
-    case classic = "classic"
-    case focused = "focused"
+    case classic
+    case focused
 
     public var localizedName: String {
         "settings.interface_style.\(rawValue)".localized()
@@ -62,7 +62,7 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
         didSet { objectWillChange.send() }
     }
 
-    private init() {}
+    private init() { }
 
     /// The current working path, falling back to the default support directory when empty.
     var currentWorkingPath: String {

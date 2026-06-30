@@ -5,24 +5,19 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 /// Displays the AI assistant's avatar.
 struct AIAvatarView: View {
     let size: CGFloat
     let url: String
 
-    init(size: CGFloat, url: String) {
-        self.size = size
-        self.url = url
-    }
-
     var body: some View {
         MinecraftSkinUtils(
             type: .url,
             src: url,
-            size: size
+            size: size,
         )
     }
 }
@@ -79,7 +74,7 @@ struct MessageBubble: View {
         Spacer(minLength: Constants.spacerMinLength)
     }
 
-    private func messageContentView(alignment: HorizontalAlignment, isUser: Bool) -> some View {
+    private func messageContentView(alignment: HorizontalAlignment, isUser _: Bool) -> some View {
         VStack(alignment: alignment, spacing: 4) {
             if !message.attachments.isEmpty {
                 attachmentsView(alignment: alignment)
@@ -103,7 +98,7 @@ struct MessageBubble: View {
         }
     }
 
-    @ViewBuilder private var messageTextBubble: some View {
+    private var messageTextBubble: some View {
         Text(message.content)
             .textSelection(.enabled)
             .font(.system(size: Constants.messageFontSize))
@@ -126,7 +121,7 @@ struct MessageBubble: View {
             MinecraftSkinUtils(
                 type: player.isRemote ? .url : .asset,
                 src: player.avatarName,
-                size: Constants.avatarSize
+                size: Constants.avatarSize,
             )
         } else {
             Image(systemName: "person.fill")
@@ -201,17 +196,16 @@ struct AttachmentView: View {
                 iconName: "doc.fill",
                 fileName: fileName,
                 fileExtension: url.pathExtension.uppercased(),
-                url: url
+                url: url,
             )
         }
     }
 
-    @ViewBuilder
     private func fileItemView(
         iconName: String,
         fileName: String,
         fileExtension: String,
-        url: URL
+        url: URL,
     ) -> some View {
         HStack(spacing: Constants.fileSpacing) {
             Image(systemName: iconName)

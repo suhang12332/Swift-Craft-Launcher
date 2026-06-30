@@ -1,0 +1,86 @@
+# ==========================================
+# SwiftFormat 0.61.1
+# Swift Craft Launcher - STABLE SAFE MODE (NO STYLE REWRITE)
+# ==========================================
+
+--swift-version 6.1
+
+# ==========================================
+# BASIC FORMAT ONLY
+# ==========================================
+
+--indent 4
+--maxwidth 120
+--linebreaks lf
+--trimwhitespace always
+
+--emptybraces spaced
+--trailingcommas always
+
+--xcodeindentation enabled
+
+--importgrouping access-control,alpha
+
+--self remove
+
+# ==========================================
+# SAFE SPACING ONLY (NO STRUCTURE CHANGES)
+# ==========================================
+
+--enable spacearoundoperators
+--enable spacearoundbraces
+--enable spacearoundbrackets
+--enable spacearoundgenerics
+--enable spacearoundparens
+
+--enable spaceinsidebraces
+--enable spaceinsidebrackets
+--enable spaceinsidegenerics
+--enable spaceinsideparens
+
+--enable trailingspace
+--enable typesugar
+--enable void
+
+--enable sortimports
+--enable duplicateimports
+--enable linebreakatendoffile
+
+# ==========================================
+# DISABLE ALL WRAP / STRUCTURE RULES
+# ==========================================
+
+--disable wrap
+--disable indent
+--disable trailingClosures
+
+--disable braces
+--disable hoistAwait
+--disable hoistTry
+
+--disable conditionalAssignment
+--disable modifierOrder
+--disable enumNamespaces
+--disable organizeDeclarations
+
+--disable wrapArguments
+--disable wrapAttributes
+--disable wrapCaseBodies
+--disable wrapConditionalBodies
+--disable wrapEnumCases
+--disable wrapFunctionBodies
+--disable wrapLoopBodies
+--disable wrapMultilineStatementBraces
+--disable wrapPropertyBodies
+--disable wrapSwitchCases
+--disable wrapSingleLineComments
+
+# ==========================================
+# IMPORTANT NOTE (ROOT CAUSE OF YOUR ERROR)
+# ==========================================
+# trailing_closure IS NOT CONTROLLED BY SwiftFormat RULES HERE
+# It is a STYLE RULE that SwiftFormat may still enforce regardless of config
+# => To fully remove it, you MUST either:
+#    1. Fix code manually, OR
+#    2. Use SwiftLint (recommended), OR
+#    3. Disable rule via Xcode/SwiftLint, NOT SwiftFormat

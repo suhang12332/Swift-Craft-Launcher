@@ -10,8 +10,8 @@ import Foundation
 /// Extension providing game save logic for `GameCreationViewModel`.
 extension GameCreationViewModel {
     func saveGame() async {
-        guard let gameRepository = gameRepository,
-              let playerListViewModel = playerListViewModel else {
+        guard let gameRepository,
+              let playerListViewModel else {
             Logger.shared.error("GameRepository 或 PlayerListViewModel 未设置")
             return
         }
@@ -23,7 +23,7 @@ extension GameCreationViewModel {
             finalGameName = GameNameGenerator.generateGameName(
                 gameVersion: selectedGameVersion,
                 loaderVersion: loaderVersion,
-                modLoader: selectedModLoader
+                modLoader: selectedModLoader,
             )
             gameNameValidator.gameName = finalGameName
         }
@@ -34,7 +34,7 @@ extension GameCreationViewModel {
                 selectedGameVersion: selectedGameVersion,
                 selectedModLoader: selectedModLoader,
                 specifiedLoaderVersion: loaderVersion,
-                pendingIconData: pendingIconData
+                pendingIconData: pendingIconData,
             ),
             playerListViewModel: playerListViewModel,
             gameRepository: gameRepository,
@@ -47,7 +47,7 @@ extension GameCreationViewModel {
                 Task { @MainActor in
                     self.handleNonCriticalError(error, message: message)
                 }
-            }
+            },
         )
     }
 }

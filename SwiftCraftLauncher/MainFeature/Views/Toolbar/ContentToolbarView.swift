@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import MinecraftFriendsKit
+import SwiftUI
 
 /// Provides the primary toolbar content for the main content area.
 public struct ContentToolbarView: ToolbarContent {
@@ -29,7 +29,7 @@ public struct ContentToolbarView: ToolbarContent {
     init(
         minecraftAuthService: MinecraftAuthService = AppServices.minecraftAuthService,
         yggdrasilAuthService: YggdrasilAuthService = AppServices.yggdrasilAuthService,
-        premiumAccountFlagManager: PremiumAccountFlagManager = AppServices.premiumAccountFlagManager
+        premiumAccountFlagManager: PremiumAccountFlagManager = AppServices.premiumAccountFlagManager,
     ) {
         self.minecraftAuthService = minecraftAuthService
         self.yggdrasilAuthService = yggdrasilAuthService
@@ -111,14 +111,14 @@ public struct ContentToolbarView: ToolbarContent {
                             yggdrasilAuthService.logout()
                         }
                     },
-                    playerListViewModel: playerListViewModel
+                    playerListViewModel: playerListViewModel,
                 )
             }
             .alert(isPresented: $showPlayerAlert) {
                 Alert(
                     title: Text("sidebar.alert.no_player.title".localized()),
                     message: Text("sidebar.alert.no_player.message".localized()),
-                    dismissButton: .default(Text("common.confirm".localized()))
+                    dismissButton: .default(Text("common.confirm".localized())),
                 )
             }
 
@@ -143,7 +143,7 @@ public struct ContentToolbarView: ToolbarContent {
                 .sheet(isPresented: $showEditSkin) {
                     SkinToolDetailView(
                         preloadedSkinInfo: viewModel.preloadedSkinInfo,
-                        preloadedProfile: viewModel.preloadedProfile
+                        preloadedProfile: viewModel.preloadedProfile,
                     )
                     .onDisappear {
                         viewModel.clearPreloadedSkinData()
@@ -177,9 +177,9 @@ public struct ContentToolbarView: ToolbarContent {
                             viewModel: minecraftFriendsSheetViewModel,
                             localize: MinecraftFriendsSheetLocalize.resolver(
                                 localeIdentifier: { AppServices.languageManager.selectedLanguage },
-                                fallback: { $0.localized() }
+                                fallback: { $0.localized() },
                             ),
-                            limitBodyScrollHeight: AppServices.generalSettingsManager.limitCommonSheetHeight
+                            limitBodyScrollHeight: AppServices.generalSettingsManager.limitCommonSheetHeight,
                         ) { _, url in
                             Group {
                                 if let u = url, !u.isEmpty {

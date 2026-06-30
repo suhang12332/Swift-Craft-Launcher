@@ -70,7 +70,7 @@ extension SkinToolDetailViewModel {
     /// Handles the result of a file importer selection.
     func handleFileSelection(_ result: Result<[URL], Error>) {
         switch result {
-        case .success(let urls):
+        case let .success(urls):
             guard let url = urls.first,
                   url.startAccessingSecurityScopedResource() else { return }
 
@@ -80,13 +80,13 @@ extension SkinToolDetailViewModel {
                     try? Data(contentsOf: urlForBackground)
                 }.value
                 urlForBackground.stopAccessingSecurityScopedResource()
-                if let data = data {
+                if let data {
                     self.processSkinData(data, filePath: urlForBackground.path)
                 } else {
                     Logger.shared.error("Failed to read skin file")
                 }
             }
-        case .failure(let error):
+        case let .failure(error):
             Logger.shared.error("File selection failed: \(error)")
         }
     }
@@ -99,7 +99,7 @@ extension SkinToolDetailViewModel {
         guard let provider = providers.first else { return false }
 
         provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in
-            guard let data = data else { return }
+            guard let data else { return }
             Task { @MainActor [weak self] in
                 guard let self else { return }
                 let tempURL = await Task.detached(priority: .userInitiated) { () -> URL? in
@@ -114,7 +114,7 @@ extension SkinToolDetailViewModel {
                         return nil
                     }
                 }.value
-                self.processSkinData(data, filePath: tempURL?.path)
+                processSkinData(data, filePath: tempURL?.path)
             }
         }
         return true

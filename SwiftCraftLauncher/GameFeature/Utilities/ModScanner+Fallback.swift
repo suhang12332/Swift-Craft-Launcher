@@ -39,14 +39,14 @@ extension ModScanner {
         let fileName = fileURL.lastPathComponent
         let baseFileName = fileName.replacingOccurrences(
             of: ".\(fileURL.pathExtension)",
-            with: ""
+            with: "",
         )
         return (fileName, baseFileName)
     }
 
     /// Creates common fallback fields with default values.
-    private func createCommonFallbackFields(fileName: String, baseFileName: String) -> CommonFallbackFields {
-        return CommonFallbackFields(
+    private func createCommonFallbackFields(fileName: String, baseFileName _: String) -> CommonFallbackFields {
+        CommonFallbackFields(
             description: "local：\(fileName)",
             categories: ["unknown"],
             clientSide: "optional",
@@ -67,13 +67,13 @@ extension ModScanner {
             license: nil,
             gameVersions: [],
             loaders: [],
-            type: nil
+            type: nil,
         )
     }
 
     /// Creates a minimal fallback `ModrinthProjectDetail` using the file name.
     func createFallbackDetailFromFileName(
-        fileURL: URL
+        fileURL: URL,
     ) -> ModrinthProjectDetail {
         let (fileName, baseFileName) = createBaseFallbackDetail(fileURL: fileURL)
         let common = createCommonFallbackFields(fileName: fileName, baseFileName: baseFileName)
@@ -81,7 +81,7 @@ extension ModScanner {
         return ModrinthProjectDetail(
             slug: baseFileName.lowercased().replacingOccurrences(
                 of: " ",
-                with: "-"
+                with: "-",
             ),
             title: baseFileName,
             description: common.description,
@@ -107,7 +107,7 @@ extension ModScanner {
             gameVersions: common.gameVersions,
             loaders: common.loaders,
             type: common.type,
-            fileName: fileName
+            fileName: fileName,
         )
     }
 }

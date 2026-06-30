@@ -45,7 +45,7 @@ enum DownloadManager {
             throw GlobalError.validation(
                 chineseMessage: "无效的下载地址",
                 i18nKey: "error.validation.invalid_download_url",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -53,7 +53,7 @@ enum DownloadManager {
             throw GlobalError.resource(
                 chineseMessage: "未知的资源类型",
                 i18nKey: "error.resource.unknown_type",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -82,7 +82,7 @@ enum DownloadManager {
             throw GlobalError.resource(
                 chineseMessage: "无法获取资源目录",
                 i18nKey: "error.resource.directory_not_found",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -90,7 +90,7 @@ enum DownloadManager {
         return try await downloadFile(
             urlString: url.absoluteString,
             destinationURL: destURL,
-            expectedSha1: expectedSha1
+            expectedSha1: expectedSha1,
         )
     }
 
@@ -104,14 +104,14 @@ enum DownloadManager {
     static func downloadFile(
         urlString: String,
         destinationURL: URL,
-        expectedSha1: String? = nil
+        expectedSha1: String? = nil,
     ) async throws -> URL {
         do {
             return try await ProgressDownloadManager.downloadFile(
                 urlString: urlString,
                 destinationURL: destinationURL,
                 expectedSha1: expectedSha1,
-                progressHandler: nil
+                progressHandler: nil,
             )
         } catch {
             throw mapDownloadError(error)
@@ -129,13 +129,13 @@ enum DownloadManager {
             return GlobalError.download(
                 chineseMessage: "网络请求失败",
                 i18nKey: "error.download.network_request_failed",
-                level: .notification
+                level: .notification,
             )
         }
         return GlobalError.download(
             chineseMessage: "下载失败",
             i18nKey: "error.download.general_failure",
-            level: .notification
+            level: .notification,
         )
     }
 
@@ -153,13 +153,13 @@ enum DownloadManager {
                 throw GlobalError.download(
                     chineseMessage: "网络请求失败",
                     i18nKey: "error.download.network_request_failed",
-                    level: .notification
+                    level: .notification,
                 )
             } else {
                 throw GlobalError.download(
                     chineseMessage: "下载失败",
                     i18nKey: "error.download.general_failure",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }

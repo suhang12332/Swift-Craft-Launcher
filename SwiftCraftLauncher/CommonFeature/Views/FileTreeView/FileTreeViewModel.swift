@@ -19,9 +19,9 @@ final class FileTreeViewModel {
     private var didAttemptApplyDefaultSelection = false
 
     init(rootURL: URL, showHiddenFiles: Bool, fileManager: FileManager = .default) {
-        self.root = FileNode(url: rootURL)
+        root = FileNode(url: rootURL)
         self.showHiddenFiles = showHiddenFiles
-        self.fm = fileManager
+        fm = fileManager
     }
 
     /// Updates the root URL and hidden files setting.
@@ -62,7 +62,7 @@ final class FileTreeViewModel {
             let urls = try fm.contentsOfDirectory(
                 at: node.url,
                 includingPropertiesForKeys: keys,
-                options: options
+                options: options,
             )
 
             node.children = urls

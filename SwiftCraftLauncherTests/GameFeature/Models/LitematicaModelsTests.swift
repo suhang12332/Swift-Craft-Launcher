@@ -5,15 +5,14 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class LitematicaModelsTests: XCTestCase {
-
     func testLitematicaInfo_init_defaults() {
         let info = LitematicaInfo(
             name: "Test Build",
-            path: URL(fileURLWithPath: "/tmp/test.litematic")
+            path: URL(fileURLWithPath: "/tmp/test.litematic"),
         )
         XCTAssertEqual(info.name, "Test Build")
         XCTAssertEqual(info.id, "test.litematic")
@@ -37,7 +36,7 @@ final class LitematicaModelsTests: XCTestCase {
             description: "A test build",
             version: "1.0",
             regionCount: 5,
-            totalBlocks: 1000
+            totalBlocks: 1000,
         )
         XCTAssertEqual(info.name, "My Build")
         XCTAssertEqual(info.fileSize, 1024)
@@ -57,7 +56,7 @@ final class LitematicaModelsTests: XCTestCase {
     func testLitematicaInfo_idFromPath() {
         let info = LitematicaInfo(
             name: "Build",
-            path: URL(fileURLWithPath: "/some/deep/path/MyProject.litematic")
+            path: URL(fileURLWithPath: "/some/deep/path/MyProject.litematic"),
         )
         XCTAssertEqual(info.id, "MyProject.litematic")
     }
@@ -67,18 +66,18 @@ final class LitematicaModelsTests: XCTestCase {
             name: "Castle",
             author: "Builder",
             description: "A castle",
-            timeCreated: 1000000,
-            timeModified: 2000000,
+            timeCreated: 1_000_000,
+            timeModified: 2_000_000,
             totalVolume: 100,
             totalBlocks: 80,
             enclosingSize: Size(x: 10, y: 10, z: 1),
-            regionCount: 1
+            regionCount: 1,
         )
         XCTAssertEqual(meta.name, "Castle")
         XCTAssertEqual(meta.author, "Builder")
         XCTAssertEqual(meta.description, "A castle")
-        XCTAssertEqual(meta.timeCreated, 1000000)
-        XCTAssertEqual(meta.timeModified, 2000000)
+        XCTAssertEqual(meta.timeCreated, 1_000_000)
+        XCTAssertEqual(meta.timeModified, 2_000_000)
         XCTAssertEqual(meta.totalVolume, 100)
         XCTAssertEqual(meta.totalBlocks, 80)
         XCTAssertEqual(meta.enclosingSize.x, 10)

@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import AppKit
+import Foundation
 
 /// View model that loads a screenshot thumbnail asynchronously from a file URL.
 @MainActor

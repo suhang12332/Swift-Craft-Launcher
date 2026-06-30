@@ -27,7 +27,7 @@ final class AuthlibInjectorMissingPresenter: ObservableObject {
 
     private var continuation: CheckedContinuation<AuthlibInjectorMissingChoice, Never>?
 
-    private init() {}
+    private init() { }
 
     func requestUserChoice() async -> AuthlibInjectorMissingChoice {
         if let continuation {
@@ -55,4 +55,4 @@ final class AuthlibInjectorMissingPresenter: ObservableObject {
 }
 
 /// An error indicating the user cancelled the launch due to a missing authlib-injector.
-struct AuthlibInjectorLaunchCancelled: Error {}
+struct AuthlibInjectorLaunchCancelled: Error { }

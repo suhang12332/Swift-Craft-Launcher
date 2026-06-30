@@ -50,7 +50,7 @@ class JavaRuntimeDownloader {
             throw GlobalError.validation(
                 chineseMessage: "解析manifest.json失败",
                 i18nKey: "error.validation.manifest_parse_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -73,7 +73,7 @@ class JavaRuntimeDownloader {
             .reduce(0, +)
 
         let semaphore = AsyncSemaphore(
-            value: generalSettingsManager.concurrentDownloads
+            value: generalSettingsManager.concurrentDownloads,
         )
 
         let counter = Counter()
@@ -86,7 +86,7 @@ class JavaRuntimeDownloader {
                         throw GlobalError.download(
                             chineseMessage: "下载已被取消",
                             i18nKey: "error.download.cancelled",
-                            level: .notification
+                            level: .notification,
                         )
                     }
 
@@ -119,14 +119,14 @@ class JavaRuntimeDownloader {
                     _ = try await DownloadManager.downloadFile(
                         urlString: fileURL,
                         destinationURL: localFilePath,
-                        expectedSha1: expectedSHA1
+                        expectedSha1: expectedSHA1,
                     )
 
-                    if fileType == "file" && isExecutable {
+                    if fileType == "file", isExecutable {
                         try setExecutablePermission(for: localFilePath)
                     }
 
-                    if fileType == "file" && !fileExistsBefore {
+                    if fileType == "file", !fileExistsBefore {
                         do {
                             let fileAttributes = try FileManager.default.attributesOfItem(atPath: localFilePath.path)
                             if let fileSize = fileAttributes[.size] as? Int64, fileSize > 0 {
@@ -148,7 +148,7 @@ class JavaRuntimeDownloader {
             throw GlobalError.validation(
                 chineseMessage: "无效的URL",
                 i18nKey: "error.validation.invalid_url",
-                level: .notification
+                level: .notification,
             )
         }
         return try await APIClient.get(url: url)
@@ -174,12 +174,12 @@ class JavaRuntimeDownloader {
         try await downloadZipWithProgress(
             from: url,
             to: tempZipPath,
-            fileName: "\(version).zip"
+            fileName: "\(version).zip",
         )
 
         try await extractAndProcessBundledJavaRuntime(
             zipPath: tempZipPath,
-            targetDirectory: targetDirectory
+            targetDirectory: targetDirectory,
         )
 
         await progressActor.callProgressUpdate("Java运行时 \(version) 安装完成", 1, 1)
@@ -197,7 +197,7 @@ class JavaRuntimeDownloader {
         do {
             try extractSpecificFolderFromZip(
                 zipPath: zipPath,
-                destinationPath: finalJreBundlePath
+                destinationPath: finalJreBundlePath,
             )
         } catch {
             Logger.shared.error("解压Java运行时失败: \(error.localizedDescription)")
@@ -205,7 +205,7 @@ class JavaRuntimeDownloader {
             throw GlobalError.validation(
                 chineseMessage: "解压Java运行时失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.extract_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -222,7 +222,7 @@ class JavaRuntimeDownloader {
             throw GlobalError.validation(
                 chineseMessage: "无法打开zip文件: \(error.localizedDescription)",
                 i18nKey: "error.validation.cannot_open_zip",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -236,9 +236,9 @@ class JavaRuntimeDownloader {
 
             for (index, component) in pathComponents.enumerated() {
                 let componentStr = String(component)
-                if componentStr.hasPrefix("zulu-") && componentStr.contains(".jre") {
+                if componentStr.hasPrefix("zulu-"), componentStr.contains(".jre") {
                     if targetFolderPrefix == nil {
-                        let prefixComponents = pathComponents[0...index]
+                        let prefixComponents = pathComponents[0 ... index]
                         targetFolderPrefix = prefixComponents.joined(separator: "/")
                         if let prefix = targetFolderPrefix, !prefix.isEmpty {
                             targetFolderPrefix = prefix + "/"
@@ -257,7 +257,7 @@ class JavaRuntimeDownloader {
             throw GlobalError.validation(
                 chineseMessage: "在zip文件中未找到zulu文件夹",
                 i18nKey: "error.validation.zulu_folder_not_found_in_zip",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -302,7 +302,7 @@ class JavaRuntimeDownloader {
         _ = try await ProgressDownloadManager.downloadFile(
             urlString: url.absoluteString,
             destinationURL: destinationURL,
-            progressHandler: progressCallback
+            progressHandler: progressCallback,
         )
     }
 }
@@ -336,6 +336,6 @@ private actor CancelActor {
     }
 
     func shouldCancel() -> Bool {
-        return callback?() ?? false
+        callback?() ?? false
     }
 }

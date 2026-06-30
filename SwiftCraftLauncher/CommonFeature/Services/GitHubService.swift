@@ -10,10 +10,9 @@ import Foundation
 /// Provides access to GitHub API endpoints for contributors, acknowledgements, and announcements.
 @MainActor
 public class GitHubService: ObservableObject {
-
     public static let shared = GitHubService()
 
-    private init() {}
+    private init() { }
 
     /// Fetches the list of repository contributors.
     public func fetchContributors(perPage: Int = 50) async throws -> [GitHubContributor] {
@@ -54,11 +53,11 @@ public class GitHubService: ObservableObject {
     /// - Returns: The announcement data, or `nil` if not found.
     public func fetchAnnouncement(
         version: String,
-        language: String
+        language: String,
     ) async throws -> AnnouncementData? {
         let url = URLConfig.API.GitHub.announcement(
             version: version,
-            language: language
+            language: language,
         )
 
         let headers = APIClient.DefaultHeaders.acceptJSON
@@ -66,7 +65,7 @@ public class GitHubService: ObservableObject {
 
         let announcementResponse = try JSONDecoder().decode(
             AnnouncementResponse.self,
-            from: data
+            from: data,
         )
 
         guard announcementResponse.success else {

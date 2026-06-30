@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class LoaderURLConfigTests: XCTestCase {
-
     func testFabricLoaderURL() {
         let url = URLConfig.API.Fabric.loader
         XCTAssertEqual(url.absoluteString, "https://meta.fabricmc.net/v2/versions/loader")

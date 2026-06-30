@@ -37,7 +37,7 @@ struct OverflowPopoverContent<Item: Identifiable, Content: View>: View {
         items: [Item],
         maxHeight: CGFloat = SectionViewConstants.defaultPopoverMaxHeight,
         width: CGFloat = SectionViewConstants.defaultPopoverWidth,
-        @ViewBuilder content: @escaping (Item) -> Content
+        @ViewBuilder content: @escaping (Item) -> Content,
     ) {
         self.items = items
         self.maxHeight = maxHeight
@@ -74,7 +74,7 @@ struct ContentWithOverflow<Item: Identifiable, Content: View>: View {
         maxHeight: CGFloat = SectionViewConstants.defaultMaxHeight,
         verticalPadding: CGFloat = SectionViewConstants.defaultVerticalPadding,
         spacing: CGFloat = 8,
-        @ViewBuilder content: @escaping (Item) -> Content
+        @ViewBuilder content: @escaping (Item) -> Content,
     ) {
         self.items = items
         self.maxHeight = maxHeight
@@ -106,7 +106,7 @@ extension Array {
     func computeVisibleAndOverflowItemsByRows(
         maxRows: Int = SectionViewConstants.defaultMaxRows,
         maxWidth: CGFloat = SectionViewConstants.defaultMaxWidth,
-        estimatedWidth: (Element) -> CGFloat
+        estimatedWidth: (Element) -> CGFloat,
     ) -> ([Element], [Element]) {
         var rows: [[Element]] = []
         var currentRow: [Element] = []
@@ -130,7 +130,7 @@ extension Array {
         }
 
         let visibleRows = rows.prefix(maxRows)
-        let visibleItems = visibleRows.flatMap { $0 }
+        let visibleItems = visibleRows.flatMap(\.self)
         let overflowItems = Array(dropFirst(visibleItems.count))
 
         return (visibleItems, overflowItems)

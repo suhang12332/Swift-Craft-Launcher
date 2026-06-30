@@ -57,15 +57,15 @@ struct ModrinthIndexAdapter: ModPackIndexAdapter {
                 summary: modPackIndex.summary,
                 files: modPackIndex.files,
                 dependencies: modPackIndex.dependencies.dependencies ?? [],
-                source: .modrinth
+                source: .modrinth,
             )
         } catch ModrinthIndexError.emptyIndex {
             errorHandler.handle(
                 GlobalError.resource(
                     chineseMessage: "modrinth.index.json 文件为空",
                     i18nKey: "error.resource.modrinth_index_empty",
-                    level: .notification
-                )
+                    level: .notification,
+                ),
             )
             return nil
         } catch {
@@ -77,7 +77,7 @@ struct ModrinthIndexAdapter: ModPackIndexAdapter {
     }
 
     private func determineLoaderInfo(
-        from dependencies: ModrinthIndexDependencies
+        from dependencies: ModrinthIndexDependencies,
     ) -> (type: String, version: String) {
         if let forgeVersion = dependencies.forgeLoader {
             return (GameLoader.forge.displayName, forgeVersion)

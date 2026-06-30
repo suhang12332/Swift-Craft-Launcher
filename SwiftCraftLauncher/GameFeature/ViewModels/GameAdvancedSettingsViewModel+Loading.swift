@@ -16,7 +16,7 @@ extension GameAdvancedSettingsViewModel {
 
         let xms = game.xms == 0 ? gameSettingsManager.globalXms : game.xms
         let xmx = game.xmx == 0 ? gameSettingsManager.globalXmx : game.xmx
-        memoryRange = Double(xms)...Double(xmx)
+        memoryRange = Double(xms) ... Double(xmx)
         environmentVariables = game.environmentVariables
         javaPath = game.javaPath
 

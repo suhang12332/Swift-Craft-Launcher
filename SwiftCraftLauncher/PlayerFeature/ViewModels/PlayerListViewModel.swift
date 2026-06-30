@@ -20,22 +20,24 @@ class PlayerListViewModel: ObservableObject {
 
     init(
         dataManager: PlayerDataManager = AppServices.playerDataManager,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.dataManager = dataManager
         self.errorHandler = errorHandler
         setupNotifications()
     }
+
     deinit {
         if let observer = notificationObserver {
             NotificationCenter.default.removeObserver(observer)
         }
     }
+
     private func setupNotifications() {
         notificationObserver = NotificationCenter.default.addObserver(
             forName: .playerUpdated,
             object: nil,
-            queue: .main
+            queue: .main,
         ) { [weak self] notification in
             if let updatedPlayer = notification.userInfo?["updatedPlayer"] as? Player {
                 self?.updatePlayerInList(updatedPlayer)
@@ -132,7 +134,7 @@ class PlayerListViewModel: ObservableObject {
             avatarName: avatarUrl,
             accToken: profile.accessToken,
             refreshToken: profile.refreshToken,
-            xuid: profile.authXuid
+            xuid: profile.authXuid,
         )
         try loadPlayersThrowing()
         Logger.shared.debug("玩家 \(profile.name) 添加成功，列表已更新。")
@@ -168,7 +170,7 @@ class PlayerListViewModel: ObservableObject {
             avatarName: avatarUrl,
             accToken: profile.accessToken,
             refreshToken: profile.refreshToken,
-            xuid: ""
+            xuid: "",
         )
         try loadPlayersThrowing()
         Logger.shared.debug("Yggdrasil 玩家 \(profile.name) 添加成功，列表已更新。")
@@ -226,18 +228,18 @@ class PlayerListViewModel: ObservableObject {
             throw GlobalError.player(
                 chineseMessage: "玩家不存在: \(playerId)",
                 i18nKey: "error.player.not_found",
-                level: .notification
+                level: .notification,
             )
         }
 
-        for i in 0..<players.count {
+        for i in 0 ..< players.count {
             players[i].isCurrent = (i == index)
         }
         currentPlayer = players[index]
 
         try dataManager.savePlayersThrowing(players)
         Logger.shared.debug(
-            "已设置玩家 (ID: \(playerId), 姓名: \(currentPlayer?.name ?? "未知")) 为当前玩家，数据已保存。"
+            "已设置玩家 (ID: \(playerId), 姓名: \(currentPlayer?.name ?? "未知")) 为当前玩家，数据已保存。",
         )
     }
 
@@ -271,7 +273,7 @@ class PlayerListViewModel: ObservableObject {
         if let index = players.firstIndex(where: { $0.id == updatedPlayer.id }) {
             players[index] = updatedPlayer
 
-            if let currentPlayer = currentPlayer, currentPlayer.id == updatedPlayer.id {
+            if let currentPlayer, currentPlayer.id == updatedPlayer.id {
                 self.currentPlayer = updatedPlayer
             }
 

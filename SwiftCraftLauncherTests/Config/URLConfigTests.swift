@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class URLConfigTests: XCTestCase {
-
     func testApplyGitProxy_githubURL() {
         let url = URL.require("https://github.com/user/repo/releases/download/v1.0/file.jar")
         let result = URLConfig.applyGitProxyIfNeeded(url)
@@ -95,19 +94,19 @@ final class URLConfigTests: XCTestCase {
     func testAPICurseForge_webProjectURL() {
         XCTAssertEqual(
             URLConfig.API.CurseForge.webProjectURL(projectType: "mod"),
-            "https://www.curseforge.com/minecraft/mc-mods/"
+            "https://www.curseforge.com/minecraft/mc-mods/",
         )
         XCTAssertEqual(
             URLConfig.API.CurseForge.webProjectURL(projectType: "resourcepack"),
-            "https://www.curseforge.com/minecraft/texture-packs/"
+            "https://www.curseforge.com/minecraft/texture-packs/",
         )
         XCTAssertEqual(
             URLConfig.API.CurseForge.webProjectURL(projectType: "shader"),
-            "https://www.curseforge.com/minecraft/shaders/"
+            "https://www.curseforge.com/minecraft/shaders/",
         )
         XCTAssertEqual(
             URLConfig.API.CurseForge.webProjectURL(projectType: "modpack"),
-            "https://www.curseforge.com/minecraft/modpacks/"
+            "https://www.curseforge.com/minecraft/modpacks/",
         )
     }
 
@@ -127,28 +126,28 @@ final class URLConfigTests: XCTestCase {
     func testServerApiRoot_trailingSlash() {
         XCTAssertEqual(
             URLConfig.API.AuthlibInjector.serverApiRoot(for: "https://littleskin.cn/"),
-            "https://littleskin.cn"
+            "https://littleskin.cn",
         )
     }
 
     func testServerApiRoot_multipleTrailingSlashes() {
         XCTAssertEqual(
             URLConfig.API.AuthlibInjector.serverApiRoot(for: "https://example.com///"),
-            "https://example.com"
+            "https://example.com",
         )
     }
 
     func testServerApiRoot_noTrailingSlash() {
         XCTAssertEqual(
             URLConfig.API.AuthlibInjector.serverApiRoot(for: "https://littleskin.cn"),
-            "https://littleskin.cn"
+            "https://littleskin.cn",
         )
     }
 
     func testServerApiRoot_whitespace() {
         XCTAssertEqual(
             URLConfig.API.AuthlibInjector.serverApiRoot(for: "  https://example.com/  "),
-            "https://example.com"
+            "https://example.com",
         )
     }
 

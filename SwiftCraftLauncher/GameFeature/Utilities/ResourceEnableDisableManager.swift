@@ -13,7 +13,7 @@ enum ResourceEnableDisableManager {
     /// - Parameter fileName: The file name to check, or `nil`.
     /// - Returns: `true` if the file name ends with `.disable`; otherwise `false`.
     static func isDisabled(fileName: String?) -> Bool {
-        guard let fileName = fileName else { return false }
+        guard let fileName else { return false }
         return fileName.hasSuffix(".disable")
     }
 
@@ -25,7 +25,7 @@ enum ResourceEnableDisableManager {
     /// - Throws: A file-system error if the rename operation fails.
     static func toggleDisableState(
         fileName: String,
-        resourceDir: URL
+        resourceDir: URL,
     ) throws -> String {
         let fileManager = FileManager.default
         let currentURL = resourceDir.appendingPathComponent(fileName)

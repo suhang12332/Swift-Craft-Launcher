@@ -15,12 +15,12 @@ struct PlayerInfoSectionView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            if let player = player {
+            if let player {
                 VStack(spacing: 12) {
                     MinecraftSkinUtils(
                         type: player.isRemote ? .url : .asset,
                         src: player.avatarName,
-                        size: 88
+                        size: 88,
                     )
                     Text(player.name).font(.title2.bold())
 
@@ -31,7 +31,7 @@ struct PlayerInfoSectionView: View {
 
                         Toggle(isOn: Binding(
                             get: { currentModel == .slim },
-                            set: { currentModel = $0 ? .slim : .classic }
+                            set: { currentModel = $0 ? .slim : .classic },
                         )) {
                             EmptyView()
                         }
@@ -48,7 +48,7 @@ struct PlayerInfoSectionView: View {
                 ContentUnavailableView(
                     "skin.no_player".localized(),
                     systemImage: "person",
-                    description: Text("skin.add_player_first".localized())
+                    description: Text("skin.add_player_first".localized()),
                 )
             }
         }.frame(width: 280)

@@ -5,9 +5,9 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Toolbar button that presents a file importer for local resource installation.
-///
-/// Supports importing `.jar` and `.zip` files for mods, datapacks, and resource packs.
+// Toolbar button that presents a file importer for local resource installation.
+//
+// Supports importing `.jar` and `.zip` files for mods, datapacks, and resource packs.
 
 import SwiftUI
 import UniformTypeIdentifiers
@@ -22,7 +22,7 @@ struct ResourceImportButton: View {
     init(
         game: GameVersionInfo,
         gameResourcesType: String,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.game = game
         self.gameResourcesType = gameResourcesType
@@ -46,17 +46,17 @@ struct ResourceImportButton: View {
                 types.append(.zip)
                 return types
             }(),
-            allowsMultipleSelection: true
+            allowsMultipleSelection: true,
         ) { result in
             switch result {
-            case .success(let urls):
+            case let .success(urls):
                 guard !urls.isEmpty else { return }
                 importSelectedFiles(urls)
-            case .failure(let error):
+            case let .failure(error):
                 errorHandler.handle(GlobalError.fileSystem(
                     chineseMessage: "文件选择失败：\(error.localizedDescription)",
                     i18nKey: "error.filesystem.file_selection_failed",
-                    level: .notification
+                    level: .notification,
                 ))
             }
         }
@@ -71,7 +71,7 @@ struct ResourceImportButton: View {
             errorHandler.handle(GlobalError.configuration(
                 chineseMessage: "不支持导入此类型的资源",
                 i18nKey: "error.configuration.resource_directory_not_found",
-                level: .notification
+                level: .notification,
             ))
             return
         }
@@ -80,7 +80,7 @@ struct ResourceImportButton: View {
             errorHandler.handle(GlobalError.fileSystem(
                 chineseMessage: "找不到游戏目录",
                 i18nKey: "error.filesystem.game_directory_not_found",
-                level: .notification
+                level: .notification,
             ))
             return
         }
@@ -96,7 +96,7 @@ struct ResourceImportButton: View {
                     throw GlobalError.resource(
                         chineseMessage: "不支持的文件类型。请导入 .jar 或 .zip 文件。",
                         i18nKey: "error.resource.invalid_file_type",
-                        level: .notification
+                        level: .notification,
                     )
                 }
 
@@ -110,7 +110,7 @@ struct ResourceImportButton: View {
                         default: return .mod
                         }
                     }(),
-                    gameRoot: gameRoot
+                    gameRoot: gameRoot,
                 )
                 importedCount += 1
             } catch {

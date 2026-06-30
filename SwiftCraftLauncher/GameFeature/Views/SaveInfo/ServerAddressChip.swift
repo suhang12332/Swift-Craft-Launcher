@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A chip displaying a server address with connection status indicator.
+// A chip displaying a server address with connection status indicator.
 import SwiftUI
 
 struct ServerAddressChip: View {
@@ -22,7 +22,7 @@ struct ServerAddressChip: View {
         port: Int? = nil,
         isLoading: Bool,
         connectionStatus: ServerConnectionStatus = .unknown,
-        action: (() -> Void)? = nil
+        action: (() -> Void)? = nil,
     ) {
         self.title = title
         self.address = address
@@ -33,7 +33,7 @@ struct ServerAddressChip: View {
     }
 
     var body: some View {
-        Button(action: action ?? {}) {
+        Button(action: action ?? { }) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
                     Image(systemName: "server.rack")
@@ -65,12 +65,12 @@ struct ServerAddressChip: View {
             .padding(.vertical, 6)
             .background(
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.clear)
+                    .fill(Color.clear),
             )
             .foregroundStyle(.primary)
             .overlay(
                 RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1),
             )
         }
         .buttonStyle(.plain)

@@ -14,9 +14,9 @@ final class FileTreeCellView: NSTableCellView {
     let titleField: NSTextField
 
     init(toggleTarget: AnyObject?, toggleAction: Selector) {
-        self.checkbox = NSButton(checkboxWithTitle: "", target: toggleTarget, action: toggleAction)
-        self.iconView = NSImageView()
-        self.titleField = NSTextField(labelWithString: "")
+        checkbox = NSButton(checkboxWithTitle: "", target: toggleTarget, action: toggleAction)
+        iconView = NSImageView()
+        titleField = NSTextField(labelWithString: "")
         super.init(frame: .zero)
 
         checkbox.translatesAutoresizingMaskIntoConstraints = false
@@ -57,7 +57,7 @@ final class FileTreeCellView: NSTableCellView {
     }
 
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }

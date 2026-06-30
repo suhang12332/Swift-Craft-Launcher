@@ -25,20 +25,20 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         preselectedFile: URL? = nil,
         shouldStartProcessing: Bool = false,
         onProcessingStateChanged: @escaping (Bool) -> Void = { _ in },
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.onProcessingStateChanged = onProcessingStateChanged
         super.init(configuration: configuration, errorHandler: errorHandler)
 
-        self.selectedModPackFile = preselectedFile
-        self.isProcessingModPack = shouldStartProcessing
+        selectedModPackFile = preselectedFile
+        isProcessingModPack = shouldStartProcessing
     }
 
     func setup(gameRepository: GameRepository) {
         self.gameRepository = gameRepository
         modPackViewModel.setGameRepository(gameRepository)
 
-        if selectedModPackFile != nil && isProcessingModPack {
+        if selectedModPackFile != nil, isProcessingModPack {
             Task {
                 await parseSelectedModPack()
             }
@@ -103,7 +103,7 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     }
 
     override func computeIsDownloading() -> Bool {
-        return gameSetupService.downloadState.isDownloading
+        gameSetupService.downloadState.isDownloading
             || modPackViewModel.modPackInstallState.isInstalling
             || isProcessingModPack
     }

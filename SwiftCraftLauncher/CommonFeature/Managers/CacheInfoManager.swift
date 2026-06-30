@@ -12,13 +12,13 @@ import SwiftUI
 class CacheInfoManager: ObservableObject {
     static let shared = CacheInfoManager()
 
-    @Published var cacheInfo: CacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
+    @Published var cacheInfo: CacheInfo = .init(fileCount: 0, totalSize: 0)
     private let errorHandler: GlobalErrorHandler
     private let calculator: CacheCalculator
 
     init(
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        calculator: CacheCalculator = AppServices.cacheCalculator
+        calculator: CacheCalculator = AppServices.cacheCalculator,
     ) {
         self.errorHandler = errorHandler
         self.calculator = calculator
@@ -27,7 +27,7 @@ class CacheInfoManager: ObservableObject {
     /// Calculates cache size for application data.
     func calculateDataCacheInfo() {
         do {
-            self.cacheInfo = try calculator.calculateCacheInfo()
+            cacheInfo = try calculator.calculateCacheInfo()
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("计算数据缓存信息失败: \(globalError.chineseMessage)")
@@ -39,7 +39,7 @@ class CacheInfoManager: ObservableObject {
     /// - Parameter game: The game name to calculate cache for.
     func calculateGameCacheInfo(_ game: String) {
         do {
-            self.cacheInfo = try calculator.calculateProfileCacheInfo(gameName: game)
+            cacheInfo = try calculator.calculateProfileCacheInfo(gameName: game)
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("计算游戏缓存信息失败: \(globalError.chineseMessage)")

@@ -10,7 +10,6 @@ import Foundation
 /// View model for the world detail sheet, parsing NBT data from level.dat to display world metadata.
 @MainActor
 final class WorldDetailSheetViewModel: ObservableObject {
-
     private enum LoadError: Error {
         case levelDatNotFound
         case invalidStructure
@@ -38,7 +37,7 @@ final class WorldDetailSheetViewModel: ObservableObject {
     var filteredRawData: [String: Any]? {
         guard let raw = rawDataTag else { return nil }
 
-        let displayedKeys: Set<String> = [
+        let displayedKeys: Set = [
             "LevelName", "Version", "DataVersion",
             "GameType", "Difficulty", "hardcore", "allowCommands", "GameRules",
             "LastPlayed", "RandomSeed", "SpawnX", "SpawnY", "SpawnZ",
@@ -91,12 +90,12 @@ final class WorldDetailSheetViewModel: ObservableObject {
                 from: dataTag,
                 folderName: world.name,
                 path: world.path,
-                seedOverride: seedOverride
+                seedOverride: seedOverride,
             )
 
-            self.rawDataTag = dataTag
-            self.metadata = parsedMetadata
-            self.isLoading = false
+            rawDataTag = dataTag
+            metadata = parsedMetadata
+            isLoading = false
         } catch LoadError.levelDatNotFound {
             isLoading = false
             errorMessage = "saveinfo.world.detail.error.level_dat_not_found".localized()
@@ -110,7 +109,7 @@ final class WorldDetailSheetViewModel: ObservableObject {
             isLoading = false
             errorMessage = String(
                 format: "saveinfo.world.detail.error.load_failed".localized(),
-                error.localizedDescription
+                error.localizedDescription,
             )
             showError = true
         }
@@ -120,7 +119,7 @@ final class WorldDetailSheetViewModel: ObservableObject {
         from dataTag: [String: Any],
         folderName: String,
         path: URL,
-        seedOverride: Int64?
+        seedOverride: Int64?,
     ) -> WorldDetailMetadata {
         let levelName = (dataTag["LevelName"] as? String) ?? folderName
 
@@ -235,7 +234,7 @@ final class WorldDetailSheetViewModel: ObservableObject {
             dayTime: dayTime,
             weather: weather,
             worldBorder: worldBorder,
-            gameRules: gameRules
+            gameRules: gameRules,
         )
     }
 

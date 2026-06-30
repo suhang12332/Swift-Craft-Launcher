@@ -69,6 +69,7 @@ enum AppConstants {
         let encrypted = "$(CLIENTID)"
         return Obfuscator.decryptClientID(encrypted)
     }()
+
     static let minecraftScope = "XboxLive.signin offline_access"
     static let validResourceTypes = [ResourceType.mod.rawValue, ResourceType.datapack.rawValue, ResourceType.shader.rawValue, ResourceType.resourcepack.rawValue]
     /// The CurseForge API key, decrypted at launch.
@@ -94,6 +95,7 @@ enum AppConstants {
         let encrypted = "$(ELYBY_CLIENT_SECRET)"
         return Obfuscator.decryptAPIKey(encrypted)
     }()
+
     static let cacheResourceTypes = [DirectoryNames.libraries, DirectoryNames.natives, DirectoryNames.assets, DirectoryNames.versions]
 
     static let logTag = Bundle.main.identifier + ".logger"
@@ -209,28 +211,30 @@ enum AppConstants {
 
 extension Bundle {
     var appVersion: String {
-        return infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
     }
 
     var buildNumber: String {
-        return infoDictionary?["CFBundleVersion"] as? String ?? "beta"
+        infoDictionary?["CFBundleVersion"] as? String ?? "beta"
     }
 
     var fullVersion: String {
-        return "\(appVersion)-\(buildNumber)"
+        "\(appVersion)-\(buildNumber)"
     }
+
     var appName: String {
-        return infoDictionary?["CFBundleName"] as? String ?? "Swift Craft Launcher"
+        infoDictionary?["CFBundleName"] as? String ?? "Swift Craft Launcher"
     }
+
     var copyright: String {
-        return infoDictionary?["NSHumanReadableCopyright"] as? String ?? "Copyright © 2025 \(appName)"
+        infoDictionary?["NSHumanReadableCopyright"] as? String ?? "Copyright © 2025 \(appName)"
     }
 
     var identifier: String {
-        return infoDictionary?["CFBundleIdentifier"] as? String ?? "com.su.code.SwiftCraftLauncher"
+        infoDictionary?["CFBundleIdentifier"] as? String ?? "com.su.code.SwiftCraftLauncher"
     }
 
     var appCategory: String {
-        return infoDictionary?["LSApplicationCategoryType"] as? String ?? "public.app-category.games"
+        infoDictionary?["LSApplicationCategoryType"] as? String ?? "public.app-category.games"
     }
 }

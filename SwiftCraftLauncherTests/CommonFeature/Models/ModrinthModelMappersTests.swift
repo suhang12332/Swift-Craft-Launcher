@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModrinthModelMappersTests: XCTestCase {
-
     func testModrinthProject_fromDetail() throws {
         let detail = try makeDetail(DetailParams(
             id: "proj-1",
@@ -20,7 +19,7 @@ final class ModrinthModelMappersTests: XCTestCase {
             projectType: "mod",
             downloads: 1000,
             team: "Team1",
-            license: "MIT"
+            license: "MIT",
         ))
 
         let project = ModrinthProject.from(detail: detail)
@@ -48,7 +47,7 @@ final class ModrinthModelMappersTests: XCTestCase {
             projectType: "mod",
             downloads: 500,
             team: "Team2",
-            license: nil
+            license: nil,
         ))
 
         let project = ModrinthProject.from(detail: detail)
@@ -67,7 +66,7 @@ final class ModrinthModelMappersTests: XCTestCase {
             projectType: "mod",
             downloads: 100,
             team: "Team3",
-            license: nil
+            license: nil,
         ))
 
         let project = ModrinthProject.from(detail: detail)
@@ -117,7 +116,7 @@ final class ModrinthModelMappersTests: XCTestCase {
             gameVersions: ["1.20.1"],
             loaders: ["fabric"],
             type: nil,
-            fileName: nil
+            fileName: nil,
         )
     }
 }

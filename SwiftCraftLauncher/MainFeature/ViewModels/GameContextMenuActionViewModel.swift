@@ -27,7 +27,7 @@ final class GameContextMenuActionViewModel: ObservableObject {
         isRunning: Bool,
         player: Player?,
         game: GameVersionInfo,
-        gameLaunchUseCase: GameLaunchUseCase
+        gameLaunchUseCase: GameLaunchUseCase,
     ) {
         Task {
             let userId = player?.id ?? ""

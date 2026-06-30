@@ -64,16 +64,16 @@ struct ModrinthLoader: Codable {
         arguments = try container.decode(Arguments.self, forKey: .arguments)
         libraries = try container.decode(
             [ModrinthLoaderLibrary].self,
-            forKey: .libraries
+            forKey: .libraries,
         )
         version = try container.decodeIfPresent(String.self, forKey: .version)
         processors = try container.decodeIfPresent(
             [Processor].self,
-            forKey: .processors
+            forKey: .processors,
         )
         data = try container.decodeIfPresent(
             [String: SidedDataEntry].self,
-            forKey: .data
+            forKey: .data,
         )
     }
 }
@@ -90,7 +90,7 @@ struct ModrinthLoaderLibrary: Codable {
         downloads: LibraryDownloads?,
         name: String,
         includeInClasspath: Bool,
-        downloadable: Bool
+        downloadable: Bool,
     ) {
         self.downloads = downloads
         self.name = name
@@ -109,12 +109,12 @@ struct ModrinthLoaderLibrary: Codable {
         downloadable = try container.decode(Bool.self, forKey: .downloadable)
         includeInClasspath = try container.decode(
             Bool.self,
-            forKey: .includeInClasspath
+            forKey: .includeInClasspath,
         )
         url = try container.decodeIfPresent(URL.self, forKey: .url)
         downloads = try container.decodeIfPresent(
             LibraryDownloads.self,
-            forKey: .downloads
+            forKey: .downloads,
         )
     }
 }

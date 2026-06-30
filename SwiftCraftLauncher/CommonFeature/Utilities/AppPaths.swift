@@ -30,18 +30,23 @@ enum AppPaths {
     static var metaDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.meta)
     }
+
     static var librariesDirectory: URL {
         metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.libraries)
     }
+
     static var nativesDirectory: URL {
         metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.natives)
     }
+
     static var assetsDirectory: URL {
         metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.assets)
     }
+
     static var versionsDirectory: URL {
         metaDirectory.appendingPathComponent(AppConstants.DirectoryNames.versions)
     }
+
     static var profileRootDirectory: URL {
         let customPath = AppServices.generalSettingsManager.launcherWorkingDirectory
         let workingDirectory = customPath.isEmpty ? launcherSupportDirectory.path : customPath

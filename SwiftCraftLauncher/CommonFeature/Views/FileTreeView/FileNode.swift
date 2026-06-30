@@ -21,8 +21,8 @@ final class FileNode: NSObject {
         self.url = url
 
         let values = try? url.resourceValues(forKeys: [.isDirectoryKey, .localizedNameKey])
-        self.isDirectory = values?.isDirectory ?? false
-        self.displayName = values?.localizedName ?? url.lastPathComponent
+        isDirectory = values?.isDirectory ?? false
+        displayName = values?.localizedName ?? url.lastPathComponent
 
         super.init()
     }

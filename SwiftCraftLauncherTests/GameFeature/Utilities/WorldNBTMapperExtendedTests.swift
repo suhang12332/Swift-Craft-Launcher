@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class WorldNBTMapperExtendedTests: XCTestCase {
-
     func testReadInt64_int64() {
         XCTAssertEqual(WorldNBTMapper.readInt64(Int64(42)), 42)
     }
@@ -166,7 +165,7 @@ final class WorldNBTMapperExtendedTests: XCTestCase {
 
     func testReadSeed_worldGenSettings() {
         let dataTag: [String: Any] = [
-            "WorldGenSettings": ["seed": Int64(67890)]
+            "WorldGenSettings": ["seed": Int64(67890)],
         ]
         let seed = WorldNBTMapper.readSeed(from: dataTag, worldPath: nil)
         XCTAssertEqual(seed, 67890)
@@ -174,7 +173,7 @@ final class WorldNBTMapperExtendedTests: XCTestCase {
 
     func testReadSeed_worldGenSettings_lowercase() {
         let dataTag: [String: Any] = [
-            "worldGenSettings": ["seed": Int64(11111)]
+            "worldGenSettings": ["seed": Int64(11111)],
         ]
         let seed = WorldNBTMapper.readSeed(from: dataTag, worldPath: nil)
         XCTAssertEqual(seed, 11111)

@@ -45,12 +45,11 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 chineseMessage: "未找到gamecore平台数据",
                 i18nKey: "error.validation.gamecore_not_found",
-                level: .notification
+                level: .notification,
             )
         }
 
-        let versionNames = Array(gamecore.keys)
-        return versionNames
+        return Array(gamecore.keys)
     }
 
     func getMacJavaRuntimeData() async throws -> [String: Any] {
@@ -60,7 +59,7 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 chineseMessage: "未找到\(platform)平台数据",
                 i18nKey: "error.validation.platform_data_not_found",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -74,7 +73,7 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 chineseMessage: "未找到版本 \(version) 的数据",
                 i18nKey: "error.validation.version_data_not_found",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -90,7 +89,7 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 chineseMessage: "未找到版本 \(version) 的manifest URL",
                 i18nKey: "error.validation.manifest_url_not_found",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -106,7 +105,7 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 chineseMessage: "解析JSON失败",
                 i18nKey: "error.validation.json_parse_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -118,13 +117,13 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 chineseMessage: "无效的URL",
                 i18nKey: "error.validation.invalid_url",
-                level: .notification
+                level: .notification,
             )
         }
         return try await APIClient.get(url: url)
     }
 
     private func getCurrentMacPlatform() -> String {
-        return Architecture.current.macPlatformId
+        Architecture.current.macPlatformId
     }
 }

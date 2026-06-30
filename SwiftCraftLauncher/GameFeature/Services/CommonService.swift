@@ -9,20 +9,19 @@ import Foundation
 
 /// Provides shared utilities for mod loader version management and classpath generation.
 enum CommonService {
-
     static func compatibleVersions(
         for loader: String,
-        includeSnapshots: Bool = false
+        includeSnapshots: Bool = false,
     ) async -> [String] {
         do {
             return try await compatibleVersionsThrowing(
                 for: loader,
-                includeSnapshots: includeSnapshots
+                includeSnapshots: includeSnapshots,
             )
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error(
-                "获取 \(loader) 版本失败: \(globalError.chineseMessage)"
+                "获取 \(loader) 版本失败: \(globalError.chineseMessage)",
             )
             AppServices.errorHandler.handle(globalError)
             return []
@@ -31,7 +30,7 @@ enum CommonService {
 
     static func compatibleVersionsThrowing(
         for loader: String,
-        includeSnapshots: Bool = false
+        includeSnapshots: Bool = false,
     ) async throws -> [String] {
         var result: [String] = []
         switch loader.lowercased() {
@@ -39,14 +38,14 @@ enum CommonService {
             let loaderType =
                 loader.lowercased() == GameLoader.neoforge.displayName ? "neo" : loader.lowercased()
             let loaderVersions = try await fetchAllVersionThrowing(
-                type: loaderType
+                type: loaderType,
             )
-            let filteredVersions = loaderVersions.map { $0.id }
+            let filteredVersions = loaderVersions.map(\.id)
                 .filter { version in
                     let components = version.components(separatedBy: ".")
                     return components.allSatisfy {
                         $0.rangeOfCharacter(
-                            from: CharacterSet.decimalDigits.inverted
+                            from: CharacterSet.decimalDigits.inverted,
                         ) == nil
                     }
                 }
@@ -54,18 +53,18 @@ enum CommonService {
             result = CommonUtil.versionsAtLeast(sortResult)
         default:
             let gameVersions = await ModrinthService.fetchGameVersions(
-                includeSnapshots: includeSnapshots
+                includeSnapshots: includeSnapshots,
             )
             let versionNames = gameVersions
                 .map { version in
                     let cacheKey = "version_time_\(version.version)"
                     let formattedTime = CommonUtil.formatRelativeTime(
-                        version.date
+                        version.date,
                     )
                     AppServices.appCacheManager.setSilently(
                         namespace: "version_time",
                         key: cacheKey,
-                        value: formattedTime
+                        value: formattedTime,
                     )
                     return version.version
                 }
@@ -76,7 +75,7 @@ enum CommonService {
 
     static func generateClasspath(
         from loader: ModrinthLoader,
-        librariesDir: URL
+        librariesDir: URL,
     ) -> String {
         let jarPaths: [String] = loader.libraries.compactMap { lib in
             guard lib.includeInClasspath else { return nil }
@@ -90,12 +89,12 @@ enum CommonService {
 
     static func fetchAllLoaderVersions(
         type: String,
-        minecraftVersion: String
+        minecraftVersion: String,
     ) async -> LoaderVersion? {
         do {
             return try await fetchAllLoaderVersionsThrowing(
                 type: type,
-                minecraftVersion: minecraftVersion
+                minecraftVersion: minecraftVersion,
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -107,7 +106,7 @@ enum CommonService {
 
     static func fetchAllLoaderVersionsThrowing(
         type: String,
-        minecraftVersion: String
+        minecraftVersion: String,
     ) async throws -> LoaderVersion {
         let manifest = try await fetchAllVersionThrowing(type: type)
 
@@ -118,7 +117,7 @@ enum CommonService {
                 chineseMessage:
                     "未找到 Minecraft \(minecraftVersion) 的 \(type) 加载器版本",
                 i18nKey: "error.resource.loader_version_not_found",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -126,7 +125,7 @@ enum CommonService {
     }
 
     static func fetchAllVersionThrowing(
-        type: String
+        type: String,
     ) async throws -> [LoaderVersion] {
         let manifestURL = URLConfig.API.Modrinth.loaderManifest(loader: type)
         let manifestData = try await APIClient.get(url: manifestURL)
@@ -134,20 +133,20 @@ enum CommonService {
         do {
             let result = try JSONDecoder().decode(
                 ModrinthLoaderVersion.self,
-                from: manifestData
+                from: manifestData,
             )
 
             if type == "neo" {
                 return result.gameVersions
             } else {
-                return result.gameVersions.filter { $0.stable }
+                return result.gameVersions.filter(\.stable)
             }
         } catch {
             throw GlobalError.validation(
                 chineseMessage:
                     "解析 \(type) 版本清单失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.version_manifest_parse_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -158,9 +157,8 @@ enum CommonService {
         }
 
         if let relativePath = mavenCoordinateToRelativePath(coordinate) {
-
             return AppPaths.librariesDirectory.appendingPathComponent(
-                relativePath
+                relativePath,
             ).path
         }
 
@@ -168,7 +166,7 @@ enum CommonService {
     }
 
     static func parseMavenCoordinateWithAtSymbol(
-        _ coordinate: String
+        _ coordinate: String,
     ) -> String {
         let parts = coordinate.components(separatedBy: ":")
         guard parts.count >= 3 else { return coordinate }
@@ -190,7 +188,7 @@ enum CommonService {
             let classifierPart = parts[3]
             if classifierPart.contains("@") {
                 let classifierParts = classifierPart.components(
-                    separatedBy: "@"
+                    separatedBy: "@",
                 )
                 if classifierParts.count >= 2 {
                     classifierName = classifierParts[0]
@@ -210,7 +208,7 @@ enum CommonService {
     }
 
     static func convertMavenCoordinateWithAtSymbol(
-        _ coordinate: String
+        _ coordinate: String,
     ) -> String {
         let relativePath = parseMavenCoordinateWithAtSymbol(coordinate)
 
@@ -238,7 +236,7 @@ enum CommonService {
             classifier = String(parts[3])
         }
 
-        if let classifier = classifier {
+        if let classifier {
             return
                 "\(group)/\(artifact)/\(version)/\(artifact)-\(version)-\(classifier).jar"
         } else {
@@ -259,9 +257,9 @@ enum CommonService {
     }
 
     static func convertMavenCoordinateWithAtSymbolForURL(
-        _ coordinate: String
+        _ coordinate: String,
     ) -> String {
-        return parseMavenCoordinateWithAtSymbol(coordinate)
+        parseMavenCoordinateWithAtSymbol(coordinate)
     }
 
     static func mavenCoordinateToURL(lib: ModrinthLoaderLibrary) -> URL? {
@@ -275,12 +273,12 @@ enum CommonService {
     }
 
     static func mavenCoordinateToDefaultPath(_ coordinate: String) -> String {
-        return mavenCoordinateToRelativePathForURL(coordinate)
+        mavenCoordinateToRelativePathForURL(coordinate)
     }
 
     static func generateFabricClasspath(
         from loader: ModrinthLoader,
-        librariesDir: URL
+        librariesDir: URL,
     ) -> String {
         let jarPaths = loader.libraries.compactMap { coordinate -> String? in
             guard let relPath = mavenCoordinateToRelativePath(coordinate.name)
@@ -292,7 +290,7 @@ enum CommonService {
 
     static func processGameVersionPlaceholders(
         loader: ModrinthLoader,
-        gameVersion: String
+        gameVersion: String,
     ) -> ModrinthLoader {
         var processedLoader = loader
 
@@ -301,7 +299,7 @@ enum CommonService {
 
             processedLibrary.name = library.name.replacingOccurrences(
                 of: "${modrinth.gameVersion}",
-                with: gameVersion
+                with: gameVersion,
             )
 
             return processedLibrary

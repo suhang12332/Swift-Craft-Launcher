@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 @MainActor
 final class DownloadStateExtendedTests: XCTestCase {
-
     func testUpdateProgress_zeroTotal() {
         let state = DownloadState()
         state.startDownload(coreTotalFiles: 0, resourcesTotalFiles: 0)

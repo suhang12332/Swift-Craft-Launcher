@@ -33,7 +33,7 @@ struct CategorySectionConfiguration: SectionViewConfiguration {
         items: [FilterItem],
         isLoading: Bool,
         maxItems: Int = SectionViewConstants.defaultMaxItems,
-        iconName: String? = nil
+        iconName: String? = nil,
     ) {
         self.title = title
         self.items = items
@@ -56,7 +56,7 @@ struct FileSectionConfiguration<Item: Identifiable>: SectionViewConfiguration {
         items: [Item],
         isLoading: Bool,
         maxItems: Int = SectionViewConstants.defaultMaxItems,
-        iconName: String? = nil
+        iconName: String? = nil,
     ) {
         self.title = title
         self.items = items
@@ -81,7 +81,7 @@ struct SimpleStringSectionConfiguration: SectionViewConfiguration {
         items: [IdentifiableString],
         isLoading: Bool,
         maxItems: Int = SectionViewConstants.defaultMaxItems,
-        iconName: String? = nil
+        iconName: String? = nil,
     ) {
         self.title = title
         self.items = items

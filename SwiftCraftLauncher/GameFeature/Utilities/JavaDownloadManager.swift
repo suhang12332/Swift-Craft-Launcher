@@ -23,7 +23,7 @@ class JavaDownloadManager: ObservableObject {
 
     private init(
         javaRuntimeDownloader: JavaRuntimeDownloader = .shared,
-        windowManager: WindowManager = AppServices.windowManager
+        windowManager: WindowManager = AppServices.windowManager,
     ) {
         self.javaRuntimeDownloader = javaRuntimeDownloader
         self.windowManager = windowManager
@@ -49,7 +49,7 @@ class JavaDownloadManager: ObservableObject {
 
             javaRuntimeDownloader.setProgressCallback { [weak self] fileName, completed, total in
                 Task { @MainActor in
-                    guard let self = self, !self.downloadState.isCancelled else { return }
+                    guard let self, !self.downloadState.isCancelled else { return }
                     let progress = total > 0 ? Double(completed) / Double(total) : 0.0
                     self.downloadState.updateProgress(fileName: fileName, progress: progress)
                 }

@@ -13,7 +13,6 @@ import SQLite3
 /// Stores parsed `mod.json` payloads keyed by file hash, enabling fast
 /// lookups without re-parsing jar files.
 class ModCacheDatabase {
-
     private let db: SQLiteDatabase
     private let tableName = AppConstants.DatabaseTables.modCache
 
@@ -21,7 +20,7 @@ class ModCacheDatabase {
     ///
     /// - Parameter dbPath: The file path for the SQLite database.
     init(dbPath: String) {
-        self.db = SQLiteDatabase(path: dbPath)
+        db = SQLiteDatabase(path: dbPath)
     }
 
     /// Opens the database connection and creates the table if needed.
@@ -86,7 +85,7 @@ class ModCacheDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "保存 mod 缓存失败: \(errorMessage)",
                     i18nKey: "error.validation.mod_cache_save_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -123,7 +122,7 @@ class ModCacheDatabase {
                     throw GlobalError.validation(
                         chineseMessage: "批量保存 mod 缓存失败: \(errorMessage)",
                         i18nKey: "error.validation.mod_cache_batch_save_failed",
-                        level: .notification
+                        level: .notification,
                     )
                 }
             }

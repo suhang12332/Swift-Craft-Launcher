@@ -5,10 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Toolbar items displayed when a resource or project is selected.
-///
-/// Provides navigation (back), installation, and browser-open actions,
-/// or falls back to a data-source filter menu when no selection is active.
+// Toolbar items displayed when a resource or project is selected.
+//
+// Provides navigation (back), installation, and browser-open actions,
+// or falls back to a data-source filter menu when no selection is active.
 
 import SwiftUI
 
@@ -46,7 +46,7 @@ struct ResourceToolbarItems: View {
         Task {
             if resourceType == ResourceType.modpack.rawValue {
                 guard let detail = await ResourceDetailLoader.loadModPackDetail(
-                    projectId: projectId
+                    projectId: projectId,
                 ) else {
                     return
                 }
@@ -56,14 +56,14 @@ struct ResourceToolbarItems: View {
                         projectType: ResourceType.modpack.rawValue,
                         versions: [],
                         clientSide: "",
-                        serverSide: ""
+                        serverSide: "",
                     )
                 }
             } else {
                 guard let result = await ResourceDetailLoader.loadProjectDetail(
                     projectId: projectId,
                     gameRepository: gameRepository,
-                    resourceType: resourceType
+                    resourceType: resourceType,
                 ) else {
                     return
                 }
@@ -74,7 +74,7 @@ struct ResourceToolbarItems: View {
                         projectType: result.detail.projectType,
                         versions: result.detail.versions,
                         clientSide: result.detail.clientSide,
-                        serverSide: result.detail.serverSide
+                        serverSide: result.detail.serverSide,
                     )
                 }
             }
@@ -88,7 +88,7 @@ struct ResourceToolbarItems: View {
         projectType: String,
         versions: [String],
         clientSide: String,
-        serverSide: String
+        serverSide: String,
     ) {
         detailState.currentProject = ModrinthProject(
             projectId: detail.id,
@@ -106,7 +106,7 @@ struct ResourceToolbarItems: View {
             license: detail.license?.url ?? "",
             clientSide: clientSide,
             serverSide: serverSide,
-            fileName: nil
+            fileName: nil,
         )
         detailState.loadedProjectDetail = detail
         if let compatibleGames {
@@ -145,7 +145,7 @@ struct ResourceToolbarItems: View {
                                 projectId: project.projectId,
                                 gameInfo: nil,
                                 query: detailState.gameResourcesType,
-                                preloadedDetail: detail
+                                preloadedDetail: detail,
                             )
                             .environmentObject(gameRepository)
                         } else {
@@ -154,7 +154,7 @@ struct ResourceToolbarItems: View {
                                 resourceType: detailState.gameResourcesType,
                                 isPresented: detailState.showInstallSheetBinding,
                                 preloadedDetail: detail,
-                                preloadedCompatibleGames: detailState.compatibleGames
+                                preloadedCompatibleGames: detailState.compatibleGames,
                             )
                             .environmentObject(gameRepository)
                         }
@@ -176,7 +176,7 @@ struct ResourceToolbarItems: View {
                 if detailState.gameType {
                     ResourceFilterMenus.dataSourceMenu(filterState: filterState)
                         .disabled(
-                            detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue
+                            detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue,
                         )
                         .id(controlActiveState)
                 }

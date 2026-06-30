@@ -29,11 +29,11 @@ public struct GeneralSettingsView: View {
             GeneralSettingsWorkingDirectoryRow(
                 generalSettings: generalSettings,
                 viewModel: viewModel,
-                gameRepository: gameRepository
+                gameRepository: gameRepository,
             )
             GeneralSettingsConcurrentDownloadsRow(
                 generalSettings: generalSettings,
-                viewModel: viewModel
+                viewModel: viewModel,
             )
             GeneralSettingsSystemProxyRow()
             GeneralSettingsGitHubProxyRow(generalSettings: generalSettings)
@@ -45,7 +45,7 @@ public struct GeneralSettingsView: View {
         }
         .alert(
             "error.notification.validation.title".localized(),
-            isPresented: .constant(viewModel.error != nil && viewModel.error?.level == .popup)
+            isPresented: .constant(viewModel.error != nil && viewModel.error?.level == .popup),
         ) {
             Button("common.close".localized()) {
                 viewModel.clearError()

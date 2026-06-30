@@ -26,7 +26,7 @@ enum GameNameGenerator {
     static func generateModPackName(
         projectTitle: String?,
         gameVersion: String,
-        includeTimestamp: Bool = true
+        includeTimestamp: Bool = true,
     ) -> String {
         let baseName = "\(projectTitle ?? "ModPack")-\(gameVersion)"
 
@@ -47,7 +47,7 @@ enum GameNameGenerator {
     static func generateImportName(
         modPackName: String,
         modPackVersion: String,
-        includeTimestamp: Bool = true
+        includeTimestamp: Bool = true,
     ) -> String {
         let baseName = "\(modPackName)-\(modPackVersion)"
 
@@ -69,7 +69,7 @@ enum GameNameGenerator {
         gameVersion: String,
         loaderVersion: String,
         modLoader: String,
-        includeTimestamp: Bool = true
+        includeTimestamp: Bool = true,
     ) -> String {
         let baseName: String
         if modLoader.lowercased() == GameLoader.vanilla.displayName {

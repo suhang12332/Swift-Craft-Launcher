@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A form view for creating games or importing mod packs.
+// A form view for creating games or importing mod packs.
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -54,7 +54,7 @@ struct GameFormView: View {
         _mode = State(initialValue: initialMode)
     }
 
-    @ViewBuilder var body: some View {
+    var body: some View {
         CommonSheetView(
             header: { headerView },
             body: {
@@ -74,7 +74,7 @@ struct GameFormView: View {
                             },
                             onSetImagePickerHandler: { handler in
                                 imagePickerHandler = handler
-                            }
+                            },
                         )
                     case let .modPackImport(file, shouldProcess):
                         ModPackImportView(
@@ -84,13 +84,13 @@ struct GameFormView: View {
                                 triggerConfirm: $triggerConfirm,
                                 triggerCancel: $triggerCancel,
                                 onCancel: { dismiss() },
-                                onConfirm: { dismiss() }
+                                onConfirm: { dismiss() },
                             ),
                             preselectedFile: file,
-                            shouldStartProcessing: shouldProcess
+                            shouldStartProcessing: shouldProcess,
                         ) { isProcessing in
                             if !isProcessing {
-                                if case .modPackImport(let file, _) = mode {
+                                if case let .modPackImport(file, _) = mode {
                                     mode = .modPackImport(file: file, shouldProcess: false)
                                 }
                                 isModPackParsed = true
@@ -100,7 +100,7 @@ struct GameFormView: View {
                     }
                 }
             },
-            footer: { footerView }
+            footer: { footerView },
         )
         .fileImporter(
             isPresented: $showFilePicker,
@@ -116,7 +116,7 @@ struct GameFormView: View {
                     return [.png, .jpeg, .gif]
                 }
             }(),
-            allowsMultipleSelection: false
+            allowsMultipleSelection: false,
         ) { result in
             switch filePickerType {
             case .modPack:

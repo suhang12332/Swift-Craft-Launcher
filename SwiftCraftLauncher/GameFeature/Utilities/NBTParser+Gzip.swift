@@ -8,7 +8,6 @@
 import Foundation
 
 extension NBTParser {
-
     /// Decompresses gzip-compressed data using the system `gunzip` utility.
     /// - Parameter data: The gzip-compressed data.
     /// - Throws: A `GlobalError` if the input is empty, the process fails, or the output is empty.
@@ -18,7 +17,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "NBT GZIP 数据为空",
                 i18nKey: "error.filesystem.nbt_gzip_empty_data",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -47,7 +46,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "无法启动 gzip 解压进程: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.nbt_gzip_process_start_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -59,7 +58,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "GZIP 解压失败，退出状态: \(process.terminationStatus)",
                 i18nKey: "error.filesystem.nbt_gzip_decompress_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -67,7 +66,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "GZIP 解压后数据为空",
                 i18nKey: "error.filesystem.nbt_gzip_decompressed_empty",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -83,7 +82,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "NBT 数据为空，无法压缩",
                 i18nKey: "error.filesystem.nbt_empty_data_for_compress",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -112,7 +111,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "无法启动 gzip 压缩进程: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.nbt_gzip_compress_process_start_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -124,7 +123,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "GZIP 压缩失败，退出状态: \(process.terminationStatus)",
                 i18nKey: "error.filesystem.nbt_gzip_compress_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -132,7 +131,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "GZIP 压缩后数据为空",
                 i18nKey: "error.filesystem.nbt_gzip_compressed_empty",
-                level: .notification
+                level: .notification,
             )
         }
 

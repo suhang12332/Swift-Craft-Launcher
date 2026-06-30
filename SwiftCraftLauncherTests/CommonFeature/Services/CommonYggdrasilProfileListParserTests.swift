@@ -5,15 +5,15 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CommonYggdrasilProfileListParserTests: XCTestCase {
     func testParse_arrayFormat() throws {
         let data = try Data(contentsOf: TestSupport.fixtureURL(
             subdirectory: "Fixtures/yggdrasil",
             name: "profile_list_array",
-            extension: "json"
+            extension: "json",
         ))
 
         let result = CommonYggdrasilProfileListParser.parse(data: data)
@@ -27,7 +27,7 @@ final class CommonYggdrasilProfileListParserTests: XCTestCase {
         let data = try Data(contentsOf: TestSupport.fixtureURL(
             subdirectory: "Fixtures/yggdrasil",
             name: "profile_list_wrapped_data",
-            extension: "json"
+            extension: "json",
         ))
 
         let result = CommonYggdrasilProfileListParser.parse(data: data)
@@ -41,7 +41,7 @@ final class CommonYggdrasilProfileListParserTests: XCTestCase {
         let data = try Data(contentsOf: TestSupport.fixtureURL(
             subdirectory: "Fixtures/yggdrasil",
             name: "profile_list_wrapped_profiles",
-            extension: "json"
+            extension: "json",
         ))
 
         let result = CommonYggdrasilProfileListParser.parse(data: data)
@@ -51,7 +51,7 @@ final class CommonYggdrasilProfileListParserTests: XCTestCase {
         XCTAssertEqual(result?.first?.name, "ProfilesPlayer")
     }
 
-    func testParse_extractsSkinFromTextures() throws {
+    func testParse_extractsSkinFromTextures() {
         let texturesJSON = """
         {"textures":{"SKIN":{"url":"https://example.com/skin.png","metadata":{"model":"slim"}}}}
         """
@@ -66,7 +66,7 @@ final class CommonYggdrasilProfileListParserTests: XCTestCase {
         XCTAssertEqual(result?.first?.skins.first?.variant, "slim")
     }
 
-    func testParse_extractsCapeFromTextures() throws {
+    func testParse_extractsCapeFromTextures() {
         let texturesJSON = """
         {"textures":{"SKIN":{"url":"https://example.com/skin.png"},"CAPE":{"url":"https://example.com/cape.png"}}}
         """

@@ -53,5 +53,5 @@ class PlayerSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
-    private init() {}
+    private init() { }
 }

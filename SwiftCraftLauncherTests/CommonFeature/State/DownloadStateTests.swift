@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 @MainActor
 final class DownloadStateTests: XCTestCase {
-
     func testReset_clearsAllProperties() {
         let state = DownloadState()
         state.isDownloading = true

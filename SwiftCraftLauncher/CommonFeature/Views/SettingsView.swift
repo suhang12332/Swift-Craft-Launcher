@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import Foundation
+import SwiftUI
 
 /// An enumeration of settings tabs.
 enum SettingsTab: Int {
@@ -31,7 +31,7 @@ public struct SettingsView: View {
 
     init(
         general: GeneralSettingsManager,
-        selectedGameManager: SelectedGameManager
+        selectedGameManager: SelectedGameManager,
     ) {
         _general = StateObject(wrappedValue: general)
         _selectedGameManager = StateObject(wrappedValue: selectedGameManager)
@@ -63,7 +63,7 @@ public struct SettingsView: View {
                 .tabItem {
                     Label(
                         "settings.game.advanced.tab".localized(),
-                        systemImage: "gearshape.2"
+                        systemImage: "gearshape.2",
                     )
                 }
                 .tag(SettingsTab.advanced)
@@ -82,7 +82,7 @@ public struct SettingsView: View {
     }
 
     private func checkAndOpenAdvancedSettings() {
-        if selectedGameManager.shouldOpenAdvancedSettings && selectedGameManager.selectedGameId != nil {
+        if selectedGameManager.shouldOpenAdvancedSettings, selectedGameManager.selectedGameId != nil {
             selectedTab = .advanced
             selectedGameManager.shouldOpenAdvancedSettings = false
         }

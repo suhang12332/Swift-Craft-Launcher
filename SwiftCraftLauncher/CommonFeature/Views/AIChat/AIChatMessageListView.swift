@@ -53,7 +53,7 @@ struct AIChatMessageListView: View {
                 }
                 .onChange(of: chatState.messages.count) { _, _ in
                     scrollCoordinator.onMessagesCountChanged(
-                        hasLastMessage: chatState.messages.last != nil
+                        hasLastMessage: chatState.messages.last != nil,
                     ) {
                         scrollToBottom(proxy: proxy)
                     }
@@ -61,7 +61,7 @@ struct AIChatMessageListView: View {
                 .onChange(of: chatState.messages.last?.id) { _, _ in
                     if let lastMessage = chatState.messages.last {
                         scrollCoordinator.onLastMessageChanged(
-                            contentLength: lastMessage.content.count
+                            contentLength: lastMessage.content.count,
                         ) {
                             scrollToBottom(proxy: proxy)
                         }
@@ -72,14 +72,14 @@ struct AIChatMessageListView: View {
                         wasSending: oldValue,
                         isSending: newValue,
                         scrollToBottom: { scrollToBottom(proxy: proxy) },
-                        getLastMessageContentLength: { chatState.messages.last?.content.count }
+                        getLastMessageContentLength: { chatState.messages.last?.content.count },
                     )
                 }
                 .onAppear {
                     scrollCoordinator.onAppearIfSending(
                         isSending: chatState.isSending,
                         scrollToBottom: { scrollToBottom(proxy: proxy) },
-                        getLastMessageContentLength: { chatState.messages.last?.content.count }
+                        getLastMessageContentLength: { chatState.messages.last?.content.count },
                     )
                 }
                 .onDisappear {
@@ -113,7 +113,7 @@ struct AIChatMessageListView: View {
                     currentPlayer: currentPlayer,
                     cachedAIAvatar: cachedAIAvatar,
                     cachedUserAvatar: cachedUserAvatar,
-                    aiAvatarURL: aiAvatarURL
+                    aiAvatarURL: aiAvatarURL,
                 )
                 .id(message.id)
             }

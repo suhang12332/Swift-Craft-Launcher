@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 /// Loads and manages save information including worlds, screenshots, servers,
 /// litematica files, and logs for a specific game instance.
@@ -46,7 +46,7 @@ final class SaveInfoManager: ObservableObject {
     init(
         gameName: String,
         serverAddressService: ServerAddressService = AppServices.serverAddressService,
-        litematicaService: LitematicaService = AppServices.litematicaService
+        litematicaService: LitematicaService = AppServices.litematicaService,
     ) {
         self.gameName = gameName
         self.serverAddressService = serverAddressService
@@ -120,7 +120,7 @@ final class SaveInfoManager: ObservableObject {
                     let contents = try fm.contentsOfDirectory(
                         at: savesPath,
                         includingPropertiesForKeys: [.isDirectoryKey],
-                        options: [.skipsHiddenFiles]
+                        options: [.skipsHiddenFiles],
                     )
                     hasWorlds = contents.contains { url in
                         guard let isDirectory = try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory,
@@ -138,7 +138,7 @@ final class SaveInfoManager: ObservableObject {
                     let contents = try fm.contentsOfDirectory(
                         at: screenshotsPath,
                         includingPropertiesForKeys: [.isRegularFileKey],
-                        options: [.skipsHiddenFiles]
+                        options: [.skipsHiddenFiles],
                     )
                     hasScreenshots = contents.contains { url in
                         guard let isFile = try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
@@ -157,7 +157,7 @@ final class SaveInfoManager: ObservableObject {
                     let contents = try fm.contentsOfDirectory(
                         at: schematicsDir,
                         includingPropertiesForKeys: [.isRegularFileKey],
-                        options: [.skipsHiddenFiles]
+                        options: [.skipsHiddenFiles],
                     )
                     hasLitematicaFiles = contents.contains { url in
                         guard let isFile = try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
@@ -175,7 +175,7 @@ final class SaveInfoManager: ObservableObject {
                     let contents = try fm.contentsOfDirectory(
                         at: logsPath,
                         includingPropertiesForKeys: [.isRegularFileKey],
-                        options: [.skipsHiddenFiles]
+                        options: [.skipsHiddenFiles],
                     )
                     hasLogs = contents.contains { url in
                         guard let isFile = try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
@@ -192,7 +192,7 @@ final class SaveInfoManager: ObservableObject {
                 hasScreenshots,
                 fm.fileExists(atPath: serversDatURL.path),
                 hasLitematicaFiles,
-                hasLogs
+                hasLogs,
             )
         }.value
         hasWorldsType = worlds
@@ -338,7 +338,7 @@ final class SaveInfoManager: ObservableObject {
             let contents = try fm.contentsOfDirectory(
                 at: savesPath,
                 includingPropertiesForKeys: [.isDirectoryKey, .contentModificationDateKey],
-                options: [.skipsHiddenFiles]
+                options: [.skipsHiddenFiles],
             )
             var loadedWorlds: [WorldInfo] = []
             for worldPath in contents {
@@ -405,8 +405,8 @@ final class SaveInfoManager: ObservableObject {
                             hardcore: hardcore,
                             cheats: cheats,
                             version: version,
-                            seed: seed
-                        )
+                            seed: seed,
+                        ),
                     )
                 } catch {
                     Logger.shared.error("解析 level.dat 失败 (\(worldName)): \(error.localizedDescription)")
@@ -430,7 +430,7 @@ final class SaveInfoManager: ObservableObject {
             let contents = try fm.contentsOfDirectory(
                 at: screenshotsPath,
                 includingPropertiesForKeys: [.isRegularFileKey, .creationDateKey, .fileSizeKey],
-                options: [.skipsHiddenFiles]
+                options: [.skipsHiddenFiles],
             )
             var loaded: [ScreenshotInfo] = []
             for screenshotPath in contents {
@@ -459,7 +459,7 @@ final class SaveInfoManager: ObservableObject {
             let contents = try fm.contentsOfDirectory(
                 at: logsPath,
                 includingPropertiesForKeys: [.isRegularFileKey, .creationDateKey, .fileSizeKey],
-                options: [.skipsHiddenFiles]
+                options: [.skipsHiddenFiles],
             )
             var loaded: [LogInfo] = []
             for logPath in contents {

@@ -15,7 +15,7 @@ class GameStatusManager: ObservableObject {
     /// Launching states keyed by processKey(gameId, userId).
     @Published private var gameLaunchingStates: [String: Bool] = [:]
 
-    private init() {}
+    private init() { }
 
     func cachedIsGameRunning(gameId: String, userId: String) -> Bool {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
@@ -26,7 +26,7 @@ class GameStatusManager: ObservableObject {
         guard !games.isEmpty else { return }
 
         applyOnMain { [self] in
-            var updated = self.gameRunningStates
+            var updated = gameRunningStates
             var changed = false
             let processManager = AppServices.gameProcessManager
 
@@ -40,7 +40,7 @@ class GameStatusManager: ObservableObject {
             }
 
             if changed {
-                self.gameRunningStates = updated
+                gameRunningStates = updated
             }
         }
     }
@@ -50,7 +50,7 @@ class GameStatusManager: ObservableObject {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
 
         applyOnMain { [self] in
-            self.updateGameStatusIfNeeded(key: key, actuallyRunning: actuallyRunning)
+            updateGameStatusIfNeeded(key: key, actuallyRunning: actuallyRunning)
         }
 
         return actuallyRunning
@@ -80,7 +80,7 @@ class GameStatusManager: ObservableObject {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
         applyOnMain { [weak self] in
             guard let self else { return }
-            self.gameRunningStates[key] = actuallyRunning
+            gameRunningStates[key] = actuallyRunning
             Logger.shared.debug("强制刷新游戏状态: \(key) -> \(actuallyRunning ? "运行中" : "已停止")")
         }
     }
@@ -94,9 +94,9 @@ class GameStatusManager: ObservableObject {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
         applyOnMain { [weak self] in
             guard let self else { return }
-            let currentState = self.gameRunningStates[key]
+            let currentState = gameRunningStates[key]
             if currentState != isRunning {
-                self.gameRunningStates[key] = isRunning
+                gameRunningStates[key] = isRunning
                 Logger.shared.debug("游戏状态更新: \(key) -> \(isRunning ? "运行中" : "已停止")")
             }
         }
@@ -108,7 +108,7 @@ class GameStatusManager: ObservableObject {
 
         applyOnMain { [weak self] in
             guard let self else { return }
-            self.gameRunningStates = self.gameRunningStates.filter { key, isRunning in
+            gameRunningStates = gameRunningStates.filter { key, isRunning in
                 guard isRunning else { return false }
                 if let idx = key.firstIndex(of: "_") {
                     let gameId = String(key[..<idx])
@@ -129,7 +129,7 @@ class GameStatusManager: ObservableObject {
 
     /// All cached game states keyed by processKey.
     var allGameStates: [String: Bool] {
-        return gameRunningStates
+        gameRunningStates
     }
 
     /// Updates the launching state for a specific game and player.
@@ -141,9 +141,9 @@ class GameStatusManager: ObservableObject {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
         applyOnMain { [weak self] in
             guard let self else { return }
-            let currentState = self.gameLaunchingStates[key] ?? false
+            let currentState = gameLaunchingStates[key] ?? false
             if currentState != isLaunching {
-                self.gameLaunchingStates[key] = isLaunching
+                gameLaunchingStates[key] = isLaunching
                 Logger.shared.debug("游戏启动中状态更新: \(key) -> \(isLaunching ? "启动中" : "非启动中")")
             }
         }
@@ -165,11 +165,11 @@ class GameStatusManager: ObservableObject {
         let prefix = "\(gameId)_"
         applyOnMain { [weak self] in
             guard let self else { return }
-            let keysToRemove = self.gameRunningStates.keys.filter { $0.hasPrefix(prefix) }
-                + self.gameLaunchingStates.keys.filter { $0.hasPrefix(prefix) }
+            let keysToRemove = gameRunningStates.keys.filter { $0.hasPrefix(prefix) }
+                + gameLaunchingStates.keys.filter { $0.hasPrefix(prefix) }
             for key in keysToRemove {
-                self.gameRunningStates.removeValue(forKey: key)
-                self.gameLaunchingStates.removeValue(forKey: key)
+                gameRunningStates.removeValue(forKey: key)
+                gameLaunchingStates.removeValue(forKey: key)
             }
         }
     }

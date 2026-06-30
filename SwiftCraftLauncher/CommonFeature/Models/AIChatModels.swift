@@ -10,9 +10,9 @@ import SwiftUI
 
 /// Identifies the sender of a chat message.
 enum MessageRole: String, Codable {
-    case user = "user"
-    case assistant = "assistant"
-    case system = "system"
+    case user
+    case assistant
+    case system
 }
 
 /// Represents an attachment included with a chat message.
@@ -21,7 +21,7 @@ enum MessageAttachmentType: Identifiable, Equatable {
 
     var id: String {
         switch self {
-        case .file(let url, _):
+        case let .file(url, _):
             return "file_\(url.path)"
         }
     }
@@ -40,7 +40,7 @@ struct ChatMessage: Identifiable, Equatable {
         role: MessageRole,
         content: String = "",
         timestamp: Date = Date(),
-        attachments: [MessageAttachmentType] = []
+        attachments: [MessageAttachmentType] = [],
     ) {
         self.id = id
         self.role = role

@@ -50,7 +50,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
             let isCrash = await checkIfCrash(gameId: gameId, process: process)
 
             if isCrash {
-                let gameSettings = self.gameSettingsManager
+                let gameSettings = gameSettingsManager
                 if gameSettings.enableAICrashAnalysis {
                     Logger.shared.info("检测到游戏崩溃，启用AI分析: \(gameId)")
                     await collectLogsForGameImmediately(gameId: gameId)
@@ -60,7 +60,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
                         NotificationCenter.default.post(
                             name: .gameCrashed,
                             object: nil,
-                            userInfo: ["directory": gameDirectory as Any]
+                            userInfo: ["directory": gameDirectory as Any],
                         )
                     }
                 }
@@ -104,7 +104,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
                         .contentsOfDirectory(
                             at: crashReportsDir,
                             includingPropertiesForKeys: [.isRegularFileKey, .creationDateKey],
-                            options: [.skipsHiddenFiles]
+                            options: [.skipsHiddenFiles],
                         )
                         .filter { url in
                             guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey]) else {
@@ -168,7 +168,7 @@ final class GameProcessManager: ObservableObject, @unchecked Sendable {
             manuallyStoppedGames.insert(key)
             return proc
         }
-        guard let process = process else { return false }
+        guard let process else { return false }
 
         if process.isRunning {
             process.terminate()

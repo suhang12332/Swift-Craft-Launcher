@@ -24,7 +24,7 @@ final class AddPlayerSheetViewModel: ObservableObject {
     init(
         playerSettings: PlayerSettingsManager = AppServices.playerSettingsManager,
         premiumAccountFlagManager: PremiumAccountFlagManager = AppServices.premiumAccountFlagManager,
-        ipLocationService: IPLocationService = AppServices.ipLocationService
+        ipLocationService: IPLocationService = AppServices.ipLocationService,
     ) {
         self.playerSettings = playerSettings
         self.premiumAccountFlagManager = premiumAccountFlagManager

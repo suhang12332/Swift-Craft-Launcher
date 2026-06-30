@@ -34,9 +34,9 @@ struct WorldInfo: Identifiable, Equatable {
         hardcore: Bool = false,
         cheats: Bool = false,
         version: String? = nil,
-        seed: Int64? = nil
+        seed: Int64? = nil,
     ) {
-        self.id = path.lastPathComponent
+        id = path.lastPathComponent
         self.name = name
         self.path = path
         self.lastPlayed = lastPlayed
@@ -58,7 +58,7 @@ struct ScreenshotInfo: Identifiable, Equatable {
     let fileSize: Int64
 
     init(name: String, path: URL, createdDate: Date? = nil, fileSize: Int64 = 0) {
-        self.id = path.lastPathComponent
+        id = path.lastPathComponent
         self.name = name
         self.path = path
         self.createdDate = createdDate
@@ -76,7 +76,7 @@ struct LogInfo: Identifiable, Equatable {
     let isCrashLog: Bool
 
     init(name: String, path: URL, createdDate: Date? = nil, fileSize: Int64 = 0, isCrashLog: Bool = false) {
-        self.id = path.lastPathComponent
+        id = path.lastPathComponent
         self.name = name
         self.path = path
         self.createdDate = createdDate

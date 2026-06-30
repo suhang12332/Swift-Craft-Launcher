@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class MinecraftAuthExtendedTests: XCTestCase {
-
     func testAuthorizationCodeResponse_invalidURL() {
         let response = AuthorizationCodeResponse(from: URL(fileURLWithPath: "/dev/null"))
         XCTAssertNil(response)
@@ -87,7 +86,7 @@ final class MinecraftAuthExtendedTests: XCTestCase {
     func testXboxLiveTokenResponse_codable_roundTrip() throws {
         let original = XboxLiveTokenResponse(
             token: "xbox-tok",
-            displayClaims: DisplayClaims(xui: [XUI(uhs: "hash1"), XUI(uhs: "hash2")])
+            displayClaims: DisplayClaims(xui: [XUI(uhs: "hash1"), XUI(uhs: "hash2")]),
         )
         let encoded = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(XboxLiveTokenResponse.self, from: encoded)
@@ -160,7 +159,7 @@ final class MinecraftAuthExtendedTests: XCTestCase {
             capes: capes,
             accessToken: "my-token",
             authXuid: "my-xuid",
-            refreshToken: "my-refresh"
+            refreshToken: "my-refresh",
         )
 
         XCTAssertEqual(profile.accessToken, "my-token")
@@ -269,8 +268,8 @@ final class MinecraftAuthExtendedTests: XCTestCase {
             .error("err"),
         ]
 
-        for i in 0..<states.count {
-            for j in (i + 1)..<states.count {
+        for i in 0 ..< states.count {
+            for j in (i + 1) ..< states.count {
                 XCTAssertNotEqual(states[i], states[j])
             }
         }
@@ -279,14 +278,14 @@ final class MinecraftAuthExtendedTests: XCTestCase {
     func testAuthenticationState_error_sameMessage() {
         XCTAssertEqual(
             AuthenticationState.error("same"),
-            AuthenticationState.error("same")
+            AuthenticationState.error("same"),
         )
     }
 
     func testAuthenticationState_error_differentMessage() {
         XCTAssertNotEqual(
             AuthenticationState.error("a"),
-            AuthenticationState.error("b")
+            AuthenticationState.error("b"),
         )
     }
 
@@ -297,7 +296,7 @@ final class MinecraftAuthExtendedTests: XCTestCase {
             skins: [],
             capes: nil,
             accessToken: "",
-            authXuid: ""
+            authXuid: "",
         )
         let profile2 = MinecraftProfileResponse(
             id: "id",
@@ -305,12 +304,12 @@ final class MinecraftAuthExtendedTests: XCTestCase {
             skins: [],
             capes: nil,
             accessToken: "",
-            authXuid: ""
+            authXuid: "",
         )
 
         XCTAssertEqual(
             AuthenticationState.authenticated(profile: profile1),
-            AuthenticationState.authenticated(profile: profile2)
+            AuthenticationState.authenticated(profile: profile2),
         )
     }
 
@@ -321,7 +320,7 @@ final class MinecraftAuthExtendedTests: XCTestCase {
             skins: [],
             capes: nil,
             accessToken: "",
-            authXuid: ""
+            authXuid: "",
         )
         let profile2 = MinecraftProfileResponse(
             id: "id2",
@@ -329,12 +328,12 @@ final class MinecraftAuthExtendedTests: XCTestCase {
             skins: [],
             capes: nil,
             accessToken: "",
-            authXuid: ""
+            authXuid: "",
         )
 
         XCTAssertNotEqual(
             AuthenticationState.authenticated(profile: profile1),
-            AuthenticationState.authenticated(profile: profile2)
+            AuthenticationState.authenticated(profile: profile2),
         )
     }
 }

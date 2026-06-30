@@ -23,7 +23,7 @@ final class AIChatWindowViewModel: ObservableObject {
     func onAppear(
         games: [GameVersionInfo],
         currentPlayer: Player?,
-        aiAvatarURL: String
+        aiAvatarURL: String,
     ) {
         if selectedGameId == nil, let first = games.first?.id {
             selectedGameId = first
@@ -58,7 +58,7 @@ final class AIChatWindowViewModel: ObservableObject {
 
     private func updateAIAvatarCache(aiAvatarURL: String) {
         cachedAIAvatar = AnyView(
-            AIAvatarView(size: Constants.avatarSize, url: aiAvatarURL)
+            AIAvatarView(size: Constants.avatarSize, url: aiAvatarURL),
         )
     }
 
@@ -68,14 +68,14 @@ final class AIChatWindowViewModel: ObservableObject {
                 MinecraftSkinUtils(
                     type: player.isRemote ? .url : .asset,
                     src: player.avatarName,
-                    size: Constants.avatarSize
-                )
+                    size: Constants.avatarSize,
+                ),
             )
         } else {
             cachedUserAvatar = AnyView(
                 Image(systemName: "person.fill")
                     .font(.system(size: Constants.avatarSize))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.secondary),
             )
         }
     }

@@ -5,17 +5,16 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModUpdateCheckerTests: XCTestCase {
-
     func testUpdateCheckResult_hasUpdate() {
         let result = ModUpdateChecker.UpdateCheckResult(
             hasUpdate: true,
             currentHash: "hash-current",
             latestHash: "hash-latest",
-            latestVersion: nil
+            latestVersion: nil,
         )
 
         XCTAssertTrue(result.hasUpdate)
@@ -29,7 +28,7 @@ final class ModUpdateCheckerTests: XCTestCase {
             hasUpdate: false,
             currentHash: "same-hash",
             latestHash: "same-hash",
-            latestVersion: nil
+            latestVersion: nil,
         )
 
         XCTAssertFalse(result.hasUpdate)
@@ -41,7 +40,7 @@ final class ModUpdateCheckerTests: XCTestCase {
             hasUpdate: false,
             currentHash: nil,
             latestHash: nil,
-            latestVersion: nil
+            latestVersion: nil,
         )
 
         XCTAssertFalse(result.hasUpdate)
@@ -61,20 +60,20 @@ final class ModUpdateCheckerTests: XCTestCase {
             versionNumber: "1.1.0",
             changelog: "Bug fixes",
             changelogUrl: nil,
-            datePublished: Date(timeIntervalSince1970: 1700100000),
+            datePublished: Date(timeIntervalSince1970: 1_700_100_000),
             downloads: 50,
             versionType: "release",
             status: "listed",
             requestedStatus: nil,
             files: [],
-            dependencies: []
+            dependencies: [],
         )
 
         let result = ModUpdateChecker.UpdateCheckResult(
             hasUpdate: true,
             currentHash: "old-hash",
             latestHash: "new-hash",
-            latestVersion: version
+            latestVersion: version,
         )
 
         XCTAssertTrue(result.hasUpdate)

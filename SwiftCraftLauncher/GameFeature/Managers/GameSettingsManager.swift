@@ -31,7 +31,7 @@ enum DataSource: String, CaseIterable, Codable {
 class GameSettingsManager: ObservableObject {
     static let shared = GameSettingsManager()
 
-    private init() {}
+    private init() { }
 
     @AppStorage(AppConstants.UserDefaultsKeys.globalXms)
     var globalXms: Int = 512 {

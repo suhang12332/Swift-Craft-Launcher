@@ -5,9 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A list row displaying the game icon, name, version info, and cache size.
-import SwiftUI
 import Combine
+
+// A list row displaying the game icon, name, version info, and cache size.
+import SwiftUI
 
 struct GameHeaderListRow: View {
     private static let iconSize: CGFloat = 80
@@ -20,7 +21,7 @@ struct GameHeaderListRow: View {
     var onIconTap: (() -> Void)?
     private let iconRefreshNotifier: IconRefreshNotifier
 
-    @State private var refreshTrigger: UUID = UUID()
+    @State private var refreshTrigger: UUID = .init()
     @State private var cancellable: AnyCancellable?
 
     init(
@@ -28,7 +29,7 @@ struct GameHeaderListRow: View {
         cacheInfo: CacheInfo,
         query: String,
         onIconTap: (() -> Void)? = nil,
-        iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier
+        iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier,
     ) {
         self.game = game
         self.cacheInfo = cacheInfo
@@ -57,16 +58,16 @@ struct GameHeaderListRow: View {
                         game.modVersion.isEmpty
                             ? game.modLoader
                             : "\(game.modLoader)-\(game.modVersion)",
-                        systemImage: "puzzlepiece.extension.fill"
+                        systemImage: "puzzlepiece.extension.fill",
                     )
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     Divider().frame(height: 14)
                     Label(
                         game.lastPlayed.formatted(
-                            .relative(presentation: .named)
+                            .relative(presentation: .named),
                         ),
-                        systemImage: "clock.fill"
+                        systemImage: "clock.fill",
                     )
                     .font(.subheadline)
                     .foregroundColor(.secondary)
@@ -84,7 +85,7 @@ struct GameHeaderListRow: View {
         }
         .listRowSeparator(.hidden)
         .listRowInsets(
-            EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 8)
+            EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 8),
         )
     }
 
@@ -118,7 +119,7 @@ struct GameHeaderListRow: View {
                         ProgressView()
                             .controlSize(.small)
                             .frame(width: Self.iconSize, height: Self.iconSize)
-                    case .success(let image):
+                    case let .success(image):
                         styledIcon(image, size: Self.iconSize)
                     case .failure:
                         defaultIcon
@@ -129,7 +130,7 @@ struct GameHeaderListRow: View {
                 .id(refreshTrigger)
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(
-                        for: URLRequest(url: iconURL)
+                        for: URLRequest(url: iconURL),
                     )
                 }
             } else {

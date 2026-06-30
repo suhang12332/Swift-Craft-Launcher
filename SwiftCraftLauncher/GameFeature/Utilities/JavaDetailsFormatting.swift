@@ -9,7 +9,6 @@ import Foundation
 
 /// Formats Java runtime details into a human-readable description string.
 enum JavaDetailsFormatting {
-
     /// Returns a two-line string combining the executable path and version output.
     /// - Parameters:
     ///   - javaExecutablePath: The file path to the Java executable.

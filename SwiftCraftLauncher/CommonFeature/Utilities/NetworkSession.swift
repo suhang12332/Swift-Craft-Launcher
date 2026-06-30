@@ -26,7 +26,7 @@ enum NetworkSession {
     /// - Returns: A configured URLSession instance.
     static func makeSession(
         delegate: URLSessionDelegate? = nil,
-        configure: ((URLSessionConfiguration) -> Void)? = nil
+        configure: ((URLSessionConfiguration) -> Void)? = nil,
     ) -> URLSession {
         let configuration = newConfiguration()
         configure?(configuration)

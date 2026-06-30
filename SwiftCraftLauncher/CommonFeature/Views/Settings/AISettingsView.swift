@@ -31,7 +31,7 @@ public struct AISettingsView: View {
                 .labelsHidden()
                 .if(
                     ProcessInfo.processInfo.operatingSystemVersion.majorVersion
-                        < 26
+                        < 26,
                 ) { view in
                     view.fixedSize()
                 }
@@ -102,7 +102,7 @@ public struct AISettingsView: View {
                 MinecraftSkinUtils(
                     type: .url,
                     src: aiSettings.aiAvatarURL,
-                    size: 42
+                    size: 42,
                 )
                 .padding(.leading, 2)
                 Group {

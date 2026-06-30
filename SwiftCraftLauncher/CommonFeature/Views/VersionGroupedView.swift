@@ -21,19 +21,19 @@ struct VersionGroupedView: View {
     /// Initializes the view for multi-select mode.
     init(items: [FilterItem], selectedItems: Binding<[String]>, onItemTap: @escaping (String) -> Void) {
         self.items = items
-        self._selectedItems = selectedItems
+        _selectedItems = selectedItems
         self.onItemTap = onItemTap
-        self.isMultiSelect = true
-        self._selectedItem = .constant(nil)
+        isMultiSelect = true
+        _selectedItem = .constant(nil)
     }
 
     /// Initializes the view for single-select mode.
     init(items: [FilterItem], selectedItem: Binding<String?>, onItemTap: @escaping (String) -> Void) {
         self.items = items
-        self._selectedItem = selectedItem
+        _selectedItem = selectedItem
         self.onItemTap = onItemTap
-        self.isMultiSelect = false
-        self._selectedItems = .constant([])
+        isMultiSelect = false
+        _selectedItems = .constant([])
     }
 
     private enum Constants {
@@ -65,7 +65,6 @@ struct VersionGroupedView: View {
         }
     }
 
-    @ViewBuilder
     private func versionGroupView(key: String, items: [FilterItem]) -> some View {
         VStack(alignment: .leading, spacing: Constants.itemSpacing) {
             Text(key)
@@ -77,7 +76,7 @@ struct VersionGroupedView: View {
                 ForEach(visibleItems(for: key, items: items)) { item in
                     FilterChip(
                         title: item.name,
-                        isSelected: isSelected(item.id)
+                        isSelected: isSelected(item.id),
                     ) {
                         onItemTap(item.id)
                     }
@@ -112,7 +111,7 @@ struct VersionGroupedView: View {
 
         visibleGroupCount = min(
             visibleGroupCount + Constants.incrementalGroupLoadBatchSize,
-            groupKeys.count
+            groupKeys.count,
         )
     }
 
@@ -126,7 +125,7 @@ struct VersionGroupedView: View {
 
         visibleItemCounts[key] = min(
             currentVisibleCount + Constants.incrementalLoadBatchSize,
-            allItems.count
+            allItems.count,
         )
     }
 
@@ -161,7 +160,7 @@ struct VersionGroupedView: View {
     private func extractReleaseSeries(from version: String) -> String? {
         guard let range = version.range(
             of: #"^\d+\.\d+"#,
-            options: .regularExpression
+            options: .regularExpression,
         ) else {
             return nil
         }
@@ -172,7 +171,7 @@ struct VersionGroupedView: View {
     private func extractSnapshotSeries(from version: String) -> String? {
         guard let range = version.range(
             of: #"^\d{2}w\d{2}[a-z]?"#,
-            options: [.regularExpression, .caseInsensitive]
+            options: [.regularExpression, .caseInsensitive],
         ) else {
             return nil
         }

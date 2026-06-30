@@ -41,7 +41,7 @@ struct AIChatInputAreaView: View {
     }
 
     private var selectedGame: GameVersionInfo? {
-        guard let selectedGameId = selectedGameId else { return nil }
+        guard let selectedGameId else { return nil }
         return games.first { $0.id == selectedGameId }
     }
 
@@ -56,7 +56,7 @@ struct AIChatInputAreaView: View {
             }
         } label: {
             HStack(spacing: 4) {
-                if let selectedGame = selectedGame {
+                if let selectedGame {
                     Text(selectedGame.gameName)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -82,7 +82,7 @@ struct AIChatInputAreaView: View {
         TextField("ai.chat.input.placeholder".localized(), text: $inputText, axis: .vertical)
             .textFieldStyle(.plain)
             .focused($isInputFocused)
-            .lineLimit(1...6)
+            .lineLimit(1 ... 6)
             .onSubmit {
                 if canSend {
                     onSend()

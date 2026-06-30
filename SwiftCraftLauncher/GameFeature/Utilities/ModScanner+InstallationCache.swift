@@ -15,7 +15,7 @@ extension ModScanner {
 
         private var cache: [String: Set<String>] = [:]
 
-        private init() {}
+        private init() { }
 
         func get(for directory: URL) -> Set<String>? {
             cache[directory.standardizedFileURL.path]
@@ -35,7 +35,7 @@ extension ModScanner {
 
         private var cache: [String: Set<String>] = [:]
 
-        private init() {}
+        private init() { }
 
         func addHash(_ hash: String, to gameName: String) {
             if var cached = cache[gameName] {
@@ -54,11 +54,11 @@ extension ModScanner {
         }
 
         func getAllModsInstalled(for gameName: String) -> Set<String> {
-            return cache[gameName] ?? Set<String>()
+            cache[gameName] ?? Set<String>()
         }
 
         func hasCache(for gameName: String) -> Bool {
-            return cache[gameName] != nil
+            cache[gameName] != nil
         }
 
         func setAllModsInstalled(for gameName: String, hashes: Set<String>) {
@@ -83,7 +83,7 @@ extension ModScanner {
     }
 
     func getAllModsInstalled(for gameName: String) async -> Set<String> {
-        return await AppServices.modInstallationCache.getAllModsInstalled(for: gameName)
+        await AppServices.modInstallationCache.getAllModsInstalled(for: gameName)
     }
 
     func clearModCache(for gameName: String) async {

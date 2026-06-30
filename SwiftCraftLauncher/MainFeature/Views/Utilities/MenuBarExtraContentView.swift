@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Content view for the macOS menu bar extra, listing games, players, and app actions.
+// Content view for the macOS menu bar extra, listing games, players, and app actions.
 
 import AppKit
 import SwiftUI
@@ -37,7 +37,7 @@ struct MenuBarExtraContentView: View {
         let isRunning = gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: userId)
         let isLaunching = gameStatusManager.isGameLaunching(gameId: game.id, userId: userId)
 
-        if isLaunching && !isRunning {
+        if isLaunching, !isRunning {
             return "progress.indicator"
         } else if isRunning {
             return "stop.fill"
@@ -58,7 +58,7 @@ struct MenuBarExtraContentView: View {
                             onDelete: { gameDialogsPresenter.requestGameDeletion(of: game) },
                             onOpenSettings: { openSettings() },
                             onExport: { gameDialogsPresenter.presentModPackExport(for: game) },
-                            showsShowInLauncher: true
+                            showsShowInLauncher: true,
                         )
                         .environmentObject(playerListViewModel)
                         .environmentObject(gameRepository)
@@ -115,7 +115,7 @@ struct MenuBarExtraContentView: View {
     private func syncMenuBarGameStatuses() {
         gameStatusManager.syncRunningStates(
             for: gameRepository.games,
-            userId: playerListViewModel.currentPlayer?.id ?? ""
+            userId: playerListViewModel.currentPlayer?.id ?? "",
         )
     }
 }

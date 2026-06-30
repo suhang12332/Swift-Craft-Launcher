@@ -20,17 +20,16 @@ enum ResourceDetailLoader {
         projectId: String,
         gameRepository: GameRepository,
         resourceType: String,
-        skipCompatibleGameResolution: Bool = false
+        skipCompatibleGameResolution: Bool = false,
     ) async -> (detail: ModrinthProjectDetail, compatibleGames: [GameVersionInfo])? {
-
         let isServer = resourceType == ResourceType.minecraftJavaServer.rawValue
         guard let detail = await ModrinthService.fetchProjectDetails(id: projectId, type: isServer ? resourceType : "") else {
             AppServices.errorHandler.handle(
                 GlobalError.resource(
                     chineseMessage: "无法获取项目详情",
                     i18nKey: "error.resource.project_details_not_found",
-                    level: .notification
-                )
+                    level: .notification,
+                ),
             )
             return nil
         }
@@ -41,13 +40,13 @@ enum ResourceDetailLoader {
             detail: detail,
             gameRepository: gameRepository,
             resourceType: resourceType,
-            projectId: projectId
+            projectId: projectId,
         )
         let finalGames: [GameVersionInfo]
         if isServer {
             finalGames = await AppServices.serverAddressService.filterGamesWithoutExistingServer(
                 detail: detail,
-                games: compatibleGames
+                games: compatibleGames,
             )
         } else {
             finalGames = compatibleGames
@@ -64,7 +63,7 @@ enum ResourceDetailLoader {
             AppServices.errorHandler.handle(GlobalError.resource(
                 chineseMessage: "无法获取整合包项目详情",
                 i18nKey: "error.resource.project_details_not_found",
-                level: .notification
+                level: .notification,
             ))
             return nil
         }

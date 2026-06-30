@@ -5,12 +5,12 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
-extension FileTreeView {
+public extension FileTreeView {
     /// The coordinator for managing NSOutlineView data source and delegate.
-    public final class Coordinator: NSObject, NSOutlineViewDataSource, NSOutlineViewDelegate {
+    final class Coordinator: NSObject, NSOutlineViewDataSource, NSOutlineViewDelegate {
         private let viewModel: FileTreeViewModel
 
         weak var outlineView: NSOutlineView?
@@ -19,7 +19,7 @@ extension FileTreeView {
         private let iconProvider = NSWorkspace.shared
 
         init(rootURL: URL, showHiddenFiles: Bool, onSelectionChange: (([URL]) -> Void)?) {
-            self.viewModel = FileTreeViewModel(rootURL: rootURL, showHiddenFiles: showHiddenFiles)
+            viewModel = FileTreeViewModel(rootURL: rootURL, showHiddenFiles: showHiddenFiles)
             self.onSelectionChange = onSelectionChange
             super.init()
         }
@@ -46,13 +46,13 @@ extension FileTreeView {
             }
         }
 
-        public func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
+        public func outlineView(_: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
             let node = (item as? FileNode) ?? viewModel.root
             viewModel.ensureChildrenLoaded(for: node)
             return node.children?.count ?? 0
         }
 
-        public func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
+        public func outlineView(_: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
             let node = (item as? FileNode) ?? viewModel.root
             viewModel.ensureChildrenLoaded(for: node)
             guard let children = node.children, index < children.count else {
@@ -61,12 +61,12 @@ extension FileTreeView {
             return children[index]
         }
 
-        public func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
+        public func outlineView(_: NSOutlineView, isItemExpandable item: Any) -> Bool {
             guard let node = item as? FileNode else { return false }
             return node.isDirectory
         }
 
-        public func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
+        public func outlineView(_ outlineView: NSOutlineView, viewFor _: NSTableColumn?, item: Any) -> NSView? {
             guard let node = item as? FileNode else { return nil }
 
             let identifier = NSUserInterfaceItemIdentifier.cell
@@ -86,7 +86,7 @@ extension FileTreeView {
             return cell
         }
 
-        public func outlineView(_ outlineView: NSOutlineView, shouldSelectItem item: Any) -> Bool {
+        public func outlineView(_: NSOutlineView, shouldSelectItem _: Any) -> Bool {
             true
         }
 

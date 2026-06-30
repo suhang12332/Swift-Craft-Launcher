@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A text field for entering a game name with duplicate validation.
+// A text field for entering a game name with duplicate validation.
 import SwiftUI
 
 struct GameNameInputView: View {
@@ -22,7 +22,7 @@ struct GameNameInputView: View {
                 .foregroundColor(.primary)
             TextField(
                 "game.form.name.placeholder".localized(),
-                text: $gameName
+                text: $gameName,
             )
             .textFieldStyle(.roundedBorder)
             .foregroundColor(.primary)

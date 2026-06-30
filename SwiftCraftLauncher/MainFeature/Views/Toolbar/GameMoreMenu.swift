@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 /// Displays a context menu with additional actions for the selected game.
 struct GameMoreMenu: View {
@@ -21,7 +21,7 @@ struct GameMoreMenu: View {
     init(
         game: GameVersionInfo,
         selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
-        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter
+        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter,
     ) {
         self.game = game
         _selectedGameManager = ObservedObject(wrappedValue: selectedGameManager)
@@ -44,7 +44,7 @@ struct GameMoreMenu: View {
             } label: {
                 Label(
                     "settings.game.advanced".localized(),
-                    systemImage: "gearshape"
+                    systemImage: "gearshape",
                 )
             }
 

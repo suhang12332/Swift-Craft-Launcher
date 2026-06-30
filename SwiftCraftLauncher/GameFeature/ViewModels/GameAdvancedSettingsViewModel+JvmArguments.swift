@@ -55,7 +55,7 @@ extension GameAdvancedSettingsViewModel {
         enableNetworkOptimizations = args.contains("-Djava.net.preferIPv4Stack=true")
         updateOptimizationPreset()
 
-        if optimizationPreset == .maximum && selectedGarbageCollector != .g1gc {
+        if optimizationPreset == .maximum, selectedGarbageCollector != .g1gc {
             optimizationPreset = .balanced
             applyOptimizationPreset(.balanced)
         }
@@ -90,9 +90,9 @@ extension GameAdvancedSettingsViewModel {
     func updateOptimizationPreset() {
         if !enableOptimizations {
             optimizationPreset = .disabled
-        } else if enableAikarFlags && enableNetworkOptimizations {
+        } else if enableAikarFlags, enableNetworkOptimizations {
             optimizationPreset = .maximum
-        } else if enableMemoryOptimizations && enableThreadOptimizations {
+        } else if enableMemoryOptimizations, enableThreadOptimizations {
             optimizationPreset = .balanced
         } else {
             optimizationPreset = .basic

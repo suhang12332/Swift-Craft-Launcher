@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import CoreServices
+import Foundation
 
 /// Watches an entire directory tree for changes using FSEvents, including subdirectories.
 final class ModsDirectoryTreeWatcher {
@@ -15,7 +15,7 @@ final class ModsDirectoryTreeWatcher {
     private let callback: () -> Void
 
     init(path: String, callback: @escaping () -> Void) {
-        self.rootPath = (path as NSString).standardizingPath
+        rootPath = (path as NSString).standardizingPath
         self.callback = callback
 
         var context = FSEventStreamContext(
@@ -23,7 +23,7 @@ final class ModsDirectoryTreeWatcher {
             info: UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()),
             retain: nil,
             release: nil,
-            copyDescription: nil
+            copyDescription: nil,
         )
 
         let pathsToWatch = [path] as CFArray
@@ -31,16 +31,16 @@ final class ModsDirectoryTreeWatcher {
         stream = FSEventStreamCreate(
             kCFAllocatorDefault,
             { _, info, numEvents, eventPathsPointer, _, _ in
-                guard let info = info else { return }
+                guard let info else { return }
                 let watcher = Unmanaged<ModsDirectoryTreeWatcher>
                     .fromOpaque(info)
                     .takeUnretainedValue()
                 let paths = eventPathsPointer.assumingMemoryBound(
-                    to: UnsafePointer<CChar>?.self
+                    to: UnsafePointer<CChar>?.self,
                 )
                 var changedPaths: [String] = []
                 changedPaths.reserveCapacity(Int(numEvents))
-                for i in 0..<Int(numEvents) {
+                for i in 0 ..< Int(numEvents) {
                     if let cPath = paths[i] {
                         changedPaths.append(String(cString: cPath))
                     }
@@ -50,11 +50,11 @@ final class ModsDirectoryTreeWatcher {
             &context,
             pathsToWatch,
             FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
-            0.5,  // Coalesces multiple change events within a short time window
-            FSEventStreamCreateFlags(kFSEventStreamCreateFlagFileEvents)
+            0.5, // Coalesces multiple change events within a short time window
+            FSEventStreamCreateFlags(kFSEventStreamCreateFlagFileEvents),
         )
 
-        if let stream = stream {
+        if let stream {
             FSEventStreamSetDispatchQueue(stream, DispatchQueue.main)
             FSEventStreamStart(stream)
         }

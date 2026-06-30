@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A sheet view for managing and downloading resource dependencies.
+// A sheet view for managing and downloading resource dependencies.
 import SwiftUI
 
 struct DependencySheetView: View {
@@ -24,19 +24,19 @@ struct DependencySheetView: View {
         isDownloadingMainResourceOnly: Binding<Bool>,
         projectDetail: ModrinthProjectDetail,
         onDownloadAll: @escaping () async -> Void,
-        onDownloadMainOnly: @escaping () async -> Void
+        onDownloadMainOnly: @escaping () async -> Void,
     ) {
         self.viewModel = viewModel
-        self._isDownloadingAllDependencies = isDownloadingAllDependencies
-        self._isDownloadingMainResourceOnly = isDownloadingMainResourceOnly
+        _isDownloadingAllDependencies = isDownloadingAllDependencies
+        _isDownloadingMainResourceOnly = isDownloadingMainResourceOnly
         self.projectDetail = projectDetail
         self.onDownloadAll = onDownloadAll
         self.onDownloadMainOnly = onDownloadMainOnly
-        self._actionViewModel = StateObject(
+        _actionViewModel = StateObject(
             wrappedValue: DependencySheetActionViewModel(
                 isDownloadingAllDependencies: isDownloadingAllDependencies,
-                isDownloadingMainResourceOnly: isDownloadingMainResourceOnly
-            )
+                isDownloadingMainResourceOnly: isDownloadingMainResourceOnly,
+            ),
         )
     }
 
@@ -68,17 +68,17 @@ struct DependencySheetView: View {
                                             get: {
                                                 viewModel
                                                     .selectedDependencyVersion[
-                                                        dep.id
+                                                        dep.id,
                                                     ]
                                                     ?? (versions.first?.id ?? "")
                                             },
                                             set: {
                                                 viewModel
                                                     .selectedDependencyVersion[
-                                                        dep.id
+                                                        dep.id,
                                                     ] = $0
-                                            }
-                                        )
+                                            },
+                                        ),
                                     ) {
                                         Text("dependency.version.picker".localized())
                                     } content: {
@@ -122,13 +122,13 @@ struct DependencySheetView: View {
                             } else {
                                 Text(
                                     "global_resource.download_main_only"
-                                        .localized()
+                                        .localized(),
                                 )
                             }
                         }
                         .disabled(
                             isDownloadingAllDependencies
-                                || isDownloadingMainResourceOnly
+                                || isDownloadingMainResourceOnly,
                         )
                         switch viewModel.overallDownloadState {
                         case .idle:
@@ -140,13 +140,13 @@ struct DependencySheetView: View {
                                 } else {
                                     Text(
                                         "dependency.download_all_and_continue"
-                                            .localized()
+                                            .localized(),
                                     )
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
                             .disabled(
-                                isDownloadingAllDependencies || hasDownloading
+                                isDownloadingAllDependencies || hasDownloading,
                             )
 
                         case .failed:
@@ -162,7 +162,7 @@ struct DependencySheetView: View {
                             .keyboardShortcut(.defaultAction)
                             .disabled(
                                 isDownloadingAllDependencies || hasDownloading
-                                    || !viewModel.allDependenciesDownloaded
+                                    || !viewModel.allDependenciesDownloaded,
                             )
 
                         case .retrying:
@@ -177,14 +177,14 @@ struct DependencySheetView: View {
                         }
                     }
                 }
-            }
+            },
         )
         .alert(
             "error.notification.download.title".localized(),
             isPresented: Binding(
                 get: { actionViewModel.error != nil },
-                set: { if !$0 { actionViewModel.error = nil } }
-            )
+                set: { if !$0 { actionViewModel.error = nil } },
+            ),
         ) {
             Button("common.close".localized()) {
                 actionViewModel.error = nil

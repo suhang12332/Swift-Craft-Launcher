@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A button for updating an installed local resource.
+// A button for updating an installed local resource.
 import SwiftUI
 
 struct LocalResourceUpdateButton: View {

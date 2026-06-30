@@ -48,7 +48,7 @@ public struct PlayerSettingsView: View {
                 LabeledContent("settings.player.ephemeral_login".localized()) {
                     Toggle(
                         "settings.player.ephemeral_login.toggle".localized(),
-                        isOn: $playerSettings.enableEphemeralWebLogin
+                        isOn: $playerSettings.enableEphemeralWebLogin,
                     )
                 }
                 .labeledContentStyle(.custom)
@@ -57,13 +57,13 @@ public struct PlayerSettingsView: View {
             LabeledContent("settings.player.offline_login".localized()) {
                 Toggle(
                     "settings.player.offline_login.toggle".localized(),
-                    isOn: $playerSettings.enableOfflineLogin
+                    isOn: $playerSettings.enableOfflineLogin,
                 )
             }.labeledContentStyle(.custom)
             LabeledContent("settings.player.default_skin_server".localized()) {
                 Picker(
                     "",
-                    selection: $playerSettings.defaultYggdrasilServerBaseURL
+                    selection: $playerSettings.defaultYggdrasilServerBaseURL,
                 ) {
                     Text("yggdrasil.server.please_select".localized())
                         .tag("")
@@ -83,7 +83,7 @@ public struct PlayerSettingsView: View {
                     LabeledContent("settings.player.history_skin_library".localized()) {
                         Toggle(
                             "settings.player.history_skin_library.toggle".localized(),
-                            isOn: $playerSettings.enableHistorySkinLibrary
+                            isOn: $playerSettings.enableHistorySkinLibrary,
                         )
                     }
                     .labeledContentStyle(.custom)
@@ -93,12 +93,12 @@ public struct PlayerSettingsView: View {
                     LabeledContent("settings.player.minecraft_friends_presence_notifications".localized()) {
                         Toggle(
                             "settings.player.minecraft_friends_presence_notifications.toggle".localized(),
-                            isOn: $playerSettings.enableMinecraftFriendsPresenceNotifications
+                            isOn: $playerSettings.enableMinecraftFriendsPresenceNotifications,
                         )
                     }
                     .labeledContentStyle(.custom)
                     CommonDescriptionText(
-                        text: "settings.player.minecraft_friends_presence_notifications.description".localized()
+                        text: "settings.player.minecraft_friends_presence_notifications.description".localized(),
                     )
                 }
                 Group {
@@ -123,8 +123,8 @@ public struct PlayerSettingsView: View {
                                 get: { viewModel.minecraftFriendAccountPreferences?.friends == .enabled },
                                 set: { on in
                                     Task { await viewModel.setMinecraftFriendListEnabled(on, currentPlayer: currentPlayer) }
-                                }
-                            )
+                                },
+                            ),
                         )
                         .disabled(minecraftFriendAccountToggleDisabled)
                     }
@@ -136,8 +136,8 @@ public struct PlayerSettingsView: View {
                                 get: { viewModel.minecraftFriendAccountPreferences?.acceptInvites == .enabled },
                                 set: { on in
                                     Task { await viewModel.setMinecraftFriendAcceptInvitesEnabled(on, currentPlayer: currentPlayer) }
-                                }
-                            )
+                                },
+                            ),
                         )
                         .disabled(minecraftFriendAccountToggleDisabled)
                     }

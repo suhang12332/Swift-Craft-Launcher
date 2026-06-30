@@ -22,7 +22,7 @@ class AIChatManager: ObservableObject {
         settings: AISettingsManager = AppServices.aiSettingsManager,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
         windowManager: WindowManager = AppServices.windowManager,
-        windowDataStore: WindowDataStore = AppServices.windowDataStore
+        windowDataStore: WindowDataStore = AppServices.windowDataStore,
     ) {
         self.settings = settings
         self.errorHandler = errorHandler
@@ -40,7 +40,7 @@ class AIChatManager: ObservableObject {
             let error = GlobalError.configuration(
                 chineseMessage: "AI 服务未配置，请检查 API Key",
                 i18nKey: "error.configuration.ai_service_not_configured",
-                level: .notification
+                level: .notification,
             )
             await MainActor.run {
                 chatState.isSending = false
@@ -53,7 +53,7 @@ class AIChatManager: ObservableObject {
             let error = GlobalError.configuration(
                 chineseMessage: "AI 模型未配置，请在设置中填写模型名称",
                 i18nKey: "error.configuration.ai_model_not_configured",
-                level: .notification
+                level: .notification,
             )
             await MainActor.run {
                 chatState.isSending = false
@@ -65,7 +65,7 @@ class AIChatManager: ObservableObject {
         let userMessage = ChatMessage(
             role: .user,
             content: text,
-            attachments: attachments
+            attachments: attachments,
         )
         await MainActor.run {
             chatState.addMessage(userMessage)
@@ -103,7 +103,7 @@ class AIChatManager: ObservableObject {
                     let globalError = GlobalError.network(
                         chineseMessage: error.localizedDescription,
                         i18nKey: "error.network.ai_request_failed",
-                        level: .notification
+                        level: .notification,
                     )
                     errorHandler.handle(globalError)
                     if let lastIndex = chatState.messages.indices.last {
@@ -121,7 +121,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "无效的 API URL",
                 i18nKey: "error.network.invalid_url",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -141,13 +141,13 @@ class AIChatManager: ObservableObject {
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
-        guard (200...299).contains(httpResponse.statusCode) else {
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
             let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
             let errorMessage = String(data: errorData, encoding: .utf8) ?? "未知错误"
             throw GlobalError.network(
                 chineseMessage: "API 错误: \(errorMessage)",
                 i18nKey: "error.network.api_error",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -190,7 +190,7 @@ class AIChatManager: ObservableObject {
 
         for message in messages {
             var messageDict: [String: Any] = [
-                "role": message.apiRoleString
+                "role": message.apiRoleString,
             ]
 
             var contentParts: [String] = []
@@ -230,7 +230,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "无效的 API URL",
                 i18nKey: "error.network.invalid_url",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -253,13 +253,13 @@ class AIChatManager: ObservableObject {
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
-        guard (200...299).contains(httpResponse.statusCode) else {
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
             let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
             let errorMessage = String(data: errorData, encoding: .utf8) ?? "未知错误"
             throw GlobalError.network(
                 chineseMessage: "API 错误: \(errorMessage)",
                 i18nKey: "error.network.api_error",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -295,7 +295,7 @@ class AIChatManager: ObservableObject {
 
         for message in messages {
             var messageDict: [String: Any] = [
-                "role": message.apiRoleString
+                "role": message.apiRoleString,
             ]
 
             var contentParts: [String] = []
@@ -331,12 +331,12 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: "无效的 API URL",
                 i18nKey: "error.network.invalid_url",
-                level: .notification
+                level: .notification,
             )
         }
 
         let requestBody: [String: Any] = [
-            "contents": try await buildGeminiContents(messages: messages)
+            "contents": try await buildGeminiContents(messages: messages),
         ]
 
         var request = URLRequest(url: url)
@@ -348,13 +348,13 @@ class AIChatManager: ObservableObject {
 
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
-        guard (200...299).contains(httpResponse.statusCode) else {
+        guard (200 ... 299).contains(httpResponse.statusCode) else {
             let errorData = try await asyncBytes.reduce(into: Data()) { $0.append($1) }
             let errorMessage = String(data: errorData, encoding: .utf8) ?? "未知错误"
             throw GlobalError.network(
                 chineseMessage: "API 错误: \(errorMessage)",
                 i18nKey: "error.network.api_error",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -403,7 +403,7 @@ class AIChatManager: ObservableObject {
             guard !parts.isEmpty else { continue }
 
             var contentDict: [String: Any] = [
-                "parts": parts
+                "parts": parts,
             ]
 
             // Gemini uses "user" and "model" for roles

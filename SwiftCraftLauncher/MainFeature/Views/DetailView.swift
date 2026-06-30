@@ -13,12 +13,12 @@ struct DetailView: View {
     @EnvironmentObject private var detailState: ResourceDetailState
     @EnvironmentObject private var gameRepository: GameRepository
 
-    @ViewBuilder var body: some View {
+    var body: some View {
         Group {
             switch detailState.selectedItem {
-            case .game(let gameId):
+            case let .game(gameId):
                 gameDetailView(gameId: gameId)
-            case .resource(let type):
+            case let .resource(type):
                 resourceDetailView(type: type)
             }
         }
@@ -42,7 +42,7 @@ struct DetailView: View {
                 gameType: detailState.gameTypeBinding,
                 selectedItem: detailState.selectedItemBinding,
                 searchText: filterState.searchTextBinding,
-                localResourceFilter: filterState.localResourceFilterBinding
+                localResourceFilter: filterState.localResourceFilterBinding,
             )
         }
     }
@@ -52,7 +52,7 @@ struct DetailView: View {
         if detailState.selectedProjectId != nil {
             List {
                 ModrinthProjectDetailView(
-                    projectDetail: detailState.loadedProjectDetail
+                    projectDetail: detailState.loadedProjectDetail,
                 )
             }
         } else {
@@ -69,7 +69,7 @@ struct DetailView: View {
                 selectedItem: detailState.selectedItemBinding,
                 gameType: detailState.gameTypeBinding,
                 dataSource: filterState.dataSourceBinding,
-                searchText: filterState.searchTextBinding
+                searchText: filterState.searchTextBinding,
             )
         }
     }

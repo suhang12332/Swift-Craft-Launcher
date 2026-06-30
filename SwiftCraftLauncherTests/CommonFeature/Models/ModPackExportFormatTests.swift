@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModPackExportFormatTests: XCTestCase {
-
     func testRawValues() {
         XCTAssertEqual(ModPackExportFormat.modrinth.rawValue, "modrinth")
         XCTAssertEqual(ModPackExportFormat.curseforge.rawValue, "curseforge")
@@ -43,7 +42,7 @@ final class ModPackExportFormatTests: XCTestCase {
     func testFileExtension_differentFormats() {
         XCTAssertNotEqual(
             ModPackExportFormat.modrinth.fileExtension,
-            ModPackExportFormat.curseforge.fileExtension
+            ModPackExportFormat.curseforge.fileExtension,
         )
     }
 

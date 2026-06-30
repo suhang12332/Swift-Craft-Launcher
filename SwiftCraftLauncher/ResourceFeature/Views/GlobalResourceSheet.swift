@@ -30,7 +30,7 @@ struct GlobalResourceSheet: View {
         isPresented: Binding<Bool>,
         preloadedDetail: ModrinthProjectDetail?,
         preloadedCompatibleGames: [GameVersionInfo],
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.project = project
         self.resourceType = resourceType
@@ -70,11 +70,11 @@ struct GlobalResourceSheet: View {
                     } else {
                         VStack {
                             ModrinthProjectTitleView(
-                                projectDetail: detail
+                                projectDetail: detail,
                             ).padding(.bottom, 18)
                             CommonSheetGameBody(
                                 compatibleGames: preloadedCompatibleGames,
-                                selectedGame: $selectedGame
+                                selectedGame: $selectedGame,
                             )
                             if let game = selectedGame {
                                 if resourceType != ResourceType.minecraftJavaServer.rawValue {
@@ -85,7 +85,7 @@ struct GlobalResourceSheet: View {
                                         selectedGame: $selectedGame,
                                         selectedVersion: $selectedVersion,
                                         availableVersions: $availableVersions,
-                                        mainVersionId: $mainVersionId
+                                        mainVersionId: $mainVersionId,
                                     ) { version in
                                         if resourceType == ResourceType.mod.rawValue,
                                            let v = version {
@@ -119,9 +119,9 @@ struct GlobalResourceSheet: View {
                     gameRepository: gameRepository,
                     loadDependencies: loadDependencies,
                     mainVersionId: $mainVersionId,
-                    compatibleGames: preloadedCompatibleGames
+                    compatibleGames: preloadedCompatibleGames,
                 )
-            }
+            },
         )
         .onDisappear {
             selectedGame = nil
@@ -136,7 +136,7 @@ struct GlobalResourceSheet: View {
 
     private func loadDependencies(
         for version: ModrinthProjectDetailVersion,
-        game: GameVersionInfo
+        game: GameVersionInfo,
     ) {
         dependencyState.isLoading = true
         Task {
@@ -154,14 +154,14 @@ struct GlobalResourceSheet: View {
     }
 
     private func loadDependenciesThrowing(
-        for version: ModrinthProjectDetailVersion,
-        game: GameVersionInfo
+        for _: ModrinthProjectDetailVersion,
+        game: GameVersionInfo,
     ) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
                 chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -170,7 +170,7 @@ struct GlobalResourceSheet: View {
             await ModrinthDependencyDownloader
             .getMissingDependenciesWithVersions(
                 for: project.projectId,
-                gameInfo: game
+                gameInfo: game,
             )
 
         var depVersions: [String: [ModrinthProjectDetailVersion]] = [:]
@@ -188,7 +188,7 @@ struct GlobalResourceSheet: View {
                 dependencies: dependencies,
                 versions: depVersions,
                 selected: depSelected,
-                isLoading: false
+                isLoading: false,
             )
         }
     }

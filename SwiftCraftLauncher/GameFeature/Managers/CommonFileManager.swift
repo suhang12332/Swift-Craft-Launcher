@@ -18,7 +18,7 @@ class CommonFileManager {
     init(
         librariesDir: URL,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        javaManager: JavaManager = AppServices.javaManager
+        javaManager: JavaManager = AppServices.javaManager,
     ) {
         self.librariesDir = librariesDir
         self.errorHandler = errorHandler
@@ -59,7 +59,7 @@ class CommonFileManager {
                     name: lib.name,
                     url: artifactUrl,
                     destinationPath: artifactPath,
-                    expectedSha1: downloads.artifact.sha1.isEmpty ? nil : downloads.artifact.sha1
+                    expectedSha1: downloads.artifact.sha1.isEmpty ? nil : downloads.artifact.sha1,
                 )
             }
 
@@ -68,7 +68,7 @@ class CommonFileManager {
                 name: lib.name,
                 url: url,
                 destinationPath: CommonService.mavenCoordinateToDefaultPath(lib.name),
-                expectedSha1: nil
+                expectedSha1: nil,
             )
         }
 
@@ -76,14 +76,14 @@ class CommonFileManager {
             try await BatchJarDownloader.download(
                 tasks: tasks,
                 metaLibrariesDir: AppPaths.librariesDirectory,
-                onProgressUpdate: self.onProgressUpdate
+                onProgressUpdate: onProgressUpdate,
             )
         } catch {
             let globalError = GlobalError.from(error)
             throw GlobalError.download(
                 chineseMessage: "下载 Forge JAR 文件失败: \(globalError.chineseMessage)",
                 i18nKey: "error.download.jar_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -111,7 +111,7 @@ class CommonFileManager {
                 name: lib.name,
                 url: url,
                 destinationPath: CommonService.mavenCoordinateToDefaultPath(lib.name),
-                expectedSha1: ""
+                expectedSha1: "",
             )
         }
 
@@ -119,14 +119,14 @@ class CommonFileManager {
             try await BatchJarDownloader.download(
                 tasks: tasks,
                 metaLibrariesDir: AppPaths.librariesDirectory,
-                onProgressUpdate: self.onProgressUpdate
+                onProgressUpdate: onProgressUpdate,
             )
         } catch {
             let globalError = GlobalError.from(error)
             throw GlobalError.download(
                 chineseMessage: "下载 JAR 文件失败: \(globalError.chineseMessage)",
                 i18nKey: "error.download.jar_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -166,12 +166,12 @@ class CommonFileManager {
         processorData["MINECRAFT_JAR"] = minecraftJarPath.path
 
         // Add instance path (profile directory)
-        if let gameName = gameName {
+        if let gameName {
             processorData["ROOT"] = AppPaths.profileDirectory(gameName: gameName).path
         }
 
         // Parse data fields from version.json
-        if let data = data {
+        if let data {
             for (key, sidedEntry) in data {
                 processorData[key] = Self.extractClientValue(from: sidedEntry.client) ?? sidedEntry.client
             }
@@ -191,14 +191,14 @@ class CommonFileManager {
                     gameVersion: gameVersion,
                     javaPath: javaPath,
                     data: processorData,
-                    onProgressUpdate: onProgressUpdate
+                    onProgressUpdate: onProgressUpdate,
                 )
             } catch {
                 Logger.shared.error("执行处理器失败: \(error.localizedDescription)")
                 throw GlobalError.download(
                     chineseMessage: "执行处理器失败: \(error.localizedDescription)",
                     i18nKey: "error.download.processor_start_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -213,13 +213,13 @@ class CommonFileManager {
     ///   - data: Optional data fields for placeholder substitution.
     ///   - onProgressUpdate: Optional progress callback.
     /// - Throws: A ``GlobalError`` if the processor fails.
-    private func executeProcessor(_ processor: Processor, librariesDir: URL, gameVersion: String, javaPath: String, data: [String: String]? = nil, onProgressUpdate: ((String, Int, Int) -> Void)? = nil) async throws {
+    private func executeProcessor(_ processor: Processor, librariesDir: URL, gameVersion: String, javaPath: String, data: [String: String]? = nil, onProgressUpdate _: ((String, Int, Int) -> Void)? = nil) async throws {
         try await ProcessorExecutor.executeProcessor(
             processor,
             librariesDir: librariesDir,
             gameVersion: gameVersion,
             javaPath: javaPath,
-            data: data
+            data: data,
         )
     }
 
@@ -228,12 +228,12 @@ class CommonFileManager {
     /// - Returns: The extracted client data, or `nil` if parsing fails.
     static func extractClientValue(from value: String) -> String? {
         // Convert Maven coordinate format to path
-        if value.contains(":") && !value.hasPrefix("[") && !value.hasPrefix("{") {
+        if value.contains(":"), !value.hasPrefix("["), !value.hasPrefix("{") {
             return CommonService.convertMavenCoordinateToPath(value)
         }
 
         // Extract content from array format and convert to path
-        if value.hasPrefix("[") && value.hasSuffix("]") {
+        if value.hasPrefix("["), value.hasSuffix("]") {
             let content = String(value.dropFirst().dropLast())
             if content.contains(":") {
                 return CommonService.convertMavenCoordinateToPath(content)

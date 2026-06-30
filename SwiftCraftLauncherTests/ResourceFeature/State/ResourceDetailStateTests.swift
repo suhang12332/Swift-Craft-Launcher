@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 @MainActor
 final class ResourceDetailStateTests: XCTestCase {
-
     func testInit_defaultValues() {
         let state = ResourceDetailState()
 
@@ -29,7 +28,7 @@ final class ResourceDetailStateTests: XCTestCase {
             gameType: true,
             gameId: "game-id",
             gameResourcesType: "shader",
-            selectedProjectId: "proj-id"
+            selectedProjectId: "proj-id",
         )
 
         XCTAssertEqual(state.selectedItem, .game("test-game"))
@@ -66,7 +65,7 @@ final class ResourceDetailStateTests: XCTestCase {
 
     func testClearSelection() {
         let state = ResourceDetailState(
-            selectedProjectId: "proj-id"
+            selectedProjectId: "proj-id",
         )
 
         state.clearSelection()

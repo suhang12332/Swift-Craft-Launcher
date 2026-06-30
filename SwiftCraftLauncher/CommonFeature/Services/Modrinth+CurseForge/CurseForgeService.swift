@@ -9,7 +9,6 @@ import Foundation
 
 /// Provides a unified interface for accessing the CurseForge API.
 enum CurseForgeService {
-
     static func getHeaders() -> [String: String] {
         var headers: [String: String] = APIClient.DefaultHeaders.acceptJSON
         if let apiKey = AppConstants.curseForgeAPIKey {
@@ -106,7 +105,7 @@ enum CurseForgeService {
         let url = URLConfig.API.CurseForge.projectFiles(
             projectId: projectId,
             gameVersion: gameVersion,
-            modLoaderType: modLoaderType
+            modLoaderType: modLoaderType,
         )
 
         let headers = getHeaders()

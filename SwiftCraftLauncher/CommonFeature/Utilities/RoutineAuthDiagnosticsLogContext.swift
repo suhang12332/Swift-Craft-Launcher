@@ -17,7 +17,7 @@ enum RoutineAuthDiagnosticsLogContext {
 
     /// Executes the given operation with routine debug logs suppressed.
     static func withSuppressedRoutineDebugLogs<T>(
-        _ operation: () async throws -> T
+        _ operation: () async throws -> T,
     ) async rethrows -> T {
         try await $suppressRoutineDebugLogs.withValue(true, operation: operation)
     }

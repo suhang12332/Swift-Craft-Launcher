@@ -9,7 +9,7 @@ import Foundation
 
 /// Represents macOS platform identifiers for library compatibility checks.
 enum MacOS: String {
-    case osx = "osx"
+    case osx
     case osxArm64 = "osx-arm64"
     case osxX86_64 = "osx-x86_64"
 
@@ -30,8 +30,8 @@ enum MacOS: String {
 
 /// Represents a rule action for library compatibility.
 enum RuleAction: String {
-    case allow = "allow"
-    case disallow = "disallow"
+    case allow
+    case disallow
 }
 
 /// A simplified rule structure for macOS compatibility evaluation.
@@ -42,7 +42,6 @@ struct MacRule {
 
 /// Evaluates Minecraft library rules against the current platform.
 enum MacRuleEvaluator {
-
     /// Returns the Java architecture string for the current platform.
     /// - Returns: A Java architecture identifier (e.g., "aarch64", "x86_64").
     static func getCurrentJavaArch() -> String {
@@ -90,14 +89,14 @@ enum MacRuleEvaluator {
     ///   - minecraftVersion: The Minecraft version string, if available.
     /// - Returns: `true` if the identifier is supported; `false` otherwise.
     static func isPlatformIdentifierSupported(_ identifier: String, minecraftVersion: String? = nil) -> Bool {
-        return getSupportedMacOSIdentifiers(minecraftVersion: minecraftVersion).contains(identifier)
+        getSupportedMacOSIdentifiers(minecraftVersion: minecraftVersion).contains(identifier)
     }
 
     /// Converts Minecraft library rules into simplified `MacRule` structures.
     /// - Parameter rules: The original Minecraft rules.
     /// - Returns: An array of `MacRule` values, excluding non-macOS rules.
     static func convertFromMinecraftRules(_ rules: [Rule]) -> [MacRule] {
-        return rules.compactMap { rule in
+        rules.compactMap { rule in
             guard let action = RuleAction(rawValue: rule.action) else { return nil }
 
             let macOS: MacOS?

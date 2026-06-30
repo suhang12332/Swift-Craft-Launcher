@@ -12,15 +12,15 @@ import UniformTypeIdentifiers
 extension GameCreationViewModel {
     func handleImagePickerResult(_ result: Result<[URL], Error>) {
         switch result {
-        case .success(let urls):
+        case let .success(urls):
             guard let url = urls.first else {
                 handleNonCriticalError(
                     GlobalError.validation(
                         chineseMessage: "未选择文件",
                         i18nKey: "error.validation.no_file_selected",
-                        level: .notification
+                        level: .notification,
                     ),
-                    message: "error.image.pick.failed".localized()
+                    message: "error.image.pick.failed".localized(),
                 )
                 return
             }
@@ -47,16 +47,16 @@ extension GameCreationViewModel {
                     pendingIconURL = tempURL
                     pendingIconData = dataToWrite
                     iconImage = nil
-                case .failure(let error):
+                case let .failure(error):
                     handleFileReadError(error, context: "图片文件")
                 }
             }
 
-        case .failure(let error):
+        case let .failure(error):
             let globalError = GlobalError.from(error)
             handleNonCriticalError(
                 globalError,
-                message: "error.image.pick.failed".localized()
+                message: "error.image.pick.failed".localized(),
             )
         }
     }
@@ -69,20 +69,20 @@ extension GameCreationViewModel {
 
         if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
             provider.loadDataRepresentation(
-                forTypeIdentifier: UTType.image.identifier
+                forTypeIdentifier: UTType.image.identifier,
             ) { data, error in
-                if let error = error {
+                if let error {
                     DispatchQueue.main.async {
                         let globalError = GlobalError.from(error)
                         self.handleNonCriticalError(
                             globalError,
-                            message: "error.image.load.drag.failed".localized()
+                            message: "error.image.load.drag.failed".localized(),
                         )
                     }
                     return
                 }
 
-                if let data = data {
+                if let data {
                     Task { @MainActor in
                         let optimizedData = GameIconProcessor.optimize(data: data)
                         let result: URL? = await Task.detached(priority: .userInitiated) {
@@ -104,9 +104,9 @@ extension GameCreationViewModel {
                                 NSError(
                                     domain: NSCocoaErrorDomain,
                                     code: NSFileWriteUnknownError,
-                                    userInfo: nil
+                                    userInfo: nil,
                                 ),
-                                context: "图片保存"
+                                context: "图片保存",
                             )
                         }
                     }

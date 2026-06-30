@@ -28,19 +28,19 @@ struct ModrinthDetailsSection: View, Equatable {
 
             if isLoading {
                 CategorySectionSkeletonView(count: 3)
-            } else if let project = project, let publishedDateString = publishedDateString, let updatedDateString = updatedDateString {
+            } else if let project, let publishedDateString, let updatedDateString {
                 VStack(alignment: .leading, spacing: 8) {
                     ModrinthDetailRow(
                         label: "project.info.details.licensed".localized(),
-                        value: (project.license?.name).map { $0.isEmpty ? "Unknown" : $0 } ?? "Unknown"
+                        value: (project.license?.name).map { $0.isEmpty ? "Unknown" : $0 } ?? "Unknown",
                     )
                     ModrinthDetailRow(
                         label: "project.info.details.published".localized(),
-                        value: publishedDateString
+                        value: publishedDateString,
                     )
                     ModrinthDetailRow(
                         label: "project.info.details.updated".localized(),
-                        value: updatedDateString
+                        value: updatedDateString,
                     )
                 }
             }
@@ -69,13 +69,9 @@ private struct ModrinthDetailRow: View, Equatable {
             Spacer(minLength: 8)
             FilterChip(
                 title: value,
-                isSelected: false
-            ) {}
+                isSelected: false,
+            ) { }
         }
         .frame(minHeight: 20)
-    }
-
-    static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.label == rhs.label && lhs.value == rhs.value
     }
 }

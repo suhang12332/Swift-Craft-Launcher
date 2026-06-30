@@ -23,9 +23,9 @@
 //  This program includes additional terms for source attribution and name usage.
 //  See doc/ADDITIONAL_TERMS.md in the project root for details.
 
+import Combine
 import SwiftUI
 import UserNotifications
-import Combine
 
 /// The entry point and root scene of SwiftCraftLauncher.
 @main
@@ -70,7 +70,7 @@ struct SwiftCraftLauncherApp: App {
                 .task {
                     AppServices.sparkleUpdateService.scheduleStartupCheckIfNeeded()
                     AppServices.minecraftFriendsPresencePollingCoordinator.start(
-                        playerListViewModel: playerListViewModel
+                        playerListViewModel: playerListViewModel,
                     )
                 }
                 .onAppear(perform: cleanupWindowDataOnLaunch)
@@ -119,7 +119,7 @@ struct SwiftCraftLauncherApp: App {
                         Text(" \(gameRepository.games.count)")
                     }
                 }
-            }
+            },
         )
     }
 
@@ -128,7 +128,7 @@ struct SwiftCraftLauncherApp: App {
         URLCache.shared = URLCache(
             memoryCapacity: AppConstants.URLCacheConfig.memoryCapacity,
             diskCapacity: AppConstants.URLCacheConfig.diskCapacity,
-            diskPath: nil
+            diskPath: nil,
         )
     }
 

@@ -30,7 +30,7 @@ struct ModPackDocument: FileDocument {
         self.data = data
     }
 
-    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+    func fileWrapper(configuration _: WriteConfiguration) throws -> FileWrapper {
         FileWrapper(regularFileWithContents: data)
     }
 }
@@ -55,7 +55,7 @@ struct ModPackExportSheet: View {
         CommonSheetView(
             header: { headerView },
             body: { bodyView },
-            footer: { footerView }
+            footer: { footerView },
         )
         .onDisappear {
             viewModel.cleanupAllData()
@@ -72,14 +72,14 @@ struct ModPackExportSheet: View {
             isPresented: $coordinator.isExporting,
             document: coordinator.exportDocument,
             contentType: exportContentType,
-            defaultFilename: exportDefaultFilename
+            defaultFilename: exportDefaultFilename,
         ) { result in
             switch result {
-            case .success(let url):
+            case let .success(url):
                 Logger.shared.info("整合包已保存到: \(url.path)")
                 viewModel.handleSaveSuccess()
                 dismiss()
-            case .failure(let error):
+            case let .failure(error):
                 Logger.shared.error("保存文件失败: \(error.localizedDescription)")
                 viewModel.handleSaveFailure(error: error.localizedDescription)
             }
@@ -162,7 +162,7 @@ struct ModPackExportSheet: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 FileTreeView(
-                    rootURL: AppPaths.profileDirectory(gameName: gameInfo.gameName)
+                    rootURL: AppPaths.profileDirectory(gameName: gameInfo.gameName),
                 ) { urls in
                     if viewModel.selectedFileURLs != urls {
                         DispatchQueue.main.async {
@@ -256,7 +256,7 @@ struct ModPackExportSheet: View {
                 currentFile: progress.currentFile,
                 completed: progress.completed,
                 total: progress.total,
-                version: nil
+                version: nil,
             )
         }
         .frame(minHeight: 70)

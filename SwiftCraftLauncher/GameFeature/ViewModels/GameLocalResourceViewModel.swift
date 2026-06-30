@@ -40,7 +40,7 @@ final class GameLocalResourceViewModel: ObservableObject {
 
     init(
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        modScanner: ModScanner = AppServices.modScanner
+        modScanner: ModScanner = AppServices.modScanner,
     ) {
         self.errorHandler = errorHandler
         self.modScanner = modScanner
@@ -140,7 +140,7 @@ final class GameLocalResourceViewModel: ObservableObject {
         game: GameVersionInfo,
         query: String,
         localFilter: LocalResourceFilter,
-        forceResetDirectory: Bool
+        forceResetDirectory: Bool,
     ) {
         self.game = game
         self.query = query
@@ -180,8 +180,8 @@ final class GameLocalResourceViewModel: ObservableObject {
         searchTask = Task { [weak self] in
             try? await Task.sleep(nanoseconds: 500_000_000)
             guard let self, !Task.isCancelled else { return }
-            guard generationAtSchedule == self.searchGeneration else { return }
-            self.loadPage(page: 1, append: false, searchText: searchText)
+            guard generationAtSchedule == searchGeneration else { return }
+            loadPage(page: 1, append: false, searchText: searchText)
         }
     }
 
@@ -209,7 +209,7 @@ final class GameLocalResourceViewModel: ObservableObject {
             let globalError = GlobalError.configuration(
                 chineseMessage: "无法获取资源目录路径",
                 i18nKey: "error.configuration.resource_directory_not_found",
-                level: .notification
+                level: .notification,
             )
             Logger.shared.error("初始化资源目录失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
@@ -281,7 +281,7 @@ final class GameLocalResourceViewModel: ObservableObject {
         modScanner.scanResourceFilesPage(
             fileURLs: sourceFiles,
             page: page,
-            pageSize: pageSize
+            pageSize: pageSize,
         ) { [weak self] details, hasMore in
             DispatchQueue.main.async {
                 guard let self else { return }
@@ -290,14 +290,14 @@ final class GameLocalResourceViewModel: ObservableObject {
                 let filteredDetails = self.filterResourcesByTitle(details, searchText: effectiveSearchText)
 
                 if append {
-                    let existingIds = Set(self.scannedResources.map { $0.id })
+                    let existingIds = Set(self.scannedResources.map(\.id))
                     let newDetails = filteredDetails.filter { !existingIds.contains($0.id) }
                     self.scannedResources.append(contentsOf: newDetails)
                 } else {
                     self.scannedResources = filteredDetails
                 }
 
-                if isSearching && hasMore {
+                if isSearching, hasMore {
                     self.isLoadingResources = false
                     self.isLoadingMore = false
                     let nextPage = page + 1

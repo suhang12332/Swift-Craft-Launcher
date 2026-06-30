@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CurseForgeSlugAdvancedTests: XCTestCase {
-
     func testToSlug_allAllowedSpecialChars() {
         let result = CurseForgeSlugHelper.toSlug("!@#$%^&*()")
         XCTAssertFalse(result.isEmpty)
@@ -130,7 +129,7 @@ final class CurseForgeSlugAdvancedTests: XCTestCase {
             if !slug.isEmpty {
                 XCTAssertTrue(
                     CurseForgeSlugHelper.isValid(slug),
-                    "Slug '\(slug)' from '\(name)' should be valid"
+                    "Slug '\(slug)' from '\(name)' should be valid",
                 )
             }
         }

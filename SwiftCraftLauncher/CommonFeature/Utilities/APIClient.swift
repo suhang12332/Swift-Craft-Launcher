@@ -44,10 +44,7 @@ enum APIClient {
         return Data(query.utf8)
     }
 
-    private static let sharedDecoder: JSONDecoder = {
-        let decoder = JSONDecoder()
-        return decoder
-    }()
+    private static let sharedDecoder: JSONDecoder = .init()
 
     private static let sharedSession: URLSession = NetworkSession.makeSession()
 
@@ -71,7 +68,7 @@ enum APIClient {
     /// - Throws: A ``GlobalError`` if the request fails.
     static func get(
         url: URL,
-        headers: [String: String]? = nil
+        headers: [String: String]? = nil,
     ) async throws -> Data {
         var request = URLRequest(url: url)
         request.httpMethod = HTTPMethods.get
@@ -92,7 +89,7 @@ enum APIClient {
     static func post(
         url: URL,
         body: Data? = nil,
-        headers: [String: String]? = nil
+        headers: [String: String]? = nil,
     ) async throws -> Data {
         var request = URLRequest(url: url)
         request.httpMethod = HTTPMethods.post
@@ -100,7 +97,7 @@ enum APIClient {
 
         var needsContentType = false
         if body != nil {
-            if let headers = headers {
+            if let headers {
                 needsContentType = !headers.keys.contains { key in
                     key.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame
                 }
@@ -122,7 +119,7 @@ enum APIClient {
     static func put(
         url: URL,
         body: Data? = nil,
-        headers: [String: String]? = nil
+        headers: [String: String]? = nil,
     ) async throws -> Data {
         try await requestData(url: url, method: HTTPMethods.put, body: body, headers: headers)
     }
@@ -130,7 +127,7 @@ enum APIClient {
     /// Performs a DELETE request.
     static func delete(
         url: URL,
-        headers: [String: String]? = nil
+        headers: [String: String]? = nil,
     ) async throws -> Data {
         try await requestData(url: url, method: HTTPMethods.delete, headers: headers)
     }
@@ -139,7 +136,7 @@ enum APIClient {
     /// Use this when the response body needs to be parsed even if the status code is not 200.
     static func getUnchecked(
         url: URL,
-        headers: [String: String]? = nil
+        headers: [String: String]? = nil,
     ) async throws -> (Data, Int) {
         var request = URLRequest(url: url)
         request.httpMethod = HTTPMethods.get
@@ -152,7 +149,7 @@ enum APIClient {
     static func postUnchecked(
         url: URL,
         body: Data? = nil,
-        headers: [String: String]? = nil
+        headers: [String: String]? = nil,
     ) async throws -> (Data, Int) {
         var request = URLRequest(url: url)
         request.httpMethod = HTTPMethods.post
@@ -160,7 +157,7 @@ enum APIClient {
 
         var needsContentType = false
         if body != nil {
-            if let headers = headers {
+            if let headers {
                 needsContentType = !headers.keys.contains { key in
                     key.localizedCaseInsensitiveCompare(Header.contentType) == .orderedSame
                 }
@@ -192,13 +189,13 @@ enum APIClient {
         method: String = "GET",
         body: Data? = nil,
         headers: [String: String]? = nil,
-        decoder: JSONDecoder? = nil
+        decoder: JSONDecoder? = nil,
     ) async throws -> T {
         let data = try await requestData(
             url: url,
             method: method,
             body: body,
-            headers: headers
+            headers: headers,
         )
         return try (decoder ?? sharedDecoder).decode(T.self, from: data)
     }
@@ -215,13 +212,13 @@ enum APIClient {
         url: URL,
         method: String = HTTPMethods.get,
         body: Data? = nil,
-        headers: [String: String]? = nil
+        headers: [String: String]? = nil,
     ) async throws -> Data {
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.httpBody = body
 
-        if body != nil && method == HTTPMethods.post {
+        if body != nil, method == HTTPMethods.post {
             request.setValue(MimeType.json, forHTTPHeaderField: Header.contentType)
         }
 
@@ -238,7 +235,7 @@ enum APIClient {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
                 i18nKey: "error.network.invalid_response",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -246,7 +243,7 @@ enum APIClient {
             throw GlobalError.network(
                 chineseMessage: "API 请求失败: HTTP \(httpResponse.statusCode)",
                 i18nKey: "error.network.api_request_failed",
-                statusCode: httpResponse.statusCode
+                statusCode: httpResponse.statusCode,
             )
         }
 
@@ -260,7 +257,7 @@ enum APIClient {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
-                i18nKey: "error.network.invalid_response"
+                i18nKey: "error.network.invalid_response",
             )
         }
 
@@ -275,7 +272,7 @@ enum APIClient {
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
                 i18nKey: "error.network.invalid_response",
-                level: .notification
+                level: .notification,
             )
         }
 

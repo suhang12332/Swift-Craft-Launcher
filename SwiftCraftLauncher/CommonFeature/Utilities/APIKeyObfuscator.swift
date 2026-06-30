@@ -23,7 +23,7 @@ enum Obfuscator {
         let partLength = 8
         var parts: [String] = []
 
-        for i in 0..<6 {
+        for i in 0 ..< 6 {
             let startOffset = i * partLength
             guard startOffset < encryptedString.count else {
                 parts.append("")
@@ -31,7 +31,7 @@ enum Obfuscator {
             }
             let startIndex = encryptedString.index(encryptedString.startIndex, offsetBy: startOffset)
             let endIndex = encryptedString.index(startIndex, offsetBy: partLength, limitedBy: encryptedString.endIndex) ?? encryptedString.endIndex
-            let part = String(encryptedString[startIndex..<endIndex])
+            let part = String(encryptedString[startIndex ..< endIndex])
             parts.append(part)
         }
 
@@ -52,10 +52,10 @@ enum Obfuscator {
         let numParts = (totalLength + partLength - 1) / partLength
 
         var parts: [String] = []
-        for i in 0..<numParts {
+        for i in 0 ..< numParts {
             let startIndex = encryptedString.index(encryptedString.startIndex, offsetBy: i * partLength)
             let endIndex = min(encryptedString.index(startIndex, offsetBy: partLength), encryptedString.endIndex)
-            let part = String(encryptedString[startIndex..<endIndex])
+            let part = String(encryptedString[startIndex ..< endIndex])
             parts.append(part)
         }
 

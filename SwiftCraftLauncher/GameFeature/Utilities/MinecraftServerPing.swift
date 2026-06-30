@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 @preconcurrency import Dispatch
+import Foundation
 @preconcurrency import Network
 
 /// Represents information about a Minecraft server.
@@ -52,18 +52,18 @@ struct MinecraftServerInfo: Codable {
             func encode(to encoder: Encoder) throws {
                 var container = encoder.singleValueContainer()
                 switch self {
-                case .string(let string):
+                case let .string(string):
                     try container.encode(string)
-                case .object(let description):
+                case let .object(description):
                     try container.encode(description)
                 }
             }
 
             var plainText: String {
                 switch self {
-                case .string(let string):
+                case let .string(string):
                     return string
-                case .object(let description):
+                case let .object(description):
                     return description.plainText
                 }
             }
@@ -72,11 +72,11 @@ struct MinecraftServerInfo: Codable {
         /// Returns the plain text description with formatting codes removed.
         var plainText: String {
             var result = ""
-            if let text = text {
+            if let text {
                 result += stripFormatCodes(text)
             }
-            if let extra = extra {
-                result += extra.map { $0.plainText }.joined()
+            if let extra {
+                result += extra.map(\.plainText).joined()
             }
             return result
         }
@@ -87,7 +87,7 @@ struct MinecraftServerInfo: Codable {
             while let range = result.range(of: "§") {
                 let startIndex = range.lowerBound
                 let endIndex = result.index(startIndex, offsetBy: 2, limitedBy: result.endIndex) ?? result.endIndex
-                result.removeSubrange(startIndex..<endIndex)
+                result.removeSubrange(startIndex ..< endIndex)
             }
             return result
         }
@@ -125,7 +125,7 @@ enum MinecraftServerPing {
         connectPort: Int,
         originalAddress: String,
         originalPort: Int,
-        timeout: TimeInterval = 5.0
+        timeout: TimeInterval = 5.0,
     ) async -> MinecraftServerInfo? {
         let host = NWEndpoint.Host(connectAddress)
         let nwPort = NWEndpoint.Port(integerLiteral: UInt16(connectPort))
@@ -194,7 +194,7 @@ enum MinecraftServerPing {
             let state = State()
 
             let timeoutTask = DispatchWorkItem { [weak state] in
-                guard let state = state else { return }
+                guard let state else { return }
                 if state.setResumedAndTimeout() {
                     connection.cancel()
                     continuation.resume(returning: nil)
@@ -220,7 +220,7 @@ enum MinecraftServerPing {
                         return
                     }
 
-                    if let data = data, !data.isEmpty {
+                    if let data, !data.isEmpty {
                         state.receivedData.append(data)
 
                         if let serverInfo = parseResponse(data: state.receivedData) {
@@ -252,13 +252,13 @@ enum MinecraftServerPing {
             receiveData()
 
             connection.stateUpdateHandler = { [weak state] stateUpdate in
-                guard let state = state else { return }
+                guard let state else { return }
                 guard !state.hasResumed else { return }
 
                 switch stateUpdate {
                 case .ready:
                     sendHandshakeAndStatusRequest(connection: connection, address: originalAddress, port: originalPort)
-                case .failed(let error):
+                case let .failed(error):
                     if !state.isTimeout {
                         if state.setResumed() {
                             state.cancelTimeoutTask()
@@ -270,7 +270,7 @@ enum MinecraftServerPing {
                 case .waiting:
                     break
                 case .cancelled:
-                    if !state.hasResumed && !state.isTimeout {
+                    if !state.hasResumed, !state.isTimeout {
                         if state.setResumed() {
                             state.cancelTimeoutTask()
                             continuation.resume(returning: nil)
@@ -301,7 +301,7 @@ enum MinecraftServerPing {
         let handshakeLength = encodeVarInt(Int32(packetData.count))
         let handshakePacket = handshakeLength + packetData
         connection.send(content: handshakePacket, completion: .contentProcessed { error in
-            if let error = error {
+            if let error {
                 Logger.shared.debug("发送握手包失败: \(error.localizedDescription)")
                 return
             }
@@ -312,7 +312,7 @@ enum MinecraftServerPing {
             let statusRequestLength = encodeVarInt(Int32(statusRequestData.count))
             let statusRequestPacket = statusRequestLength + statusRequestData
             connection.send(content: statusRequestPacket, completion: .contentProcessed { error in
-                if let error = error {
+                if let error {
                     Logger.shared.debug("发送状态请求包失败: \(error.localizedDescription)")
                 }
             })
@@ -352,8 +352,7 @@ enum MinecraftServerPing {
 
         do {
             let decoder = JSONDecoder()
-            let serverInfo = try decoder.decode(MinecraftServerInfo.self, from: jsonData)
-            return serverInfo
+            return try decoder.decode(MinecraftServerInfo.self, from: jsonData)
         } catch {
             Logger.shared.debug("解析服务器 JSON 失败: \(error.localizedDescription)")
             return nil
@@ -432,7 +431,7 @@ enum MinecraftServerPing {
             return nil
         }
 
-        let stringData = data.subdata(in: offset..<(offset + Int(length)))
+        let stringData = data.subdata(in: offset ..< (offset + Int(length)))
         offset += Int(length)
 
         guard let string = String(data: stringData, encoding: .utf8) else {

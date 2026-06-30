@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 /// Displays project resource links (issues, source, wiki, discord).
 struct ModrinthLinksSection: View {
@@ -15,7 +15,7 @@ struct ModrinthLinksSection: View {
 
     var body: some View {
         let links: [(String, String)] = {
-            guard let project = project else { return [] }
+            guard let project else { return [] }
             return [
                 (project.issuesUrl, "project.info.links.issues".localized()),
                 (project.sourceUrl, "project.info.links.source".localized()),
@@ -30,7 +30,7 @@ struct ModrinthLinksSection: View {
             GenericSectionView(
                 title: "project.info.links",
                 items: links.map { IdentifiableLink(id: $0.0, text: $0.0, url: $0.1) },
-                isLoading: isLoading
+                isLoading: isLoading,
             ) { item in
                 ProjectLink(text: item.text, url: item.url)
             }
@@ -54,7 +54,7 @@ private struct ProjectLink: View {
         if let url = URL(string: url) {
             FilterChip(
                 title: text,
-                isSelected: false
+                isSelected: false,
             ) {
                 NSWorkspace.shared.open(url)
             }

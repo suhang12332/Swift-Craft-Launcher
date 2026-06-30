@@ -67,7 +67,7 @@ public extension ModrinthProjectDetail {
             }(),
             loaders: v3.loaders,
             type: nil,
-            fileName: fileName
+            fileName: fileName,
         )
     }
 }
@@ -91,7 +91,7 @@ public extension ModrinthProject {
             license: detail.license?.name ?? "",
             clientSide: detail.clientSide,
             serverSide: detail.serverSide,
-            fileName: detail.fileName
+            fileName: detail.fileName,
         )
     }
 }

@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class YggdrasilProfileListParserTests: XCTestCase {
-
-    func testParse_plainArrayFormat() throws {
+    func testParse_plainArrayFormat() {
         let json = """
         [
             {
@@ -29,7 +28,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
         XCTAssertEqual(result?.first?.name, "TestPlayer")
     }
 
-    func testParse_wrappedDataFormat() throws {
+    func testParse_wrappedDataFormat() {
         let json = """
         {
             "data": [
@@ -47,7 +46,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
         XCTAssertEqual(result?.last?.name, "Player2")
     }
 
-    func testParse_wrappedProfilesFormat() throws {
+    func testParse_wrappedProfilesFormat() {
         let json = """
         {
             "profiles": [
@@ -148,7 +147,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
         XCTAssertEqual(result?.first?.capes?.first?.url, "https://example.com/cape.png")
     }
 
-    func testParse_noProperties_getsDefaultSkin() throws {
+    func testParse_noProperties_getsDefaultSkin() {
         let json = """
         [
             {
@@ -194,7 +193,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
         XCTAssertEqual(result?.first?.skins.first?.variant, "classic")
     }
 
-    func testBlessingSkinParse_withSkinAndCape() throws {
+    func testBlessingSkinParse_withSkinAndCape() {
         let json = """
         [
             {
@@ -216,7 +215,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
         XCTAssertEqual(result?.first?.capes?.first?.url, "https://example.com/raw/99")
     }
 
-    func testBlessingSkinParse_skinOnly() throws {
+    func testBlessingSkinParse_skinOnly() {
         let json = """
         [
             {"pid": 2, "name": "SkinOnly", "tid_skin": 55, "tid_cape": 0}
@@ -230,7 +229,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
         XCTAssertNil(result?.first?.capes)
     }
 
-    func testBlessingSkinParse_noSkin_getsDefault() throws {
+    func testBlessingSkinParse_noSkin_getsDefault() {
         let json = """
         [
             {"pid": 3, "name": "NoSkin", "tid_skin": 0, "tid_cape": 0}
@@ -254,7 +253,7 @@ final class YggdrasilProfileListParserTests: XCTestCase {
         XCTAssertNil(result)
     }
 
-    func testBlessingSkinParse_generatesDeterministicUUID() throws {
+    func testBlessingSkinParse_generatesDeterministicUUID() {
         let json = """
         [
             {"name": "DeterministicPlayer", "tid_skin": 10}

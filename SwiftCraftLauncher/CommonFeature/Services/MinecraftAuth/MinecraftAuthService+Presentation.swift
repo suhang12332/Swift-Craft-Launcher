@@ -10,7 +10,7 @@ import AuthenticationServices
 
 /// Provides the presentation anchor for web authentication sessions.
 extension MinecraftAuthService: ASWebAuthenticationPresentationContextProviding {
-    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+    func presentationAnchor(for _: ASWebAuthenticationSession) -> ASPresentationAnchor {
         NSApplication.shared.windows.first ?? ASPresentationAnchor()
     }
 }

@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class NBTParserTests: XCTestCase {
     func testParse_emptyData_throws() {
@@ -29,22 +29,22 @@ final class NBTParserTests: XCTestCase {
 
     func testEncodeDecode_roundTrip_uncompressed() throws {
         let original: [String: Any] = [
-            "Data": ["RandomSeed": Int64(12_345)],
-            "DataVersion": Int32(3_465),
+            "Data": ["RandomSeed": Int64(12345)],
+            "DataVersion": Int32(3465),
         ]
 
         let encoded = try NBTParser.encode(original, compress: false)
         let parsed = try NBTParser(data: encoded).parse()
 
-        XCTAssertEqual(parsed["DataVersion"] as? Int32, 3_465)
+        XCTAssertEqual(parsed["DataVersion"] as? Int32, 3465)
         let dataTag = parsed["Data"] as? [String: Any]
-        XCTAssertEqual(dataTag?["RandomSeed"] as? Int64, 12_345)
+        XCTAssertEqual(dataTag?["RandomSeed"] as? Int64, 12345)
     }
 
     func testEncodeDecode_roundTrip_compressed() throws {
         let original: [String: Any] = [
-            "Data": ["RandomSeed": Int64(99_999)],
-            "DataVersion": Int32(2_970),
+            "Data": ["RandomSeed": Int64(99999)],
+            "DataVersion": Int32(2970),
         ]
 
         let encoded = try NBTParser.encode(original, compress: true)
@@ -52,7 +52,7 @@ final class NBTParserTests: XCTestCase {
 
         let parsed = try NBTParser(data: encoded).parse()
         let dataTag = parsed["Data"] as? [String: Any]
-        XCTAssertEqual(dataTag?["RandomSeed"] as? Int64, 99_999)
+        XCTAssertEqual(dataTag?["RandomSeed"] as? Int64, 99999)
     }
 
     func testRoundTrip_serversDatStructure() throws {
@@ -82,13 +82,13 @@ final class NBTParserTests: XCTestCase {
                 "RandomSeed": Int64(-123_456_789),
                 "LevelName": "Test World",
             ],
-            "DataVersion": Int32(3_456),
+            "DataVersion": Int32(3456),
         ]
 
         let encoded = try NBTParser.encode(original, compress: false)
         let parsed = try NBTParser(data: encoded).parse()
 
-        XCTAssertEqual(parsed["DataVersion"] as? Int32, 3_456)
+        XCTAssertEqual(parsed["DataVersion"] as? Int32, 3456)
         let dataTag = parsed["Data"] as? [String: Any]
         XCTAssertEqual(dataTag?["LevelName"] as? String, "Test World")
         XCTAssertEqual(dataTag?["RandomSeed"] as? Int64, -123_456_789)

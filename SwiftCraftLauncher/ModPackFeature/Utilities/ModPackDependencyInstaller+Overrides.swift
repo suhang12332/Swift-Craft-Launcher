@@ -8,12 +8,11 @@
 import Foundation
 
 extension ModPackDependencyInstaller {
-
     /// Installs override files from the extracted modpack into the game directory.
     static func installOverrides(
         extractedPath: URL,
         resourceDir: URL,
-        onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?
+        onProgressUpdate: ((String, Int, Int, DownloadType) -> Void)?,
     ) async -> Bool {
         var overridesPath = extractedPath.appendingPathComponent("overrides")
 
@@ -47,7 +46,7 @@ extension ModPackDependencyInstaller {
             try await InstanceFileCopier.copyDirectory(
                 from: overridesPath,
                 to: resourceDir,
-                fileFilter: nil
+                fileFilter: nil,
             ) { fileName, completed, total in
                 onProgressUpdate?(fileName, completed, total, .overrides)
             }

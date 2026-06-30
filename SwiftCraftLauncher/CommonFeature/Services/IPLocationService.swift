@@ -12,7 +12,7 @@ import Foundation
 class IPLocationService: ObservableObject {
     static let shared = IPLocationService()
 
-    private init() {}
+    private init() { }
 
     /// Checks whether the user's IP is outside the current region.
     /// - Returns: `true` if the IP is foreign, `false` if detection fails or the IP is domestic.
@@ -44,7 +44,7 @@ class IPLocationService: ObservableObject {
             throw GlobalError.validation(
                 chineseMessage: "解析IP地理位置响应失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.ip_location_parse_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -58,7 +58,7 @@ class IPLocationService: ObservableObject {
             throw GlobalError.network(
                 chineseMessage: errorMessage,
                 i18nKey: "error.network.ip_location_failed",
-                level: .notification
+                level: .notification,
             )
         }
 

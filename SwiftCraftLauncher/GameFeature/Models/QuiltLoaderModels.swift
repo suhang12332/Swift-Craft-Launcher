@@ -8,8 +8,8 @@
 import Foundation
 
 /// A response from the Quilt Loader API.
-struct QuiltLoaderResponse: Codable, Sendable {
-    struct Loader: Codable, Sendable {
+struct QuiltLoaderResponse: Codable {
+    struct Loader: Codable {
         let version: String
     }
 

@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class MinecraftLaunchCommandBuilderTests: XCTestCase {
-
     private func makeGameInfo(
         id: String = "test-game-id",
         gameName: String = "TestGame",
@@ -17,14 +16,14 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         assetIndex: String = "17",
         mainClass: String = "net.minecraft.client.main.Main",
         modClassPath: String = "",
-        modJvm: [String] = [],
+        modJvm _: [String] = [],
         gameArguments: [String] = [],
         xms: Int = 0,
         xmx: Int = 0,
         jvmArguments: String = "",
-        javaPath: String = "/usr/bin/java"
+        javaPath: String = "/usr/bin/java",
     ) -> GameVersionInfo {
-        let info = GameVersionInfo(
+        GameVersionInfo(
             id: UUID(uuidString: id) ?? UUID(),
             gameName: gameName,
             gameIcon: "",
@@ -37,9 +36,8 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
             xms: xms,
             xmx: xmx,
             mainClass: mainClass,
-            gameArguments: gameArguments
+            gameArguments: gameArguments,
         )
-        return info
     }
 
     private func makeLibrary(
@@ -47,7 +45,7 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         artifactPath: String? = "org/example/lib-1.0.jar",
         downloadable: Bool = true,
         includeInClasspath: Bool = true,
-        rules: [Rule]? = nil
+        rules: [Rule]? = nil,
     ) throws -> Library {
         var artifactJson: [String: Any] = [
             "sha1": "abc",
@@ -64,7 +62,7 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
             "include_in_classpath": includeInClasspath,
             "downloadable": downloadable,
         ]
-        if let rules = rules {
+        if let rules {
             let ruleData = try JSONEncoder().encode(rules)
             let ruleObj = try JSONSerialization.jsonObject(with: ruleData)
             json["rules"] = ruleObj
@@ -92,20 +90,20 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertTrue(LibraryFilter.shouldIncludeInClasspath(library))
     }
 
-    func testRemoveDuplicatePaths_removesExactDuplicates() throws {
+    func testRemoveDuplicatePaths_removesExactDuplicates() {
         let paths = ["/a/b.jar", "/a/b.jar", "/c/d.jar"]
         let unique = Array(Set(paths))
         XCTAssertEqual(unique.count, 2)
     }
 
-    func testRemoveDuplicatePaths_preservesOrder() throws {
+    func testRemoveDuplicatePaths_preservesOrder() {
         let paths = ["/a/b.jar", "/c/d.jar", "/a/b.jar"]
         var seen = Set<String>()
         let filtered = paths.filter { seen.insert($0).inserted }
         XCTAssertEqual(filtered, ["/a/b.jar", "/c/d.jar"])
     }
 
-    func testCommandStructure_jvmArgsBeforeMainClass() throws {
+    func testCommandStructure_jvmArgsBeforeMainClass() {
         let jvmArgs = ["-Xmx4G", "-Djava.class.path=/path/to/jar"]
         let mainClass = "net.minecraft.client.main.Main"
         let gameArgs = ["--width", "854"]
@@ -119,14 +117,14 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertEqual(command[4], "854")
     }
 
-    func testCommandStructure_macOSArgsFirst() throws {
+    func testCommandStructure_macOSArgsFirst() {
         var jvmArgs = ["-Xmx4G"]
         jvmArgs.insert("-XstartOnFirstThread", at: 0)
 
         XCTAssertEqual(jvmArgs.first, "-XstartOnFirstThread")
     }
 
-    func testCommandStructure_memoryArgsBeforeOtherJvmArgs() throws {
+    func testCommandStructure_memoryArgsBeforeOtherJvmArgs() {
         var jvmArgs = ["-Djava.class.path=/path/to/jar"]
         let xmsArg = "-Xms${xms}M"
         let xmxArg = "-Xmx${xmx}M"
@@ -137,7 +135,7 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertEqual(jvmArgs[2], "-Djava.class.path=/path/to/jar")
     }
 
-    func testModJvmArgs_appendedToEnd() throws {
+    func testModJvmArgs_appendedToEnd() {
         var jvmArgs = ["-Xmx4G", "-XstartOnFirstThread"]
         let modJvm = ["-Dfabric.classPath=/mods", "-Dforge.enabled=true"]
 
@@ -148,7 +146,7 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertEqual(jvmArgs[3], "-Dforge.enabled=true")
     }
 
-    func testGameArgs_appendedToEnd() throws {
+    func testGameArgs_appendedToEnd() {
         var gameArgs = ["--width", "854"]
         let extraGameArgs = ["--launchTarget", "forge_client"]
 
@@ -159,11 +157,11 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertEqual(gameArgs[3], "forge_client")
     }
 
-    func testVariableMap_containsRequiredKeys() throws {
+    func testVariableMap_containsRequiredKeys() {
         let gameInfo = makeGameInfo(
             gameName: "TestGame",
             gameVersion: "1.20.1",
-            assetIndex: "17"
+            assetIndex: "17",
         )
 
         let variableMap: [String: String] = [

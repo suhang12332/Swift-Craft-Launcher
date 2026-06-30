@@ -26,14 +26,14 @@ public class ContributorsViewModel: ObservableObject {
 
         do {
             contributors = try await gitHubService.fetchContributors(
-                perPage: 50
+                perPage: 50,
             )
-        } catch {}
+        } catch { }
     }
 
     /// Returns the profile URL for a contributor.
     public func getContributorProfileURL(
-        _ contributor: GitHubContributor
+        _ contributor: GitHubContributor,
     ) -> URL? {
         URL(string: contributor.htmlUrl)
     }
@@ -50,19 +50,19 @@ public class ContributorsViewModel: ObservableObject {
     }
 }
 
-extension ContributorsViewModel {
+public extension ContributorsViewModel {
     /// Contributors sorted by contribution count in descending order.
-    public var sortedContributors: [GitHubContributor] {
+    var sortedContributors: [GitHubContributor] {
         contributors.sorted { $0.contributions > $1.contributions }
     }
 
     /// The top three contributors by contribution count.
-    public var topContributors: [GitHubContributor] {
+    var topContributors: [GitHubContributor] {
         Array(sortedContributors.prefix(3))
     }
 
     /// Contributors beyond the top three.
-    public var otherContributors: [GitHubContributor] {
+    var otherContributors: [GitHubContributor] {
         Array(sortedContributors.dropFirst(3))
     }
 }

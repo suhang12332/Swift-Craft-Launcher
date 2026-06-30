@@ -30,7 +30,7 @@ extension URL {
         guard
             var components = URLComponents(
                 url: self,
-                resolvingAgainstBaseURL: true
+                resolvingAgainstBaseURL: true,
             )
         else {
             return nil
@@ -44,10 +44,11 @@ extension URL {
         return self
     }
 }
+
 extension String {
     /// Converts HTTP URLs in the string to HTTPS.
     func httpToHttps() -> String {
-        return autoreleasepool {
+        autoreleasepool {
             guard let url = URL(string: self) else { return self }
             return url.forceHTTPS()?.absoluteString ?? self
         }
@@ -78,7 +79,7 @@ enum CommonUtil {
             isoFormatter.formatOptions = [.withInternetDateTime]
             date = isoFormatter.date(from: isoString)
         }
-        guard let date = date else { return isoString }
+        guard let date else { return isoString }
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
         return formatter.localizedString(for: date, relativeTo: Date())
@@ -89,7 +90,7 @@ enum CommonUtil {
         let trimmed = version.trimmingCharacters(in: .whitespacesAndNewlines)
         let isPureNumericVersion = trimmed.range(
             of: #"^\d+(\.\d+)*$"#,
-            options: [.regularExpression]
+            options: [.regularExpression],
         ) != nil
         return !isPureNumericVersion
     }
@@ -110,7 +111,7 @@ enum CommonUtil {
 
         if base.range(
             of: #"^\d{2}w\d{2}[a-z]?$"#,
-            options: [.regularExpression]
+            options: [.regularExpression],
         ) != nil {
             return "minecraft-snapshot-\(base)"
         }
@@ -161,7 +162,7 @@ enum CommonUtil {
         let components1 = parseVersionComponents(version1)
         let components2 = parseVersionComponents(version2)
 
-        for i in 0..<max(components1.count, components2.count) {
+        for i in 0 ..< max(components1.count, components2.count) {
             let v1 = i < components1.count ? components1[i] : 0
             let v2 = i < components2.count ? components2[i] : 0
             if v1 < v2 {
@@ -175,12 +176,12 @@ enum CommonUtil {
     }
 
     private static func parseVersionComponents(_ version: String) -> [Int] {
-        return version.components(separatedBy: ".")
+        version.components(separatedBy: ".")
             .compactMap { Int($0.trimmingCharacters(in: .whitespacesAndNewlines)) }
     }
 
     static func sortMinecraftVersions(_ versions: [String]) -> [String] {
-        return versions.sorted { version1, version2 in
+        versions.sorted { version1, version2 in
             compareMinecraftVersions(version1, version2) > 0
         }
     }
@@ -188,7 +189,7 @@ enum CommonUtil {
     /// Returns versions at or above the specified baseline.
     static func versionsAtLeast(
         _ versions: [String],
-        baseline: String = AppConstants.MinecraftVersions.featureBaseline
+        baseline: String = AppConstants.MinecraftVersions.featureBaseline,
     ) -> [String] {
         if let baselineIndex = versions.firstIndex(of: baseline) {
             return Array(versions.prefix(through: baselineIndex))
@@ -203,7 +204,7 @@ enum CommonUtil {
     static func versionsAtLeast<T>(
         _ versions: [T],
         baseline: String = AppConstants.MinecraftVersions.featureBaseline,
-        version: (T) -> String
+        version: (T) -> String,
     ) -> [T] {
         if let baselineIndex = versions.firstIndex(where: {
             version($0) == baseline
@@ -218,7 +219,7 @@ enum CommonUtil {
 
     /// Returns whether a Minecraft version meets or exceeds the baseline.
     static func isVersionAtLeast(_ version: String) -> Bool {
-        return compareMinecraftVersions(version, AppConstants.MinecraftVersions.featureBaseline) >= 0
+        compareMinecraftVersions(version, AppConstants.MinecraftVersions.featureBaseline) >= 0
     }
 
     /// Checks server connectivity and updates the status on the main thread.
@@ -226,7 +227,7 @@ enum CommonUtil {
         for address: String,
         port: Int = 25565,
         timeout: TimeInterval = 5.0,
-        setStatus: @escaping (ServerConnectionStatus) -> Void
+        setStatus: @escaping (ServerConnectionStatus) -> Void,
     ) async {
         guard !address.isEmpty else { return }
 
@@ -237,7 +238,7 @@ enum CommonUtil {
         let status = await NetworkUtils.checkServerConnectionStatus(
             address: address,
             port: port,
-            timeout: timeout
+            timeout: timeout,
         )
 
         await MainActor.run {
@@ -296,7 +297,6 @@ enum CommonUtil {
             return "tr_tr"
         case "vi":
             return "vi_vn"
-
         default:
             return "en_us"
         }
@@ -356,6 +356,7 @@ enum CommonUtil {
         }
     }
 }
+
 extension ResourceType {
     var overridesSubdirectory: String {
         switch self {
@@ -374,7 +375,6 @@ extension ResourceType {
 }
 
 enum SystemSettings {
-
     @discardableResult
     static func open(_ paths: [String]) -> Bool {
         for path in paths {

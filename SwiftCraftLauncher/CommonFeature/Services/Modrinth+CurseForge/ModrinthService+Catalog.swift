@@ -9,7 +9,6 @@ import Foundation
 
 /// Provides catalog operations for Modrinth loaders, categories, and game versions.
 extension ModrinthService {
-
     static func fetchLoaders() async -> [Loader] {
         do {
             return try await fetchLoadersThrowing()
@@ -54,7 +53,7 @@ extension ModrinthService {
     }
 
     static func fetchGameVersionsThrowing(
-        includeSnapshots: Bool = false
+        includeSnapshots: Bool = false,
     ) async throws -> [GameVersion] {
         let data = try await APIClient.get(url: URLConfig.API.Modrinth.gameVersionTag)
         let result = try JSONDecoder().decode([GameVersion].self, from: data)

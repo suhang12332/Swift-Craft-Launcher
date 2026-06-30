@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 @MainActor
 final class ModInstallationCacheTests: XCTestCase {
-
     func testAddAndRetrieve() async {
         let cache = AppServices.modInstallationCache
         await cache.addHash("hash1", to: "testGame")
@@ -63,7 +62,7 @@ final class ModInstallationCacheTests: XCTestCase {
 
     func testSetAllModsInstalled() async {
         let cache = AppServices.modInstallationCache
-        let hashes: Set<String> = ["h1", "h2", "h3"]
+        let hashes: Set = ["h1", "h2", "h3"]
         await cache.setAllModsInstalled(for: "game1", hashes: hashes)
 
         let result = await cache.getAllModsInstalled(for: "game1")

@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 /// Publishes notifications when game icons need to refresh.
 final class IconRefreshNotifier: ObservableObject {
@@ -20,7 +20,7 @@ final class IconRefreshNotifier: ObservableObject {
         refreshSubject.eraseToAnyPublisher()
     }
 
-    private init() {}
+    private init() { }
 
     /// Notifies observers to refresh the icon for a specific game.
     /// - Parameter gameName: The game name, or `nil` to refresh all icons.

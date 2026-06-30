@@ -33,7 +33,7 @@ struct ModPackInstallSharedSections: View {
                         gameName: $gameName,
                         isGameNameDuplicate: $isGameNameDuplicate,
                         isDisabled: isGameNameInputDisabled,
-                        gameSetupService: gameSetupService
+                        gameSetupService: gameSetupService,
                     )
                 }
             }
@@ -42,7 +42,7 @@ struct ModPackInstallSharedSections: View {
                 DownloadProgressView(
                     gameSetupService: gameSetupService,
                     modPackInstallState: modPackInstallState,
-                    lastParsedIndexInfo: lastParsedIndexInfo
+                    lastParsedIndexInfo: lastParsedIndexInfo,
                 )
                 .padding(.top, 10)
             }

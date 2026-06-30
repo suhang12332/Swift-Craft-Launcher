@@ -14,7 +14,7 @@ enum ForgeLoaderService {
             throw GlobalError.resource(
                 chineseMessage: "未找到 Minecraft \(minecraftVersion) 的 Forge 加载器版本",
                 i18nKey: "error.resource.forge_loader_version_not_found",
-                level: .notification
+                level: .notification,
             )
         }
         return result
@@ -42,14 +42,14 @@ enum ForgeLoaderService {
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void
+        onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async -> (loaderVersion: String, classpath: String, mainClass: String)? {
         do {
             return try await setupWithSpecificVersionThrowing(
                 for: gameVersion,
                 loaderVersion: loaderVersion,
                 gameInfo: gameInfo,
-                onProgressUpdate: onProgressUpdate
+                onProgressUpdate: onProgressUpdate,
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -63,7 +63,7 @@ enum ForgeLoaderService {
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void
+        onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         Logger.shared.info("开始设置指定版本的 Forge 加载器: \(loaderVersion)")
 
@@ -71,10 +71,12 @@ enum ForgeLoaderService {
         let librariesDirectory = AppPaths.librariesDirectory
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
 
-        let totalDownloads = forgeProfile.libraries.filter { $0.downloads != nil }.count
-        let totalProcessors = (forgeProfile.processors ?? []).filter {
+        let totalDownloads = forgeProfile.libraries.count {
+            $0.downloads != nil
+        }
+        let totalProcessors = (forgeProfile.processors ?? []).count {
             ($0.sides ?? [AppConstants.EnvironmentTypes.client]).contains(AppConstants.EnvironmentTypes.client)
-        }.count
+        }
         let totalTasks = totalDownloads + totalProcessors
 
         fileManager.onProgressUpdate = { name, completed, _ in onProgressUpdate(name, completed, totalTasks) }
@@ -87,7 +89,7 @@ enum ForgeLoaderService {
                 librariesDir: librariesDirectory,
                 gameVersion: gameVersion,
                 data: forgeProfile.data,
-                gameName: gameInfo.gameName
+                gameName: gameInfo.gameName,
             ) { message, current, _ in
                 onProgressUpdate(message, totalDownloads + current, totalTasks)
             }
@@ -99,11 +101,11 @@ enum ForgeLoaderService {
             throw GlobalError.resource(
                 chineseMessage: "Forge profile 缺少版本信息",
                 i18nKey: "error.resource.missing_forge_version",
-                level: .notification
+                level: .notification,
             )
         }
         return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)
     }
 }
 
-extension ForgeLoaderService: ModLoaderHandler {}
+extension ForgeLoaderService: ModLoaderHandler { }

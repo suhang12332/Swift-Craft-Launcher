@@ -9,7 +9,6 @@ import SwiftUI
 
 /// Provides static menu builders for filtering resources in the detail toolbar.
 enum ResourceFilterMenus {
-
     private static func resourceTypesForCurrentGame(currentGame: GameVersionInfo?) -> [String] {
         var types = [ResourceType.datapack.rawValue, ResourceType.resourcepack.rawValue]
         if let game = currentGame, game.modLoader.lowercased() != GameLoader.vanilla.displayName {
@@ -30,7 +29,6 @@ enum ResourceFilterMenus {
     }
 
     /// Toggles the resource content location between local and remote.
-    @ViewBuilder
     static func resourcesTypeMenu(detailState: ResourceDetailState) -> some View {
         Button {
             detailState.gameType.toggle()
@@ -38,7 +36,7 @@ enum ResourceFilterMenus {
             Label(
                 currentResourceTypeTitle(detailState: detailState),
                 systemImage: detailState.gameType
-                    ? "tray.and.arrow.down" : "icloud.and.arrow.down"
+                    ? "tray.and.arrow.down" : "icloud.and.arrow.down",
             )
             .foregroundStyle(.primary)
             .applyReplaceTransition()
@@ -47,7 +45,6 @@ enum ResourceFilterMenus {
     }
 
     /// Displays a menu for selecting the active resource type (mod, datapack, resourcepack, or shader).
-    @ViewBuilder
     static func resourcesMenu(currentGame: GameVersionInfo?, detailState: ResourceDetailState) -> some View {
         Menu {
             ForEach(resourceTypesForCurrentGame(currentGame: currentGame), id: \.self) { sort in
@@ -61,7 +58,6 @@ enum ResourceFilterMenus {
     }
 
     /// Presents a menu for choosing between data sources such as Modrinth or CurseForge.
-    @ViewBuilder
     static func dataSourceMenu(filterState: ResourceFilterState) -> some View {
         Menu {
             ForEach(DataSource.allCases, id: \.self) { source in
@@ -76,7 +72,6 @@ enum ResourceFilterMenus {
     }
 
     /// Provides a menu for filtering local resources by status, such as all or disabled.
-    @ViewBuilder
     static func localResourceFilterMenu(filterState: ResourceFilterState) -> some View {
         Menu {
             ForEach(LocalResourceFilter.allCases) { filter in

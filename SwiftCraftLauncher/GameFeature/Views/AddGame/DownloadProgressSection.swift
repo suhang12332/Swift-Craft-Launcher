@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Displays download progress for game core files, mod loaders, and mod packs.
+// Displays download progress for game core files, mod loaders, and mod packs.
 import SwiftUI
 
 struct DownloadProgressSection: View {
@@ -18,7 +18,7 @@ struct DownloadProgressSection: View {
         gameSetupService: GameSetupUtil,
         selectedModLoader: String = GameLoader.vanilla.displayName,
         modPackViewModel: ModPackDownloadSheetViewModel? = nil,
-        modPackIndexInfo: ModrinthIndexInfo? = nil
+        modPackIndexInfo: ModrinthIndexInfo? = nil,
     ) {
         self.gameSetupService = gameSetupService
         self.selectedModLoader = selectedModLoader
@@ -30,7 +30,7 @@ struct DownloadProgressSection: View {
         VStack(spacing: 24) {
             gameDownloadProgressView
             modLoaderProgressView
-            if let modPackViewModel = modPackViewModel {
+            if let modPackViewModel {
                 ModPackProgressView(modPackViewModel: modPackViewModel)
             }
         }
@@ -41,12 +41,12 @@ struct DownloadProgressSection: View {
             progressSection(
                 title: "download.core.title".localized(),
                 state: gameSetupService.downloadState,
-                type: .core
+                type: .core,
             )
             progressSection(
                 title: "download.resources.title".localized(),
                 state: gameSetupService.downloadState,
-                type: .resources
+                type: .resources,
             )
         }
     }
@@ -57,7 +57,7 @@ struct DownloadProgressSection: View {
                 title: loaderProgressInfo.title,
                 state: loaderProgressInfo.state,
                 type: .core,
-                version: loaderProgressInfo.version
+                version: loaderProgressInfo.version,
             )
         }
     }
@@ -71,7 +71,7 @@ struct DownloadProgressSection: View {
         title: String,
         state: DownloadState,
         type: ProgressType,
-        version: String? = nil
+        version: String? = nil,
     ) -> some View {
         FormSection {
             DownloadProgressRow(
@@ -80,7 +80,7 @@ struct DownloadProgressSection: View {
                 currentFile: type == .core ? state.currentCoreFile : state.currentResourceFile,
                 completed: type == .core ? state.coreCompletedFiles : state.resourcesCompletedFiles,
                 total: type == .core ? state.coreTotalFiles : state.resourcesTotalFiles,
-                version: version
+                version: version,
             )
         }
     }
@@ -102,18 +102,18 @@ struct DownloadProgressSection: View {
                 return LoaderProgressInfo(
                     title: title,
                     state: state,
-                    version: indexInfo.loaderVersion
+                    version: indexInfo.loaderVersion,
                 )
             }
         } else {
             let state = getLoaderDownloadState(for: loaderType)
             let title = getLoaderTitle(for: loaderType)
 
-            if let state = state {
+            if let state {
                 return LoaderProgressInfo(
                     title: title,
                     state: state,
-                    version: nil
+                    version: nil,
                 )
             }
         }
@@ -161,21 +161,21 @@ private struct ModPackProgressView: View {
                     modPackProgressSection(
                         title: "modpack.copying_files".localized(),
                         state: modPackViewModel.modPackInstallState,
-                        type: .overrides
+                        type: .overrides,
                     )
                 }
 
                 modPackProgressSection(
                     title: "modpack.files.title".localized(),
                     state: modPackViewModel.modPackInstallState,
-                    type: .files
+                    type: .files,
                 )
 
                 if modPackViewModel.modPackInstallState.dependenciesTotal > 0 {
                     modPackProgressSection(
                         title: "modpack.dependencies.title".localized(),
                         state: modPackViewModel.modPackInstallState,
-                        type: .dependencies
+                        type: .dependencies,
                     )
                 }
             }
@@ -191,7 +191,7 @@ private struct ModPackProgressView: View {
     private func modPackProgressSection(
         title: String,
         state: ModPackInstallState,
-        type: ModPackProgressType
+        type: ModPackProgressType,
     ) -> some View {
         FormSection {
             DownloadProgressRow(
@@ -236,7 +236,7 @@ private struct ModPackProgressView: View {
                         return state.overridesTotal
                     }
                 }(),
-                version: nil
+                version: nil,
             )
         }
     }

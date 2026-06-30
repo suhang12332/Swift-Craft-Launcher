@@ -23,7 +23,7 @@ extension JSONDecoder {
             }
             throw DecodingError.dataCorruptedError(
                 in: container,
-                debugDescription: "Invalid date: \(dateStr)"
+                debugDescription: "Invalid date: \(dateStr)",
             )
         }
     }

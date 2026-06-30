@@ -12,7 +12,7 @@ import Foundation
 class AnnouncementStateManager {
     static let shared = AnnouncementStateManager()
 
-    private init() {}
+    private init() { }
 
     private let defaults = UserDefaults.standard
 
@@ -27,13 +27,13 @@ class AnnouncementStateManager {
         let currentVersion = Bundle.main.appVersion
         defaults.set(
             currentVersion,
-            forKey: AppConstants.UserDefaultsKeys.acknowledgedAnnouncementVersion
+            forKey: AppConstants.UserDefaultsKeys.acknowledgedAnnouncementVersion,
         )
     }
 
     private func acknowledgedVersion() -> String? {
         defaults.string(
-            forKey: AppConstants.UserDefaultsKeys.acknowledgedAnnouncementVersion
+            forKey: AppConstants.UserDefaultsKeys.acknowledgedAnnouncementVersion,
         )
     }
 }

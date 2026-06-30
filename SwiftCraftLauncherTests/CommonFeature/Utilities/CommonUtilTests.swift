@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CommonUtilTests: XCTestCase {
     func testIsMinecraftSnapshotVersion_release_returnsFalse() {
@@ -62,21 +62,21 @@ final class CommonUtilTests: XCTestCase {
     func testMinecraftReleaseNewsSlug() {
         XCTAssertEqual(
             CommonUtil.minecraftReleaseNewsSlug(version: "1.26.1"),
-            "minecraft-java-edition-1-26-1"
+            "minecraft-java-edition-1-26-1",
         )
     }
 
     func testMinecraftSnapshotNewsSlug_weekly() {
         XCTAssertEqual(
             CommonUtil.minecraftSnapshotNewsSlug(version: "26w11a"),
-            "minecraft-snapshot-26w11a"
+            "minecraft-snapshot-26w11a",
         )
     }
 
     func testMinecraftSnapshotNewsSlug_rc() {
         XCTAssertEqual(
             CommonUtil.minecraftSnapshotNewsSlug(version: "26.1.2-rc-1"),
-            "minecraft-26-1-2-release-candidate-1"
+            "minecraft-26-1-2-release-candidate-1",
         )
     }
 

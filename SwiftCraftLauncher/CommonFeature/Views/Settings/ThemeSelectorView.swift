@@ -16,7 +16,7 @@ struct ThemeSelectorView: View {
             ForEach(ThemeMode.allCases, id: \.self) { theme in
                 ThemeOptionView(
                     theme: theme,
-                    isSelected: selectedTheme == theme
+                    isSelected: selectedTheme == theme,
                 ) {
                     selectedTheme = theme
                 }

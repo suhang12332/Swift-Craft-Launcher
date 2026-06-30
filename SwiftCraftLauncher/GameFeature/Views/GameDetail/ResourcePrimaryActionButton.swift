@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A primary action button for installing or deleting resources.
+// A primary action button for installing or deleting resources.
 import SwiftUI
 
 struct ResourcePrimaryActionButton: View {
@@ -42,9 +42,9 @@ struct ResourcePrimaryActionButton: View {
                 .scaleEffect(1.3)
         case .installed:
             Text(
-                (!type
+                !type
                     ? "common.delete".localized()
-                    : "resource.installed".localized())
+                    : "resource.installed".localized(),
             )
         case .update:
             Text("common.delete".localized())

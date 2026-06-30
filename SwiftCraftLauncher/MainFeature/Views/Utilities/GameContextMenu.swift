@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Context menu for game entries providing play/stop, settings, export, and delete actions.
+// Context menu for game entries providing play/stop, settings, export, and delete actions.
 
 import SwiftUI
 
@@ -28,7 +28,7 @@ struct GameContextMenu: View {
         onExport: @escaping () -> Void,
         showsShowInLauncher: Bool = false,
         selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
-        windowManager: WindowManager = AppServices.windowManager
+        windowManager: WindowManager = AppServices.windowManager,
     ) {
         self.game = game
         self.onDelete = onDelete
@@ -56,7 +56,7 @@ struct GameContextMenu: View {
         }, label: {
             Label(
                 isRunning ? "stop.fill".localized() : "play.fill".localized(),
-                systemImage: isRunning ? "stop.fill" : "play.fill"
+                systemImage: isRunning ? "stop.fill" : "play.fill",
             )
         })
 
@@ -112,7 +112,7 @@ struct GameContextMenu: View {
             isRunning: isRunning,
             player: playerListViewModel.currentPlayer,
             game: game,
-            gameLaunchUseCase: gameLaunchUseCase
+            gameLaunchUseCase: gameLaunchUseCase,
         )
     }
 }

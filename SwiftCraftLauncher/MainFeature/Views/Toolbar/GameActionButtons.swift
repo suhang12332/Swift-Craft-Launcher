@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 /// Provides action buttons for the selected game: launch/stop, show in Finder, import, and crash alert handling.
 struct GameActionButtons: View {
@@ -27,7 +27,7 @@ struct GameActionButtons: View {
 
     init(
         game: GameVersionInfo,
-        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter
+        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter,
     ) {
         self.game = game
         _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
@@ -40,7 +40,7 @@ struct GameActionButtons: View {
     private func cachedIsGameRunning(userId: String = "") -> Bool {
         gameStatusManager.cachedIsGameRunning(
             gameId: game.id,
-            userId: userId.isEmpty ? currentUserId : userId
+            userId: userId.isEmpty ? currentUserId : userId,
         )
     }
 
@@ -62,7 +62,7 @@ struct GameActionButtons: View {
                         defer { gameStatusManager.setGameLaunching(gameId: game.id, userId: userId, isLaunching: false) }
                         await gameLaunchUseCase.launchGame(
                             player: playerListViewModel.currentPlayer,
-                            game: game
+                            game: game,
                         )
                     }
                 }
@@ -70,7 +70,7 @@ struct GameActionButtons: View {
                 let userId = currentUserId
                 let isRunning = cachedIsGameRunning(userId: userId)
                 let isLaunchingGame = gameStatusManager.isGameLaunching(gameId: game.id, userId: userId)
-                if isLaunchingGame && !isRunning {
+                if isLaunchingGame, !isRunning {
                     ProgressView()
                         .controlSize(.small)
                 } else {
@@ -79,7 +79,7 @@ struct GameActionButtons: View {
                         ? "stop.fill".localized()
                         : "play.fill".localized(),
                         systemImage: isRunning
-                        ? "stop.fill" : "play.fill"
+                        ? "stop.fill" : "play.fill",
                     )
                     .applyReplaceTransition()
                 }
@@ -88,14 +88,14 @@ struct GameActionButtons: View {
             .help(
                 cachedIsGameRunning()
                 ? "stop.fill"
-                : (gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId) ? "" : "play.fill")
+                : (gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId) ? "" : "play.fill"),
             )
             .disabled(gameStatusManager.isGameLaunching(gameId: game.id, userId: currentUserId))
 
-            if detailState.gameType == false && game.modLoader != GameLoader.vanilla.displayName {
+            if detailState.gameType == false, game.modLoader != GameLoader.vanilla.displayName {
                 ResourceImportButton(
                     game: game,
-                    gameResourcesType: detailState.gameResourcesType
+                    gameResourcesType: detailState.gameResourcesType,
                 )
             }
 
@@ -112,7 +112,7 @@ struct GameActionButtons: View {
             }
             .alert(
                 "error.game_launch.game_crashed".localized(),
-                isPresented: $showCrashAlert
+                isPresented: $showCrashAlert,
             ) {
                 Button("menu.open.log".localized()) {
                     if let directory = crashDirectory {
@@ -121,7 +121,7 @@ struct GameActionButtons: View {
                         Logger.shared.error("无法打开游戏目录：directory 为空")
                     }
                 }
-                Button("common.close".localized(), role: .cancel) {}
+                Button("common.close".localized(), role: .cancel) { }
             } message: {
                 Text("error.game_launch.game_crashed.description".localized())
             }

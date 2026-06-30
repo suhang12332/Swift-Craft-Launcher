@@ -21,7 +21,7 @@ class GameLogCollector {
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
         windowManager: WindowManager = AppServices.windowManager,
         aiChatManager: AIChatManager = AppServices.aiChatManager,
-        windowDataStore: WindowDataStore = AppServices.windowDataStore
+        windowDataStore: WindowDataStore = AppServices.windowDataStore,
     ) {
         self.errorHandler = errorHandler
         self.windowManager = windowManager
@@ -38,7 +38,7 @@ class GameLogCollector {
             let error = GlobalError.fileSystem(
                 chineseMessage: "未找到游戏日志文件",
                 i18nKey: "error.filesystem.logs_not_found",
-                level: .notification
+                level: .notification,
             )
             errorHandler.handle(error)
             return
@@ -62,7 +62,7 @@ class GameLogCollector {
                     .contentsOfDirectory(
                         at: crashReportsDir,
                         includingPropertiesForKeys: [.isRegularFileKey],
-                        options: [.skipsHiddenFiles]
+                        options: [.skipsHiddenFiles],
                     )
                     .filter { url in
                         guard let resourceValues = try? url.resourceValues(forKeys: [.isRegularFileKey]) else {
@@ -96,7 +96,7 @@ class GameLogCollector {
     /// - Parameters:
     ///   - logFiles: The log file URLs to attach.
     ///   - gameName: The name of the game instance.
-    private func openAIWindowWithLogs(logFiles: [URL], gameName: String) async {
+    private func openAIWindowWithLogs(logFiles: [URL], gameName _: String) async {
         let chatState = ChatState()
 
         var attachments: [MessageAttachmentType] = []

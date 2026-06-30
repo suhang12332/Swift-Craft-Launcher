@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class GameVersionInfoCreationTests: XCTestCase {
-
     func testInit_defaultValues() {
         let info = GameVersionInfo(
             gameName: "TestGame",
@@ -17,7 +16,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
             gameVersion: "1.20.1",
             modClassPath: "",
             assetIndex: "17",
-            modLoader: "vanilla"
+            modLoader: "vanilla",
         )
 
         XCTAssertFalse(info.id.isEmpty)
@@ -58,7 +57,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
             javaVersion: 21,
             mainClass: "net.minecraft.client.main.Main",
             gameArguments: ["--username", "Player"],
-            environmentVariables: "JAVA_HOME=/usr"
+            environmentVariables: "JAVA_HOME=/usr",
         )
 
         XCTAssertEqual(info.gameName, "ModdedGame")
@@ -96,7 +95,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
             javaVersion: 17,
             mainClass: "net.minecraft.client.main.Main",
             gameArguments: ["--username", "Test"],
-            environmentVariables: "JAVA_HOME=/usr"
+            environmentVariables: "JAVA_HOME=/usr",
         )
 
         let encoded = try JSONEncoder().encode(original)
@@ -114,7 +113,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
 
     func testHashable_equalValuesHashEqual() {
         let id = UUID()
-        let date = Date(timeIntervalSince1970: 1000000)
+        let date = Date(timeIntervalSince1970: 1_000_000)
         let a = GameVersionInfo(
             id: id,
             gameName: "Game",
@@ -123,7 +122,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
             modClassPath: "",
             assetIndex: "17",
             modLoader: "vanilla",
-            lastPlayed: date
+            lastPlayed: date,
         )
         let b = GameVersionInfo(
             id: id,
@@ -133,7 +132,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
             modClassPath: "",
             assetIndex: "17",
             modLoader: "vanilla",
-            lastPlayed: date
+            lastPlayed: date,
         )
         XCTAssertEqual(a, b)
         XCTAssertEqual(a.hashValue, b.hashValue)
@@ -146,7 +145,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
             gameVersion: "1.20.1",
             modClassPath: "",
             assetIndex: "17",
-            modLoader: "vanilla"
+            modLoader: "vanilla",
         )
         let b = GameVersionInfo(
             gameName: "GameB",
@@ -154,7 +153,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
             gameVersion: "1.20.1",
             modClassPath: "",
             assetIndex: "17",
-            modLoader: "vanilla"
+            modLoader: "vanilla",
         )
         XCTAssertNotEqual(a, b)
     }
@@ -168,7 +167,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
             gameVersion: "1.20.1",
             modClassPath: "",
             assetIndex: "17",
-            modLoader: "vanilla"
+            modLoader: "vanilla",
         )
         let b = GameVersionInfo(
             id: id,
@@ -177,14 +176,14 @@ final class GameVersionInfoCreationTests: XCTestCase {
             gameVersion: "1.21.1",
             modClassPath: "",
             assetIndex: "17",
-            modLoader: "vanilla"
+            modLoader: "vanilla",
         )
         XCTAssertNotEqual(a, b)
     }
 
     func testHashable_intoSet() {
         let id = UUID()
-        let date = Date(timeIntervalSince1970: 1000000)
+        let date = Date(timeIntervalSince1970: 1_000_000)
         let a = GameVersionInfo(
             id: id,
             gameName: "Game",
@@ -193,7 +192,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
             modClassPath: "",
             assetIndex: "17",
             modLoader: "vanilla",
-            lastPlayed: date
+            lastPlayed: date,
         )
         let b = GameVersionInfo(
             id: id,
@@ -203,7 +202,7 @@ final class GameVersionInfoCreationTests: XCTestCase {
             modClassPath: "",
             assetIndex: "17",
             modLoader: "vanilla",
-            lastPlayed: date
+            lastPlayed: date,
         )
         var set = Set<GameVersionInfo>()
         set.insert(a)

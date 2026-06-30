@@ -17,19 +17,19 @@ extension ModrinthSearchViewModel {
     /// - Returns: An array of facet groups suitable for the Modrinth API.
     func buildFacets(
         projectType: String,
-        filterOptions: FilterOptions
+        filterOptions: FilterOptions,
     ) -> [[String]] {
         var facets: [[String]] = []
 
         facets.append([
-            "\(ModrinthConstants.API.FacetType.projectType):\(projectType)"
+            "\(ModrinthConstants.API.FacetType.projectType):\(projectType)",
         ])
 
         if !filterOptions.versions.isEmpty {
             facets.append(
                 filterOptions.versions.map {
                     "\(ModrinthConstants.API.FacetType.versions):\($0)"
-                }
+                },
             )
         }
 
@@ -37,7 +37,7 @@ extension ModrinthSearchViewModel {
             facets.append(
                 filterOptions.categories.map {
                     "\(ModrinthConstants.API.FacetType.categories):\($0)"
-                }
+                },
             )
         }
 
@@ -57,8 +57,8 @@ extension ModrinthSearchViewModel {
             facets.append(filterOptions.performanceImpact.map { "categories:\($0)" })
         }
 
-        if !filterOptions.loaders.isEmpty && projectType != ResourceType.resourcepack.rawValue
-            && projectType != ResourceType.datapack.rawValue {
+        if !filterOptions.loaders.isEmpty, projectType != ResourceType.resourcepack.rawValue,
+            projectType != ResourceType.datapack.rawValue {
             var loadersToUse = filterOptions.loaders
             if let first = filterOptions.loaders.first, first.lowercased() == GameLoader.vanilla.displayName {
                 loadersToUse = ["minecraft"]

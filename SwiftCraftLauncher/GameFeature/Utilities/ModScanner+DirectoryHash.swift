@@ -15,7 +15,7 @@ extension ModScanner {
             throw GlobalError.resource(
                 chineseMessage: "目录不存在: \(dir.lastPathComponent)",
                 i18nKey: "error.resource.directory_not_found",
-                level: .silent
+                level: .silent,
             )
         }
 
@@ -23,14 +23,14 @@ extension ModScanner {
         do {
             files = try FileManager.default.contentsOfDirectory(
                 at: dir,
-                includingPropertiesForKeys: nil
+                includingPropertiesForKeys: nil,
             )
         } catch {
             throw GlobalError.fileSystem(
                 chineseMessage:
                     "读取目录失败: \(dir.lastPathComponent), 错误: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.directory_read_failed",
-                level: .silent
+                level: .silent,
             )
         }
 
@@ -42,7 +42,7 @@ extension ModScanner {
     /// Rebuilds the hash set for a directory, updating both the general cache and the mod installation cache when applicable.
     func rebuildDirectoryHashes(
         dir: URL,
-        gameNameHint: String? = nil
+        gameNameHint: String? = nil,
     ) async throws -> Set<String> {
         let standardizedDir = dir.standardizedFileURL
         let jarFiles = try readJarZipFiles(from: standardizedDir)
@@ -65,7 +65,7 @@ extension ModScanner {
 
             var result: Set<String> = []
             for await hash in group {
-                if let hash = hash {
+                if let hash {
                     result.insert(hash)
                 }
             }
@@ -79,7 +79,7 @@ extension ModScanner {
             if let gameName {
                 await AppServices.modInstallationCache.setAllModsInstalled(
                     for: gameName,
-                    hashes: hashes
+                    hashes: hashes,
                 )
             }
         }
@@ -90,7 +90,7 @@ extension ModScanner {
     /// Ensures the FSEvents watcher is registered for the given directory.
     func ensureFSEventsWatcherRegistered(
         standardizedDirectory: URL,
-        gameNameHint: String?
+        gameNameHint: String?,
     ) async {
         let hint: String? = {
             if let gameNameHint { return gameNameHint }
@@ -99,13 +99,13 @@ extension ModScanner {
         }()
         await AppServices.modDirectoryWatcherRegistry.ensureWatching(
             directoryURL: standardizedDirectory,
-            gameNameHint: hint
+            gameNameHint: hint,
         )
     }
 
     /// Returns cached detail IDs or performs a full scan if no cache exists.
     func scanAllDetailIdsAfterWatcherRegisteredThrowing(
-        standardizedDirectory: URL
+        standardizedDirectory: URL,
     ) async throws -> Set<String> {
         if let cached = await AppServices.directoryHashCache.get(for: standardizedDirectory) {
             return cached
@@ -116,7 +116,7 @@ extension ModScanner {
     /// Scans the directory for all detail IDs, returning the result via a completion handler.
     public func scanAllDetailIds(
         in dir: URL,
-        completion: @escaping (Set<String>) -> Void
+        completion: @escaping (Set<String>) -> Void,
     ) {
         Task {
             do {
@@ -136,10 +136,10 @@ extension ModScanner {
         let standardizedDir = dir.standardizedFileURL
         await ensureFSEventsWatcherRegistered(
             standardizedDirectory: standardizedDir,
-            gameNameHint: nil
+            gameNameHint: nil,
         )
         return try await scanAllDetailIdsAfterWatcherRegisteredThrowing(
-            standardizedDirectory: standardizedDir
+            standardizedDirectory: standardizedDir,
         )
     }
 
@@ -155,12 +155,12 @@ extension ModScanner {
         let standardizedModsDir = modsDir.standardizedFileURL
         await ensureFSEventsWatcherRegistered(
             standardizedDirectory: standardizedModsDir,
-            gameNameHint: game.gameName
+            gameNameHint: game.gameName,
         )
 
         do {
             let detailIds = try await scanAllDetailIdsAfterWatcherRegisteredThrowing(
-                standardizedDirectory: standardizedModsDir
+                standardizedDirectory: standardizedModsDir,
             )
             Logger.shared.debug("游戏 \(game.gameName) 扫描完成，发现 \(detailIds.count) 个 mod")
         } catch {
@@ -184,11 +184,11 @@ extension ModScanner {
             defer { semaphore.signal() }
             await self.ensureFSEventsWatcherRegistered(
                 standardizedDirectory: standardizedModsDir,
-                gameNameHint: game.gameName
+                gameNameHint: game.gameName,
             )
             do {
                 let detailIds = try await self.scanAllDetailIdsAfterWatcherRegisteredThrowing(
-                    standardizedDirectory: standardizedModsDir
+                    standardizedDirectory: standardizedModsDir,
                 )
                 Logger.shared.debug("游戏 \(game.gameName) 扫描完成，发现 \(detailIds.count) 个 mod")
             } catch {
@@ -201,7 +201,7 @@ extension ModScanner {
 
     /// Returns `true` if the directory is a mods directory.
     func isModsDirectory(_ dir: URL) -> Bool {
-        return dir.lastPathComponent.lowercased() == "mods"
+        dir.lastPathComponent.lowercased() == "mods"
     }
 
     /// Extracts the game name from a mods directory path.

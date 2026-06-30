@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A button that manages adding, deleting, updating, and toggling resource installation state.
+// A button that manages adding, deleting, updating, and toggling resource installation state.
 import Foundation
 import SwiftUI
 
@@ -41,7 +41,7 @@ struct AddOrDeleteResourceButton: View {
         scannedDetailIds: Binding<Set<String>> = .constant([]),
         isResourceDisabled: Binding<Bool> = .constant(false),
         onResourceUpdated: ((String, String, String, String?) -> Void)? = nil,
-        onToggleDisableState: ((Bool) -> Void)? = nil
+        onToggleDisableState: ((Bool) -> Void)? = nil,
     ) {
         self.project = project
         self.selectedVersions = selectedVersions
@@ -49,10 +49,10 @@ struct AddOrDeleteResourceButton: View {
         self.gameInfo = gameInfo
         self.query = query
         self.type = type
-        self._selectedItem = selectedItem
+        _selectedItem = selectedItem
         self.onResourceChanged = onResourceChanged
-        self._scannedDetailIds = scannedDetailIds
-        self._isResourceDisabled = isResourceDisabled
+        _scannedDetailIds = scannedDetailIds
+        _isResourceDisabled = isResourceDisabled
         self.onResourceUpdated = onResourceUpdated
         self.onToggleDisableState = onToggleDisableState
 
@@ -68,25 +68,24 @@ struct AddOrDeleteResourceButton: View {
                 onResourceUpdated: onResourceUpdated,
                 onToggleDisableState: onToggleDisableState,
                 setIsResourceDisabled: { isResourceDisabled.wrappedValue = $0 },
-                addScannedHash: { hash in scannedDetailIds.wrappedValue.insert(hash) }
-            )
+                addScannedHash: { hash in scannedDetailIds.wrappedValue.insert(hash) },
+            ),
         )
     }
 
     var body: some View {
-
         HStack(spacing: 8) {
             LocalResourceUpdateButton(
                 isVisible: type == false && viewModel.addButtonState == .update && !isResourceDisabled,
                 isUpdateButtonLoading: $viewModel.isUpdateButtonLoading,
                 addButtonState: viewModel.addButtonState,
-                onTap: viewModel.handleUpdateTap
+                onTap: viewModel.handleUpdateTap,
             )
 
             LocalResourceToggle(
                 isVisible: type == false,
                 isDisabled: $viewModel.isDisabled,
-                onToggle: viewModel.toggleDisableState
+                onToggle: viewModel.toggleDisableState,
             )
 
             ResourcePrimaryActionButton(
@@ -95,19 +94,19 @@ struct AddOrDeleteResourceButton: View {
                 isDisabled: viewModel.addButtonState == .loading
                     || (viewModel.addButtonState == .installed && type),
                 onTap: { viewModel.handlePrimaryTap(selectedItem: selectedItem) },
-                query: query
+                query: query,
             )
             .onAppear {
                 viewModel.setDependencies(
                     gameRepository: gameRepository,
-                    playerListViewModel: playerListViewModel
+                    playerListViewModel: playerListViewModel,
                 )
                 viewModel.onAppear(selectedItem: selectedItem, scannedDetailIds: scannedDetailIds)
             }
             .onChange(of: scannedDetailIds) { _, _ in
                 viewModel.onScannedDetailIdsChanged(
                     selectedItem: selectedItem,
-                    scannedDetailIds: scannedDetailIds
+                    scannedDetailIds: scannedDetailIds,
                 )
             }
         }
@@ -117,8 +116,8 @@ struct AddOrDeleteResourceButton: View {
                 project: project,
                 gameInfo: gameInfo,
                 query: query,
-                gameRepository: gameRepository
-            )
+                gameRepository: gameRepository,
+            ),
         )
     }
 }

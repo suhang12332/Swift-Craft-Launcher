@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Displays a list of locally installed resources for a game.
+// Displays a list of locally installed resources for a game.
 import SwiftUI
 
 struct GameLocalResourceListContent: View {
@@ -26,7 +26,7 @@ struct GameLocalResourceListContent: View {
             } else {
                 ForEach(
                     viewModel.displayedResources.map { ModrinthProject.from(detail: $0) },
-                    id: \.projectId
+                    id: \.projectId,
                 ) { mod in
                     ModrinthDetailCardView(
                         project: mod,
@@ -42,7 +42,7 @@ struct GameLocalResourceListContent: View {
                             viewModel.handleLocalDisableStateChanged(
                                 projectId: project.projectId,
                                 oldFileName: oldFileName,
-                                isDisabled: isDisabled
+                                isDisabled: isDisabled,
                             )
                         },
                         onResourceUpdated: { projectId, oldFileName, newFileName, newHash in
@@ -50,17 +50,17 @@ struct GameLocalResourceListContent: View {
                                 projectId: projectId,
                                 oldFileName: oldFileName,
                                 newFileName: newFileName,
-                                newHash: newHash
+                                newHash: newHash,
                             )
                         },
-                        scannedDetailIds: .constant([])
+                        scannedDetailIds: .constant([]),
                     )
                     .padding(.vertical, ModrinthConstants.UIConstants.verticalPadding)
                     .listRowInsets(EdgeInsets(top: 4, leading: 8, bottom: 4, trailing: 8))
                     .listRowSeparator(.hidden)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        if !mod.projectId.hasPrefix("local_") && !mod.projectId.hasPrefix("file_") {
+                        if !mod.projectId.hasPrefix("local_"), !mod.projectId.hasPrefix("file_") {
                             selectedProjectId = mod.projectId
                             if let type = ResourceType(rawValue: query) {
                                 selectedItem = .resource(type)

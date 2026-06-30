@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 @MainActor
 final class GameCreationDownloadStateTests: XCTestCase {
-
     func testInitialState() {
         let state = DownloadState()
         XCTAssertFalse(state.isDownloading)

@@ -42,7 +42,7 @@ final class CategoryContentViewModel: ObservableObject {
         loadTask = nil
         loadTask = Task { [weak self] in
             guard let self else { return }
-            await self.fetchData()
+            await fetchData()
         }
     }
 
@@ -87,7 +87,7 @@ final class CategoryContentViewModel: ObservableObject {
                 throw GlobalError.resource(
                     chineseMessage: "无法获取分类数据",
                     i18nKey: "error.resource.categories_not_found",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
@@ -95,14 +95,14 @@ final class CategoryContentViewModel: ObservableObject {
                 throw GlobalError.resource(
                     chineseMessage: "无法获取游戏版本数据",
                     i18nKey: "error.resource.game_versions_not_found",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
             await processFetchedData(
                 categories: categoriesResult,
                 versions: versionsResult,
-                loaders: loadersResult
+                loaders: loadersResult,
             )
         } catch is CancellationError {
             isLoading = false
@@ -115,26 +115,26 @@ final class CategoryContentViewModel: ObservableObject {
     }
 
     private static func getStaticLoaders() -> [Loader] {
-        return [
+        [
             Loader(
                 name: GameLoader.fabric.displayName,
                 icon: GameLoader.fabric.displayName,
-                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue],
             ),
             Loader(
                 name: GameLoader.forge.displayName,
                 icon: GameLoader.forge.displayName,
-                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue],
             ),
             Loader(
                 name: GameLoader.quilt.rawValue,
                 icon: GameLoader.quilt.rawValue,
-                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue],
             ),
             Loader(
                 name: GameLoader.neoforge.displayName,
                 icon: GameLoader.neoforge.displayName,
-                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue]
+                supported_project_types: [ResourceType.mod.rawValue, ResourceType.modpack.rawValue],
             ),
         ]
     }
@@ -142,7 +142,7 @@ final class CategoryContentViewModel: ObservableObject {
     private func processFetchedData(
         categories: [Category],
         versions: [GameVersion],
-        loaders: [Loader]
+        loaders: [Loader],
     ) async {
         let projectType =
             project == ProjectType.datapack ? ProjectType.mod : project

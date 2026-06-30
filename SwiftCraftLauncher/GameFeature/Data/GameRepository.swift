@@ -13,7 +13,6 @@ import Foundation
 /// `GameRepository` serves as the primary data access layer for game instances,
 /// coordinating between the local SQLite database and the in-memory cache.
 class GameRepository: ObservableObject {
-
     /// A dictionary of game instances keyed by their working path.
     @Published private(set) var gamesByWorkingPath: [String: [GameVersionInfo]] = [:]
 
@@ -60,13 +59,13 @@ class GameRepository: ObservableObject {
     init(
         workingPathProvider: WorkingPathProviding = AppServices.generalSettingsManager,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        modScanner: ModScanner = AppServices.modScanner
+        modScanner: ModScanner = AppServices.modScanner,
     ) {
         self.workingPathProvider = workingPathProvider
         self.errorHandler = errorHandler
         self.modScanner = modScanner
         let dbPath = AppPaths.gameVersionDatabase.path
-        self.database = GameVersionDatabase(dbPath: dbPath)
+        database = GameVersionDatabase(dbPath: dbPath)
 
         lastWorkingPath = currentWorkingPath
 
@@ -92,13 +91,13 @@ class GameRepository: ObservableObject {
         workingPathCancellable = workingPathProvider.workingPathWillChange
             .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
-                guard let self = self else { return }
-                let newPath = self.currentWorkingPath
-                if newPath != self.lastWorkingPath {
-                    self.lastWorkingPath = newPath
-                    self.workingPathChanged = true
-                    self.workspaceSwitchTask?.cancel()
-                    self.workspaceSwitchTask = Task { @MainActor in
+                guard let self else { return }
+                let newPath = currentWorkingPath
+                if newPath != lastWorkingPath {
+                    lastWorkingPath = newPath
+                    workingPathChanged = true
+                    workspaceSwitchTask?.cancel()
+                    workspaceSwitchTask = Task { @MainActor in
                         do {
                             try await self.loadGamesThrowing()
                             if !Task.isCancelled {
@@ -130,13 +129,13 @@ class GameRepository: ObservableObject {
         let task = Task { [weak self] in
             guard let self else { return }
             do {
-                try await self.initializeDatabase()
-                try await self.loadGamesThrowing()
-                await self.scanAllGamesModsDirectory()
-                await self.refreshWorkingPathOptions()
-                self.hasLoadedInitialData = true
+                try await initializeDatabase()
+                try await loadGamesThrowing()
+                await scanAllGamesModsDirectory()
+                await refreshWorkingPathOptions()
+                hasLoadedInitialData = true
             } catch {
-                self.errorHandler.handle(error)
+                errorHandler.handle(error)
                 await MainActor.run {
                     self.gamesByWorkingPath = [:]
                 }
@@ -195,7 +194,7 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 chineseMessage: "找不到要删除的游戏：\(id)",
                 i18nKey: "error.validation.game_not_found_delete",
-                level: .notification
+                level: .notification,
             )
         }
         try await Task.detached(priority: .userInitiated) {
@@ -239,11 +238,11 @@ class GameRepository: ObservableObject {
     }
 
     func getGame(by id: String) -> GameVersionInfo? {
-        return games.first { $0.id == id }
+        games.first { $0.id == id }
     }
 
     func getGameByName(by gameName: String) -> GameVersionInfo? {
-        return games.first { $0.gameName == gameName }
+        games.first { $0.gameName == gameName }
     }
 
     func updateGame(_ game: GameVersionInfo) async throws {
@@ -286,7 +285,7 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 chineseMessage: "找不到要更新状态的游戏：\(id)",
                 i18nKey: "error.validation.game_not_found_status",
-                level: .notification
+                level: .notification,
             )
         }
         try await Task.detached(priority: .userInitiated) {
@@ -321,7 +320,7 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 chineseMessage: "找不到要更新 Java 路径的游戏：\(id)",
                 i18nKey: "error.validation.game_not_found_java",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -346,7 +345,7 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 chineseMessage: "找不到要更新 JVM 参数的游戏：\(id)",
                 i18nKey: "error.validation.game_not_found_jvm",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -371,15 +370,15 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 chineseMessage: "找不到要更新内存大小的游戏：\(id)",
                 i18nKey: "error.validation.game_not_found_memory",
-                level: .notification
+                level: .notification,
             )
         }
 
-        guard xms > 0 && xmx > 0 && xms <= xmx else {
+        guard xms > 0, xmx > 0, xms <= xmx else {
             throw GlobalError.validation(
                 chineseMessage: "无效的内存参数：xms=\(xms), xmx=\(xmx)",
                 i18nKey: "error.validation.invalid_memory_params",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -477,7 +476,7 @@ class GameRepository: ObservableObject {
                 localGameNames = []
             }
             let valid = games.filter { localGameNames.contains($0.gameName) }
-            let dbGameNames = Set(games.map { $0.gameName })
+            let dbGameNames = Set(games.map(\.gameName))
             let missingFolders = dbGameNames.subtracting(localGameNames)
             let missingDatabase = localGameNames.subtracting(dbGameNames)
             let corrupted = Array(missingFolders.union(missingDatabase)).sorted()

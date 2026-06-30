@@ -5,9 +5,9 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import AuthenticationServices
 import Foundation
 import SwiftUI
-import AuthenticationServices
 
 /// Manages OAuth2 authentication with Yggdrasil-compatible authentication servers.
 final class YggdrasilAuthService: NSObject, ObservableObject {
@@ -72,7 +72,7 @@ extension YggdrasilAuthService {
         await withCheckedContinuation { continuation in
             webAuthSession = ASWebAuthenticationSession(
                 url: authURL,
-                callbackURLScheme: URL(string: server.redirectURI)?.scheme
+                callbackURLScheme: URL(string: server.redirectURI)?.scheme,
             ) { [weak self] callbackURL, error in
                 Task { @MainActor in
                     func finish(_ state: YggdrasilAuthState) {
@@ -87,7 +87,7 @@ extension YggdrasilAuthService {
 
                     defer { continuation.resume() }
 
-                    if let error = error {
+                    if let error {
                         if let authError = error as? ASWebAuthenticationSessionError,
                            authError.code == .canceledLogin {
                             Logger.shared.info("用户取消了 Yggdrasil 登录")
@@ -180,7 +180,7 @@ private extension YggdrasilAuthService {
             try? await Task.sleep(nanoseconds: 1_000_000_000)
             let candidates = try await fetchProfileList(
                 accessToken: token.accessToken,
-                server: server
+                server: server,
             )
 
             let accessToken = token.accessToken
@@ -190,7 +190,7 @@ private extension YggdrasilAuthService {
                 throw GlobalError.validation(
                     chineseMessage: "未获取到任何玩家资料",
                     i18nKey: "error.validation.yggdrasil_no_profiles",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
@@ -206,7 +206,7 @@ private extension YggdrasilAuthService {
                     capes: c.capes,
                     accessToken: accessToken,
                     refreshToken: refreshToken,
-                    serverBaseURL: server.baseURL.absoluteString
+                    serverBaseURL: server.baseURL.absoluteString,
                 )
             }
 

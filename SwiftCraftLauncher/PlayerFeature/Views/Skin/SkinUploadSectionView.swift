@@ -5,11 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+import AppKit
 import Foundation
+import SkinRenderKit
 import SwiftUI
 import UniformTypeIdentifiers
-import AppKit
-import SkinRenderKit
 
 /// Provides the skin upload area, render preview, and library access.
 struct SkinUploadSectionView: View {
@@ -54,7 +54,7 @@ struct SkinUploadSectionView: View {
         onSelectSkinLibraryItem: @escaping (SkinLibraryItem) -> Void,
         windowDataStore: WindowDataStore = AppServices.windowDataStore,
         windowManager: WindowManager = AppServices.windowManager,
-        skinLibraryStore: SkinLibraryStore = SkinLibraryStore()
+        skinLibraryStore: SkinLibraryStore = SkinLibraryStore(),
     ) {
         _currentModel = currentModel
         _showingFileImporter = showingFileImporter
@@ -109,7 +109,7 @@ struct SkinUploadSectionView: View {
                             },
                             onDeleteItem: { item in
                                 pendingDeletion = item
-                            }
+                            },
                         )
                     }
                 }
@@ -136,10 +136,10 @@ struct SkinUploadSectionView: View {
                     if !isPresented {
                         pendingDeletion = nil
                     }
-                }
+                },
             ),
             titleVisibility: .visible,
-            presenting: pendingDeletion
+            presenting: pendingDeletion,
         ) { item in
             Button("common.delete".localized(), role: .destructive) {
                 _ = skinLibraryStore.deleteItem(item)
@@ -164,7 +164,6 @@ struct SkinUploadSectionView: View {
             .conditionalDrop(isEnabled: !hasSkinRenderView, perform: onDrop)
     }
 
-    @ViewBuilder
     private func skinRenderContent(playerModel: PlayerModel) -> some View {
         Group {
             if let image = selectedSkinImage ?? currentSkinRenderImage {
@@ -177,7 +176,7 @@ struct SkinUploadSectionView: View {
                     onSkinDropped: { dropped in
                         onSkinDropped(dropped)
                     },
-                    onCapeDropped: { _ in }
+                    onCapeDropped: { _ in },
                 )
             } else if let skinPath = selectedSkinPath {
                 SkinRenderView(
@@ -189,7 +188,7 @@ struct SkinUploadSectionView: View {
                     onSkinDropped: { dropped in
                         onSkinDropped(dropped)
                     },
-                    onCapeDropped: { _ in }
+                    onCapeDropped: { _ in },
                 )
             } else {
                 Color.clear
@@ -213,7 +212,7 @@ struct SkinUploadSectionView: View {
             skinImage: selectedSkinImage ?? currentSkinRenderImage,
             skinPath: selectedSkinPath,
             capeImage: selectedCapeImage,
-            playerModel: playerModel
+            playerModel: playerModel,
         )
         windowManager.openWindow(id: .skinPreview)
     }
@@ -227,7 +226,7 @@ extension View {
     @ViewBuilder
     func conditionalDrop(isEnabled: Bool, perform: @escaping ([NSItemProvider]) -> Bool) -> some View {
         if isEnabled {
-            self.onDrop(of: [UTType.image.identifier, UTType.fileURL.identifier], isTargeted: nil, perform: perform)
+            onDrop(of: [UTType.image.identifier, UTType.fileURL.identifier], isTargeted: nil, perform: perform)
         } else {
             self
         }

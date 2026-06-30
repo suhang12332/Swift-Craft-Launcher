@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class GameVersionInfoExtendedTests: XCTestCase {
-
     func testGameVersionInfo_codable_allFields() throws {
         let original = GameVersionInfo(
             id: UUID(),
@@ -29,7 +28,7 @@ final class GameVersionInfoExtendedTests: XCTestCase {
             javaVersion: 17,
             mainClass: "net.minecraft.client.main.Main",
             gameArguments: ["--username", "Test"],
-            environmentVariables: "JAVA_HOME=/usr"
+            environmentVariables: "JAVA_HOME=/usr",
         )
 
         let encoded = try JSONEncoder().encode(original)

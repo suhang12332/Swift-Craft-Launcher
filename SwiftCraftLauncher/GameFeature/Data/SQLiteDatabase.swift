@@ -13,7 +13,6 @@ import SQLite3
 /// Manages a single database connection with WAL journal mode and memory-mapped I/O.
 /// All operations are serialized on a dedicated dispatch queue.
 class SQLiteDatabase {
-
     private var db: OpaquePointer?
     private let dbPath: String
     private let queue: DispatchQueue
@@ -25,7 +24,7 @@ class SQLiteDatabase {
     ///   - path: The file path of the SQLite database.
     ///   - queue: An optional dispatch queue for serializing operations.
     init(path: String, queue: DispatchQueue? = nil) {
-        self.dbPath = path
+        dbPath = path
         self.queue = queue ?? DispatchQueue(label: "com.swiftcraftlauncher.sqlite", qos: .utility)
         self.queue.setSpecific(key: Self.queueKey, value: true)
     }
@@ -35,7 +34,7 @@ class SQLiteDatabase {
     }
 
     private var isOnQueue: Bool {
-        return DispatchQueue.getSpecific(key: Self.queueKey) != nil
+        DispatchQueue.getSpecific(key: Self.queueKey) != nil
     }
 
     private func sync<T>(_ block: () throws -> T) rethrows -> T {
@@ -65,7 +64,7 @@ class SQLiteDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "无法打开数据库: \(errorMessage)",
                     i18nKey: "error.validation.database_open_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
@@ -79,7 +78,7 @@ class SQLiteDatabase {
     /// Closes the database connection.
     func close() {
         sync {
-            guard let db = db else { return }
+            guard let db else { return }
             sqlite3_close(db)
             self.db = nil
             Logger.shared.debug("SQLite 数据库已关闭")
@@ -87,7 +86,7 @@ class SQLiteDatabase {
     }
 
     private func enableWALMode() throws {
-        guard let db = db else { return }
+        guard let db else { return }
 
         let result = sqlite3_exec(db, "PRAGMA journal_mode=WAL;", nil, nil, nil)
         guard result == SQLITE_OK else {
@@ -95,7 +94,7 @@ class SQLiteDatabase {
             throw GlobalError.validation(
                 chineseMessage: "无法启用 WAL 模式: \(errorMessage)",
                 i18nKey: "error.validation.wal_mode_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -105,7 +104,7 @@ class SQLiteDatabase {
     }
 
     private func enableMmap() throws {
-        guard let db = db else { return }
+        guard let db else { return }
 
         let mmapSize = 64 * 1024 * 1024
         let sql = "PRAGMA mmap_size=\(mmapSize);"
@@ -116,7 +115,7 @@ class SQLiteDatabase {
             throw GlobalError.validation(
                 chineseMessage: "无法启用 mmap: \(errorMessage)",
                 i18nKey: "error.validation.mmap_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -131,11 +130,11 @@ class SQLiteDatabase {
     /// - Returns: The value produced by the block.
     func transaction<T>(_ block: () throws -> T) throws -> T {
         try sync {
-            guard let db = db else {
+            guard let db else {
                 throw GlobalError.validation(
                     chineseMessage: "数据库未打开",
                     i18nKey: "error.validation.database_not_open",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
@@ -145,7 +144,7 @@ class SQLiteDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "无法开始事务: \(errorMessage)",
                     i18nKey: "error.validation.transaction_begin_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
@@ -158,7 +157,7 @@ class SQLiteDatabase {
                     throw GlobalError.validation(
                         chineseMessage: "无法提交事务: \(errorMessage)",
                         i18nKey: "error.validation.transaction_commit_failed",
-                        level: .notification
+                        level: .notification,
                     )
                 }
 
@@ -175,11 +174,11 @@ class SQLiteDatabase {
     /// - Parameter sql: The SQL statement to execute.
     func execute(_ sql: String) throws {
         try sync {
-            guard let db = db else {
+            guard let db else {
                 throw GlobalError.validation(
                     chineseMessage: "数据库未打开",
                     i18nKey: "error.validation.database_not_open",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
@@ -192,7 +191,7 @@ class SQLiteDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "SQL 执行失败: \(message)",
                     i18nKey: "error.validation.sql_execution_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -205,12 +204,12 @@ class SQLiteDatabase {
     /// - Parameter sql: The SQL statement to prepare.
     /// - Returns: A pointer to the prepared statement.
     func prepare(_ sql: String) throws -> OpaquePointer {
-        return try sync {
-            guard let db = db else {
+        try sync {
+            guard let db else {
                 throw GlobalError.validation(
                     chineseMessage: "数据库未打开",
                     i18nKey: "error.validation.database_not_open",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
@@ -222,7 +221,7 @@ class SQLiteDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "无法准备 SQL 语句: \(errorMessage)",
                     i18nKey: "error.validation.sql_prepare_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
@@ -232,26 +231,25 @@ class SQLiteDatabase {
 
     /// The underlying database pointer.
     var database: OpaquePointer? {
-        return sync { db }
+        sync { db }
     }
 
     /// Executes a block with direct access to the raw database pointer.
     ///
     /// - Parameter block: The work to perform with the database pointer.
     func perform<T>(_ block: @escaping (OpaquePointer?) throws -> T) throws -> T {
-        return try sync {
+        try sync {
             try block(db)
         }
     }
 }
 
 extension SQLiteDatabase {
-
     private static let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
     /// Binds a string value to a statement parameter.
     static func bind(_ statement: OpaquePointer, index: Int32, value: String?) {
-        if let value = value {
+        if let value {
             sqlite3_bind_text(statement, index, value, -1, SQLITE_TRANSIENT)
         } else {
             sqlite3_bind_null(statement, index)
@@ -283,7 +281,7 @@ extension SQLiteDatabase {
 
     /// Reads an integer value from a result column.
     static func intColumn(_ statement: OpaquePointer, index: Int32) -> Int {
-        return Int(sqlite3_column_int64(statement, index))
+        Int(sqlite3_column_int64(statement, index))
     }
 
     /// Reads a date value from a result column, interpreted as a Unix timestamp.

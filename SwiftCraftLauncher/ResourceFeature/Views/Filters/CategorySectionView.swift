@@ -26,19 +26,19 @@ struct CategorySectionView: View {
             chipBuilder: { item in
                 FilterChip(
                     title: item.name,
-                    isSelected: selectedItems.contains(item.id)
+                    isSelected: selectedItems.contains(item.id),
                 ) { toggleSelection(for: item.id) }
             },
             overflowContentBuilder: isVersionSection ? { _ in
                 AnyView(
                     VersionGroupedView(
                         items: items,
-                        selectedItems: $selectedItems
+                        selectedItems: $selectedItems,
                     ) { itemId in
                         toggleSelection(for: itemId)
                     }
                     .frame(maxHeight: SectionViewConstants.defaultPopoverMaxHeight)
-                    .frame(width: SectionViewConstants.defaultPopoverWidth)
+                    .frame(width: SectionViewConstants.defaultPopoverWidth),
                 )
             } : nil,
             clearAction: {
@@ -48,14 +48,14 @@ struct CategorySectionView: View {
                 !selectedItems.isEmpty
             },
             customVisibleItems: visibleItems,
-            customOverflowItems: overflowItems
+            customOverflowItems: overflowItems,
         )
     }
 
     private func computeVisibleAndOverflowItems() -> ([FilterItem], [FilterItem]) {
-        return items.computeVisibleAndOverflowItemsByRows(
+        items.computeVisibleAndOverflowItemsByRows(
             maxRows: SectionViewConstants.defaultMaxRows,
-            maxWidth: SectionViewConstants.defaultMaxWidth
+            maxWidth: SectionViewConstants.defaultMaxWidth,
         ) { item in
             CGFloat(item.name.count) * SectionViewConstants.defaultEstimatedCharWidth
                 + SectionViewConstants.defaultChipPadding

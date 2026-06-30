@@ -22,13 +22,13 @@ final class MinecraftFriendsSheetHostAdapter: MinecraftFriendsSheetHost {
         player: Player,
         authService: MinecraftAuthService = AppServices.minecraftAuthService,
         dataManager: PlayerDataManager = AppServices.playerDataManager,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.player = player
         self.authService = authService
-        self.sideEffects = MinecraftFriendsMicrosoftPlayerSideEffects(
+        sideEffects = MinecraftFriendsMicrosoftPlayerSideEffects(
             dataManager: dataManager,
-            errorHandler: errorHandler
+            errorHandler: errorHandler,
         )
     }
 
@@ -54,7 +54,7 @@ final class MinecraftFriendsSheetHostAdapter: MinecraftFriendsSheetHost {
             },
             applyRefreshedPlayer: { self.player = $0 },
             onMissingMinecraftAccessToken: { self.sideEffects.reportMissingAccessToken() },
-            onRefreshFailure: { self.sideEffects.reportGlobalError($0) }
+            onRefreshFailure: { self.sideEffects.reportGlobalError($0) },
         )
     }
 

@@ -13,13 +13,13 @@ protocol ModLoaderHandler {
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void
+        onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String)
 
     static func setupWithSpecificVersion(
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void
+        onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async -> (loaderVersion: String, classpath: String, mainClass: String)?
 }

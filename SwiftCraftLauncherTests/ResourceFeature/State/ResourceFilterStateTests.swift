@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 @MainActor
 final class ResourceFilterStateTests: XCTestCase {
-
     func testInit_defaultValues() {
         let state = ResourceFilterState()
 

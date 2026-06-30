@@ -9,7 +9,6 @@ import Foundation
 
 /// Fetches and manages Quilt mod loader versions and profiles.
 enum QuiltLoaderService {
-
     static func fetchAllQuiltLoaders(for minecraftVersion: String) async -> [QuiltLoaderResponse] {
         do {
             return try await fetchAllQuiltLoadersThrowing(for: minecraftVersion)
@@ -51,14 +50,14 @@ enum QuiltLoaderService {
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void
+        onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async -> (loaderVersion: String, classpath: String, mainClass: String)? {
         do {
             return try await setupWithSpecificVersionThrowing(
                 for: gameVersion,
                 loaderVersion: loaderVersion,
                 gameInfo: gameInfo,
-                onProgressUpdate: onProgressUpdate
+                onProgressUpdate: onProgressUpdate,
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -71,8 +70,8 @@ enum QuiltLoaderService {
     static func setupWithSpecificVersionThrowing(
         for gameVersion: String,
         loaderVersion: String,
-        gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void
+        gameInfo _: GameVersionInfo,
+        onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         Logger.shared.info("开始设置指定版本的 Quilt 加载器: \(loaderVersion)")
 
@@ -89,11 +88,11 @@ enum QuiltLoaderService {
             throw GlobalError.resource(
                 chineseMessage: "Quilt profile 缺少版本信息",
                 i18nKey: "error.resource.quilt_missing_version",
-                level: .notification
+                level: .notification,
             )
         }
         return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)
     }
 }
 
-extension QuiltLoaderService: ModLoaderHandler {}
+extension QuiltLoaderService: ModLoaderHandler { }

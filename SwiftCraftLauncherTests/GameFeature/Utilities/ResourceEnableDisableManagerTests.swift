@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ResourceEnableDisableManagerTests: XCTestCase {
-
     func testIsDisabled_nil_returnsFalse() {
         XCTAssertFalse(ResourceEnableDisableManager.isDisabled(fileName: nil))
     }
@@ -45,7 +44,7 @@ final class ResourceEnableDisableManagerTests: XCTestCase {
 
         let result = try ResourceEnableDisableManager.toggleDisableState(
             fileName: testFile,
-            resourceDir: tmpDir
+            resourceDir: tmpDir,
         )
         XCTAssertEqual(result, "test.jar.disable")
         XCTAssertTrue(FileManager.default.fileExists(atPath: tmpDir.appendingPathComponent(result).path))
@@ -63,7 +62,7 @@ final class ResourceEnableDisableManagerTests: XCTestCase {
 
         let result = try ResourceEnableDisableManager.toggleDisableState(
             fileName: testFile,
-            resourceDir: tmpDir
+            resourceDir: tmpDir,
         )
         XCTAssertEqual(result, "test.jar")
         XCTAssertTrue(FileManager.default.fileExists(atPath: tmpDir.appendingPathComponent(result).path))

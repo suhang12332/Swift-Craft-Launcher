@@ -67,8 +67,7 @@ enum JWTDecoder {
         }
 
         do {
-            let payloadJSON = try JSONSerialization.jsonObject(with: payloadData) as? [String: Any]
-            return payloadJSON
+            return try JSONSerialization.jsonObject(with: payloadData) as? [String: Any]
         } catch {
             Logger.shared.warning("JWT payload JSON解析失败：\(error.localizedDescription)")
             return nil

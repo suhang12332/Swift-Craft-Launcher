@@ -18,9 +18,9 @@ struct ContentView: View {
     var body: some View {
         List {
             switch detailState.selectedItem {
-            case .game(let gameId):
+            case let .game(gameId):
                 gameContentView(gameId: gameId)
-            case .resource(let type):
+            case let .resource(type):
                 resourceContentView(type: type)
             }
         }
@@ -49,7 +49,7 @@ struct ContentView: View {
             selectedLoaders: filterState.selectedLoadersBinding,
             gameVersion: game.gameVersion,
             gameLoader: game.modLoader.lowercased() == GameLoader.vanilla.displayName ? nil : game.modLoader,
-            dataSource: filterState.dataSource
+            dataSource: filterState.dataSource,
         )
         .id(detailState.gameResourcesType)
     }
@@ -65,7 +65,7 @@ struct ContentView: View {
             ModrinthProjectContentView(
                 projectDetail: detailState.loadedProjectDetailBinding,
                 projectId: projectId,
-                resourceType: type.rawValue
+                resourceType: type.rawValue,
             )
         } else {
             CategoryContentView(
@@ -77,7 +77,7 @@ struct ContentView: View {
                 selectedPerformanceImpacts: filterState.selectedPerformanceImpactBinding,
                 selectedVersions: filterState.selectedVersionsBinding,
                 selectedLoaders: filterState.selectedLoadersBinding,
-                dataSource: filterState.dataSource
+                dataSource: filterState.dataSource,
             )
             .id(type)
         }

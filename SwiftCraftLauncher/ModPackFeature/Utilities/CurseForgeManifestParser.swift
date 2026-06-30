@@ -10,7 +10,6 @@ import ZIPFoundation
 
 /// Parses a CurseForge modpack's manifest.json file.
 enum CurseForgeManifestParser {
-
     /// Parses the manifest.json file within an extracted CurseForge modpack.
     /// - Parameter extractedPath: The path to the extracted modpack directory.
     /// - Returns: The parsed Modrinth index information, or `nil` if parsing fails.
@@ -24,9 +23,9 @@ enum CurseForgeManifestParser {
                 do {
                     let contents = try FileManager.default.contentsOfDirectory(
                         at: extractedPath,
-                        includingPropertiesForKeys: nil
+                        includingPropertiesForKeys: nil,
                     )
-                    Logger.shared.info("解压目录内容: \(contents.map { $0.lastPathComponent })")
+                    Logger.shared.info("解压目录内容: \(contents.map(\.lastPathComponent))")
                 } catch {
                     Logger.shared.error("无法列出解压目录内容: \(error.localizedDescription)")
                 }
@@ -54,13 +53,13 @@ enum CurseForgeManifestParser {
             let modPackVersion = manifest.version ?? generateAutoVersion(
                 modPackName: manifest.name,
                 gameVersion: manifest.minecraft.version,
-                loaderInfo: loaderInfo
+                loaderInfo: loaderInfo,
             )
 
             let modrinthInfo = await convertToModrinthFormat(
                 manifest: manifest,
                 loaderInfo: loaderInfo,
-                generatedVersion: modPackVersion
+                generatedVersion: modPackVersion,
             )
 
             Logger.shared.info("解析 CurseForge manifest.json 成功: \(manifest.name) v\(modPackVersion)")
@@ -141,9 +140,9 @@ enum CurseForgeManifestParser {
     ///   - loaderInfo: The mod loader information.
     /// - Returns: A generated version string in the format `gameVersion-loaderType-date`.
     private static func generateAutoVersion(
-        modPackName: String,
+        modPackName _: String,
         gameVersion: String,
-        loaderInfo: (type: String, version: String)
+        loaderInfo: (type: String, version: String),
     ) -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
@@ -164,7 +163,7 @@ enum CurseForgeManifestParser {
     private static func convertToModrinthFormat(
         manifest: CurseForgeManifest,
         loaderInfo: (type: String, version: String),
-        generatedVersion: String
+        generatedVersion: String,
     ) async -> ModrinthIndexInfo {
         Logger.shared.info("转换 CurseForge 格式到 Modrinth 格式，模组数量: \(manifest.files.count)")
 
@@ -181,7 +180,7 @@ enum CurseForgeManifestParser {
                 env: nil,
                 source: .curseforge,
                 curseForgeProjectId: file.projectID,
-                curseForgeFileId: file.fileID
+                curseForgeFileId: file.fileID,
             ))
         }
 
@@ -196,7 +195,7 @@ enum CurseForgeManifestParser {
             summary: "",
             files: modrinthFiles,
             dependencies: [],
-            source: .curseforge
+            source: .curseforge,
         )
     }
 }

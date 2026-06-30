@@ -19,7 +19,7 @@ struct ContributorRankBadgeView: View {
                 .fill(color.gradient)
                 .frame(width: 20, height: 20)
 
-            if let icon = icon {
+            if let icon {
                 Image(systemName: icon)
                     .font(.system(size: 8, weight: .bold))
                     .foregroundColor(.white)

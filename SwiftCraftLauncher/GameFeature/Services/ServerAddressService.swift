@@ -5,15 +5,15 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import CryptoKit
+import Foundation
 
 /// Reads and manages Minecraft server addresses from `servers.dat` files.
 @MainActor
 class ServerAddressService {
     static let shared = ServerAddressService()
 
-    private init() {}
+    private init() { }
 
     nonisolated func parseServerAddress(from detail: ModrinthProjectDetail) -> String {
         let rawFileName = detail.fileName ?? ""
@@ -23,14 +23,14 @@ class ServerAddressService {
     func addServerIfNeeded(
         for gameName: String,
         address: String,
-        name: String
+        name: String,
     ) async throws {
         let trimmedAddress = address.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedAddress.isEmpty else {
             throw GlobalError.validation(
                 chineseMessage: "服务器地址不能为空",
                 i18nKey: "error.server.address_empty",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -43,7 +43,7 @@ class ServerAddressService {
             throw GlobalError.validation(
                 chineseMessage: "该服务器已添加到列表中",
                 i18nKey: "error.server.already_added",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -54,7 +54,7 @@ class ServerAddressService {
             port: 0,
             hidden: false,
             icon: nil,
-            acceptTextures: false
+            acceptTextures: false,
         )
 
         currentServers.append(newServer)
@@ -136,7 +136,7 @@ class ServerAddressService {
                 port: port,
                 hidden: hidden,
                 icon: icon,
-                acceptTextures: acceptTextures
+                acceptTextures: acceptTextures,
             )
 
             servers.append(server)
@@ -175,7 +175,7 @@ class ServerAddressService {
 
     func filterGamesWithoutExistingServer(
         detail: ModrinthProjectDetail,
-        games: [GameVersionInfo]
+        games: [GameVersionInfo],
     ) async -> [GameVersionInfo] {
         let address = parseServerAddress(from: detail)
 
@@ -189,7 +189,7 @@ class ServerAddressService {
         for game in games {
             let currentServers =
                 (try? await loadServerAddresses(
-                    for: game.gameName
+                    for: game.gameName,
                 )) ?? []
 
             let hasSameServer = currentServers.contains {
@@ -230,7 +230,7 @@ class ServerAddressService {
         }
 
         let nbtData: [String: Any] = [
-            "servers": serversList
+            "servers": serversList,
         ]
 
         let encodedData = try NBTParser.encode(nbtData, compress: false)
@@ -239,7 +239,7 @@ class ServerAddressService {
         try FileManager.default.createDirectory(
             at: directory,
             withIntermediateDirectories: true,
-            attributes: nil
+            attributes: nil,
         )
 
         try encodedData.write(to: serversDatURL)

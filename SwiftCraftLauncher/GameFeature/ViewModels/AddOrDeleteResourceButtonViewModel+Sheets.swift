@@ -38,7 +38,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 installedHashes: scannedDetailIds,
                 selectedVersions: selectedVersions,
                 selectedLoaders: selectedLoaders,
-                gameInfo: gameInfo
+                gameInfo: gameInfo,
             )
             addButtonState = installed ? .installed : .idle
         }
@@ -80,7 +80,7 @@ extension AddOrDeleteResourceButtonViewModel {
         guard let result = await ResourceDetailLoader.loadProjectDetail(
             projectId: project.projectId,
             gameRepository: gameRepository,
-            resourceType: query
+            resourceType: query,
         ) else {
             return
         }
@@ -118,7 +118,7 @@ extension AddOrDeleteResourceButtonViewModel {
                   projectId: project.projectId,
                   gameRepository: gameRepository,
                   resourceType: query,
-                  skipCompatibleGameResolution: true
+                  skipCompatibleGameResolution: true,
               )
         else { return }
 

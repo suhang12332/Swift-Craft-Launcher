@@ -12,7 +12,7 @@ import Foundation
 class LitematicaService {
     static let shared = LitematicaService()
 
-    private init() {}
+    private init() { }
 
     func loadLitematicaFiles(for gameName: String) async throws -> [LitematicaInfo] {
         let schematicsDir = AppPaths.schematicsDirectory(gameName: gameName)
@@ -25,7 +25,7 @@ class LitematicaService {
             throw GlobalError.fileSystem(
                 chineseMessage: "读取 Litematica 文件列表失败",
                 i18nKey: "error.filesystem.litematica_list_read_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -73,7 +73,7 @@ private func loadLitematicaFilesSync(schematicsDir: URL) throws -> [LitematicaIn
     let contents = try FileManager.default.contentsOfDirectory(
         at: schematicsDir,
         includingPropertiesForKeys: [.isRegularFileKey, .creationDateKey, .fileSizeKey],
-        options: [.skipsHiddenFiles]
+        options: [.skipsHiddenFiles],
     )
     var litematicaFiles: [LitematicaInfo] = []
     for filePath in contents {
@@ -92,7 +92,7 @@ private func loadLitematicaFilesSync(schematicsDir: URL) throws -> [LitematicaIn
             description: metadata?.description,
             version: metadata?.version,
             regionCount: metadata?.regionCount,
-            totalBlocks: metadata?.totalBlocks
+            totalBlocks: metadata?.totalBlocks,
         ))
     }
     litematicaFiles.sort { ($0.createdDate ?? .distantPast) > ($1.createdDate ?? .distantPast) }
@@ -119,7 +119,7 @@ private func loadFullMetadataSync(filePath: URL) throws -> LitematicMetadata? {
         enclosingSize = Size(
             x: (sizeData["x"] as? Int32) ?? 0,
             y: (sizeData["y"] as? Int32) ?? 0,
-            z: (sizeData["z"] as? Int32) ?? 0
+            z: (sizeData["z"] as? Int32) ?? 0,
         )
     }
     var totalVolume: Int32 = 0, totalBlocks: Int32 = 0, regionCount: Int32 = 0
@@ -135,6 +135,6 @@ private func loadFullMetadataSync(filePath: URL) throws -> LitematicMetadata? {
         totalVolume: totalVolume,
         totalBlocks: totalBlocks,
         enclosingSize: enclosingSize,
-        regionCount: regionCount
+        regionCount: regionCount,
     )
 }

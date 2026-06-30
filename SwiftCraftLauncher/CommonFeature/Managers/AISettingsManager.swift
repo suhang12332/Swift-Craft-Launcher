@@ -11,8 +11,8 @@ import SwiftUI
 
 /// Represents an available AI service provider.
 enum AIProvider: String, CaseIterable, Identifiable {
-    case openai = "openai"
-    case ollama = "ollama"
+    case openai
+    case ollama
 //    case gemini = "gemini"
 
     var id: String { rawValue }
@@ -66,7 +66,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
 
 /// The request format used to communicate with an AI provider.
 enum APIFormat {
-    case openAI  // Compatible with DeepSeek and similar services
+    case openAI // Compatible with DeepSeek and similar services
     case ollama
 //    case gemini
 }
@@ -80,7 +80,7 @@ class AISettingsManager: ObservableObject {
 
     var selectedProvider: AIProvider {
         get {
-            return AIProvider(rawValue: _selectedProviderRawValue) ?? .openai
+            AIProvider(rawValue: _selectedProviderRawValue) ?? .openai
         }
         set {
             _selectedProviderRawValue = newValue.rawValue
@@ -163,8 +163,8 @@ class AISettingsManager: ObservableObject {
 
     /// Returns the configured model name, trimmed of whitespace.
     func getModel() -> String {
-        return modelOverride.trimmingCharacters(in: .whitespacesAndNewlines)
+        modelOverride.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    private init() {}
+    private init() { }
 }

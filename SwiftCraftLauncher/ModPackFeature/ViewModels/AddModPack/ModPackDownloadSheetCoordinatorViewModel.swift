@@ -26,7 +26,7 @@ final class ModPackDownloadSheetCoordinatorViewModel: ObservableObject {
         sheetViewModel: ModPackDownloadSheetViewModel,
         gameRepository: GameRepository,
         projectId: String,
-        preloadedDetail: ModrinthProjectDetail?
+        preloadedDetail: ModrinthProjectDetail?,
     ) {
         sheetViewModel.setGameRepository(gameRepository)
 
@@ -51,7 +51,7 @@ final class ModPackDownloadSheetCoordinatorViewModel: ObservableObject {
     ///   - gameSetupService: The service used to set up game instances.
     func onDisappear(
         sheetViewModel: ModPackDownloadSheetViewModel,
-        gameSetupService: GameSetupUtil
+        gameSetupService: GameSetupUtil,
     ) {
         loadTask?.cancel()
         loadTask = nil

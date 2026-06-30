@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
-@testable import SwiftCraftLauncher
 import CFModrinthAdapterKit
+@testable import SwiftCraftLauncher
+import XCTest
 
 final class ModrinthModelMappersExtendedTests: XCTestCase {
-
     func testFromV3_basicMapping() {
         let v3 = makeV3(
             id: "v3-id",
@@ -25,7 +24,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             additionalCategories: ["library"],
             loaders: ["fabric"],
             versions: ["1.20.1", "1.21"],
-            gameVersions: ["1.20.1", "1.21"]
+            gameVersions: ["1.20.1", "1.21"],
         )
 
         let detail = ModrinthProjectDetail.fromV3(v3)
@@ -59,7 +58,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             additionalCategories: [],
             loaders: [],
             versions: [],
-            gameVersions: []
+            gameVersions: [],
         )
 
         let detail = ModrinthProjectDetail.fromV3(v3)
@@ -80,7 +79,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             additionalCategories: [],
             loaders: [],
             versions: [],
-            gameVersions: []
+            gameVersions: [],
         )
 
         let detail = ModrinthProjectDetail.fromV3(v3)
@@ -103,7 +102,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             loaders: [],
             versions: [],
             gameVersions: [],
-            license: license
+            license: license,
         )
 
         let detail = ModrinthProjectDetail.fromV3(v3)
@@ -125,14 +124,14 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             additionalCategories: [],
             loaders: [],
             versions: [],
-            gameVersions: ["1.20.1", "1.21", "1.20.1"]
+            gameVersions: ["1.20.1", "1.21", "1.20.1"],
         )
 
         let detail = ModrinthProjectDetail.fromV3(v3)
         XCTAssertEqual(detail.gameVersions, ["1.20.1", "1.21"])
     }
 
-    func testFromV3_javaServerInfo_fillsFileName() {
+    func testFromV3_javaServerInfo_fillsFileName() throws {
         let dict: [String: Any] = [
             "id": "id",
             "slug": "s",
@@ -172,7 +171,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             ] as [String: Any],
         ]
         // swiftlint:disable:next force_try
-        let data = try! JSONSerialization.data(withJSONObject: dict)
+        let data = try JSONSerialization.data(withJSONObject: dict)
         let decoder = JSONDecoder()
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -185,7 +184,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)
         }
         // swiftlint:disable:next force_try
-        let v3 = try! decoder.decode(ModrinthProjectDetailV3.self, from: data)
+        let v3 = try decoder.decode(ModrinthProjectDetailV3.self, from: data)
 
         let detail = ModrinthProjectDetail.fromV3(v3)
         XCTAssertNotNil(detail.fileName, "fileName should not be nil")
@@ -197,7 +196,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         let serverInfo = makeJavaServerInfo(
             address: "mc.example.com",
             pingPlayersOnline: nil,
-            pingPlayersMax: nil
+            pingPlayersMax: nil,
         )
 
         let v3 = makeV3(
@@ -214,7 +213,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             loaders: [],
             versions: [],
             gameVersions: [],
-            minecraftJavaServer: serverInfo
+            minecraftJavaServer: serverInfo,
         )
 
         let detail = ModrinthProjectDetail.fromV3(v3)
@@ -225,7 +224,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         let serverInfo = makeJavaServerInfo(
             address: "",
             pingPlayersOnline: nil,
-            pingPlayersMax: nil
+            pingPlayersMax: nil,
         )
 
         let v3 = makeV3(
@@ -242,57 +241,57 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             loaders: [],
             versions: [],
             gameVersions: [],
-            minecraftJavaServer: serverInfo
+            minecraftJavaServer: serverInfo,
         )
 
         let detail = ModrinthProjectDetail.fromV3(v3)
         XCTAssertNil(detail.fileName)
     }
 
-    func testFromDetail_displayCategories_nilAdditional() throws {
+    func testFromDetail_displayCategories_nilAdditional() {
         let detail = makeDetail(
             id: "id",
             categories: ["fabric"],
             additionalCategories: nil,
-            license: nil
+            license: nil,
         )
 
         let project = ModrinthProject.from(detail: detail)
         XCTAssertTrue(project.displayCategories.isEmpty)
     }
 
-    func testFromDetail_displayCategories_nonNil() throws {
+    func testFromDetail_displayCategories_nonNil() {
         let detail = makeDetail(
             id: "id",
             categories: ["fabric"],
             additionalCategories: ["library", "utility"],
-            license: nil
+            license: nil,
         )
 
         let project = ModrinthProject.from(detail: detail)
         XCTAssertEqual(project.displayCategories, ["library", "utility"])
     }
 
-    func testFromDetail_fileName() throws {
+    func testFromDetail_fileName() {
         let detail = makeDetail(
             id: "id",
             categories: [],
             additionalCategories: nil,
             license: nil,
-            fileName: "mod-1.0.jar"
+            fileName: "mod-1.0.jar",
         )
 
         let project = ModrinthProject.from(detail: detail)
         XCTAssertEqual(project.fileName, "mod-1.0.jar")
     }
 
-    func testFromDetail_fileName_nil() throws {
+    func testFromDetail_fileName_nil() {
         let detail = makeDetail(
             id: "id",
             categories: [],
             additionalCategories: nil,
             license: nil,
-            fileName: nil
+            fileName: nil,
         )
 
         let project = ModrinthProject.from(detail: detail)
@@ -315,7 +314,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         versions: [String],
         gameVersions: [String],
         license: License = License(id: "mit", name: "MIT", url: nil),
-        minecraftJavaServer: ModrinthMinecraftJavaServerInfo? = nil
+        minecraftJavaServer: ModrinthMinecraftJavaServerInfo? = nil,
     ) -> ModrinthProjectDetailV3 {
         var dict: [String: Any] = [
             "id": id,
@@ -372,7 +371,7 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         categories: [String],
         additionalCategories: [String]?,
         license: License?,
-        fileName: String? = nil
+        fileName: String? = nil,
     ) -> ModrinthProjectDetail {
         ModrinthProjectDetail(
             slug: "slug",
@@ -392,22 +391,22 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             iconUrl: nil,
             id: id,
             team: "team",
-            published: Date(timeIntervalSince1970: 1700000000),
-            updated: Date(timeIntervalSince1970: 1700000000),
+            published: Date(timeIntervalSince1970: 1_700_000_000),
+            updated: Date(timeIntervalSince1970: 1_700_000_000),
             followers: 0,
             license: license,
             versions: [],
             gameVersions: [],
             loaders: [],
             type: nil,
-            fileName: fileName
+            fileName: fileName,
         )
     }
 
     private func makeJavaServerInfo(
         address: String,
         pingPlayersOnline: Int?,
-        pingPlayersMax: Int?
+        pingPlayersMax: Int?,
     ) -> ModrinthMinecraftJavaServerInfo {
         var dict: [String: Any] = ["address": address]
         if let online = pingPlayersOnline, let max = pingPlayersMax {

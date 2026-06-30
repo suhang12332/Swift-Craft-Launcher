@@ -9,7 +9,6 @@ import Foundation
 
 /// Provides internal CurseForge API request and parsing utilities.
 extension CurseForgeService {
-
     /// Fetches file details from a specified URL.
     /// - Parameter urlString: The API endpoint URL.
     /// - Returns: The file details.
@@ -19,7 +18,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 chineseMessage: "无效的镜像 API URL",
                 i18nKey: "error.network.url",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -39,7 +38,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 chineseMessage: "无效的镜像 API URL",
                 i18nKey: "error.network.url",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -59,7 +58,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 chineseMessage: "无效的镜像 API URL",
                 i18nKey: "error.network.url",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -77,7 +76,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 chineseMessage: "无效的项目 ID",
                 i18nKey: "error.validation.invalid_project_id",
-                level: .notification
+                level: .notification,
             )
         }
         let normalizedId = id.hasPrefix("cf-") ? id : "cf-\(cleanId)"

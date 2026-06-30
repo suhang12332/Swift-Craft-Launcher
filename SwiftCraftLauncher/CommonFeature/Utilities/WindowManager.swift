@@ -5,9 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Manages application window lifecycle, activation, and front-to-back ordering.
-import SwiftUI
 import AppKit
+
+// Manages application window lifecycle, activation, and front-to-back ordering.
+import SwiftUI
 
 @MainActor
 class WindowManager {
@@ -15,10 +16,10 @@ class WindowManager {
 
     private var openAuxiliaryWindowAction: ((AuxiliaryWindowID) -> Void)?
 
-    private init() {}
+    private init() { }
 
     func setOpenAuxiliaryWindowAction(_ action: @escaping (AuxiliaryWindowID) -> Void) {
-        self.openAuxiliaryWindowAction = action
+        openAuxiliaryWindowAction = action
     }
 
     private func findWindow(id: AuxiliaryWindowID) -> NSWindow? {
@@ -42,7 +43,7 @@ class WindowManager {
             NotificationCenter.default.post(
                 name: .openWindow,
                 object: nil,
-                userInfo: ["windowID": id.rawValue]
+                userInfo: ["windowID": id.rawValue],
             )
         }
     }
@@ -53,8 +54,8 @@ class WindowManager {
         NSApplication.shared.activate(ignoringOtherApps: true)
 
         DispatchQueue.main.async { [weak self] in
-            guard let self, let window = self.findWindow(id: id) else { return }
-            self.bringWindowToFront(window)
+            guard let self, let window = findWindow(id: id) else { return }
+            bringWindowToFront(window)
         }
     }
 

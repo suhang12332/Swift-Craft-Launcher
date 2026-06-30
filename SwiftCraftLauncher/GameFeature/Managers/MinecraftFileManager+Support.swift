@@ -45,9 +45,11 @@ extension Library {
     var artifactPath: String? {
         downloads.artifact.path
     }
+
     var artifactURL: URL? {
         downloads.artifact.url
     }
+
     var artifactSHA1: String? {
         downloads.artifact.sha1
     }

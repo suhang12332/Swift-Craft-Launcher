@@ -40,7 +40,7 @@ struct GameRemoteResourceView: View {
         header: AnyView? = nil,
         scannedDetailIds: Binding<Set<String>> = .constant([]),
         dataSource: Binding<DataSource> = .constant(.modrinth),
-        searchText: Binding<String> = .constant("")
+        searchText: Binding<String> = .constant(""),
     ) {
         self.game = game
         _query = query
@@ -75,7 +75,7 @@ struct GameRemoteResourceView: View {
             header: header,
             scannedDetailIds: $scannedDetailIds,
             dataSource: $dataSource,
-            searchText: $searchText
+            searchText: $searchText,
         )
     }
 }

@@ -54,7 +54,7 @@ struct Player: Identifiable, Equatable, Codable {
 
     /// A Boolean value indicating whether the avatar is hosted remotely.
     var isRemote: Bool {
-        return profile.avatar.hasPrefix("http://") || profile.avatar.hasPrefix("https://")
+        profile.avatar.hasPrefix("http://") || profile.avatar.hasPrefix("https://")
     }
 
     /// The access token used for authentication.
@@ -99,7 +99,7 @@ struct Player: Identifiable, Equatable, Codable {
         avatar: String? = nil,
         credential: AuthCredential? = nil,
         lastPlayed: Date = Date(),
-        isCurrent: Bool = false
+        isCurrent: Bool = false,
     ) throws {
         let playerId: String
         if let providedUUID = uuid {
@@ -122,7 +122,7 @@ struct Player: Identifiable, Equatable, Codable {
             name: name,
             avatar: avatarName,
             lastPlayed: lastPlayed,
-            isCurrent: isCurrent
+            isCurrent: isCurrent,
         )
 
         self.profile = profile

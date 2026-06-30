@@ -13,22 +13,22 @@ extension GameCreationViewModel {
         let includeSnapshots = gameSettingsManager.includeSnapshotsForGameVersions
         let compatibleVersions = await CommonService.compatibleVersions(
             for: selectedModLoader,
-            includeSnapshots: includeSnapshots
+            includeSnapshots: includeSnapshots,
         )
         await updateAvailableVersions(compatibleVersions)
     }
 
     /// Updates the available versions list and selects a default version.
     func updateAvailableVersions(_ versions: [String]) async {
-        self.availableVersions = versions
-        if !versions.contains(self.selectedGameVersion) && !versions.isEmpty {
-            self.selectedGameVersion = versions.first ?? ""
+        availableVersions = versions
+        if !versions.contains(selectedGameVersion), !versions.isEmpty {
+            selectedGameVersion = versions.first ?? ""
         }
 
         if !versions.isEmpty {
-            let targetVersion = versions.contains(self.selectedGameVersion) ? self.selectedGameVersion : (versions.first ?? "")
+            let targetVersion = versions.contains(selectedGameVersion) ? selectedGameVersion : (versions.first ?? "")
             let timeString = await ModrinthService.queryVersionTime(from: targetVersion)
-            self.versionTime = timeString
+            versionTime = timeString
             updateDefaultGameName()
         }
     }
@@ -43,11 +43,11 @@ extension GameCreationViewModel {
             let includeSnapshots = gameSettingsManager.includeSnapshotsForGameVersions
             let compatibleVersions = await CommonService.compatibleVersions(
                 for: newLoader,
-                includeSnapshots: includeSnapshots
+                includeSnapshots: includeSnapshots,
             )
             await updateAvailableVersions(compatibleVersions)
 
-            if newLoader != GameLoader.vanilla.displayName && !selectedGameVersion.isEmpty {
+            if newLoader != GameLoader.vanilla.displayName, !selectedGameVersion.isEmpty {
                 await updateLoaderVersions(for: newLoader, gameVersion: selectedGameVersion)
             } else {
                 await MainActor.run {
@@ -68,7 +68,7 @@ extension GameCreationViewModel {
 
     /// Fetches available loader versions for the specified loader and game version.
     func updateLoaderVersions(for loader: String, gameVersion: String) async {
-        guard loader != GameLoader.vanilla.displayName && !gameVersion.isEmpty else {
+        guard loader != GameLoader.vanilla.displayName, !gameVersion.isEmpty else {
             availableLoaderVersions = []
             selectedLoaderVersion = ""
             updateDefaultGameName()
@@ -80,11 +80,11 @@ extension GameCreationViewModel {
         switch loader.lowercased() {
         case GameLoader.fabric.displayName:
             let fabricVersions = await FabricLoaderService.fetchAllLoaderVersions(for: gameVersion)
-            versions = fabricVersions.map { $0.loader.version }
+            versions = fabricVersions.map(\.loader.version)
         case GameLoader.forge.displayName:
             do {
                 let forgeVersions = try await ForgeLoaderService.fetchAllForgeVersions(for: gameVersion)
-                versions = forgeVersions.loaders.map { $0.id }
+                versions = forgeVersions.loaders.map(\.id)
             } catch {
                 Logger.shared.error("获取 Forge 版本失败: \(error.localizedDescription)")
                 versions = []
@@ -92,20 +92,20 @@ extension GameCreationViewModel {
         case GameLoader.neoforge.displayName:
             do {
                 let neoforgeVersions = try await NeoForgeLoaderService.fetchAllNeoForgeVersions(for: gameVersion)
-                versions = neoforgeVersions.loaders.map { $0.id }
+                versions = neoforgeVersions.loaders.map(\.id)
             } catch {
                 Logger.shared.error("获取 NeoForge 版本失败: \(error.localizedDescription)")
                 versions = []
             }
         case GameLoader.quilt.rawValue:
             let quiltVersions = await QuiltLoaderService.fetchAllQuiltLoaders(for: gameVersion)
-            versions = quiltVersions.map { $0.loader.version }
+            versions = quiltVersions.map(\.loader.version)
         default:
             versions = []
         }
 
         availableLoaderVersions = versions
-        if !versions.contains(selectedLoaderVersion) && !versions.isEmpty {
+        if !versions.contains(selectedLoaderVersion), !versions.isEmpty {
             selectedLoaderVersion = versions.first ?? ""
         } else if versions.isEmpty {
             selectedLoaderVersion = ""
@@ -123,7 +123,7 @@ extension GameCreationViewModel {
         let generatedName = GameNameGenerator.generateGameName(
             gameVersion: selectedGameVersion,
             loaderVersion: loaderVersion,
-            modLoader: selectedModLoader
+            modLoader: selectedModLoader,
         )
         gameNameValidator.gameName = generatedName
     }

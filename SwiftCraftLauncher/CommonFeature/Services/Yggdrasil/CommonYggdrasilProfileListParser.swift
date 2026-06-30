@@ -39,6 +39,7 @@ enum CommonYggdrasilProfileListParser {
                     ?? c.decodeIfPresent([Item].self, forKey: .profiles)
                     ?? []
             }
+
             private enum CodingKeys: String, CodingKey { case data, profiles }
         }
 
@@ -67,7 +68,7 @@ enum CommonYggdrasilProfileListParser {
                         skins.append(Skin(
                             state: "ACTIVE",
                             url: s.url,
-                            variant: s.metadata?.model ?? "classic"
+                            variant: s.metadata?.model ?? "classic",
                         ))
                     }
                     if let c = tex.CAPE {
@@ -75,7 +76,7 @@ enum CommonYggdrasilProfileListParser {
                             id: UUID().uuidString,
                             state: "ACTIVE",
                             url: c.url,
-                            alias: nil
+                            alias: nil,
                         ))
                     }
                 }
@@ -89,7 +90,7 @@ enum CommonYggdrasilProfileListParser {
                 id: item.id,
                 name: item.name,
                 skins: skins,
-                capes: capes.isEmpty ? nil : capes
+                capes: capes.isEmpty ? nil : capes,
             ))
         }
         return result

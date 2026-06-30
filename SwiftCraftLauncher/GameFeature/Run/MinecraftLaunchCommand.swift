@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import AVFoundation
+import Foundation
 
 /// Orchestrates the Minecraft game launch process including authentication and process management.
 struct MinecraftLaunchCommand {
@@ -25,7 +25,7 @@ struct MinecraftLaunchCommand {
         yggdrasilAuthService: YggdrasilAuthService = AppServices.yggdrasilAuthService,
         gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager,
         gameProcessManager: GameProcessManager = AppServices.gameProcessManager,
-        gameStatusManager: GameStatusManager = AppServices.gameStatusManager
+        gameStatusManager: GameStatusManager = AppServices.gameStatusManager,
     ) {
         self.player = player
         self.game = game
@@ -54,12 +54,12 @@ struct MinecraftLaunchCommand {
 
         let command = game.launchCommand
         try await launchGameProcess(
-            command: try await replaceAuthParameters(command: command, with: validatedPlayer)
+            command: try await replaceAuthParameters(command: command, with: validatedPlayer),
         )
     }
 
     private func validatePlayerTokenBeforeLaunch() async throws -> Player? {
-        guard let player = player else {
+        guard let player else {
             Logger.shared.warning("没有选择玩家，使用默认认证参数")
             return nil
         }
@@ -96,7 +96,7 @@ struct MinecraftLaunchCommand {
             NotificationCenter.default.post(
                 name: .playerUpdated,
                 object: nil,
-                userInfo: ["updatedPlayer": updatedPlayer]
+                userInfo: ["updatedPlayer": updatedPlayer],
             )
         }
     }
@@ -111,7 +111,7 @@ struct MinecraftLaunchCommand {
         let (accessToken, commandWithAgent) = try await handleThirdPartyAuth(
             command: command,
             player: player,
-            profile: yggdrasilProfile
+            profile: yggdrasilProfile,
         )
 
         let authReplacedCommand = commandWithAgent.map { arg -> String in
@@ -120,25 +120,25 @@ struct MinecraftLaunchCommand {
                 of: "${auth_player_name}",
                 with: player.name,
                 options: [],
-                range: NSRange(location: 0, length: mutableArg.length)
+                range: NSRange(location: 0, length: mutableArg.length),
             )
             mutableArg.replaceOccurrences(
                 of: "${auth_uuid}",
                 with: player.id,
                 options: [],
-                range: NSRange(location: 0, length: mutableArg.length)
+                range: NSRange(location: 0, length: mutableArg.length),
             )
             mutableArg.replaceOccurrences(
                 of: "${auth_access_token}",
                 with: accessToken,
                 options: [],
-                range: NSRange(location: 0, length: mutableArg.length)
+                range: NSRange(location: 0, length: mutableArg.length),
             )
             mutableArg.replaceOccurrences(
                 of: "${auth_xuid}",
                 with: player.authXuid,
                 options: [],
-                range: NSRange(location: 0, length: mutableArg.length)
+                range: NSRange(location: 0, length: mutableArg.length),
             )
             return mutableArg as String
         }
@@ -149,7 +149,7 @@ struct MinecraftLaunchCommand {
     private func handleThirdPartyAuth(
         command: [String],
         player: Player,
-        profile: YggdrasilProfile?
+        profile: YggdrasilProfile?,
     ) async throws -> (accessToken: String, command: [String]) {
         guard let profile,
               let server = YggdrasilServerPresets.server(for: profile.serverBaseURL) else {
@@ -163,7 +163,7 @@ struct MinecraftLaunchCommand {
             throw GlobalError.authentication(
                 chineseMessage: "获取访问令牌失败",
                 i18nKey: "error.authentication.token_fetch_failed",
-                level: .popup
+                level: .popup,
             )
         }
 
@@ -200,13 +200,13 @@ struct MinecraftLaunchCommand {
                 of: "${xms}",
                 with: xmsString,
                 options: [],
-                range: NSRange(location: 0, length: mutableArg.length)
+                range: NSRange(location: 0, length: mutableArg.length),
             )
             mutableArg.replaceOccurrences(
                 of: "${xmx}",
                 with: xmxString,
                 options: [],
-                range: NSRange(location: 0, length: mutableArg.length)
+                range: NSRange(location: 0, length: mutableArg.length),
             )
             return mutableArg as String
         }
@@ -238,7 +238,7 @@ struct MinecraftLaunchCommand {
             throw GlobalError.configuration(
                 chineseMessage: "Java 路径未设置",
                 i18nKey: "error.configuration.java_path_not_set",
-                level: .popup
+                level: .popup,
             )
         }
 
@@ -284,7 +284,7 @@ struct MinecraftLaunchCommand {
             throw GlobalError.gameLaunch(
                 chineseMessage: "启动游戏进程失败: \(error.localizedDescription)",
                 i18nKey: "error.game_launch.process_failed",
-                level: .popup
+                level: .popup,
             )
         }
     }

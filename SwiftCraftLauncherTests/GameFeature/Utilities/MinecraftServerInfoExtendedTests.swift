@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class MinecraftServerInfoExtendedTests: XCTestCase {
-
     func testDescription_plainText_textOnly() {
         let desc = MinecraftServerInfo.Description(text: "Hello World", extra: nil)
         XCTAssertEqual(desc.plainText, "Hello World")
@@ -47,7 +46,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
     func testDescription_plainText_nestedObject() {
         let inner = MinecraftServerInfo.Description(text: "Inner", extra: nil)
         let extra = [
-            MinecraftServerInfo.Description.DescriptionElement.object(inner)
+            MinecraftServerInfo.Description.DescriptionElement.object(inner),
         ]
         let desc = MinecraftServerInfo.Description(text: "Outer ", extra: extra)
         XCTAssertEqual(desc.plainText, "Outer Inner")
@@ -74,7 +73,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
         let data = try JSONEncoder().encode(element)
         let decoded = try JSONDecoder().decode(MinecraftServerInfo.Description.DescriptionElement.self, from: data)
 
-        if case .string(let str) = decoded {
+        if case let .string(str) = decoded {
             XCTAssertEqual(str, "test")
         } else {
             XCTFail("Expected string element")
@@ -87,7 +86,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
         let data = try JSONEncoder().encode(element)
         let decoded = try JSONDecoder().decode(MinecraftServerInfo.Description.DescriptionElement.self, from: data)
 
-        if case .object(let desc) = decoded {
+        if case let .object(desc) = decoded {
             XCTAssertEqual(desc.text, "inner")
         } else {
             XCTFail("Expected object element")
@@ -186,7 +185,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
             players: MinecraftServerInfo.Players(max: 50, online: 12, sample: nil),
             description: MinecraftServerInfo.Description(text: "Test", extra: nil),
             favicon: "data:image/png;base64,abc",
-            modinfo: nil
+            modinfo: nil,
         )
 
         let data = try JSONEncoder().encode(original)
@@ -231,7 +230,7 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
         let info = try JSONDecoder().decode(MinecraftServerInfo.self, from: data)
 
         XCTAssertEqual(info.description.extra?.count, 2)
-        if case .string(let str) = info.description.extra?[0] {
+        if case let .string(str) = info.description.extra?[0] {
             XCTAssertEqual(str, "Nested ")
         }
     }

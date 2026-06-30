@@ -27,7 +27,7 @@ enum ProgressDownloadManager {
         urlString: String,
         destinationURL: URL,
         expectedSha1: String? = nil,
-        progressHandler: ((Int64, Int64) -> Void)? = nil
+        progressHandler: ((Int64, Int64) -> Void)? = nil,
     ) async throws -> URL {
         try Task.checkCancellation()
         let url = try FileDownloadCore.parseURL(from: urlString)
@@ -40,7 +40,7 @@ enum ProgressDownloadManager {
         if let existingFileSize = FileDownloadCore.existingFileSizeIfReusable(
             at: destinationURL,
             expectedSha1: expectedSha1,
-            fileManager: fileManager
+            fileManager: fileManager,
         ) {
             progressHandler?(existingFileSize, existingFileSize)
             return destinationURL
@@ -61,7 +61,7 @@ enum ProgressDownloadManager {
                 let tempURL = try await ProgressDownloadSession.shared.download(
                     from: finalURL,
                     totalSize: fileSize,
-                    progressHandler: progressHandler
+                    progressHandler: progressHandler,
                 )
                 defer { try? fileManager.removeItem(at: tempURL) }
 
@@ -90,7 +90,7 @@ enum ProgressDownloadManager {
             throw GlobalError.download(
                 chineseMessage: "无法获取文件大小",
                 i18nKey: "error.download.cannot_get_file_size",
-                level: .notification
+                level: .notification,
             )
         }
         return fileSize
@@ -112,8 +112,8 @@ enum ProgressDownloadManager {
             }
         }
 
-        if case ProgressDownloadError.httpStatus(let statusCode) = error {
-            return statusCode == 408 || statusCode == 429 || (500...599).contains(statusCode)
+        if case let ProgressDownloadError.httpStatus(statusCode) = error {
+            return statusCode == 408 || statusCode == 429 || (500 ... 599).contains(statusCode)
         }
 
         return false
@@ -129,7 +129,7 @@ enum ProgressDownloadManager {
             return GlobalError.download(
                 chineseMessage: "HTTP 请求失败",
                 i18nKey: "error.download.http_status_error",
-                level: .notification
+                level: .notification,
             )
         }
         return error
@@ -150,7 +150,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
     func download(
         from url: URL,
         totalSize: Int64,
-        progressHandler: ((Int64, Int64) -> Void)?
+        progressHandler: ((Int64, Int64) -> Void)?,
     ) async throws -> URL {
         let tracker = ProgressDownloadTracker(totalSize: totalSize, progressCallback: progressHandler)
         let context = ProgressDownloadTaskContext()
@@ -183,7 +183,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
             throw GlobalError.network(
                 chineseMessage: "无效的 HTTP 响应",
                 i18nKey: "error.network.invalid_response",
-                level: .notification
+                level: .notification,
             )
         }
         return (data, httpResponse)
@@ -216,26 +216,26 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
     }
 
     func urlSession(
-        _ session: URLSession,
+        _: URLSession,
         downloadTask: URLSessionDownloadTask,
-        didWriteData bytesWritten: Int64,
+        didWriteData _: Int64,
         totalBytesWritten: Int64,
-        totalBytesExpectedToWrite: Int64
+        totalBytesExpectedToWrite: Int64,
     ) {
         tracker(for: downloadTask)?.reportProgress(
             totalBytesWritten: totalBytesWritten,
-            totalBytesExpectedToWrite: totalBytesExpectedToWrite
+            totalBytesExpectedToWrite: totalBytesExpectedToWrite,
         )
     }
 
     func urlSession(
-        _ session: URLSession,
+        _: URLSession,
         downloadTask: URLSessionDownloadTask,
-        didFinishDownloadingTo location: URL
+        didFinishDownloadingTo location: URL,
     ) {
         guard let tracker = tracker(for: downloadTask) else { return }
         if let httpResponse = downloadTask.response as? HTTPURLResponse,
-           !(200...299).contains(httpResponse.statusCode) {
+           !(200 ... 299).contains(httpResponse.statusCode) {
             tracker.complete(.failure(ProgressDownloadError.httpStatus(httpResponse.statusCode)))
             removeTracker(for: downloadTask)
             return
@@ -253,9 +253,9 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
     }
 
     func urlSession(
-        _ session: URLSession,
+        _: URLSession,
         task: URLSessionTask,
-        didCompleteWithError error: Error?
+        didCompleteWithError error: Error?,
     ) {
         guard let error else {
             removeTracker(for: task)
@@ -294,7 +294,7 @@ private final class ProgressDownloadTracker: @unchecked Sendable {
     var completionHandler: ((Result<URL, Error>) -> Void)?
 
     init(totalSize: Int64, progressCallback: ((Int64, Int64) -> Void)?) {
-        self.totalFileSize = totalSize
+        totalFileSize = totalSize
         self.progressCallback = progressCallback
     }
 
