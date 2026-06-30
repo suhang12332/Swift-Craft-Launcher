@@ -1,9 +1,17 @@
+//
+//  WorkingPathProviding.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Combine
 import Foundation
 
-/// 工作路径提供者
+/// Provides a configurable working directory for the launcher.
 public protocol WorkingPathProviding: AnyObject {
-    /// 当前启动器工作目录；空字符串时使用默认目录
+    /// The active working directory path. Returns an empty string when using the default.
     var currentWorkingPath: String { get }
+    /// Publishes before the working directory changes.
     var workingPathWillChange: AnyPublisher<Void, Never> { get }
 }

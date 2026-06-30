@@ -1,7 +1,14 @@
+//
+//  SparkleUpdateService.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import Sparkle
 
-/// Sparkle 更新服务
+/// Manages application updates using the Sparkle framework.
 class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     static let shared = SparkleUpdateService()
 
@@ -16,15 +23,14 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
     @Published var updateDescription = ""
     @Published var versionString = ""
 
-    // 配置选项
-    private let startupCheckDelay: TimeInterval = 2.0 // 启动后延迟检查时间（秒）
+    private let startupCheckDelay: TimeInterval = 2.0
 
     override private init() {
         super.init()
         currentVersion = Bundle.main.appVersion
     }
 
-    /// 设置 Sparkle 更新器
+    /// Configures and starts the Sparkle updater.
     private func setupUpdater() {
         let hostBundle = Bundle.main
         let driver = SPUStandardUserDriver(hostBundle: hostBundle, delegate: nil)
@@ -35,7 +41,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
             try updater?.start()
 
             updater?.automaticallyChecksForUpdates = true
-            updater?.updateCheckInterval = 24 * 60 * 60 // 24小时检查一次
+            updater?.updateCheckInterval = 24 * 60 * 60
             updater?.sendsSystemProfile = false
         } catch {
             Logger.shared.error("初始化更新器失败：\(error.localizedDescription)")
@@ -48,23 +54,18 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         setupUpdater()
     }
 
-    // MARK: - SPUUpdaterDelegate
-
-    /// 提供 feed URL - 根据系统架构选择对应的 appcast 文件
     func feedURLString(for updater: SPUUpdater) -> String? {
         let architecture = getSystemArchitecture()
         let appcastURL = URLConfig.API.GitHub.appcastURL(architecture: architecture)
         return appcastURL.absoluteString
     }
 
-    /// 更新检查完成（无更新）
     func updaterDidNotFindUpdate(_ updater: SPUUpdater) {
         Logger.shared.info("检查完成，未发现新版本")
         isCheckingForUpdates = false
         updateAvailable = false
     }
 
-    /// 更新检查完成（有更新）
     func updater(_ updater: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
         Logger.shared.info("发现新版本：\(item.versionString)")
         isCheckingForUpdates = false
@@ -74,37 +75,31 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         updateDescription = item.itemDescription ?? ""
     }
 
-    /// 更新检查失败
     func updater(_ updater: SPUUpdater, didFailToCheckForUpdatesWithError error: Error) {
         Logger.shared.error("更新检查失败：\(error.localizedDescription)")
         isCheckingForUpdates = false
         updateAvailable = false
     }
 
-    /// 更新会话开始
     func updater(_ updater: SPUUpdater, willInstallUpdate item: SUAppcastItem) {
         Logger.shared.info("开始安装更新：\(item.versionString)")
         isCheckingForUpdates = false
     }
 
-    /// 更新会话结束
     func updater(_ updater: SPUUpdater, didFinishLoading appcast: SUAppcast) {
         Logger.shared.info("更新清单加载完成")
     }
 
-    /// 获取系统架构
     private func getSystemArchitecture() -> String {
         return Architecture.current.sparkleArch
     }
 
-    // MARK: - Public Methods
-
-    /// 获取当前系统架构
+    /// Returns the current system architecture identifier.
     func getCurrentArchitecture() -> String {
         return getSystemArchitecture()
     }
 
-    /// 检查更新器状态
+    /// Returns the current updater state.
     func getUpdaterStatus() -> (isInitialized: Bool, sessionInProgress: Bool, isChecking: Bool) {
         guard let updater = updater else {
             return (isInitialized: false, sessionInProgress: false, isChecking: isCheckingForUpdates)
@@ -120,7 +115,7 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
         }
     }
 
-    /// 手动检查更新（显示Sparkle标准UI）
+    /// Checks for updates and displays the standard Sparkle UI.
     func checkForUpdatesWithUI() {
         ensureUpdaterStarted()
         guard let updater = updater else {
@@ -128,19 +123,17 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
             return
         }
 
-        // 检查是否正在进行更新会话
         if updater.sessionInProgress {
             Logger.shared.warning("更新会话正在进行中，跳过重复的更新检查")
             return
         }
 
-        // 设置检查状态
         isCheckingForUpdates = true
 
         updater.checkForUpdates()
     }
 
-    /// 静默检查更新（无 UI）
+    /// Checks for updates silently without showing any UI.
     func checkForUpdatesSilently() {
         ensureUpdaterStarted()
         guard let updater = updater else {
@@ -148,20 +141,18 @@ class SparkleUpdateService: NSObject, ObservableObject, SPUUpdaterDelegate {
             return
         }
 
-        // 检查是否正在进行更新会话
         if updater.sessionInProgress {
             Logger.shared.warning("更新会话正在进行中，跳过重复的更新检查")
             return
         }
 
-        // 设置检查状态
         isCheckingForUpdates = true
 
         updater.checkForUpdatesInBackground()
     }
 }
 
-// 拦截下载请求，按需为 GitHub 资源地址加上代理前缀
+/// Intercepts download requests to apply proxy prefix for GitHub resource URLs when needed.
 extension SparkleUpdateService {
     func updater(_ updater: SPUUpdater, willDownloadUpdate item: SUAppcastItem, with request: NSMutableURLRequest) {
         guard let originalURL = request.url else { return }

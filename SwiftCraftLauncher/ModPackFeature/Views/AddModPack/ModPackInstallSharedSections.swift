@@ -1,5 +1,16 @@
+//
+//  ModPackInstallSharedSections.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// A view that displays shared sections for mod pack installation sheets.
+///
+/// Combines a game name input field and a download progress indicator
+/// into a unified installation interface.
 struct ModPackInstallSharedSections: View {
     @Binding var gameName: String
     @Binding var isGameNameDuplicate: Bool

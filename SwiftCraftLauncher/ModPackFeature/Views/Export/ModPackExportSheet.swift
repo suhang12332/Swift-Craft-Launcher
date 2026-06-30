@@ -1,13 +1,14 @@
 //
 //  ModPackExportSheet.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// 整合包文档类型，用于文件导出
+/// A file document type used for exporting modpack archives.
 struct ModPackDocument: FileDocument {
     static var readableContentTypes: [UTType] {
         [
@@ -34,14 +35,8 @@ struct ModPackDocument: FileDocument {
     }
 }
 
-/// 整合包导出 Sheet 视图
-/// 提供整合包导出功能，包括：
-/// - 导出表单（名称、版本、描述）
-/// - 导出进度显示
-/// - 导出完成提示
-/// - 文件保存对话框
+/// A sheet for exporting a game profile as a modpack.
 struct ModPackExportSheet: View {
-    // MARK: - Properties
     let gameInfo: GameVersionInfo
     @Environment(\.dismiss)
     private var dismiss
@@ -49,16 +44,13 @@ struct ModPackExportSheet: View {
     @State private var showSaveErrorAlert = false
     @StateObject private var coordinator = ModPackExportSheetCoordinatorViewModel()
 
-    // MARK: - Initialization
     init(gameInfo: GameVersionInfo) {
         self.gameInfo = gameInfo
         let viewModel = ModPackExportViewModel()
-        // 导出包名固定使用当前游戏名
         viewModel.modPackName = gameInfo.gameName
         _viewModel = StateObject(wrappedValue: viewModel)
     }
 
-    // MARK: - Body
     var body: some View {
         CommonSheetView(
             header: { headerView },
@@ -138,8 +130,6 @@ struct ModPackExportSheet: View {
         }
     }
 
-    // MARK: - State Views
-
     @ViewBuilder private var idleStateView: some View {
         if let error = viewModel.exportError {
             errorView(error: error)
@@ -150,7 +140,6 @@ struct ModPackExportSheet: View {
 
     private var exportFormView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // 整合包版本
             VStack(alignment: .leading, spacing: 8) {
                 Text("modpack.export.version".localized())
                     .font(.subheadline)
@@ -160,7 +149,6 @@ struct ModPackExportSheet: View {
                     .focusable(false)
             }
 
-            // 整合包描述（Summary）
             VStack(alignment: .leading, spacing: 8) {
                 Text("modpack.export.summary".localized())
                     .font(.subheadline)
@@ -169,7 +157,6 @@ struct ModPackExportSheet: View {
                     .textFieldStyle(.roundedBorder)
             }
 
-            // 版本目录
             VStack(alignment: .leading, spacing: 8) {
                 Text("version.directory.tree".localized())
                     .font(.subheadline)
@@ -247,17 +234,13 @@ struct ModPackExportSheet: View {
         "\(gameInfo.gameName).\(viewModel.currentExportFormat.fileExtension)"
     }
 
-    // MARK: - Reusable Components
-
     private var progressItemsView: some View {
         VStack(spacing: 16) {
-            // 扫描资源进度条
             if let scanProgress = viewModel.exportProgress.scanProgress {
                 progressRow(progress: scanProgress)
                     .id("scan-\(scanProgress.completed)-\(scanProgress.total)")
             }
 
-            // 复制文件进度条
             if let copyProgress = viewModel.exportProgress.copyProgress {
                 progressRow(progress: copyProgress)
                     .id("copy-\(copyProgress.completed)-\(copyProgress.total)")
@@ -297,9 +280,6 @@ struct ModPackExportSheet: View {
         .frame(maxWidth: .infinity)
     }
 
-    // MARK: - Actions
-
-    /// 处理导出完成，显示保存对话框
     private func handleExportCompleted(tempFilePath: URL) {
         if viewModel.shouldShowSaveDialog {
             viewModel.markSaveDialogShown()

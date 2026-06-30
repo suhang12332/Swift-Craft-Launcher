@@ -1,9 +1,14 @@
+//
+//  YggdrasilProfileListParserTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class YggdrasilProfileListParserTests: XCTestCase {
-
-    // MARK: - CommonYggdrasilProfileListParser
 
     func testParse_plainArrayFormat() throws {
         let json = """
@@ -188,8 +193,6 @@ final class YggdrasilProfileListParserTests: XCTestCase {
         XCTAssertNotNil(result)
         XCTAssertEqual(result?.first?.skins.first?.variant, "classic")
     }
-
-    // MARK: - BlessingSkinProfileListParser
 
     func testBlessingSkinParse_withSkinAndCape() throws {
         let json = """

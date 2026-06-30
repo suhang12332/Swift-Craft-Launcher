@@ -1,3 +1,10 @@
+//
+//  ModrinthIndexBuilderExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
@@ -32,8 +39,6 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             env: ModrinthIndexFileEnv(client: "required", server: nil)
         )
     }
-
-    // MARK: - JSON structure validation
 
     func testBuild_jsonHasFormatVersion() async throws {
         let json = try await ModrinthIndexBuilder.build(
@@ -97,8 +102,6 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
 
         XCTAssertFalse(json.contains("summary"))
     }
-
-    // MARK: - Files in JSON
 
     func testBuild_jsonContainsFileHashes() async throws {
         let files = [makeFile(sha1: "sha1val", sha512: "sha512val")]
@@ -184,8 +187,6 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
         XCTAssertTrue(json.contains("hash_b"))
         XCTAssertTrue(json.contains("hash_c"))
     }
-
-    // MARK: - Dependencies
 
     func testBuild_fabricDependencies() async throws {
         let json = try await ModrinthIndexBuilder.build(

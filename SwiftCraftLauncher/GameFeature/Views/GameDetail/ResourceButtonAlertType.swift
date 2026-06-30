@@ -1,13 +1,13 @@
 //
 //  ResourceButtonAlertType.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/6/28.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// Alert types presented by resource action buttons.
 import SwiftUI
 
-/// 资源按钮的 Alert 类型枚举
 enum ResourceButtonAlertType: Identifiable {
     case noGame
     case noPlayer
@@ -21,7 +21,7 @@ enum ResourceButtonAlertType: Identifiable {
         }
     }
 
-    /// 创建对应的 Alert
+    /// The alert associated with this case.
     var alert: Alert {
         switch self {
         case .noGame:

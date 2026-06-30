@@ -1,13 +1,13 @@
 //
 //  GameNameValidator.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-// MARK: - GameNameValidator
+/// Validates game names to prevent duplicates during creation.
 @MainActor
 class GameNameValidator: ObservableObject {
     @Published var gameName: String = ""
@@ -19,7 +19,7 @@ class GameNameValidator: ObservableObject {
         self.gameSetupService = gameSetupService
     }
 
-    /// 验证游戏名称是否重复
+    /// Validates whether the current game name is a duplicate.
     func validateGameName() async {
         guard !gameName.isEmpty else {
             isGameNameDuplicate = false
@@ -32,7 +32,8 @@ class GameNameValidator: ObservableObject {
         }
     }
 
-    /// 设置默认游戏名称（仅在当前名称为空时设置）
+    /// Sets a default game name only when the current name is empty.
+    /// - Parameter name: The default name to set.
     func setDefaultName(_ name: String) {
         if gameName.isEmpty {
             gameName = name
@@ -44,7 +45,7 @@ class GameNameValidator: ObservableObject {
         isGameNameDuplicate = false
     }
 
-    /// 检查表单是否有效
+    /// A Boolean value indicating whether the form input is valid.
     var isFormValid: Bool {
         !gameName.isEmpty && !isGameNameDuplicate
     }

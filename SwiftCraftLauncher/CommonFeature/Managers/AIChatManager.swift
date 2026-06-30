@@ -1,7 +1,9 @@
 //
 //  AIChatManager.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  Manages AI chat interactions including message sending and streaming responses.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -28,9 +30,11 @@ class AIChatManager: ObservableObject {
         self.windowDataStore = windowDataStore
     }
 
-    // MARK: - 发送消息
-
-    /// 发送消息
+    /// Sends a message to the AI service and streams the response.
+    /// - Parameters:
+    ///   - text: The message text to send.
+    ///   - attachments: File attachments to include with the message.
+    ///   - chatState: The current chat state to update.
     func sendMessage(_ text: String, attachments: [MessageAttachmentType] = [], chatState: ChatState) async {
         guard !settings.apiKey.isEmpty else {
             let error = GlobalError.configuration(
@@ -58,7 +62,6 @@ class AIChatManager: ObservableObject {
             return
         }
 
-        // 添加用户消息
         let userMessage = ChatMessage(
             role: .user,
             content: text,
@@ -67,13 +70,11 @@ class AIChatManager: ObservableObject {
         await MainActor.run {
             chatState.addMessage(userMessage)
 
-            // 添加空的助手消息用于流式更新
             let assistantMessage = ChatMessage(role: .assistant, content: "")
             chatState.addMessage(assistantMessage)
             chatState.isSending = true
         }
 
-        // 构建消息历史
         let historyMessages = chatState.messages.dropLast(2)
         var allMessages: [ChatMessage] = Array(historyMessages)
         allMessages.append(userMessage)
@@ -94,20 +95,17 @@ class AIChatManager: ObservableObject {
 
                 if let globalError = error as? GlobalError {
                     errorHandler.handle(globalError)
-                    // 在消息中显示错误
                     if let lastIndex = chatState.messages.indices.last {
                         let userFriendlyMessage = globalError.localizedDescription
                         chatState.messages[lastIndex].content = userFriendlyMessage
                     }
                 } else {
-                    // 其他错误转换为 GlobalError
                     let globalError = GlobalError.network(
                         chineseMessage: error.localizedDescription,
                         i18nKey: "error.network.ai_request_failed",
                         level: .notification
                     )
                     errorHandler.handle(globalError)
-                    // 在消息中显示错误
                     if let lastIndex = chatState.messages.indices.last {
                         let userFriendlyMessage = globalError.localizedDescription
                         chatState.messages[lastIndex].content = userFriendlyMessage
@@ -116,8 +114,6 @@ class AIChatManager: ObservableObject {
             }
         }
     }
-
-    // MARK: - OpenAI 格式（兼容 DeepSeek 等）
 
     private func sendOpenAIMessage(messages: [ChatMessage], chatState: ChatState) async throws {
         let apiURL = settings.getAPIURL()
@@ -129,7 +125,6 @@ class AIChatManager: ObservableObject {
             )
         }
 
-        // 构建请求体
         let requestBody: [String: Any] = [
             "model": settings.getModel(),
             "stream": true,
@@ -144,7 +139,6 @@ class AIChatManager: ObservableObject {
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         request.httpBody = jsonData
 
-        // 发送流式请求
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
         guard (200...299).contains(httpResponse.statusCode) else {
@@ -157,13 +151,12 @@ class AIChatManager: ObservableObject {
             )
         }
 
-        // 处理流式响应（SSE 格式）
         var accumulatedContent = ""
 
         for try await line in asyncBytes.lines {
             guard !line.isEmpty else { continue }
 
-            // OpenAI 流式响应格式：data: {...}
+            // SSE format: "data: {...}"
             if line.hasPrefix("data: ") {
                 let jsonString = String(line.dropFirst(6)).trimmingCharacters(in: .whitespacesAndNewlines)
                 if jsonString == "[DONE]" {
@@ -192,7 +185,6 @@ class AIChatManager: ObservableObject {
         }
     }
 
-    /// 构建 OpenAI 格式的消息数组
     private func buildOpenAIMessages(messages: [ChatMessage]) async throws -> [[String: Any]] {
         var apiMessages: [[String: Any]] = []
 
@@ -201,20 +193,17 @@ class AIChatManager: ObservableObject {
                 "role": message.apiRoleString
             ]
 
-            // 处理文本内容和文件附件
             var contentParts: [String] = []
 
             if !message.content.isEmpty {
                 contentParts.append(message.content)
             }
 
-            // 处理文件附件（跳过图片）
             for attachment in message.attachments {
                 if case let .file(url, fileName) = attachment {
                     let fileText = await processFile(url: url, fileName: fileName)
                     contentParts.append(fileText)
                 }
-                // 忽略图片附件
             }
 
             if contentParts.isEmpty {
@@ -231,8 +220,6 @@ class AIChatManager: ObservableObject {
         return apiMessages
     }
 
-    // MARK: - Ollama 格式
-
     private func sendOllamaMessage(messages: [ChatMessage], chatState: ChatState) async throws {
         let baseURL = settings.selectedProvider == .ollama
             ? (settings.ollamaBaseURL.isEmpty ? settings.selectedProvider.baseURL : settings.ollamaBaseURL)
@@ -247,7 +234,6 @@ class AIChatManager: ObservableObject {
             )
         }
 
-        // 构建请求体
         let requestBody: [String: Any] = [
             "model": settings.getModel(),
             "stream": true,
@@ -265,7 +251,6 @@ class AIChatManager: ObservableObject {
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         request.httpBody = jsonData
 
-        // 发送流式请求
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
         guard (200...299).contains(httpResponse.statusCode) else {
@@ -278,7 +263,6 @@ class AIChatManager: ObservableObject {
             )
         }
 
-        // 处理流式响应
         var accumulatedContent = ""
         for try await line in asyncBytes.lines {
             guard !line.isEmpty,
@@ -287,7 +271,7 @@ class AIChatManager: ObservableObject {
                 continue
             }
 
-            // Ollama 流式响应格式：{"message": {"content": "..."}, "done": false}
+            // Ollama format: {"message": {"content": "..."}, "done": false}
             if let message = json["message"] as? [String: Any],
                let content = message["content"] as? String {
                 accumulatedContent += content
@@ -306,7 +290,6 @@ class AIChatManager: ObservableObject {
         }
     }
 
-    /// 构建 Ollama 格式的消息数组
     private func buildOllamaMessages(messages: [ChatMessage]) async throws -> [[String: Any]] {
         var apiMessages: [[String: Any]] = []
 
@@ -315,20 +298,17 @@ class AIChatManager: ObservableObject {
                 "role": message.apiRoleString
             ]
 
-            // 处理文本内容和文件附件
             var contentParts: [String] = []
 
             if !message.content.isEmpty {
                 contentParts.append(message.content)
             }
 
-            // 处理文件附件（跳过图片）
             for attachment in message.attachments {
                 if case let .file(url, fileName) = attachment {
                     let fileText = await processFile(url: url, fileName: fileName)
                     contentParts.append(fileText)
                 }
-                // 忽略图片附件
             }
 
             if contentParts.isEmpty {
@@ -343,8 +323,6 @@ class AIChatManager: ObservableObject {
         return apiMessages
     }
 
-    // MARK: - Gemini 格式
-
     private func sendGeminiMessage(messages: [ChatMessage], chatState: ChatState) async throws {
         let model = settings.getModel()
         let apiURL = "\(settings.selectedProvider.baseURL)/v1/models/\(model):streamGenerateContent?key=\(settings.apiKey.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? settings.apiKey)"
@@ -357,7 +335,6 @@ class AIChatManager: ObservableObject {
             )
         }
 
-        // 构建请求体
         let requestBody: [String: Any] = [
             "contents": try await buildGeminiContents(messages: messages)
         ]
@@ -369,7 +346,6 @@ class AIChatManager: ObservableObject {
         let jsonData = try JSONSerialization.data(withJSONObject: requestBody)
         request.httpBody = jsonData
 
-        // 发送流式请求
         let (asyncBytes, httpResponse) = try await APIClient.performStreamRequest(request: request)
 
         guard (200...299).contains(httpResponse.statusCode) else {
@@ -382,7 +358,6 @@ class AIChatManager: ObservableObject {
             )
         }
 
-        // 处理流式响应
         var accumulatedContent = ""
         for try await line in asyncBytes.lines {
             guard !line.isEmpty,
@@ -408,19 +383,16 @@ class AIChatManager: ObservableObject {
         }
     }
 
-    /// 构建 Gemini 格式的内容数组
     private func buildGeminiContents(messages: [ChatMessage]) async throws -> [[String: Any]] {
         var contents: [[String: Any]] = []
 
         for message in messages {
             var parts: [[String: Any]] = []
 
-            // 处理文本内容
             if !message.content.isEmpty {
                 parts.append(["text": message.content])
             }
 
-            // 处理文件附件
             for attachment in message.attachments {
                 if case let .file(url, fileName) = attachment {
                     let fileText = await processFile(url: url, fileName: fileName)
@@ -434,7 +406,7 @@ class AIChatManager: ObservableObject {
                 "parts": parts
             ]
 
-            // 设置角色（Gemini 使用 "user" 和 "model"）
+            // Gemini uses "user" and "model" for roles
             if message.role == .assistant {
                 contentDict["role"] = "model"
             } else {
@@ -447,37 +419,27 @@ class AIChatManager: ObservableObject {
         return contents
     }
 
-    // MARK: - 文件处理
-
-    /// 处理文件：读取文本内容
     private func processFile(url: URL, fileName: String) async -> String {
-        // 文件大小阈值：100KB
         let maxFileSizeForReading: Int64 = 100_000
 
-        // 获取文件大小
         guard let fileSize = await getFileSize(url: url) else {
             return await readFileContent(url: url, fileName: fileName) ??
                    String(format: "ai.file.cannot_read".localized(), fileName)
         }
 
-        // 根据大小决定处理方式
         if fileSize <= maxFileSizeForReading {
-            // 小文件：读取文本内容
             return await readFileContent(url: url, fileName: fileName) ??
                    String(format: "ai.file.cannot_read_text".localized(), fileName)
         } else {
-            // 大文件：返回文件信息
             let sizeDescription = formatFileSize(fileSize)
             return String(format: "ai.file.too_large".localized(), fileName, sizeDescription)
         }
     }
 
-    /// 读取文件内容（小文件）
     private func readFileContent(url: URL, fileName: String) async -> String? {
         guard let fileContent = await loadFileAsText(url: url) else { return nil }
 
         let maxLength = 5000
-        // 使用字符串插值而非字符串拼接
         let truncatedContent = fileContent.count > maxLength
             ? "\(String(fileContent.prefix(maxLength)))\n... \("ai.file.content_truncated".localized())"
             : fileContent
@@ -485,7 +447,6 @@ class AIChatManager: ObservableObject {
         return String(format: "ai.file.content".localized(), fileName, truncatedContent)
     }
 
-    /// 获取文件大小（字节）
     private func getFileSize(url: URL) async -> Int64? {
         await Task.detached(priority: .utility) {
             guard url.startAccessingSecurityScopedResource() else { return nil }
@@ -502,7 +463,6 @@ class AIChatManager: ObservableObject {
         }.value
     }
 
-    /// 格式化文件大小
     private func formatFileSize(_ bytes: Int64) -> String {
         let sizeInKB = Double(bytes) / 1024.0
         if sizeInKB < 1024 {
@@ -513,7 +473,6 @@ class AIChatManager: ObservableObject {
         }
     }
 
-    /// 将文件加载为文本
     private func loadFileAsText(url: URL) async -> String? {
         await Task.detached(priority: .utility) {
             guard url.startAccessingSecurityScopedResource() else { return nil }
@@ -523,14 +482,10 @@ class AIChatManager: ObservableObject {
         }.value
     }
 
-    // MARK: - 打开聊天窗口
-
-    /// 打开聊天窗口
+    /// Opens the AI chat window with a fresh chat state.
     func openChatWindow() {
         let chatState = ChatState()
-        // 存储到 WindowDataStore
         windowDataStore.aiChatState = chatState
-        // 打开窗口
         windowManager.openWindow(id: .aiChat)
     }
 }

@@ -1,7 +1,15 @@
+//
+//  PlayerDataManager.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 玩家数据管理器
-/// 使用 UserProfileStore (plist) 和 AuthCredentialStore (Keychain) 分离存储
+/// Coordinates player data across ``UserProfileStore`` and ``AuthCredentialStore``.
+///
+/// Profiles are persisted to `UserDefaults` (plist) and credentials are stored in the system Keychain.
 class PlayerDataManager {
     static let shared = PlayerDataManager()
 
@@ -14,18 +22,17 @@ class PlayerDataManager {
         self.profileStore = UserProfileStore(errorHandler: errorHandler)
     }
 
-    // MARK: - Public Methods
-
-    /// 添加新玩家
+    /// Adds a new player with the specified properties.
+    ///
     /// - Parameters:
-    ///   - name: 玩家名称
-    ///   - uuid: 玩家UUID，如果为nil则生成离线UUID
-    ///   - isOnline: 是否为在线账户
-    ///   - avatarName: 头像名称
-    ///   - accToken: 访问令牌，默认为空字符串
-    ///   - refreshToken: 刷新令牌，默认为空字符串
-    ///   - xuid: Xbox用户ID，默认为空字符串
-    /// - Throws: GlobalError 当操作失败时
+    ///   - name: The player's display name.
+    ///   - uuid: A unique identifier. An offline UUID is generated when this is `nil`.
+    ///   - isOnline: A Boolean value indicating whether this is an online account.
+    ///   - avatarName: The avatar image name or URL.
+    ///   - accToken: The access token for online authentication.
+    ///   - refreshToken: The refresh token for online authentication.
+    ///   - xuid: The Xbox user identifier.
+    /// - Throws: A `GlobalError` if the player already exists or creation fails.
     func addPlayer(
         name: String,
         uuid: String? = nil,
@@ -46,10 +53,8 @@ class PlayerDataManager {
         }
 
         do {
-            // 创建 Player 对象
             let credential: AuthCredential?
             if isOnline && !accToken.isEmpty {
-                // 需先创建 Player 获取 ID，此处先创建 profile
                 let tempId: String
                 if let providedUUID = uuid {
                     tempId = providedUUID
@@ -74,13 +79,10 @@ class PlayerDataManager {
                 isCurrent: players.isEmpty
             )
 
-            // 保存 profile
             try profileStore.addProfile(newPlayer.profile)
 
-            // 如果有 credential，保存到 Keychain
             if let credential = newPlayer.credential {
                 if !credentialStore.saveCredential(credential) {
-                    // 如果保存 credential 失败，回滚 profile
                     try? profileStore.deleteProfile(byID: newPlayer.id)
                     throw GlobalError.validation(
                         chineseMessage: "保存认证凭据失败",
@@ -100,16 +102,17 @@ class PlayerDataManager {
         }
     }
 
-    /// 添加新玩家（静默版本）
+    /// Adds a new player without propagating errors.
+    ///
     /// - Parameters:
-    ///   - name: 玩家名称
-    ///   - uuid: 玩家UUID，如果为nil则生成离线UUID
-    ///   - isOnline: 是否为在线账户
-    ///   - avatarName: 头像名称
-    ///   - accToken: 访问令牌，默认为空字符串
-    ///   - refreshToken: 刷新令牌，默认为空字符串
-    ///   - xuid: Xbox用户ID，默认为空字符串
-    /// - Returns: 是否成功添加
+    ///   - name: The player's display name.
+    ///   - uuid: A unique identifier.
+    ///   - isOnline: A Boolean value indicating whether this is an online account.
+    ///   - avatarName: The avatar image name or URL.
+    ///   - accToken: The access token.
+    ///   - refreshToken: The refresh token.
+    ///   - xuid: The Xbox user identifier.
+    /// - Returns: `true` if the player was added successfully.
     func addPlayerSilently(
         name: String,
         uuid: String? = nil,
@@ -138,8 +141,9 @@ class PlayerDataManager {
         }
     }
 
-    /// 加载所有保存的玩家（静默版本）
-    /// - Returns: 玩家数组
+    /// Loads all saved players, returning an empty array on failure.
+    ///
+    /// - Returns: An array of players.
     func loadPlayers() -> [Player] {
         do {
             return try loadPlayersThrowing()
@@ -151,11 +155,11 @@ class PlayerDataManager {
         }
     }
 
-    /// 加载所有保存的玩家（抛出异常版本）
-    /// - Returns: 玩家数组
-    /// - Throws: GlobalError 当操作失败时
+    /// Loads all saved players, throwing on failure.
+    ///
+    /// - Returns: An array of players.
+    /// - Throws: A `GlobalError` if loading fails.
     func loadPlayersThrowing() throws -> [Player] {
-        // 从 UserProfileStore 加载所有 profiles
         let profiles = try profileStore.loadProfilesThrowing()
 
         let players = profiles.map { profile in
@@ -165,16 +169,18 @@ class PlayerDataManager {
         return players
     }
 
-    /// 为指定玩家按需加载认证凭据
-    /// - Parameter userId: 玩家 ID
-    /// - Returns: 认证凭据，如不存在则返回 nil
+    /// Loads the authentication credential for the specified player.
+    ///
+    /// - Parameter userId: The player's identifier.
+    /// - Returns: The credential, or `nil` if none exists.
     func loadCredential(userId: String) -> AuthCredential? {
         credentialStore.loadCredential(userId: userId)
     }
 
-    /// 检查玩家是否存在（不区分大小写）
-    /// - Parameter name: 要检查的名称
-    /// - Returns: 如果存在同名玩家则返回 true，否则返回 false
+    /// Checks whether a player with the given name already exists (case-insensitive).
+    ///
+    /// - Parameter name: The name to check.
+    /// - Returns: `true` if a matching player exists.
     func playerExists(name: String) -> Bool {
         do {
             let players = try loadPlayersThrowing()
@@ -187,27 +193,22 @@ class PlayerDataManager {
         }
     }
 
-    /// 删除指定ID的玩家
-    /// - Parameter id: 要删除的玩家ID
-    /// - Throws: GlobalError 当操作失败时
+    /// Deletes a player by identifier, including their credential and server mappings.
+    ///
+    /// When the current player is deleted, the first remaining player becomes current.
+    ///
+    /// - Parameter id: The identifier of the player to delete.
+    /// - Throws: A `GlobalError` if the player cannot be found or deletion fails.
     func deletePlayer(byID id: String) throws {
         let players = try loadPlayersThrowing()
         let initialCount = players.count
-
-        // 检查要删除的玩家是否为当前玩家
         let isDeletingCurrentPlayer = players.contains { $0.id == id && $0.isCurrent }
 
-        // 删除 profile
         try profileStore.deleteProfile(byID: id)
-
-        // 删除 credential（如果存在）
         _ = credentialStore.deleteCredential(userId: id)
-
-        // 删除该用户对应的三方服务器映射（如存在）
         OfflineUserServerMap.removeServer(for: id)
 
         if initialCount > 0 {
-            // 如果删除的是当前玩家，需要设置新的当前玩家
             if isDeletingCurrentPlayer {
                 let remainingPlayers = try loadPlayersThrowing()
                 if !remainingPlayers.isEmpty {
@@ -221,9 +222,10 @@ class PlayerDataManager {
         }
     }
 
-    /// 删除指定ID的玩家（静默版本）
-    /// - Parameter id: 要删除的玩家ID
-    /// - Returns: 是否成功删除
+    /// Deletes a player without propagating errors.
+    ///
+    /// - Parameter id: The identifier of the player to delete.
+    /// - Returns: `true` if the player was deleted successfully.
     func deletePlayerSilently(byID id: String) -> Bool {
         do {
             try deletePlayer(byID: id)
@@ -236,8 +238,9 @@ class PlayerDataManager {
         }
     }
 
-    /// 保存玩家数组（静默版本）
-    /// - Parameter players: 要保存的玩家数组
+    /// Saves an array of players without propagating errors.
+    ///
+    /// - Parameter players: The players to save.
     func savePlayers(_ players: [Player]) {
         do {
             try savePlayersThrowing(players)
@@ -248,11 +251,14 @@ class PlayerDataManager {
         }
     }
 
-    /// 保存玩家数组（抛出异常版本）
-    /// - Parameter players: 要保存的玩家数组
-    /// - Throws: GlobalError 当操作失败时
+    /// Saves an array of players, throwing on failure.
+    ///
+    /// Profiles and credentials are persisted separately. Orphaned credentials
+    /// (those whose associated profile no longer exists) are cleaned up.
+    ///
+    /// - Parameter players: The players to save.
+    /// - Throws: A `GlobalError` if saving fails.
     func savePlayersThrowing(_ players: [Player]) throws {
-        // 分离 profiles 和 credentials
         var profiles: [UserProfile] = []
         var credentials: [AuthCredential] = []
 
@@ -263,10 +269,8 @@ class PlayerDataManager {
             }
         }
 
-        // 保存 profiles
         try profileStore.saveProfilesThrowing(profiles)
 
-        // 保存 credentials
         for credential in credentials where !credentialStore.saveCredential(credential) {
             throw GlobalError.validation(
                 chineseMessage: "保存认证凭据失败: \(credential.userId)",
@@ -275,7 +279,6 @@ class PlayerDataManager {
             )
         }
 
-        // 清理已删除玩家的 credentials
         let existingProfileIds = Set(profiles.map { $0.id })
         let allCredentials = try loadPlayersThrowing().compactMap { $0.credential }
         for credential in allCredentials where !existingProfileIds.contains(credential.userId) {
@@ -285,14 +288,13 @@ class PlayerDataManager {
         Logger.shared.debug("玩家数据已保存")
     }
 
-    /// 更新指定玩家的信息
-    /// - Parameter updatedPlayer: 更新后的玩家对象
-    /// - Throws: GlobalError 当操作失败时
+    /// Updates an existing player's profile and credential.
+    ///
+    /// - Parameter updatedPlayer: The player with updated values.
+    /// - Throws: A `GlobalError` if the update fails.
     func updatePlayer(_ updatedPlayer: Player) throws {
-        // 更新 profile
         try profileStore.updateProfile(updatedPlayer.profile)
 
-        // 更新或删除 credential
         if let credential = updatedPlayer.credential {
             if !credentialStore.saveCredential(credential) {
                 throw GlobalError.validation(
@@ -308,9 +310,10 @@ class PlayerDataManager {
         Logger.shared.debug("已更新玩家信息: \(updatedPlayer.name)")
     }
 
-    /// 更新指定玩家的信息（静默版本）
-    /// - Parameter updatedPlayer: 更新后的玩家对象
-    /// - Returns: 是否成功更新
+    /// Updates an existing player without propagating errors.
+    ///
+    /// - Parameter updatedPlayer: The player with updated values.
+    /// - Returns: `true` if the update was successful.
     func updatePlayerSilently(_ updatedPlayer: Player) -> Bool {
         do {
             try updatePlayer(updatedPlayer)

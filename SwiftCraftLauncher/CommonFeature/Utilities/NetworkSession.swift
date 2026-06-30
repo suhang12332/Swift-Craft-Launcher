@@ -1,5 +1,13 @@
+//
+//  NetworkSession.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides configured URLSession instances with shared timeout and connection settings.
 enum NetworkSession {
     static let sharedConfiguration: URLSessionConfiguration = {
         let configuration = URLSessionConfiguration.default
@@ -11,6 +19,11 @@ enum NetworkSession {
         return configuration
     }()
 
+    /// Creates a new URLSession with optional delegate and configuration overrides.
+    /// - Parameters:
+    ///   - delegate: The session delegate.
+    ///   - configure: A closure to modify the default configuration before the session is created.
+    /// - Returns: A configured URLSession instance.
     static func makeSession(
         delegate: URLSessionDelegate? = nil,
         configure: ((URLSessionConfiguration) -> Void)? = nil

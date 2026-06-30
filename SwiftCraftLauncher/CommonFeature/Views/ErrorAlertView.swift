@@ -1,6 +1,13 @@
+//
+//  ErrorAlertView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-/// 错误弹窗修饰符
+/// A view modifier that presents error alerts from the global error handler.
 struct ErrorAlertModifier: ViewModifier {
     @StateObject private var errorHandler: GlobalErrorHandler
 
@@ -25,10 +32,8 @@ struct ErrorAlertModifier: ViewModifier {
     }
 }
 
-// MARK: - View Extension
-
 extension View {
-    /// 添加错误弹窗处理
+    /// Adds error alert handling to the view.
     func errorAlert() -> some View {
         self.modifier(ErrorAlertModifier())
     }

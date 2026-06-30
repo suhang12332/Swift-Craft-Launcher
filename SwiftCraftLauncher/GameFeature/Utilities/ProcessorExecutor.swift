@@ -1,16 +1,24 @@
+//
+//  ProcessorExecutor.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import ZIPFoundation
 
-/// Forge/NeoForge Processor执行器
+/// Executes Forge/NeoForge processor configurations by invoking Java.
 enum ProcessorExecutor {
 
-    /// 执行单个processor
+    /// Executes a single processor configuration.
     /// - Parameters:
-    ///   - processor: 处理器配置
-    ///   - librariesDir: 库目录
-    ///   - gameVersion: 游戏版本（用于占位符替换）
-    ///   - data: 数据字段，用于占位符替换
-    /// - Throws: GlobalError 当处理失败时
+    ///   - processor: The processor configuration to execute.
+    ///   - librariesDir: The directory containing library dependencies.
+    ///   - gameVersion: The game version string used for placeholder substitution.
+    ///   - javaPath: The path to the Java executable.
+    ///   - data: Optional data fields used for placeholder substitution.
+    /// - Throws: A ``GlobalError`` if processing fails.
     static func executeProcessor(
         _ processor: Processor,
         librariesDir: URL,
@@ -18,23 +26,19 @@ enum ProcessorExecutor {
         javaPath: String,
         data: [String: String]? = nil
     ) async throws {
-        // 1. 验证和准备JAR文件
         let jarPath = try validateAndGetJarPath(
             processor.jar,
             librariesDir: librariesDir
         )
 
-        // 2. 构建classpath
         let classpath = try buildClasspath(
             processor.classpath,
             jarPath: jarPath,
             librariesDir: librariesDir
         )
 
-        // 3. 获取主类
         let mainClass = try getMainClassFromJar(jarPath: jarPath)
 
-        // 4. 构建Java命令
         let command = buildJavaCommand(
             classpath: classpath,
             mainClass: mainClass,
@@ -44,16 +48,12 @@ enum ProcessorExecutor {
             data: data
         )
 
-        // 5. 执行Java命令
         try await executeJavaCommand(command, javaPath: javaPath, workingDir: librariesDir)
 
-        // 6. 处理输出文件
         if let outputs = processor.outputs {
             try await processOutputs(outputs, workingDir: librariesDir)
         }
     }
-
-    // MARK: - Private Helper Methods
 
     private static func validateAndGetJarPath(
         _ jar: String?,
@@ -126,11 +126,9 @@ enum ProcessorExecutor {
         _ coordinate: String,
         librariesDir: URL
     ) throws -> URL {
-        // 使用支持@符号的方法来处理Maven坐标
         let relativePath: String
 
         if coordinate.contains("@") {
-            // 对于包含@符号的坐标（如 org.ow2.asm:asm:9.3@jar），使用特殊处理方法
             relativePath = CommonService.parseMavenCoordinateWithAtSymbol(
                 coordinate
             )
@@ -197,7 +195,6 @@ enum ProcessorExecutor {
 
         let processedArg = NSMutableString(string: arg)
 
-        // 基础占位符替换
         let basicReplacements = [
             AppConstants.ProcessorPlaceholders.side: AppConstants.EnvironmentTypes.client,
             AppConstants.ProcessorPlaceholders.version: gameVersion,
@@ -215,7 +212,6 @@ enum ProcessorExecutor {
             )
         }
 
-        // 处理data字段的占位符替换
         if let data = data {
             for (key, value) in data {
                 let placeholder = "{\(key)}"
@@ -250,12 +246,10 @@ enum ProcessorExecutor {
         process.arguments = command
         process.currentDirectoryURL = workingDir
 
-        // 设置环境变量
         var environment = ProcessInfo.processInfo.environment
         environment["LIBRARY_DIR"] = workingDir.path
         process.environment = environment
 
-        // 捕获输出
         let outputPipe = Pipe()
         let errorPipe = Pipe()
         process.standardOutput = outputPipe
@@ -264,12 +258,10 @@ enum ProcessorExecutor {
         do {
             try process.run()
 
-            // 实时读取输出
             setupOutputHandlers(outputPipe: outputPipe, errorPipe: errorPipe)
 
             process.waitUntilExit()
 
-            // 清理handlers
             outputPipe.fileHandleForReading.readabilityHandler = nil
             errorPipe.fileHandleForReading.readabilityHandler = nil
 
@@ -314,13 +306,11 @@ enum ProcessorExecutor {
             let sourceURL = workingDir.appendingPathComponent(source)
             let destURL = workingDir.appendingPathComponent(destination)
 
-            // 确保目标目录存在
             try fileManager.createDirectory(
                 at: destURL.deletingLastPathComponent(),
                 withIntermediateDirectories: true
             )
 
-            // 移动或复制文件
             if fileManager.fileExists(atPath: sourceURL.path) {
                 try fileManager.moveItem(at: sourceURL, to: destURL)
             }
@@ -362,7 +352,6 @@ enum ProcessorExecutor {
             )
         }
 
-        // 解析MANIFEST.MF查找Main-Class
         let lines = manifestContent.components(separatedBy: .newlines)
         for line in lines {
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)

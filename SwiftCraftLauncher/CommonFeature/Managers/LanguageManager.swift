@@ -1,29 +1,34 @@
+//
+//  LanguageManager.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
-/// 语言管理器
-/// 只负责语言列表与当前生效语言读取（不在 App 内修改语言）
+/// Provides the effective app language without modifying it at runtime.
 public class LanguageManager {
 
     public var selectedLanguage: String {
         Self.getDefaultLanguage()
     }
 
-    /// 单例实例
     public static let shared = LanguageManager()
 
     private init() {}
 
-    /// 获取当前对本 App 生效的语言 code（系统自动匹配/回退后，并限制在 App 支持的本地化中）。
+    /// Returns the language code currently in use by the app, respecting system preferences and supported localizations.
     public static func getDefaultLanguage() -> String {
         Bundle.main.preferredLocalizations.first ?? "en"
     }
 
-    /// 获取语言显示名称（用于 UI 展示）。
+    /// Returns the localized display name for a language code.
     /// - Parameters:
-    ///   - code: 语言/地区标识（例如 "en"、"zh-Hans"、"ja"）
-    ///   - locale: 用于显示的 Locale（默认当前系统 Locale）
-    /// - Returns: 尽可能本地化的显示名；如果无法解析则回退到英语显示名。
+    ///   - code: The language or region identifier (e.g. "en", "zh-Hans", "ja").
+    ///   - locale: The locale used for display name resolution.
+    /// - Returns: A localized display name, falling back to English if unresolvable.
     public static func displayName(for code: String, locale: Locale = .current) -> String {
         let name = locale.localizedString(forIdentifier: code)
             ?? locale.localizedString(forIdentifier: "en")
@@ -31,18 +36,16 @@ public class LanguageManager {
         return name
     }
 
-    /// 当前生效语言的显示名称（用于 UI 展示）。
+    /// The display name of the currently effective language.
     public var selectedLanguageDisplayName: String {
         Self.displayName(for: selectedLanguage)
     }
 }
 
-// MARK: - String Localization Extension
-
 extension String {
-    /// 获取本地化字符串
-    /// - Parameter bundle: 默认使用系统解析后的主 bundle
-    /// - Returns: 本地化后的字符串
+    /// Returns the localized version of this string using the specified bundle.
+    /// - Parameter bundle: The bundle to search for localized strings.
+    /// - Returns: The localized string, or the key itself if no translation exists.
     public func localized(
         _ bundle: Bundle = .main
     ) -> String {

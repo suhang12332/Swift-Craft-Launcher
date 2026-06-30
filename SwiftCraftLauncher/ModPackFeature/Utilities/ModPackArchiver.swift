@@ -1,19 +1,20 @@
 //
 //  ModPackArchiver.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 import ZIPFoundation
 
-/// 整合包打包器
-/// 负责将临时目录打包为 .mrpack 文件
+/// Archives a modpack directory into a `.mrpack` file.
 enum ModPackArchiver {
-    /// 打包整合包
+    /// Creates a `.mrpack` archive from a temporary directory.
     /// - Parameters:
-    ///   - tempDir: 临时目录（包含 modrinth.index.json 和 overrides）
-    ///   - outputPath: 输出文件路径
+    ///   - tempDir: The temporary directory containing `modrinth.index.json` and `overrides`.
+    ///   - outputPath: The destination file path for the archive.
+    ///   - rootFiles: The root-level files to include. Defaults to the Modrinth index file.
     static func archive(
         tempDir: URL,
         outputPath: URL,
@@ -21,12 +22,10 @@ enum ModPackArchiver {
     ) throws {
         if Task.isCancelled { throw CancellationError() }
 
-        // 如果输出文件已存在，先删除
         if FileManager.default.fileExists(atPath: outputPath.path) {
             try FileManager.default.removeItem(at: outputPath)
         }
 
-        // 创建 ZIP 归档
         let archive: Archive
         do {
             archive = try Archive(url: outputPath, accessMode: .create)
@@ -38,7 +37,6 @@ enum ModPackArchiver {
             )
         }
 
-        // 添加根目录文件（如 modrinth.index.json / manifest.json）
         for fileName in rootFiles {
             if Task.isCancelled { throw CancellationError() }
             let filePath = tempDir.appendingPathComponent(fileName)
@@ -57,7 +55,6 @@ enum ModPackArchiver {
             }
         }
 
-        // 添加 overrides 文件夹及其所有内容到 zip 根目录
         let overridesDir = tempDir.appendingPathComponent("overrides")
         if FileManager.default.fileExists(atPath: overridesDir.path) {
             let overridesEnumerator = FileManager.default.enumerator(
@@ -66,7 +63,6 @@ enum ModPackArchiver {
                 options: [.skipsHiddenFiles]
             )
 
-            // 标准化 overridesDir 路径（确保以 / 结尾）
             let overridesDirPath = (overridesDir.path as NSString).standardizingPath
             let overridesDirPathWithSlash = overridesDirPath.hasSuffix("/")
                 ? overridesDirPath
@@ -76,18 +72,14 @@ enum ModPackArchiver {
                 if Task.isCancelled { throw CancellationError() }
                 if let isRegularFile = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,
                    isRegularFile {
-                    // 计算相对路径（相对于 overridesDir），添加 overrides/ 前缀
                     let filePath = (fileURL.path as NSString).standardizingPath
 
-                    // 确保文件路径以 overridesDir 路径开头
                     guard filePath.hasPrefix(overridesDirPathWithSlash) else {
                         Logger.shared.warning("文件路径不在 overrides 目录内: \(filePath)")
                         continue
                     }
 
-                    // 提取相对路径部分
                     let relativeToOverrides = String(filePath.dropFirst(overridesDirPathWithSlash.count))
-                    // 构建 ZIP 中的路径（以 overrides/ 开头）
                     let relativePath = "overrides/\(relativeToOverrides)"
 
                     let fileData = try Data(contentsOf: fileURL)

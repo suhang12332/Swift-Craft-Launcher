@@ -1,9 +1,14 @@
+//
+//  LocalResourceInstallerTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class LocalResourceInstallerTests: XCTestCase {
-
-    // MARK: - LocalResourceType
 
     func testLocalResourceType_directoryName_mod() {
         XCTAssertEqual(LocalResourceInstaller.LocalResourceType.mod.directoryName, "mods")
@@ -34,8 +39,6 @@ final class LocalResourceInstallerTests: XCTestCase {
         XCTAssertTrue(extensions.contains("jar"))
         XCTAssertTrue(extensions.contains("zip"))
     }
-
-    // MARK: - install validation
 
     func testInstall_invalidExtension_throws() {
         let tempDir = FileManager.default.temporaryDirectory

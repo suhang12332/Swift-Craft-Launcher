@@ -1,10 +1,18 @@
+//
+//  SidebarItem.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 侧边栏导航项
+/// An item displayed in the sidebar navigation.
 public enum SidebarItem: Hashable, Identifiable {
-    case game(String)  // 游戏项，包含游戏ID
-    case resource(ResourceType)  // 资源项
+    case game(String)
+    case resource(ResourceType)
 
+    /// The unique identifier for this sidebar item.
     public var id: String {
         switch self {
         case .game(let gameId):
@@ -14,17 +22,18 @@ public enum SidebarItem: Hashable, Identifiable {
         }
     }
 
+    /// The display title for this sidebar item.
     public var title: String {
         switch self {
         case .game(let gameId):
-            return gameId  // 可从游戏数据获取名称
+            return gameId
         case .resource(let type):
             return type.localizedName
         }
     }
 }
 
-/// 资源类型
+/// The type of content resource available in the launcher.
 public enum ResourceType: String, CaseIterable {
     case mod = "mod"
     case datapack = "datapack"
@@ -33,11 +42,12 @@ public enum ResourceType: String, CaseIterable {
     case modpack = "modpack"
     case minecraftJavaServer = "minecraft_java_server"
 
+    /// The localized name of this resource type.
     public var localizedName: String {
         "resource.content.type.\(rawValue)".localized()
     }
 
-    /// 资源类型的 SF Symbol 图标名称
+    /// The SF Symbol image name for this resource type.
     public var systemImage: String {
         switch self {
         case .mod:

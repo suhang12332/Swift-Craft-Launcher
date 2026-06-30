@@ -1,13 +1,24 @@
+//
+//  ModPackInstallCoordinator.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Orchestrates the full modpack installation flow: extraction, parsing, dependency resolution,
+/// override installation, file installation, and game setup.
 @MainActor
 final class ModPackInstallCoordinator {
+    /// A prepared modpack with extracted path and parsed index.
     struct PreparedModPack {
         let extractedPath: URL
         let indexInfo: ModrinthIndexInfo
         let projectDetailForIcon: ModrinthProjectDetail?
     }
 
+    /// Input parameters for the installation run.
     struct RunInput {
         let archivePath: URL
         let projectDetailForIcon: ModrinthProjectDetail?
@@ -32,6 +43,11 @@ final class ModPackInstallCoordinator {
         self.errorHandler = errorHandler
     }
 
+    /// Prepares the modpack by extracting and parsing the index.
+    /// - Parameters:
+    ///   - archivePath: The path to the modpack archive.
+    ///   - projectDetailForIcon: Optional project detail for downloading the icon.
+    /// - Returns: A prepared modpack, or nil on failure.
     func prepare(
         archivePath: URL,
         projectDetailForIcon: ModrinthProjectDetail? = nil
@@ -58,6 +74,9 @@ final class ModPackInstallCoordinator {
         )
     }
 
+    /// Runs the full installation flow.
+    /// - Parameter input: The installation input parameters.
+    /// - Returns: Whether installation succeeded.
     func run(_ input: RunInput) async -> Bool {
         input.setProcessing(true)
         if Task.isCancelled {
@@ -79,7 +98,6 @@ final class ModPackInstallCoordinator {
             gameName: input.gameName
         )
 
-        // 5. 创建 profile 文件夹
         let profileCreated = await createProfileDirectories(for: input.gameName)
         guard profileCreated else {
             await handleInstallationResult(
@@ -91,7 +109,6 @@ final class ModPackInstallCoordinator {
             return false
         }
 
-        // 进入安装阶段（复制 overrides / 下载文件 / 安装依赖）
         input.setProcessing(false)
 
         let resourceDir = AppPaths.profileDirectory(gameName: input.gameName)
@@ -151,8 +168,6 @@ final class ModPackInstallCoordinator {
         downloadService.cleanupTempFiles()
         return gameSuccess
     }
-
-    // MARK: - Helpers
 
     private func resolvePreparedPack(_ input: RunInput) async -> PreparedModPack? {
         if let prepared = input.prepared {

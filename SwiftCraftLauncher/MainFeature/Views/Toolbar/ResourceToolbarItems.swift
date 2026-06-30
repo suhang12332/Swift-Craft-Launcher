@@ -1,11 +1,17 @@
 //
 //  ResourceToolbarItems.swift
-//  SwiftCraftLauncher
+//  MainFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Toolbar items displayed when a resource or project is selected.
+///
+/// Provides navigation (back), installation, and browser-open actions,
+/// or falls back to a data-source filter menu when no selection is active.
 
 import SwiftUI
 
-/// 选中资源/项目时的详情工具栏内容：返回、安装、在浏览器打开，或仅数据源菜单
 struct ResourceToolbarItems: View {
     @Environment(\.controlActiveState)
     private var controlActiveState
@@ -18,7 +24,7 @@ struct ResourceToolbarItems: View {
     @State private var showingLauncherStats = false
     @State private var launcherStatsSheetIdentity = UUID()
 
-    /// 打开当前资源在浏览器中的项目页面
+    /// Opens the project page for the currently loaded resource in the default browser.
     private func openCurrentResourceInBrowser() {
         guard let slug = detailState.loadedProjectDetail?.slug else { return }
         guard let id = detailState.loadedProjectDetail?.id else { return }
@@ -32,6 +38,7 @@ struct ResourceToolbarItems: View {
         openURL(url)
     }
 
+    /// Loads the full project detail and presents the install sheet.
     private func openInstallSheet() {
         guard let projectId = detailState.selectedProjectId else { return }
         let resourceType = detailState.gameResourcesType
@@ -74,6 +81,7 @@ struct ResourceToolbarItems: View {
         }
     }
 
+    /// Populates the detail state with loaded project information and shows the install sheet.
     private func applyProjectDetail(
         detail: ModrinthProjectDetail,
         compatibleGames: [GameVersionInfo]? = nil,

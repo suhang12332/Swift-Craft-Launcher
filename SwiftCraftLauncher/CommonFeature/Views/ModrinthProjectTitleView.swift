@@ -1,24 +1,20 @@
 //
 //  ModrinthProjectTitleView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/8/3.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-// MARK: - Modrinth Project Title View
-/// 通用的项目标题卡片组件，用于展示 Modrinth 项目详情
-/// 适用于 Modrinth 资源、服务器信息等场景
+/// A title card view for displaying Modrinth project or server information.
 struct ModrinthProjectTitleView: View {
-    // MARK: - Properties
     let title: String
     let description: String
     let icon: ProjectIcon
     let infoItems: [InfoItem]
     let tags: [String]
 
-    // MARK: - Types
     enum ProjectIcon {
         case favicon(base64: String?)
         case asyncImage(url: URL?)
@@ -36,7 +32,6 @@ struct ModrinthProjectTitleView: View {
         }
     }
 
-    // MARK: - Initialization
     init(
         title: String,
         description: String,
@@ -51,7 +46,6 @@ struct ModrinthProjectTitleView: View {
         self.tags = tags
     }
 
-    // MARK: - Body
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             iconView
@@ -78,8 +72,6 @@ struct ModrinthProjectTitleView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
-
-    // MARK: - View Components
 
     @ViewBuilder private var iconView: some View {
         switch icon {
@@ -162,9 +154,8 @@ struct ModrinthProjectTitleView: View {
     }
 }
 
-// MARK: - Convenience Initializers
 extension ModrinthProjectTitleView {
-    /// 从 MinecraftServerInfo 创建项目标题卡片（用于本地服务器）
+    /// Creates a title card from server information.
     init(
         serverName: String,
         serverAddress: String,
@@ -198,7 +189,7 @@ extension ModrinthProjectTitleView {
         }
     }
 
-    /// 从 ModrinthProjectDetail 创建项目标题卡片（用于 Modrinth 项目）
+    /// Creates a title card from a Modrinth project detail.
     init(projectDetail: ModrinthProjectDetail) {
         self.title = projectDetail.title
         self.description = projectDetail.description

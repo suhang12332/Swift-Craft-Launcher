@@ -1,5 +1,13 @@
+//
+//  OpenURLModPackImportPresenter.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Presents a mod pack import sheet when the app opens a supported file URL.
 @MainActor
 final class OpenURLModPackImportPresenter: ObservableObject {
     static let shared = OpenURLModPackImportPresenter()

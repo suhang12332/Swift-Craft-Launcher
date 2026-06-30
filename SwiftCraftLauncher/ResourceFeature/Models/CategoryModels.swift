@@ -1,9 +1,18 @@
+//
+//  CategoryModels.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// A filter item with an identifier and display name.
 struct FilterItem: Identifiable, Equatable, Hashable {
     let id: String
     let name: String
 }
+/// Project type string constants used for categorization.
 enum ProjectType {
     static let modpack = "modpack"
     static let mod = "mod"
@@ -13,6 +22,7 @@ enum ProjectType {
     static let minecraftJavaServer = "minecraft_java_server"
 }
 
+/// Category header string constants for grouping filter categories.
 enum CategoryHeader {
     static let categories = "categories"
     static let features = "features"
@@ -25,6 +35,7 @@ enum CategoryHeader {
     static let minecraftServerCommunity = "minecraft_server_community"
 }
 
+/// Localization key constants for filter section titles.
 enum FilterTitle {
     static let category = "filter.category"
     static let environment = "filter.environment"

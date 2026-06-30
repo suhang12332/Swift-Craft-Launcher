@@ -1,6 +1,13 @@
+//
+//  CommonSheetGameBody.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A game selection picker used within resource sheets.
 import SwiftUI
 
-// MARK: - 游戏选择区块
 struct CommonSheetGameBody: View {
     let compatibleGames: [GameVersionInfo]
     @Binding var selectedGame: GameVersionInfo?

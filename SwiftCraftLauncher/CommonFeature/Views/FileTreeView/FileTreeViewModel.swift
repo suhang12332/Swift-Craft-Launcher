@@ -1,9 +1,16 @@
+//
+//  FileTreeViewModel.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 承载文件树的数据与业务逻辑（加载、三态选择、导出选中文件）。
+/// Manages file tree data and selection logic.
 ///
-/// 说明：
-/// - NSOutlineView 的 dataSource/delegate 仍由 Coordinator 负责；本类只提供纯逻辑与可测试的状态。
+/// The NSOutlineView data source and delegate are handled by the coordinator.
+/// This class provides pure logic and testable state.
 final class FileTreeViewModel {
     private(set) var root: FileNode
     private(set) var showHiddenFiles: Bool
@@ -17,8 +24,9 @@ final class FileTreeViewModel {
         self.fm = fileManager
     }
 
-    /// 更新输入参数并在需要时重建根节点。
-    /// - Returns: 是否发生了根目录变更（便于调用方决定是否清空外部选中）。
+    /// Updates the root URL and hidden files setting.
+    ///
+    /// - Returns: Whether the root directory changed.
     @discardableResult
     func update(rootURL: URL, showHiddenFiles: Bool) -> Bool {
         let needsRootReload = root.url != rootURL
@@ -33,8 +41,6 @@ final class FileTreeViewModel {
     func reload() {
         root.resetChildren()
     }
-
-    // MARK: - Loading
 
     func ensureChildrenLoaded(for node: FileNode) {
         guard node.children == nil else { return }
@@ -78,17 +84,14 @@ final class FileTreeViewModel {
         }
     }
 
-    // MARK: - Selection
-
-    /// 切换节点选择状态，并保证父、子三态一致。
-    /// - Returns: 需要在 UI 上刷新的节点（self + 祖先）。
+    /// Toggles the selection state of a node, maintaining tri-state consistency.
+    ///
+    /// - Returns: Nodes that need UI refresh (self and ancestors).
     func toggleSelection(for node: FileNode) -> [FileNode] {
         let targetIsOn: Bool
         if node.isDirectory {
-            // 文件夹：当前为 all -> 变为 none；否则都视为全选
             targetIsOn = node.selection != .all
         } else {
-            // 文件：简单开关
             targetIsOn = node.selection != .all
         }
 
@@ -96,12 +99,10 @@ final class FileTreeViewModel {
         return node.selfAndAncestors()
     }
 
-    /// 应用选择状态并向下/向上传播，用于保证父、子节点的三态一致
     private func applySelection(to node: FileNode, isOn: Bool) {
         let newState: SelectionState = isOn ? .all : .unselected
         node.selection = newState
 
-        // 向下：更新所有已加载子节点
         if node.isDirectory {
             ensureChildrenLoaded(for: node)
             node.children?.forEach { child in
@@ -109,7 +110,6 @@ final class FileTreeViewModel {
             }
         }
 
-        // 向上：从当前节点开始逐级汇总子节点状态
         updateParentsSelection(from: node)
     }
 
@@ -140,8 +140,6 @@ final class FileTreeViewModel {
         }
     }
 
-    // MARK: - Export selected files
-
     func selectedFileURLs() -> [URL] {
         var result: [URL] = []
         collectSelectedFiles(from: root, into: &result)
@@ -163,10 +161,10 @@ final class FileTreeViewModel {
     }
 }
 
-// MARK: - Default selection
-
 extension FileTreeViewModel {
-    /// - Returns: 是否实际变更了选择状态（便于调用方刷新 UI / 回调）。
+    /// Applies default selection to common top-level files if not already done.
+    ///
+    /// - Returns: Whether the selection state changed.
     @discardableResult
     func applyDefaultSelectionIfNeeded() -> Bool {
         guard didAttemptApplyDefaultSelection == false else { return false }
@@ -174,7 +172,6 @@ extension FileTreeViewModel {
         ensureChildrenLoaded(for: root)
         guard let topLevelNodes = root.children, topLevelNodes.isEmpty == false else { return false }
 
-        // 仅匹配根目录下的“顶级目录/文件名”，忽略大小写。
         var didChange = false
         let defaultSet = Set(AppConstants.defaultFileTreeTopLevelSelections.map { $0.lowercased() })
 

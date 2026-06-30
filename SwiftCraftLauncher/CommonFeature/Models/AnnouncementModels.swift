@@ -1,6 +1,13 @@
+//
+//  AnnouncementModels.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 公告响应模型
+/// A response containing announcement data from the server.
 public struct AnnouncementResponse: Codable {
     public let success: Bool
     public let data: AnnouncementData?
@@ -11,7 +18,7 @@ public struct AnnouncementResponse: Codable {
     }
 }
 
-/// 公告数据模型
+/// A single announcement with title, content, and author.
 public struct AnnouncementData: Codable {
     public let title: String
     public let content: String

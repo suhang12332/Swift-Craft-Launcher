@@ -1,7 +1,13 @@
+//
+//  CurseForgeFingerprint.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 public enum CurseForgeFingerprint {
-    // \t \n \r space
     private static let ignoredWhitespace: Set<UInt8> = [
         0x09,
         0x0A,
@@ -9,7 +15,7 @@ public enum CurseForgeFingerprint {
         0x20,
     ]
 
-    /// 计算文件的 CurseForge fingerprint
+    /// Computes the CurseForge fingerprint for a file.
     public static func fingerprint(fileAt url: URL) throws -> UInt32 {
         let normalizedLength = try computeNormalizedLength(fileAt: url)
         guard normalizedLength > 0 else {
@@ -22,7 +28,7 @@ public enum CurseForgeFingerprint {
         return try computeHash(fileAt: url, normalizedLength: normalizedLength)
     }
 
-    /// 计算 Data 的 CurseForge fingerprint
+    /// Computes the CurseForge fingerprint for in-memory data.
     public static func fingerprint(data: Data) -> UInt32 {
         let normalizedLength = computeNormalizedLength(data)
         return hashFilteredBytes(normalizedLength: normalizedLength) { consume in

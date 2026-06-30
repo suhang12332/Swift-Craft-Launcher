@@ -1,9 +1,14 @@
+//
+//  CurseForgeSlugHelperExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class CurseForgeSlugHelperExtendedTests: XCTestCase {
-
-    // MARK: - toSlug edge cases
 
     func testToSlug_singleChar_returnsEmpty() {
         XCTAssertEqual(CurseForgeSlugHelper.toSlug("a"), "")
@@ -52,8 +57,6 @@ final class CurseForgeSlugHelperExtendedTests: XCTestCase {
     func testToSlug_uppercase_lowercased() {
         XCTAssertEqual(CurseForgeSlugHelper.toSlug("MyMod"), "mymod")
     }
-
-    // MARK: - isValid edge cases
 
     func testIsValid_exactly3Chars() {
         XCTAssertTrue(CurseForgeSlugHelper.isValid("abc"))

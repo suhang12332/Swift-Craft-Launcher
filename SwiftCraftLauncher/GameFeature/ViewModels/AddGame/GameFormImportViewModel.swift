@@ -1,5 +1,13 @@
+//
+//  GameFormImportViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// View model that prepares mod pack import files by copying them to a temporary directory.
 @MainActor
 final class GameFormImportViewModel: ObservableObject {
     private let errorHandler: GlobalErrorHandler
@@ -8,6 +16,9 @@ final class GameFormImportViewModel: ObservableObject {
         self.errorHandler = errorHandler
     }
 
+    /// Prepares a mod pack file for import by copying it to a temporary directory.
+    /// - Parameter result: The file picker result containing selected URLs.
+    /// - Returns: A `GameFormMode` for mod pack import, or `nil` if preparation fails.
     func prepareModPackImportMode(from result: Result<[URL], Error>) async -> GameFormMode? {
         switch result {
         case .success(let urls):

@@ -1,17 +1,20 @@
+//
+//  CurseForgeServiceExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class CurseForgeServiceExtendedTests: XCTestCase {
-
-    // MARK: - getHeaders
 
     func testGetHeaders_containsAcceptJSON() {
         let headers = APIClient.DefaultHeaders.acceptJSON
         XCTAssertFalse(headers.isEmpty)
         XCTAssertEqual(headers["Accept"], APIClient.MimeType.json)
     }
-
-    // MARK: - ModrinthService.filterPrimaryFiles
 
     func testFilterPrimaryFiles_empty_returnsNil() {
         let result = ModrinthService.filterPrimaryFiles(from: [])

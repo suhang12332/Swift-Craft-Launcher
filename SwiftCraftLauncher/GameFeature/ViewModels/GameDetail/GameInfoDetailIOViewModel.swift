@@ -1,6 +1,14 @@
+//
+//  GameInfoDetailIOViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import UniformTypeIdentifiers
 
+/// View model for game info detail I/O operations, including local resource scanning and game icon management.
 @MainActor
 final class GameInfoDetailIOViewModel: ObservableObject {
     private let errorHandler: GlobalErrorHandler
@@ -14,9 +22,8 @@ final class GameInfoDetailIOViewModel: ObservableObject {
         self.modScanner = modScanner
     }
 
-    /// 扫描本地资源目录，返回 detailId Set（失败返回空集合，并上报 GlobalError）
+    /// Scans the local resource directory and returns a set of detail IDs.
     func scanAllDetailIds(query: String, gameName: String) async -> Set<String> {
-        // Modpacks don't have a local directory to scan
         if query.lowercased() == ResourceType.modpack.rawValue {
             return []
         }
@@ -39,7 +46,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
         }
     }
 
-    /// 保存游戏图标（支持 security-scoped），失败会走 GlobalErrorHandler，返回是否成功
+    /// Saves a game icon from a file picker result, returning whether the operation succeeded.
     func saveGameIcon(from result: Result<[URL], Error>, gameName: String) async -> Bool {
         switch result {
         case .success(let urls):

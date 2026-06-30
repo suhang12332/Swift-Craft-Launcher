@@ -1,5 +1,13 @@
+//
+//  MinecraftManifest.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// A Minecraft version manifest containing full launch configuration.
 struct MinecraftVersionManifest: Codable {
     let arguments: Arguments
     let assetIndex: AssetIndex
@@ -41,6 +49,7 @@ struct MinecraftVersionManifest: Codable {
     }
 }
 
+/// Game and JVM arguments for a Minecraft version.
 struct Arguments: Codable {
     let game: [String]?
     let jvm: [String]?
@@ -48,27 +57,25 @@ struct Arguments: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        // 处理 game 参数，可能不存在
         if container.contains(.game) {
             let gameArgs = try container.decode([ArgumentValue].self, forKey: .game)
             game = gameArgs.compactMap { arg in
                 if case let .string(value) = arg {
                     return value
                 }
-                return nil // 丢弃 objectWithRules
+                return nil
             }
         } else {
             game = nil
         }
 
-        // 处理 jvm 参数，可能不存在
         if container.contains(.jvm) {
             let jvmArgs = try container.decode([ArgumentValue].self, forKey: .jvm)
             jvm = jvmArgs.compactMap { arg in
                 if case let .string(value) = arg {
                     return value
                 }
-                return nil // 丢弃 objectWithRules
+                return nil
             }
         } else {
             jvm = nil
@@ -80,6 +87,7 @@ struct Arguments: Codable {
     }
 }
 
+/// A value that can be either a plain string or a conditional rule object.
 enum ArgumentValue: Codable {
     case string(String)
     case objectWithRules(ArgumentRuleObject)
@@ -100,11 +108,13 @@ enum ArgumentValue: Codable {
     }
 }
 
+/// A conditional argument with rules that determine when it applies.
 struct ArgumentRuleObject: Codable {
     let rules: [Rule]
     let value: ArgumentValueArrayOrString
 }
 
+/// A value that can be either a string or an array of strings.
 enum ArgumentValueArrayOrString: Codable {
     case string(String)
     case array([String])
@@ -125,12 +135,14 @@ enum ArgumentValueArrayOrString: Codable {
     }
 }
 
+/// A conditional rule that determines whether an argument or library applies.
 struct Rule: Codable {
     let action: String
     let features: Features?
     let os: OperatingSystem?
 }
 
+/// Feature flags used in conditional rules.
 struct Features: Codable {
     let is_demo_user: Bool
     let has_custom_resolution: Bool
@@ -142,7 +154,6 @@ struct Features: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        // Handle both missing keys and null values
         is_demo_user = (try? container.decodeIfPresent(Bool.self, forKey: .is_demo_user)) ?? false
         has_custom_resolution = (try? container.decodeIfPresent(Bool.self, forKey: .has_custom_resolution)) ?? false
         has_quick_plays_support = (try? container.decodeIfPresent(Bool.self, forKey: .has_quick_plays_support)) ?? false
@@ -157,12 +168,14 @@ struct Features: Codable {
     }
 }
 
+/// Operating system information used in conditional rules.
 struct OperatingSystem: Codable {
     let name: String?
     let version: String?
     let arch: String?
 }
 
+/// An asset index entry describing a downloadable asset index file.
 struct AssetIndex: Codable {
     let id: String
     let sha1: String
@@ -171,6 +184,7 @@ struct AssetIndex: Codable {
     let url: URL
 }
 
+/// Download information for client and server artifacts.
 struct Downloads: Codable {
     let client: DownloadInfo
     let client_mappings: DownloadInfo?
@@ -178,12 +192,14 @@ struct Downloads: Codable {
     let server_mappings: DownloadInfo?
 }
 
+/// A downloadable artifact with integrity information.
 struct DownloadInfo: Codable {
     let sha1: String
     let size: Int
     let url: URL
 }
 
+/// A library dependency required by a Minecraft version.
 struct Library: Codable {
     var downloads: LibraryDownloads
     let name: String
@@ -213,23 +229,23 @@ struct Library: Codable {
     }
 }
 
+/// Downloadable artifacts for a library, including native classifiers.
 struct LibraryDownloads: Codable {
     var artifact: LibraryArtifact
-    let classifiers: [String: LibraryArtifact]?  // For native libraries
+    let classifiers: [String: LibraryArtifact]?
 
-        // Handle potential missing keys during decoding
-        enum CodingKeys: String, CodingKey {
-            case artifact, classifiers
-        }
+    enum CodingKeys: String, CodingKey {
+        case artifact, classifiers
+    }
 }
 
+/// A single downloadable library artifact.
 struct LibraryArtifact: Codable {
     let path: String?
     let sha1: String
     let size: Int
     var url: URL?
 
-    // 自定义初始化器，用于直接创建实例
     init(path: String?, sha1: String, size: Int, url: URL?) {
         self.path = path
         self.sha1 = sha1
@@ -240,12 +256,10 @@ struct LibraryArtifact: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
-        // path 字段可能不存在（特别是对于 LWJGL 原生库）
         path = try container.decodeIfPresent(String.self, forKey: .path)
         sha1 = try container.decode(String.self, forKey: .sha1)
         size = try container.decode(Int.self, forKey: .size)
 
-        // 处理 URL，允许为空字符串
         let urlString = try container.decode(String.self, forKey: .url)
         if urlString.isEmpty {
             url = nil
@@ -267,20 +281,24 @@ struct LibraryArtifact: Codable {
     }
 }
 
+/// Files to exclude when extracting a library archive.
 struct LibraryExtract: Codable {
     let exclude: [String]
 }
 
+/// Logging configuration for the Minecraft client.
 struct Logging: Codable {
     let client: LoggingClient
 }
 
+/// Client-side logging configuration details.
 struct LoggingClient: Codable {
     let argument: String
     let file: LoggingFile
     let type: String
 }
 
+/// A logging configuration file reference.
 struct LoggingFile: Codable {
     let id: String
     let sha1: String
@@ -288,21 +306,25 @@ struct LoggingFile: Codable {
     let url: URL
 }
 
+/// Java version requirements for a Minecraft version.
 struct JavaVersion: Codable {
     let component: String
     let majorVersion: Int
 }
 
+/// The top-level Mojang version manifest.
 struct MojangVersionManifest: Codable {
     let latest: LatestVersions
     let versions: [MojangVersionInfo]
 }
 
+/// The latest release and snapshot version identifiers.
 struct LatestVersions: Codable {
     let release: String
     let snapshot: String
 }
 
+/// A version entry in the Mojang version manifest.
 struct MojangVersionInfo: Codable, Identifiable {
     let id: String
     let type: String
@@ -311,6 +333,7 @@ struct MojangVersionInfo: Codable, Identifiable {
     let releaseTime: String
 }
 
+/// A downloaded asset index containing object mappings.
 struct DownloadedAssetIndex {
     let id: String
     let url: URL
@@ -319,6 +342,7 @@ struct DownloadedAssetIndex {
     let objects: [String: AssetIndexData.AssetObject]
 }
 
+/// Asset index data mapping asset names to their downloadable objects.
 struct AssetIndexData: Codable {
     let objects: [String: AssetObject]
 

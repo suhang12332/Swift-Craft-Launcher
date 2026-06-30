@@ -1,14 +1,15 @@
 //
 //  NetworkUtils.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/1/20.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// Provides Minecraft server address resolution and connectivity checks.
 import Foundation
 import Network
 
-/// 服务器连接状态
+/// The status of a server connection check.
 enum ServerConnectionStatus {
     case unknown
     case checking
@@ -17,41 +18,36 @@ enum ServerConnectionStatus {
     case failed
 }
 
-/// 解析后的服务器地址信息
+/// A resolved server address containing both the connection target and the original user input.
 internal struct ResolvedServerAddress {
-    internal let address: String  // 实际连接的地址（SRV target 或原始地址）
-    internal let port: Int        // 实际连接的端口（SRV port 或原始端口）
-    internal let originalAddress: String  // 原始域名（用于 handshake）
-    internal let originalPort: Int        // 原始端口（用于 handshake）
+    internal let address: String
+    internal let port: Int
+    internal let originalAddress: String
+    internal let originalPort: Int
 }
 
-/// 网络工具类
-/// 提供网络连接检测等功能
+/// Provides network utilities for Minecraft server address resolution and connectivity checks.
 enum NetworkUtils {
-    /// 智能解析服务器地址
-    /// 根据用户输入自动判断端口，如果没有端口则查询 SRV 记录
-    /// - Parameter input: 用户输入的地址（可能包含端口，如 "example.com:25565" 或 "example.com"）
-    /// - Returns: 解析后的地址和端口（包含原始地址信息）
+    /// Resolves a server address using the default Minecraft port.
+    /// - Parameter input: The user-provided address string, optionally including a port.
+    /// - Returns: The resolved address and port information.
     internal static func resolveServerAddress(_ input: String) async -> ResolvedServerAddress {
         await resolveServerAddress(input, explicitPort: 25565)
     }
 
-    /// 智能解析服务器地址，优先使用输入中的有效端口，其次使用显式非默认端口
+    /// Resolves a server address, preferring an explicit port over SRV record lookup.
     /// - Parameters:
-    ///   - input: 用户输入的地址（可能包含端口）
-    ///   - explicitPort: 调用方传入的端口
-    /// - Returns: 解析后的地址和端口（包含原始地址信息）
+    ///   - input: The user-provided address string, optionally including a port.
+    ///   - explicitPort: The port specified by the caller.
+    /// - Returns: The resolved address and port information.
     internal static func resolveServerAddress(_ input: String, explicitPort: Int) async -> ResolvedServerAddress {
         let trimmed = input.trimmingCharacters(in: .whitespaces)
         var originalAddress = trimmed
         var originalPort = 25565
 
-        // 检查是否包含端口
         if let colonIndex = trimmed.lastIndex(of: ":") {
-            // 检查冒号后的内容是否为数字（端口）
             let afterColon = String(trimmed[trimmed.index(after: colonIndex)...])
             if let port = Int(afterColon), port > 0 && port <= 65535 {
-                // 包含有效端口，直接使用
                 let address = String(trimmed[..<colonIndex])
                 originalAddress = address
                 originalPort = port
@@ -64,7 +60,6 @@ enum NetworkUtils {
             }
         }
 
-        // 显式非默认端口由用户配置指定，不查询 SRV 记录
         if explicitPort > 0 && explicitPort <= 65535 && explicitPort != 25565 {
             return ResolvedServerAddress(
                 address: trimmed,
@@ -74,18 +69,15 @@ enum NetworkUtils {
             )
         }
 
-        // 不包含端口，查询 SRV 记录
         if let srvResult = await querySRVRecord(for: trimmed) {
-            // SRV 记录返回的是连接地址，原始地址是输入的域名
             return ResolvedServerAddress(
                 address: srvResult.address,
                 port: srvResult.port,
                 originalAddress: trimmed,
-                originalPort: 25565  // 默认端口
+                originalPort: 25565
             )
         }
 
-        // 没有 SRV 记录，使用默认端口 25565
         return ResolvedServerAddress(
             address: trimmed,
             port: 25565,
@@ -94,17 +86,14 @@ enum NetworkUtils {
         )
     }
 
-    /// 查询 Minecraft SRV 记录
-    /// - Parameter domain: 域名
-    /// - Returns: SRV 记录中的地址和端口（仅连接信息），如果没有则返回 nil
+    /// Queries the Minecraft SRV record for the specified domain.
+    /// - Parameter domain: The domain to query.
+    /// - Returns: The target address and port from the SRV record, or `nil` if not found.
     private static func querySRVRecord(for domain: String) async -> (address: String, port: Int)? {
         let srvName = "_minecraft._tcp.\(domain)"
 
-        // 使用系统的 dig 命令查询 SRV 记录（更简单可靠）
         guard let output = await runDigShortSRVQuery(srvName: srvName) else { return nil }
 
-        // 解析 SRV 记录格式: priority weight port target
-        // 例如: "5 0 25565 mc.example.com."
         let lines = output.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: .newlines)
         guard let firstLine = lines.first, !firstLine.isEmpty else {
             return nil
@@ -127,7 +116,6 @@ enum NetworkUtils {
         return (address: target, port: port)
     }
 
-    /// 异步执行 `dig +short SRV <srvName>` 并返回 stdout 文本
     private static func runDigShortSRVQuery(srvName: String) async -> String? {
         await withCheckedContinuation { continuation in
             final class ResumeGuard: @unchecked Sendable {
@@ -183,22 +171,20 @@ enum NetworkUtils {
             }
         }
     }
-    /// 检测服务器连接状态（使用 Minecraft Server List Ping 协议）
+
+    /// Checks a Minecraft server's connection status using the Server List Ping protocol.
     /// - Parameters:
-    ///   - address: 服务器地址
-    ///   - port: 服务器端口
-    ///   - timeout: 超时时间（秒），默认 5 秒
-    /// - Returns: 连接状态，成功时包含服务器信息
+    ///   - address: The server address.
+    ///   - port: The server port.
+    ///   - timeout: The connection timeout in seconds. Defaults to 5.
+    /// - Returns: The connection status, which includes server info on success.
     static func checkServerConnectionStatus(
         address: String,
         port: Int,
         timeout: TimeInterval = 5.0
     ) async -> ServerConnectionStatus {
-        // 解析服务器地址（显式非默认端口不查询 SRV 记录）
         let resolved = await resolveServerAddress(address, explicitPort: port)
 
-        // 使用 Minecraft Server List Ping 协议获取服务器信息
-        // 使用 SRV target + port 建立连接，但 handshake 使用原始域名
         if let serverInfo = await MinecraftServerPing.ping(
             connectAddress: resolved.address,
             connectPort: resolved.port,
@@ -212,13 +198,12 @@ enum NetworkUtils {
         }
     }
 
-    /// 检测服务器连接是否可用（兼容旧接口）
+    /// Checks whether a Minecraft server is reachable.
     /// - Parameters:
-    ///   - address: 服务器地址
-    ///   - port: 服务器端口
-    ///   - timeout: 超时时间（秒），默认 5 秒
-    /// - Returns: 检测结果，true 表示连接成功，false 表示连接失败
-    /// - Throws: 检测过程中的错误
+    ///   - address: The server address.
+    ///   - port: The server port.
+    ///   - timeout: The connection timeout in seconds. Defaults to 5.
+    /// - Returns: `true` if the server responded successfully.
     static func checkServerConnection(
         address: String,
         port: Int,

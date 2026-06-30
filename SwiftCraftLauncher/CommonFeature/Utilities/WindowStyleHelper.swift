@@ -1,16 +1,16 @@
 //
 //  WindowStyleHelper.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/1/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import AppKit
 import SwiftUI
 
-/// 窗口样式配置工具
+/// Configures standard window appearance by disabling miniaturize and resize.
 enum WindowStyleHelper {
-    /// 配置标准窗口样式（禁用缩小和放大）
+    /// Removes miniaturize, resize, and full-screen capabilities from a window.
     static func configureStandardWindow(_ window: NSWindow) {
         window.styleMask.remove([.miniaturizable, .resizable])
         window.collectionBehavior.insert(.fullScreenNone)
@@ -18,7 +18,7 @@ enum WindowStyleHelper {
     }
 }
 
-/// 窗口样式配置修饰符
+/// Applies the standard window style and sets the window identifier and title.
 struct WindowStyleConfig: ViewModifier {
     let windowID: AuxiliaryWindowID
 
@@ -44,6 +44,7 @@ extension View {
     }
 }
 
+/// Cleans up window data when the view disappears.
 struct WindowCleanup: ViewModifier {
     let windowID: AuxiliaryWindowID
     private let windowDataStore: WindowDataStore

@@ -1,9 +1,14 @@
+//
+//  GameFeatureModelsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class GameFeatureModelsTests: XCTestCase {
-
-    // MARK: - ServerAddress
 
     func testServerAddress_init_defaults() {
         let server = ServerAddress(name: "My Server", address: "play.example.com")
@@ -74,8 +79,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertNotEqual(a, c)
     }
 
-    // MARK: - SidebarItem
-
     func testSidebarItem_game_id() {
         let item = SidebarItem.game("test-game-id")
         XCTAssertEqual(item.id, "game_test-game-id")
@@ -107,8 +110,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertEqual(set.count, 2)
     }
 
-    // MARK: - ResourceType
-
     func testResourceType_rawValues() {
         XCTAssertEqual(ResourceType.mod.rawValue, "mod")
         XCTAssertEqual(ResourceType.datapack.rawValue, "datapack")
@@ -130,8 +131,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertEqual(ResourceType.modpack.systemImage, "cube.box")
         XCTAssertEqual(ResourceType.minecraftJavaServer.systemImage, "server.rack")
     }
-
-    // MARK: - WorldInfo
 
     func testWorldInfo_init_defaults() {
         let url = URL(fileURLWithPath: "/tmp/MyWorld")
@@ -176,8 +175,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertEqual(a, b)
     }
 
-    // MARK: - ScreenshotInfo
-
     func testScreenshotInfo_init_defaults() {
         let url = URL(fileURLWithPath: "/tmp/screenshot.png")
         let screenshot = ScreenshotInfo(name: "screenshot.png", path: url)
@@ -197,8 +194,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertEqual(screenshot.createdDate, date)
     }
 
-    // MARK: - LogInfo
-
     func testLogInfo_init_defaults() {
         let url = URL(fileURLWithPath: "/tmp/latest.log")
         let log = LogInfo(name: "latest.log", path: url)
@@ -215,8 +210,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertTrue(log.isCrashLog)
         XCTAssertEqual(log.fileSize, 2048)
     }
-
-    // MARK: - FabricLoader
 
     func testFabricLoader_codable() throws {
         let json = """
@@ -236,8 +229,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertEqual(decoded.loader.version, "0.15.3")
     }
 
-    // MARK: - QuiltLoaderResponse
-
     func testQuiltLoaderResponse_codable() throws {
         let json = """
         {"loader": {"version": "0.22.0"}}
@@ -255,8 +246,6 @@ final class GameFeatureModelsTests: XCTestCase {
 
         XCTAssertEqual(decoded.loader.version, "0.23.0")
     }
-
-    // MARK: - ModrinthLoader
 
     func testModrinthLoader_codable() throws {
         let json = """
@@ -304,8 +293,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertEqual(loader.data?["mappings"]?.client, "mapped")
     }
 
-    // MARK: - ModrinthLoaderLibrary
-
     func testModrinthLoaderLibrary_init() {
         let lib = ModrinthLoaderLibrary(
             downloads: nil,
@@ -337,8 +324,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertFalse(lib.downloadable)
         XCTAssertEqual(lib.url?.absoluteString, "https://example.com/lib.jar")
     }
-
-    // MARK: - Processor
 
     func testProcessor_codable() throws {
         let json = """
@@ -372,8 +357,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertNil(processor.outputs)
     }
 
-    // MARK: - SidedDataEntry
-
     func testSidedDataEntry_codable() throws {
         let json = """
         {"client": "mapped-client", "server": "mapped-server"}
@@ -384,8 +367,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertEqual(entry.client, "mapped-client")
         XCTAssertEqual(entry.server, "mapped-server")
     }
-
-    // MARK: - LoaderVersion
 
     func testLoaderVersion_codable() throws {
         let json = """
@@ -402,8 +383,6 @@ final class GameFeatureModelsTests: XCTestCase {
         XCTAssertTrue(version.stable)
         XCTAssertEqual(version.loaders.count, 1)
     }
-
-    // MARK: - GameVersionInfo Codable
 
     func testGameVersionInfo_codable_roundTrip() throws {
         let original = GameVersionInfo(

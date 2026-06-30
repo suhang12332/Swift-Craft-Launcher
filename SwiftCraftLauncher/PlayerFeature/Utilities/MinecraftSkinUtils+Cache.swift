@@ -1,9 +1,17 @@
+//
+//  MinecraftSkinUtils+Cache.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 import CoreImage
 import Foundation
 
 extension MinecraftSkinUtils {
 
+    /// An in-memory cache mapping cache keys to rendered skin images.
     static let imageCache: NSCache<NSString, RenderedImageCache> = {
         let cache = NSCache<NSString, RenderedImageCache>()
         cache.countLimit = MinecraftSkinConstants.maxCacheSize
@@ -12,6 +20,7 @@ extension MinecraftSkinUtils {
         return cache
     }()
 
+    /// The shared Core Image context used for skin rendering.
     static let ciContext: CIContext = {
         let options: [CIContextOption: Any] = [
             .useSoftwareRenderer: true,
@@ -21,11 +30,13 @@ extension MinecraftSkinUtils {
         return CIContext(options: options)
     }()
 
+    /// Returns a cached rendered image for the given key, or `nil` if none exists.
     static func getCachedRenderedImage(for key: String) -> RenderedImageCache? {
         let nsKey = key as NSString
         return imageCache.object(forKey: nsKey)
     }
 
+    /// A Boolean value indicating whether the image has any non-transparent pixels.
     static func hasNonTransparentPixels(_ cgImage: CGImage) -> Bool {
         let width = cgImage.width
         let height = cgImage.height
@@ -62,6 +73,7 @@ extension MinecraftSkinUtils {
         return false
     }
 
+    /// Renders a `CIImage` into cached head and layer images, or returns the existing cache entry.
     static func renderAndCacheImage(_ ciImage: CIImage, for key: String, context: CIContext) -> RenderedImageCache? {
         let nsKey = key as NSString
 
@@ -97,6 +109,7 @@ extension MinecraftSkinUtils {
         return cache
     }
 
+    /// Clears the entire skin image cache.
     static func clearCache() {
         imageCache.removeAllObjects()
         Logger.shared.debug("🧹 MinecraftSkinUtils 缓存已清理")

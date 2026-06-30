@@ -1,9 +1,14 @@
+//
+//  ModrinthLoaderLibraryExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
-
-    // MARK: - CodingKeys
 
     func testCodingKeys_includeInClasspath() throws {
         let json = """
@@ -61,8 +66,6 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
         XCTAssertEqual(lib.name, "test:lib:1.0")
     }
 
-    // MARK: - ModrinthLoader edge cases
-
     func testModrinthLoader_withAllOptionalFields() throws {
         let json = """
         {
@@ -106,8 +109,6 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
         XCTAssertTrue(loader.libraries.isEmpty)
     }
 
-    // MARK: - LoaderVersion edge cases
-
     func testLoaderVersion_multipleLoaders() throws {
         let json = """
         {
@@ -125,8 +126,6 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
         XCTAssertTrue(version.loaders[0].stable)
         XCTAssertFalse(version.loaders[1].stable)
     }
-
-    // MARK: - Processor edge cases
 
     func testProcessor_allFields() throws {
         let json = """
@@ -155,8 +154,6 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
         XCTAssertEqual(processor.sides, ["client"])
         XCTAssertNil(processor.classpath)
     }
-
-    // MARK: - SidedDataEntry edge cases
 
     func testSidedDataEntry_differentValues() throws {
         let entry = SidedDataEntry(client: "client-data", server: "server-data")

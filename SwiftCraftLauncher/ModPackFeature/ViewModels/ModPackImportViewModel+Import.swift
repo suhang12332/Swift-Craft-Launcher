@@ -1,14 +1,20 @@
+//
+//  ModPackImportViewModel+Import.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 extension ModPackImportViewModel {
-    // MARK: - ModPack Import
+    /// Performs the full modpack import flow: runs the install coordinator and handles the result.
     func importModPack() async {
         guard let archiveURL = selectedModPackFile,
               let extractedPath = extractedModPackPath,
               let indexInfo = modPackIndexInfo,
               let gameRepository = gameRepository else { return }
 
-        // 判断整合包游戏版本是否在支持范围内（与下载整合包一致，仅支持基线版本及以上）
         if !CommonUtil.isVersionAtLeast(indexInfo.gameVersion) {
             return
         }
@@ -40,6 +46,10 @@ extension ModPackImportViewModel {
         handleModPackInstallationResult(success: success, gameName: gameNameValidator.gameName)
     }
 
+    /// Handles the final result of a modpack installation.
+    /// - Parameters:
+    ///   - success: Whether installation succeeded.
+    ///   - gameName: The name of the game being installed.
     func handleModPackInstallationResult(success: Bool, gameName: String) {
         if success {
             Logger.shared.info("本地整合包导入完成: \(gameName)")
@@ -50,7 +60,6 @@ extension ModPackImportViewModel {
             gameSetupService.downloadState.reset()
         } else {
             Logger.shared.error("本地整合包导入失败: \(gameName)")
-            // 清理已创建的游戏文件夹
             Task {
                 await cleanupGameDirectories(gameName: gameName)
             }
@@ -67,6 +76,8 @@ extension ModPackImportViewModel {
         isProcessingModPack = false
     }
 
+    /// Cleans up game directories on the file system.
+    /// - Parameter gameName: The name of the game whose directories should be removed.
     func cleanupGameDirectories(gameName: String) async {
         do {
             let fileManager = MinecraftFileManager()

@@ -1,12 +1,15 @@
+//
+//  CurseForgeService.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// CurseForge 服务
-/// 提供统一的 CurseForge API 访问接口
+/// Provides a unified interface for accessing the CurseForge API.
 enum CurseForgeService {
 
-    // MARK: - Private Helpers
-
-    /// 获取 CurseForge API 请求头（包含 API key，如果可用）
     static func getHeaders() -> [String: String] {
         var headers: [String: String] = APIClient.DefaultHeaders.acceptJSON
         if let apiKey = AppConstants.curseForgeAPIKey {
@@ -15,13 +18,11 @@ enum CurseForgeService {
         return headers
     }
 
-    // MARK: - Public Methods
-
-    /// 获取 CurseForge 文件详情
+    /// Fetches file details for a CurseForge project file.
     /// - Parameters:
-    ///   - projectId: 项目 ID
-    ///   - fileId: 文件 ID
-    /// - Returns: 文件详情，如果获取失败则返回 nil
+    ///   - projectId: The CurseForge project identifier.
+    ///   - fileId: The file identifier.
+    /// - Returns: The file details, or `nil` if the request fails.
     static func fetchFileDetail(projectId: Int, fileId: Int) async -> CurseForgeModFileDetail? {
         do {
             return try await fetchFileDetailThrowing(projectId: projectId, fileId: fileId)
@@ -31,22 +32,21 @@ enum CurseForgeService {
         }
     }
 
-    /// 获取 CurseForge 文件详情（抛出异常版本）
+    /// Fetches file details for a CurseForge project file, throwing on failure.
     /// - Parameters:
-    ///   - projectId: 项目 ID
-    ///   - fileId: 文件 ID
-    /// - Returns: 文件详情
-    /// - Throws: 网络错误或解析错误
+    ///   - projectId: The CurseForge project identifier.
+    ///   - fileId: The file identifier.
+    /// - Returns: The file details.
+    /// - Throws: A network or parsing error.
     static func fetchFileDetailThrowing(projectId: Int, fileId: Int) async throws -> CurseForgeModFileDetail {
-        // 使用配置的 CurseForge API URL
         let url = URLConfig.API.CurseForge.fileDetail(projectId: projectId, fileId: fileId)
 
         return try await tryFetchFileDetail(from: url.absoluteString)
     }
 
-    /// 获取 CurseForge 模组详情
-    /// - Parameter modId: 模组 ID
-    /// - Returns: 模组详情，如果获取失败则返回 nil
+    /// Fetches mod details from CurseForge.
+    /// - Parameter modId: The mod identifier.
+    /// - Returns: The mod details, or `nil` if the request fails.
     static func fetchModDetail(modId: Int) async -> CurseForgeModDetail? {
         do {
             return try await fetchModDetailThrowing(modId: modId)
@@ -56,34 +56,32 @@ enum CurseForgeService {
         }
     }
 
-    /// 获取 CurseForge 模组详情（抛出异常版本）
-    /// - Parameter modId: 模组 ID
-    /// - Returns: 模组详情
-    /// - Throws: 网络错误或解析错误
+    /// Fetches mod details from CurseForge, throwing on failure.
+    /// - Parameter modId: The mod identifier.
+    /// - Returns: The mod details.
+    /// - Throws: A network or parsing error.
     static func fetchModDetailThrowing(modId: Int) async throws -> CurseForgeModDetail {
-        // 使用配置的 CurseForge API URL
-        let url = URLConfig.API.CurseForge.modDetail(modId: modId)
+        let url = URLConfig.API.CurseForge.modDescription(modId: modId)
 
         return try await tryFetchModDetail(from: url.absoluteString)
     }
 
-    /// 获取 CurseForge 模组描述（抛出异常版本）
-    /// - Parameter modId: 模组 ID
-    /// - Returns: HTML 格式的描述内容
-    /// - Throws: 网络错误或解析错误
+    /// Fetches the HTML description for a CurseForge mod, throwing on failure.
+    /// - Parameter modId: The mod identifier.
+    /// - Returns: The HTML-formatted description content.
+    /// - Throws: A network or parsing error.
     static func fetchModDescriptionThrowing(modId: Int) async throws -> String {
-        // 使用配置的 CurseForge API URL
         let url = URLConfig.API.CurseForge.modDescription(modId: modId)
 
         return try await tryFetchModDescription(from: url.absoluteString)
     }
 
-    /// 获取 CurseForge 项目文件列表
+    /// Fetches the file list for a CurseForge project.
     /// - Parameters:
-    ///   - projectId: 项目 ID
-    ///   - gameVersion: 游戏版本过滤（可选）
-    ///   - modLoaderType: 模组加载器类型过滤（可选）
-    /// - Returns: 文件列表，如果获取失败则返回 nil
+    ///   - projectId: The CurseForge project identifier.
+    ///   - gameVersion: An optional game version filter.
+    ///   - modLoaderType: An optional mod loader type filter.
+    /// - Returns: The file list, or `nil` if the request fails.
     static func fetchProjectFiles(projectId: Int, gameVersion: String? = nil, modLoaderType: Int? = nil) async -> [CurseForgeModFileDetail]? {
         do {
             return try await fetchProjectFilesThrowing(projectId: projectId, gameVersion: gameVersion, modLoaderType: modLoaderType)
@@ -93,14 +91,13 @@ enum CurseForgeService {
         }
     }
 
-    /// 获取 CurseForge 项目文件列表（抛出异常版本）
+    /// Fetches the file list for a CurseForge project, throwing on failure.
     /// - Parameters:
-    ///   - projectId: 项目 ID
-    ///   - gameVersion: 游戏版本过滤（可选）
-    ///   - modLoaderType: 模组加载器类型过滤（可选）
-    ///   - modDetail: 预先获取的模组详情（可选，用于复用减少请求）
-    /// - Returns: 文件列表
-    /// - Throws: 网络错误或解析错误
+    ///   - projectId: The CurseForge project identifier.
+    ///   - gameVersion: An optional game version filter.
+    ///   - modLoaderType: An optional mod loader type filter.
+    /// - Returns: The file list.
+    /// - Throws: A network or parsing error.
     static func fetchProjectFilesThrowing(
         projectId: Int,
         gameVersion: String? = nil,

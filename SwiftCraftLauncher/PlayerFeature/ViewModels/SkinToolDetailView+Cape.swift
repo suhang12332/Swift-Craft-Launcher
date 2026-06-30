@@ -1,9 +1,16 @@
+//
+//  SkinToolDetailView+Cape.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 import SkinRenderKit
 
 extension SkinToolDetailViewModel {
-    /// 加载当前激活的披风（如果存在）
+    /// Loads the currently active cape image if one exists and no manual selection has been made.
     func loadCurrentActiveCapeIfNeeded(
         from profile: MinecraftProfileResponse,
         resolvedPlayer: Player?
@@ -11,14 +18,12 @@ extension SkinToolDetailViewModel {
         do {
             try Task.checkCancellation()
 
-            // 如果用户已经手动选择了与当前激活披风不同的披风，则不再加载「当前激活披风」以免覆盖预览
             if let manualSelectedId = selectedCapeId,
                let activeId = PlayerSkinService.getActiveCapeId(from: profile),
                manualSelectedId != activeId {
                 return
             }
 
-            // 优先检查 publicSkinInfo 中的 capeURL
             if let capeURL = publicSkinInfo?.capeURL, !capeURL.isEmpty {
                 selectedCapeImageURL = capeURL
                 isCapeLoading = true
@@ -66,7 +71,6 @@ extension SkinToolDetailViewModel {
 
             try Task.checkCancellation()
 
-            // 有披风需要加载，设置加载状态
             selectedCapeImageURL = activeCape.url
             isCapeLoading = true
             capeLoadCompleted = false
@@ -85,6 +89,7 @@ extension SkinToolDetailViewModel {
         }
     }
 
+    /// Downloads a cape texture and caches it to a temporary file if needed.
     func downloadCapeTextureIfNeeded(from urlString: String) async {
         if let current = selectedCapeImageURL, current == urlString, selectedCapeLocalPath != nil {
             return
@@ -107,7 +112,7 @@ extension SkinToolDetailViewModel {
         }
     }
 
-    /// 下载披风纹理并设置图片
+    /// Downloads a cape texture and sets the image for display.
     func downloadCapeTextureAndSetImage(
         from urlString: String,
         resolvedPlayer: Player?
@@ -122,7 +127,6 @@ extension SkinToolDetailViewModel {
             return
         }
 
-        // 验证 URL 格式
         guard let url = URL(string: urlString.httpToHttps()) else {
             selectedCapeImage = nil
             return

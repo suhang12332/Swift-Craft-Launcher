@@ -1,5 +1,13 @@
+//
+//  AddOrDeleteResourceButtonViewModel+Sheets.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Extension providing sheet presentation and detail loading for `AddOrDeleteResourceButtonViewModel`.
 extension AddOrDeleteResourceButtonViewModel {
     func updateButtonState(selectedItem: SidebarItem, scannedDetailIds: Set<String>) {
         if type == false {

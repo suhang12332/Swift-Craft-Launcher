@@ -1,10 +1,11 @@
 //
 //  AddOrDeleteResourceButton.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/6/28.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// A button that manages adding, deleting, updating, and toggling resource installation state.
 import Foundation
 import SwiftUI
 
@@ -14,20 +15,20 @@ struct AddOrDeleteResourceButton: View {
     let selectedLoaders: [String]
     let gameInfo: GameVersionInfo?
     let query: String
-    let type: Bool  // false = local, true = server
-    @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找（O(1)）
+    let type: Bool
+    @Binding var scannedDetailIds: Set<String>
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
-    @Binding var isResourceDisabled: Bool  // 暴露给父视图的禁用状态（用于置灰效果）
+    @Binding var isResourceDisabled: Bool
     @Binding var selectedItem: SidebarItem
     var onResourceChanged: (() -> Void)?
-    /// 启用/禁用状态切换后的回调（仅本地资源列表使用）
+    /// Closure invoked after the enable/disable state toggle.
     var onToggleDisableState: ((Bool) -> Void)?
-    /// 更新成功回调：仅更新当前条目的 hash 与列表项，不全局扫描。参数 (projectId, oldFileName, newFileName, newHash)
+    /// Closure invoked after a successful resource update with (projectId, oldFileName, newFileName, newHash).
     var onResourceUpdated: ((String, String, String, String?) -> Void)?
 
     @StateObject private var viewModel: AddOrDeleteResourceButtonViewModel
-    // 保证所有 init 都有 onResourceChanged 参数（带默认值）
+
     init(
         project: ModrinthProject,
         selectedVersions: [String],
@@ -88,7 +89,6 @@ struct AddOrDeleteResourceButton: View {
                 onToggle: viewModel.toggleDisableState
             )
 
-            // 安装/删除按钮
             ResourcePrimaryActionButton(
                 addButtonState: viewModel.addButtonState,
                 type: type,
@@ -104,7 +104,6 @@ struct AddOrDeleteResourceButton: View {
                 )
                 viewModel.onAppear(selectedItem: selectedItem, scannedDetailIds: scannedDetailIds)
             }
-            // 根据最新扫描结果刷新按钮的安装状态
             .onChange(of: scannedDetailIds) { _, _ in
                 viewModel.onScannedDetailIdsChanged(
                     selectedItem: selectedItem,

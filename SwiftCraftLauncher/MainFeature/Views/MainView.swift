@@ -1,13 +1,13 @@
 //
 //  MainView.swift
-//  SwiftCraftLauncher
+//  MainFeature
 //
-//  Created by su on 2025/5/30.
-//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
+/// Root navigation view that orchestrates the sidebar, content, and detail columns.
 struct MainView: View {
     @StateObject private var general: GeneralSettingsManager
     @State private var columnVisibility = NavigationSplitViewVisibility.all
@@ -18,6 +18,11 @@ struct MainView: View {
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
 
+    /// Creates the main view with the required managers.
+    /// - Parameters:
+    ///   - general: Manages general application settings.
+    ///   - openURLModPackImportPresenter: Handles mod pack import from URLs.
+    ///   - selectedGameManager: Tracks the currently selected game.
     init(
         general: GeneralSettingsManager = AppServices.generalSettingsManager,
         openURLModPackImportPresenter: OpenURLModPackImportPresenter = AppServices.openURLModPackImportPresenter,
@@ -90,8 +95,6 @@ struct MainView: View {
             .toolbar { ContentToolbarView() }
             .navigationSplitViewColumnWidth(min: 235, ideal: 235, max: 280)
     }
-
-    // MARK: - Sidebar Item Change Handlers
 
     private func handleSidebarItemChange(
         from oldValue: SidebarItem,

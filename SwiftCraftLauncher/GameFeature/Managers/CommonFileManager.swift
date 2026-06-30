@@ -1,11 +1,14 @@
 //
 //  CommonFileManager.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/7/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import Foundation
 
+/// Manages common file operations for mod loader installations, including
+/// Forge and Fabric JAR downloads and processor execution.
 class CommonFileManager {
     let librariesDir: URL
     var onProgressUpdate: ((String, Int, Int) -> Void)?
@@ -31,8 +34,8 @@ class CommonFileManager {
         }
     }
 
-    /// 下载 Forge JAR 文件（静默版本）
-    /// - Parameter libraries: 要下载的库文件列表
+    /// Downloads Forge JAR files, handling errors silently.
+    /// - Parameter libraries: The loader libraries to download.
     func downloadForgeJars(libraries: [ModrinthLoaderLibrary]) async {
         do {
             try await downloadForgeJarsThrowing(libraries: libraries)
@@ -43,14 +46,14 @@ class CommonFileManager {
         }
     }
 
-    /// 下载 Forge JAR 文件（抛出异常版本）
-    /// - Parameter libraries: 要下载的库文件列表
-    /// - Throws: GlobalError 当下载失败时
+    /// Downloads Forge JAR files.
+    /// - Parameter libraries: The loader libraries to download.
+    /// - Throws: A ``GlobalError`` if the download fails.
     func downloadForgeJarsThrowing(libraries: [ModrinthLoaderLibrary]) async throws {
         let tasks = libraries.compactMap { lib -> JarDownloadTask? in
             guard lib.downloadable else { return nil }
 
-            // 优先使用LibraryDownloads.artifact
+            // Prefer LibraryDownloads.artifact
             if let downloads = lib.downloads, let artifactUrl = downloads.artifact.url, let artifactPath = downloads.artifact.path {
                 return JarDownloadTask(
                     name: lib.name,
@@ -85,8 +88,8 @@ class CommonFileManager {
         }
     }
 
-    /// 下载 FabricJAR 文件（静默版本）
-    /// - Parameter libraries: 要下载的库文件列表
+    /// Downloads Fabric JAR files, handling errors silently.
+    /// - Parameter libraries: The loader libraries to download.
     func downloadFabricJars(libraries: [ModrinthLoaderLibrary]) async {
         do {
             try await downloadFabricJarsThrowing(libraries: libraries)
@@ -97,9 +100,9 @@ class CommonFileManager {
         }
     }
 
-    /// 下载 FabricJAR 文件（抛出异常版本）
-    /// - Parameter libraries: 要下载的库文件列表
-    /// - Throws: GlobalError 当下载失败时
+    /// Downloads Fabric JAR files.
+    /// - Parameter libraries: The loader libraries to download.
+    /// - Throws: A ``GlobalError`` if the download fails.
     func downloadFabricJarsThrowing(libraries: [ModrinthLoaderLibrary]) async throws {
         let tasks = libraries.compactMap { lib -> JarDownloadTask? in
             guard lib.downloadable else { return nil }
@@ -128,19 +131,19 @@ class CommonFileManager {
         }
     }
 
-    /// 执行processors处理
+    /// Executes client-side processors defined in the version manifest.
     /// - Parameters:
-    ///   - processors: 处理器列表
-    ///   - librariesDir: 库目录
-    ///   - gameVersion: 游戏版本
-    ///   - data: 数据字段，用于占位符替换
-    ///   - gameName: 游戏名称（可选）
-    ///   - onProgressUpdate: 进度更新回调（可选，包含当前处理器索引和总处理器数量）
-    /// - Throws: GlobalError 当处理失败时
+    ///   - processors: The list of processors to execute.
+    ///   - librariesDir: The libraries directory URL.
+    ///   - gameVersion: The Minecraft version string.
+    ///   - data: Optional data fields for placeholder substitution.
+    ///   - gameName: Optional game instance name.
+    ///   - onProgressUpdate: Optional progress callback providing the message, current index, and total count.
+    /// - Throws: A ``GlobalError`` if any processor fails.
     func executeProcessors(processors: [Processor], librariesDir: URL, gameVersion: String, data: [String: SidedDataEntry]? = nil, gameName: String? = nil, onProgressUpdate: ((String, Int, Int) -> Void)? = nil) async throws {
-        // 过滤出client端的processor
+        // Filter client-side processors
         let clientProcessors = processors.filter { processor in
-            guard let sides = processor.sides else { return true } // 如果没有指定sides，默认执行
+            guard let sides = processor.sides else { return true }
             return sides.contains(AppConstants.EnvironmentTypes.client)
         }
 
@@ -153,21 +156,21 @@ class CommonFileManager {
 
         var processorData: [String: String] = [:]
 
-        // 添加基础环境变量
+        // Add base environment variables
         processorData["SIDE"] = AppConstants.EnvironmentTypes.client
         processorData["MINECRAFT_VERSION"] = gameVersion
         processorData["LIBRARY_DIR"] = librariesDir.path
 
-        // 添加Minecraft JAR路径
+        // Add Minecraft JAR path
         let minecraftJarPath = AppPaths.versionsDirectory.appendingPathComponent(gameVersion).appendingPathComponent("\(gameVersion).jar")
         processorData["MINECRAFT_JAR"] = minecraftJarPath.path
 
-        // 添加实例路径（profile目录）
+        // Add instance path (profile directory)
         if let gameName = gameName {
             processorData["ROOT"] = AppPaths.profileDirectory(gameName: gameName).path
         }
 
-        // 解析version.json中的data字段
+        // Parse data fields from version.json
         if let data = data {
             for (key, sidedEntry) in data {
                 processorData[key] = Self.extractClientValue(from: sidedEntry.client) ?? sidedEntry.client
@@ -201,15 +204,15 @@ class CommonFileManager {
         }
     }
 
-    /// 执行单个processor
+    /// Executes a single processor.
     /// - Parameters:
-    ///   - processor: 处理器
-    ///   - librariesDir: 库目录
-    ///   - gameVersion: 游戏版本
-    ///   - javaPath: Java可执行路径（已提前解析/校验）
-    ///   - data: 数据字段，用于占位符替换
-    ///   - onProgressUpdate: 进度更新回调（可选，包含当前处理器索引和总处理器数量）
-    /// - Throws: GlobalError 当处理失败时
+    ///   - processor: The processor to execute.
+    ///   - librariesDir: The libraries directory URL.
+    ///   - gameVersion: The Minecraft version string.
+    ///   - javaPath: The resolved path to the Java executable.
+    ///   - data: Optional data fields for placeholder substitution.
+    ///   - onProgressUpdate: Optional progress callback.
+    /// - Throws: A ``GlobalError`` if the processor fails.
     private func executeProcessor(_ processor: Processor, librariesDir: URL, gameVersion: String, javaPath: String, data: [String: String]? = nil, onProgressUpdate: ((String, Int, Int) -> Void)? = nil) async throws {
         try await ProcessorExecutor.executeProcessor(
             processor,
@@ -220,16 +223,16 @@ class CommonFileManager {
         )
     }
 
-    /// 从data字段值中提取client端的数据
-    /// - Parameter value: data字段的值
-    /// - Returns: client端的数据，如果无法解析则返回nil
+    /// Extracts client-side data from a sided data field value.
+    /// - Parameter value: The data field value to parse.
+    /// - Returns: The extracted client data, or `nil` if parsing fails.
     static func extractClientValue(from value: String) -> String? {
-        // 如果是Maven坐标格式，直接转换为路径
+        // Convert Maven coordinate format to path
         if value.contains(":") && !value.hasPrefix("[") && !value.hasPrefix("{") {
             return CommonService.convertMavenCoordinateToPath(value)
         }
 
-        // 如果是数组格式，直接提取内容并转换为路径
+        // Extract content from array format and convert to path
         if value.hasPrefix("[") && value.hasSuffix("]") {
             let content = String(value.dropFirst().dropLast())
             if content.contains(":") {

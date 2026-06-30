@@ -1,9 +1,14 @@
+//
+//  ModPackExporterExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModPackExporterExtendedTests: XCTestCase {
-
-    // MARK: - ExportResult edge cases
 
     func testExportResult_successWithMessage() {
         let result = ModPackExporter.ExportResult(
@@ -45,8 +50,6 @@ final class ModPackExporterExtendedTests: XCTestCase {
         XCTAssertTrue(result.error is CancellationError)
         XCTAssertEqual(result.message, "已取消")
     }
-
-    // MARK: - ExportProgress ProgressItem edge cases
 
     func testProgressItem_zeroProgress() {
         let item = ModPackExporter.ExportProgress.ProgressItem(
@@ -98,8 +101,6 @@ final class ModPackExporterExtendedTests: XCTestCase {
         XCTAssertEqual(progress.copyProgress?.completed, 3)
     }
 
-    // MARK: - CurseForgeModListItem edge cases
-
     func testCurseForgeModListItem_allFields() {
         let item = ModPackExporter.CurseForgeModListItem(
             projectID: 999999,
@@ -130,8 +131,6 @@ final class ModPackExporterExtendedTests: XCTestCase {
         XCTAssertNil(item.projectName)
         XCTAssertNil(item.authorsText)
     }
-
-    // MARK: - SelectedResourcesResult
 
     func testSelectedResourcesResult_empty() {
         let result = ModPackExporter.SelectedResourcesResult(
@@ -171,8 +170,6 @@ final class ModPackExporterExtendedTests: XCTestCase {
         XCTAssertEqual(result.filesToCopy.first?.relativePath, "config")
     }
 
-    // MARK: - CopyFilesParams
-
     func testCopyFilesParams_empty() {
         let params = ModPackExporter.CopyFilesParams(
             filesToCopy: [],
@@ -181,8 +178,6 @@ final class ModPackExporterExtendedTests: XCTestCase {
 
         XCTAssertTrue(params.filesToCopy.isEmpty)
     }
-
-    // MARK: - IndexBuildParams
 
     func testIndexBuildParams_allFields() {
         let gameInfo = GameVersionInfo(

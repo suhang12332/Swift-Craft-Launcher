@@ -1,9 +1,14 @@
+//
+//  CommonUtilExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class CommonUtilExtendedTests: XCTestCase {
-
-    // MARK: - URL.forceHTTPS
 
     func testForceHTTPS_httpToHttps() {
         let url = URL.require("http://example.com/path")
@@ -23,8 +28,6 @@ final class CommonUtilExtendedTests: XCTestCase {
         XCTAssertEqual(result, url)
     }
 
-    // MARK: - String.httpToHttps
-
     func testHttpToHttps_convertsUrl() {
         let result = "http://example.com/path".httpToHttps()
         XCTAssertTrue(result.hasPrefix("https://"))
@@ -40,8 +43,6 @@ final class CommonUtilExtendedTests: XCTestCase {
         let result = "not a url".httpToHttps()
         XCTAssertFalse(result.isEmpty)
     }
-
-    // MARK: - CommonUtil.isMinecraftSnapshotVersion
 
     func testIsMinecraftSnapshotVersion_weekly() {
         XCTAssertTrue(CommonUtil.isMinecraftSnapshotVersion("24w11a"))
@@ -62,8 +63,6 @@ final class CommonUtilExtendedTests: XCTestCase {
     func testIsMinecraftSnapshotVersion_singleNumber() {
         XCTAssertFalse(CommonUtil.isMinecraftSnapshotVersion("20"))
     }
-
-    // MARK: - CommonUtil.compareMinecraftVersions
 
     func testCompareMinecraftVersions_sameVersion() {
         XCTAssertEqual(CommonUtil.compareMinecraftVersions("1.20.1", "1.20.1"), 0)
@@ -89,8 +88,6 @@ final class CommonUtilExtendedTests: XCTestCase {
         XCTAssertEqual(CommonUtil.compareMinecraftVersions("1.20", "1.20.0"), 0)
     }
 
-    // MARK: - CommonUtil.minecraftReleaseNewsSlug
-
     func testMinecraftReleaseNewsSlug_simpleVersion() {
         let slug = CommonUtil.minecraftReleaseNewsSlug(version: "1.21")
         XCTAssertEqual(slug, "minecraft-java-edition-1-21")
@@ -100,8 +97,6 @@ final class CommonUtilExtendedTests: XCTestCase {
         let slug = CommonUtil.minecraftReleaseNewsSlug(version: "1.20.4")
         XCTAssertEqual(slug, "minecraft-java-edition-1-20-4")
     }
-
-    // MARK: - CommonUtil.minecraftSnapshotNewsSlug
 
     func testMinecraftSnapshotNewsSlug_weekly() {
         let slug = CommonUtil.minecraftSnapshotNewsSlug(version: "24w11a")
@@ -117,8 +112,6 @@ final class CommonUtilExtendedTests: XCTestCase {
         let slug = CommonUtil.minecraftSnapshotNewsSlug(version: "1.21-pre-3")
         XCTAssertTrue(slug.contains("pre-release"))
     }
-
-    // MARK: - CommonUtil.minecraftLanguageCode
 
     func testMinecraftLanguageCode_allKnown() {
         XCTAssertEqual(CommonUtil.minecraftLanguageCode(from: "zh-Hans"), "zh_cn")
@@ -137,8 +130,6 @@ final class CommonUtilExtendedTests: XCTestCase {
         XCTAssertEqual(CommonUtil.minecraftLanguageCode(from: "xx"), "en_us")
         XCTAssertEqual(CommonUtil.minecraftLanguageCode(from: ""), "en_us")
     }
-
-    // MARK: - CommonUtil.parseMinecraftJavaServerInfo
 
     func testParseMinecraftJavaServerInfo_addressOnly() {
         let result = CommonUtil.parseMinecraftJavaServerInfo(from: "mc.example.com")

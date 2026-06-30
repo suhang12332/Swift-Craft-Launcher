@@ -1,9 +1,15 @@
+//
+//  FileTreeView+Coordinator.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 import AppKit
 
-// MARK: - Coordinator
-
 extension FileTreeView {
+    /// The coordinator for managing NSOutlineView data source and delegate.
     public final class Coordinator: NSObject, NSOutlineViewDataSource, NSOutlineViewDelegate {
         private let viewModel: FileTreeViewModel
 
@@ -34,14 +40,11 @@ extension FileTreeView {
             viewModel.reload()
             outlineView?.reloadData()
 
-            // 默认预选：仅首次加载时，对常见目录/文件自动勾选（若存在）。
             if viewModel.applyDefaultSelectionIfNeeded() {
                 outlineView?.reloadData()
                 onSelectionChange?(viewModel.selectedFileURLs())
             }
         }
-
-        // MARK: NSOutlineViewDataSource
 
         public func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
             let node = (item as? FileNode) ?? viewModel.root
@@ -62,8 +65,6 @@ extension FileTreeView {
             guard let node = item as? FileNode else { return false }
             return node.isDirectory
         }
-
-        // MARK: NSOutlineViewDelegate
 
         public func outlineView(_ outlineView: NSOutlineView, viewFor tableColumn: NSTableColumn?, item: Any) -> NSView? {
             guard let node = item as? FileNode else { return nil }
@@ -89,8 +90,6 @@ extension FileTreeView {
             true
         }
 
-        // MARK: - Selection
-
         @objc private func toggleSelection(_ sender: NSButton) {
             guard
                 let outlineView,
@@ -100,7 +99,6 @@ extension FileTreeView {
 
             let refreshNodes = viewModel.toggleSelection(for: node)
 
-            // 局部刷新：当前节点刷新子树；祖先只刷新自身
             outlineView.reloadItem(node, reloadChildren: true)
             for parent in refreshNodes.dropFirst() {
                 outlineView.reloadItem(parent, reloadChildren: false)

@@ -1,12 +1,19 @@
+//
+//  ModPackIndexAdapter.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 protocol ModPackIndexAdapter {
-    /// 适配器标识
+    /// The unique identifier for this adapter.
     var id: String { get }
 
-    /// 判断该解压目录是否可由此适配器解析
+    /// Determines whether the extracted directory can be parsed by this adapter.
     func canParse(extractedPath: URL) async -> Bool
 
-    /// 解析并转换为统一的 Modrinth 索引信息
+    /// Parses the extracted directory and returns a unified Modrinth index.
     func parseToModrinthIndexInfo(extractedPath: URL) async -> ModrinthIndexInfo?
 }

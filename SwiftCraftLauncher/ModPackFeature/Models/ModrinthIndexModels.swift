@@ -1,7 +1,13 @@
+//
+//  ModrinthIndexModels.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-// MARK: - Modrinth Index Models
-
+/// Represents a Modrinth mod pack index file.
 struct ModrinthIndex: Codable {
     let formatVersion: Int
     let game: String
@@ -22,21 +28,20 @@ struct ModrinthIndex: Codable {
     }
 }
 
-/// 常用哈希（sha1, sha512）作为属性存储，其他哈希存储在可选字典中
+/// Stores file hashes with commonly used hashes as properties.
 struct ModrinthIndexFileHashes: Codable {
-    /// SHA1 哈希（最常用）
+    /// The SHA-1 hash.
     let sha1: String?
-    /// SHA512 哈希（次常用）
+    /// The SHA-512 hash.
     let sha512: String?
-    /// 其他哈希类型（不常用，延迟存储）
+    /// Additional hash types.
     let other: [String: String]?
 
-    /// 从字典创建（用于 JSON 解码）
+    /// Creates an instance from a dictionary.
     init(from dict: [String: String]) {
         self.sha1 = dict["sha1"]
         self.sha512 = dict["sha512"]
 
-        // 只存储非标准哈希
         var otherDict: [String: String] = [:]
         for (key, value) in dict {
             if key != "sha1" && key != "sha512" {
@@ -46,14 +51,14 @@ struct ModrinthIndexFileHashes: Codable {
         self.other = otherDict.isEmpty ? nil : otherDict
     }
 
-    /// 自定义解码，从 JSON 字典解码
+    /// Decodes the hashes from a JSON dictionary.
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let dict = try container.decode([String: String].self)
         self.init(from: dict)
     }
 
-    /// 编码为字典格式（用于 JSON 编码）
+    /// Encodes the hashes as a JSON dictionary.
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         var dict: [String: String] = [:]
@@ -71,7 +76,7 @@ struct ModrinthIndexFileHashes: Codable {
         try container.encode(dict)
     }
 
-    /// 字典访问兼容性（向后兼容）
+    /// Provides dictionary-style access to hashes by type name.
     subscript(key: String) -> String? {
         switch key {
         case "sha1": return sha1
@@ -81,6 +86,7 @@ struct ModrinthIndexFileHashes: Codable {
     }
 }
 
+/// A file entry in the mod pack index.
 struct ModrinthIndexFile: Codable {
     let path: String
     let hashes: ModrinthIndexFileHashes
@@ -88,8 +94,9 @@ struct ModrinthIndexFile: Codable {
     let fileSize: Int
     let env: ModrinthIndexFileEnv?
     let source: FileSource?
-    // CurseForge 特有字段，用于延迟获取文件详情
+    /// The CurseForge project identifier, if sourced from CurseForge.
     let curseForgeProjectId: Int?
+    /// The CurseForge file identifier, if sourced from CurseForge.
     let curseForgeFileId: Int?
 
     enum CodingKeys: String, CodingKey {
@@ -124,23 +131,25 @@ struct ModrinthIndexFile: Codable {
     }
 }
 
+/// Identifies the source platform of a mod file.
 enum FileSource: String, Codable {
     case modrinth = "modrinth"
     case curseforge = "curseforge"
 }
 
+/// Environment compatibility for a mod file.
 struct ModrinthIndexFileEnv: Codable {
     let client: String?
     let server: String?
 }
 
+/// Dependencies required by the mod pack.
 struct ModrinthIndexDependencies: Codable {
     let minecraft: String?
     let forgeLoader: String?
     let fabricLoader: String?
     let quiltLoader: String?
     let neoforgeLoader: String?
-    // 添加不带 -loader 后缀的属性
     let forge: String?
     let fabric: String?
     let quilt: String?
@@ -161,6 +170,7 @@ struct ModrinthIndexDependencies: Codable {
     }
 }
 
+/// A project-level dependency for the mod pack.
 struct ModrinthIndexProjectDependency: Codable {
     let projectId: String?
     let versionId: String?
@@ -173,7 +183,7 @@ struct ModrinthIndexProjectDependency: Codable {
     }
 }
 
-// MARK: - Modrinth Index Info
+/// Contains parsed mod pack index information for installation.
 struct ModrinthIndexInfo {
     let gameVersion: String
     let loaderType: String

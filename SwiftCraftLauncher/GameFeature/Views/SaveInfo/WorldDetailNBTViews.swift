@@ -1,3 +1,11 @@
+//
+//  WorldDetailNBTViews.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A recursive tree view for displaying NBT data structures.
 import SwiftUI
 
 struct NBTStructureView: View {
@@ -22,6 +30,7 @@ struct NBTStructureView: View {
     }
 }
 
+/// A single NBT entry that renders as a disclosure group for compounds and arrays, or a value row for primitives.
 struct NBTEntryView: View {
     let key: String
     let value: Any
@@ -41,7 +50,6 @@ struct NBTEntryView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             if let dict = value as? [String: Any] {
-                // 字典类型
                 NBTDisclosureButton(
                     isExpanded: expandedKeys.contains(fullKey),
                     label: key,
@@ -72,7 +80,6 @@ struct NBTEntryView: View {
                     }
                 }
             } else if let array = value as? [Any] {
-                // 数组类型
                 NBTDisclosureButton(
                     isExpanded: expandedKeys.contains(fullKey),
                     label: key,
@@ -110,7 +117,6 @@ struct NBTEntryView: View {
                     }
                 }
             } else {
-                // 基本类型
                 NBTValueRow(
                     label: key,
                     value: formatNBTValue(value),
@@ -136,8 +142,7 @@ struct NBTEntryView: View {
     }
 }
 
-// MARK: - macOS 风格的组件
-
+/// A disclosure button styled for macOS, used to expand or collapse NBT compound and array entries.
 struct NBTDisclosureButton: View {
     let isExpanded: Bool
     let label: String
@@ -180,6 +185,7 @@ struct NBTDisclosureButton: View {
     }
 }
 
+/// A row displaying a label-value pair from NBT data with monospaced font.
 struct NBTValueRow: View {
     let label: String
     let value: String

@@ -1,26 +1,32 @@
+//
+//  AuthCredential.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 认证凭据模型
-/// 存储在 Keychain 中
+/// An authentication credential stored in the system keychain.
 struct AuthCredential: Codable, Equatable {
-    /// 用户ID（与 UserProfile.id 对应）
+    /// The user identifier matching the corresponding `UserProfile.id`.
     let userId: String
 
-    /// 访问令牌
+    /// The OAuth access token used for API requests.
     var accessToken: String
 
-    /// 刷新令牌
+    /// The OAuth refresh token used to obtain a new access token.
     var refreshToken: String
 
-    /// Xbox 用户ID（XUID）
+    /// The Xbox Live user identifier (XUID).
     var xuid: String
 
-    /// 初始化认证凭据
+    /// Creates an authentication credential.
     /// - Parameters:
-    ///   - userId: 用户ID
-    ///   - accessToken: 访问令牌
-    ///   - refreshToken: 刷新令牌
-    ///   - xuid: Xbox 用户ID，默认为空字符串
+    ///   - userId: The user identifier.
+    ///   - accessToken: The OAuth access token.
+    ///   - refreshToken: The OAuth refresh token.
+    ///   - xuid: The Xbox Live user identifier. Defaults to an empty string.
     init(
         userId: String,
         accessToken: String,

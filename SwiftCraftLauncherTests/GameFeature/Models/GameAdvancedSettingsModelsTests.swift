@@ -1,9 +1,14 @@
+//
+//  GameAdvancedSettingsModelsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class GameAdvancedSettingsModelsTests: XCTestCase {
-
-    // MARK: - GarbageCollector
 
     func testGarbageCollector_allCases() {
         XCTAssertEqual(GarbageCollector.allCases.count, 5)
@@ -43,8 +48,6 @@ final class GameAdvancedSettingsModelsTests: XCTestCase {
         XCTAssertEqual(GarbageCollector.parallel.rawValue, "parallel")
         XCTAssertEqual(GarbageCollector.serial.rawValue, "serial")
     }
-
-    // MARK: - OptimizationPreset
 
     func testOptimizationPreset_allCases() {
         XCTAssertEqual(OptimizationPreset.allCases.count, 4)

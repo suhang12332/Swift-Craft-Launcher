@@ -1,6 +1,14 @@
+//
+//  GameLocalResourceViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// View model that manages paginated loading, search, and filtering of local game resources.
 @MainActor
 final class GameLocalResourceViewModel: ObservableObject {
     @Published private(set) var scannedResources: [ModrinthProjectDetail] = []
@@ -128,8 +136,6 @@ final class GameLocalResourceViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Private
-
     private func applyContext(
         game: GameVersionInfo,
         query: String,
@@ -245,7 +251,6 @@ final class GameLocalResourceViewModel: ObservableObject {
         return filteredByType.filter { $0.title.lowercased().contains(searchLower) }
     }
 
-    /// - Parameter searchText: `nil` 表示使用 `currentSearchText`
     private func loadPage(page: Int, append: Bool, searchText: String?) {
         guard !isLoadingResources, !isLoadingMore else { return }
 

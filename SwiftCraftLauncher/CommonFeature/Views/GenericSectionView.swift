@@ -1,11 +1,13 @@
 //
 //  GenericSectionView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
-// MARK: - Generic Section View
+/// A section view that displays a collection of items as chips with overflow handling.
 struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
     let title: String
     let items: [Item]
@@ -61,7 +63,6 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         }
     }
 
-    // MARK: - Header View
     @ViewBuilder private var headerView: some View {
         if !title.isEmpty {
             let overflowItems = customOverflowItems ?? items.computeVisibleAndOverflowItems(maxItems: maxItems).1
@@ -86,7 +87,6 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         }
     }
 
-    // MARK: - Loading Placeholder
     private var loadingPlaceholder: some View {
         CategorySectionSkeletonView(
             count: SectionViewConstants.defaultPlaceholderCount,
@@ -96,7 +96,6 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         )
     }
 
-    // MARK: - Content With Overflow
     private var contentWithOverflow: some View {
         let visibleItems = customVisibleItems ?? items.computeVisibleAndOverflowItems(maxItems: maxItems).0
 
@@ -109,7 +108,6 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         }
     }
 
-    // MARK: - Overflow Popover Content
     @ViewBuilder
     private func overflowPopoverContent(overflowItems: [Item]) -> some View {
         if let customOverflowBuilder = overflowContentBuilder {
@@ -125,7 +123,6 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         }
     }
 
-    // MARK: - Clear Button
     @ViewBuilder
     private func clearButton(action: @escaping () -> Void) -> some View {
         Button(action: action) {
@@ -137,9 +134,8 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
     }
 }
 
-// MARK: - Convenience Initializers
 extension GenericSectionView {
-    /// 从配置创建 GenericSectionView
+    /// Creates a section view from a configuration.
     init<Config: SectionViewConfiguration>(
         configuration: Config,
         @ViewBuilder chipBuilder: @escaping (Item) -> ChipContent,

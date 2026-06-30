@@ -1,15 +1,15 @@
 //
 //  WindowDataStore.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/1/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import AppKit
 import SkinRenderKit
 
-/// 皮肤预览数据
+/// Data model for skin preview rendering.
 struct SkinPreviewData {
     let skinImage: NSImage?
     let skinPath: String?
@@ -17,7 +17,7 @@ struct SkinPreviewData {
     let playerModel: PlayerModel
 }
 
-/// 窗口数据存储，用于在窗口间传递数据
+/// Shared observable store for passing data between auxiliary windows.
 @MainActor
 class WindowDataStore: ObservableObject {
     static let shared = WindowDataStore()
@@ -28,7 +28,7 @@ class WindowDataStore: ObservableObject {
 
     @Published var skinPreviewData: SkinPreviewData?
 
-    /// 清理指定窗口的数据
+    /// Releases the data associated with the specified window.
     func cleanup(for windowID: AuxiliaryWindowID) {
         switch windowID {
         case .aiChat:

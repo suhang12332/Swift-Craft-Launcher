@@ -1,6 +1,13 @@
+//
+//  GitHubService.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-// MARK: - GitHub Service
+/// Provides access to GitHub API endpoints for contributors, acknowledgements, and announcements.
 @MainActor
 public class GitHubService: ObservableObject {
 
@@ -8,54 +15,43 @@ public class GitHubService: ObservableObject {
 
     private init() {}
 
-    // MARK: - Public Methods
-
-    /// 获取仓库贡献者列表
+    /// Fetches the list of repository contributors.
     public func fetchContributors(perPage: Int = 50) async throws -> [GitHubContributor] {
         let url = URLConfig.API.GitHub.contributors(perPage: perPage)
-        // 使用统一的 API 客户端
         let data = try await APIClient.get(url: url)
         return try JSONDecoder().decode([GitHubContributor].self, from: data)
     }
 
-    // MARK: - Static Contributors
-
-    /// 获取静态贡献者原始数据（JSON）
+    /// Fetches raw static contributor data as JSON.
     private func fetchStaticContributorsData() async throws -> Data {
         let url = URLConfig.API.GitHub.staticContributors()
-        // 使用统一的 API 客户端
         return try await APIClient.get(url: url)
     }
 
-    /// 获取静态贡献者解码后的数据
+    /// Fetches decoded static contributor data.
     public func fetchStaticContributors<T: Decodable>() async throws -> T {
         let data = try await fetchStaticContributorsData()
         return try JSONDecoder().decode(T.self, from: data)
     }
 
-    // MARK: - Acknowledgements
-
-    /// 获取开源致谢原始数据（JSON）
+    /// Fetches raw open source acknowledgements data as JSON.
     private func fetchAcknowledgementsData() async throws -> Data {
         let url = URLConfig.API.GitHub.acknowledgements()
-        // 使用统一的 API 客户端
         let headers = APIClient.DefaultHeaders.acceptJSON
         return try await APIClient.get(url: url, headers: headers)
     }
 
-    /// 获取开源致谢解码后的数据
+    /// Fetches decoded open source acknowledgements data.
     public func fetchAcknowledgements<T: Decodable>() async throws -> T {
         let data = try await fetchAcknowledgementsData()
         return try JSONDecoder().decode(T.self, from: data)
     }
 
-    // MARK: - Announcement
-
-    /// 获取公告数据
+    /// Fetches announcement data for the specified version and language.
     /// - Parameters:
-    ///   - version: 应用版本号
-    ///   - language: 语言代码
-    /// - Returns: 公告数据，如果不存在（404）则返回 nil
+    ///   - version: The application version number.
+    ///   - language: The language code.
+    /// - Returns: The announcement data, or `nil` if not found.
     public func fetchAnnouncement(
         version: String,
         language: String
@@ -81,8 +77,7 @@ public class GitHubService: ObservableObject {
     }
 }
 
-// MARK: - GitHubService Error
-
+/// Errors that can occur during GitHub service operations.
 public enum GitHubServiceError: Error {
     case httpError(statusCode: Int)
     case invalidResponse

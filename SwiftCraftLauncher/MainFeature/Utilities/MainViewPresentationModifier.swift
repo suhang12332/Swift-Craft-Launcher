@@ -1,6 +1,13 @@
+//
+//  MainViewPresentationModifier.swift
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-/// 主窗口级展示层（导出、删除确认、启动公告）
+/// Attaches main-window presentation layers including export sheets, deletion confirmation, and startup announcement.
 struct MainViewPresentationModifier: ViewModifier {
     @ObservedObject private var gameDialogsPresenter: GameDialogsPresenter
     @ObservedObject var detailState: ResourceDetailState

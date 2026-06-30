@@ -1,6 +1,14 @@
+//
+//  DependencySheetActionViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// View model that manages download actions for dependency sheet dialogs, coordinating "download all" and "download main only" flows.
 @MainActor
 final class DependencySheetActionViewModel: ObservableObject {
     @Published var error: GlobalError?
@@ -19,6 +27,7 @@ final class DependencySheetActionViewModel: ObservableObject {
         self.errorHandler = errorHandler
     }
 
+    /// Downloads only the main resource, excluding dependencies.
     func downloadMainOnly(onDownloadMainOnly: @escaping () async -> Void) {
         Task {
             isDownloadingMainResourceOnly.wrappedValue = true
@@ -27,6 +36,7 @@ final class DependencySheetActionViewModel: ObservableObject {
         }
     }
 
+    /// Downloads the main resource and all its dependencies.
     func downloadAll(onDownloadAll: @escaping () async -> Void) {
         Task {
             isDownloadingAllDependencies.wrappedValue = true

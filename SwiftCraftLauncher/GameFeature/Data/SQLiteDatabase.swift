@@ -1,22 +1,29 @@
+//
+//  SQLiteDatabase.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SQLite3
 
-/// SQLite 数据库管理器
-/// 使用 WAL 模式和 mmap 优化性能
+/// A thread-safe wrapper around the SQLite C API.
+///
+/// Manages a single database connection with WAL journal mode and memory-mapped I/O.
+/// All operations are serialized on a dedicated dispatch queue.
 class SQLiteDatabase {
-    // MARK: - Properties
 
     private var db: OpaquePointer?
     private let dbPath: String
     private let queue: DispatchQueue
     private static let queueKey = DispatchSpecificKey<Bool>()
 
-    // MARK: - Initialization
-
-    /// 初始化数据库连接
+    /// Creates a database connection.
+    ///
     /// - Parameters:
-    ///   - path: 数据库文件路径
-    ///   - queue: 数据库操作队列，默认为串行队列
+    ///   - path: The file path of the SQLite database.
+    ///   - queue: An optional dispatch queue for serializing operations.
     init(path: String, queue: DispatchQueue? = nil) {
         self.dbPath = path
         self.queue = queue ?? DispatchQueue(label: "com.swiftcraftlauncher.sqlite", qos: .utility)
@@ -27,13 +34,10 @@ class SQLiteDatabase {
         close()
     }
 
-    // MARK: - Connection Management
-
     private var isOnQueue: Bool {
         return DispatchQueue.getSpecific(key: Self.queueKey) != nil
     }
 
-    /// 在队列中执行操作（如果已在队列内则直接执行）
     private func sync<T>(_ block: () throws -> T) rethrows -> T {
         if isOnQueue {
             return try block()
@@ -42,8 +46,9 @@ class SQLiteDatabase {
         }
     }
 
-    /// 打开数据库连接
-    /// - Throws: GlobalError 当连接失败时
+    /// Opens the database connection.
+    ///
+    /// Enables WAL journal mode and memory-mapped I/O after opening.
     func open() throws {
         try sync {
             guard db == nil else { return }
@@ -71,7 +76,7 @@ class SQLiteDatabase {
         }
     }
 
-    /// 关闭数据库连接
+    /// Closes the database connection.
     func close() {
         sync {
             guard let db = db else { return }
@@ -81,8 +86,6 @@ class SQLiteDatabase {
         }
     }
 
-    /// 启用 WAL 模式（Write-Ahead Logging）
-    /// 提供更好的并发性能和崩溃恢复能力
     private func enableWALMode() throws {
         guard let db = db else { return }
 
@@ -101,12 +104,9 @@ class SQLiteDatabase {
         Logger.shared.debug("WAL 模式已启用")
     }
 
-    /// 启用 mmap（内存映射）
-    /// 允许 SQLite 使用操作系统虚拟内存系统来访问数据库文件
     private func enableMmap() throws {
         guard let db = db else { return }
 
-        // 设置 mmap 大小为 64MB（可根据需要调整）
         let mmapSize = 64 * 1024 * 1024
         let sql = "PRAGMA mmap_size=\(mmapSize);"
 
@@ -123,11 +123,12 @@ class SQLiteDatabase {
         Logger.shared.debug("mmap 已启用 (64MB)")
     }
 
-    // MARK: - Transaction Management
-
-    /// 执行事务操作
-    /// - Parameter block: 事务块
-    /// - Throws: GlobalError 当操作失败时
+    /// Executes a block within a database transaction.
+    ///
+    /// The transaction is committed if the block succeeds, or rolled back if it throws.
+    ///
+    /// - Parameter block: The work to perform inside the transaction.
+    /// - Returns: The value produced by the block.
     func transaction<T>(_ block: () throws -> T) throws -> T {
         try sync {
             guard let db = db else {
@@ -138,7 +139,6 @@ class SQLiteDatabase {
                 )
             }
 
-            // 开始事务
             var result = sqlite3_exec(db, "BEGIN TRANSACTION;", nil, nil, nil)
             guard result == SQLITE_OK else {
                 let errorMessage = String(cString: sqlite3_errmsg(db))
@@ -152,7 +152,6 @@ class SQLiteDatabase {
             do {
                 let value = try block()
 
-                // 提交事务
                 result = sqlite3_exec(db, "COMMIT;", nil, nil, nil)
                 guard result == SQLITE_OK else {
                     let errorMessage = String(cString: sqlite3_errmsg(db))
@@ -165,18 +164,15 @@ class SQLiteDatabase {
 
                 return value
             } catch {
-                // 回滚事务
                 sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
                 throw error
             }
         }
     }
 
-    // MARK: - Query Execution
-
-    /// 执行 SQL 语句（不返回结果）
-    /// - Parameter sql: SQL 语句
-    /// - Throws: GlobalError 当执行失败时
+    /// Executes a SQL statement that does not return results.
+    ///
+    /// - Parameter sql: The SQL statement to execute.
     func execute(_ sql: String) throws {
         try sync {
             guard let db = db else {
@@ -202,11 +198,12 @@ class SQLiteDatabase {
         }
     }
 
-    /// 准备 SQL 语句
-    /// - Parameter sql: SQL 语句
-    /// - Returns: 准备好的语句指针
-    /// - Throws: GlobalError 当准备失败时
-    /// - Warning: 返回的 statement 必须在队列内使用，使用完毕后调用 sqlite3_finalize
+    /// Prepares a SQL statement for execution.
+    ///
+    /// The caller is responsible for calling `sqlite3_finalize` on the returned pointer.
+    ///
+    /// - Parameter sql: The SQL statement to prepare.
+    /// - Returns: A pointer to the prepared statement.
     func prepare(_ sql: String) throws -> OpaquePointer {
         return try sync {
             guard let db = db else {
@@ -233,15 +230,14 @@ class SQLiteDatabase {
         }
     }
 
-    /// 获取数据库实例（用于直接操作）
-    /// - Returns: SQLite 数据库指针
-    /// - Warning: 仅在队列内使用
+    /// The underlying database pointer.
     var database: OpaquePointer? {
         return sync { db }
     }
 
-    /// 在队列中执行操作
-    /// - Parameter block: 操作块
+    /// Executes a block with direct access to the raw database pointer.
+    ///
+    /// - Parameter block: The work to perform with the database pointer.
     func perform<T>(_ block: @escaping (OpaquePointer?) throws -> T) throws -> T {
         return try sync {
             try block(db)
@@ -249,13 +245,11 @@ class SQLiteDatabase {
     }
 }
 
-// MARK: - Statement Helpers
-
 extension SQLiteDatabase {
-    // SQLITE_TRANSIENT 的替代：使用 nil 让 SQLite 复制数据
+
     private static let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
-    /// 绑定字符串参数
+    /// Binds a string value to a statement parameter.
     static func bind(_ statement: OpaquePointer, index: Int32, value: String?) {
         if let value = value {
             sqlite3_bind_text(statement, index, value, -1, SQLITE_TRANSIENT)
@@ -264,41 +258,41 @@ extension SQLiteDatabase {
         }
     }
 
-    /// 绑定整数参数
+    /// Binds an integer value to a statement parameter.
     static func bind(_ statement: OpaquePointer, index: Int32, value: Int) {
         sqlite3_bind_int64(statement, index, Int64(value))
     }
 
-    /// 绑定日期参数（存储为时间戳）
+    /// Binds a date value to a statement parameter, stored as a Unix timestamp.
     static func bind(_ statement: OpaquePointer, index: Int32, value: Date) {
         sqlite3_bind_double(statement, index, value.timeIntervalSince1970)
     }
 
-    /// 绑定 BLOB 参数
+    /// Binds binary data to a statement parameter.
     static func bind(_ statement: OpaquePointer, index: Int32, data: Data) {
         _ = data.withUnsafeBytes { bytes in
             sqlite3_bind_blob(statement, index, bytes.baseAddress, Int32(data.count), SQLITE_TRANSIENT)
         }
     }
 
-    /// 读取字符串列
+    /// Reads a string value from a result column.
     static func stringColumn(_ statement: OpaquePointer, index: Int32) -> String? {
         guard let text = sqlite3_column_text(statement, index) else { return nil }
         return String(cString: text)
     }
 
-    /// 读取整数列
+    /// Reads an integer value from a result column.
     static func intColumn(_ statement: OpaquePointer, index: Int32) -> Int {
         return Int(sqlite3_column_int64(statement, index))
     }
 
-    /// 读取日期列
+    /// Reads a date value from a result column, interpreted as a Unix timestamp.
     static func dateColumn(_ statement: OpaquePointer, index: Int32) -> Date {
         let timestamp = sqlite3_column_double(statement, index)
         return Date(timeIntervalSince1970: timestamp)
     }
 
-    /// 读取 BLOB 列
+    /// Reads binary data from a result column.
     static func dataColumn(_ statement: OpaquePointer, index: Int32) -> Data? {
         guard let blob = sqlite3_column_blob(statement, index) else { return nil }
         let length = sqlite3_column_bytes(statement, index)

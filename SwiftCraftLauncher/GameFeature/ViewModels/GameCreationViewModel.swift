@@ -1,16 +1,16 @@
 //
 //  GameCreationViewModel.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - Game Creation View Model
+/// View model for creating a new game instance, managing version selection, mod loader configuration, and game persistence.
 @MainActor
 class GameCreationViewModel: BaseGameFormViewModel {
-    // MARK: - Published Properties
     @Published var gameIcon = AppConstants.defaultGameIcon
     @Published var iconImage: Image?
     @Published var selectedGameVersion = ""
@@ -28,17 +28,14 @@ class GameCreationViewModel: BaseGameFormViewModel {
     @Published var availableLoaderVersions: [String] = []
     @Published var availableVersions: [String] = []
 
-    // MARK: - Private Properties
     var pendingIconData: Data?
     var pendingIconURL: URL?
     var didInit = false
     let gameSettingsManager: GameSettingsManager
 
-    // MARK: - Environment Objects (to be set from view)
     var gameRepository: GameRepository?
     var playerListViewModel: PlayerListViewModel?
 
-    // MARK: - Initialization
     init(
         configuration: GameFormConfiguration,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
@@ -48,7 +45,6 @@ class GameCreationViewModel: BaseGameFormViewModel {
         super.init(configuration: configuration, errorHandler: errorHandler)
     }
 
-    // MARK: - Setup Methods
     func setup(gameRepository: GameRepository, playerListViewModel: PlayerListViewModel) {
         self.gameRepository = gameRepository
         self.playerListViewModel = playerListViewModel
@@ -62,7 +58,6 @@ class GameCreationViewModel: BaseGameFormViewModel {
         updateParentState()
     }
 
-    // MARK: - Override Methods
     override func performConfirmAction() async {
         startDownloadTask {
             await self.saveGame()
@@ -71,14 +66,9 @@ class GameCreationViewModel: BaseGameFormViewModel {
 
     override func handleCancel() {
         if isDownloading {
-            // 停止下载任务
             downloadTask?.cancel()
             downloadTask = nil
-
-            // 取消下载状态
             gameSetupService.downloadState.cancel()
-
-            // 执行取消后的清理工作
             Task {
                 await performCancelCleanup()
             }
@@ -88,11 +78,8 @@ class GameCreationViewModel: BaseGameFormViewModel {
     }
 
     override func performCancelCleanup() async {
-        // 如果正在下载时取消，需要删除已创建的游戏文件夹
         let gameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
         if !gameName.isEmpty {
-            // 检查游戏是否已经保存到仓库中
-            // 如果已经保存，说明游戏创建成功，不应该删除文件夹
             let isGameSaved = await MainActor.run {
                 guard let gameRepository = gameRepository else { return false }
                 return gameRepository.games.contains { $0.gameName == gameName }
@@ -114,7 +101,6 @@ class GameCreationViewModel: BaseGameFormViewModel {
             }
         }
 
-        // 重置下载状态并关闭窗口
         await MainActor.run {
             gameSetupService.downloadState.reset()
             configuration.actions.onCancel()
@@ -138,7 +124,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
         pendingIconURL ?? URLConfig.API.GitHub.gameIcon(selectedModLoader)
     }
 
-    /// 添加游戏窗口关闭时，清理已加载的版本列表
+    /// Clears loaded version data when the add-game window closes.
     func clearLoadedVersionsOnClose() {
         availableVersions = []
         availableLoaderVersions = []

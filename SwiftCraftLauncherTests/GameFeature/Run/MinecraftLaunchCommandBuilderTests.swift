@@ -1,9 +1,14 @@
+//
+//  MinecraftLaunchCommandBuilderTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class MinecraftLaunchCommandBuilderTests: XCTestCase {
-
-    // MARK: - Helpers
 
     private func makeGameInfo(
         id: String = "test-game-id",
@@ -69,8 +74,6 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         return try JSONDecoder().decode(Library.self, from: jsonData)
     }
 
-    // MARK: - 库过滤逻辑验证
-
     func testLibraryFiltering_nonDownloadableExcluded() throws {
         let library = try makeLibrary(downloadable: false, includeInClasspath: true)
         XCTAssertFalse(LibraryFilter.shouldDownloadLibrary(library))
@@ -89,8 +92,6 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertTrue(LibraryFilter.shouldIncludeInClasspath(library))
     }
 
-    // MARK: - 路径去重逻辑验证
-
     func testRemoveDuplicatePaths_removesExactDuplicates() throws {
         let paths = ["/a/b.jar", "/a/b.jar", "/c/d.jar"]
         let unique = Array(Set(paths))
@@ -104,10 +105,7 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertEqual(filtered, ["/a/b.jar", "/c/d.jar"])
     }
 
-    // MARK: - 构建命令结构验证
-
     func testCommandStructure_jvmArgsBeforeMainClass() throws {
-        // 验证命令结构：JVM参数 + 主类 + 游戏参数
         let jvmArgs = ["-Xmx4G", "-Djava.class.path=/path/to/jar"]
         let mainClass = "net.minecraft.client.main.Main"
         let gameArgs = ["--width", "854"]
@@ -122,7 +120,6 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
     }
 
     func testCommandStructure_macOSArgsFirst() throws {
-        // 验证 macOS 特定参数在最前面
         var jvmArgs = ["-Xmx4G"]
         jvmArgs.insert("-XstartOnFirstThread", at: 0)
 
@@ -130,7 +127,6 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
     }
 
     func testCommandStructure_memoryArgsBeforeOtherJvmArgs() throws {
-        // 验证内存参数在其他 JVM 参数之前
         var jvmArgs = ["-Djava.class.path=/path/to/jar"]
         let xmsArg = "-Xms${xms}M"
         let xmxArg = "-Xmx${xmx}M"
@@ -140,8 +136,6 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertEqual(jvmArgs[1], "-Xmx${xmx}M")
         XCTAssertEqual(jvmArgs[2], "-Djava.class.path=/path/to/jar")
     }
-
-    // MARK: - Mod JVM 参数拼接
 
     func testModJvmArgs_appendedToEnd() throws {
         var jvmArgs = ["-Xmx4G", "-XstartOnFirstThread"]
@@ -154,8 +148,6 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertEqual(jvmArgs[3], "-Dforge.enabled=true")
     }
 
-    // MARK: - 游戏参数拼接
-
     func testGameArgs_appendedToEnd() throws {
         var gameArgs = ["--width", "854"]
         let extraGameArgs = ["--launchTarget", "forge_client"]
@@ -166,8 +158,6 @@ final class MinecraftLaunchCommandBuilderTests: XCTestCase {
         XCTAssertEqual(gameArgs[2], "--launchTarget")
         XCTAssertEqual(gameArgs[3], "forge_client")
     }
-
-    // MARK: - 变量映射验证
 
     func testVariableMap_containsRequiredKeys() throws {
         let gameInfo = makeGameInfo(

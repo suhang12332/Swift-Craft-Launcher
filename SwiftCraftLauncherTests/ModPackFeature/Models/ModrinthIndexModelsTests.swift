@@ -1,9 +1,14 @@
+//
+//  ModrinthIndexModelsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModrinthIndexModelsExtendedTests: XCTestCase {
-
-    // MARK: - ModrinthIndex
 
     func testModrinthIndex_codable_roundtrip() throws {
         let index = ModrinthIndex(
@@ -62,8 +67,6 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
         XCTAssertNil(decoded.summary)
     }
 
-    // MARK: - ModrinthIndexDependencies
-
     func testModrinthIndexDependencies_codable() throws {
         let deps = ModrinthIndexDependencies(
             minecraft: "1.20.1",
@@ -98,8 +101,6 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
         XCTAssertEqual(decoded.fabricLoader, "0.14.0")
     }
 
-    // MARK: - ModrinthIndexProjectDependency
-
     func testModrinthIndexProjectDependency_codable() throws {
         let dep = ModrinthIndexProjectDependency(
             projectId: "abc123",
@@ -127,8 +128,6 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
         XCTAssertEqual(decoded.dependencyType, "optional")
     }
 
-    // MARK: - ModrinthIndexFileEnv
-
     func testModrinthIndexFileEnv_codable() throws {
         let env = ModrinthIndexFileEnv(client: "required", server: "optional")
         let data = try JSONEncoder().encode(env)
@@ -145,8 +144,6 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
         XCTAssertNil(decoded.server)
     }
 
-    // MARK: - FileSource
-
     func testFileSource_rawValues() {
         XCTAssertEqual(FileSource.modrinth.rawValue, "modrinth")
         XCTAssertEqual(FileSource.curseforge.rawValue, "curseforge")
@@ -158,8 +155,6 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
         let decoded = try JSONDecoder().decode(FileSource.self, from: data)
         XCTAssertEqual(decoded, .modrinth)
     }
-
-    // MARK: - ModrinthIndexFileHashes subscript
 
     func testModrinthIndexFileHashes_subscript_sha1() {
         let hashes = ModrinthIndexFileHashes(from: ["sha1": "abc123", "sha512": "def456"])
@@ -180,8 +175,6 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
         let hashes = ModrinthIndexFileHashes(from: ["sha1": "abc"])
         XCTAssertNil(hashes["unknown"])
     }
-
-    // MARK: - ModrinthIndexFile
 
     func testModrinthIndexFile_init_withHashes() {
         let hashes = ModrinthIndexFileHashes(from: ["sha1": "abc"])
@@ -216,8 +209,6 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
         XCTAssertEqual(decoded.curseForgeProjectId, 123)
         XCTAssertEqual(decoded.curseForgeFileId, 456)
     }
-
-    // MARK: - ModrinthIndexInfo
 
     func testModrinthIndexInfo_init() {
         let info = ModrinthIndexInfo(

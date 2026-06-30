@@ -1,9 +1,14 @@
+//
+//  ModrinthIndexExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModrinthIndexExtendedTests: XCTestCase {
-
-    // MARK: - ModrinthIndexFileHashes Codable
 
     func testModrinthIndexFileHashes_codable_roundTrip() throws {
         let hashes = ModrinthIndexFileHashes(from: ["sha1": "abc123", "sha512": "def456", "md5": "xyz789"])
@@ -56,8 +61,6 @@ final class ModrinthIndexExtendedTests: XCTestCase {
         XCTAssertEqual(decoded.sha512, "d4e5f6")
         XCTAssertEqual(decoded.other?["custom_hash"], "abc123")
     }
-
-    // MARK: - ModrinthIndexFile full Codable
 
     func testModrinthIndexFile_codable_withEnv() throws {
         let file = ModrinthIndexFile(
@@ -116,8 +119,6 @@ final class ModrinthIndexExtendedTests: XCTestCase {
         XCTAssertNil(decoded.env)
         XCTAssertNil(decoded.source)
     }
-
-    // MARK: - ModrinthIndex full Codable
 
     func testModrinthIndex_codable_withFiles() throws {
         let files = [
@@ -210,8 +211,6 @@ final class ModrinthIndexExtendedTests: XCTestCase {
         XCTAssertNil(decoded.summary)
     }
 
-    // MARK: - ModrinthIndexDependencies all loader types
-
     func testModrinthIndexDependencies_allLoaders() throws {
         let deps = ModrinthIndexDependencies(
             minecraft: "1.20.1",
@@ -258,8 +257,6 @@ final class ModrinthIndexExtendedTests: XCTestCase {
         XCTAssertEqual(decoded.quiltLoader, "0.22.0")
         XCTAssertEqual(decoded.neoforgeLoader, "21.0.0")
     }
-
-    // MARK: - ModrinthIndexInfo with CurseForge source
 
     func testModrinthIndexInfo_curseforgeSource() {
         let info = ModrinthIndexInfo(

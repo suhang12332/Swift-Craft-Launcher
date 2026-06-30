@@ -1,9 +1,15 @@
+//
+//  ModScanner+ResourceScan.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Resource directory scanning with support for paginated and concurrent detail resolution.
 extension ModScanner {
-    // MARK: - 资源目录扫描
-
-    /// 扫描目录，返回所有已识别的 ModrinthProjectDetail（静默版本）
+    /// Scans a resource directory and returns all recognized `ModrinthProjectDetail` instances.
     func scanResourceDirectory(
         _ dir: URL,
         completion: @escaping ([ModrinthProjectDetail]) -> Void
@@ -21,18 +27,15 @@ extension ModScanner {
         }
     }
 
-    /// 扫描目录，返回所有已识别的 ModrinthProjectDetail（抛出异常版本）
+    /// Scans a resource directory and returns all recognized `ModrinthProjectDetail` instances.
     func scanResourceDirectoryThrowing(
         _ dir: URL
     ) async throws -> [ModrinthProjectDetail] {
-        // 复用本地详情扫描逻辑，只返回非空 detail
         let items = try scanDirectoryForDetails(in: dir)
         return items.compactMap { $0.detail }
     }
 
-    // MARK: - 分页扫描
-
-    /// 计算分页范围
+    /// Calculates the start index, end index, and whether more pages remain for the given pagination parameters.
     func calculatePageRange(
         totalCount: Int,
         page: Int,
@@ -54,7 +57,7 @@ extension ModScanner {
         return (startIndex, endIndex, endIndex < totalCount)
     }
 
-    /// 并发扫描文件列表并返回详情
+    /// Concurrently scans a list of file URLs and returns their resolved details.
     func scanFilesConcurrently(
         fileURLs: [URL],
         semaphore: AsyncSemaphore
@@ -81,7 +84,7 @@ extension ModScanner {
         }
     }
 
-    /// 扫描目录下所有 jar/zip 文件，返回文件 URL + hash + 详情（若无缓存则使用兜底 detail）
+    /// Scans all jar and zip files in the directory, returning each file's URL, hash, and resolved detail.
     func scanDirectoryForDetails(
         in dir: URL
     ) throws -> [(
@@ -95,15 +98,12 @@ extension ModScanner {
 
             var detail = getModCacheFromDatabase(hash: hash)
 
-            // 如果缓存中没有找到，使用兜底策略创建基础信息
             if detail == nil {
                 detail = createFallbackDetailFromFileName(fileURL: fileURL)
-                // 保存兜底信息到缓存，避免重复创建
                 if let detail = detail {
                     saveToCache(hash: hash, detail: detail)
                 }
             } else {
-                // 更新文件名为当前实际文件名（可能已重命名为 .disabled）
                 detail?.fileName = fileURL.lastPathComponent
             }
 
@@ -111,7 +111,7 @@ extension ModScanner {
         }
     }
 
-    /// 获取目录下所有 jar/zip 文件列表（不解析详情，快速）
+    /// Returns all jar and zip files in the directory without resolving details.
     func getAllResourceFiles(_ dir: URL) -> [URL] {
         do {
             return try getAllResourceFilesThrowing(dir)
@@ -123,9 +123,8 @@ extension ModScanner {
         }
     }
 
-    /// 获取目录下所有 jar/zip 文件列表（抛出异常版本）
+    /// Returns all jar and zip files in the directory without resolving details, returning an empty array if the directory does not exist.
     func getAllResourceFilesThrowing(_ dir: URL) throws -> [URL] {
-        // 目录不存在时返回空数组（不抛出异常，因为这是正常情况）
         guard FileManager.default.fileExists(atPath: dir.path) else {
             return []
         }
@@ -133,7 +132,7 @@ extension ModScanner {
         return try readJarZipFiles(from: dir)
     }
 
-    /// 分页扫描目录，仅对当前页的文件进行解析（静默版本）
+    /// Scans a resource directory by page, resolving details only for the requested page.
     func scanResourceDirectoryPage(
         _ dir: URL,
         page: Int,
@@ -157,7 +156,7 @@ extension ModScanner {
         }
     }
 
-    /// 基于文件列表分页扫描，仅对当前页的文件进行解析（静默版本）
+    /// Scans a list of files by page, resolving details only for the requested page.
     func scanResourceFilesPage(
         fileURLs: [URL],
         page: Int,
@@ -181,7 +180,7 @@ extension ModScanner {
         }
     }
 
-    /// 基于文件列表分页扫描，仅对当前页的文件进行解析（抛出异常版本）
+    /// Scans a list of files by page, resolving details only for the requested page.
     func scanResourceFilesPageThrowing(
         fileURLs: [URL],
         page: Int,
@@ -203,7 +202,7 @@ extension ModScanner {
         return (results, pageRange.hasMore)
     }
 
-    /// 分页扫描目录，仅对当前页的文件进行解析（抛出异常版本）
+    /// Scans a resource directory by page, resolving details only for the requested page.
     func scanResourceDirectoryPageThrowing(
         _ dir: URL,
         page: Int,

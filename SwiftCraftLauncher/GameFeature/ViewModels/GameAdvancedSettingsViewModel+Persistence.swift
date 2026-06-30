@@ -1,8 +1,14 @@
+//
+//  GameAdvancedSettingsViewModel+Persistence.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Extension providing debounced auto-save persistence for advanced game settings.
 extension GameAdvancedSettingsViewModel {
-    // MARK: - Persistence
-
     func autoSave() {
         guard !isLoadingSettings, currentGame != nil else { return }
         saveTask?.cancel()

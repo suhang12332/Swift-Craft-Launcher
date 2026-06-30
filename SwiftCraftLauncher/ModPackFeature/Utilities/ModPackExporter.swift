@@ -1,13 +1,13 @@
 //
 //  ModPackExporter.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// 整合包导出器
-/// 将游戏实例导出为 Modrinth 官方整合包格式 (.mrpack)
+/// Exports a game instance as a Modpack (.mrpack) or CurseForge archive.
 enum ModPackExporter {
 
     struct ExportResult {

@@ -1,12 +1,15 @@
 //
 //  ResourceFilterState.swift
-//  SwiftCraftLauncher
+//  ResourceFeature
 //
-//  收拢资源筛选、分页、Tab、数据源、搜索与本地筛选等状态，通过 @EnvironmentObject 向下提供，减少 @Binding 透传。
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
+/// Aggregates resource filter, pagination, tab, data source, search, and local filter state.
+///
+/// Intended to be provided via `@EnvironmentObject` to reduce `@Binding` proliferation.
 final class ResourceFilterState: ObservableObject {
 
     @Published var selectedVersions: [String] = []
@@ -33,6 +36,7 @@ final class ResourceFilterState: ObservableObject {
         self.dataSource = dataSource ?? gameSettingsManager.defaultAPISource
     }
 
+    /// Clears all filter selections and resets pagination.
     func clearFiltersAndPagination() {
         selectedVersions.removeAll()
         selectedLicenses.removeAll()
@@ -47,7 +51,7 @@ final class ResourceFilterState: ObservableObject {
         versionTotal = 0
     }
 
-    /// 仅清空搜索文本
+    /// Clears the search text only.
     func clearSearchText() {
         searchText = ""
     }

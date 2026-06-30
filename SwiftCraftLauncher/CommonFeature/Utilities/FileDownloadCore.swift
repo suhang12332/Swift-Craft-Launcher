@@ -1,5 +1,13 @@
+//
+//  FileDownloadCore.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides core utilities for downloading files, including URL parsing, directory setup, and SHA-1 validation.
 enum FileDownloadCore {
     static func parseURL(from urlString: String) throws -> URL {
         try autoreleasepool {

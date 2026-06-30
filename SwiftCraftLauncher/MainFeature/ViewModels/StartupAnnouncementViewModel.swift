@@ -1,6 +1,14 @@
+//
+//  StartupAnnouncementViewModel.swift
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// Manages startup announcement display and acknowledgment state.
 @MainActor
 final class StartupAnnouncementViewModel: ObservableObject {
     @Published var hasAnnouncement: Bool = false
@@ -11,6 +19,11 @@ final class StartupAnnouncementViewModel: ObservableObject {
     private let languageManager: LanguageManager
     private let gitHubService: GitHubService
 
+    /// Creates a view model with the required services.
+    /// - Parameters:
+    ///   - announcementStateManager: Manages announcement acknowledgment state.
+    ///   - languageManager: Provides the selected language.
+    ///   - gitHubService: Fetches announcement data from GitHub.
     init(
         announcementStateManager: AnnouncementStateManager = AppServices.announcementStateManager,
         languageManager: LanguageManager = AppServices.languageManager,
@@ -21,6 +34,7 @@ final class StartupAnnouncementViewModel: ObservableObject {
         self.gitHubService = gitHubService
     }
 
+    /// Checks for a new announcement if one hasn't been checked yet.
     func checkAnnouncementIfNeeded() async {
         guard !hasCheckedAnnouncement else { return }
         hasCheckedAnnouncement = true

@@ -1,22 +1,21 @@
 //
 //  ResourceDetailLoader.swift
-//  SwiftCraftLauncher
+//  ResourceFeature
 //
-//  Created by su on 2025/6/28.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// 资源详情加载器
-/// 负责在打开 sheet 前加载项目详情和兼容游戏信息
+/// Loads project details and compatible game information before presenting a detail sheet.
 enum ResourceDetailLoader {
-    /// 加载普通资源的详情和兼容游戏列表
+    /// Loads project details and determines compatible games for a standard resource.
     /// - Parameters:
-    ///   - projectId: 项目 ID
-    ///   - gameRepository: 游戏仓库
-    ///   - resourceType: 资源类型
-    ///   - skipCompatibleGameResolution: 为 true 时只拉取项目详情，不解析兼容游戏、不做已安装过滤
-    /// - Returns: 项目详情和兼容游戏列表的元组，如果加载失败则返回 nil
+    ///   - projectId: The project identifier.
+    ///   - gameRepository: The game repository providing local game data.
+    ///   - resourceType: The type of resource.
+    ///   - skipCompatibleGameResolution: When true, fetches only the project detail without resolving compatible games.
+    /// - Returns: A tuple of project detail and compatible game versions, or nil on failure.
     static func loadProjectDetail(
         projectId: String,
         gameRepository: GameRepository,
@@ -57,9 +56,9 @@ enum ResourceDetailLoader {
         return (detail, finalGames)
     }
 
-    /// 加载整合包详情
-    /// - Parameter projectId: 项目 ID
-    /// - Returns: 项目详情，如果加载失败则返回 nil
+    /// Loads a modpack project detail.
+    /// - Parameter projectId: The project identifier.
+    /// - Returns: The project detail, or nil on failure.
     static func loadModPackDetail(projectId: String) async -> ModrinthProjectDetail? {
         guard let detail = await ModrinthService.fetchProjectDetails(id: projectId) else {
             AppServices.errorHandler.handle(GlobalError.resource(

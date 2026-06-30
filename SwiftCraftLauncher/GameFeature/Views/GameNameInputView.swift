@@ -1,13 +1,13 @@
 //
 //  GameNameInputView.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// A text field for entering a game name with duplicate validation.
 import SwiftUI
 
-// MARK: - GameNameInputView
 struct GameNameInputView: View {
     @Binding var gameName: String
     @Binding var isGameNameDuplicate: Bool

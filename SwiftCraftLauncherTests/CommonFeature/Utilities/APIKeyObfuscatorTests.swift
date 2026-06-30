@@ -1,9 +1,14 @@
+//
+//  APIKeyObfuscatorTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class APIKeyObfuscatorTests: XCTestCase {
-
-    // MARK: - decryptClientID
 
     func testDecryptClientID_emptyString() {
         _ = Obfuscator.decryptClientID("")
@@ -15,8 +20,6 @@ final class APIKeyObfuscatorTests: XCTestCase {
         let result2 = Obfuscator.decryptClientID(input)
         XCTAssertEqual(result1, result2)
     }
-
-    // MARK: - decryptAPIKey
 
     func testDecryptAPIKey_consistentResults() {
         let input = "AAAAAAAA BBBBBBBB CCCCCCCC DDDDDDDD EEEEEEEE FFFFFFFF".replacingOccurrences(of: " ", with: "")

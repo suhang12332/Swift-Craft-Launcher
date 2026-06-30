@@ -1,13 +1,14 @@
 //
 //  ContentView.swift
-//  SwiftCraftLauncher
+//  MainFeature
 //
-//  Created by su on 2025/6/1.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import WebKit
 
+/// Primary content view that displays game or resource details based on the selected item.
 struct ContentView: View {
     @EnvironmentObject private var filterState: ResourceFilterState
     @EnvironmentObject private var detailState: ResourceDetailState

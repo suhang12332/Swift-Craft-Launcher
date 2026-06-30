@@ -1,9 +1,15 @@
+//
+//  ModScanner+Installation.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Mod installation status checking by file hash lookup.
 extension ModScanner {
-    // MARK: - 安装状态检查
-
-    /// 检查 mod 是否已安装
+    /// Returns whether the mod with the given hash is installed for the specified game.
     func checkModInstalledCore(
         hash: String,
         gameName: String
@@ -12,11 +18,11 @@ extension ModScanner {
         return cachedMods.contains(hash)
     }
 
-    /// 通用：根据文件 hash 判断资源是否已安装（适用于非 mod 资源目录）
+    /// Determines whether a resource is installed in the given directory based on its hash.
     /// - Parameters:
-    ///   - hash: 资源文件的 sha1 哈希
-    ///   - dir: 资源所在的本地目录（例如 resourcepack / shader / datapack 目录）
-    /// - Returns: 是否已安装（基于本地目录 hash 缓存）
+    ///   - hash: The SHA-1 hash of the resource file.
+    ///   - dir: The local directory containing the resource (for example, a resourcepack, shader, or datapack directory).
+    /// - Returns: `true` if the resource is installed, based on the directory hash cache.
     func isResourceInstalledByHash(
         _ hash: String,
         in dir: URL
@@ -32,7 +38,7 @@ extension ModScanner {
         }
     }
 
-    /// 获取目录下所有 jar/zip 文件及其 hash、缓存 detail（静默版本）
+    /// Returns all jar and zip files in the directory with their hashes and cached details.
     public func localModDetails(in dir: URL) -> [(
         file: URL, hash: String, detail: ModrinthProjectDetail?
     )] {
@@ -46,14 +52,14 @@ extension ModScanner {
         }
     }
 
-    /// 获取目录下所有 jar/zip 文件及其 hash、缓存 detail（抛出异常版本）
+    /// Returns all jar and zip files in the directory with their hashes and cached details, throwing on errors.
     public func localModDetailsThrowing(in dir: URL) throws -> [(
         file: URL, hash: String, detail: ModrinthProjectDetail?
     )] {
         return try scanDirectoryForDetails(in: dir)
     }
 
-    /// 同步：仅查缓存（通过文件hash检查）
+    /// Synchronously checks whether a mod is installed by consulting the cache.
     func isModInstalledSync(hash: String, in modsDir: URL) -> Bool {
         do {
             return try isModInstalledSyncThrowing(
@@ -68,7 +74,7 @@ extension ModScanner {
         }
     }
 
-    /// 同步：仅查缓存（抛出异常版本）
+    /// Synchronously checks whether a mod is installed, throwing on errors.
     func isModInstalledSyncThrowing(
         hash: String,
         in modsDir: URL
@@ -77,7 +83,6 @@ extension ModScanner {
             return false
         }
 
-        // 使用 DispatchSemaphore 在同步函数中等待异步结果
         let semaphore = DispatchSemaphore(value: 0)
         var result = false
 
@@ -90,7 +95,7 @@ extension ModScanner {
         return result
     }
 
-    /// 异步：仅查缓存（静默版本）
+    /// Asynchronously checks whether a mod is installed, returning the result via a completion handler.
     func isModInstalled(
         hash: String,
         in modsDir: URL,
@@ -114,7 +119,7 @@ extension ModScanner {
         }
     }
 
-    /// 异步：仅查缓存（抛出异常版本）
+    /// Asynchronously checks whether a mod is installed.
     func isModInstalledThrowing(
         hash: String,
         in modsDir: URL

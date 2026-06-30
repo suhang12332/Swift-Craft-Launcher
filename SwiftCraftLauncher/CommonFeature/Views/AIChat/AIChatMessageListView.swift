@@ -1,12 +1,13 @@
 //
 //  AIChatMessageListView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// AI 聊天消息列表视图
+/// Displays the scrollable list of chat messages.
 struct AIChatMessageListView: View {
     @ObservedObject var chatState: ChatState
     let currentPlayer: Player?
@@ -22,7 +23,7 @@ struct AIChatMessageListView: View {
         static let messageVerticalPadding: CGFloat = 2
         static let scrollDelay: TimeInterval = 0.1
         static let scrollAnimationDuration: TimeInterval = 0.3
-        static let scrollThrottleInterval: TimeInterval = 0.2 // 防抖间隔
+        static let scrollThrottleInterval: TimeInterval = 0.2
     }
 
     var body: some View {
@@ -30,7 +31,6 @@ struct AIChatMessageListView: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     if chatState.messages.isEmpty {
-                        // 空消息时显示欢迎语
                         VStack {
                             Spacer()
                             welcomeView
@@ -41,7 +41,6 @@ struct AIChatMessageListView: View {
                         LazyVStack(alignment: .leading, spacing: 12) {
                             messageListView
 
-                            // 只有当正在发送且最后一条 AI 消息为空时，才显示"正在思考"
                             if chatState.isSending,
                                let lastMessage = chatState.messages.last,
                                lastMessage.role == .assistant,
@@ -53,7 +52,6 @@ struct AIChatMessageListView: View {
                     }
                 }
                 .onChange(of: chatState.messages.count) { _, _ in
-                    // 新消息时滚动
                     scrollCoordinator.onMessagesCountChanged(
                         hasLastMessage: chatState.messages.last != nil
                     ) {
@@ -61,7 +59,6 @@ struct AIChatMessageListView: View {
                     }
                 }
                 .onChange(of: chatState.messages.last?.id) { _, _ in
-                    // 最后一条消息的 ID 变化时（新消息），重置内容长度跟踪并滚动
                     if let lastMessage = chatState.messages.last {
                         scrollCoordinator.onLastMessageChanged(
                             contentLength: lastMessage.content.count
@@ -79,7 +76,6 @@ struct AIChatMessageListView: View {
                     )
                 }
                 .onAppear {
-                    // 视图出现时，如果正在发送，启动定期滚动检查
                     scrollCoordinator.onAppearIfSending(
                         isSending: chatState.isSending,
                         scrollToBottom: { scrollToBottom(proxy: proxy) },
@@ -87,14 +83,11 @@ struct AIChatMessageListView: View {
                     )
                 }
                 .onDisappear {
-                    // 视图消失时，停止所有滚动任务
                     scrollCoordinator.onDisappear()
                 }
             }
         }
     }
-
-    // MARK: - View Components
 
     private var welcomeView: some View {
         VStack(spacing: 16) {
@@ -114,7 +107,6 @@ struct AIChatMessageListView: View {
 
     private var messageListView: some View {
         ForEach(chatState.messages) { message in
-            // 跳过正在发送的空 AI 消息（会显示加载指示器）
             if !(chatState.isSending && message.role == .assistant && message.content.isEmpty) {
                 MessageBubble(
                     message: message,
@@ -130,7 +122,6 @@ struct AIChatMessageListView: View {
 
     private var loadingIndicatorView: some View {
         HStack(alignment: .firstTextBaseline, spacing: Constants.messageSpacing) {
-            // 使用缓存的头像视图
             if let cachedAvatar = cachedAIAvatar {
                 cachedAvatar
             } else {

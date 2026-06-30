@@ -1,15 +1,14 @@
 //
 //  LitematicaDetailSheetView.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/20.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// Displays detailed metadata for a Litematica schematic file.
 import SwiftUI
 
-/// Litematica 投影详细信息视图
 struct LitematicaDetailSheetView: View {
-    // MARK: - Properties
     let filePath: URL
     let gameName: String
     @Environment(\.dismiss)
@@ -31,7 +30,6 @@ struct LitematicaDetailSheetView: View {
         self.litematicaService = litematicaService
     }
 
-    // MARK: - Body
     var body: some View {
         CommonSheetView(
             header: { headerView },
@@ -51,7 +49,6 @@ struct LitematicaDetailSheetView: View {
         }
     }
 
-    // MARK: - Header View
     private var headerView: some View {
         HStack {
             Text("litematica.detail.title".localized())
@@ -66,7 +63,6 @@ struct LitematicaDetailSheetView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    // MARK: - Body View
     private var bodyView: some View {
         Group {
             if isLoading {
@@ -108,7 +104,6 @@ struct LitematicaDetailSheetView: View {
         ScrollView {
             VStack {
                 HStack {
-                    // 基本信息
                     infoSection(title: "litematica.detail.section.basic".localized()) {
                         infoRow(label: "litematica.detail.field.name".localized(), value: metadata.name)
                         infoRow(label: "litematica.detail.field.author".localized(), value: metadata.author.isEmpty ? "common.unknown".localized() : metadata.author)
@@ -117,7 +112,6 @@ struct LitematicaDetailSheetView: View {
                         }
                     }
 
-                    // 时间信息
                     infoSection(title: "litematica.detail.section.time".localized()) {
                         VStack(alignment: .leading, spacing: 12) {
                             infoRow(label: "litematica.detail.field.created".localized(), value: formatTimestamp(metadata.timeCreated))
@@ -128,7 +122,6 @@ struct LitematicaDetailSheetView: View {
                 .padding(.vertical, 8)
                 .padding(.bottom, 20)
 
-                // 尺寸信息
                 infoSection(title: "litematica.detail.section.size".localized()) {
                     VStack(alignment: .leading, spacing: 12) {
                         let hasSize = metadata.enclosingSize.x > 0 || metadata.enclosingSize.y > 0 || metadata.enclosingSize.z > 0
@@ -189,14 +182,13 @@ struct LitematicaDetailSheetView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    // MARK: - Footer View
     private var footerView: some View {
         HStack {
 
             Label {
                 Text(filePath.lastPathComponent)
                     .lineLimit(1)
-                    .truncationMode(.middle) // 可选：中间省略，长路径更好看
+                    .truncationMode(.middle)
             } icon: {
                 Image(systemName: "square.stack.3d.up")
             }
@@ -213,7 +205,6 @@ struct LitematicaDetailSheetView: View {
         }
     }
 
-    // MARK: - Helper Methods
     private func loadMetadata() async {
         isLoading = true
         errorMessage = nil

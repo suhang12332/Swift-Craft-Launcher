@@ -1,14 +1,15 @@
 //
 //  GameFormViewExtensions.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// View extensions for game form state listening and common error handling.
 import SwiftUI
 
-// MARK: - Game Form View Extensions
 extension View {
-    /// 通用的游戏表单状态监听修饰符
+    /// A modifier that observes game form state changes and triggers parent updates.
     func gameFormStateListeners<T: BaseGameFormViewModel>(
         viewModel: T,
         triggerConfirm: Binding<Bool>,
@@ -45,7 +46,6 @@ extension View {
     }
 }
 
-// MARK: - Common Error Handling
 extension BaseGameFormViewModel {
     func handleFileAccessError(_ error: Error, context: String) {
         let globalError = GlobalError.fileSystem(

@@ -1,7 +1,14 @@
+//
+//  ContentToolbarView.swift
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 import MinecraftFriendsKit
 
-/// 内容区域工具栏内容
+/// Provides the primary toolbar content for the main content area.
 public struct ContentToolbarView: ToolbarContent {
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @State private var showingAddPlayerSheet = false
@@ -29,14 +36,10 @@ public struct ContentToolbarView: ToolbarContent {
         self.premiumAccountFlagManager = premiumAccountFlagManager
     }
 
-    // MARK: - Computed Properties
-
-    /// 当前玩家（计算属性，避免重复访问）
     private var currentPlayer: Player? {
         playerListViewModel.currentPlayer
     }
 
-    /// 是否为在线账户（计算属性）
     private var isCurrentPlayerOnline: Bool {
         currentPlayer?.isOnlineAccount ?? false
     }
@@ -60,7 +63,6 @@ public struct ContentToolbarView: ToolbarContent {
                     .presentationBackgroundInteraction(.automatic)
             }
             Spacer()
-            // 添加玩家按钮
             Button {
                 playerName = ""
                 isPlayerNameValid = false
@@ -102,7 +104,6 @@ public struct ContentToolbarView: ToolbarContent {
                     },
                     onYggdrasilLogin: { profile in
                         Logger.shared.debug("Yggdrasil 登录成功，用户: \(profile.name)")
-                        // 绑定该三方账号的认证/皮肤服务器基地址，供启动时注入 authlib-injector 使用
                         OfflineUserServerMap.setServer(profile, for: profile.id)
                         _ = playerListViewModel.addOnlinePlayer(profile: profile)
                         showingAddPlayerSheet = false
@@ -121,7 +122,6 @@ public struct ContentToolbarView: ToolbarContent {
                 )
             }
 
-            // 皮肤管理按钮 - 仅在线账户显示
             if isCurrentPlayerOnline {
                 Button {
                     Task {

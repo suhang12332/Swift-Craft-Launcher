@@ -1,35 +1,40 @@
+//
+//  LibraryFilter.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 统一的库过滤工具类
-/// 统一下载和 classpath 构建的库过滤逻辑
+/// Unified library filtering utilities for download and classpath construction.
 enum LibraryFilter {
 
-    /// 判断库是否被允许（基于平台规则）
+    /// Determines whether a library is allowed based on platform rules.
     /// - Parameters:
-    ///   - library: 要检查的库
-    ///   - minecraftVersion: Minecraft 版本号（可选）
-    /// - Returns: 是否允许
+    ///   - library: The library to check.
+    ///   - minecraftVersion: The Minecraft version string, if available.
+    /// - Returns: `true` if the library is allowed; `false` otherwise.
     static func isLibraryAllowed(_ library: Library, minecraftVersion: String? = nil) -> Bool {
-        // 检查系统规则（没有规则或空规则默认允许）
         guard let rules = library.rules, !rules.isEmpty else { return true }
         return MacRuleEvaluator.isAllowed(rules, minecraftVersion: minecraftVersion)
     }
 
-    /// 判断库是否应该下载
+    /// Determines whether a library should be downloaded.
     /// - Parameters:
-    ///   - library: 要检查的库
-    ///   - minecraftVersion: Minecraft 版本号（可选）
-    /// - Returns: 是否应该下载
+    ///   - library: The library to check.
+    ///   - minecraftVersion: The Minecraft version string, if available.
+    /// - Returns: `true` if the library should be downloaded; `false` otherwise.
     static func shouldDownloadLibrary(_ library: Library, minecraftVersion: String? = nil) -> Bool {
         guard library.downloadable else { return false }
         return isLibraryAllowed(library, minecraftVersion: minecraftVersion)
     }
 
-    /// 判断库是否应该包含在classpath中
+    /// Determines whether a library should be included in the classpath.
     /// - Parameters:
-    ///   - library: 要检查的库
-    ///   - minecraftVersion: Minecraft 版本号（可选）
-    /// - Returns: 是否应该包含在classpath中
+    ///   - library: The library to check.
+    ///   - minecraftVersion: The Minecraft version string, if available.
+    /// - Returns: `true` if the library should be included in the classpath; `false` otherwise.
     static func shouldIncludeInClasspath(_ library: Library, minecraftVersion: String? = nil) -> Bool {
         guard library.downloadable == true && library.includeInClasspath == true else {
             return false

@@ -1,3 +1,11 @@
+//
+//  GameLocalResourceListContent.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Displays a list of locally installed resources for a game.
 import SwiftUI
 
 struct GameLocalResourceListContent: View {

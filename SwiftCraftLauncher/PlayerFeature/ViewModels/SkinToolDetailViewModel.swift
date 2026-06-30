@@ -1,8 +1,16 @@
+//
+//  SkinToolDetailViewModel.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
 import SkinRenderKit
 
+/// Manages the state and operations for the skin tool detail view.
 @MainActor
 final class SkinToolDetailViewModel: ObservableObject {
     let skinLibraryStore: SkinLibraryStore
@@ -42,24 +50,24 @@ final class SkinToolDetailViewModel: ObservableObject {
     @Published var hasChanges = false
     @Published var currentSkinRenderImage: NSImage?
 
-    // MARK: - 缓存
+    /// Cached values for detecting skin and cape changes.
     var lastSelectedSkinData: Data?
     var lastCurrentModel: PlayerSkinService.PublicSkinInfo.SkinModel = .classic
     var lastSelectedCapeId: String?
     var lastCurrentActiveCapeId: String?
 
-    // MARK: - Tasks
     var loadCapeTask: Task<Void, Never>?
     var loadSkinImageTask: Task<Void, Never>?
     var downloadCapeTask: Task<Void, Never>?
     var resetSkinTask: Task<Void, Never>?
     var applyChangesTask: Task<Void, Never>?
 
-    // MARK: - Derived
+    /// The identifier of the currently active cape, or `nil`.
     var currentActiveCapeId: String? {
         PlayerSkinService.getActiveCapeId(from: playerProfile)
     }
 
+    /// The original skin model from the server, or `nil`.
     var originalModel: PlayerSkinService.PublicSkinInfo.SkinModel? {
         publicSkinInfo?.model
     }
@@ -93,8 +101,7 @@ final class SkinToolDetailViewModel: ObservableObject {
         clearAllData()
     }
 
-    // MARK: - Player & State
-
+    /// Returns a player with credentials loaded from the Keychain when needed.
     func playerWithCredentialIfNeeded(_ player: Player?) -> Player? {
         guard let p = player, p.isOnlineAccount else { return player }
         var copy = p
@@ -106,6 +113,7 @@ final class SkinToolDetailViewModel: ObservableObject {
         return copy
     }
 
+    /// Re-evaluates whether there are unsaved skin or cape changes.
     func updateHasChanges() {
         let skinDataChanged = selectedSkinData != lastSelectedSkinData
         let modelChanged = currentModel != lastCurrentModel
@@ -134,6 +142,7 @@ final class SkinToolDetailViewModel: ObservableObject {
         hasChanges = hasSkinChange || hasCapeChange
     }
 
+    /// Handles a cape selection change and initiates image loading.
     func handleCapeSelection(id: String?, imageURL: String?, resolvedPlayer: Player?) {
         loadCapeTask?.cancel()
         loadCapeTask = nil
@@ -157,6 +166,7 @@ final class SkinToolDetailViewModel: ObservableObject {
         updateHasChanges()
     }
 
+    /// Selects a skin from the library and updates the preview.
     func selectSkinLibraryItem(_ item: SkinLibraryItem) {
         let fileURL = item.fileURL
 

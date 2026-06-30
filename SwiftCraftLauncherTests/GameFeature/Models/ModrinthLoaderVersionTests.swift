@@ -1,9 +1,14 @@
+//
+//  ModrinthLoaderVersionTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModrinthLoaderVersionTests: XCTestCase {
-
-    // MARK: - LoaderInfo
 
     func testLoaderInfo_codable() throws {
         let json = """
@@ -27,8 +32,6 @@ final class ModrinthLoaderVersionTests: XCTestCase {
         XCTAssertEqual(info.id, "quilt")
         XCTAssertFalse(info.stable)
     }
-
-    // MARK: - LoaderVersion
 
     func testLoaderVersion_codable() throws {
         let json = """
@@ -67,8 +70,6 @@ final class ModrinthLoaderVersionTests: XCTestCase {
         XCTAssertFalse(version.stable)
         XCTAssertTrue(version.loaders.isEmpty)
     }
-
-    // MARK: - ModrinthLoaderVersion
 
     func testModrinthLoaderVersion_codable() throws {
         let json = """

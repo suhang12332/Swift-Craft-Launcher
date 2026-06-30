@@ -1,11 +1,13 @@
 //
 //  OverflowButton.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
-// MARK: - Overflow Button
+/// A button that displays an overflow count and shows a popover with additional items.
 struct OverflowButton<Content: View>: View {
     let count: Int
     @Binding var isPresented: Bool

@@ -1,6 +1,13 @@
+//
+//  SaveInfoModels.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-// MARK: - 世界信息模型
+/// A Minecraft world save.
 struct WorldInfo: Identifiable, Equatable {
     let id: String
     let name: String
@@ -8,10 +15,13 @@ struct WorldInfo: Identifiable, Equatable {
     let lastPlayed: Date?
     let gameMode: String?
     let difficulty: String?
-    /// 是否极限模式（不同版本字段位置不同，无法解析时为 false）
+
+    /// Whether the world is in hardcore mode.
     let hardcore: Bool
-    /// 是否允许作弊/指令（allowCommands），无法解析时为 false
+
+    /// Whether cheats and commands are enabled.
     let cheats: Bool
+
     let version: String?
     let seed: Int64?
 
@@ -39,7 +49,7 @@ struct WorldInfo: Identifiable, Equatable {
     }
 }
 
-// MARK: - 截图信息模型
+/// A screenshot taken in-game.
 struct ScreenshotInfo: Identifiable, Equatable {
     let id: String
     let name: String
@@ -56,7 +66,7 @@ struct ScreenshotInfo: Identifiable, Equatable {
     }
 }
 
-// MARK: - 日志信息模型
+/// A game log file entry.
 struct LogInfo: Identifiable, Equatable {
     let id: String
     let name: String
@@ -74,7 +84,8 @@ struct LogInfo: Identifiable, Equatable {
         self.isCrashLog = isCrashLog
     }
 }
-// MARK: - 世界详细信息模型
+
+/// Detailed metadata for a Minecraft world.
 struct WorldDetailMetadata {
     let levelName: String
     let folderName: String

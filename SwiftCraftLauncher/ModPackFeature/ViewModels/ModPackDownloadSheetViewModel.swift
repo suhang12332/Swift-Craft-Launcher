@@ -1,13 +1,15 @@
 //
 //  ModPackDownloadSheetViewModel.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
 //
-//  Created by su on 2025/8/3.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import Foundation
 import SwiftUI
 
-// MARK: - View Model
+/// Manages modpack download and installation state, including project details,
+/// version filtering, and progress tracking.
 @MainActor
 class ModPackDownloadSheetViewModel: ObservableObject {
     @Published var projectDetail: ModrinthProjectDetail?
@@ -16,13 +18,9 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     @Published var isLoadingModPackVersions = false
     @Published var isLoadingProjectDetails = true
     @Published var lastParsedIndexInfo: ModrinthIndexInfo?
-
-    // 整合包安装进度状态
     @Published var modPackInstallState = ModPackInstallState()
-
-    // 整合包文件下载进度状态
-    @Published var modPackDownloadProgress: Int64 = 0  // 已下载字节数
-    @Published var modPackTotalSize: Int64 = 0  // 总文件大小
+    @Published var modPackDownloadProgress: Int64 = 0
+    @Published var modPackTotalSize: Int64 = 0
 
     @Published var isProcessing = false
 
@@ -30,34 +28,21 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     private let downloadService = ModPackDownloadService()
     private lazy var installCoordinator = ModPackInstallCoordinator(downloadService: downloadService)
     private let errorHandler: GlobalErrorHandler
-    // MARK: - Memory Management
-    /// 清理不再需要的索引数据以释放内存
-    /// 在 ModPack 安装完成后调用
+
     func clearParsedIndexInfo() {
         lastParsedIndexInfo = nil
     }
 
-    /// 清理所有整合包导入相关的数据和临时文件
     func cleanupAllData() {
         cancelDownloadAndResetStates()
-
-        // 清理索引数据
         clearParsedIndexInfo()
-
-        // 清理项目详情数据
         projectDetail = nil
         availableGameVersions = []
         filteredModPackVersions = []
         allModPackVersions = []
-
-        // 清理安装状态
         modPackInstallState.reset()
-
-        // 清理下载进度
         modPackDownloadProgress = 0
         modPackTotalSize = 0
-
-        // 清理临时文件
         cleanupTempFiles()
     }
 
@@ -90,8 +75,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
             }
         }
     }
-
-    // MARK: - Download / Install Pipeline
 
     func beginDownloadAndInstall(
         selectedVersion: ModrinthProjectDetailVersion,
@@ -203,14 +186,12 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         return success
     }
 
-    /// 应用预加载的项目详情，避免在 sheet 内重复加载
     func applyPreloadedDetail(_ detail: ModrinthProjectDetail) {
         projectDetail = detail
         availableGameVersions = detail.gameVersions
         isLoadingProjectDetails = false
     }
 
-    // MARK: - Data Loading
     func loadProjectDetails(projectId: String) async {
         isLoadingProjectDetails = true
 
@@ -243,7 +224,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                     version.gameVersions.contains(gameVersion)
                 }
                 .sorted { version1, version2 in
-                    // 按发布日期排序，最新的在前
                     version1.datePublished > version2.datePublished
                 }
         } catch {
@@ -253,8 +233,6 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
         isLoadingModPackVersions = false
     }
-
-    // MARK: - File Operations
 
     func downloadModPackFile(
         file: ModrinthVersionFile,

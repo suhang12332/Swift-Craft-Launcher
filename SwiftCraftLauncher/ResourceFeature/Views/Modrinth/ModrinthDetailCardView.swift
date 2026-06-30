@@ -1,6 +1,14 @@
+//
+//  ModrinthDetailCardView.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// A layout container for a Modrinth project detail card.
 struct ModrinthDetailCardLayout<Icon: View, Title: View, Description: View, Tags: View, Trailing: View>: View {
     var contentOpacity: CGFloat = 1
     @ViewBuilder let icon: () -> Icon
@@ -27,6 +35,7 @@ struct ModrinthDetailCardLayout<Icon: View, Title: View, Description: View, Tags
     }
 }
 
+/// A placeholder icon used when the project icon is not available.
 struct ModrinthDetailCardPlaceholderIcon: View {
     var body: some View {
         Color.gray.opacity(0.2)
@@ -38,8 +47,8 @@ struct ModrinthDetailCardPlaceholderIcon: View {
     }
 }
 
+/// Displays a single Modrinth project as a card in search results.
 struct ModrinthDetailCardView: View {
-    // MARK: - Properties
     var project: ModrinthProject
     let selectedVersions: [String]
     let selectedLoaders: [String]
@@ -48,25 +57,23 @@ struct ModrinthDetailCardView: View {
     let type: Bool  // false = local, true = server
     @Binding var selectedItem: SidebarItem
     var onResourceChanged: (() -> Void)?
-    /// 本地资源启用/禁用状态变更回调（仅 local 列表使用）
+    /// Callback for local resource enable/disable state changes.
     var onLocalDisableStateChanged: ((ModrinthProject, Bool) -> Void)?
-    /// 更新成功回调：仅更新当前条目的 hash 与列表项，不全局扫描。参数 (projectId, oldFileName, newFileName, newHash)
+    /// Update callback: updates the current item's hash and list entry without a full scan. Parameters: (projectId, oldFileName, newFileName, newHash).
     var onResourceUpdated: ((String, String, String, String?) -> Void)?
-    @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找
+    @Binding var scannedDetailIds: Set<String> // detail IDs from the parent for fast lookup
     @State private var addButtonState: AddButtonState = .idle
     @State private var showDeleteAlert = false
-    @State private var isResourceDisabled: Bool = false  // 资源是否被禁用（用于置灰效果）
+    @State private var isResourceDisabled: Bool = false
     @EnvironmentObject private var gameRepository: GameRepository
 
-    // MARK: - Enums
     enum AddButtonState {
         case idle
         case loading
         case installed
-        case update  // 有新版本可用
+        case update
     }
 
-    // MARK: - Body
     var body: some View {
         ModrinthDetailCardLayout(
             contentOpacity: isResourceDisabled ? 0.5 : 1,
@@ -84,7 +91,6 @@ struct ModrinthDetailCardView: View {
         }
     }
 
-    // MARK: - View Components
     private var iconView: some View {
         Group {
             if project.projectId.hasPrefix("local_") || project.projectId.hasPrefix("file_") {
@@ -242,6 +248,7 @@ struct ModrinthDetailCardView: View {
     }
 }
 
+/// A tag chip for a Modrinth category.
 struct ModrinthDetailCardTagView: View {
     let text: String
 
@@ -255,6 +262,7 @@ struct ModrinthDetailCardTagView: View {
     }
 }
 
+/// A single info row with an icon and text.
 struct ModrinthDetailCardInfoRowView: View {
     let icon: String
     let text: String

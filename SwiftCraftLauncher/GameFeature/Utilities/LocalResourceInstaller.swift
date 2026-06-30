@@ -1,6 +1,13 @@
+//
+//  LocalResourceInstaller.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 工具类：负责将本地 jar/zip 文件导入到指定资源目录
+/// Installs local jar or zip files into the appropriate resource directory.
 enum LocalResourceInstaller {
     enum LocalResourceType {
         case mod, datapack, resourcepack
@@ -13,20 +20,19 @@ enum LocalResourceInstaller {
             }
         }
 
-        /// 支持的文件扩展名 - 统一支持 jar 和 zip
+        /// The file extensions that are allowed for this resource type.
         var allowedExtensions: [String] {
             return ["jar", "zip"]
         }
     }
 
-    /// 安装本地资源文件到指定目录
+    /// Installs a local resource file into the specified directory.
     /// - Parameters:
-    ///   - fileURL: 用户选中的本地文件
-    ///   - resourceType: 资源类型（mods/datapacks/resourcepacks）
-    ///   - gameRoot: 游戏根目录（如 .minecraft）
-    /// - Throws: GlobalError
+    ///   - fileURL: The local file selected by the user.
+    ///   - resourceType: The resource type (mods, datapacks, or resourcepacks).
+    ///   - gameRoot: The game root directory (e.g., `.minecraft`).
+    /// - Throws: A `GlobalError` if the file type is invalid, the destination is unavailable, or the copy fails.
     static func install(fileURL: URL, resourceType: LocalResourceType, gameRoot: URL) throws {
-        // 检查扩展名
         guard let ext = fileURL.pathExtension.lowercased() as String?,
               resourceType.allowedExtensions.contains(ext) else {
             throw GlobalError.resource(
@@ -36,7 +42,6 @@ enum LocalResourceInstaller {
             )
         }
 
-        // 目标目录
         var isDir: ObjCBool = false
         guard FileManager.default.fileExists(atPath: gameRoot.path, isDirectory: &isDir), isDir.boolValue else {
             throw GlobalError.fileSystem(
@@ -46,7 +51,6 @@ enum LocalResourceInstaller {
             )
         }
 
-        // 处理安全作用域
         let needsSecurity = fileURL.startAccessingSecurityScopedResource()
         defer { if needsSecurity { fileURL.stopAccessingSecurityScopedResource() } }
         if !needsSecurity {
@@ -57,10 +61,8 @@ enum LocalResourceInstaller {
             )
         }
 
-        // 目标文件路径
         let destURL = gameRoot.appendingPathComponent(fileURL.lastPathComponent)
 
-        // 如果已存在，先移除
         if FileManager.default.fileExists(atPath: destURL.path) {
             try? FileManager.default.removeItem(at: destURL)
         }

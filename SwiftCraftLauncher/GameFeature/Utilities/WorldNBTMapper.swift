@@ -1,10 +1,16 @@
+//
+//  WorldNBTMapper.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 与 Minecraft 世界存档（level.dat / world_gen_settings.dat 等）相关的通用 NBT 解析工具
+/// NBT parsing utilities for Minecraft world save files (level.dat, world_gen_settings.dat, and others).
 enum WorldNBTMapper {
-    // MARK: - 基本数值/布尔读取
 
-    /// 尝试将任意 NBT 数值类型统一转换为 Int64，兼容 Int/Int8/Int16/Int32/UInt 等
+    /// Attempts to convert any NBT numeric type to an `Int64`, supporting Int, Int8, Int16, Int32, UInt, and other variants.
     static func readInt64(_ any: Any?) -> Int64? {
         if let v = any as? Int64 { return v }
         if let v = any as? Int { return Int64(v) }
@@ -18,7 +24,7 @@ enum WorldNBTMapper {
         return nil
     }
 
-    /// 将 NBT 中的数值或布尔统一转换为 Bool（非 0 即 true），无法解析时返回 false
+    /// Converts an NBT numeric or boolean value to a `Bool` (non-zero is `true`), returning `false` if parsing fails.
     static func readBoolFlag(_ any: Any?) -> Bool {
         guard let any else { return false }
         if let b = any as? Bool { return b }
@@ -26,8 +32,7 @@ enum WorldNBTMapper {
         return false
     }
 
-    // MARK: - 游戏模式 / 难度
-
+    /// Returns a localized game mode string for the given integer value.
     static func mapGameMode(_ value: Int) -> String {
         switch value {
         case 0: return "saveinfo.world.game_mode.survival".localized()
@@ -38,6 +43,7 @@ enum WorldNBTMapper {
         }
     }
 
+    /// Returns a localized difficulty string for the given integer value.
     static func mapDifficulty(_ value: Int) -> String {
         switch value {
         case 0: return "saveinfo.world.difficulty.peaceful".localized()
@@ -48,7 +54,7 @@ enum WorldNBTMapper {
         }
     }
 
-    /// 将新版 difficulty_settings.difficulty（字符串）映射为本地化文本
+    /// Returns a localized difficulty string for the given difficulty_settings string value.
     static func mapDifficultyString(_ value: String) -> String {
         switch value.lowercased() {
         case "peaceful": return "saveinfo.world.difficulty.peaceful".localized()
@@ -59,19 +65,14 @@ enum WorldNBTMapper {
         }
     }
 
-    // MARK: - 种子读取
-
-    /// 从 level.dat 的 Data 标签和可选的 world 路径中解析种子
-    /// - 优先 RandomSeed
-    /// - 其次 WorldGenSettings/worldGenSettings.seed
-    /// - 最后（如有 worldPath）尝试 data/minecraft/world_gen_settings.dat -> data.seed
+    /// Reads the seed from a level.dat Data tag and an optional world path.
+    /// - Priority: RandomSeed, then WorldGenSettings/worldGenSettings.seed,
+    ///   then (if `worldPath` is provided) data/minecraft/world_gen_settings.dat -> data.seed.
     static func readSeed(from dataTag: [String: Any], worldPath: URL?) -> Int64? {
-        // 旧版：优先从 RandomSeed 读取
         if let seed = readInt64(dataTag["RandomSeed"]) {
             return seed
         }
 
-        // 其次：level.dat 中 WorldGenSettings / worldGenSettings.seed
         if let worldGenSettings = dataTag["WorldGenSettings"] as? [String: Any],
            let seed = readInt64(worldGenSettings["seed"]) {
             return seed
@@ -81,12 +82,11 @@ enum WorldNBTMapper {
             return seed
         }
 
-        // 新版：world_gen_settings.dat
         guard let worldPath else { return nil }
         return readSeedFromWorldGenSettings(worldPath: worldPath)
     }
 
-    /// 从 26+ 新版存档的 world_gen_settings.dat 读取 seed（路径: data/minecraft/world_gen_settings.dat）
+    /// Reads the seed from a 26+ format world_gen_settings.dat file at data/minecraft/world_gen_settings.dat.
     private static func readSeedFromWorldGenSettings(worldPath: URL) -> Int64? {
         let fm = FileManager.default
         let wgsPath = worldPath
@@ -98,7 +98,6 @@ enum WorldNBTMapper {
             let raw = try Data(contentsOf: wgsPath)
             let parser = NBTParser(data: raw)
             let nbt = try parser.parse()
-            // 新版文件结构：root = { DataVersion: ..., data: { seed: ... } }
             if let dataTag = nbt["data"] as? [String: Any],
                let seed = readInt64(dataTag["seed"]) {
                 return seed

@@ -1,3 +1,10 @@
+//
+//  SHA1CalculatorTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
@@ -25,8 +32,6 @@ final class SHA1CalculatorTests: XCTestCase {
         return tmpDir.appendingPathComponent(name)
     }
 
-    // MARK: - sha1(of:) Data
-
     func testSha1_ofData_knownValue() {
         let hash = SHA1Calculator.sha1(of: Data("hello".utf8))
         XCTAssertEqual(hash, "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d")
@@ -53,8 +58,6 @@ final class SHA1CalculatorTests: XCTestCase {
         XCTAssertEqual(SHA1Calculator.sha1(of: Data([0x00, 0xFF, 0x01, 0x02])).count, 40)
     }
 
-    // MARK: - sha1(ofFileAt:)
-
     func testSha1_ofFile_knownContent() throws {
         let file = tmpFile("test.txt")
         try Data("hello".utf8).write(to: file)
@@ -79,8 +82,6 @@ final class SHA1CalculatorTests: XCTestCase {
         XCTAssertThrowsError(try SHA1Calculator.sha1(ofFileAt: file))
     }
 
-    // MARK: - sha1WithCryptoKit
-
     func testSha1WithCryptoKit_knownValue() {
         let hash = SHA1Calculator.sha1WithCryptoKit(of: Data("hello".utf8))
         XCTAssertEqual(hash, "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d")
@@ -90,8 +91,6 @@ final class SHA1CalculatorTests: XCTestCase {
         let data = Data("test data".utf8)
         XCTAssertEqual(SHA1Calculator.sha1(of: data), SHA1Calculator.sha1WithCryptoKit(of: data))
     }
-
-    // MARK: - Data.sha1 extension
 
     func testDataSha1_extension() {
         let data = Data("hello".utf8)

@@ -1,21 +1,25 @@
+//
+//  ScreenshotSectionView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Displays screenshots as selectable chips with thumbnail and detail views.
 import SwiftUI
 import AppKit
 
-// MARK: - Constants
 private enum ScreenshotSectionConstants {
     static let thumbnailSize: CGFloat = 60
 }
 
-// MARK: - 截图信息区域视图
 struct ScreenshotSectionView: View {
-    // MARK: - Properties
     let screenshots: [ScreenshotInfo]
     let isLoading: Bool
     let gameName: String
 
     @State private var selectedScreenshot: ScreenshotInfo?
 
-    // MARK: - Body
     var body: some View {
         GenericSectionView(
             title: "saveinfo.screenshots",
@@ -30,7 +34,6 @@ struct ScreenshotSectionView: View {
         }
     }
 
-    // MARK: - Chip Builder
     private func screenshotChip(for screenshot: ScreenshotInfo) -> some View {
         FilterChip(
             title: screenshot.name,
@@ -44,7 +47,7 @@ struct ScreenshotSectionView: View {
     }
 }
 
-// MARK: - Screenshot Thumbnail
+/// A thumbnail button that lazily loads and displays a screenshot image.
 struct ScreenshotThumbnail: View {
     let screenshot: ScreenshotInfo
     let action: () -> Void
@@ -83,7 +86,7 @@ struct ScreenshotThumbnail: View {
     }
 }
 
-// MARK: - Screenshot Detail View
+/// A detail sheet for viewing a full-size screenshot with metadata.
 struct ScreenshotDetailView: View {
     let screenshot: ScreenshotInfo
     let gameName: String
@@ -141,7 +144,7 @@ struct ScreenshotDetailView: View {
     }
 }
 
-// MARK: - Screenshot Image View
+/// An image view that loads and displays a screenshot from a file URL.
 struct ScreenshotImageView: View {
     let path: URL
     @StateObject private var viewModel = ScreenshotImageViewModel()

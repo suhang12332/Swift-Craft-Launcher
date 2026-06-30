@@ -1,15 +1,26 @@
+//
+//  PlayerUtils.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import CryptoKit
 import SwiftUI
 
-/// 玩家工具类
+/// Provides utility functions for player identity operations.
 enum PlayerUtils {
-    // MARK: - Constants
-
     private static let names = ["alex", "ari", "efe", "kai", "makena", "noor", "steve", "sunny", "zuri"]
     private static let offlinePrefix = "OfflinePlayer:"
 
-    // MARK: - UUID Generation
-
+    /// Generates an offline-mode UUID for the given username.
+    ///
+    /// The UUID is derived from an MD5 hash of the string `"OfflinePlayer:<username>"`
+    /// and formatted according to RFC 4122 (version 3).
+    ///
+    /// - Parameter username: The player's username.
+    /// - Returns: A 32-character hex UUID string without hyphens.
+    /// - Throws: A `GlobalError` if the username is empty or encoding fails.
     static func generateOfflineUUID(for username: String) throws -> String {
         guard !username.isEmpty else {
             throw GlobalError.player(
@@ -28,16 +39,18 @@ enum PlayerUtils {
         }
 
         var bytes = [UInt8](Insecure.MD5.hash(data: data))
-        bytes[6] = (bytes[6] & 0x0F) | 0x30 // 版本3
-        bytes[8] = (bytes[8] & 0x3F) | 0x80 // RFC 4122
+        bytes[6] = (bytes[6] & 0x0F) | 0x30
+        bytes[8] = (bytes[8] & 0x3F) | 0x80
         let uuid = bytes.withUnsafeBytes { UUID(uuid: $0.load(as: uuid_t.self)) }
         let uuidString = uuid.uuidString.lowercased()
         Logger.shared.debug("生成离线 UUID - 用户名：\(username), UUID：\(uuidString)")
         return uuidString.replacingOccurrences(of: "-", with: "")
     }
 
-    // MARK: - Avatar Name Generation
-
+    /// Returns a default avatar name for the given UUID.
+    ///
+    /// - Parameter uuid: The player's UUID string.
+    /// - Returns: An avatar asset name, or `nil` if the UUID is invalid.
     static func avatarName(for uuid: String) -> String? {
         guard let index = nameIndex(for: uuid) else {
             Logger.shared.warning("无法获取头像名称 - 无效的UUID: \(uuid)")

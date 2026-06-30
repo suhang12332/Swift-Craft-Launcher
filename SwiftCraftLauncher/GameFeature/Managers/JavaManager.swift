@@ -1,6 +1,13 @@
+//
+//  JavaManager.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// Java管理器
+/// Manages local Java runtime installation, validation, and discovery.
 class JavaManager {
     static let shared = JavaManager()
 
@@ -18,12 +25,10 @@ class JavaManager {
     func findJavaExecutable(version: String) -> String {
         let javaPath = getJavaExecutablePath(version: version)
 
-        // 检查文件是否存在
         guard fileManager.fileExists(atPath: javaPath) else {
             return ""
         }
 
-        // 验证Java是否能正常启动
         guard canJavaRun(at: javaPath) else {
             return ""
         }
@@ -31,7 +36,7 @@ class JavaManager {
         return javaPath
     }
 
-    /// `runtime` 目录下已安装的组件名（排除 Legacy / Alpha / Beta）。
+    /// Lists installed runtime component names in the runtime directory, excluding legacy and pre-release versions.
     func listInstalledRuntimeComponents() -> [String] {
         let base = AppPaths.runtimeDirectory
         guard let names = try? fileManager.contentsOfDirectory(atPath: base.path) else {
@@ -54,7 +59,6 @@ class JavaManager {
         process.executableURL = URL(fileURLWithPath: javaPath)
         process.arguments = ["-version"]
 
-        // 设置输出管道以捕获输出
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = pipe
@@ -77,9 +81,9 @@ class JavaManager {
         }
     }
 
-    /// 获取指定 Java 可执行文件的 `java --version` 输出
-    /// - Parameter javaPath: Java 可执行文件路径
-    /// - Returns: 完整输出字符串（stdout + stderr），获取失败时返回 nil
+    /// Returns the output of `java --version` for the specified executable.
+    /// - Parameter javaPath: The path to the Java executable.
+    /// - Returns: The combined stdout and stderr output, or `nil` if execution fails.
     func getJavaVersionInfo(at javaPath: String) -> String? {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: javaPath)
@@ -104,7 +108,9 @@ class JavaManager {
         }
     }
 
-    // 检查Java是否存在，不存在则使用进度窗口下载
+    /// Ensures a Java runtime exists for the specified version, downloading if necessary.
+    /// - Parameter version: The Java version component name.
+    /// - Returns: The path to the Java executable, or an empty string if unavailable.
     func ensureJavaExists(version: String) async -> String {
         let existingPath = findJavaExecutable(version: version)
         if !existingPath.isEmpty {
@@ -112,12 +118,10 @@ class JavaManager {
             return existingPath
         }
 
-        // 如果不存在，则使用进度窗口下载Java运行时
         Logger.shared.info("Java版本 \(version) 不存在，开始下载...")
         await javaDownloadManager.downloadJavaRuntime(version: version)
         Logger.shared.info("Java版本 \(version) 下载完成")
 
-        // 下载完成后再次尝试获取 Java 路径
         let newPath = findJavaExecutable(version: version)
         if newPath.isEmpty {
             Logger.shared.error("Java版本 \(version) 下载完成后仍无法找到可用的Java可执行文件")
@@ -127,11 +131,9 @@ class JavaManager {
 
     func findDefaultJavaPath(for gameVersion: String) async -> String {
         do {
-            // 查询缓存的版本文件获取manifest
             let manifest = try await ModrinthService.fetchVersionInfo(from: gameVersion)
             let component = manifest.javaVersion.component
 
-            // 使用component拼接Java路径（不验证）
             return getJavaExecutablePath(version: component)
         } catch {
             Logger.shared.error("获取游戏版本信息失败: \(error.localizedDescription)")

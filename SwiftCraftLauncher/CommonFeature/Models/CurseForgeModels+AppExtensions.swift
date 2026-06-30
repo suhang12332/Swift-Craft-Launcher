@@ -1,6 +1,14 @@
+//
+//  CurseForgeModels+AppExtensions.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 extension CurseForgeClassId {
+    /// The filesystem directory name corresponding to this content type.
     var directoryName: String {
         switch self {
         case .mods:
@@ -12,16 +20,17 @@ extension CurseForgeClassId {
         case .datapacks:
             return AppConstants.DirectoryNames.datapacks
         case .modpacks:
-            // 整合包不属于单一资源目录，这里仅提供一个占位目录名
             return "modpacks"
         }
     }
 }
 
 extension CurseForgeModDetail {
+    /// The filesystem directory name derived from the content type.
     var directoryName: String {
         contentType?.directoryName ?? AppConstants.DirectoryNames.mods
     }
+    /// The project type string (mod, resourcepack, shader, datapack, or modpack).
     var projectType: String {
         switch contentType {
         case .mods:

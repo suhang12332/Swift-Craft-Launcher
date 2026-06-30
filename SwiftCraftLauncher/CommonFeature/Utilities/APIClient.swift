@@ -1,6 +1,13 @@
+//
+//  APIClient.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 统一的 API 客户端
+/// Provides convenience methods for making HTTP requests.
 enum APIClient {
     enum Header {
         static let accept = "Accept"
@@ -56,12 +63,12 @@ enum APIClient {
         static let connect = "CONNECT"
     }
 
-    /// 执行 GET 请求
+    /// Performs a GET request.
     /// - Parameters:
-    ///   - url: 请求 URL
-    ///   - headers: 可选的请求头
-    /// - Returns: 响应数据
-    /// - Throws: GlobalError 当请求失败时
+    ///   - url: The URL to request.
+    ///   - headers: Optional additional HTTP headers.
+    /// - Returns: The response data.
+    /// - Throws: A ``GlobalError`` if the request fails.
     static func get(
         url: URL,
         headers: [String: String]? = nil
@@ -74,13 +81,14 @@ enum APIClient {
         return try await performRequest(request: request)
     }
 
-    /// 执行 POST 请求
+    /// Performs a POST request.
     /// - Parameters:
-    ///   - url: 请求 URL
-    ///   - body: 请求体数据
-    ///   - headers: 可选的请求头（如果包含 Content-Type，将使用提供的值，否则默认为 application/json）
-    /// - Returns: 响应数据
-    /// - Throws: GlobalError 当请求失败时
+    ///   - url: The URL to request.
+    ///   - body: The request body data.
+    ///   - headers: Optional additional HTTP headers. If the headers include a `Content-Type`,
+    ///     the provided value is used; otherwise, `application/json` is set as the default.
+    /// - Returns: The response data.
+    /// - Throws: A ``GlobalError`` if the request fails.
     static func post(
         url: URL,
         body: Data? = nil,
@@ -110,7 +118,7 @@ enum APIClient {
         return try await performRequest(request: request)
     }
 
-    /// 执行 PUT 请求
+    /// Performs a PUT request.
     static func put(
         url: URL,
         body: Data? = nil,
@@ -119,7 +127,7 @@ enum APIClient {
         try await requestData(url: url, method: HTTPMethods.put, body: body, headers: headers)
     }
 
-    /// 执行 DELETE 请求
+    /// Performs a DELETE request.
     static func delete(
         url: URL,
         headers: [String: String]? = nil
@@ -127,8 +135,8 @@ enum APIClient {
         try await requestData(url: url, method: HTTPMethods.delete, headers: headers)
     }
 
-    /// 执行 GET 请求，不检查状态码，返回 (Data, statusCode)
-    /// 用于需要在非200时仍解析响应体的场景
+    /// Performs a GET request without checking the status code, returning the data and status code as a tuple.
+    /// Use this when the response body needs to be parsed even if the status code is not 200.
     static func getUnchecked(
         url: URL,
         headers: [String: String]? = nil
@@ -139,8 +147,8 @@ enum APIClient {
         return try await performRequestUnchecked(request: request)
     }
 
-    /// 执行 POST 请求，不检查状态码，返回 (Data, statusCode)
-    /// 用于需要在非200时仍解析响应体的场景
+    /// Performs a POST request without checking the status code, returning the data and status code as a tuple.
+    /// Use this when the response body needs to be parsed even if the status code is not 200.
     static func postUnchecked(
         url: URL,
         body: Data? = nil,
@@ -170,15 +178,15 @@ enum APIClient {
         return try await performRequestUnchecked(request: request)
     }
 
-    /// 执行请求并返回解码后的对象
+    /// Performs a request and returns the decoded object.
     /// - Parameters:
-    ///   - url: 请求 URL
-    ///   - method: HTTP 方法
-    ///   - body: 请求体数据
-    ///   - headers: 可选的请求头
-    ///   - decoder: JSON 解码器（可选，默认使用共享解码器）
-    /// - Returns: 解码后的对象
-    /// - Throws: GlobalError 当请求失败时
+    ///   - url: The URL to request.
+    ///   - method: The HTTP method to use.
+    ///   - body: The request body data.
+    ///   - headers: Optional additional HTTP headers.
+    ///   - decoder: The JSON decoder to use. If `nil`, the shared decoder is used.
+    /// - Returns: The decoded object.
+    /// - Throws: A ``GlobalError`` if the request fails, or a ``DecodingError`` if decoding fails.
     static func request<T: Decodable>(
         url: URL,
         method: String = "GET",
@@ -195,14 +203,14 @@ enum APIClient {
         return try (decoder ?? sharedDecoder).decode(T.self, from: data)
     }
 
-    /// 执行请求并返回原始数据
+    /// Performs a request and returns the raw response data.
     /// - Parameters:
-    ///   - url: 请求 URL
-    ///   - method: HTTP 方法
-    ///   - body: 请求体数据
-    ///   - headers: 可选的请求头
-    /// - Returns: 响应数据
-    /// - Throws: GlobalError 当请求失败时
+    ///   - url: The URL to request.
+    ///   - method: The HTTP method to use.
+    ///   - body: The request body data.
+    ///   - headers: Optional additional HTTP headers.
+    /// - Returns: The response data.
+    /// - Throws: A ``GlobalError`` if the request fails.
     static func requestData(
         url: URL,
         method: String = HTTPMethods.get,
@@ -222,10 +230,7 @@ enum APIClient {
         return try await performRequest(request: request)
     }
 
-    /// 执行请求（内部方法）
-    /// - Parameter request: URLRequest
-    /// - Returns: 响应数据
-    /// - Throws: GlobalError 当请求失败时
+    /// Executes a URL request and returns the response data.
     private static func performRequest(request: URLRequest) async throws -> Data {
         let (data, response) = try await sharedSession.data(for: request)
 
@@ -248,7 +253,7 @@ enum APIClient {
         return data
     }
 
-    /// 执行请求（不检查状态码），返回 (Data, statusCode)
+    /// Executes a URL request without status code validation, returning the data and status code.
     private static func performRequestUnchecked(request: URLRequest) async throws -> (Data, Int) {
         let (data, response) = try await sharedSession.data(for: request)
 
@@ -262,10 +267,7 @@ enum APIClient {
         return (data, httpResponse.statusCode)
     }
 
-    /// 执行流式请求并返回字节流与响应
-    /// - Parameter request: URLRequest
-    /// - Returns: (流式字节, HTTP响应)
-    /// - Throws: GlobalError 当响应无效时
+    /// Executes a streaming request and returns the async bytes and response.
     static func performStreamRequest(request: URLRequest) async throws -> (URLSession.AsyncBytes, HTTPURLResponse) {
         let (asyncBytes, response) = try await sharedSession.bytes(for: request)
 

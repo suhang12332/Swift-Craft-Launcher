@@ -1,21 +1,29 @@
 //
 //  NBTParser+Write.swift
-//  SwiftCraftLauncher
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
 extension NBTParser {
 
+    /// Writes a single byte to the output buffer.
+    /// - Parameter value: The byte to write.
     func writeByte(_ value: UInt8) {
         outputData.append(value)
     }
 
+    /// Writes a big-endian 16-bit unsigned integer.
+    /// - Parameter value: The value to write.
     func writeShort(_ value: UInt16) {
         outputData.append(UInt8((value >> 8) & 0xFF))
         outputData.append(UInt8(value & 0xFF))
     }
 
+    /// Writes a big-endian 32-bit signed integer.
+    /// - Parameter value: The value to write.
     func writeInt(_ value: Int32) {
         outputData.append(UInt8((value >> 24) & 0xFF))
         outputData.append(UInt8((value >> 16) & 0xFF))
@@ -23,6 +31,8 @@ extension NBTParser {
         outputData.append(UInt8(value & 0xFF))
     }
 
+    /// Writes a big-endian 64-bit signed integer.
+    /// - Parameter value: The value to write.
     func writeLong(_ value: Int64) {
         outputData.append(UInt8((value >> 56) & 0xFF))
         outputData.append(UInt8((value >> 48) & 0xFF))
@@ -34,6 +44,8 @@ extension NBTParser {
         outputData.append(UInt8(value & 0xFF))
     }
 
+    /// Writes a length-prefixed UTF-8 string.
+    /// - Parameter value: The string to write.
     func writeString(_ value: String) {
         let stringData = value.data(using: .utf8) ?? Data()
         let length = UInt16(stringData.count)
@@ -41,18 +53,25 @@ extension NBTParser {
         outputData.append(stringData)
     }
 
+    /// Writes a big-endian 32-bit IEEE 754 float.
+    /// - Parameter value: The value to write.
     func writeFloat(_ value: Float) {
         let bitPattern = value.bitPattern
         let intValue = Int32(bitPattern: bitPattern)
         writeInt(intValue)
     }
 
+    /// Writes a big-endian 64-bit IEEE 754 double.
+    /// - Parameter value: The value to write.
     func writeDouble(_ value: Double) {
         let bitPattern = value.bitPattern
         let longValue = Int64(bitPattern: bitPattern)
         writeLong(longValue)
     }
 
+    /// Writes a compound tag containing name-value pairs, terminated by an end tag.
+    /// - Parameter compound: The dictionary of tag names to values.
+    /// - Throws: A `GlobalError` if a value cannot be encoded.
     func writeCompound(_ compound: [String: Any]) throws {
         for (name, value) in compound {
             let tagType = try inferNBTType(from: value)
@@ -63,6 +82,11 @@ extension NBTParser {
         writeByte(NBTType.end.rawValue)
     }
 
+    /// Writes a single tag value of the specified type.
+    /// - Parameters:
+    ///   - type: The NBT tag type.
+    ///   - value: The value to encode.
+    /// - Throws: A `GlobalError` if the value cannot be converted to the specified type.
     func writeTagValue(type: NBTType, value: Any) throws {
         switch type {
         case .byte:
@@ -197,6 +221,9 @@ extension NBTParser {
         }
     }
 
+    /// Writes a list tag containing homogeneous elements.
+    /// - Parameter value: An array of values of the same type.
+    /// - Throws: A `GlobalError` if an element type cannot be inferred or encoded.
     func writeList(_ value: Any) throws {
         guard let array = value as? [Any], !array.isEmpty else {
             writeByte(NBTType.end.rawValue)
@@ -213,6 +240,9 @@ extension NBTParser {
         }
     }
 
+    /// Infers the NBT tag type from a Swift value.
+    /// - Parameter value: The value to inspect.
+    /// - Returns: The inferred `NBTType`.
     func inferNBTType(from value: Any) throws -> NBTType {
         switch value {
         case is Bool, is Int8:

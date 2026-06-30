@@ -1,24 +1,36 @@
+//
+//  GameRepository.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Combine
 import Foundation
 
-/// 游戏版本信息仓库
+/// A repository that manages the persistence and retrieval of game version information.
+///
+/// `GameRepository` serves as the primary data access layer for game instances,
+/// coordinating between the local SQLite database and the in-memory cache.
 class GameRepository: ObservableObject {
-    // MARK: - Properties
 
-    /// 按工作路径分组的游戏列表，键为工作路径，值为游戏数组
+    /// A dictionary of game instances keyed by their working path.
     @Published private(set) var gamesByWorkingPath: [String: [GameVersionInfo]] = [:]
 
-    /// 按工作路径分组的损坏游戏名称列表（数据库或文件夹缺失）
+    /// A dictionary of corrupted game names keyed by their working path.
+    ///
+    /// A game is considered corrupted when its database record and local directory
+    /// are inconsistent.
     @Published private(set) var corruptedGamesByWorkingPath: [String: [String]] = [:]
 
-    /// 数据库中所有工作路径及对应游戏数量（用于设置页快速切换）
+    /// All working paths and their associated game counts from the database.
     @Published private(set) var workingPathOptions: [(path: String, count: Int)] = []
 
     var games: [GameVersionInfo] {
         gamesByWorkingPath[currentWorkingPath] ?? []
     }
 
-    /// 当前工作路径下的损坏游戏名称列表
+    /// The corrupted game names for the current working path.
     var corruptedGames: [String] {
         corruptedGamesByWorkingPath[currentWorkingPath] ?? []
     }
@@ -39,8 +51,12 @@ class GameRepository: ObservableObject {
 
     @Published var workingPathChanged: Bool = false
 
-    // MARK: - Initialization
-
+    /// Creates a game repository.
+    ///
+    /// - Parameters:
+    ///   - workingPathProvider: The provider for the current working path.
+    ///   - errorHandler: The handler for global errors.
+    ///   - modScanner: The scanner for mod directories.
     init(
         workingPathProvider: WorkingPathProviding = AppServices.generalSettingsManager,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
@@ -59,7 +75,6 @@ class GameRepository: ObservableObject {
         }
     }
 
-    /// 初始化数据库
     private func initializeDatabase() async throws {
         let dataDir = AppPaths.dataDirectory
         try? FileManager.default.createDirectory(at: dataDir, withIntermediateDirectories: true)
@@ -71,13 +86,9 @@ class GameRepository: ObservableObject {
         workingPathCancellable?.cancel()
     }
 
-    /// 设置工作路径变化观察者
     private func setupWorkingPathObserver() {
         lastWorkingPath = currentWorkingPath
 
-        // 使用注入的 WorkingPathProviding 监听工作路径变化
-        // 使用 debounce 避免频繁触发
-        // 使用 skip(1) 跳过订阅时的初始值，只响应后续的变化
         workingPathCancellable = workingPathProvider.workingPathWillChange
             .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
             .sink { [weak self] _ in
@@ -86,7 +97,6 @@ class GameRepository: ObservableObject {
                 if newPath != self.lastWorkingPath {
                     self.lastWorkingPath = newPath
                     self.workingPathChanged = true
-                    // 取消上一个切换任务
                     self.workspaceSwitchTask?.cancel()
                     self.workspaceSwitchTask = Task { @MainActor in
                         do {
@@ -106,8 +116,7 @@ class GameRepository: ObservableObject {
             }
     }
 
-    // MARK: - Public Methods
-
+    /// Loads initial data if it has not already been loaded.
     @MainActor
     func loadInitialDataIfNeeded() async {
         if hasLoadedInitialData {
@@ -139,7 +148,7 @@ class GameRepository: ObservableObject {
         initialLoadTask = nil
     }
 
-    /// 重新加载所有工作路径及其游戏数量
+    /// Reloads all working paths and their game counts.
     func refreshWorkingPathOptions() async {
         let options = await fetchAllWorkingPathsWithCounts()
         await MainActor.run {
@@ -211,7 +220,9 @@ class GameRepository: ObservableObject {
         }
     }
 
-    /// 删除当前工作路径下指定名称的所有游戏（用于删除损坏游戏）
+    /// Deletes all games with the specified name in the current working path.
+    ///
+    /// - Parameter gameName: The name of the games to delete.
     func deleteGamesByName(_ gameName: String) async throws {
         let workingPath = currentWorkingPath
         try await Task.detached(priority: .userInitiated) {
@@ -266,7 +277,7 @@ class GameRepository: ObservableObject {
                 self.errorHandler.handle(error)
             }
         }
-        return true // Note: This will always return true since the operation is async
+        return true
     }
 
     func updateGameLastPlayed(id: String, lastPlayed: Date = Date()) async throws {
@@ -302,7 +313,7 @@ class GameRepository: ObservableObject {
                 self.errorHandler.handle(error)
             }
         }
-        return true // Note: This will always return true since the operation is async
+        return true
     }
 
     func updateJavaPath(id: String, javaPath: String) async throws {
@@ -327,7 +338,7 @@ class GameRepository: ObservableObject {
                 self.errorHandler.handle(error)
             }
         }
-        return true // Note: This will always return true since the operation is async
+        return true
     }
 
     func updateJvmArguments(id: String, jvmArguments: String) async throws {
@@ -352,7 +363,7 @@ class GameRepository: ObservableObject {
                 self.errorHandler.handle(error)
             }
         }
-        return true // Note: This will always return true since the operation is async
+        return true
     }
 
     func updateMemorySize(id: String, xms: Int, xmx: Int) async throws {
@@ -364,7 +375,6 @@ class GameRepository: ObservableObject {
             )
         }
 
-        // 验证内存参数
         guard xms > 0 && xmx > 0 && xms <= xmx else {
             throw GlobalError.validation(
                 chineseMessage: "无效的内存参数：xms=\(xms), xmx=\(xmx)",
@@ -387,17 +397,13 @@ class GameRepository: ObservableObject {
                 self.errorHandler.handle(error)
             }
         }
-        return true // Note: This will always return true since the operation is async
+        return true
     }
 
-    // MARK: - Private Methods
-
-    /// 从 UserDefaults 加载游戏列表（静默版本）
     func loadGames() {
         loadGamesSafely()
     }
 
-    /// 从 UserDefaults 加载游戏列表（静默版本）
     private func loadGamesSafely() {
         Task {
             do {
@@ -413,12 +419,10 @@ class GameRepository: ObservableObject {
         }
     }
 
-    // 异步扫描所有游戏的 mods 目录
     private func scanAllGamesModsDirectory() async {
         let games = games
         Logger.shared.info("开始扫描 \(games.count) 个游戏的 mods 目录")
 
-        // 并发扫描所有游戏
         await withTaskGroup(of: Void.self) { group in
             for game in games {
                 group.addTask {
@@ -430,7 +434,7 @@ class GameRepository: ObservableObject {
         Logger.shared.info("完成所有游戏的 mods 目录扫描")
     }
 
-    /// 获取数据库中所有工作路径及其游戏数量（用于设置页快速切换，SQL GROUP BY 实现）
+    /// Fetches all working paths with their game counts from the database.
     func fetchAllWorkingPathsWithCounts() async -> [(path: String, count: Int)] {
         let currentPath = currentWorkingPath
         let rows: [(path: String, count: Int)]
@@ -450,7 +454,6 @@ class GameRepository: ObservableObject {
         return result
     }
 
-    // 只加载当前工作路径的游戏（数据库与目录扫描在后台执行，避免主线程阻塞）
     func loadGamesThrowing() async throws {
         let workingPath = currentWorkingPath
 
@@ -464,7 +467,6 @@ class GameRepository: ObservableObject {
             do {
                 if fm.fileExists(atPath: profileRootDir.path) {
                     let contents = try fm.contentsOfDirectory(atPath: profileRootDir.path)
-                    // 过滤掉 .DS_Store 等隐藏文件，避免被当成游戏目录
                     let filtered = contents.filter { !$0.hasPrefix(".") }
                     localGameNames = Set(filtered)
                 } else {

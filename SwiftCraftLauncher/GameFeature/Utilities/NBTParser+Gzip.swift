@@ -1,12 +1,18 @@
 //
 //  NBTParser+Gzip.swift
-//  SwiftCraftLauncher
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
 extension NBTParser {
 
+    /// Decompresses gzip-compressed data using the system `gunzip` utility.
+    /// - Parameter data: The gzip-compressed data.
+    /// - Throws: A `GlobalError` if the input is empty, the process fails, or the output is empty.
+    /// - Returns: The decompressed data.
     func decompressGzip(data: Data) throws -> Data {
         guard !data.isEmpty else {
             throw GlobalError.fileSystem(
@@ -68,6 +74,10 @@ extension NBTParser {
         return decompressedData
     }
 
+    /// Compresses data using the system `gzip` utility.
+    /// - Parameter data: The data to compress.
+    /// - Throws: A `GlobalError` if the input is empty, the process fails, or the output is empty.
+    /// - Returns: The gzip-compressed data.
     func compressGzip(data: Data) throws -> Data {
         guard !data.isEmpty else {
             throw GlobalError.fileSystem(

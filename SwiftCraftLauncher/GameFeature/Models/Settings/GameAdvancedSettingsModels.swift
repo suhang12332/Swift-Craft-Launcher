@@ -1,5 +1,13 @@
+//
+//  GameAdvancedSettingsModels.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Java garbage collector options available for game configuration.
 enum GarbageCollector: String, CaseIterable {
     case g1gc = "g1gc"
     case zgc = "zgc"
@@ -7,21 +15,23 @@ enum GarbageCollector: String, CaseIterable {
     case parallel = "parallel"
     case serial = "serial"
 
-    /// 垃圾回收器所需的最低 Java 版本
+    /// The minimum Java major version required by this garbage collector.
     var minimumJavaVersion: Int {
         switch self {
-        case .g1gc: return 7       // Java 7+ (G1GC 在 Java 7u4+ 可用)
-        case .parallel: return 1   // Java 1.0+ (所有版本都支持)
-        case .serial: return 1     // Java 1.0+ (所有版本都支持)
-        case .zgc: return 11       // Java 11+ (ZGC 在 Java 11 引入)
-        case .shenandoah: return 12 // Java 12+ (Shenandoah 在 Java 12 引入)
+        case .g1gc: return 7
+        case .parallel: return 1
+        case .serial: return 1
+        case .zgc: return 11
+        case .shenandoah: return 12
         }
     }
 
+    /// Returns whether the given Java version supports this garbage collector.
     func isSupported(by javaVersion: Int) -> Bool {
         javaVersion >= minimumJavaVersion
     }
 
+    /// The localized display name for this garbage collector.
     var displayName: String {
         switch self {
         case .g1gc: return "settings.game.java.gc.g1gc".localized()
@@ -32,6 +42,7 @@ enum GarbageCollector: String, CaseIterable {
         }
     }
 
+    /// The localized description for this garbage collector.
     var description: String {
         switch self {
         case .g1gc: return "settings.game.java.gc.g1gc.desc".localized()
@@ -42,6 +53,7 @@ enum GarbageCollector: String, CaseIterable {
         }
     }
 
+    /// The JVM arguments that enable this garbage collector.
     var arguments: [String] {
         switch self {
         case .g1gc: return ["-XX:+UseG1GC"]
@@ -53,12 +65,14 @@ enum GarbageCollector: String, CaseIterable {
     }
 }
 
+/// JVM optimization presets for game performance tuning.
 enum OptimizationPreset: String, CaseIterable {
     case disabled = "disabled"
     case basic = "basic"
     case balanced = "balanced"
     case maximum = "maximum"
 
+    /// The localized display name for this optimization preset.
     var displayName: String {
         switch self {
         case .disabled: return "settings.game.java.optimization.none".localized()
@@ -68,6 +82,7 @@ enum OptimizationPreset: String, CaseIterable {
         }
     }
 
+    /// The localized description for this optimization preset.
     var description: String {
         switch self {
         case .disabled: return "settings.game.java.optimization.none.desc".localized()

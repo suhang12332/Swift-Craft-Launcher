@@ -1,6 +1,14 @@
+//
+//  GameResourceInstallSheetViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// View model for the game resource install sheet, managing version selection, dependency loading, and resource download.
 @MainActor
 final class GameResourceInstallSheetViewModel: ObservableObject {
     @Published var selectedVersion: ModrinthProjectDetailVersion?

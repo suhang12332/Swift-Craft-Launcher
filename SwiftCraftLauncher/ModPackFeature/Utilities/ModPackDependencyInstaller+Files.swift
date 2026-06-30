@@ -1,12 +1,15 @@
 //
 //  ModPackDependencyInstaller+Files.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
 extension ModPackDependencyInstaller {
 
+    /// Downloads and installs all modpack files that are not excluded by environment constraints.
     static func installModPackFiles(
         files: [ModrinthIndexFile],
         resourceDir: URL,

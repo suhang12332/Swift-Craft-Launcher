@@ -1,9 +1,14 @@
+//
+//  ModrinthIndexFileExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModrinthIndexFileExtendedTests: XCTestCase {
-
-    // MARK: - ModrinthIndexFile init with CurseForge fields
 
     func testModrinthIndexFile_withCurseForgeIds() {
         let file = ModrinthIndexFile(
@@ -86,8 +91,6 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
         XCTAssertNil(file.curseForgeProjectId)
     }
 
-    // MARK: - ModrinthIndexFileHashes
-
     func testModrinthIndexFileHashes_fromEmptyDict() {
         let hashes = ModrinthIndexFileHashes(from: [:])
         XCTAssertNil(hashes.sha1)
@@ -168,8 +171,6 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
         XCTAssertEqual(dict["sha512"], "def")
     }
 
-    // MARK: - FileSource
-
     func testFileSource_rawValues() {
         XCTAssertEqual(FileSource.modrinth.rawValue, "modrinth")
         XCTAssertEqual(FileSource.curseforge.rawValue, "curseforge")
@@ -182,8 +183,6 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             XCTAssertEqual(decoded, source)
         }
     }
-
-    // MARK: - ModrinthIndexFileEnv
 
     func testModrinthIndexFileEnv_codable() throws {
         let env = ModrinthIndexFileEnv(client: "required", server: "unsupported")
@@ -201,8 +200,6 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
         XCTAssertEqual(env.client, "optional")
         XCTAssertNil(env.server)
     }
-
-    // MARK: - ModrinthIndexDependencies CodingKeys
 
     func testModrinthIndexDependencies_codable_withLoaders() throws {
         let deps = ModrinthIndexDependencies(
@@ -297,8 +294,6 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
         XCTAssertEqual(depsArray[0]["dependency_type"] as? String, "required")
     }
 
-    // MARK: - ModrinthIndexProjectDependency
-
     func testModrinthIndexProjectDependency_codable() throws {
         let dep = ModrinthIndexProjectDependency(
             projectId: "abc",
@@ -321,8 +316,6 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
         XCTAssertNil(dep.versionId)
         XCTAssertEqual(dep.dependencyType, "optional")
     }
-
-    // MARK: - ModrinthIndexInfo
 
     func testModrinthIndexInfo_init() {
         let info = ModrinthIndexInfo(

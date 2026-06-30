@@ -1,6 +1,13 @@
+//
+//  ModPackInstallState.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-// MARK: - ModPack Install State
+/// Tracks progress state during mod pack installation.
 @MainActor
 class ModPackInstallState: ObservableObject {
     @Published var isInstalling = false
@@ -17,6 +24,7 @@ class ModPackInstallState: ObservableObject {
     @Published var dependenciesCompleted: Int = 0
     @Published var overridesCompleted: Int = 0
 
+    /// Resets all progress state to initial values.
     func reset() {
         isInstalling = false
         filesProgress = 0
@@ -33,6 +41,7 @@ class ModPackInstallState: ObservableObject {
         overridesCompleted = 0
     }
 
+    /// Begins a new installation with the specified totals.
     func startInstallation(
         filesTotal: Int,
         dependenciesTotal: Int,
@@ -53,6 +62,7 @@ class ModPackInstallState: ObservableObject {
         self.dependenciesCompleted = 0
     }
 
+    /// Updates progress for a file download.
     func updateFilesProgress(fileName: String, completed: Int, total: Int) {
         currentFile = fileName
         filesCompleted = completed
@@ -61,6 +71,7 @@ class ModPackInstallState: ObservableObject {
         objectWillChange.send()
     }
 
+    /// Updates progress for a dependency download.
     func updateDependenciesProgress(
         dependencyName: String,
         completed: Int,
@@ -76,6 +87,7 @@ class ModPackInstallState: ObservableObject {
         objectWillChange.send()
     }
 
+    /// Updates progress for an override file.
     func updateOverridesProgress(
         overrideName: String,
         completed: Int,

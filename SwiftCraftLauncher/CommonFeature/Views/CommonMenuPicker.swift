@@ -1,6 +1,13 @@
+//
+//  CommonMenuPicker.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-/// 通用的菜单样式 Picker，统一 `.pickerStyle(.menu)`，并可选择隐藏标签。
+/// A menu-style picker with consistent styling and optional label hiding.
 struct CommonMenuPicker<Label: View, SelectionValue: Hashable, Content: View>: View {
     private let selection: Binding<SelectionValue>
     private let hidesLabel: Bool

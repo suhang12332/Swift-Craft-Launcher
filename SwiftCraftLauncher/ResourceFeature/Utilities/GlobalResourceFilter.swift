@@ -1,6 +1,19 @@
+//
+//  GlobalResourceFilter.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-// MARK: - 兼容游戏过滤（按照完整流程：过滤兼容 -> 查询版本信息 -> 检查hash是否安装）
+/// Filters compatible games for a resource by checking version support and installation state.
+/// - Parameters:
+///   - detail: The project detail containing supported versions and loaders.
+///   - gameRepository: The game repository for local game data.
+///   - resourceType: The type of resource.
+///   - projectId: The project identifier.
+/// - Returns: The game versions compatible with and not already containing the resource.
 func filterCompatibleGames(
     detail: ModrinthProjectDetail,
     gameRepository: GameRepository,
@@ -11,7 +24,7 @@ func filterCompatibleGames(
     let supportedLoaders = Set(detail.loaders.map { $0.lowercased() })
     let resourceTypeLowercased = resourceType.lowercased()
 
-    // 第一步：根据资源兼容版本和本地游戏列表过滤，过滤出兼容的游戏版本
+    // Filter locally compatible games by version and loader support.
     let compatibleGames = gameRepository.games.compactMap { game -> GameVersionInfo? in
         let localLoader = game.modLoader.lowercased()
         let match: Bool = {
@@ -35,17 +48,16 @@ func filterCompatibleGames(
         return match ? game : nil
     }
 
-    // 第二步和第三步：使用兼容的游戏列表的版本信息和资源信息查询该资源的版本信息，
-    // 判断该资源在对应游戏下是否已安装（基于所有兼容版本的哈希）
+    // Check installation state using hashes from all compatible versions.
     return await withTaskGroup(of: GameVersionInfo?.self) { group in
         for game in compatibleGames {
             group.addTask {
-                // 获取当前资源类型在该游戏下的安装目录（mods/datapacks/resourcepacks/shaderpacks）
+                // Determine the resource installation directory for this game.
                 let resourceDir =
                     AppPaths.resourceDirectory(for: resourceType, gameName: game.gameName)
                     ?? AppPaths.modsDirectory(gameName: game.gameName)
 
-                // 判断该资源在该游戏下是否已安装（使用统一的哈希检测逻辑）
+                // Check whether the resource is already installed using hash matching.
                 let isInstalled = await ModrinthService.isProjectInstalledByAnyCompatibleVersion(
                     projectId: projectId,
                     selectedVersions: [game.gameVersion],

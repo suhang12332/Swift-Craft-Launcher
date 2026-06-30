@@ -1,7 +1,13 @@
+//
+//  AnnouncementStateManager.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 公告状态管理器
-/// 管理按版本记录的公告已读状态
+/// Tracks whether the current version's announcement has been acknowledged.
 @MainActor
 class AnnouncementStateManager {
     static let shared = AnnouncementStateManager()
@@ -10,13 +16,13 @@ class AnnouncementStateManager {
 
     private let defaults = UserDefaults.standard
 
-    /// 当前版本公告是否已读
+    /// Returns whether the announcement for the current app version has been acknowledged.
     func isAnnouncementAcknowledgedForCurrentVersion() -> Bool {
         let currentVersion = Bundle.main.appVersion
         return acknowledgedVersion() == currentVersion
     }
 
-    /// 标记当前版本公告为已读
+    /// Marks the announcement for the current app version as acknowledged.
     func markAnnouncementAcknowledgedForCurrentVersion() {
         let currentVersion = Bundle.main.appVersion
         defaults.set(

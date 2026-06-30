@@ -1,10 +1,11 @@
 //
 //  GameAdvancedSettingsView.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/6/2.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// Per-game advanced settings for Java path, garbage collector, memory, and JVM arguments.
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -54,33 +55,32 @@ struct GameAdvancedSettingsView: View {
                     }
                     .labelsHidden()
                     .fixedSize()
-                    .disabled(viewModel.isUsingCustomArguments)  // 使用自定义参数时禁用
+                    .disabled(viewModel.isUsingCustomArguments)
                     .onChange(of: viewModel.selectedGarbageCollector) { _, _ in
                         viewModel.didSelectGarbageCollector()
                     }
                 }
                 .labeledContentStyle(.custom)
-                .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
+                .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)
                 CommonDescriptionText(text: viewModel.selectedGarbageCollector.description)
             }
 
             Group {
                 LabeledContent("settings.game.java.performance_optimization".localized()) {
                     Picker("", selection: $viewModel.optimizationPreset) {
-                        // 最大优化仅在 G1GC 时可用
                         ForEach(viewModel.availableOptimizationPresets, id: \.self) { preset in
                             Text(preset.displayName).tag(preset)
                         }
                     }
                     .labelsHidden()
                     .fixedSize()
-                    .disabled(viewModel.isUsingCustomArguments)  // 使用自定义参数时禁用
+                    .disabled(viewModel.isUsingCustomArguments)
                     .onChange(of: viewModel.optimizationPreset) { _, newValue in
                         viewModel.didSelectOptimizationPreset(newValue)
                     }
                 }
                 .labeledContentStyle(.custom)
-                .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)  // 禁用时降低透明度
+                .opacity(viewModel.isUsingCustomArguments ? 0.5 : 1.0)
                 CommonDescriptionText(text: viewModel.optimizationPreset.description)
             }
 

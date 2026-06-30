@@ -1,9 +1,14 @@
+//
+//  MinecraftServerInfoTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class MinecraftServerInfoTests: XCTestCase {
-
-    // MARK: - Description.plainText
 
     func testDescription_plainText_textOnly() throws {
         let json = """
@@ -72,8 +77,6 @@ final class MinecraftServerInfoTests: XCTestCase {
         XCTAssertEqual(desc.plainText, "Test")
     }
 
-    // MARK: - DescriptionElement
-
     func testDescriptionElement_string() throws {
         let json = "\"hello\""
         let data = Data(json.utf8)
@@ -117,8 +120,6 @@ final class MinecraftServerInfoTests: XCTestCase {
 
         XCTAssertEqual(element.plainText, "nested data")
     }
-
-    // MARK: - MinecraftServerInfo Codable
 
     func testMinecraftServerInfo_codable() throws {
         let json = """

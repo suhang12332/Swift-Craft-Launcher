@@ -1,20 +1,27 @@
+//
+//  PremiumAccountFlagManager.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 正版账户标记管理器
-/// 标记是否曾添加正版账户，判断是否允许添加离线账户
+/// Tracks whether a premium (Mojang/Microsoft) account has ever been added.
+///
+/// This flag determines whether offline account creation is permitted.
 @MainActor
 class PremiumAccountFlagManager {
     static let shared = PremiumAccountFlagManager()
 
     private init() {}
 
-    /// 检查是否曾经添加过正版账户
-    /// - Returns: 如果曾经添加过正版账户则返回 true
+    /// A Boolean value indicating whether a premium account has been added previously.
     func hasAddedPremiumAccount() -> Bool {
         return UserDefaults.standard.bool(forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
     }
 
-    /// 设置已添加正版账户标记
+    /// Marks that a premium account has been added.
     func setPremiumAccountAdded() {
         UserDefaults.standard.set(true, forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
         Logger.shared.debug("已设置正版账户添加标记")

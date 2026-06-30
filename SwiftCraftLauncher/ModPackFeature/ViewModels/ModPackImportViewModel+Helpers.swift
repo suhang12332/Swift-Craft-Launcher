@@ -1,7 +1,16 @@
+//
+//  ModPackImportViewModel+Helpers.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 extension ModPackImportViewModel {
-    // MARK: - Helper Methods
+    /// Creates the profile directory structure for the game.
+    /// - Parameter gameName: The name of the game.
+    /// - Returns: Whether all directories were created successfully.
     func createProfileDirectories(for gameName: String) async -> Bool {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
 
@@ -31,6 +40,9 @@ extension ModPackImportViewModel {
         return true
     }
 
+    /// Calculates the files and required dependencies from the index info.
+    /// - Parameter indexInfo: The parsed modpack index.
+    /// - Returns: A tuple of downloadable files and required dependencies.
     func calculateInstallationCounts(
         from indexInfo: ModrinthIndexInfo
     ) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
@@ -48,7 +60,6 @@ extension ModPackImportViewModel {
         return (filesToDownload, requiredDependencies)
     }
 
-    // MARK: - Computed Properties for UI Updates
     var shouldShowProgress: Bool {
         gameSetupService.downloadState.isDownloading
             || modPackViewModel.modPackInstallState.isInstalling
@@ -66,7 +77,6 @@ extension ModPackImportViewModel {
         modPackIndexInfo?.gameVersion ?? ""
     }
 
-    /// 整合包游戏版本是否在支持范围内
     var isGameVersionSupported: Bool {
         let v = gameVersion
         return v.isEmpty || CommonUtil.isVersionAtLeast(v)
@@ -83,7 +93,6 @@ extension ModPackImportViewModel {
             : "\(indexInfo.loaderType)-\(indexInfo.loaderVersion)"
     }
 
-    // MARK: - Expose Internal Objects
     var modPackViewModelForProgress: ModPackDownloadSheetViewModel {
         modPackViewModel
     }

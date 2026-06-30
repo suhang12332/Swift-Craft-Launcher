@@ -1,12 +1,13 @@
 //
 //  ContributorCardView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// GitHub 贡献者卡片视图
+/// Displays a GitHub contributor's information in a card layout.
 struct ContributorCardView: View {
     let contributor: GitHubContributor
     let isTopContributor: Bool
@@ -27,10 +28,8 @@ struct ContributorCardView: View {
 
     private var contributorContent: some View {
         HStack(spacing: 12) {
-            // 头像
             ContributorAvatarView(avatarUrl: contributor.avatarUrl)
 
-            // 信息
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(contributor.login)
@@ -49,10 +48,8 @@ struct ContributorCardView: View {
                 }
 
                 HStack(spacing: 4) {
-                    // 代码标签（统一标记为代码贡献者）
                     ContributionTagView(contribution: .code)
 
-                    // 贡献次数
                     Text(contributionsText)
                         .font(.caption)
                         .foregroundColor(.secondary)

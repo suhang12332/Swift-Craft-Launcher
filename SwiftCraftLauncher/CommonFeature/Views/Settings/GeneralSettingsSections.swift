@@ -1,6 +1,14 @@
+//
+//  GeneralSettingsSections.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import AppKit
 import SwiftUI
 
+/// A row that displays the current language and opens system language settings.
 struct GeneralSettingsLanguageRow: View {
     private let languageManager: LanguageManager
 
@@ -28,6 +36,7 @@ struct GeneralSettingsLanguageRow: View {
     }
 }
 
+/// A row with a theme picker selector.
 struct GeneralSettingsThemeRow: View {
     @ObservedObject var themeManager: ThemeManager
 
@@ -43,6 +52,7 @@ struct GeneralSettingsThemeRow: View {
     }
 }
 
+/// A row for choosing the interface layout style.
 struct GeneralSettingsInterfaceLayoutRow: View {
     @ObservedObject var generalSettings: GeneralSettingsManager
 
@@ -61,6 +71,7 @@ struct GeneralSettingsInterfaceLayoutRow: View {
     }
 }
 
+/// A row for configuring the launcher working directory.
 struct GeneralSettingsWorkingDirectoryRow: View {
     @ObservedObject var generalSettings: GeneralSettingsManager
     @ObservedObject var viewModel: GeneralSettingsViewModel
@@ -112,6 +123,7 @@ struct GeneralSettingsWorkingDirectoryRow: View {
     }
 }
 
+/// A row with a slider for the maximum concurrent download count.
 struct GeneralSettingsConcurrentDownloadsRow: View {
     @ObservedObject var generalSettings: GeneralSettingsManager
     @ObservedObject var viewModel: GeneralSettingsViewModel
@@ -144,6 +156,7 @@ struct GeneralSettingsConcurrentDownloadsRow: View {
     }
 }
 
+/// A row that opens system network proxy settings.
 struct GeneralSettingsSystemProxyRow: View {
     var body: some View {
         LabeledContent("settings.system_proxy.label".localized()) {
@@ -155,6 +168,7 @@ struct GeneralSettingsSystemProxyRow: View {
     }
 }
 
+/// A row for configuring a GitHub proxy URL.
 struct GeneralSettingsGitHubProxyRow: View {
     @ObservedObject var generalSettings: GeneralSettingsManager
 
@@ -186,6 +200,7 @@ struct GeneralSettingsGitHubProxyRow: View {
     }
 }
 
+/// A row to toggle the common sheet height limit.
 struct GeneralSettingsCommonSheetHeightLimitRow: View {
     @ObservedObject var generalSettings: GeneralSettingsManager
 

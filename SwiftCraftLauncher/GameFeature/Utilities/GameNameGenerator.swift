@@ -1,13 +1,12 @@
 //
 //  GameNameGenerator.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-// MARK: - DateFormatter Extension
 extension DateFormatter {
     static let timestampFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -16,14 +15,14 @@ extension DateFormatter {
     }()
 }
 
-// MARK: - GameNameGenerator
+/// Generates default game instance names for various installation types.
 enum GameNameGenerator {
-    /// 为 ModPack 下载生成默认游戏名称
+    /// Generates a default game name for a ModPack download.
     /// - Parameters:
-    ///   - projectTitle: 项目标题
-    ///   - gameVersion: 游戏版本
-    ///   - includeTimestamp: 是否包含时间戳（默认 true）
-    /// - Returns: 生成的游戏名称
+    ///   - projectTitle: The project title, or `nil` to use a default.
+    ///   - gameVersion: The Minecraft version string.
+    ///   - includeTimestamp: Whether to append a timestamp. Defaults to `true`.
+    /// - Returns: A formatted game name.
     static func generateModPackName(
         projectTitle: String?,
         gameVersion: String,
@@ -39,12 +38,12 @@ enum GameNameGenerator {
         return baseName
     }
 
-    /// 为 ModPack 导入生成默认游戏名称
+    /// Generates a default game name for an imported ModPack.
     /// - Parameters:
-    ///   - modPackName: 整合包名称
-    ///   - modPackVersion: 整合包版本
-    ///   - includeTimestamp: 是否包含时间戳（默认 true）
-    /// - Returns: 生成的游戏名称
+    ///   - modPackName: The name of the ModPack.
+    ///   - modPackVersion: The version of the ModPack.
+    ///   - includeTimestamp: Whether to append a timestamp. Defaults to `true`.
+    /// - Returns: A formatted game name.
     static func generateImportName(
         modPackName: String,
         modPackVersion: String,
@@ -60,11 +59,12 @@ enum GameNameGenerator {
         return baseName
     }
 
-    /// 为普通游戏创建生成默认游戏名称
+    /// Generates a default game name for a standard game installation.
     /// - Parameters:
-    ///   - gameVersion: 游戏版本
-    ///   - modLoader: 模组加载器
-    /// - Returns: 生成的游戏名称
+    ///   - gameVersion: The Minecraft version string.
+    ///   - modLoader: The mod loader display name.
+    ///   - includeTimestamp: Whether to append a timestamp. Defaults to `true`.
+    /// - Returns: A formatted game name.
     static func generateGameName(
         gameVersion: String,
         loaderVersion: String,

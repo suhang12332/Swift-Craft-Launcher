@@ -1,9 +1,15 @@
+//
+//  ServerAddressSectionView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Displays server addresses as chips with connection status and overflow popover.
 import SwiftUI
 import AppKit
 
-    // MARK: - 服务器地址区域视图
 struct ServerAddressSectionView: View {
-    // MARK: - Properties
     let servers: [ServerAddress]
     let isLoading: Bool
     let gameName: String
@@ -21,7 +27,6 @@ struct ServerAddressSectionView: View {
         self.onRefresh = onRefresh
     }
 
-    // MARK: - Body
     var body: some View {
         VStack {
             headerView
@@ -50,7 +55,6 @@ struct ServerAddressSectionView: View {
         }
     }
 
-    // MARK: - Header Views
     private var headerView: some View {
         let (_, overflowItems) = viewModel.computeVisibleAndOverflowItems(from: servers)
         return HStack {
@@ -121,7 +125,6 @@ struct ServerAddressSectionView: View {
         .frame(width: ServerAddressSectionConstants.popoverWidth)
     }
 
-    // MARK: - Content Views
     private var loadingPlaceholder: some View {
         ScrollView {
             FlowLayout {

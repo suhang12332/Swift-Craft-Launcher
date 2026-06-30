@@ -1,5 +1,13 @@
+//
+//  ProgressDownloadManager.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Manages file downloads with progress tracking, retry logic, and SHA1 validation.
 enum ProgressDownloadManager {
     private static let maxRetryCount = 3
 
@@ -7,6 +15,14 @@ enum ProgressDownloadManager {
         ProgressDownloadSession.shared.finishTasksAndInvalidate()
     }
 
+    /// Downloads a file from a remote URL to a local destination.
+    /// - Parameters:
+    ///   - urlString: The remote file URL string.
+    ///   - destinationURL: The local file URL to write to.
+    ///   - expectedSha1: An optional SHA1 hash for integrity validation.
+    ///   - progressHandler: An optional closure invoked with (bytesWritten, totalBytes) on progress updates.
+    /// - Returns: The local file URL after a successful download.
+    /// - Throws: An error if the download fails after retries.
     static func downloadFile(
         urlString: String,
         destinationURL: URL,

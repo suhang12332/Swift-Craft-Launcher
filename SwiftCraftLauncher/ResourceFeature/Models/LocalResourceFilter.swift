@@ -1,6 +1,13 @@
+//
+//  LocalResourceFilter.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 本地资源筛选类型
+/// Filters for displaying local (installed) resources.
 enum LocalResourceFilter: String, CaseIterable, Identifiable {
     case all
     case disabled

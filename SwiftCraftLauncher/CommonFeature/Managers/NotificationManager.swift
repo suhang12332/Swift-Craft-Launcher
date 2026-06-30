@@ -1,8 +1,13 @@
+//
+//  NotificationManager.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import UserNotifications
 import os
-
-// MARK: - Notification Center Delegate
 
 final class NotificationCenterDelegate: NSObject, UNUserNotificationCenterDelegate {
 
@@ -11,18 +16,17 @@ final class NotificationCenterDelegate: NSObject, UNUserNotificationCenterDelega
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        // 允许在前台显示横幅 / 列表，并播放声音与更新徽标
         completionHandler([.banner, .list, .sound, .badge])
     }
 }
 
 enum NotificationManager {
 
-    /// 发送通知
+    /// Sends a local notification with the specified title and body.
     /// - Parameters:
-    ///   - title: 通知标题
-    ///   - body: 通知内容
-    /// - Throws: GlobalError 当操作失败时
+    ///   - title: The notification title.
+    ///   - body: The notification body text.
+    /// - Throws: A `GlobalError` when the notification fails to send.
     static func send(title: String, body: String) async throws {
         let content = UNMutableNotificationContent()
         content.title = title
@@ -48,10 +52,10 @@ enum NotificationManager {
         }
     }
 
-    /// 发送通知（静默版本，失败时记录错误但不抛出异常）
+    /// Sends a notification silently, logging errors instead of throwing.
     /// - Parameters:
-    ///   - title: 通知标题
-    ///   - body: 通知内容
+    ///   - title: The notification title.
+    ///   - body: The notification body text.
     static func sendSilently(title: String, body: String) async {
         do {
             try await send(title: title, body: body)
@@ -62,8 +66,8 @@ enum NotificationManager {
         }
     }
 
-    /// 请求通知权限
-    /// - Throws: GlobalError 当操作失败时
+    /// Requests authorization to display notifications.
+    /// - Throws: A `GlobalError` when authorization is denied or fails.
     static func requestAuthorization() async throws {
         do {
             let granted = try await UNUserNotificationCenter.current()
@@ -91,7 +95,7 @@ enum NotificationManager {
         }
     }
 
-    /// 请求通知权限（静默版本，失败时记录错误但不抛出异常）
+    /// Requests notification authorization silently, logging errors instead of throwing.
     static func requestAuthorizationIfNeeded() async {
         do {
             try await requestAuthorization()
@@ -102,13 +106,12 @@ enum NotificationManager {
         }
     }
 
-    /// - Returns: 权限状态
+    /// Returns the current notification authorization status.
     static func checkAuthorizationStatus() async -> UNAuthorizationStatus {
         return await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
     }
 
-    /// 检查是否有通知权限
-    /// - Returns: 是否有权限
+    /// Returns whether the app is authorized to send notifications.
     static func hasAuthorization() async -> Bool {
         let status = await checkAuthorizationStatus()
         return status == .authorized

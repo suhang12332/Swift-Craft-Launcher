@@ -1,9 +1,14 @@
+//
+//  ModLoaderHandlerConformanceTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModLoaderHandlerConformanceTests: XCTestCase {
-
-    // MARK: - Protocol Conformance Verification
 
     func testFabricLoaderService_conformsToModLoaderHandler() {
         let _: any ModLoaderHandler.Type = FabricLoaderService.self
@@ -24,8 +29,6 @@ final class ModLoaderHandlerConformanceTests: XCTestCase {
         let _: any ModLoaderHandler.Type = QuiltLoaderService.self
         XCTAssertTrue(true)
     }
-
-    // MARK: - Shared Return Type Contract
 
     func testAllLoaders_returnSameTupleShape() {
         // Verify all four services have the same static method signatures

@@ -1,8 +1,19 @@
+//
+//  MinecraftSkinUtils.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 import CoreImage
 import Foundation
 import AppKit
 
+/// Renders a Minecraft player skin as a head avatar.
+///
+/// Supports loading from a remote URL, an asset catalog, or a local file path.
+/// Rendered images are cached by source for efficient reuse.
 struct MinecraftSkinUtils: View {
     let type: SkinType
     let src: String

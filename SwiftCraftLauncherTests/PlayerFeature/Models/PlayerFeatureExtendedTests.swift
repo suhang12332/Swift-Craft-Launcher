@@ -1,9 +1,14 @@
+//
+//  PlayerFeatureExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class PlayerFeatureExtendedTests: XCTestCase {
-
-    // MARK: - SkinSelectionStore
 
     func testSkinSelectionStore_select_setsId() {
         let store = SkinSelectionStore()
@@ -30,8 +35,6 @@ final class PlayerFeatureExtendedTests: XCTestCase {
         XCTAssertNil(store.selectedPlayerId)
     }
 
-    // MARK: - MinecraftSkinConstants
-
     func testMinecraftSkinConstants_headRegion() {
         XCTAssertEqual(MinecraftSkinConstants.headStartX, 8)
         XCTAssertEqual(MinecraftSkinConstants.headStartY, 8)
@@ -53,8 +56,6 @@ final class PlayerFeatureExtendedTests: XCTestCase {
         XCTAssertEqual(MinecraftSkinConstants.padding, 6)
     }
 
-    // MARK: - Player.authXuid
-
     func testPlayer_authXuid_withCredential() {
         let profile = UserProfile(id: "uuid", name: "Test", avatar: "steve")
         let credential = AuthCredential(userId: "uuid", accessToken: "token", refreshToken: "refresh", xuid: "xuid123")
@@ -68,8 +69,6 @@ final class PlayerFeatureExtendedTests: XCTestCase {
         XCTAssertEqual(player.authXuid, "")
     }
 
-    // MARK: - SkinModel invalid raw value
-
     func testSkinModel_invalidRawValue_returnsNil() {
         XCTAssertNil(PlayerSkinService.PublicSkinInfo.SkinModel(rawValue: "INVALID"))
     }
@@ -81,8 +80,6 @@ final class PlayerFeatureExtendedTests: XCTestCase {
         XCTAssertTrue(allCases.contains(.slim))
     }
 
-    // MARK: - SkinLibraryItem edge cases
-
     func testSkinLibraryItem_fileURL_endsWithPNG() {
         let item = SkinLibraryItem(originalFileName: "skin.png", sha1: "abc123", model: .classic, lastUsedAt: Date())
         XCTAssertTrue(item.fileURL.path.hasSuffix(".png"))
@@ -93,8 +90,6 @@ final class PlayerFeatureExtendedTests: XCTestCase {
         let item2 = SkinLibraryItem(originalFileName: "skin.png", sha1: "def", model: .classic, lastUsedAt: Date())
         XCTAssertNotEqual(item1.id, item2.id)
     }
-
-    // MARK: - MinecraftSkinUtils.hasNonTransparentPixels
 
     func testHasNonTransparentPixels_opaqueImage_returnsTrue() {
         let size = CGSize(width: 2, height: 2)
@@ -123,8 +118,6 @@ final class PlayerFeatureExtendedTests: XCTestCase {
         XCTAssertTrue(MinecraftSkinUtils.hasNonTransparentPixels(image))
     }
 
-    // MARK: - RenderedImageCache cost with different sizes
-
     func testRenderedImageCache_cost_formula() {
         let headSize = CGSize(width: 8, height: 8)
         let layerSize = CGSize(width: 4, height: 4)
@@ -137,8 +130,6 @@ final class PlayerFeatureExtendedTests: XCTestCase {
         let expectedCost = 8 * 8 * 4 + 4 * 4 * 4 + 2 * 1024
         XCTAssertEqual(cache.cost, expectedCost)
     }
-
-    // MARK: - Helpers
 
     private func createTestCGImage(size: CGSize, alpha: CGFloat) -> CGImage? {
         let colorSpace = CGColorSpaceCreateDeviceRGB()

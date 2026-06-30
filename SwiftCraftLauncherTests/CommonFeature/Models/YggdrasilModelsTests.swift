@@ -1,9 +1,14 @@
+//
+//  YggdrasilModelsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class YggdrasilModelsTests: XCTestCase {
-
-    // MARK: - YggdrasilProfileParserID
 
     func testParserID_rawValues() {
         XCTAssertEqual(YggdrasilProfileParserID.littleskin.rawValue, "littleskin")
@@ -30,8 +35,6 @@ final class YggdrasilModelsTests: XCTestCase {
             XCTAssertEqual(decoded, parserID)
         }
     }
-
-    // MARK: - YggdrasilServerConfig
 
     func testServerConfig_init_defaults() {
         let config = YggdrasilServerConfig(
@@ -224,8 +227,6 @@ final class YggdrasilModelsTests: XCTestCase {
         XCTAssertEqual(set.count, 1)
     }
 
-    // MARK: - YggdrasilProfile
-
     func testYggdrasilProfile_codable_roundTrip() throws {
         let original = YggdrasilProfile(
             id: "uuid-123",
@@ -268,8 +269,6 @@ final class YggdrasilModelsTests: XCTestCase {
         XCTAssertEqual(a, b)
     }
 
-    // MARK: - YggdrasilProfileCandidate
-
     func testYggdrasilProfileCandidate_equatable() {
         let a = YggdrasilProfileCandidate(id: "id", name: "A", skins: [], capes: nil)
         let b = YggdrasilProfileCandidate(id: "id", name: "A", skins: [], capes: nil)
@@ -278,8 +277,6 @@ final class YggdrasilModelsTests: XCTestCase {
         XCTAssertEqual(a, b)
         XCTAssertNotEqual(a, c)
     }
-
-    // MARK: - YggdrasilAuthState
 
     func testAuthState_idle() {
         let state = YggdrasilAuthState.idle
@@ -323,8 +320,6 @@ final class YggdrasilModelsTests: XCTestCase {
         XCTAssertNotEqual(YggdrasilAuthState.idle, YggdrasilAuthState.failed("err"))
         XCTAssertNotEqual(YggdrasilAuthState.waitingForBrowser, YggdrasilAuthState.exchangingCode)
     }
-
-    // MARK: - YggdrasilServerPresets
 
     func testPresets_count() {
         let servers = Self.makeTestServers()

@@ -1,8 +1,16 @@
+//
+//  ModrinthDependencyDownloader.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import os
 
+/// Downloads Modrinth project dependencies and manages recursive and manual dependency resolution.
 enum ModrinthDependencyDownloader {
-    /// 递归下载所有依赖（基于官方依赖API）
+    /// Recursively downloads all dependencies for a project using the official dependencies API.
     static func downloadAllDependenciesRecursive(
         for projectId: String,
         gameInfo: GameVersionInfo,
@@ -11,10 +19,10 @@ enum ModrinthDependencyDownloader {
         actuallyDownloaded: inout [ModrinthProjectDetail],
         visited: inout Set<String>
     ) async {
-        // 检查 query 是否是有效的资源类型
+        // Validate that the query is a supported resource type.
         let queryLowercased = query.lowercased()
 
-        // 如果 query 是 modpack 或无效的资源类型，直接返回
+        // Return early for modpacks or unrecognized types.
         if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
             Logger.shared.error("不支持下载此类型的资源: \(query)")
             return
@@ -27,7 +35,7 @@ enum ModrinthDependencyDownloader {
             )
             guard let resourceDirUnwrapped = resourceDir else { return }
 
-            // 用ModScanner判断对应资源目录下是否已安装
+            // Check installed state using ModScanner.
             let dependencies =
                 await ModrinthService.fetchProjectDependencies(
                     type: query,
@@ -53,7 +61,7 @@ enum ModrinthDependencyDownloader {
             ) { group in
                 for depVersion in dependencies.projects {
                     group.addTask {
-                        await semaphore.wait()  // 限制并发
+                        await semaphore.wait()
                         defer { Task { await semaphore.signal() } }
 
                         guard
@@ -101,9 +109,9 @@ enum ModrinthDependencyDownloader {
                         return nil
                     }
                 }
-                // 主mod
+                // Process the main mod.
                 group.addTask {
-                    await semaphore.wait()  // 限制并发
+                    await semaphore.wait()
                     defer { Task { await semaphore.signal() } }
 
                     do {
@@ -161,7 +169,7 @@ enum ModrinthDependencyDownloader {
                         return nil
                     }
                 }
-                // 收集所有下载结果
+                // Collect all download results.
                 var localResults: [ModrinthProjectDetail] = []
                 for await result in group {
                     if let project = result {
@@ -175,7 +183,7 @@ enum ModrinthDependencyDownloader {
         }
     }
 
-    /// 获取缺失的依赖项（包含版本信息）
+    /// Fetches missing dependencies with their available versions.
     static func getMissingDependenciesWithVersions(
         for projectId: String,
         gameInfo: GameVersionInfo
@@ -195,13 +203,13 @@ enum ModrinthDependencyDownloader {
             selectedLoaders: [gameInfo.modLoader]
         )
 
-        // 并发获取所有依赖项目的详情和版本信息
+        // Concurrently fetch project details and version info for all dependencies.
         return await withTaskGroup(
             of: (ModrinthProjectDetail, [ModrinthProjectDetailVersion])?.self
         ) { group in
             for depVersion in dependencies.projects {
                 group.addTask {
-                    // 获取项目详情
+                    // Fetch the project detail.
                     guard
                         let projectDetail =
                             await ModrinthService.fetchProjectDetails(
@@ -243,7 +251,7 @@ enum ModrinthDependencyDownloader {
         }
     }
 
-    /// 获取缺失的依赖项
+    /// Fetches missing dependencies without version details.
     static func getMissingDependencies(
         for projectId: String,
         gameInfo: GameVersionInfo
@@ -261,7 +269,7 @@ enum ModrinthDependencyDownloader {
             selectedLoaders: [gameInfo.modLoader]
         )
 
-        // 将 ModrinthProjectDetailVersion 转换为 ModrinthProjectDetail
+        // Convert ModrinthProjectDetailVersion values to ModrinthProjectDetail.
         var projectDetails: [ModrinthProjectDetail] = []
         for depVersion in dependencies.projects {
             if let projectDetail = await ModrinthService.fetchProjectDetails(
@@ -285,7 +293,7 @@ enum ModrinthDependencyDownloader {
         let gameRepository: GameRepository
     }
 
-    // 手动下载依赖和主mod（不递归，仅当前依赖和主mod）
+    // Downloads dependencies and the main mod manually, without recursion.
     static func downloadManualDependenciesAndMain(
         input: ManualDownloadInput,
         onDependencyDownloadStart: @escaping (String) -> Void,
@@ -391,7 +399,7 @@ enum ModrinthDependencyDownloader {
                     type: input.resourceType
                 )
 
-            // 如果指定了版本ID，使用指定版本；否则使用最新版本
+            // Use the specified version or fall back to the latest.
             let targetVersion: ModrinthProjectDetailVersion
             if let mainProjectVersionId = input.mainProjectVersionId,
                 let specifiedVersion = filteredVersions.first(where: {
@@ -445,7 +453,8 @@ enum ModrinthDependencyDownloader {
         }
     }
 
-    /// - Returns: (success, fileName, hash)，成功时 fileName 与 hash 有值，失败为 (false, nil, nil)
+    /// Downloads only the main resource without its dependencies.
+    /// - Returns: A tuple of (success, fileName, hash). fileName and hash are non-nil on success.
     static func downloadMainResourceOnly(
         mainProjectId: String,
         gameInfo: GameVersionInfo,

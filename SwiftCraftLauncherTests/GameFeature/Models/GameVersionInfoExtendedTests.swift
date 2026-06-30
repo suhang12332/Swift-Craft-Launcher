@@ -1,9 +1,14 @@
+//
+//  GameVersionInfoExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class GameVersionInfoExtendedTests: XCTestCase {
-
-    // MARK: - Codable
 
     func testGameVersionInfo_codable_allFields() throws {
         let original = GameVersionInfo(
@@ -47,8 +52,6 @@ final class GameVersionInfoExtendedTests: XCTestCase {
         XCTAssertEqual(decoded.environmentVariables, "JAVA_HOME=/usr")
     }
 
-    // MARK: - Hashable
-
     func testGameVersionInfo_hashable() {
         let id = UUID()
         let date = Date(timeIntervalSince1970: 1000)
@@ -57,8 +60,6 @@ final class GameVersionInfoExtendedTests: XCTestCase {
 
         XCTAssertEqual(a, b)
     }
-
-    // MARK: - Identifiable
 
     func testGameVersionInfo_identifiable() {
         let id = UUID()

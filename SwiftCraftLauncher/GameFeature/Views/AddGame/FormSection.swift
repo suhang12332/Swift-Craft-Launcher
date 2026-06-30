@@ -1,3 +1,11 @@
+//
+//  FormSection.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A reusable form section container with standard vertical padding.
 import SwiftUI
 
 struct FormSection<Content: View>: View {

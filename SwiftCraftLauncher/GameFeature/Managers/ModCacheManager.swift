@@ -1,7 +1,13 @@
+//
+//  ModCacheManager.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// Mod 缓存管理器
-/// 使用 SQLite 数据库存储 mod.json 数据（hash -> JSON BLOB）
+/// Provides a SQLite-backed cache for parsed mod metadata.
 class ModCacheManager {
     static let shared = ModCacheManager()
 
@@ -16,13 +22,10 @@ class ModCacheManager {
         self.modCacheDB = ModCacheDatabase(dbPath: dbPath)
     }
 
-    // MARK: - Initialization
-
-    /// 初始化数据库连接
-    /// - Throws: GlobalError 当操作失败时
+    /// Ensures the database connection is open.
+    /// - Throws: A ``GlobalError`` if initialization fails.
     private func ensureInitialized() throws {
         if !isInitialized {
-            // 确保数据库目录存在
             let dataDir = AppPaths.dataDirectory
             try? FileManager.default.createDirectory(at: dataDir, withIntermediateDirectories: true)
 
@@ -31,12 +34,11 @@ class ModCacheManager {
         }
     }
 
-    // MARK: - Public API
-
+    /// Stores mod metadata in the cache.
     /// - Parameters:
-    ///   - hash: mod 文件的 hash 值
-    ///   - jsonData: JSON 数据的 Data（原始 JSON bytes）
-    /// - Throws: GlobalError 当操作失败时
+    ///   - hash: The hash of the mod file.
+    ///   - jsonData: The raw JSON bytes to cache.
+    /// - Throws: A ``GlobalError`` if the operation fails.
     func set(hash: String, jsonData: Data) throws {
         try queue.sync {
             try ensureInitialized()
@@ -44,9 +46,10 @@ class ModCacheManager {
         }
     }
 
+    /// Stores mod metadata in the cache, handling errors silently.
     /// - Parameters:
-    ///   - hash: mod 文件的 hash 值
-    ///   - jsonData: JSON 数据的 Data（原始 JSON bytes）
+    ///   - hash: The hash of the mod file.
+    ///   - jsonData: The raw JSON bytes to cache.
     func setSilently(hash: String, jsonData: Data) {
         do {
             try set(hash: hash, jsonData: jsonData)
@@ -55,9 +58,9 @@ class ModCacheManager {
         }
     }
 
-    /// 获取 mod 缓存值
-    /// - Parameter hash: mod 文件的 hash 值
-    /// - Returns: JSON 数据的 Data（原始 JSON bytes），如果不存在则返回 nil
+    /// Retrieves cached mod data for the given hash.
+    /// - Parameter hash: The hash of the mod file.
+    /// - Returns: The cached JSON data, or `nil` if not found.
     func get(hash: String) -> Data? {
         return queue.sync {
             do {
@@ -70,7 +73,7 @@ class ModCacheManager {
         }
     }
 
-    /// 清空所有 mod 缓存（静默版本）
+    /// Clears all cached mod data, handling errors silently.
     func clearSilently() {
         do {
             try queue.sync {

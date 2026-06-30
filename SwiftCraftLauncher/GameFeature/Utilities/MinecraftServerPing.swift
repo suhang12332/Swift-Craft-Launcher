@@ -1,23 +1,23 @@
 //
 //  MinecraftServerPing.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/20.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 @preconcurrency import Dispatch
 @preconcurrency import Network
 
-/// Minecraft 服务器信息
+/// Represents information about a Minecraft server.
 struct MinecraftServerInfo: Codable {
-    /// 服务器版本信息
+    /// The server version information.
     struct Version: Codable {
         let name: String
-        let `protocol`: Int? // 使用反引号因为 protocol 是 Swift 关键字
+        let `protocol`: Int?
     }
 
-    /// 玩家信息
+    /// The player information.
     struct Players: Codable {
         let max: Int
         let online: Int
@@ -29,12 +29,12 @@ struct MinecraftServerInfo: Codable {
         }
     }
 
-    /// 服务器描述（MOTD）
+    /// The server description (MOTD).
     struct Description: Codable {
         let text: String?
         let extra: [DescriptionElement]?
 
-        /// 描述元素（可以是字符串或 Description 对象）
+        /// A description element that can be either a string or a nested Description object.
         enum DescriptionElement: Codable {
             case string(String)
             case object(Description)
@@ -69,7 +69,7 @@ struct MinecraftServerInfo: Codable {
             }
         }
 
-        /// 获取纯文本描述（去除格式代码）
+        /// Returns the plain text description with formatting codes removed.
         var plainText: String {
             var result = ""
             if let text = text {
@@ -81,9 +81,8 @@ struct MinecraftServerInfo: Codable {
             return result
         }
 
-        /// 去除 Minecraft 格式代码
+        /// Removes Minecraft formatting codes from the text.
         private func stripFormatCodes(_ text: String) -> String {
-            // 移除 § 符号及其后的格式代码
             var result = text
             while let range = result.range(of: "§") {
                 let startIndex = range.lowerBound
@@ -97,8 +96,8 @@ struct MinecraftServerInfo: Codable {
     let version: Version?
     let players: Players?
     let description: Description
-    let favicon: String? // Base64 编码的图标
-    let modinfo: ModInfo? // Mod 信息（如果有）
+    let favicon: String? // Base64-encoded server icon.
+    let modinfo: ModInfo? // Mod information, if available.
 
     struct ModInfo: Codable {
         let type: String
@@ -111,17 +110,16 @@ struct MinecraftServerInfo: Codable {
     }
 }
 
-/// Minecraft Server List Ping 协议实现
-/// 使用官方协议（1.7+）获取服务器信息
+/// Implements the Minecraft Server List Ping protocol to retrieve server information.
 enum MinecraftServerPing {
-    /// 使用 Server List Ping 协议获取服务器信息
+    /// Pings a Minecraft server using the Server List Ping protocol.
     /// - Parameters:
-    ///   - connectAddress: 实际连接的地址（SRV target 或原始地址）
-    ///   - connectPort: 实际连接的端口（SRV port 或原始端口）
-    ///   - originalAddress: 原始域名（用于 handshake）
-    ///   - originalPort: 原始端口（用于 handshake）
-    ///   - timeout: 超时时间（秒），默认 5 秒
-    /// - Returns: 服务器信息，如果失败则返回 nil
+    ///   - connectAddress: The actual connection address (SRV target or original address).
+    ///   - connectPort: The actual connection port (SRV port or original port).
+    ///   - originalAddress: The original domain name (used for handshake).
+    ///   - originalPort: The original port (used for handshake).
+    ///   - timeout: The timeout in seconds. Defaults to 5.0.
+    /// - Returns: The server information, or `nil` if the ping fails.
     static func ping(
         connectAddress: String,
         connectPort: Int,
@@ -129,7 +127,6 @@ enum MinecraftServerPing {
         originalPort: Int,
         timeout: TimeInterval = 5.0
     ) async -> MinecraftServerInfo? {
-        // 创建 TCP 连接（使用 SRV target 和 port）
         let host = NWEndpoint.Host(connectAddress)
         let nwPort = NWEndpoint.Port(integerLiteral: UInt16(connectPort))
         let connection = NWConnection(host: host, port: nwPort, using: .tcp)
@@ -196,7 +193,6 @@ enum MinecraftServerPing {
             }
             let state = State()
 
-            // 设置超时
             let timeoutTask = DispatchWorkItem { [weak state] in
                 guard let state = state else { return }
                 if state.setResumedAndTimeout() {
@@ -207,7 +203,6 @@ enum MinecraftServerPing {
             state.setTimeoutTask(timeoutTask)
             DispatchQueue.global().asyncAfter(deadline: .now() + timeout, execute: timeoutTask)
 
-            // 递归接收数据的函数
             func receiveData() {
                 guard !state.hasResumed else { return }
 
@@ -228,7 +223,6 @@ enum MinecraftServerPing {
                     if let data = data, !data.isEmpty {
                         state.receivedData.append(data)
 
-                        // 尝试解析响应
                         if let serverInfo = parseResponse(data: state.receivedData) {
                             if state.setResumed() {
                                 state.cancelTimeoutTask()
@@ -236,7 +230,6 @@ enum MinecraftServerPing {
                                 continuation.resume(returning: serverInfo)
                             }
                         } else if isComplete {
-                            // 数据接收完成但解析失败
                             if state.setResumed() {
                                 state.cancelTimeoutTask()
                                 Logger.shared.debug("解析服务器响应失败: \(connectAddress):\(connectPort)")
@@ -244,11 +237,9 @@ enum MinecraftServerPing {
                                 continuation.resume(returning: nil)
                             }
                         } else {
-                            // 继续接收数据
                             receiveData()
                         }
                     } else if isComplete {
-                        // 没有更多数据
                         if state.setResumed() {
                             state.cancelTimeoutTask()
                             connection.cancel()
@@ -258,17 +249,14 @@ enum MinecraftServerPing {
                 }
             }
 
-            // 开始接收数据
             receiveData()
 
-            // 设置连接状态变化回调
             connection.stateUpdateHandler = { [weak state] stateUpdate in
                 guard let state = state else { return }
                 guard !state.hasResumed else { return }
 
                 switch stateUpdate {
                 case .ready:
-                    // 连接成功，发送握手包和状态请求包（使用原始地址和端口）
                     sendHandshakeAndStatusRequest(connection: connection, address: originalAddress, port: originalPort)
                 case .failed(let error):
                     if !state.isTimeout {
@@ -280,7 +268,6 @@ enum MinecraftServerPing {
                         }
                     }
                 case .waiting:
-                    // 连接等待中，无需记录日志
                     break
                 case .cancelled:
                     if !state.hasResumed && !state.isTimeout {
@@ -294,33 +281,23 @@ enum MinecraftServerPing {
                 }
             }
 
-            // 启动连接
             connection.start(queue: DispatchQueue.global(qos: .userInitiated))
         }
     }
 
-    /// 发送握手包和状态请求包
+    /// Sends the handshake and status request packets to the server.
     private static func sendHandshakeAndStatusRequest(connection: NWConnection, address: String, port: Int) {
         var packetData = Data()
 
-        // 1. 发送 Handshake 包（包ID 0x00）
-        // 包ID: 0x00 (VarInt)
         packetData.append(encodeVarInt(0))
-
-        // 协议版本: -1 (VarInt) - 表示状态查询
         packetData.append(encodeVarInt(-1))
-
-        // 服务器地址 (String)
         packetData.append(encodeString(address))
 
-        // 服务器端口 (Unsigned Short)
         let portBytes = withUnsafeBytes(of: UInt16(port).bigEndian) { Data($0) }
         packetData.append(portBytes)
 
-        // 下一个状态: 1 (VarInt) - 表示状态
         packetData.append(encodeVarInt(1))
 
-        // 发送握手包
         let handshakeLength = encodeVarInt(Int32(packetData.count))
         let handshakePacket = handshakeLength + packetData
         connection.send(content: handshakePacket, completion: .contentProcessed { error in
@@ -329,9 +306,8 @@ enum MinecraftServerPing {
                 return
             }
 
-            // 2. 发送 Status Request 包（包ID 0x00）
             var statusRequestData = Data()
-            statusRequestData.append(encodeVarInt(0)) // 包ID: 0x00
+            statusRequestData.append(encodeVarInt(0))
 
             let statusRequestLength = encodeVarInt(Int32(statusRequestData.count))
             let statusRequestPacket = statusRequestLength + statusRequestData
@@ -343,39 +319,33 @@ enum MinecraftServerPing {
         })
     }
 
-    /// 解析服务器响应
+    /// Parses the server response data into a `MinecraftServerInfo` structure.
     private static func parseResponse(data: Data) -> MinecraftServerInfo? {
         var offset = 0
 
         guard data.count > offset else { return nil }
 
-        // 读取数据包长度（VarInt）
         guard let (packetLength, lengthBytes) = decodeVarInt(data: data, offset: &offset) else {
             return nil
         }
 
-        // 检查数据是否完整
         let totalLength = lengthBytes + Int(packetLength)
         guard data.count >= totalLength else {
-            return nil // 数据不完整，继续等待
+            return nil
         }
 
-        // 读取包ID（VarInt）
         guard let (packetId, _) = decodeVarInt(data: data, offset: &offset) else {
             return nil
         }
 
-        // Status Response 包的包ID应该是 0x00
         guard packetId == 0 else {
             return nil
         }
 
-        // 读取 JSON 字符串
         guard let (jsonString, _) = decodeString(data: data, offset: &offset) else {
             return nil
         }
 
-        // 解析 JSON
         guard let jsonData = jsonString.data(using: .utf8) else {
             return nil
         }
@@ -385,15 +355,12 @@ enum MinecraftServerPing {
             let serverInfo = try decoder.decode(MinecraftServerInfo.self, from: jsonData)
             return serverInfo
         } catch {
-            // JSON 解析失败时记录日志（可能是协议不兼容）
             Logger.shared.debug("解析服务器 JSON 失败: \(error.localizedDescription)")
             return nil
         }
     }
 
-    // MARK: - VarInt 编码/解码
-
-    /// 编码 VarInt
+    /// Encodes an integer as a VarInt.
     private static func encodeVarInt(_ value: Int32) -> Data {
         var result = Data()
         var val = UInt32(bitPattern: value)
@@ -413,7 +380,7 @@ enum MinecraftServerPing {
         return result
     }
 
-    /// 解码 VarInt
+    /// Decodes a VarInt from data at the specified offset.
     private static func decodeVarInt(data: Data, offset: inout Int) -> (Int32, Int)? {
         guard offset < data.count else { return nil }
 
@@ -434,19 +401,17 @@ enum MinecraftServerPing {
 
             shift += 7
             if shift >= 32 {
-                return nil // VarInt 溢出
+                return nil
             }
         }
 
         return (Int32(bitPattern: result), bytesRead)
     }
 
-    // MARK: - String 编码/解码
-
-    /// 编码字符串（UTF-8，前面加上 VarInt 长度）
+    /// Encodes a string with a VarInt length prefix.
     private static func encodeString(_ string: String) -> Data {
         guard let utf8Data = string.data(using: .utf8) else {
-            return encodeVarInt(0) // 空字符串
+            return encodeVarInt(0)
         }
 
         var result = Data()
@@ -455,7 +420,7 @@ enum MinecraftServerPing {
         return result
     }
 
-    /// 解码字符串
+    /// Decodes a string with a VarInt length prefix from data at the specified offset.
     private static func decodeString(data: Data, offset: inout Int) -> (String, Int)? {
         guard let (length, lengthBytes) = decodeVarInt(data: data, offset: &offset) else {
             return nil
@@ -463,7 +428,6 @@ enum MinecraftServerPing {
 
         guard length >= 0 else { return nil }
         guard offset + Int(length) <= data.count else {
-            // 数据不完整，恢复 offset
             offset -= lengthBytes
             return nil
         }

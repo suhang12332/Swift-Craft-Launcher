@@ -1,9 +1,14 @@
+//
+//  WorldNBTMapperExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class WorldNBTMapperExtendedTests: XCTestCase {
-
-    // MARK: - readInt64
 
     func testReadInt64_int64() {
         XCTAssertEqual(WorldNBTMapper.readInt64(Int64(42)), 42)
@@ -49,8 +54,6 @@ final class WorldNBTMapperExtendedTests: XCTestCase {
         XCTAssertNil(WorldNBTMapper.readInt64("not a number"))
     }
 
-    // MARK: - readBoolFlag
-
     func testReadBoolFlag_boolTrue() {
         XCTAssertTrue(WorldNBTMapper.readBoolFlag(true))
     }
@@ -74,8 +77,6 @@ final class WorldNBTMapperExtendedTests: XCTestCase {
     func testReadBoolFlag_string() {
         XCTAssertFalse(WorldNBTMapper.readBoolFlag("not a bool"))
     }
-
-    // MARK: - mapGameMode
 
     func testMapGameMode_survival() {
         let result = WorldNBTMapper.mapGameMode(0)
@@ -102,8 +103,6 @@ final class WorldNBTMapperExtendedTests: XCTestCase {
         XCTAssertFalse(result.isEmpty)
     }
 
-    // MARK: - mapDifficulty
-
     func testMapDifficulty_peaceful() {
         let result = WorldNBTMapper.mapDifficulty(0)
         XCTAssertFalse(result.isEmpty)
@@ -128,8 +127,6 @@ final class WorldNBTMapperExtendedTests: XCTestCase {
         let result = WorldNBTMapper.mapDifficulty(99)
         XCTAssertFalse(result.isEmpty)
     }
-
-    // MARK: - mapDifficultyString
 
     func testMapDifficultyString_peaceful() {
         let result = WorldNBTMapper.mapDifficultyString("peaceful")
@@ -160,8 +157,6 @@ final class WorldNBTMapperExtendedTests: XCTestCase {
         let result = WorldNBTMapper.mapDifficultyString("unknown")
         XCTAssertFalse(result.isEmpty)
     }
-
-    // MARK: - readSeed
 
     func testReadSeed_randomSeed() {
         let dataTag: [String: Any] = ["RandomSeed": Int64(12345)]

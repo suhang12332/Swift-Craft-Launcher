@@ -1,12 +1,21 @@
+//
+//  MacRuleEvaluator.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-// MARK: - Mac 规则评估器
-
+/// Represents macOS platform identifiers for library compatibility checks.
 enum MacOS: String {
     case osx = "osx"
     case osxArm64 = "osx-arm64"
     case osxX86_64 = "osx-x86_64"
 
+    /// Creates a `MacOS` value from a Java architecture string.
+    /// - Parameter javaArch: The Java architecture identifier (e.g., "aarch64", "x86_64").
+    /// - Returns: The corresponding `MacOS` value.
     static func fromJavaArch(_ javaArch: String) -> Self {
         let arch = javaArch.lowercased()
         if arch.contains("aarch64") {
@@ -19,18 +28,23 @@ enum MacOS: String {
     }
 }
 
+/// Represents a rule action for library compatibility.
 enum RuleAction: String {
     case allow = "allow"
     case disallow = "disallow"
 }
 
+/// A simplified rule structure for macOS compatibility evaluation.
 struct MacRule {
     let action: RuleAction
     let os: MacOS?
 }
 
+/// Evaluates Minecraft library rules against the current platform.
 enum MacRuleEvaluator {
 
+    /// Returns the Java architecture string for the current platform.
+    /// - Returns: A Java architecture identifier (e.g., "aarch64", "x86_64").
     static func getCurrentJavaArch() -> String {
         #if os(macOS)
         return Architecture.current.javaArch
@@ -39,6 +53,9 @@ enum MacRuleEvaluator {
         #endif
     }
 
+    /// Determines whether the given Minecraft version uses strict architecture matching.
+    /// - Parameter version: The Minecraft version string.
+    /// - Returns: `true` if the version is below 1.19.
     static func isLowVersion(_ version: String) -> Bool {
         let versionComponents = version.split(separator: ".").compactMap { Int($0) }
         guard versionComponents.count >= 2 else { return false }
@@ -46,11 +63,13 @@ enum MacRuleEvaluator {
         let major = versionComponents[0]
         let minor = versionComponents[1]
 
-        // 1.19 以下版本使用严格架构匹配
+        // Versions below 1.19 use strict architecture matching.
         return major < 1 || (major == 1 && minor < 19)
     }
 
-    // 返回支持的 macOS 标识符列表，按优先级排序
+    /// Returns a list of supported platform identifiers for the current system, ordered by priority.
+    /// - Parameter minecraftVersion: The Minecraft version string, if available.
+    /// - Returns: An array of platform identifier strings.
     static func getSupportedMacOSIdentifiers(minecraftVersion: String? = nil) -> [String] {
         #if os(macOS)
         let isLowVersion = minecraftVersion.map { Self.isLowVersion($0) } ?? false
@@ -65,10 +84,18 @@ enum MacRuleEvaluator {
         #endif
     }
 
+    /// Checks whether a platform identifier is supported on the current system.
+    /// - Parameters:
+    ///   - identifier: The platform identifier to check.
+    ///   - minecraftVersion: The Minecraft version string, if available.
+    /// - Returns: `true` if the identifier is supported; `false` otherwise.
     static func isPlatformIdentifierSupported(_ identifier: String, minecraftVersion: String? = nil) -> Bool {
         return getSupportedMacOSIdentifiers(minecraftVersion: minecraftVersion).contains(identifier)
     }
 
+    /// Converts Minecraft library rules into simplified `MacRule` structures.
+    /// - Parameter rules: The original Minecraft rules.
+    /// - Returns: An array of `MacRule` values, excluding non-macOS rules.
     static func convertFromMinecraftRules(_ rules: [Rule]) -> [MacRule] {
         return rules.compactMap { rule in
             guard let action = RuleAction(rawValue: rule.action) else { return nil }
@@ -77,32 +104,35 @@ enum MacRuleEvaluator {
             if let osName = rule.os?.name, let validMacOS = MacOS(rawValue: osName) {
                 macOS = validMacOS
             } else if rule.os?.name != nil {
-                return nil // 非 macOS 规则
+                return nil // Non-macOS rule.
             } else {
-                macOS = nil // 无 OS 限制
+                macOS = nil // No OS restriction.
             }
 
             return MacRule(action: action, os: macOS)
         }
     }
 
+    /// Determines whether the given library rules allow the library on the current platform.
+    /// - Parameters:
+    ///   - rules: The library rules to evaluate.
+    ///   - minecraftVersion: The Minecraft version string, if available.
+    /// - Returns: `true` if the library is allowed; `false` otherwise.
     static func isAllowed(_ rules: [Rule], minecraftVersion: String? = nil) -> Bool {
         guard !rules.isEmpty else { return true }
 
         let macRules = convertFromMinecraftRules(rules)
 
-        // 如果原始规则不为空但转换后为空，说明都是非 macOS 规则
+        // If original rules are non-empty but conversion produced nothing, all rules are non-macOS.
         if macRules.isEmpty {
             return false
         }
 
-        // 获取当前平台支持的标识符列表
         let supportedIdentifiers = getSupportedMacOSIdentifiers(minecraftVersion: minecraftVersion)
 
-        // 根据支持的标识符获取适用的规则（按优先级排序）
+        // Find applicable rules based on supported identifiers, ordered by priority.
         var applicableRules: [MacRule] = []
 
-        // 优先查找高优先级的规则
         for identifier in supportedIdentifiers {
             let macOS = MacOS(rawValue: identifier)
             let matchingRules = macRules.filter { rule in
@@ -114,19 +144,17 @@ enum MacRuleEvaluator {
             }
         }
 
-        // 如果没有找到匹配的规则，使用无 OS 限制的规则
+        // Fall back to rules with no OS restriction if none matched.
         if applicableRules.isEmpty {
             applicableRules = macRules.filter { $0.os == nil }
         }
 
         guard !applicableRules.isEmpty else { return false }
 
-        // 优先检查 disallow 规则
         if applicableRules.contains(where: { $0.action == .disallow }) {
             return false
         }
 
-        // 检查 allow 规则
         return applicableRules.contains { $0.action == .allow }
     }
 }

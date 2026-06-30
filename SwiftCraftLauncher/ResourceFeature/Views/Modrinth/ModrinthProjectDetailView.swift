@@ -1,7 +1,13 @@
+//
+//  ModrinthProjectDetailView.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftMarkDownUI
 import SwiftUI
 
-// MARK: - Constants
 private enum Constants {
     static let iconSize: CGFloat = 75
     static let cornerRadius: CGFloat = 8
@@ -16,7 +22,7 @@ private enum Constants {
     static let categoryCornerRadius: CGFloat = 12
 }
 
-// MARK: - ModrinthProjectDetailView
+/// Displays the full project detail view with icon, title, stats, and description.
 struct ModrinthProjectDetailView: View {
     let projectDetail: ModrinthProjectDetail?
 
@@ -28,7 +34,6 @@ struct ModrinthProjectDetailView: View {
         }
     }
 
-    // MARK: - Project Detail View
     private func projectDetailView(_ project: ModrinthProjectDetail) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             projectHeader(project)
@@ -38,7 +43,6 @@ struct ModrinthProjectDetailView: View {
         .listRowBackground(Color.clear)
     }
 
-    // MARK: - Project Header
     private func projectHeader(_ project: ModrinthProjectDetail) -> some View {
         VStack(alignment: .leading, spacing: Constants.spacing) {
             HStack(alignment: .top, spacing: Constants.spacing) {
@@ -111,7 +115,6 @@ struct ModrinthProjectDetailView: View {
         .foregroundColor(.secondary)
     }
 
-    // MARK: - Project Content
     private func projectContent(_ project: ModrinthProjectDetail) -> some View {
         VStack(alignment: .leading, spacing: Constants.spacing) {
             descriptionView(project)
@@ -124,7 +127,6 @@ struct ModrinthProjectDetailView: View {
         MixedMarkdownView(project.body)
     }
 
-    // MARK: - Loading View
     private var loadingView: some View {
         VStack(spacing: Constants.spacing) {
             ProgressView()

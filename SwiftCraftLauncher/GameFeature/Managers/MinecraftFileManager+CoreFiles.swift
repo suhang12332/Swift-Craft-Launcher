@@ -1,5 +1,13 @@
+//
+//  MinecraftFileManager+CoreFiles.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Core file download extension for MinecraftFileManager.
 extension MinecraftFileManager {
 
     func downloadCoreFiles(manifest: MinecraftVersionManifest) async throws {

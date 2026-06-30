@@ -1,29 +1,28 @@
 //
 //  ResourceEnableDisableManager.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/6/28.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// 资源启用/禁用状态管理器
-/// 负责管理本地资源的启用和禁用状态（通过 .disable 后缀）
+/// Manages the enabled and disabled state of local resources by toggling a `.disable` file extension.
 enum ResourceEnableDisableManager {
-    /// 检查资源是否被禁用
-    /// - Parameter fileName: 文件名
-    /// - Returns: 是否被禁用
+    /// Returns a Boolean value indicating whether the resource is disabled.
+    /// - Parameter fileName: The file name to check, or `nil`.
+    /// - Returns: `true` if the file name ends with `.disable`; otherwise `false`.
     static func isDisabled(fileName: String?) -> Bool {
         guard let fileName = fileName else { return false }
         return fileName.hasSuffix(".disable")
     }
 
-    /// 切换资源的启用/禁用状态
+    /// Toggles the enabled or disabled state of a resource by renaming the file.
     /// - Parameters:
-    ///   - fileName: 当前文件名
-    ///   - resourceDir: 资源目录
-    /// - Returns: 新的文件名，如果操作失败则返回 nil
-    /// - Throws: 文件操作错误
+    ///   - fileName: The current file name.
+    ///   - resourceDir: The directory containing the resource.
+    /// - Returns: The new file name after toggling.
+    /// - Throws: A file-system error if the rename operation fails.
     static func toggleDisableState(
         fileName: String,
         resourceDir: URL

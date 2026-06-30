@@ -1,5 +1,13 @@
+//
+//  VersionSelectionView.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Allows the user to pick a game version and a modpack version for download.
 struct VersionSelectionView: View {
     @Binding var selectedGameVersion: String
     @Binding var selectedModPackVersion: ModrinthProjectDetailVersion?
@@ -42,7 +50,7 @@ struct VersionSelectionView: View {
                     }
                 }
             }
-            .disabled(availableGameVersions.isEmpty) // 没有版本时禁用
+            .disabled(availableGameVersions.isEmpty)
             .onChange(of: selectedGameVersion) { _, newValue in
                 onGameVersionChange(newValue)
             }

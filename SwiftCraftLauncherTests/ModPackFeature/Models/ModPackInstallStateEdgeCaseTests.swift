@@ -1,10 +1,15 @@
+//
+//  ModPackInstallStateEdgeCaseTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 @MainActor
 final class ModPackInstallStateEdgeCaseTests: XCTestCase {
-
-    // MARK: - calculateProgress edge cases via updateFilesProgress
 
     func testUpdateFilesProgress_zeroTotal_progressZero() {
         let state = ModPackInstallState()
@@ -36,8 +41,6 @@ final class ModPackInstallStateEdgeCaseTests: XCTestCase {
         XCTAssertEqual(state.filesProgress, 0.5, accuracy: 0.001)
     }
 
-    // MARK: - calculateProgress edge cases via updateDependenciesProgress
-
     func testUpdateDependenciesProgress_zeroTotal() {
         let state = ModPackInstallState()
         state.updateDependenciesProgress(dependencyName: "dep", completed: 3, total: 0)
@@ -56,8 +59,6 @@ final class ModPackInstallStateEdgeCaseTests: XCTestCase {
         XCTAssertEqual(state.dependenciesProgress, 0)
     }
 
-    // MARK: - calculateProgress edge cases via updateOverridesProgress
-
     func testUpdateOverridesProgress_zeroTotal() {
         let state = ModPackInstallState()
         state.updateOverridesProgress(overrideName: "file", completed: 1, total: 0)
@@ -69,8 +70,6 @@ final class ModPackInstallStateEdgeCaseTests: XCTestCase {
         state.updateOverridesProgress(overrideName: "file", completed: 100, total: 10)
         XCTAssertEqual(state.overridesProgress, 1.0)
     }
-
-    // MARK: - startInstallation behavior
 
     func testStartInstallation_setsInstallingTrue() {
         let state = ModPackInstallState()
@@ -107,8 +106,6 @@ final class ModPackInstallStateEdgeCaseTests: XCTestCase {
         // Non-zero overridesTotal is NOT updated because it was already non-zero
         XCTAssertEqual(state.overridesTotal, 10)
     }
-
-    // MARK: - reset after state
 
     func testReset_afterProgress() {
         let state = ModPackInstallState()

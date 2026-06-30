@@ -1,7 +1,14 @@
+//
+//  GameDialogsPresenter.swift
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
-/// 主窗口级游戏相关浮层状态（整合包导出 sheet、删除确认对话框等
+/// Manages presentation state for main-window game dialogs such as mod-pack export and deletion confirmation.
 @MainActor
 final class GameDialogsPresenter: ObservableObject {
     static let shared = GameDialogsPresenter()

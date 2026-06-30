@@ -1,12 +1,13 @@
 //
 //  ModPackImportViewModel.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-// MARK: - ModPack Import View Model
+/// Handles importing a modpack from a local file, including parsing, validation, and installation.
 @MainActor
 class ModPackImportViewModel: BaseGameFormViewModel {
     let modPackViewModel = ModPackDownloadSheetViewModel()
@@ -19,7 +20,6 @@ class ModPackImportViewModel: BaseGameFormViewModel {
     let onProcessingStateChanged: (Bool) -> Void
     var gameRepository: GameRepository?
 
-    // MARK: - Initialization
     init(
         configuration: GameFormConfiguration,
         preselectedFile: URL? = nil,
@@ -34,13 +34,10 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         self.isProcessingModPack = shouldStartProcessing
     }
 
-    // MARK: - Setup Methods
-
     func setup(gameRepository: GameRepository) {
         self.gameRepository = gameRepository
         modPackViewModel.setGameRepository(gameRepository)
 
-        // 如果有预选文件，启动处理
         if selectedModPackFile != nil && isProcessingModPack {
             Task {
                 await parseSelectedModPack()
@@ -50,7 +47,6 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         updateParentState()
     }
 
-    // MARK: - Override Methods
     override func performConfirmAction() async {
         startDownloadTask {
             await self.importModPack()
@@ -59,19 +55,13 @@ class ModPackImportViewModel: BaseGameFormViewModel {
 
     override func handleCancel() {
         if computeIsDownloading() {
-            // 停止下载任务
             downloadTask?.cancel()
             downloadTask = nil
-
-            // 取消下载状态
             gameSetupService.downloadState.cancel()
             modPackViewModel.modPackInstallState.reset()
-
-            // 停止处理状态
             isProcessingModPack = false
             onProcessingStateChanged(false)
 
-            // 执行取消后的清理工作
             Task {
                 await performCancelCleanup()
             }
@@ -84,7 +74,6 @@ class ModPackImportViewModel: BaseGameFormViewModel {
         let gameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
         let extractedPath = extractedModPackPath
 
-        // 在后台执行文件删除，避免主线程 FileManager
         await Task.detached(priority: .utility) {
             let fm = FileManager.default
             if !gameName.isEmpty {

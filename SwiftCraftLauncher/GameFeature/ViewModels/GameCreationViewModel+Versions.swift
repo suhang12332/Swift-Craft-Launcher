@@ -1,9 +1,14 @@
+//
+//  GameCreationViewModel+Versions.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 extension GameCreationViewModel {
-    // MARK: - Version Management
-
-    /// 初始化版本选择器
+    /// Populates the version picker with compatible versions for the selected mod loader.
     func initializeVersionPicker() async {
         let includeSnapshots = gameSettingsManager.includeSnapshotsForGameVersions
         let compatibleVersions = await CommonService.compatibleVersions(
@@ -13,15 +18,13 @@ extension GameCreationViewModel {
         await updateAvailableVersions(compatibleVersions)
     }
 
-    /// 更新可用版本并设置默认选择
+    /// Updates the available versions list and selects a default version.
     func updateAvailableVersions(_ versions: [String]) async {
         self.availableVersions = versions
-        // 如果当前选中的版本不在兼容版本列表中，选择第一个兼容版本
         if !versions.contains(self.selectedGameVersion) && !versions.isEmpty {
             self.selectedGameVersion = versions.first ?? ""
         }
 
-        // 获取当前选中版本的时间信息
         if !versions.isEmpty {
             let targetVersion = versions.contains(self.selectedGameVersion) ? self.selectedGameVersion : (versions.first ?? "")
             let timeString = await ModrinthService.queryVersionTime(from: targetVersion)
@@ -30,7 +33,7 @@ extension GameCreationViewModel {
         }
     }
 
-    /// 处理模组加载器变化
+    /// Responds to a mod loader change by refreshing compatible versions and loader versions.
     func handleModLoaderChange(_ newLoader: String) {
         pendingIconURL = nil
         pendingIconData = nil
@@ -44,7 +47,6 @@ extension GameCreationViewModel {
             )
             await updateAvailableVersions(compatibleVersions)
 
-            // 更新加载器版本列表
             if newLoader != GameLoader.vanilla.displayName && !selectedGameVersion.isEmpty {
                 await updateLoaderVersions(for: newLoader, gameVersion: selectedGameVersion)
             } else {
@@ -57,14 +59,14 @@ extension GameCreationViewModel {
         }
     }
 
-    /// 处理游戏版本变化
+    /// Responds to a game version change by refreshing loader versions.
     func handleGameVersionChange(_ newGameVersion: String) {
         Task {
             await updateLoaderVersions(for: selectedModLoader, gameVersion: newGameVersion)
         }
     }
 
-    /// 更新加载器版本列表
+    /// Fetches available loader versions for the specified loader and game version.
     func updateLoaderVersions(for loader: String, gameVersion: String) async {
         guard loader != GameLoader.vanilla.displayName && !gameVersion.isEmpty else {
             availableLoaderVersions = []
@@ -103,7 +105,6 @@ extension GameCreationViewModel {
         }
 
         availableLoaderVersions = versions
-        // 如果当前选中的版本不在列表中，选择第一个版本
         if !versions.contains(selectedLoaderVersion) && !versions.isEmpty {
             selectedLoaderVersion = versions.first ?? ""
         } else if versions.isEmpty {
@@ -112,8 +113,7 @@ extension GameCreationViewModel {
         updateDefaultGameName()
     }
 
-    /// 根据当前选择的版本和加载器自动生成默认游戏名称
-    /// 加载器、游戏版本或加载器版本任意一个变化时，都重新生成
+    /// Regenerates the default game name from the current version and loader selections.
     func updateDefaultGameName() {
         guard !selectedGameVersion.isEmpty else { return }
 

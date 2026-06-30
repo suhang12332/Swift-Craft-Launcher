@@ -1,23 +1,19 @@
 //
 //  LitematicaService.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/20.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// Litematica 投影文件服务
-/// 负责读取和解析 Litematica 投影文件
+/// Reads and parses Litematica schematic files from game directories.
 @MainActor
 class LitematicaService {
     static let shared = LitematicaService()
 
     private init() {}
 
-    /// 从游戏目录读取 Litematica 投影文件列表
-    /// - Parameter gameName: 游戏名称
-    /// - Returns: Litematica 投影文件列表
     func loadLitematicaFiles(for gameName: String) async throws -> [LitematicaInfo] {
         let schematicsDir = AppPaths.schematicsDirectory(gameName: gameName)
         do {
@@ -34,9 +30,6 @@ class LitematicaService {
         }
     }
 
-    /// 读取完整的 Litematica 投影元数据
-    /// - Parameter filePath: 文件路径
-    /// - Returns: 完整的元数据信息
     func loadFullMetadata(filePath: URL) async throws -> LitematicMetadata? {
         do {
             return try await Task.detached(priority: .userInitiated) {

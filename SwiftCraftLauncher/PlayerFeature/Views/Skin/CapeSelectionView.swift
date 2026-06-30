@@ -1,6 +1,14 @@
+//
+//  CapeSelectionView.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// Displays a single cape texture loaded from a URL.
 struct CapeTextureView: View {
     let imageURL: String
     private var url: URL? { URL(string: imageURL.httpToHttps()) }
@@ -79,6 +87,7 @@ struct CapeTextureView: View {
     }
 }
 
+/// Displays a horizontally scrollable list of cape options for selection.
 struct CapeSelectionView: View {
     let playerProfile: MinecraftProfileResponse?
     @Binding var selectedCapeId: String?
@@ -137,7 +146,6 @@ struct CapeSelectionView: View {
         let isSelected = selectedCapeId == id
 
         return Button {
-            // 已选中的披风不允许重复点击
             guard !isSelected else { return }
 
             selectedCapeId = id

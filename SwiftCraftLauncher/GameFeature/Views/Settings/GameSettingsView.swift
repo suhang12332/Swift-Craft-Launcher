@@ -1,3 +1,11 @@
+//
+//  GameSettingsView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Global game settings view for API source, memory allocation, Java runtime, and cache management.
 import Foundation
 import SwiftUI
 
@@ -8,7 +16,6 @@ public struct GameSettingsView: View {
     @StateObject private var viewModel: GameSettingsJavaRuntimeViewModel
     private let modCacheManager: ModCacheManager
 
-    // 内存区间
     @State private var globalMemoryRange: ClosedRange<Double> = 512...4096
 
     @MainActor

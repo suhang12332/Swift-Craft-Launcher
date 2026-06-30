@@ -1,3 +1,10 @@
+//
+//  CurseForgeManifestBuilderExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
@@ -26,8 +33,6 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
         }
         return dict
     }
-
-    // MARK: - Vanilla loader
 
     func testBuild_vanilla_noModLoaders() throws {
         let json = try CurseForgeManifestBuilder.build(
@@ -59,8 +64,6 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
         }
         XCTAssertTrue(modLoaders.isEmpty)
     }
-
-    // MARK: - JSON structure
 
     func testBuild_containsManifestType() throws {
         let json = try CurseForgeManifestBuilder.build(
@@ -114,8 +117,6 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
         )
         XCTAssertTrue(json.contains("1.21.1"))
     }
-
-    // MARK: - Mod loader ID format
 
     func testBuild_forgeLoaderIdFormat() throws {
         let json = try CurseForgeManifestBuilder.build(
@@ -172,8 +173,6 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
         }
         XCTAssertEqual(modLoaders.first?["id"] as? String, "forge")
     }
-
-    // MARK: - ManifestFile
 
     func testBuild_filesEncoded() throws {
         let files = [

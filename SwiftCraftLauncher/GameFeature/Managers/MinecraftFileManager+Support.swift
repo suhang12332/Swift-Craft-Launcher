@@ -1,5 +1,13 @@
+//
+//  MinecraftFileManager+Support.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Support types and helpers for MinecraftFileManager.
 enum MinecraftFileManagerConstants {
     static let metaSubdirectories = [
         AppConstants.DirectoryNames.versions,
@@ -14,6 +22,7 @@ enum MinecraftFileManagerConstants {
     static let memoryBufferSize = 1024 * 1024
 }
 
+/// A thread-safe counter using `NSLock`.
 final class NSLockingCounter {
     private var count = 0
     private let lock = NSLock()

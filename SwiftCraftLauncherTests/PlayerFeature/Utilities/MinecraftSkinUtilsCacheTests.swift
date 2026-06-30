@@ -1,3 +1,10 @@
+//
+//  MinecraftSkinUtilsCacheTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
@@ -12,8 +19,6 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
         MinecraftSkinUtils.clearCache()
         super.tearDown()
     }
-
-    // MARK: - Cache Operations
 
     func testClearCache_removesAllObjects() {
         let headSize = CGSize(width: 8, height: 8)
@@ -70,8 +75,6 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
         XCTAssertEqual(result?.headImage.width, 8)
     }
 
-    // MARK: - RenderedImageCache
-
     func testRenderedImageCache_costCalculation() {
         let width = 8
         let height = 8
@@ -118,8 +121,6 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
         )
         XCTAssertTrue(cache.hasLayerContent)
     }
-
-    // MARK: - Helpers
 
     private func createTestCGImage(size: CGSize) -> CGImage? {
         let colorSpace = CGColorSpaceCreateDeviceRGB()

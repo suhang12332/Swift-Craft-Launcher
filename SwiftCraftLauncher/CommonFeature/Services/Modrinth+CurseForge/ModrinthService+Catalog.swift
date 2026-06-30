@@ -1,5 +1,13 @@
+//
+//  ModrinthService+Catalog.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides catalog operations for Modrinth loaders, categories, and game versions.
 extension ModrinthService {
 
     static func fetchLoaders() async -> [Loader] {

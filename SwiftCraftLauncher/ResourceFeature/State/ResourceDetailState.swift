@@ -1,12 +1,15 @@
 //
 //  ResourceDetailState.swift
-//  SwiftCraftLauncher
+//  ResourceFeature
 //
-//  收拢当前选中的侧边栏项、游戏/资源类型、项目详情等状态，通过 @EnvironmentObject 向下提供，减少 @Binding 透传。
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
+/// Aggregates sidebar selection, game/resource type, and project detail state.
+///
+/// Intended to be provided via `@EnvironmentObject` to reduce `@Binding` proliferation.
 public final class ResourceDetailState: ObservableObject {
 
     @Published public var selectedItem: SidebarItem
@@ -42,15 +45,17 @@ public final class ResourceDetailState: ObservableObject {
         self.loadedProjectDetail = loadedProjectDetail
     }
 
+    /// Selects a game by its identifier.
     public func selectGame(id: String?) {
         gameId = id
     }
 
+    /// Selects a resource type.
     public func selectResource(type: String) {
         gameResourcesType = type
     }
 
-    /// 清空项目/游戏选中状态（用于切换回列表等）
+    /// Clears the current project and game selection.
     public func clearSelection() {
         selectedProjectId = nil
         loadedProjectDetail = nil
@@ -63,7 +68,7 @@ public final class ResourceDetailState: ObservableObject {
         })
     }
 
-    /// 用于 List(selection:) 等需要 Optional 的 API
+    /// Returns a binding suitable for APIs that require an optional selection (e.g. `List(selection:)`).
     public var selectedItemOptionalBinding: Binding<SidebarItem?> {
         Binding(get: { [weak self] in self?.selectedItem }, set: { [weak self] value in
             guard let self else { return }

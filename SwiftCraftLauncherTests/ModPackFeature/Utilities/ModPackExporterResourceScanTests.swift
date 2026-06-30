@@ -1,11 +1,16 @@
+//
+//  ModPackExporterResourceScanTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModPackExporterResourceScanTests: XCTestCase {
 
     private let gameDirectory = URL(fileURLWithPath: "/tmp/testgame")
-
-    // MARK: - topLevelDirectoryName
 
     func testTopLevelDirectoryName_modsFolder() {
         let file = gameDirectory.appendingPathComponent("mods/test.jar")
@@ -37,8 +42,6 @@ final class ModPackExporterResourceScanTests: XCTestCase {
         XCTAssertNil(result)
     }
 
-    // MARK: - shouldScanForModrinth
-
     func testShouldScanForModrinth_mods() {
         let file = gameDirectory.appendingPathComponent("mods/test.jar")
         XCTAssertTrue(ModPackExporter.shouldScanForModrinth(file, gameDirectory: gameDirectory))
@@ -69,8 +72,6 @@ final class ModPackExporterResourceScanTests: XCTestCase {
         XCTAssertFalse(ModPackExporter.shouldScanForModrinth(file, gameDirectory: gameDirectory))
     }
 
-    // MARK: - shouldScanForCurseForge
-
     func testShouldScanForCurseForge_modsJar() {
         let file = gameDirectory.appendingPathComponent("mods/test.jar")
         XCTAssertTrue(ModPackExporter.shouldScanForCurseForge(file, gameDirectory: gameDirectory))
@@ -90,8 +91,6 @@ final class ModPackExporterResourceScanTests: XCTestCase {
         let file = gameDirectory.appendingPathComponent("config/settings.json")
         XCTAssertFalse(ModPackExporter.shouldScanForCurseForge(file, gameDirectory: gameDirectory))
     }
-
-    // MARK: - makeRelativePath
 
     func testMakeRelativePath_modsFolder() {
         let file = gameDirectory.appendingPathComponent("mods/test.jar")
@@ -116,8 +115,6 @@ final class ModPackExporterResourceScanTests: XCTestCase {
         let result = ModPackExporter.makeRelativePath(for: file, gameDirectory: gameDirectory)
         XCTAssertEqual(result, "")
     }
-
-    // MARK: - inferOverridesSubdirectory
 
     func testInferOverridesSubdirectory_mods() {
         let file = gameDirectory.appendingPathComponent("mods/test.jar")

@@ -1,9 +1,14 @@
+//
+//  ModrinthIndexDependenciesExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
-
-    // MARK: - All nil case
 
     func testAllNil() throws {
         let deps = ModrinthIndexDependencies(
@@ -33,8 +38,6 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
         XCTAssertNil(decoded.neoforge)
         XCTAssertNil(decoded.dependencies)
     }
-
-    // MARK: - CodingKeys for quilt-loader and neoforge-loader
 
     func testCodingKeys_quiltLoader() throws {
         let json = """
@@ -98,8 +101,6 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
         XCTAssertNil(decoded.dependencies?[1].versionId)
     }
 
-    // MARK: - ModrinthIndexProjectDependency edge cases
-
     func testDependency_nilProjectId() throws {
         let json = """
         {"project_id": null, "version_id": "ver1", "dependency_type": "required"}
@@ -125,8 +126,6 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
         XCTAssertNil(decoded.versionId)
         XCTAssertEqual(decoded.dependencyType, "incompatible")
     }
-
-    // MARK: - ModrinthIndexFileHashes empty dict
 
     func testHashes_emptyDict() {
         let hashes = ModrinthIndexFileHashes(from: [:])
@@ -174,8 +173,6 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
         XCTAssertNil(decoded.sha1)
         XCTAssertNil(decoded.sha512)
     }
-
-    // MARK: - ModrinthIndexFile edge cases
 
     func testModrinthIndexFile_nilEnvAndSource() throws {
         let file = ModrinthIndexFile(
@@ -232,8 +229,6 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
         XCTAssertEqual(file.env?.server, "unsupported")
     }
 
-    // MARK: - ModrinthIndexFileEnv
-
     func testFileEnv_clientOnly() throws {
         let env = ModrinthIndexFileEnv(client: "required", server: nil)
         let data = try JSONEncoder().encode(env)
@@ -251,8 +246,6 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
         XCTAssertNil(decoded.client)
         XCTAssertEqual(decoded.server, "optional")
     }
-
-    // MARK: - ModrinthIndexFile codingKeys
 
     func testModrinthIndexFile_codingKeys_fileSize() throws {
         let json = """
@@ -288,8 +281,6 @@ final class ModrinthIndexDependenciesExtendedTests: XCTestCase {
         XCTAssertEqual(decoded.fileSize, original.fileSize)
         XCTAssertEqual(decoded.source, .modrinth)
     }
-
-    // MARK: - ModrinthIndex edge cases
 
     func testModrinthIndex_fromJSON() throws {
         let json = """

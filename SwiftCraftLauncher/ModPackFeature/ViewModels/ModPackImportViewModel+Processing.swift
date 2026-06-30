@@ -1,7 +1,14 @@
+//
+//  ModPackImportViewModel+Processing.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 extension ModPackImportViewModel {
-    // MARK: - ModPack Processing
+    /// Parses the selected modpack archive, extracts it, and populates the form fields.
     func parseSelectedModPack() async {
         guard let selectedFile = selectedModPackFile else { return }
 
@@ -17,8 +24,6 @@ extension ModPackImportViewModel {
         }
 
         extractedModPackPath = prepared.extractedPath
-
-        // 解析索引信息
         modPackIndexInfo = prepared.indexInfo
         let defaultName = GameNameGenerator.generateImportName(
             modPackName: prepared.indexInfo.modPackName,

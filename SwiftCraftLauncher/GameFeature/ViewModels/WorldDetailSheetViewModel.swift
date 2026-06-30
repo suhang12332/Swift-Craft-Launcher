@@ -1,21 +1,23 @@
+//
+//  WorldDetailSheetViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// View model for the world detail sheet, parsing NBT data from level.dat to display world metadata.
 @MainActor
 final class WorldDetailSheetViewModel: ObservableObject {
-
-    // MARK: - Types
 
     private enum LoadError: Error {
         case levelDatNotFound
         case invalidStructure
     }
 
-    // MARK: - Input
-
     let world: WorldInfo
     let gameName: String
-
-    // MARK: - Output state
 
     @Published var metadata: WorldDetailMetadata?
     @Published var rawDataTag: [String: Any]?
@@ -24,14 +26,10 @@ final class WorldDetailSheetViewModel: ObservableObject {
     @Published var showError: Bool = false
     @Published var showRawData: Bool = false
 
-    // MARK: - Init
-
     init(world: WorldInfo, gameName: String) {
         self.world = world
         self.gameName = gameName
     }
-
-    // MARK: - Derived
 
     var seed: Int64? {
         metadata?.seed
@@ -75,7 +73,6 @@ final class WorldDetailSheetViewModel: ObservableObject {
                     throw LoadError.invalidStructure
                 }
 
-                // 26+ 新版存档：seed 拆到 data/minecraft/world_gen_settings.dat
                 var seed: Int64?
                 if FileManager.default.fileExists(atPath: worldGenSettingsPath.path) {
                     let wgsData = try Data(contentsOf: worldGenSettingsPath)
@@ -119,8 +116,6 @@ final class WorldDetailSheetViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Parsing
-
     private func parseWorldDetail(
         from dataTag: [String: Any],
         folderName: String,
@@ -129,19 +124,16 @@ final class WorldDetailSheetViewModel: ObservableObject {
     ) -> WorldDetailMetadata {
         let levelName = (dataTag["LevelName"] as? String) ?? folderName
 
-        // LastPlayed 为毫秒时间戳（Long），兼容 Int/Int64 等类型
         var lastPlayedDate: Date?
         if let ts = WorldNBTMapper.readInt64(dataTag["LastPlayed"]) {
             lastPlayedDate = Date(timeIntervalSince1970: TimeInterval(ts) / 1000.0)
         }
 
-        // GameType: 0 生存, 1 创造, 2 冒险, 3 旁观
         var gameMode = "saveinfo.world.game_mode.unknown".localized()
         if let gt = WorldNBTMapper.readInt64(dataTag["GameType"]) {
             gameMode = WorldNBTMapper.mapGameMode(Int(gt))
         }
 
-        // Difficulty: 旧版为数值，新版（26+）常为 difficulty_settings.difficulty 字符串
         var difficulty = "saveinfo.world.difficulty.unknown".localized()
         if let diff = WorldNBTMapper.readInt64(dataTag["Difficulty"]) {
             difficulty = WorldNBTMapper.mapDifficulty(Int(diff))
@@ -150,7 +142,6 @@ final class WorldDetailSheetViewModel: ObservableObject {
             difficulty = WorldNBTMapper.mapDifficultyString(diffStr)
         }
 
-        // 极限/作弊标志在新版可能是 byte 或 bool，这里统一为「非 0 即 true」
         let hardcore: Bool = {
             if let ds = dataTag["difficulty_settings"] as? [String: Any] {
                 return WorldNBTMapper.readBoolFlag(ds["hardcore"])
@@ -177,7 +168,6 @@ final class WorldDetailSheetViewModel: ObservableObject {
             dataVersion = Int(dv32)
         }
 
-        // 种子：26+ 优先 world_gen_settings.dat，其次 level.dat 的 RandomSeed / WorldGenSettings.seed
         var seed: Int64? = seedOverride
         if seed == nil {
             seed = WorldNBTMapper.readSeed(from: dataTag, worldPath: path)
@@ -194,7 +184,6 @@ final class WorldDetailSheetViewModel: ObservableObject {
                   let x = WorldNBTMapper.readInt64(pos[0]),
                   let y = WorldNBTMapper.readInt64(pos[1]),
                   let z = WorldNBTMapper.readInt64(pos[2]) {
-            // 26+ 新版存档：spawn.pos = [x, y, z]，同时可能带 dimension/yaw/pitch
             if let dim = spawnTag["dimension"] as? String, !dim.isEmpty {
                 spawn = "\(x), \(y), \(z) (\(dim))"
             } else {
@@ -249,8 +238,6 @@ final class WorldDetailSheetViewModel: ObservableObject {
             gameRules: gameRules
         )
     }
-
-    // MARK: - NBT helpers
 
     private func flattenNBTDictionary(_ dict: [String: Any], prefix: String = "") -> [String: String] {
         var result: [String: String] = [:]

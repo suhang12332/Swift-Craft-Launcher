@@ -1,14 +1,14 @@
 //
 //  AppLogging.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  日志协议与 Environment 注入，便于测试与替换实现。
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 import SwiftUI
 
-/// 应用日志协议
+/// A protocol for logging messages at various levels.
 public protocol AppLogging: AnyObject {
     func logDebug(_ items: Any..., file: String, function: String, line: Int)
     func logInfo(_ items: Any..., file: String, function: String, line: Int)
@@ -30,8 +30,6 @@ public extension AppLogging {
         logError(items, file: file, function: function, line: line)
     }
 }
-
-// MARK: - Environment Key
 
 private struct AppLoggerKey: EnvironmentKey {
     static let defaultValue: AppLogging = Logger.shared

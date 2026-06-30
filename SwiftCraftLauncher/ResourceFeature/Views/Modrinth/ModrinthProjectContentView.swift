@@ -1,11 +1,13 @@
 //
 //  ModrinthProjectContentView.swift
-//  SwiftCraftLauncher
+//  ResourceFeature
 //
-//  Created by su on 2025/6/2.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
+/// Loads and displays the project detail content including compatibility, links, and details.
 struct ModrinthProjectContentView: View {
     @State private var isLoading = false
     @State private var error: GlobalError?

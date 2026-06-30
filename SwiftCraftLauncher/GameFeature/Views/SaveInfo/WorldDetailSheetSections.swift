@@ -1,3 +1,11 @@
+//
+//  WorldDetailSheetSections.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Section views for displaying world detail metadata including game settings, seed, and path.
 import AppKit
 import SwiftUI
 

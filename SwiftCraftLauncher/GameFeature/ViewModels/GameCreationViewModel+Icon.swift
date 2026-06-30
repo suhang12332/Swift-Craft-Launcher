@@ -1,9 +1,15 @@
+//
+//  GameCreationViewModel+Icon.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import UniformTypeIdentifiers
 
+/// Extension providing icon image picker and drag-and-drop handling for `GameCreationViewModel`.
 extension GameCreationViewModel {
-    // MARK: - Image Handling
-
     func handleImagePickerResult(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):

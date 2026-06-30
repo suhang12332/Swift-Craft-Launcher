@@ -1,6 +1,13 @@
+//
+//  AuthlibInjectorMissingAlertModifier.swift
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-/// authlib-injector 缺失时的启动确认弹窗
+/// Presents an alert when the authlib-injector is missing before game launch.
 struct AuthlibInjectorMissingAlertModifier: ViewModifier {
     @ObservedObject private var presenter: AuthlibInjectorMissingPresenter
 

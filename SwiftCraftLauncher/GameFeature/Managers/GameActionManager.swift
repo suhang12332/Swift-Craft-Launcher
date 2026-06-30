@@ -1,15 +1,14 @@
 //
 //  GameActionManager.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import AppKit
 
-/// 游戏操作管理器
-/// 提供游戏相关的通用操作，如显示在访达、删除游戏等
+/// Provides game-related actions such as revealing in Finder and deletion.
 @MainActor
 class GameActionManager: ObservableObject {
 
@@ -17,30 +16,26 @@ class GameActionManager: ObservableObject {
 
     private init() {}
 
-    // MARK: - Public Methods
-
-    /// 在访达中显示游戏目录
-    /// - Parameter game: 游戏版本信息
+    /// Reveals the game directory in Finder.
+    /// - Parameter game: The game version to locate.
     func showInFinder(game: GameVersionInfo) {
         let gameDirectory = AppPaths.profileDirectory(gameName: game.gameName)
 
-        // 检查目录是否存在
         guard FileManager.default.fileExists(atPath: gameDirectory.path) else {
             Logger.shared.warning("游戏目录不存在: \(gameDirectory.path)")
             return
         }
 
-        // 在访达中显示目录
         NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: gameDirectory.path)
         Logger.shared.info("在访达中显示游戏目录: \(game.gameName)")
     }
 
-    /// 删除游戏及其文件夹
+    /// Deletes a game and its associated files.
     /// - Parameters:
-    ///   - game: 要删除的游戏版本信息
-    ///   - gameRepository: 游戏仓库
-    ///   - selectedItem: 当前选中的侧边栏项目（用于删除后切换）
-    ///   - gameType: 游戏类型绑定（用于切换到资源页面时设置为 true）
+    ///   - game: The game version to delete.
+    ///   - gameRepository: The game repository for record management.
+    ///   - selectedItem: An optional binding to the current sidebar selection, updated after deletion.
+    ///   - gameType: An optional binding set to `true` when navigating to the resource page.
     func deleteGame(
         game: GameVersionInfo,
         gameRepository: GameRepository,
@@ -53,7 +48,6 @@ class GameActionManager: ObservableObject {
                 let gameStatusManager = AppServices.gameStatusManager
                 let modScanner = AppServices.modScanner
 
-                // 游戏运行中不允许删除（任意玩家下该游戏在运行即不允许）
                 if gameProcessManager.isGameRunningForAnyUser(gameId: game.id) {
                     let error = GlobalError.validation(
                         chineseMessage: "游戏运行中，无法删除",
@@ -64,7 +58,6 @@ class GameActionManager: ObservableObject {
                     return
                 }
 
-                // 先切换到其他游戏或资源页面，避免删除后页面重新加载
                 if let selectedItem = selectedItem {
                     await MainActor.run {
                         if let firstGame = gameRepository.games.first(where: {
@@ -73,17 +66,14 @@ class GameActionManager: ObservableObject {
                             selectedItem.wrappedValue = .game(firstGame.id)
                         } else {
                             selectedItem.wrappedValue = .resource(.mod)
-                            // 切换到资源页面时，将 gameType 设置为 true
                             gameType?.wrappedValue = true
                         }
                     }
                 }
 
-                // 清除该游戏在进程/状态管理器中的残留状态（删除后避免无效 key）
                 gameProcessManager.removeGameState(gameId: game.id)
                 gameStatusManager.removeGameState(gameId: game.id)
 
-                // 先删除游戏文件夹（若不存在则跳过但继续删记录）
                 let profileDir = AppPaths.profileDirectory(gameName: game.gameName)
                 if FileManager.default.fileExists(atPath: profileDir.path) {
                     try FileManager.default.removeItem(at: profileDir)
@@ -91,10 +81,8 @@ class GameActionManager: ObservableObject {
                     Logger.shared.warning("删除游戏时未找到游戏目录，跳过文件删除: \(profileDir.path)")
                 }
 
-                // 清除该游戏相关的所有内存缓存（mod 扫描结果）
                 await modScanner.clearModCache(for: game.gameName)
 
-                // 删除游戏记录
                 try await gameRepository.deleteGame(id: game.id)
 
                 Logger.shared.info("成功删除游戏: \(game.gameName)")
@@ -110,10 +98,10 @@ class GameActionManager: ObservableObject {
         }
     }
 
-    /// 删除损坏游戏（只知道游戏名称，可能只有数据库记录或只有本地目录）
+    /// Deletes a corrupted game entry by name, removing both the directory and database records.
     /// - Parameters:
-    ///   - name: 游戏名称
-    ///   - gameRepository: 游戏仓库
+    ///   - name: The game name to delete.
+    ///   - gameRepository: The game repository for record management.
     func deleteCorruptedGame(
         name: String,
         gameRepository: GameRepository
@@ -122,7 +110,6 @@ class GameActionManager: ObservableObject {
             do {
                 let modScanner = AppServices.modScanner
 
-                // 删除目录（若存在）：可能是“只有目录”的损坏情况
                 let profileDir = AppPaths.profileDirectory(gameName: name)
                 if FileManager.default.fileExists(atPath: profileDir.path) {
                     try FileManager.default.removeItem(at: profileDir)
@@ -130,7 +117,6 @@ class GameActionManager: ObservableObject {
 
                 await modScanner.clearModCache(for: name)
 
-                // 删除当前工作路径下该名称的所有数据库记录
                 try await gameRepository.deleteGamesByName(name)
 
                 Logger.shared.info("成功删除损坏游戏（目录 + 数据库）: \(name)")

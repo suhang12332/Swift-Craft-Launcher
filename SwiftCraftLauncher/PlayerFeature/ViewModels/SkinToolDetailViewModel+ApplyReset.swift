@@ -1,6 +1,16 @@
+//
+//  SkinToolDetailViewModel+ApplyReset.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 extension SkinToolDetailViewModel {
+    /// Resets the player's skin to the default via the Minecraft API.
+    ///
+    /// - Parameter resolvedPlayer: The player whose skin should be reset.
     func resetSkin(resolvedPlayer: Player?) {
         guard let resolved = resolvedPlayer else { return }
         let player = playerWithCredentialIfNeeded(resolved) ?? resolved
@@ -21,6 +31,11 @@ extension SkinToolDetailViewModel {
         }
     }
 
+    /// Applies all pending skin and cape changes to the player's Minecraft profile.
+    ///
+    /// - Parameters:
+    ///   - resolvedPlayer: The player to update.
+    ///   - onAllSuccess: A closure called when both skin and cape changes succeed.
     func applyChanges(resolvedPlayer: Player?, onAllSuccess: @escaping () -> Void) {
         guard let resolved = resolvedPlayer else { return }
         let player = playerWithCredentialIfNeeded(resolved) ?? resolved
@@ -46,6 +61,10 @@ extension SkinToolDetailViewModel {
         }
     }
 
+    /// Uploads or updates the skin based on the current selection.
+    ///
+    /// - Parameter player: The player whose skin should be updated.
+    /// - Returns: `true` if the skin change was applied successfully.
     func handleSkinChanges(player: Player) async -> Bool {
         do {
             try Task.checkCancellation()
@@ -84,6 +103,10 @@ extension SkinToolDetailViewModel {
         }
     }
 
+    /// Updates the cape based on the current selection.
+    ///
+    /// - Parameter player: The player whose cape should be updated.
+    /// - Returns: `true` if the cape change was applied successfully.
     func handleCapeChanges(player: Player) async -> Bool {
         do {
             try Task.checkCancellation()
@@ -122,6 +145,7 @@ extension SkinToolDetailViewModel {
         }
     }
 
+    /// Downloads the current skin and re-uploads it with a new model variant.
     func uploadCurrentSkinWithNewModel(skinURL: String, player: Player) async -> Bool {
         do {
             try Task.checkCancellation()
@@ -156,6 +180,7 @@ extension SkinToolDetailViewModel {
         }
     }
 
+    /// Persists the selected skin to the skin library when history is enabled.
     private func persistSelectedSkinToLibrary() {
         guard AppServices.playerSettingsManager.enableHistorySkinLibrary else { return }
         guard let selectedSkinData else { return }

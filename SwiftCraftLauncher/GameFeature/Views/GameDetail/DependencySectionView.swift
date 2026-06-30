@@ -1,6 +1,13 @@
+//
+//  DependencySectionView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Tracks the loading and selection state of resource dependencies.
 import SwiftUI
 
-// MARK: - 依赖相关状态
 struct DependencyState {
     var dependencies: [ModrinthProjectDetail] = []
     var versions: [String: [ModrinthProjectDetailVersion]] = [:]
@@ -8,7 +15,7 @@ struct DependencyState {
     var isLoading = false
 }
 
-// MARK: - 依赖区块
+/// Displays a list of dependency version pickers for a resource.
 struct DependencySectionView: View {
     @Binding var state: DependencyState
 

@@ -1,20 +1,19 @@
 //
 //  DependencySheetViewModel.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/6/28.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 import SwiftUI
 
-// MARK: - 下载状态定义
+/// Represents the download state of a single resource dependency.
 enum ResourceDownloadState {
     case idle, downloading, success, failed
 }
 
-// MARK: - 依赖管理ViewModel
-/// 持久化依赖相关状态，用于管理资源依赖项的下载和安装
+/// View model that manages dependency resolution, download states, and version selection for resource dependencies.
 final class DependencySheetViewModel: ObservableObject {
     @Published var missingDependencies: [ModrinthProjectDetail] = []
     @Published var isLoadingDependencies = true
@@ -24,17 +23,16 @@ final class DependencySheetViewModel: ObservableObject {
     @Published var selectedDependencyVersion: [String: String] = [:]
     @Published var overallDownloadState: OverallDownloadState = .idle
 
+    /// Represents the aggregate state of all dependency downloads.
     enum OverallDownloadState {
-        case idle  // 初始状态，或全部下载成功后
-        case failed  // 首次"全部下载"操作中，有任何文件失败
-        case retrying  // 用户正在重试失败项
+        case idle
+        case failed
+        case retrying
     }
 
     var allDependenciesDownloaded: Bool {
-        // 当没有依赖时，也认为"所有依赖都已下载"
         if missingDependencies.isEmpty { return true }
 
-        // 检查所有列出的依赖项是否都标记为成功
         return missingDependencies.allSatisfy {
             dependencyDownloadStates[$0.id] == .success
         }
@@ -47,7 +45,7 @@ final class DependencySheetViewModel: ObservableObject {
         overallDownloadState = .idle
     }
 
-    /// 清理所有数据，在 sheet 关闭时调用以释放内存
+    /// Resets all published properties to their initial values.
     func cleanup() {
         missingDependencies = []
         isLoadingDependencies = true

@@ -1,9 +1,14 @@
+//
+//  ModScannerPaginationTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModScannerPaginationTests: XCTestCase {
-
-    // MARK: - calculatePageRange
 
     func testCalculatePageRange_normalPage() {
         let scanner = ModScanner.shared

@@ -1,6 +1,14 @@
+//
+//  ContentToolbarViewModel.swift
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// Provides preloaded skin and profile data for the content toolbar's skin manager.
 @MainActor
 final class ContentToolbarViewModel: ObservableObject {
     @Published var isLoadingSkin: Bool = false
@@ -12,6 +20,10 @@ final class ContentToolbarViewModel: ObservableObject {
         self.authService = authService
     }
 
+    /// Preloads skin and profile data for the given player before opening the skin manager.
+    ///
+    /// For online accounts the method validates and refreshes the player token before fetching.
+    /// - Parameter player: The player whose skin data should be loaded, or `nil` to skip.
     func preloadSkinDataForManager(player: Player?) async {
         guard let player else { return }
 
@@ -66,6 +78,7 @@ final class ContentToolbarViewModel: ObservableObject {
         preloadedProfile = loadedProfile
     }
 
+    /// Clears any previously preloaded skin and profile data.
     func clearPreloadedSkinData() {
         preloadedSkinInfo = nil
         preloadedProfile = nil

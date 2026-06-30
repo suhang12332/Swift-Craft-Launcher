@@ -1,8 +1,14 @@
+//
+//  ModrinthDetailView.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-// MARK: - Main View
+/// Displays search results for Modrinth projects with filtering and pagination.
 struct ModrinthDetailView: View {
-    // MARK: - Properties
     let query: String
     @Binding var selectedVersions: [String]
     @Binding var selectedCategories: [String]
@@ -15,7 +21,7 @@ struct ModrinthDetailView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var gameType: Bool
     let header: AnyView?
-    @Binding var scannedDetailIds: Set<String> // 已扫描资源的 detailId Set，用于快速查找
+    @Binding var scannedDetailIds: Set<String> // detail IDs from the parent for fast lookup
     @Binding var dataSource: DataSource
 
     @StateObject private var viewModel = ModrinthSearchViewModel()
@@ -70,7 +76,6 @@ struct ModrinthDetailView: View {
         ].joined(separator: "|")
     }
 
-    // MARK: - Body
     var body: some View {
         List {
             if let header {
@@ -93,7 +98,7 @@ struct ModrinthDetailView: View {
                 )
             }
         }
-        // 当筛选条件变化时，重新搜索
+        // Re-trigger search when filter criteria change.
         .onChange(of: selectedVersions) { _, _ in
             coordinator.resetPagination()
             coordinator.triggerSearch(searchViewModel: viewModel, context: currentSearchContext)
@@ -173,7 +178,6 @@ struct ModrinthDetailView: View {
         viewModel.clearResults()
     }
 
-    // MARK: - Result List
     @ViewBuilder private var listContent: some View {
         Group {
             if viewModel.isLoading {

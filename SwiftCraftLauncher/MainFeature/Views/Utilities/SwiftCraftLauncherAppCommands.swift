@@ -1,7 +1,11 @@
 //
 //  SwiftCraftLauncherAppCommands.swift
-//  Swift Craft Launcher
+//  MainFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Custom menu commands for the app, including update checks, help links, and community resources.
 
 import SwiftUI
 

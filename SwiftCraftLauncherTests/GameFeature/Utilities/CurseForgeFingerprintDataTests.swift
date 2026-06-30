@@ -1,9 +1,14 @@
+//
+//  CurseForgeFingerprintDataTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class CurseForgeFingerprintDataTests: XCTestCase {
-
-    // MARK: - Consistency
 
     func testFingerprint_deterministic() {
         let data = Data("deterministic-test-content".utf8)
@@ -17,8 +22,6 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         let b = CurseForgeFingerprint.fingerprint(data: Data("content-b".utf8))
         XCTAssertNotEqual(a, b)
     }
-
-    // MARK: - Whitespace handling
 
     func testFingerprint_ignoresTabs() {
         let withTabs = Data("hello\tworld".utf8)
@@ -65,8 +68,6 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         )
     }
 
-    // MARK: - Empty and small data
-
     func testFingerprint_emptyData_nonZero() {
         let hash = CurseForgeFingerprint.fingerprint(data: Data())
         XCTAssertNotEqual(hash, 0)
@@ -86,8 +87,6 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         )
     }
 
-    // MARK: - Binary data
-
     func testFingerprint_binaryData() {
         let bytes: [UInt8] = Array(0...255)
         let data = Data(bytes)
@@ -104,15 +103,11 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         )
     }
 
-    // MARK: - Large data
-
     func testFingerprint_largeData() {
         let largeData = Data(repeating: 0x42, count: 100_000)
         let hash = CurseForgeFingerprint.fingerprint(data: largeData)
         XCTAssertNotEqual(hash, 0)
     }
-
-    // MARK: - Known value regression
 
     func testFingerprint_knownValue_regression() {
         let data = Data("CurseForge".utf8)

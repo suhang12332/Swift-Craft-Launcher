@@ -1,9 +1,14 @@
+//
+//  CommonFeatureModelsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class CommonFeatureModelsTests: XCTestCase {
-
-    // MARK: - AuthCredential
 
     func testAuthCredential_init_defaults() {
         let credential = AuthCredential(
@@ -58,8 +63,6 @@ final class CommonFeatureModelsTests: XCTestCase {
         XCTAssertEqual(decoded.xuid, original.xuid)
     }
 
-    // MARK: - UserProfile
-
     func testUserProfile_init_defaults() {
         let profile = UserProfile(id: "id-1", name: "Steve", avatar: "steve")
 
@@ -100,8 +103,6 @@ final class CommonFeatureModelsTests: XCTestCase {
         XCTAssertEqual(decoded.avatar, original.avatar)
         XCTAssertEqual(decoded.isCurrent, original.isCurrent)
     }
-
-    // MARK: - IPLocationResponse
 
     func testIPLocationResponse_success() throws {
         let json = """
@@ -153,8 +154,6 @@ final class CommonFeatureModelsTests: XCTestCase {
         XCTAssertFalse(response.isSuccess)
     }
 
-    // MARK: - GitHubContributor
-
     func testGitHubContributor_codable() throws {
         let json = """
         {
@@ -190,8 +189,6 @@ final class CommonFeatureModelsTests: XCTestCase {
         XCTAssertEqual(decoded.id, original.id)
         XCTAssertEqual(decoded.login, original.login)
     }
-
-    // MARK: - GitHubRelease
 
     func testGitHubRelease_codable() throws {
         let json = """

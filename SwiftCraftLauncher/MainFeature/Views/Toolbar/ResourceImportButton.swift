@@ -1,12 +1,17 @@
 //
-//  ToolbarImportButton.swift
-//  SwiftCraftLauncher
+//  ResourceImportButton.swift
+//  MainFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Toolbar button that presents a file importer for local resource installation.
+///
+/// Supports importing `.jar` and `.zip` files for mods, datapacks, and resource packs.
 
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// 工具栏中的本地资源导入按钮
 struct ResourceImportButton: View {
     let game: GameVersionInfo
     let gameResourcesType: String
@@ -57,6 +62,7 @@ struct ResourceImportButton: View {
         }
     }
 
+    /// Imports the selected files into the appropriate game resource directory.
     private func importSelectedFiles(_ urls: [URL]) {
         let queryLowercased = gameResourcesType.lowercased()
 

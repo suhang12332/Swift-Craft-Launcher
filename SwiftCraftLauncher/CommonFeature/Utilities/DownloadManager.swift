@@ -1,3 +1,10 @@
+//
+//  DownloadManager.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 enum DownloadManager {
@@ -25,14 +32,14 @@ enum DownloadManager {
         }
     }
 
-    /// 下载资源文件
+    /// Downloads a resource file to the appropriate game directory.
     /// - Parameters:
-    ///   - game: 游戏信息
-    ///   - urlString: 下载地址
-    ///   - resourceType: 资源类型（如 "mod", "datapack", "shader", "resourcepack"）
-    ///   - expectedSha1: 预期 SHA1 值
-    /// - Returns: 下载到的本地文件 URL
-    /// - Throws: GlobalError 当操作失败时
+    ///   - game: The game version information.
+    ///   - urlString: The download URL string.
+    ///   - resourceType: The resource type (e.g., "mod", "datapack", "shader", "resourcepack").
+    ///   - expectedSha1: An optional expected SHA-1 hash for verification.
+    /// - Returns: The local URL of the downloaded file.
+    /// - Throws: A ``GlobalError`` if the operation fails.
     static func downloadResource(for game: GameVersionInfo, urlString: String, resourceType: String, expectedSha1: String? = nil) async throws -> URL {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
@@ -87,13 +94,13 @@ enum DownloadManager {
         )
     }
 
-    /// 通用下载文件到指定路径（不做任何目录结构拼接）
+    /// Downloads a file to a specified destination URL.
     /// - Parameters:
-    ///   - urlString: 下载地址（字符串形式）
-    ///   - destinationURL: 目标文件路径
-    ///   - expectedSha1: 预期 SHA1 值
-    /// - Returns: 下载到的本地文件 URL
-    /// - Throws: GlobalError 当操作失败时
+    ///   - urlString: The download URL string.
+    ///   - destinationURL: The local file destination.
+    ///   - expectedSha1: An optional expected SHA-1 hash for verification.
+    /// - Returns: The local URL of the downloaded file.
+    /// - Throws: A ``GlobalError`` if the operation fails.
     static func downloadFile(
         urlString: String,
         destinationURL: URL,
@@ -132,10 +139,10 @@ enum DownloadManager {
         )
     }
 
-    /// 下载 URL 对应的原始数据
-    /// - Parameter url: 下载地址
-    /// - Returns: 下载到的数据
-    /// - Throws: GlobalError 当操作失败时
+    /// Downloads raw data from a URL.
+    /// - Parameter url: The URL to download from.
+    /// - Returns: The downloaded data.
+    /// - Throws: A ``GlobalError`` if the operation fails.
     static func downloadData(from url: URL) async throws -> Data {
         do {
             return try await APIClient.get(url: url)

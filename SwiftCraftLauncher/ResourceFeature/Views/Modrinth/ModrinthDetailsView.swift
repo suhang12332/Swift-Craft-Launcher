@@ -1,12 +1,13 @@
 //
 //  ModrinthDetailsView.swift
-//  SwiftCraftLauncher
+//  ResourceFeature
 //
-//  Created by su on 2025/6/2.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
-// MARK: - Details Section
+/// Displays license, publish date, and update date for a project detail.
 struct ModrinthDetailsSection: View, Equatable {
     let project: ModrinthProjectDetail?
     let isLoading: Bool
@@ -55,7 +56,7 @@ struct ModrinthDetailsSection: View, Equatable {
     }
 }
 
-// MARK: - Detail Row
+/// A single detail row showing a label and value.
 private struct ModrinthDetailRow: View, Equatable {
     let label: String
     let value: String

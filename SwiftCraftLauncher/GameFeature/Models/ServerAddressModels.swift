@@ -1,44 +1,44 @@
 //
 //  ServerAddressModels.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/20.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// 服务器地址信息模型
+/// A Minecraft server address with connection details.
 struct ServerAddress: Codable, Identifiable, Hashable {
-    /// 服务器唯一标识符
+    /// The unique identifier for this server entry.
     let id: String
 
-    /// 服务器名称
+    /// The display name of the server.
     let name: String
 
-    /// 服务器地址（IP 或域名）
+    /// The server IP address or hostname.
     let address: String
 
-    /// 服务器端口（可选，默认 25565）
+    /// The server port. Defaults to 25565.
     let port: Int
 
-    /// 是否隐藏服务器图标
+    /// Whether the server icon is hidden.
     let hidden: Bool
 
-    /// 服务器图标资源位置（可选）
+    /// The optional server icon resource path.
     let icon: String?
 
-    /// 是否接受文本到聊天
+    /// Whether the server accepts texture skins.
     let acceptTextures: Bool
 
-    /// 初始化服务器地址信息
+    /// Creates a server address with the specified parameters.
     /// - Parameters:
-    ///   - id: 服务器ID，默认生成新的UUID
-    ///   - name: 服务器名称
-    ///   - address: 服务器地址
-    ///   - port: 服务器端口，默认 25565
-    ///   - hidden: 是否隐藏，默认 false
-    ///   - icon: 服务器图标，默认 nil
-    ///   - acceptTextures: 是否接受纹理，默认 false
+    ///   - id: The unique identifier. Defaults to a new UUID string.
+    ///   - name: The display name of the server.
+    ///   - address: The server IP address or hostname.
+    ///   - port: The server port. Defaults to 25565.
+    ///   - hidden: Whether the server icon is hidden. Defaults to false.
+    ///   - icon: The server icon resource path, if available.
+    ///   - acceptTextures: Whether texture skins are accepted. Defaults to false.
     init(
         id: String = UUID().uuidString,
         name: String,
@@ -57,7 +57,7 @@ struct ServerAddress: Codable, Identifiable, Hashable {
         self.acceptTextures = acceptTextures
     }
 
-    /// 获取完整的服务器地址（包含端口）
+    /// The full server address including port.
     var fullAddress: String {
         return "\(address):\(String(port))"
     }

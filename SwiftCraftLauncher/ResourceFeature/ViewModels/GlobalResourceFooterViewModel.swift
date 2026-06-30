@@ -1,6 +1,14 @@
+//
+//  GlobalResourceFooterViewModel.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// Manages download and installation actions for a project's resource footer.
 @MainActor
 final class GlobalResourceFooterViewModel: ObservableObject {
     private let project: ModrinthProject
@@ -30,6 +38,8 @@ final class GlobalResourceFooterViewModel: ObservableObject {
         self.errorHandler = errorHandler
     }
 
+    /// Downloads the main resource only for the selected game.
+    /// - Parameter selectedGame: The game version to download for.
     func downloadMainOnly(selectedGame: GameVersionInfo?) {
         guard let game = selectedGame else { return }
 
@@ -48,6 +58,11 @@ final class GlobalResourceFooterViewModel: ObservableObject {
         }
     }
 
+    /// Downloads the main resource and all manually selected dependencies.
+    /// - Parameters:
+    ///   - selectedGame: The game version to download for.
+    ///   - dependencyState: The current dependency selection state.
+    ///   - mainVersionId: The version ID of the main project.
     func downloadAllManual(
         selectedGame: GameVersionInfo?,
         dependencyState: DependencyState,
@@ -74,6 +89,10 @@ final class GlobalResourceFooterViewModel: ObservableObject {
         }
     }
 
+    /// Adds the project as a Minecraft Java server resource and installs it.
+    /// - Parameters:
+    ///   - selectedGame: The game version to add the server to.
+    ///   - projectDetail: The project detail information.
     func addServerResource(
         selectedGame: GameVersionInfo?,
         projectDetail: ModrinthProjectDetail?
@@ -98,6 +117,8 @@ final class GlobalResourceFooterViewModel: ObservableObject {
         }
     }
 
+    /// Downloads the resource for the selected game version.
+    /// - Parameter selectedGame: The game version to download for.
     func downloadResource(selectedGame: GameVersionInfo?) {
         guard let game = selectedGame else { return }
 

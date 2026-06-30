@@ -1,3 +1,11 @@
+//
+//  CustomVersionPicker.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A version picker with popover for selecting Minecraft game versions.
 import SwiftUI
 
 private enum Constants {
@@ -108,7 +116,6 @@ struct CustomVersionPicker: View {
                     if let newValue = newValue {
                         selected = newValue
                         showMenu = false
-                        // 使用版本时间映射来设置时间信息
                         Task {
                             time = await onVersionSelected(newValue)
                         }
@@ -118,7 +125,6 @@ struct CustomVersionPicker: View {
         ) { version in
             selected = version
             showMenu = false
-            // 使用版本时间映射来设置时间信息
             Task {
                 time = await onVersionSelected(version)
             }

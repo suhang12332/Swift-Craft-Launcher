@@ -1,3 +1,10 @@
+//
+//  OfflineUserServerMapTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
@@ -36,14 +43,10 @@ final class OfflineUserServerMapTests: XCTestCase {
     // These tests verify the public API behavior; they run against the real
     // standard UserDefaults and are isolated by unique user IDs.
 
-    // MARK: - serverKey
-
     func testServerKey_noMapping_returnsNil() {
         let userId = "no-mapping-\(UUID().uuidString)"
         XCTAssertNil(OfflineUserServerMap.serverKey(for: userId))
     }
-
-    // MARK: - setServer / serverKey round-trip
 
     func testSetServer_thenServerKey_returnsSameValue() {
         let userId = "round-trip-\(UUID().uuidString)"
@@ -52,7 +55,6 @@ final class OfflineUserServerMapTests: XCTestCase {
 
         XCTAssertEqual(OfflineUserServerMap.serverKey(for: userId), profile)
 
-        // Cleanup
         OfflineUserServerMap.removeServer(for: userId)
     }
 
@@ -68,8 +70,6 @@ final class OfflineUserServerMapTests: XCTestCase {
         OfflineUserServerMap.removeServer(for: userId)
     }
 
-    // MARK: - removeServer
-
     func testRemoveServer_existingMapping_returnsNil() {
         let userId = "remove-\(UUID().uuidString)"
         let profile = makeProfile(id: userId, serverBaseURL: "https://myserver.com")
@@ -84,8 +84,6 @@ final class OfflineUserServerMapTests: XCTestCase {
         OfflineUserServerMap.removeServer(for: userId)
         XCTAssertNil(OfflineUserServerMap.serverKey(for: userId))
     }
-
-    // MARK: - Multiple users isolation
 
     func testMultipleUsers_independentMappings() {
         let userA = "multi-a-\(UUID().uuidString)"
@@ -123,8 +121,6 @@ final class OfflineUserServerMapTests: XCTestCase {
         OfflineUserServerMap.removeServer(for: userB)
     }
 
-    // MARK: - Server key with special characters
-
     func testSetServer_specialCharacters() {
         let userId = "special-\(UUID().uuidString)"
         let profile = makeProfile(id: userId, serverBaseURL: "https://littleskin.cn/api")
@@ -144,8 +140,6 @@ final class OfflineUserServerMapTests: XCTestCase {
 
         OfflineUserServerMap.removeServer(for: userId)
     }
-
-    // MARK: - Edge cases
 
     func testServerKey_longUserId() {
         let userId = String(repeating: "a", count: 1000)

@@ -1,15 +1,20 @@
+//
+//  CategorySectionView.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-// MARK: - Category Section View
+/// Displays a section of filter chips with optional overflow handling.
 struct CategorySectionView: View {
-    // MARK: - Properties
     let title: String
     let items: [FilterItem]
     @Binding var selectedItems: [String]
     let isLoading: Bool
     var isVersionSection: Bool = false
 
-    // MARK: - Body
     var body: some View {
         let (visibleItems, overflowItems) = computeVisibleAndOverflowItems()
 

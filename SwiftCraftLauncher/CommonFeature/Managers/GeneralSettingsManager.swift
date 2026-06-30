@@ -1,21 +1,29 @@
+//
+//  GeneralSettingsManager.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Combine
 import Foundation
 import SwiftUI
 
-/// 主界面布局风格：经典（列表在左、内容在右）/ 聚焦（内容在左、列表在右）
+/// The interface layout style for the main window.
 public enum InterfaceLayoutStyle: String, CaseIterable {
-    case classic = "classic"   // 经典
-    case focused = "focused"  // 聚焦
+    case classic = "classic"
+    case focused = "focused"
 
     public var localizedName: String {
         "settings.interface_style.\(rawValue)".localized()
     }
 }
 
+/// Manages general application settings including proxy, downloads, and layout preferences.
 class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
     static let shared = GeneralSettingsManager()
 
-    /// 是否启用 GitHub 代理（默认开启）
+    /// Whether GitHub proxy is enabled.
     @AppStorage(AppConstants.UserDefaultsKeys.enableGitHubProxy)
     var enableGitHubProxy: Bool = true {
         didSet { objectWillChange.send() }
@@ -26,13 +34,12 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
         didSet { objectWillChange.send() }
     }
 
-    /// 是否限制通用 Sheet 高度（默认关闭）
+    /// Whether to limit the height of common sheets.
     @AppStorage(AppConstants.UserDefaultsKeys.limitCommonSheetHeight)
     var limitCommonSheetHeight: Bool = false {
         didSet { objectWillChange.send() }
     }
 
-    // MARK: - 应用设置属性
     @AppStorage(AppConstants.UserDefaultsKeys.concurrentDownloads)
     var concurrentDownloads: Int = 64 {
         didSet {
@@ -43,13 +50,13 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
         }
     }
 
-    // 新增：启动器工作目录
+    /// The launcher working directory path.
     @AppStorage(AppConstants.UserDefaultsKeys.launcherWorkingDirectory)
     var launcherWorkingDirectory: String = AppPaths.launcherSupportDirectory.path {
         didSet { objectWillChange.send() }
     }
 
-    /// 界面风格：经典（列表 | 内容）/ 聚焦（内容 | 列表）
+    /// The interface layout style for the main window.
     @AppStorage(AppConstants.UserDefaultsKeys.interfaceLayoutStyle)
     var interfaceLayoutStyle: InterfaceLayoutStyle = .classic {
         didSet { objectWillChange.send() }
@@ -57,8 +64,7 @@ class GeneralSettingsManager: ObservableObject, WorkingPathProviding {
 
     private init() {}
 
-    /// 当前启动器工作目录（WorkingPathProviding）
-    /// 空时使用默认支持目录
+    /// The current working path, falling back to the default support directory when empty.
     var currentWorkingPath: String {
         launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : launcherWorkingDirectory
     }

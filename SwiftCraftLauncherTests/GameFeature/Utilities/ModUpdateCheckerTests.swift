@@ -1,9 +1,14 @@
+//
+//  ModUpdateCheckerTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModUpdateCheckerTests: XCTestCase {
-
-    // MARK: - UpdateCheckResult
 
     func testUpdateCheckResult_hasUpdate() {
         let result = ModUpdateChecker.UpdateCheckResult(

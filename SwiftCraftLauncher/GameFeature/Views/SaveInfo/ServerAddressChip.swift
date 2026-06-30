@@ -1,6 +1,13 @@
+//
+//  ServerAddressChip.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A chip displaying a server address with connection status indicator.
 import SwiftUI
 
-// MARK: - Server Address Chip
 struct ServerAddressChip: View {
     let title: String
     let address: String

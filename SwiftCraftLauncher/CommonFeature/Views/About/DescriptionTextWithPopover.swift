@@ -1,5 +1,13 @@
+//
+//  DescriptionTextWithPopover.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Displays truncated text that reveals the full content in a popover on hover.
 struct DescriptionTextWithPopover: View {
     private static let hoverDelayNanoseconds: UInt64 = 500_000_000
 

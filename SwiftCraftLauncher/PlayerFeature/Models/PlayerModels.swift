@@ -1,41 +1,49 @@
+//
+//  PlayerModels.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 玩家信息模型
-/// 组合 UserProfile 和可选的 AuthCredential
-/// 不直接存储，而是从 UserProfileStore 和 AuthCredentialStore 加载
+/// Represents a player by combining a ``UserProfile`` with an optional ``AuthCredential``.
+///
+/// `Player` values are not stored directly; they are constructed from ``UserProfileStore``
+/// and ``AuthCredentialStore`` at the point of use.
 struct Player: Identifiable, Equatable, Codable {
-    /// 用户基本信息
+    /// The player's profile information.
     var profile: UserProfile
 
-    /// 认证凭据（仅在线账号有）
+    /// The player's authentication credential, or `nil` for offline-only accounts.
     var credential: AuthCredential?
 
-    // MARK: - Computed Properties
-
-    /// 玩家唯一标识符
+    /// The unique identifier for this player.
     var id: String { profile.id }
 
-    /// 玩家名称
+    /// The display name of this player.
     var name: String { profile.name }
 
-    /// 玩家头像路径或URL
+    /// The avatar image name or URL.
     var avatarName: String { profile.avatar }
 
-    /// 最后游玩时间
+    /// The last time this player was active.
     var lastPlayed: Date {
         get { profile.lastPlayed }
         set { profile.lastPlayed = newValue }
     }
 
-    /// 是否为当前选中的玩家
+    /// A Boolean value indicating whether this is the currently selected player.
     var isCurrent: Bool {
         get { profile.isCurrent }
         set { profile.isCurrent = newValue }
     }
 
-    /// 是否为在线账号
-    /// 优先依据认证凭据；在尚未从 Keychain 加载凭据时，
-    /// 若头像为远程 URL 且不在 `OfflineUserServerMap`（离线第三方服映射）中，则近似认为是正版在线账号
+    /// A Boolean value indicating whether this is an online-authenticated account.
+    ///
+    /// When an ``AuthCredential`` is available, the account is considered online.
+    /// For players without a credential, this property checks whether the avatar is
+    /// a remote URL and the player is not listed in the offline server map.
     var isOnlineAccount: Bool {
         if credential != nil {
             return true
@@ -44,41 +52,47 @@ struct Player: Identifiable, Equatable, Codable {
         return !OfflineUserServerMap.contains(userId: id)
     }
 
+    /// A Boolean value indicating whether the avatar is hosted remotely.
     var isRemote: Bool {
         return profile.avatar.hasPrefix("http://") || profile.avatar.hasPrefix("https://")
     }
 
-    /// 访问令牌
+    /// The access token used for authentication.
     var authAccessToken: String {
         credential?.accessToken ?? OfflineUserServerMap.serverKey(for: id)?.accessToken ?? ""
     }
 
-    /// 刷新令牌
+    /// The refresh token used to renew authentication.
     var authRefreshToken: String {
         credential?.refreshToken ?? OfflineUserServerMap.serverKey(for: id)?.refreshToken ?? ""
     }
 
-    /// Xbox 用户ID
+    /// The Xbox user identifier associated with this account.
     var authXuid: String { credential?.xuid ?? "" }
 
-    /// 初始化玩家信息
+    /// Creates a player with the given profile and optional credential.
+    ///
     /// - Parameters:
-    ///   - profile: 用户基本信息
-    ///   - credential: 认证凭据（可选，离线账号为 nil）
+    ///   - profile: The player's profile information.
+    ///   - credential: The authentication credential. Pass `nil` for offline-only accounts.
     init(profile: UserProfile, credential: AuthCredential? = nil) {
         self.profile = profile
         self.credential = credential
     }
 
-    /// 初始化玩家信息（便捷方法）
+    /// Creates a player from individual property values.
+    ///
+    /// This initializer generates an offline UUID when no `uuid` is provided and selects
+    /// a default avatar for offline accounts.
+    ///
     /// - Parameters:
-    ///   - name: 玩家名称
-    ///   - uuid: 玩家UUID，如果为nil则生成离线UUID
-    ///   - avatar: 头像名称或路径
-    ///   - credential: 认证凭据（可选）
-    ///   - lastPlayed: 最后游玩时间，默认当前时间
-    ///   - isCurrent: 是否当前玩家，默认false
-    /// - Throws: 如果生成玩家ID失败则抛出错误
+    ///   - name: The player's display name.
+    ///   - uuid: A unique identifier for the player. A UUID is generated when this is `nil`.
+    ///   - avatar: An avatar name or URL. A default is used when this is `nil`.
+    ///   - credential: An authentication credential for online accounts.
+    ///   - lastPlayed: The last active date. Defaults to the current date.
+    ///   - isCurrent: A Boolean value indicating whether this is the current player.
+    /// - Throws: ``PlayerError`` if the player ID cannot be generated.
     init(
         name: String,
         uuid: String? = nil,
@@ -87,7 +101,6 @@ struct Player: Identifiable, Equatable, Codable {
         lastPlayed: Date = Date(),
         isCurrent: Bool = false
     ) throws {
-        // 如果提供了UUID则使用，否则生成离线UUID
         let playerId: String
         if let providedUUID = uuid {
             playerId = providedUUID
@@ -95,15 +108,12 @@ struct Player: Identifiable, Equatable, Codable {
             playerId = try PlayerUtils.generateOfflineUUID(for: name)
         }
 
-        // 确定头像
         let avatarName: String
         if let providedAvatar = avatar {
             avatarName = providedAvatar
         } else if credential != nil {
-            // 在线账号需要提供头像
             avatarName = ""
         } else {
-            // 离线账号使用默认头像
             avatarName = PlayerUtils.avatarName(for: playerId) ?? "steve"
         }
 

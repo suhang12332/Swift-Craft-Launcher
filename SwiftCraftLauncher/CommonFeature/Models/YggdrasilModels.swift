@@ -1,6 +1,13 @@
+//
+//  YggdrasilModels.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// Yggdrasil profile 列表解析器标识
+/// Identifies a Yggdrasil profile parser implementation.
 enum YggdrasilProfileParserID: String, Codable, CaseIterable, Identifiable {
     case littleskin
     case mua
@@ -10,7 +17,7 @@ enum YggdrasilProfileParserID: String, Codable, CaseIterable, Identifiable {
 }
 
 struct YggdrasilServerConfig: Codable, Equatable, Hashable {
-    /// 服务器在 UI 中展示用的名称（可选）
+    /// The display name for this server in the UI.
     var name: String
     var baseURL: URL
     var clientId: String?
@@ -49,17 +56,17 @@ struct YggdrasilServerConfig: Codable, Equatable, Hashable {
         self.token = token
     }
 
-    /// 授权端点：{baseURL}{authorizePath}
+    /// The full authorize URL derived from the base URL and authorize path.
     var authorizeURL: URL? {
         baseURL.appendingPathComponent(authorizePath)
     }
 
-    /// 令牌端点：{baseURL}{tokenPath}
+    /// The full token URL derived from the base URL and token path.
     var tokenURL: URL? {
         baseURL.appendingPathComponent(tokenPath)
     }
 
-    /// 玩家资料端点：{baseURL}{profilePath}
+    /// The full profile URL derived from the base URL and profile path.
     var profileURL: URL? {
         baseURL.appendingPathComponent(profilePath)
     }
@@ -102,6 +109,7 @@ struct YggdrasilProfileCandidate: Codable, Equatable {
     }
 }
 
+/// The current state of the Yggdrasil authentication flow.
 enum YggdrasilAuthState: Equatable {
     case idle
     case waitingForBrowser

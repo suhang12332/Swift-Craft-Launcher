@@ -1,11 +1,18 @@
+//
+//  Architecture.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 统一的架构辅助工具，集中处理编译期架构分支
+/// Identifies the CPU architecture of the running process and provides architecture-specific strings.
 enum Architecture {
     case arm64
     case x86_64
 
-    /// 当前编译架构
+    /// The current process architecture.
     static let current: Architecture = {
         #if arch(arm64)
         return .arm64
@@ -14,7 +21,7 @@ enum Architecture {
         #endif
     }()
 
-    /// Java 相关架构字符串
+    /// The architecture identifier used by Java.
     var javaArch: String {
         switch self {
         case .arm64: return "aarch64"
@@ -22,7 +29,7 @@ enum Architecture {
         }
     }
 
-    /// Sparkle / 通用架构字符串
+    /// The architecture identifier used by Sparkle and other general-purpose APIs.
     var sparkleArch: String {
         switch self {
         case .arm64: return "arm64"
@@ -30,7 +37,7 @@ enum Architecture {
         }
     }
 
-    /// 用于 Java Runtime API 的平台标识
+    /// The platform identifier for the Java Runtime API.
     var macPlatformId: String {
         switch self {
         case .arm64: return "mac-os-arm64"
@@ -38,8 +45,8 @@ enum Architecture {
         }
     }
 
-    /// 当前架构对应的 macOS 标识符列表（按优先级）
-    /// - Parameter isLowVersion: 是否为低版本（Minecraft < 1.19）
+    /// Returns the macOS library identifiers for the current architecture, ordered by priority.
+    /// - Parameter isLowVersion: Whether the target Minecraft version is below 1.19.
     func macOSIdentifiers(isLowVersion: Bool) -> [String] {
         switch self {
         case .arm64:

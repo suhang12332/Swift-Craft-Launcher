@@ -1,5 +1,13 @@
+//
+//  AddOrDeleteResourceButtonViewModel+Lifecycle.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Extension providing lifecycle event handling for `AddOrDeleteResourceButtonViewModel`.
 extension AddOrDeleteResourceButtonViewModel {
     func onAppear(selectedItem: SidebarItem, scannedDetailIds: Set<String>) {
         if type == false {

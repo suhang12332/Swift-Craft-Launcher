@@ -1,6 +1,13 @@
+//
+//  ThemeSelectorView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-// MARK: - Theme Selector View
+/// A view for selecting a theme mode from available options.
 struct ThemeSelectorView: View {
     @Binding var selectedTheme: ThemeMode
 
@@ -32,7 +39,6 @@ struct ThemeSelectorLabel: View {
     }
 }
 
-// MARK: - Theme Option View
 private struct ThemeOptionView: View {
     let theme: ThemeMode
     let isSelected: Bool
@@ -54,7 +60,6 @@ private struct ThemeOptionView: View {
     }
 }
 
-// MARK: - Theme Window Icon
 private struct ThemeWindowIcon: View {
     let theme: ThemeMode
 

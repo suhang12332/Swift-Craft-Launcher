@@ -1,9 +1,14 @@
+//
+//  PlayerSkinServiceTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class PlayerSkinServiceTests: XCTestCase {
-
-    // MARK: - hasSkinChanges
 
     func testHasSkinChanges_withSelectedData_alwaysTrue() {
         let data = Data("skin".utf8)
@@ -54,8 +59,6 @@ final class PlayerSkinServiceTests: XCTestCase {
         ))
     }
 
-    // MARK: - hasCapeChanges
-
     func testHasCapeChanges_bothNil_returnsFalse() {
         XCTAssertFalse(PlayerSkinService.hasCapeChanges(
             selectedCapeId: nil,
@@ -90,8 +93,6 @@ final class PlayerSkinServiceTests: XCTestCase {
             currentActiveCapeId: nil
         ))
     }
-
-    // MARK: - getActiveCapeId
 
     func testGetActiveCapeId_nilProfile_returnsNil() {
         XCTAssertNil(PlayerSkinService.getActiveCapeId(from: nil))
@@ -157,8 +158,6 @@ final class PlayerSkinServiceTests: XCTestCase {
         XCTAssertEqual(PlayerSkinService.getActiveCapeId(from: profile), "cape-active-1")
     }
 
-    // MARK: - PublicSkinInfo Codable
-
     func testPublicSkinInfo_codable_roundTrip() throws {
         let info = PlayerSkinService.PublicSkinInfo(
             skinURL: "https://example.com/skin.png",
@@ -197,8 +196,6 @@ final class PlayerSkinServiceTests: XCTestCase {
         )
         XCTAssertEqual(a, b)
     }
-
-    // MARK: - SkinModel CaseIterable
 
     func testSkinModel_allCases() {
         XCTAssertEqual(PlayerSkinService.PublicSkinInfo.SkinModel.allCases.count, 2)

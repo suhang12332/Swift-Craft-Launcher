@@ -1,14 +1,13 @@
 //
 //  ModPackDependencyInstaller.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
 //
-//  Created by su on 2025/8/3.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// 整合包依赖安装服务
-/// 负责安装整合包中定义的所有必需依赖
+/// Installs all required dependencies defined by a modpack.
 enum ModPackDependencyInstaller {
     static var downloadSemaphoreValue: Int {
         max(1, AppServices.generalSettingsManager.concurrentDownloads / 4)
@@ -20,7 +19,7 @@ enum ModPackDependencyInstaller {
         case overrides
     }
 
-    /// 安装整合包版本的所有必需依赖
+    /// Installs all required dependencies for a modpack version.
     static func installVersionDependencies(
         indexInfo: ModrinthIndexInfo,
         gameInfo: GameVersionInfo,
@@ -59,7 +58,7 @@ enum ModPackDependencyInstaller {
     }
 }
 
-// MARK: - Thread-safe Counter
+/// A thread-safe counter for tracking download progress.
 final class ModPackCounter {
     private var count = 0
     private let lock = NSLock()

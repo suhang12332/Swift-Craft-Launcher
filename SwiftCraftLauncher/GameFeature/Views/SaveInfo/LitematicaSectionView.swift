@@ -1,16 +1,21 @@
+//
+//  LitematicaSectionView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Displays Litematica schematic files as selectable chips with detail sheet support.
 import SwiftUI
 import AppKit
 
-// MARK: - Litematica 投影文件区域视图
 struct LitematicaSectionView: View {
-    // MARK: - Properties
     let litematicaFiles: [LitematicaInfo]
     let isLoading: Bool
     let gameName: String
 
     @State private var selectedFile: LitematicaInfo?
 
-    // MARK: - Body
     var body: some View {
         GenericSectionView(
             title: "saveinfo.litematica",
@@ -25,7 +30,6 @@ struct LitematicaSectionView: View {
         }
     }
 
-    // MARK: - Chip Builder
     private func litematicaChip(for file: LitematicaInfo) -> some View {
         FilterChip(
             title: file.name,
@@ -40,7 +44,7 @@ struct LitematicaSectionView: View {
     }
 }
 
-// MARK: - Litematica File Row
+/// A row view for displaying Litematica file details with metadata.
 struct LitematicaFileRow: View {
     let file: LitematicaInfo
 

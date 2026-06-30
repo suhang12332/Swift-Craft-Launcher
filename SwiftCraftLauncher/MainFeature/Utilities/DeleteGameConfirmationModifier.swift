@@ -1,11 +1,13 @@
 //
 //  DeleteGameConfirmationModifier.swift
-//  SwiftCraftLauncher
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// 统一的「删除游戏」确认对话框（侧边栏、工具栏等入口共用）
+/// Confirmation dialog for deleting a game, shared across sidebar and toolbar entry points.
 struct DeleteGameConfirmationModifier: ViewModifier {
     @Binding var gamePendingDeletion: GameVersionInfo?
     @ObservedObject var detailState: ResourceDetailState

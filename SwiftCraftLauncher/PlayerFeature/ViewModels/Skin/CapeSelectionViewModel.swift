@@ -1,7 +1,15 @@
+//
+//  CapeSelectionViewModel.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import AppKit
 import SwiftUI
 
+/// Manages cape image loading and selection state.
 @MainActor
 final class CapeSelectionViewModel: ObservableObject {
     private let selectedCapeImageURL: Binding<String?>
@@ -17,6 +25,9 @@ final class CapeSelectionViewModel: ObservableObject {
         self.selectedCapeImage = selectedCapeImage
     }
 
+    /// Loads the cape image from the specified URL if not already cached.
+    ///
+    /// - Parameter imageURL: The URL of the cape image.
     func loadCapeImageIfNeeded(imageURL: String?) {
         guard let imageURL else { return }
 
@@ -38,6 +49,7 @@ final class CapeSelectionViewModel: ObservableObject {
         }
     }
 
+    /// Cancels any pending image loading operation.
     func cancel() {
         loadTask?.cancel()
         loadTask = nil

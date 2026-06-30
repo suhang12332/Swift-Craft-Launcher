@@ -1,10 +1,15 @@
+//
+//  ModPackInstallStateExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 @MainActor
 final class ModPackInstallStateExtendedTests: XCTestCase {
-
-    // MARK: - calculateProgress edge cases
 
     func testUpdateFilesProgress_zeroTotal() {
         let state = ModPackInstallState()
@@ -63,8 +68,6 @@ final class ModPackInstallStateExtendedTests: XCTestCase {
         XCTAssertEqual(state.overridesProgress, 1.0, accuracy: 0.001)
     }
 
-    // MARK: - startInstallation edge cases
-
     func testStartInstallation_zeroTotals() {
         let state = ModPackInstallState()
 
@@ -103,8 +106,6 @@ final class ModPackInstallStateExtendedTests: XCTestCase {
         XCTAssertEqual(state.overridesProgress, 0.5, accuracy: 0.001)
     }
 
-    // MARK: - reset after multiple updates
-
     func testReset_afterMultipleUpdates() {
         let state = ModPackInstallState()
         state.startInstallation(filesTotal: 10, dependenciesTotal: 5, overridesTotal: 3)
@@ -125,8 +126,6 @@ final class ModPackInstallStateExtendedTests: XCTestCase {
         XCTAssertEqual(state.currentDependency, "")
         XCTAssertEqual(state.currentOverride, "")
     }
-
-    // MARK: - Progress values
 
     func testFilesProgress_half() {
         let state = ModPackInstallState()

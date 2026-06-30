@@ -1,5 +1,13 @@
+//
+//  GameAdvancedSettingsViewModel+JvmArguments.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Extension providing JVM argument parsing, generation, and optimization preset management.
 extension GameAdvancedSettingsViewModel {
     func parseExistingJvmArguments(_ arguments: String) -> Bool {
         let args = arguments.components(separatedBy: .whitespacesAndNewlines).filter { !$0.isEmpty }

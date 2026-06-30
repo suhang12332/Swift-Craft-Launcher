@@ -1,6 +1,13 @@
+//
+//  PlayerListView.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-/// 显示玩家列表的视图
+/// Displays a player list popover with selection and deletion capabilities.
 struct PlayerListView: View {
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @Environment(\.dismiss)
@@ -61,7 +68,6 @@ private struct PlayerSelectorLabel: View {
     }
 }
 
-// 列表项视图
 private struct PlayerListItemView: View {
     let player: Player
     let playerListViewModel: PlayerListViewModel
@@ -92,7 +98,6 @@ private struct PlayerListItemView: View {
     }
 }
 
-// PlayerAvatarView struct definition moved here
 private struct PlayerAvatarView: View {
     let player: Player
     var size: CGFloat

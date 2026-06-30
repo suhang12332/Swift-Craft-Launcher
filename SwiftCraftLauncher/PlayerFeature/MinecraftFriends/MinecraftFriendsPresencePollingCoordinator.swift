@@ -1,7 +1,19 @@
+//
+//  MinecraftFriendsPresencePollingCoordinator.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Combine
 import Foundation
 import MinecraftFriendsKit
 
+/// Coordinates periodic polling of Minecraft friends presence and friend list updates.
+///
+/// This singleton observes the current player and the presence notifications setting
+/// to start or stop a background polling loop. The loop runs at a fixed 10-second
+/// interval while a Microsoft account is selected and presence notifications are enabled.
 @MainActor
 final class MinecraftFriendsPresencePollingCoordinator {
     static let shared = MinecraftFriendsPresencePollingCoordinator()
@@ -44,6 +56,9 @@ final class MinecraftFriendsPresencePollingCoordinator {
         )
     }
 
+    /// Starts observing the player list view model and begins polling if conditions are met.
+    ///
+    /// - Parameter playerListViewModel: The view model whose current player is observed.
     func start(playerListViewModel: PlayerListViewModel) {
         self.playerListViewModel = playerListViewModel
 
@@ -72,6 +87,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
         syncPollingToCurrentPlayer()
     }
 
+    /// Stops all observations and the polling loop.
     func stop() {
         currentPlayerObservation?.cancel()
         currentPlayerObservation = nil
@@ -81,6 +97,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
         stopPollingLoop()
     }
 
+    /// Starts or stops the polling loop based on the current player and settings.
     private func syncPollingToCurrentPlayer() {
         guard AppServices.playerSettingsManager.enableMinecraftFriendsPresenceNotifications else {
             stopPollingLoop()

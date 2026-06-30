@@ -1,8 +1,8 @@
 //
 //  SkinPreviewWindowView.swift
-//  SwiftCraftLauncher
+//  PlayerFeature
 //
-//  Created by su on 2025/1/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -10,7 +10,7 @@ import SwiftUI
 import AppKit
 import SkinRenderKit
 
-/// 皮肤预览窗口视图
+/// A window that displays a 3D preview of the selected Minecraft skin and cape.
 struct SkinPreviewWindowView: View {
     let skinImage: NSImage?
     let skinPath: String?
@@ -63,7 +63,6 @@ struct SkinPreviewWindowView: View {
         }
     }
 
-    /// 清理所有数据
     private func clearAllData() {
         currentSkinImage = nil
         currentSkinPath = nil

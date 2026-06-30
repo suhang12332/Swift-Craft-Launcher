@@ -1,10 +1,15 @@
+//
+//  ModPackExporterActorTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 @MainActor
 final class ModPackExporterActorTests: XCTestCase {
-
-    // MARK: - ProcessedCounter
 
     func testProcessedCounter_increment() async {
         let counter = ModPackExporter.ProcessedCounter()
@@ -17,8 +22,6 @@ final class ModPackExporterActorTests: XCTestCase {
         XCTAssertEqual(count3, 3)
     }
 
-    // MARK: - CopyCounter
-
     func testCopyCounter_increment() async {
         let counter = ModPackExporter.CopyCounter(total: 10)
         let (count1, total1) = await counter.increment()
@@ -29,8 +32,6 @@ final class ModPackExporterActorTests: XCTestCase {
         XCTAssertEqual(count2, 2)
         XCTAssertEqual(total2, 10)
     }
-
-    // MARK: - ProgressUpdater
 
     func testProgressUpdater_setCopyProgressTotal() async {
         let updater = ModPackExporter.ProgressUpdater()

@@ -1,13 +1,14 @@
 //
-//  AIChatWindow.swift
-//  SwiftCraftLauncher
+//  AIChatWindowView.swift
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// AI 对话窗口视图
+/// Provides the main AI chat window interface.
 struct AIChatWindowView: View {
     @ObservedObject var chatState: ChatState
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
@@ -35,7 +36,6 @@ struct AIChatWindowView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // 消息列表
             AIChatMessageListView(
                 chatState: chatState,
                 currentPlayer: playerListViewModel.currentPlayer,
@@ -46,7 +46,6 @@ struct AIChatWindowView: View {
 
             Divider()
 
-            // 待发送附件预览
             if !attachmentManager.pendingAttachments.isEmpty {
                 AIChatAttachmentPreviewView(
                     attachments: attachmentManager.pendingAttachments
@@ -55,7 +54,6 @@ struct AIChatWindowView: View {
                 }
             }
 
-            // 输入区域
             AIChatInputAreaView(
                 inputText: $inputText,
                 selectedGameId: $viewModel.selectedGameId,
@@ -108,8 +106,6 @@ struct AIChatWindowView: View {
         }
     }
 
-    // MARK: - Computed Properties
-
     private var selectedGame: GameVersionInfo? {
         guard let selectedGameId = viewModel.selectedGameId else { return nil }
         return gameRepository.games.first { $0.id == selectedGameId }
@@ -119,15 +115,10 @@ struct AIChatWindowView: View {
         !chatState.isSending && (!inputText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !attachmentManager.pendingAttachments.isEmpty)
     }
 
-    // MARK: - Methods
-
-    /// 清除页面所有数据
     private func clearAllData() {
         viewModel.clearAllData()
-        // 清理输入文本和附件
         inputText = ""
         attachmentManager.clearAll()
-        // 重置焦点状态
         isInputFocused = false
     }
 
@@ -144,7 +135,6 @@ struct AIChatWindowView: View {
         }
     }
 
-    /// 处理文件选择结果
     private func handleFileSelection(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):

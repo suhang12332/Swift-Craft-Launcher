@@ -1,10 +1,15 @@
+//
+//  CurseForgeManifestModelTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 import CFModrinthAdapterKit
 
 final class CurseForgeManifestModelTests: XCTestCase {
-
-    // MARK: - CurseForgeManifest decoding
 
     func testCurseForgeManifest_decodable() throws {
         let json = """
@@ -107,8 +112,6 @@ final class CurseForgeManifestModelTests: XCTestCase {
         XCTAssertTrue(manifest.files[2].required)
     }
 
-    // MARK: - CurseForgeModLoader
-
     func testCurseForgeModLoader_primary() throws {
         let json = """
         {"id": "forge-47.2.0", "primary": true}
@@ -129,8 +132,6 @@ final class CurseForgeManifestModelTests: XCTestCase {
         XCTAssertFalse(loader.primary)
     }
 
-    // MARK: - CurseForgeManifestFile
-
     func testCurseForgeManifestFile_decodable() throws {
         let json = """
         {"projectID": 12345, "fileID": 67890, "required": true}
@@ -150,8 +151,6 @@ final class CurseForgeManifestModelTests: XCTestCase {
 
         XCTAssertFalse(file.required)
     }
-
-    // MARK: - CurseForgeManifestBuilder.ManifestFile
 
     func testManifestFile_codable() throws {
         let original = CurseForgeManifestBuilder.ManifestFile(

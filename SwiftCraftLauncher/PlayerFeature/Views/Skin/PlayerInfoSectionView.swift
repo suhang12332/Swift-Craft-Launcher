@@ -1,6 +1,14 @@
+//
+//  PlayerInfoSectionView.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// Displays the current player's avatar, name, and skin model toggle.
 struct PlayerInfoSectionView: View {
     let player: Player?
     @Binding var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel

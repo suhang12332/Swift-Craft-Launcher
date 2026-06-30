@@ -1,12 +1,19 @@
+//
+//  LocalResourceToggle.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A toggle switch for enabling or disabling a local resource.
 import SwiftUI
 
-/// 本地资源启用/禁用开关视图
 struct LocalResourceToggle: View {
-    /// 是否显示开关（仅本地资源）
+    /// Whether the toggle is visible.
     let isVisible: Bool
-    /// 当前是否被禁用（外部状态）
+    /// Whether the resource is currently disabled.
     @Binding var isDisabled: Bool
-    /// 点击回调
+    /// Called when the toggle value changes.
     let onToggle: () -> Void
 
     var body: some View {

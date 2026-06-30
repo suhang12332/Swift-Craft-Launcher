@@ -1,8 +1,17 @@
+//
+//  PlayerSkinService.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides skin and cape management operations for Minecraft player profiles.
+///
+/// This service interacts with the Minecraft Services API to upload, reset,
+/// and retrieve skin and cape data for authenticated online players.
 enum PlayerSkinService {
-
-    // MARK: - Notification System
 
     private static func notifyPlayerUpdated(_ updatedPlayer: Player) {
         NotificationCenter.default.post(
@@ -12,14 +21,12 @@ enum PlayerSkinService {
         )
     }
 
-    // MARK: - Error Handling
     private static func handleError(_ error: Error, operation: String) {
         let globalError = GlobalError.from(error)
         Logger.shared.error("\(operation) failed: \(globalError.chineseMessage)")
         AppServices.errorHandler.handle(globalError)
     }
 
-    // MARK: - Common Error Helpers
     private static func validateAccessToken(_ player: Player) throws {
         guard !player.authAccessToken.isEmpty else {
             throw GlobalError.authentication(
@@ -75,11 +82,12 @@ enum PlayerSkinService {
         enum SkinModel: String, Codable, CaseIterable { case classic, slim }
     }
 
-    /// 更新玩家皮肤信息到数据管理器
+    /// Updates the player's skin information in the data manager.
+    ///
     /// - Parameters:
-    ///   - uuid: 玩家UUID
-    ///   - skinInfo: 皮肤信息
-    /// - Returns: 是否更新成功
+    ///   - uuid: The player's UUID.
+    ///   - skinInfo: The skin information to persist.
+    /// - Returns: `true` if the update was successful.
     private static func updatePlayerSkinInfo(uuid: String, skinInfo: PublicSkinInfo) async -> Bool {
         do {
             let dataManager = AppServices.playerDataManager
@@ -90,7 +98,6 @@ enum PlayerSkinService {
                 return false
             }
 
-            // 创建更新后的玩家对象
             let updatedProfile = UserProfile(
                 id: player.profile.id,
                 name: player.profile.name,
@@ -103,10 +110,8 @@ enum PlayerSkinService {
 
             let updatedPlayer = Player(profile: updatedProfile, credential: updatedCredential)
 
-            // 使用 dataManager 更新数据
             try dataManager.updatePlayer(updatedPlayer)
 
-            // 通知ViewModel更新当前玩家
             notifyPlayerUpdated(updatedPlayer)
 
             return true
@@ -116,20 +121,19 @@ enum PlayerSkinService {
         }
     }
 
-    /// 使用 Minecraft Services API 获取当前玩家的皮肤信息（更准确，无缓存延迟）
-    /// - Parameter player: 玩家信息
-    /// - Returns: 皮肤信息，如果获取失败返回nil
+    /// Fetches the current player's skin information from the Minecraft Services API.
+    ///
+    /// - Parameter player: The player to query.
+    /// - Returns: Skin information, or `nil` if the fetch fails.
     static func fetchCurrentPlayerSkinFromServices(player: Player) async -> PublicSkinInfo? {
         do {
             let profile = try await fetchPlayerProfileThrowing(player: player)
 
-            // 从 Minecraft Services API 响应中提取皮肤信息
             guard !profile.skins.isEmpty else {
                 Logger.shared.warning("玩家没有皮肤信息")
                 return nil
             }
 
-            // 找到当前激活的皮肤
             let activeSkin = profile.skins.first { $0.state == "ACTIVE" } ?? profile.skins.first
 
             guard let skin = activeSkin else {
@@ -140,7 +144,7 @@ enum PlayerSkinService {
             let skinInfo = PublicSkinInfo(
                 skinURL: skin.url,
                 model: skin.variant == "SLIM" ? .slim : .classic,
-                capeURL: nil, // Minecraft Services API 不直接提供斗篷信息
+                capeURL: nil,
                 fetchedAt: Date()
             )
 
@@ -151,13 +155,13 @@ enum PlayerSkinService {
         }
     }
 
-    // MARK: - Upload Skin (multipart/form-data)
-    /// Upload (silent version)
+    /// Uploads a skin for the specified player.
+    ///
     /// - Parameters:
-    ///   - imageData: PNG image data (64x64 or 64x32 standard formats)
-    ///   - model: Skin model classic / slim
-    ///   - player: Current online player (requires valid accessToken)
-    /// - Returns: Whether successful
+    ///   - imageData: The PNG image data (64×64 or 64×32 resolution).
+    ///   - model: The skin model type (classic or slim).
+    ///   - player: The player whose skin should be updated.
+    /// - Returns: `true` if the upload succeeded.
     static func uploadSkin(
         imageData: Data,
         model: PublicSkinInfo.SkinModel,
@@ -176,20 +180,22 @@ enum PlayerSkinService {
         }
     }
 
-    /// 刷新皮肤信息（公共方法）
-    /// - Parameter player: 玩家信息
+    /// Refreshes the skin information for the given player.
+    ///
+    /// - Parameter player: The player whose skin information should be refreshed.
     private static func refreshSkinInfo(player: Player) async {
         if let newSkinInfo = await fetchCurrentPlayerSkinFromServices(player: player) {
             _ = await updatePlayerSkinInfo(uuid: player.id, skinInfo: newSkinInfo)
         }
     }
 
-    /// 处理皮肤上传后的完整流程（包括数据更新和通知）
+    /// Uploads a skin and refreshes the local skin information on success.
+    ///
     /// - Parameters:
-    ///   - imageData: 皮肤图片数据
-    ///   - model: 皮肤模型
-    ///   - player: 玩家信息
-    /// - Returns: 是否成功
+    ///   - imageData: The PNG image data.
+    ///   - model: The skin model type.
+    ///   - player: The player to update.
+    /// - Returns: `true` if both the upload and refresh succeeded.
     static func uploadSkinAndRefresh(
         imageData: Data,
         model: PublicSkinInfo.SkinModel,
@@ -202,9 +208,10 @@ enum PlayerSkinService {
         return success
     }
 
-    /// 重置皮肤并刷新数据
-    /// - Parameter player: 玩家信息
-    /// - Returns: 是否成功
+    /// Resets the player's skin to the default and refreshes local information.
+    ///
+    /// - Parameter player: The player whose skin should be reset.
+    /// - Returns: `true` if the reset and refresh succeeded.
     static func resetSkinAndRefresh(player: Player) async -> Bool {
         let success = await resetSkin(player: player)
         if success {
@@ -213,8 +220,9 @@ enum PlayerSkinService {
         return success
     }
 
-    /// Upload (throwing version)
-    /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#upload-skin specification
+    /// Uploads a skin image for the specified player, throwing on failure.
+    ///
+    /// Implements the [Mojang API skin upload](https://zh.minecraft.wiki/w/Mojang_API#upload-skin) specification.
     static func uploadSkinThrowing(
         imageData: Data,
         model: PublicSkinInfo.SkinModel,
@@ -288,7 +296,10 @@ enum PlayerSkinService {
         Logger.shared.info("Skin upload successful with variant: \(variantValue)")
     }
 
-    // MARK: - Reset Skin (delete active)
+    /// Resets the player's skin to the default.
+    ///
+    /// - Parameter player: The player whose skin should be reset.
+    /// - Returns: `true` if the reset succeeded.
     static func resetSkin(player: Player) async -> Bool {
         do {
             try await resetSkinThrowing(player: player)
@@ -299,37 +310,33 @@ enum PlayerSkinService {
         }
     }
 
-    // MARK: - Common Helper Methods
-
-    /// 获取当前激活的披风ID
-    /// - Parameter profile: 玩家配置文件
-    /// - Returns: 激活的披风ID，如果没有则返回nil
+    /// Returns the identifier of the currently active cape, or `nil` if none is active.
+    ///
+    /// - Parameter profile: The player's Minecraft profile response.
     static func getActiveCapeId(from profile: MinecraftProfileResponse?) -> String? {
         return profile?.capes?.first { $0.state == "ACTIVE" }?.id
     }
 
-    /// 检查是否有皮肤变化
+    /// A Boolean value indicating whether the skin configuration has changed.
+    ///
     /// - Parameters:
-    ///   - selectedSkinData: 选中的皮肤数据
-    ///   - currentModel: 当前模型
-    ///   - originalModel: 原始模型（可选，nil表示没有现有皮肤）
-    /// - Returns: 是否有皮肤变化
+    ///   - selectedSkinData: Newly selected skin data, or `nil` if none was selected.
+    ///   - currentModel: The currently configured skin model.
+    ///   - originalModel: The original skin model, or `nil` if no existing skin.
+    /// - Returns: `true` if the skin or model differs from the original.
     static func hasSkinChanges(
         selectedSkinData: Data?,
         currentModel: PublicSkinInfo.SkinModel,
         originalModel: PublicSkinInfo.SkinModel?
     ) -> Bool {
-        // 如果有选中的皮肤数据，则有变化
         if selectedSkinData != nil {
             return true
         }
 
-        // 如果没有原始模型信息（没有现有皮肤），但当前模型不是默认的classic，则有变化
         if originalModel == nil && currentModel != .classic {
             return true
         }
 
-        // 如果有原始模型信息，比较当前模型和原始模型
         if let original = originalModel {
             return currentModel != original
         }
@@ -337,19 +344,20 @@ enum PlayerSkinService {
         return false
     }
 
-    /// 检查是否有披风变化
+    /// A Boolean value indicating whether the cape selection has changed.
+    ///
     /// - Parameters:
-    ///   - selectedCapeId: 选中的披风ID
-    ///   - currentActiveCapeId: 当前激活的披风ID
-    /// - Returns: 是否有披风变化
+    ///   - selectedCapeId: The newly selected cape identifier.
+    ///   - currentActiveCapeId: The currently active cape identifier.
+    /// - Returns: `true` if the selected cape differs from the current one.
     static func hasCapeChanges(selectedCapeId: String?, currentActiveCapeId: String?) -> Bool {
         return selectedCapeId != currentActiveCapeId
     }
 
-    // MARK: - Cape Management
-    /// Get player profile with capes information (silent version)
-    /// - Parameter player: Current online player
-    /// - Returns: Profile with cape information or nil if failed
+    /// Fetches the player's Minecraft profile including cape information.
+    ///
+    /// - Parameter player: The player to query.
+    /// - Returns: The profile response, or `nil` on failure.
     static func fetchPlayerProfile(player: Player) async
         -> MinecraftProfileResponse? {
         do {
@@ -360,7 +368,7 @@ enum PlayerSkinService {
         }
     }
 
-    /// Get player profile with capes information (throwing version)
+    /// Fetches the player's Minecraft profile including cape information, throwing on failure.
     static func fetchPlayerProfileThrowing(player: Player) async throws
         -> MinecraftProfileResponse {
         try validateAccessToken(player)
@@ -385,11 +393,12 @@ enum PlayerSkinService {
         )
     }
 
-    /// Show/equip a cape (silent version)
+    /// Equips a cape for the specified player.
+    ///
     /// - Parameters:
-    ///   - capeId: Cape UUID to equip
-    ///   - player: Current online player
-    /// - Returns: Whether successful
+    ///   - capeId: The cape's UUID to equip.
+    ///   - player: The player whose cape should be changed.
+    /// - Returns: `true` if the operation succeeded.
     static func showCape(capeId: String, player: Player) async -> Bool {
         do {
             try await showCapeThrowing(capeId: capeId, player: player)
@@ -400,8 +409,9 @@ enum PlayerSkinService {
         }
     }
 
-    /// Show/equip a cape (throwing version)
-    /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#show-cape specification
+    /// Equips a cape for the specified player, throwing on failure.
+    ///
+    /// Implements the [Mojang API show cape](https://zh.minecraft.wiki/w/Mojang_API#show-cape) specification.
     static func showCapeThrowing(capeId: String, player: Player) async throws {
         try validateAccessToken(player)
 
@@ -431,9 +441,10 @@ enum PlayerSkinService {
         }
     }
 
-    /// Hide current cape (silent version)
-    /// - Parameter player: Current online player
-    /// - Returns: Whether successful
+    /// Hides the currently active cape.
+    ///
+    /// - Parameter player: The player whose cape should be hidden.
+    /// - Returns: `true` if the operation succeeded.
     static func hideCape(player: Player) async -> Bool {
         do {
             try await hideCapeThrowing(player: player)
@@ -444,8 +455,9 @@ enum PlayerSkinService {
         }
     }
 
-    /// Hide current cape (throwing version)
-    /// Implemented according to https://zh.minecraft.wiki/w/Mojang_API#hide-cape specification
+    /// Hides the currently active cape, throwing on failure.
+    ///
+    /// Implements the [Mojang API hide cape](https://zh.minecraft.wiki/w/Mojang_API#hide-cape) specification.
     static func hideCapeThrowing(player: Player) async throws {
         try validateAccessToken(player)
         do {
@@ -458,6 +470,7 @@ enum PlayerSkinService {
         }
     }
 
+    /// Resets the player's skin to the default, throwing on failure.
     static func resetSkinThrowing(player: Player) async throws {
         try validateAccessToken(player)
         do {

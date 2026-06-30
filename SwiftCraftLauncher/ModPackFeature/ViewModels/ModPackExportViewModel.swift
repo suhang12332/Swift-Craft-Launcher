@@ -1,84 +1,51 @@
 //
 //  ModPackExportViewModel.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 import SwiftUI
 
-/// 整合包导出视图模型
-/// 管理整合包导出流程的状态和业务逻辑
+/// Manages modpack export state, including format selection, progress tracking, and file handling.
 @MainActor
 class ModPackExportViewModel: ObservableObject {
-    // MARK: - Export State
-
-    /// 导出状态枚举
+    /// The current state of the export process.
     enum ExportState: Equatable {
-        case idle              // 空闲状态，显示表单
-        case exporting         // 正在导出，显示进度
-        case completed         // 导出完成，等待保存
+        case idle
+        case exporting
+        case completed
     }
 
-    // MARK: - Published Properties
-
-    /// 导出状态
     @Published var exportState: ExportState = .idle
-
-    /// 导出进度信息
     @Published var exportProgress = ModPackExporter.ExportProgress()
-
-    /// 整合包名称（固定使用当前游戏名）
     @Published var modPackName: String = ""
-
-    /// 整合包版本
     @Published var modPackVersion: String = "1.0.0"
-
-    /// 整合包描述
     @Published var summary: String = ""
-
-    /// 导出错误信息
     @Published var exportError: String?
-
-    /// 临时文件路径，当有值时表示打包完成，需要显示保存对话框
     @Published var tempExportPath: URL?
-
-    /// 保存文件时的错误信息
     @Published var saveError: String?
-
-    /// 在文件树里选择的文件（用于后续导出过滤）
     @Published var selectedFileURLs: [URL] = []
-
-    /// 当前导出使用的格式
     @Published var currentExportFormat: ModPackExportFormat = .modrinth
 
-    // MARK: - Private Properties
-
-    /// 导出任务
     private var exportTask: Task<Void, Never>?
     private let gameSettingsManager: GameSettingsManager
-
-    /// 是否已显示保存对话框（防止重复显示）
     private var hasShownSaveDialog = false
 
-    // MARK: - Computed Properties
-
-    /// 是否正在导出
     var isExporting: Bool {
         exportState == .exporting
     }
 
-    /// 是否应该显示保存对话框
     var shouldShowSaveDialog: Bool {
         tempExportPath != nil && !hasShownSaveDialog
     }
 
-    // MARK: - Export Actions
-
+    /// Starts the export for the given game asynchronously.
+    /// - Parameter gameInfo: The game version to export.
     func startExport(gameInfo: GameVersionInfo) {
         guard exportState == .idle else { return }
 
-        // 导出包名固定为当前游戏名，后缀由导出格式决定
         modPackName = gameInfo.gameName
 
         exportState = .exporting
@@ -125,7 +92,7 @@ class ModPackExportViewModel: ObservableObject {
         }
     }
 
-    /// 取消导出任务
+    /// Cancels the current export and cleans up.
     func cancelExport() {
         exportTask?.cancel()
         cleanupTempFile()
@@ -136,11 +103,12 @@ class ModPackExportViewModel: ObservableObject {
         saveError = nil
     }
 
-    // MARK: - Save Dialog Actions
+    /// Marks the save dialog as having been shown.
     func markSaveDialogShown() {
         hasShownSaveDialog = true
     }
 
+    /// Handles a successful save operation and resets state.
     func handleSaveSuccess() {
         cleanupTempFile()
         hasShownSaveDialog = false
@@ -149,12 +117,15 @@ class ModPackExportViewModel: ObservableObject {
         exportProgress = ModPackExporter.ExportProgress()
     }
 
+    /// Handles a save failure and stores the error message.
+    /// - Parameter error: The error description.
     func handleSaveFailure(error: String) {
         saveError = error
         cleanupTempFile()
         hasShownSaveDialog = false
     }
 
+    /// Cleans up all export data and resets to the idle state.
     func cleanupAllData() {
         exportTask?.cancel()
         exportTask = nil
@@ -172,7 +143,8 @@ class ModPackExportViewModel: ObservableObject {
         currentExportFormat = gameSettingsManager.defaultModPackExportFormat
     }
 
-    /// 取消导出后将界面恢复为初始可编辑状态（不关闭 Sheet）
+    /// Resets the view model back to its initial state for the given game.
+    /// - Parameter gameInfo: The game version to reset for.
     func resetToInitial(gameInfo: GameVersionInfo) {
         exportTask?.cancel()
         exportTask = nil
@@ -191,8 +163,6 @@ class ModPackExportViewModel: ObservableObject {
         summary = ""
         selectedFileURLs = []
     }
-
-    // MARK: - Private Helper Methods
 
     private func cleanupTempFile() {
         guard let tempPath = tempExportPath else { return }

@@ -1,9 +1,14 @@
+//
+//  GameFeatureExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class GameFeatureExtendedTests: XCTestCase {
-
-    // MARK: - MacRuleEvaluator
 
     func testMacOS_fromJavaArch_aarch64() {
         XCTAssertEqual(MacOS.fromJavaArch("aarch64"), .osxArm64)
@@ -50,8 +55,6 @@ final class GameFeatureExtendedTests: XCTestCase {
         XCTAssertEqual(RuleAction.disallow.rawValue, "disallow")
     }
 
-    // MARK: - CommonService Maven Utilities
-
     func testMavenCoordinateToRelativePath_basic() {
         let result = CommonService.mavenCoordinateToRelativePath("com.google.guava:guava:31.1-jre")
         guard let result else {
@@ -90,8 +93,6 @@ final class GameFeatureExtendedTests: XCTestCase {
         let result = CommonService.parseMavenCoordinateWithAtSymbol("com.google:guava")
         XCTAssertEqual(result, "com.google:guava")
     }
-
-    // MARK: - LibraryFilter (via JSON construction)
 
     func testIsLibraryAllowed_noRules_returnsTrue() throws {
         let json = Data("""

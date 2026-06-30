@@ -1,6 +1,14 @@
+//
+//  ModrinthModelMappers.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 public extension ModrinthProjectDetail {
+    /// Creates a `ModrinthProjectDetail` from the V3 API response format.
     static func fromV3(_ v3: ModrinthProjectDetailV3) -> ModrinthProjectDetail {
         let serverInfo = v3.minecraftJavaServer
         let address = serverInfo?.address ?? ""
@@ -65,6 +73,7 @@ public extension ModrinthProjectDetail {
 }
 
 public extension ModrinthProject {
+    /// Creates a `ModrinthProject` from a detailed project response.
     static func from(detail: ModrinthProjectDetail) -> ModrinthProject {
         ModrinthProject(
             projectId: detail.id,

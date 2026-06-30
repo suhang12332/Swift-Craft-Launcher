@@ -1,6 +1,13 @@
+//
+//  DownloadState.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-// MARK: - Download State
+/// Tracks download progress for game core files and resources.
 @MainActor
 class DownloadState: ObservableObject {
     @Published var isDownloading = false
@@ -14,6 +21,7 @@ class DownloadState: ObservableObject {
     @Published var resourcesCompletedFiles: Int = 0
     @Published var isCancelled = false
 
+    /// Resets all progress values to the default state.
     func reset() {
         isDownloading = false
         coreProgress = 0
@@ -27,6 +35,10 @@ class DownloadState: ObservableObject {
         isCancelled = false
     }
 
+    /// Begins tracking a new download operation.
+    /// - Parameters:
+    ///   - coreTotalFiles: The total number of core files to download.
+    ///   - resourcesTotalFiles: The total number of resource files to download.
     func startDownload(coreTotalFiles: Int, resourcesTotalFiles: Int) {
         self.coreTotalFiles = coreTotalFiles
         self.resourcesTotalFiles = resourcesTotalFiles
@@ -38,10 +50,17 @@ class DownloadState: ObservableObject {
         self.isCancelled = false
     }
 
+    /// Cancels the download by setting the cancelled flag.
     func cancel() {
         isCancelled = true
     }
 
+    /// Updates progress for a specific download type.
+    /// - Parameters:
+    ///   - fileName: The current file being processed.
+    ///   - completed: The number of completed files.
+    ///   - total: The total number of files.
+    ///   - type: Whether this is a core or resources download.
     func updateProgress(
         fileName: String,
         completed: Int,

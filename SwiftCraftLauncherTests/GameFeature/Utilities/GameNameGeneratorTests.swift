@@ -1,9 +1,14 @@
+//
+//  GameNameGeneratorTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class GameNameGeneratorExtendedTests: XCTestCase {
-
-    // MARK: - generateModPackName
 
     func testGenerateModPackName_withTitle_noTimestamp() {
         let result = GameNameGenerator.generateModPackName(
@@ -33,8 +38,6 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
         XCTAssertTrue(result.count > "Test-1.20.1-".count)
     }
 
-    // MARK: - generateImportName
-
     func testGenerateImportName_noTimestamp() {
         let result = GameNameGenerator.generateImportName(
             modPackName: "AllTheMods",
@@ -52,8 +55,6 @@ final class GameNameGeneratorExtendedTests: XCTestCase {
         )
         XCTAssertTrue(result.hasPrefix("Test-1.0-"))
     }
-
-    // MARK: - generateGameName
 
     func testGenerateGameName_vanilla_noTimestamp() {
         let result = GameNameGenerator.generateGameName(

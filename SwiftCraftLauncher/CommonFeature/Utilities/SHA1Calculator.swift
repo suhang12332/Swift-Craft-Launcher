@@ -1,20 +1,20 @@
 //
 //  SHA1Calculator.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/8/3.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 import CommonCrypto
 import CryptoKit
 
-/// 统一的 SHA1 计算工具类
+/// Provides SHA1 hash computation for data and files.
 public enum SHA1Calculator {
 
-    /// 计算 Data 的 SHA1 哈希值（适用于小文件或内存中的数据）
-    /// - Parameter data: 要计算哈希的数据
-    /// - Returns: SHA1 哈希字符串
+    /// Computes the SHA1 hash of in-memory data.
+    /// - Parameter data: The data to hash.
+    /// - Returns: A lowercase hexadecimal SHA1 string.
     public static func sha1(of data: Data) -> String {
         var digest = [UInt8](repeating: 0, count: Int(CC_SHA1_DIGEST_LENGTH))
         data.withUnsafeBytes { buffer in
@@ -23,10 +23,10 @@ public enum SHA1Calculator {
         return digest.map { String(format: "%02hhx", $0) }.joined()
     }
 
-    /// 计算文件的 SHA1 哈希值（流式处理，适用于大文件）
-    /// - Parameter url: 文件路径
-    /// - Returns: SHA1 哈希字符串
-    /// - Throws: GlobalError 当操作失败时
+    /// Computes the SHA1 hash of a file at the given URL using streaming.
+    /// - Parameter url: The file URL.
+    /// - Returns: A lowercase hexadecimal SHA1 string.
+    /// - Throws: A `GlobalError` if the file cannot be read.
     public static func sha1(ofFileAt url: URL) throws -> String {
         do {
             let fileHandle = try FileHandle(forReadingFrom: url)
@@ -35,7 +35,6 @@ public enum SHA1Calculator {
             var context = CC_SHA1_CTX()
             CC_SHA1_Init(&context)
 
-            // 使用 1MB 缓冲区进行流式处理
             let bufferSize = 1024 * 1024
 
             while autoreleasepool(invoking: {
@@ -62,9 +61,9 @@ public enum SHA1Calculator {
         }
     }
 
-    /// 计算文件的 SHA1 哈希值（静默版本，返回可选值）
-    /// - Parameter url: 文件路径
-    /// - Returns: SHA1 哈希字符串，如果计算失败则返回 nil
+    /// Computes the SHA1 hash of a file, returning `nil` on failure.
+    /// - Parameter url: The file URL.
+    /// - Returns: A lowercase hexadecimal SHA1 string, or `nil` if the computation fails.
     public static func sha1Silent(ofFileAt url: URL) -> String? {
         do {
             return try sha1(ofFileAt: url)
@@ -76,18 +75,17 @@ public enum SHA1Calculator {
         }
     }
 
-    /// 使用 CryptoKit 计算 SHA1（适用于需要 CryptoKit 特性的场景）
-    /// - Parameter data: 要计算哈希的数据
-    /// - Returns: SHA1 哈希字符串
+    /// Computes the SHA1 hash of in-memory data using CryptoKit.
+    /// - Parameter data: The data to hash.
+    /// - Returns: A lowercase hexadecimal SHA1 string.
     public static func sha1WithCryptoKit(of data: Data) -> String {
         let hash = Insecure.SHA1.hash(data: data)
         return hash.map { String(format: "%02hhx", $0) }.joined()
     }
 }
 
-// MARK: - Data Extension (保持向后兼容)
 extension Data {
-    /// 计算当前 Data 的 SHA1 哈希值
+    /// The SHA1 hash of this data instance.
     var sha1: String {
         return SHA1Calculator.sha1(of: self)
     }

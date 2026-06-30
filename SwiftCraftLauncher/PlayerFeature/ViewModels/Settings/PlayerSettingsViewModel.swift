@@ -1,7 +1,15 @@
+//
+//  PlayerSettingsViewModel.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Combine
 import Foundation
 import MinecraftFriendsKit
 
+/// Manages player-related settings in the settings view.
 @MainActor
 final class PlayerSettingsViewModel: ObservableObject {
     @Published var isDownloadingAuthlibInjector: Bool = false
@@ -29,6 +37,7 @@ final class PlayerSettingsViewModel: ObservableObject {
         )
     }
 
+    /// Updates whether the authlib-injector JAR file exists on disk.
     func refreshAuthlibInjectorExists() {
         let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(
             AppConstants.AuthlibInjector.jarFileName
@@ -36,6 +45,7 @@ final class PlayerSettingsViewModel: ObservableObject {
         authlibInjectorExists = FileManager.default.fileExists(atPath: authlibInjectorJarURL.path)
     }
 
+    /// Downloads the authlib-injector JAR file.
     func downloadAuthlibInjector() async {
         guard !isDownloadingAuthlibInjector else { return }
         isDownloadingAuthlibInjector = true
@@ -63,12 +73,16 @@ final class PlayerSettingsViewModel: ObservableObject {
         }
     }
 
+    /// Resets the Minecraft friend account preferences state.
     func clearMinecraftFriendAccountPreferences() {
         minecraftFriendAccountPreferences = nil
         isLoadingMinecraftFriendAccountPreferences = false
         isSavingMinecraftFriendAccountPreferences = false
     }
 
+    /// Loads the Minecraft friend account preferences for the current player.
+    ///
+    /// - Parameter currentPlayer: The currently selected player.
     func reloadMinecraftFriendAccountPreferences(currentPlayer: Player?) async {
         guard let player = currentPlayer, player.isOnlineAccount else {
             clearMinecraftFriendAccountPreferences()
@@ -94,6 +108,7 @@ final class PlayerSettingsViewModel: ObservableObject {
         }
     }
 
+    /// Enables or disables the Minecraft friend list.
     func setMinecraftFriendListEnabled(_ enabled: Bool, currentPlayer: Player?) async {
         let invitesOn = minecraftFriendAccountPreferences?.acceptInvites == .enabled
         await persistMinecraftFriendAccountPreferences(
@@ -103,6 +118,7 @@ final class PlayerSettingsViewModel: ObservableObject {
         )
     }
 
+    /// Enables or disables Minecraft friend invite acceptance.
     func setMinecraftFriendAcceptInvitesEnabled(_ enabled: Bool, currentPlayer: Player?) async {
         let friendsOn = minecraftFriendAccountPreferences?.friends == .enabled
         await persistMinecraftFriendAccountPreferences(
@@ -139,6 +155,7 @@ final class PlayerSettingsViewModel: ObservableObject {
         }
     }
 
+    /// Ensures the player has a valid access token, refreshing it if necessary.
     private func preparedTokenPlayer(for player: Player, onMissingCredential: () -> Void) async -> Player? {
         var resolved = player
         sideEffects.loadCredentialFromDiskIfMissing(into: &resolved)

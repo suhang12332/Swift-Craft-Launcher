@@ -1,6 +1,13 @@
+//
+//  CommonYggdrasilProfileParserProvider.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 通用的解析器 Provider（LittleSkin / MUA / Ely.by）
+/// Provides profile list parsers for LittleSkin, MUA, and Ely.by authentication servers.
 struct CommonYggdrasilProfileParserProvider: YggdrasilProfileParserProvider {
     func makeParser(
         for id: YggdrasilProfileParserID,
@@ -17,7 +24,7 @@ struct CommonYggdrasilProfileParserProvider: YggdrasilProfileParserProvider {
     }
 }
 
-/// 统一的注入入口
+/// Configures the shared Yggdrasil profile parser provider.
 enum CommonYggdrasilProfileParsersConfigurator {
     static func bootstrap() {
         YggdrasilProfileParsers.configure(provider: CommonYggdrasilProfileParserProvider())

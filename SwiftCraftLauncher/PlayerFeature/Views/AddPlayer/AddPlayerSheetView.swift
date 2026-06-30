@@ -1,5 +1,13 @@
+//
+//  AddPlayerSheetView.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Provides the UI for adding a new player via Microsoft, Yggdrasil, or offline authentication.
 struct AddPlayerSheetView: View {
     @Binding var playerName: String
     @Binding var isPlayerNameValid: Bool
@@ -173,11 +181,9 @@ struct AddPlayerSheetView: View {
             }
         )
         .task {
-            // 检查标记
             await viewModel.checkPremiumAccountFlag()
         }
         .onDisappear {
-            // 页面关闭后清除所有数据
             clearAllData()
         }
     }
@@ -195,25 +201,19 @@ struct AddPlayerSheetView: View {
         .fixedSize()
     }
 
-    // MARK: - 清除数据
-    /// 清除页面所有数据
+    /// Clears all data and resets authentication state when the sheet is dismissed.
     private func clearAllData() {
-        // 清理玩家名称
         playerName = ""
         isPlayerNameValid = false
-        // 清理认证状态
         authenticatedProfile = nil
         isPremium = false
-        // 重置认证服务状态
         authService.isLoading = false
-        // 重置焦点状态
         isTextFieldFocused = false
         showErrorPopover = false
         yggdrasilAuthService.logout()
         viewModel.reset()
     }
 
-    // 说明区
     private var playerInfoSection: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("addplayer.info.title".localized())
@@ -233,7 +233,6 @@ struct AddPlayerSheetView: View {
         }
     }
 
-    // 输入区
     private var playerNameInputSection: some View {
         VStack(alignment: .leading) {
             Text("addplayer.name.label".localized())
@@ -262,7 +261,6 @@ struct AddPlayerSheetView: View {
         }
     }
 
-    // 根据输入状态和焦点状态决定边框颜色
     private var borderColor: Color {
         if isTextFieldFocused {
             return .blue
@@ -271,7 +269,6 @@ struct AddPlayerSheetView: View {
         }
     }
 
-    // 获取错误信息（仅在不合法时，不包括空字符串）
     private var playerNameError: String? {
         let trimmedName = playerName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else { return nil }
@@ -283,18 +280,21 @@ struct AddPlayerSheetView: View {
 
     private func checkPlayerName(_ name: String) {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        // 基于 playerNameError 和是否为空来设置状态，避免重复检查
         let hasError = playerNameError != nil
         isPlayerNameValid = !trimmedName.isEmpty && !hasError
         showErrorPopover = hasError
     }
 }
 
+/// The type of account authentication available in the add-player sheet.
 enum AccountAuthType: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
+    /// Microsoft (premium) account authentication.
     case premium
+    /// Yggdrasil third-party authentication server.
     case yggdrasil
+    /// Offline (local) account creation.
     case offline
 
     var displayName: String {
@@ -310,6 +310,7 @@ enum AccountAuthType: String, CaseIterable, Identifiable {
 }
 
 extension AccountAuthType {
+    /// The SF Symbol name and rendering mode for each authentication type.
     var symbol: (name: String, mode: SymbolRenderingMode) {
         switch self {
         case .premium:

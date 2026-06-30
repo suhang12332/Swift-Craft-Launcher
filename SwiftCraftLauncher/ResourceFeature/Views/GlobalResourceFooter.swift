@@ -1,6 +1,13 @@
+//
+//  GlobalResourceFooter.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-// MARK: - Footer 按钮区块
+/// Footer with action buttons for downloading or adding a project resource.
 struct GlobalResourceFooter: View {
     let project: ModrinthProject
     let resourceType: String

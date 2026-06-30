@@ -1,9 +1,17 @@
+//
+//  SkinUploadSectionView.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
 import AppKit
 import SkinRenderKit
 
+/// Provides the skin upload area, render preview, and library access.
 struct SkinUploadSectionView: View {
     @Binding var currentModel: PlayerSkinService.PublicSkinInfo.SkinModel
     @Binding var showingFileImporter: Bool
@@ -198,7 +206,7 @@ struct SkinUploadSectionView: View {
         }
     }
 
-    /// 打开皮肤预览窗口
+    /// Opens a separate 3D skin preview window.
     private func openSkinPreviewWindow() {
         let playerModel = convertToPlayerModel(currentModel)
         windowDataStore.skinPreviewData = SkinPreviewData(
@@ -215,7 +223,6 @@ struct SkinUploadSectionView: View {
     }
 }
 
-// MARK: - View Extension for Conditional Drop
 extension View {
     @ViewBuilder
     func conditionalDrop(isEnabled: Bool, perform: @escaping ([NSItemProvider]) -> Bool) -> some View {

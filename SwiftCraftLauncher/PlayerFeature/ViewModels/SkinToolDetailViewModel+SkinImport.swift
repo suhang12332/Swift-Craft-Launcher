@@ -1,10 +1,16 @@
+//
+//  SkinToolDetailViewModel+SkinImport.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
 
 extension SkinToolDetailViewModel {
-    // MARK: - 当前皮肤渲染图
-
+    /// Loads the current skin image from the server for the 3D preview renderer.
     func loadCurrentSkinRenderImageIfNeeded(resolvedPlayer: Player?) {
         if selectedSkinImage != nil || selectedSkinPath != nil { return }
         guard let urlString = publicSkinInfo?.skinURL?.httpToHttps(),
@@ -31,8 +37,9 @@ extension SkinToolDetailViewModel {
         }
     }
 
-    // MARK: - File Import & Drop
-
+    /// Processes a dropped or pasted skin image.
+    ///
+    /// - Parameter image: The dropped `NSImage`.
     func handleSkinDroppedImage(_ image: NSImage) {
         guard let tiff = image.tiffRepresentation,
               let bitmap = NSBitmapImageRep(data: tiff),
@@ -60,6 +67,7 @@ extension SkinToolDetailViewModel {
         Logger.shared.info("Skin image dropped and processed successfully. Model: \(currentModel.rawValue)")
     }
 
+    /// Handles the result of a file importer selection.
     func handleFileSelection(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):
@@ -83,6 +91,10 @@ extension SkinToolDetailViewModel {
         }
     }
 
+    /// Handles a drag-and-drop operation of skin images.
+    ///
+    /// - Parameter providers: The item providers from the drop session.
+    /// - Returns: `true` if the drop was accepted.
     func handleDrop(_ providers: [NSItemProvider]) -> Bool {
         guard let provider = providers.first else { return false }
 
@@ -108,6 +120,7 @@ extension SkinToolDetailViewModel {
         return true
     }
 
+    /// Processes raw skin data and updates the UI state.
     func processSkinData(_ data: Data, filePath: String? = nil) {
         guard data.isPNG else { return }
         selectedSkinData = data
@@ -116,6 +129,7 @@ extension SkinToolDetailViewModel {
         updateHasChanges()
     }
 
+    /// Saves skin data to a temporary file and returns the file URL.
     nonisolated func saveTempSkinFile(data: Data) -> URL? {
         let tempDir = FileManager.default.temporaryDirectory
         let fileName = "temp_skin_\(UUID().uuidString).png"
@@ -129,6 +143,7 @@ extension SkinToolDetailViewModel {
         }
     }
 
+    /// Clears the selected skin and resets the preview.
     func clearSelectedSkin() {
         selectedSkinData = nil
         selectedSkinImage = nil

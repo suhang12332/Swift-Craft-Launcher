@@ -1,14 +1,13 @@
 //
 //  NBTParser.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/20.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// NBT 解析器
-/// 用于解析和生成 Minecraft 的 NBT 格式文件（如 servers.dat）
+/// Parses and encodes Minecraft's NBT (Named Binary Tag) format, such as `servers.dat`.
 class NBTParser {
     var data: Data
     var offset: Int = 0
@@ -22,6 +21,9 @@ class NBTParser {
         self.data = Data()
     }
 
+    /// Parses the NBT data into a dictionary.
+    /// - Throws: A `GlobalError` if the data is empty or the root tag is not a compound.
+    /// - Returns: The root compound as a dictionary.
     func parse() throws -> [String: Any] {
         if data.count >= 2 && data[0] == 0x1F && data[1] == 0x8B {
             data = try decompressGzip(data: data)
@@ -50,6 +52,12 @@ class NBTParser {
         return try readCompound() as [String: Any]
     }
 
+    /// Encodes a dictionary into NBT data.
+    /// - Parameters:
+    ///   - data: The dictionary to encode.
+    ///   - compress: Whether to gzip-compress the output. Defaults to `true`.
+    /// - Throws: A `GlobalError` if encoding fails.
+    /// - Returns: The encoded NBT data.
     static func encode(_ data: [String: Any], compress: Bool = true) throws -> Data {
         let parser = NBTParser()
         parser.outputData = Data()

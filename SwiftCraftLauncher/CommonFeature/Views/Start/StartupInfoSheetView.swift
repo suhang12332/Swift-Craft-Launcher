@@ -1,23 +1,21 @@
 //
 //  StartupInfoSheetView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/1/12.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftMarkDownUI
 import SwiftUI
 
-/// 启动信息提示Sheet视图
+/// A sheet view for displaying startup information and announcements.
 struct StartupInfoSheetView: View {
 
-    // MARK: - Properties
     @Environment(\.dismiss)
     private var dismiss
 
     let announcementData: AnnouncementData?
 
-    // MARK: - Body
     var body: some View {
         CommonSheetView(
             header: {
@@ -30,7 +28,6 @@ struct StartupInfoSheetView: View {
             body: {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
-                        // 应用图标
                         HStack {
                             Spacer()
                             if let appIcon = NSApplication.shared.applicationIconImage {
@@ -43,7 +40,6 @@ struct StartupInfoSheetView: View {
                         }
                         .padding(.bottom, 8)
 
-                        // 主要信息内容
                         if let announcementData = announcementData {
                             let placeholderPattern = /%(\d+\$)?@/
                             let localizedContent = announcementData.content.replacing(
@@ -55,7 +51,7 @@ struct StartupInfoSheetView: View {
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 4)  // 为滚动条留出空间
+                    .padding(.horizontal, 4)
                 }
             },
             footer: {

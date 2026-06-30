@@ -1,6 +1,13 @@
+//
+//  CommonYggdrasilProfileListParser.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 通用的 Yggdrasil 多用户列表解析（LittleSkin/MUA 同格式）
+/// Parses Yggdrasil multi-user profile list responses in LittleSkin/MUA format.
 enum CommonYggdrasilProfileListParser {
     static func parse(data: Data) -> [YggdrasilProfileCandidate]? {
         struct Prop: Codable { let name: String; let value: String }
@@ -89,7 +96,7 @@ enum CommonYggdrasilProfileListParser {
     }
 }
 
-/// LittleSkin 通用解析器
+/// Parses LittleSkin-style Yggdrasil profile list responses.
 struct CommonYggdrasilStyleProfileListParser: YggdrasilProfileListParser {
     let id: YggdrasilProfileParserID = .littleskin
     private let baseURL: String

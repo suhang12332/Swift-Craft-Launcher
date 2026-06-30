@@ -1,5 +1,13 @@
+//
+//  YggdrasilAuthService+TokenChain.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Performs Yggdrasil OAuth2 token exchange and profile retrieval.
 extension YggdrasilAuthService {
 
     func exchangeCodeForToken(code: String, server: YggdrasilServerConfig) async throws -> TokenResponse {

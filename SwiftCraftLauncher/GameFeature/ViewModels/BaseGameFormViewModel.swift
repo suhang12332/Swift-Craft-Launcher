@@ -1,13 +1,14 @@
 //
 //  BaseGameFormViewModel.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import Combine
 
-// MARK: - Base Game Form View Model
+/// Base view model for game form views, providing common download management and form validation.
 @MainActor
 class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     @Published var isDownloading: Bool = false
@@ -31,15 +32,11 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
         self.errorHandler = errorHandler
         self.gameNameValidator = GameNameValidator(gameSetupService: gameSetupService)
 
-        // 监听子对象的状态变化
         setupObservers()
-
-        // 设置初始状态
         updateParentState()
     }
 
     private func setupObservers() {
-        // 监听gameNameValidator的变化
         gameNameValidator.objectWillChange
             .sink { [weak self] in
                 DispatchQueue.main.async {
@@ -48,7 +45,6 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
                 }
             }
             .store(in: &cancellables)
-        // 监听gameSetupService的变化
         gameSetupService.objectWillChange
             .sink { [weak self] in
                 DispatchQueue.main.async {
@@ -59,17 +55,11 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
             .store(in: &cancellables)
     }
 
-    // MARK: - GameFormStateProtocol Implementation
     func handleCancel() {
         if isDownloading {
-            // 停止下载任务
             downloadTask?.cancel()
             downloadTask = nil
-
-            // 取消下载状态
             gameSetupService.downloadState.cancel()
-
-            // 执行取消后的清理工作
             Task {
                 await performCancelCleanup()
             }
@@ -98,10 +88,7 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
         }
     }
 
-    // MARK: - Virtual Methods (to be overridden)
-
     func performConfirmAction() async {
-        // Override in subclasses
         configuration.actions.onConfirm()
     }
 
@@ -120,7 +107,6 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
         return gameNameValidator.isFormValid
     }
 
-    // MARK: - Common Download Management
     func startDownloadTask(_ task: @escaping () async -> Void) {
         downloadTask?.cancel()
         downloadTask = Task {
@@ -137,7 +123,6 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
         }
     }
 
-    // MARK: - Setup Methods
     func handleNonCriticalError(_ error: GlobalError, message: String) {
         Logger.shared.error("\(message): \(error.chineseMessage)")
         errorHandler.handle(error)

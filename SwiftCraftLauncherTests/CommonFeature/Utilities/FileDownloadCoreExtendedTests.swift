@@ -1,3 +1,10 @@
+//
+//  FileDownloadCoreExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
@@ -24,8 +31,6 @@ final class FileDownloadCoreExtendedTests: XCTestCase {
         guard let tmpDir else { fatalError("tmpDir not set") }
         return tmpDir.appendingPathComponent(name)
     }
-
-    // MARK: - parseURL
 
     func testParseURL_https() throws {
         let url = try FileDownloadCore.parseURL(from: "https://example.com/file.jar")
@@ -54,8 +59,6 @@ final class FileDownloadCoreExtendedTests: XCTestCase {
         XCTAssertThrowsError(try FileDownloadCore.parseURL(from: "https://exam ple.com/file.jar"))
     }
 
-    // MARK: - normalizedDownloadURL
-
     func testNormalizedDownloadURL_nonGitHub_passthrough() throws {
         let url = try FileDownloadCore.parseURL(from: "https://example.com/file.jar")
         let result = FileDownloadCore.normalizedDownloadURL(from: url)
@@ -69,8 +72,6 @@ final class FileDownloadCoreExtendedTests: XCTestCase {
             result.absoluteString.contains("github.com") || result.absoluteString.contains("gh-proxy")
         )
     }
-
-    // MARK: - existingFileSizeIfReusable
 
     func testExistingFileSizeIfReusable_missingFile_returnsNil() {
         let url = tmpFile("missing-\(UUID().uuidString).jar")
@@ -105,8 +106,6 @@ final class FileDownloadCoreExtendedTests: XCTestCase {
         XCTAssertEqual(FileDownloadCore.existingFileSizeIfReusable(at: file, expectedSha1: ""), Int64(data.count))
     }
 
-    // MARK: - validateSHA1IfNeeded
-
     func testValidateSHA1IfNeeded_nilExpected_noError() throws {
         let file = tmpFile("test.jar")
         try Data("hello".utf8).write(to: file)
@@ -136,8 +135,6 @@ final class FileDownloadCoreExtendedTests: XCTestCase {
         }
     }
 
-    // MARK: - moveDownloadedFile
-
     func testMoveDownloadedFile_toNewDestination() throws {
         let src = tmpFile("src.jar")
         let dst = tmpFile("dst.jar")
@@ -160,8 +157,6 @@ final class FileDownloadCoreExtendedTests: XCTestCase {
 
         XCTAssertEqual(try Data(contentsOf: dst), Data("new".utf8))
     }
-
-    // MARK: - ensureParentDirectory
 
     func testEnsureParentDirectory_createsNestedDir() throws {
         let dest = tmpFile("sub/deep/file.jar")

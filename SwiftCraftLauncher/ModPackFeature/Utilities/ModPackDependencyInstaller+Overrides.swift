@@ -1,12 +1,15 @@
 //
 //  ModPackDependencyInstaller+Overrides.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
 extension ModPackDependencyInstaller {
 
+    /// Installs override files from the extracted modpack into the game directory.
     static func installOverrides(
         extractedPath: URL,
         resourceDir: URL,

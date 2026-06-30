@@ -1,8 +1,8 @@
 //
 //  Common.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/6/28.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
@@ -36,18 +36,16 @@ extension URL {
             return nil
         }
 
-        // 如果是 HTTP 协议，替换为 HTTPS
         if components.scheme?.lowercased() == "http" {
             components.scheme = "https"
             return components.url
         }
 
-        // 已经是 HTTPS 或其他协议，直接返回
         return self
     }
 }
 extension String {
-    /// 将字符串中的 HTTP URL 转换为 HTTPS
+    /// Converts HTTP URLs in the string to HTTPS.
     func httpToHttps() -> String {
         return autoreleasepool {
             guard let url = URL(string: self) else { return self }
@@ -57,7 +55,6 @@ extension String {
 }
 
 enum CommonUtil {
-    // MARK: - Base64 图片解码工具
     static func imageDataFromBase64(_ base64: String) -> Data? {
         if base64.hasPrefix("data:image") {
             if let base64String = base64.split(separator: ",").last,
@@ -70,7 +67,7 @@ enum CommonUtil {
         return nil
     }
 
-    /// 格式化 ISO8601 字符串为相对时间（如"3天前"）
+    /// Formats an ISO 8601 date string into a relative time description.
     static func formatRelativeTime(_ isoString: String) -> String {
         let isoFormatter = ISO8601DateFormatter()
         isoFormatter.formatOptions = [
@@ -87,9 +84,7 @@ enum CommonUtil {
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 
-    // MARK: - Minecraft News URL Slug Helpers
-
-    /// 判断是否为快照版本，例如 26w11a
+    /// Returns whether the version string represents a snapshot version.
     static func isMinecraftSnapshotVersion(_ version: String) -> Bool {
         let trimmed = version.trimmingCharacters(in: .whitespacesAndNewlines)
         let isPureNumericVersion = trimmed.range(
@@ -99,17 +94,14 @@ enum CommonUtil {
         return !isPureNumericVersion
     }
 
-    /// 生成正式版新闻 slug，例如 1.26.1 -> minecraft-java-edition-26-1
+    /// Generates the news slug for a release version (e.g., `1.26.1` → `minecraft-java-edition-26-1`).
     static func minecraftReleaseNewsSlug(version: String) -> String {
         let trimmedVersion = version.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalized = trimmedVersion.replacingOccurrences(of: ".", with: "-")
         return "minecraft-java-edition-\(normalized)"
     }
 
-    /// 生成非正式版新闻 slug，例如:
-    /// - 26w11a -> minecraft-snapshot-26w11a
-    /// - 26.1.2-rc-1 -> minecraft-26-1-2-release-candidate-1
-    /// - 26.1-pre-3 -> minecraft-26-1-pre-release-3
+    /// Generates the news slug for a snapshot or pre-release version.
     static func minecraftSnapshotNewsSlug(version: String) -> String {
         let base = version
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -129,9 +121,8 @@ enum CommonUtil {
         return "minecraft-\(normalized)"
     }
 
-    /// 解析 `ModrinthProjectDetail.fileName` 中的服务器信息
+    /// Parses server address and player info from a `ModrinthProjectDetail.fileName` string.
     static func parseMinecraftJavaServerInfo(from raw: String) -> (address: String, playersText: String?) {
-        // 按 `|` 分割并去掉首尾空白
         let parts = raw
             .split(separator: "|")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -140,12 +131,10 @@ enum CommonUtil {
             return ("", nil)
         }
 
-        // 只有地址
         if parts.count == 1 {
             return (address, nil)
         }
 
-        // 地址 + 在线
         if parts.count == 2 {
             let online = parts[1]
             guard !online.isEmpty else {
@@ -154,7 +143,6 @@ enum CommonUtil {
             return (address, "\(online)")
         }
 
-        // 地址 + 在线 + 最大
         let online = parts[1]
         let max = parts[2]
 
@@ -167,14 +155,12 @@ enum CommonUtil {
         }
     }
 
-    // MARK: - Minecraft 版本比较和排序
-
-    /// - Returns: -1 表示 version1 < version2，0 相等，1 表示 version1 > version2
+    /// Compares two Minecraft version strings.
+    /// - Returns: `-1` if `version1` < `version2`, `0` if equal, `1` if `version1` > `version2`.
     static func compareMinecraftVersions(_ version1: String, _ version2: String) -> Int {
         let components1 = parseVersionComponents(version1)
         let components2 = parseVersionComponents(version2)
 
-        // 比较主版本号
         for i in 0..<max(components1.count, components2.count) {
             let v1 = i < components1.count ? components1[i] : 0
             let v2 = i < components2.count ? components2[i] : 0
@@ -199,9 +185,7 @@ enum CommonUtil {
         }
     }
 
-    /// 按基线版本裁剪 Minecraft 版本集合。
-    /// 如果集合中存在基线版本，则直接基于当前序列截断，保留基线及其之前的元素；
-    /// 如果不存在基线版本，则退回到逐项比较，并保持原始顺序不变。
+    /// Returns versions at or above the specified baseline.
     static func versionsAtLeast(
         _ versions: [String],
         baseline: String = AppConstants.MinecraftVersions.featureBaseline
@@ -215,9 +199,7 @@ enum CommonUtil {
         }
     }
 
-    /// 按基线版本裁剪 Minecraft 版本模型集合。
-    /// 如果集合中存在基线版本，则直接基于当前序列截断，保留基线及其之前的元素；
-    /// 如果不存在基线版本，则退回到逐项比较，并保持原始顺序不变。
+    /// Returns model instances at or above the specified baseline version.
     static func versionsAtLeast<T>(
         _ versions: [T],
         baseline: String = AppConstants.MinecraftVersions.featureBaseline,
@@ -234,13 +216,12 @@ enum CommonUtil {
         }
     }
 
-    /// 判断单个 Minecraft 版本是否至少为基线版本。
-    /// 仅用于没有版本集合上下文时的退回判断。
+    /// Returns whether a Minecraft version meets or exceeds the baseline.
     static func isVersionAtLeast(_ version: String) -> Bool {
         return compareMinecraftVersions(version, AppConstants.MinecraftVersions.featureBaseline) >= 0
     }
 
-    /// 更新服务器连通性状态（在主线程上设置状态，避免 View 里重复逻辑）
+    /// Checks server connectivity and updates the status on the main thread.
     static func updateServerConnectionStatus(
         for address: String,
         port: Int = 25565,
@@ -264,68 +245,64 @@ enum CommonUtil {
         }
     }
 
-    // MARK: - Minecraft Language Mapping
-
-    /// 将启动器语言代码（如 zh-Hans / en / ja）映射为 Minecraft 语言码（如 zh_cn / en_us / ja_jp）
-    /// - Parameter launcherLang: 启动器语言代码
-    /// - Returns: Minecraft 语言码，默认为 en_us
+    /// Maps a launcher language code to the corresponding Minecraft language code.
+    /// - Parameter launcherLang: The launcher language code (e.g., `zh-Hans`, `en`).
+    /// - Returns: The Minecraft language code, defaulting to `en_us`.
     static func minecraftLanguageCode(from launcherLang: String) -> String {
         let code = launcherLang.lowercased()
 
         switch code {
         case "zh-hans":
-            return "zh_cn"      // 简体中文
+            return "zh_cn"
         case "zh-hant":
-            return "zh_tw"      // 繁体中文
+            return "zh_tw"
         case "ar":
-            return "ar_sa"      // 阿拉伯语
+            return "ar_sa"
         case "da":
-            return "da_dk"      // 丹麦语
+            return "da_dk"
         case "en":
-            return "en_us"      // 英文
+            return "en_us"
         case "de":
-            return "de_de"      // 德语
+            return "de_de"
         case "es":
-            return "es_es"      // 西班牙语
+            return "es_es"
         case "fr":
-            return "fr_fr"      // 法语
+            return "fr_fr"
         case "fi":
-            return "fi_fi"      // 芬兰语
+            return "fi_fi"
         case "hi":
-            return "hi_in"      // 印地语
+            return "hi_in"
         case "it":
-            return "it_it"      // 意大利语
+            return "it_it"
         case "ja":
-            return "ja_jp"      // 日语
+            return "ja_jp"
         case "ko":
-            return "ko_kr"      // 韩语
+            return "ko_kr"
         case "nb":
-            return "nb_no"      // 挪威语
+            return "nb_no"
         case "nl":
-            return "nl_nl"      // 荷兰语
+            return "nl_nl"
         case "pl":
-            return "pl_pl"      // 波兰语
+            return "pl_pl"
         case "pt":
-            return "pt_br"      // 葡萄牙语（默认巴西葡语）
+            return "pt_br"
         case "ru":
-            return "ru_ru"      // 俄语
+            return "ru_ru"
         case "sv":
-            return "sv_se"      // 瑞典语
+            return "sv_se"
         case "th":
-            return "th_th"      // 泰语
+            return "th_th"
         case "tr":
-            return "tr_tr"      // 土耳其语
+            return "tr_tr"
         case "vi":
-            return "vi_vn"      // 越南语
+            return "vi_vn"
 
         default:
-            // 兜底：用英文
             return "en_us"
         }
     }
 
-    // MARK: - Game Directory Helpers
-    /// 根据 gameId 查询游戏并返回对应的实例目录（如果失败则返回 nil）
+    /// Returns the instance directory for a game ID, or `nil` if the game is not found.
     static func gameDirectory(for gameId: String) -> URL? {
         let gameDatabase = GameVersionDatabase(dbPath: AppPaths.gameVersionDatabase.path)
         do {
@@ -341,9 +318,7 @@ enum CommonUtil {
         }
     }
 
-    // MARK: - Minecraft Options.txt Helper
-
-    /// 在指定游戏实例的 options.txt 中插入或更新一行 `key:value`
+    /// Inserts or updates a key-value entry in a game instance's `options.txt` file.
     static func upsertOptionsEntry(gameName: String, key: String, value: String) {
         let optionsURL = AppPaths.optionsFile(gameName: gameName)
         let gameDirectory = optionsURL.deletingLastPathComponent()

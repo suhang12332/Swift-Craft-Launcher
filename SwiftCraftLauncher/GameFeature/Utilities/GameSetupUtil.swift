@@ -1,19 +1,17 @@
 //
 //  GameSetupUtil.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/8/3.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 import SwiftUI
 
-/// 游戏设置服务
-/// 负责处理游戏下载、配置和保存的完整流程
+/// Manages the complete game installation flow including download, configuration, and setup.
 @MainActor
 class GameSetupUtil: ObservableObject {
 
-    // MARK: - Properties
     @Published var downloadState = DownloadState()
     @Published var fabricDownloadState = DownloadState()
     @Published var forgeDownloadState = DownloadState()
@@ -40,8 +38,6 @@ class GameSetupUtil: ObservableObject {
         self.languageManager = languageManager
     }
 
-    // MARK: - Public Methods
-
     struct GameSaveInput {
         let gameName: String
         let selectedGameVersion: String
@@ -57,7 +53,6 @@ class GameSetupUtil: ObservableObject {
         onSuccess: @escaping () -> Void,
         onError: @escaping (GlobalError, String) -> Void
     ) async {
-        // 验证当前玩家（仅在提供了 playerListViewModel 时）
         if let playerListViewModel = playerListViewModel {
             guard playerListViewModel.currentPlayer != nil else {
                 Logger.shared.error("无法保存游戏，因为没有选择当前玩家。")
@@ -73,7 +68,6 @@ class GameSetupUtil: ObservableObject {
             }
         }
 
-        // 设置下载状态
         await MainActor.run {
             self.objectWillChange.send()
             downloadState.reset()
@@ -95,7 +89,6 @@ class GameSetupUtil: ObservableObject {
         )
         let persistedGameIcon = standardIconPresent ? AppConstants.defaultGameIcon : ""
 
-        // 创建初始游戏信息
         var gameInfo = GameVersionInfo(
             id: UUID(),
             gameName: input.gameName,
@@ -106,23 +99,20 @@ class GameSetupUtil: ObservableObject {
         )
 
         do {
-            // 下载 Mojang manifest
             let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: input.selectedGameVersion)
 
             let javaPath = await javaManager.ensureJavaExists(
                 version: downloadedManifest.javaVersion.component
             )
 
-            // 设置文件管理器
             let fileManager = try await setupFileManager(manifest: downloadedManifest, modLoader: gameInfo.modLoader)
 
-            // 开始下载过程
             try await startDownloadProcess(
                 fileManager: fileManager,
                 manifest: downloadedManifest,
                 gameName: input.gameName
             )
-            // 设置模组加载器
+
             let modLoaderResult = try await setupModLoaderIfNeeded(
                 selectedModLoader: input.selectedModLoader,
                 selectedGameVersion: input.selectedGameVersion,
@@ -130,7 +120,7 @@ class GameSetupUtil: ObservableObject {
                 gameIcon: persistedGameIcon,
                 specifiedLoaderVersion: input.specifiedLoaderVersion
             )
-            // 完善游戏信息
+
             gameInfo = await finalizeGameInfo(
                 gameInfo: gameInfo,
                 manifest: downloadedManifest,
@@ -145,17 +135,14 @@ class GameSetupUtil: ObservableObject {
             gameInfo.javaPath = javaPath
             gameRepository.addGameSilently(gameInfo)
 
-            // 根据设置决定是否为新创建的游戏写入/更新 options.txt 的语言设置
             if gameSettingsManager.syncLanguageForNewGames {
                 configureGameLanguage(for: gameInfo.gameName)
             }
 
-            // 扫描游戏的 mods 目录
             Task.detached(priority: .utility) {
                 await self.modScanner.scanGameModsDirectory(game: gameInfo)
             }
 
-            // 发送通知
             await NotificationManager.sendSilently(
                 title: "notification.download.complete.title".localized(),
                 body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader)
@@ -185,15 +172,14 @@ class GameSetupUtil: ObservableObject {
         return false
     }
 
-    /// 清理游戏文件夹
-    /// - Parameter gameName: 游戏名称
+    /// Removes partial game files after a failed or cancelled download.
+    /// - Parameter gameName: The name of the game instance.
     private func cleanupGameDirectories(gameName: String) async {
         do {
             let fileManager = MinecraftFileManager()
             try fileManager.cleanupGameDirectories(gameName: gameName)
         } catch {
             Logger.shared.error("清理游戏文件夹失败: \(error.localizedDescription)")
-            // 不抛出错误，因为这是清理操作，不应该影响主流程
         }
     }
 
@@ -257,7 +243,6 @@ class GameSetupUtil: ObservableObject {
         manifest: MinecraftVersionManifest,
         gameName: String
     ) async throws {
-        // 先下载资源索引来获取资源文件总数
         let assetIndex = try await downloadAssetIndex(manifest: manifest)
         let resourceTotalFiles = assetIndex.objects.count
 
@@ -332,7 +317,6 @@ class GameSetupUtil: ObservableObject {
 
         guard let handler else { return nil }
 
-        // 直接创建 GameVersionInfo，不依赖 mojangVersions
         let gameInfo = GameVersionInfo(
             gameName: gameName,
             gameIcon: gameIcon,
@@ -341,7 +325,6 @@ class GameSetupUtil: ObservableObject {
             modLoader: selectedModLoader
         )
 
-        // 根据是否指定了加载器版本来选择不同的方法
         let progressCallback: (String, Int, Int) -> Void = { [weak self] fileName, completed, total in
             Task { @MainActor in
                 guard let self = self else { return }
@@ -437,7 +420,6 @@ class GameSetupUtil: ObservableObject {
                     updatedGameInfo.gameArguments = gameArgs
 
                     let jvmArgs = neoForgeLoader.arguments.jvm ?? []
-                    // 使用 NSMutableString 避免链式调用创建多个临时字符串
                     updatedGameInfo.modJvm = jvmArgs.map { arg -> String in
                         let mutableArg = NSMutableString(string: arg)
                         mutableArg.replaceOccurrences(
@@ -467,7 +449,6 @@ class GameSetupUtil: ObservableObject {
             updatedGameInfo.mainClass = manifest.mainClass
         }
 
-        // 构建启动命令
         let launcherBrand = Bundle.main.appName
         let launcherVersion = Bundle.main.fullVersion
 
@@ -481,9 +462,9 @@ class GameSetupUtil: ObservableObject {
         return updatedGameInfo
     }
 
-    /// 检查游戏名称是否重复
-    /// - Parameter name: 游戏名称
-    /// - Returns: 是否重复
+    /// Checks whether a game instance with the given name already exists.
+    /// - Parameter name: The game name to check.
+    /// - Returns: `true` if a directory with that name exists; otherwise `false`.
     func checkGameNameDuplicate(_ name: String) async -> Bool {
         guard !name.isEmpty else { return false }
 
@@ -492,7 +473,8 @@ class GameSetupUtil: ObservableObject {
         return fileManager.fileExists(atPath: gameDir.path)
     }
 
-    /// 根据启动器当前语言，为指定游戏实例写入/更新 Minecraft 的 options.txt 语言设置
+    /// Writes or updates the Minecraft `options.txt` language setting for a game instance.
+    /// - Parameter gameName: The name of the game instance.
     private func configureGameLanguage(for gameName: String) {
         let mcLang = CommonUtil.minecraftLanguageCode(from: languageManager.selectedLanguage)
         CommonUtil.upsertOptionsEntry(gameName: gameName, key: "lang", value: mcLang)

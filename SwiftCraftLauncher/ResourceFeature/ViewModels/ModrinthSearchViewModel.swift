@@ -1,22 +1,25 @@
+//
+//  ModrinthSearchViewModel.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-// MARK: - ViewModel
-/// Modrinth 搜索视图模型
+/// Manages Modrinth project search state and pagination.
 @MainActor
 final class ModrinthSearchViewModel: ObservableObject {
-    // MARK: - Published Properties
     @Published private(set) var results: [ModrinthProject] = []
     @Published private(set) var isLoading: Bool = false
     @Published private(set) var isLoadingMore: Bool = false
     @Published private(set) var error: GlobalError?
     @Published private(set) var totalHits: Int = 0
 
-    // MARK: - Private Properties
     var searchTask: Task<Void, Never>?
     let pageSize: Int = 20
     private let errorHandler: GlobalErrorHandler
 
-    // MARK: - Initialization
     init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
         self.errorHandler = errorHandler
     }
@@ -25,7 +28,17 @@ final class ModrinthSearchViewModel: ObservableObject {
         searchTask?.cancel()
     }
 
-    // MARK: - Public Methods
+    /// Searches for projects with the given query and filters.
+    ///
+    /// Cancels any previous search before starting a new one. Supports
+    /// both Modrinth and CurseForge data sources via the adapter layer.
+    /// - Parameters:
+    ///   - query: The search query string.
+    ///   - projectType: The type of project to search for.
+    ///   - filterOptions: The filters to apply to the search.
+    ///   - page: The page of results to fetch.
+    ///   - append: Whether to append results to the existing list.
+    ///   - dataSource: The search backend to use.
     func search(
         query: String,
         projectType: String,
@@ -45,7 +58,6 @@ final class ModrinthSearchViewModel: ObservableObject {
                 }
                 error = nil
 
-                // 检查任务是否被取消
                 try Task.checkCancellation()
 
                 let offset = (page - 1) * pageSize
@@ -58,7 +70,6 @@ final class ModrinthSearchViewModel: ObservableObject {
 
                 let result: ModrinthResult
                 if dataSource == .modrinth {
-                    // 使用 Modrinth 服务
                     result = await ModrinthService.searchProjects(
                         facets: facets,
                         offset: offset,
@@ -66,7 +77,6 @@ final class ModrinthSearchViewModel: ObservableObject {
                         query: query
                     )
                 } else {
-                    // 使用 CurseForge 服务并转换为 Modrinth 格式
                     let cfParams = ModrinthToCurseForgeSearchAdapter.convertToSearchParams(
                         projectType: projectType,
                         versions: filterOptions.versions,
@@ -126,6 +136,7 @@ final class ModrinthSearchViewModel: ObservableObject {
         }
     }
 
+    /// Cancels any ongoing search and clears all results.
     func clearResults() {
         searchTask?.cancel()
         results.removeAll()
@@ -135,6 +146,7 @@ final class ModrinthSearchViewModel: ObservableObject {
         isLoadingMore = false
     }
 
+    /// Prepares the view model for a new search by resetting state.
     @MainActor
     func beginNewSearch() {
         isLoading = true

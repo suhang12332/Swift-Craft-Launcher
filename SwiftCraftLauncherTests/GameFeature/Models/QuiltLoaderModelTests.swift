@@ -1,3 +1,10 @@
+//
+//  QuiltLoaderModelTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
@@ -57,8 +64,6 @@ final class QuiltLoaderModelTests: XCTestCase {
 
         XCTAssertEqual(decoded.loader.version, original.loader.version)
     }
-
-    // MARK: - Beta/Pre-release Filtering Logic
 
     func testFiltering_betaVersionsExcluded() {
         let responses = [

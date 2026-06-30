@@ -1,5 +1,13 @@
+//
+//  GameRemoteResourceView.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Displays remote resource search results for a single game version.
 struct GameRemoteResourceView: View {
     let game: GameVersionInfo
     @Binding var query: String
@@ -13,7 +21,7 @@ struct GameRemoteResourceView: View {
     @Binding var selectedItem: SidebarItem
     @Binding var gameType: Bool
     let header: AnyView?
-    @Binding var scannedDetailIds: Set<String> // 从父视图传入的 detailId Set，用于快速查找
+    @Binding var scannedDetailIds: Set<String> // detail IDs from the parent for fast lookup
     @Binding var dataSource: DataSource
     @Binding var searchText: String
 

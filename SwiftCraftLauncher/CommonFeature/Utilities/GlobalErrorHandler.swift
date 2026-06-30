@@ -1,15 +1,20 @@
+//
+//  GlobalErrorHandler.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import MinecraftFriendsKit
 import SwiftUI
 
-// MARK: - Error Level Enum
-
-/// 错误等级枚举
+/// Defines how an error should be presented to the user.
 enum ErrorLevel: String, CaseIterable {
-    case popup = "popup"           // 弹窗显示
-    case notification = "notification" // 通知显示
-    case silent = "silent"         // 静默处理，只记录日志
-    case disabled = "disabled"     // 什么都不做，不记录
+    case popup = "popup"
+    case notification = "notification"
+    case silent = "silent"
+    case disabled = "disabled"
 
     var displayName: String {
         switch self {
@@ -25,9 +30,7 @@ enum ErrorLevel: String, CaseIterable {
     }
 }
 
-// MARK: - Global Error Types
-
-/// 全局错误分类（仅承载类别元数据，与 payload 分离）
+/// Categorizes errors by their domain.
 enum GlobalErrorKind: String, CaseIterable {
     case network
     case fileSystem
@@ -89,7 +92,7 @@ enum GlobalErrorKind: String, CaseIterable {
     }
 }
 
-/// 全局错误（统一 payload，按 kind 区分类别）
+/// A unified error type that carries category metadata, a localized message, and a display level.
 struct GlobalError: Error, LocalizedError, Identifiable {
     let kind: GlobalErrorKind
     let chineseMessage: String
@@ -119,12 +122,11 @@ struct GlobalError: Error, LocalizedError, Identifiable {
         kind.notificationTitle
     }
 
-    /// 本地化错误描述（使用国际化key）
     var errorDescription: String? {
         i18nKey.localized()
     }
 
-    /// 本地化描述：优先使用 i18nKey，找不到时回退到 chineseMessage
+    /// Returns the localized description, falling back to the Chinese message if no localization is found.
     var localizedDescription: String {
         let localizedText = i18nKey.localized()
         if localizedText != i18nKey {
@@ -225,10 +227,8 @@ extension GlobalError {
     }
 }
 
-// MARK: - Error Conversion Extensions
-
 extension GlobalError {
-    /// 从其他错误类型转换为全局错误
+    /// Converts an arbitrary error into a ``GlobalError``.
     static func from(_ error: Error) -> GlobalError {
         switch error {
         case let globalError as Self:
@@ -296,8 +296,7 @@ extension GlobalError {
     }
 }
 
-// MARK: - Global Error Handler
-
+/// Manages global error state, including presentation and history.
 class GlobalErrorHandler: ObservableObject {
     static let shared = GlobalErrorHandler()
 
@@ -322,14 +321,12 @@ class GlobalErrorHandler: ObservableObject {
         }
     }
 
-    /// 根据错误等级处理错误
     private func handleErrorByLevel(_ error: GlobalError) {
         switch error.level {
         case .popup:
             Logger.shared.error("[GlobalError-Popup] \(error.chineseMessage)")
 
         case .notification:
-            // 发送通知
             Task {
                 await NotificationManager.sendSilently(
                     title: error.notificationTitle,
@@ -338,40 +335,36 @@ class GlobalErrorHandler: ObservableObject {
             }
 
         case .silent:
-            // 静默处理，只记录日志
             Logger.shared.error("[GlobalError-Silent] \(error.chineseMessage)")
 
         case .disabled:
-            // 什么都不做
             break
         }
     }
 
-    /// 清除当前错误
+    /// Clears the currently displayed error.
     func clearCurrentError() {
         DispatchQueue.main.async {
             self.currentError = nil
         }
     }
 
-    /// 清除错误历史
+    /// Clears the error history.
     func clearHistory() {
         DispatchQueue.main.async {
             self.errorHistory.removeAll()
         }
     }
 
-    /// 添加错误到历史记录
     private func addToHistory(_ error: GlobalError) {
         errorHistory.append(error)
 
-        // 限制历史记录数量
         if errorHistory.count > maxHistoryCount {
             errorHistory.removeFirst()
         }
     }
 
-    /// 应用退出时清理内存
+    /// Releases memory when the application is terminating.
     func cleanup() {
         DispatchQueue.main.async {
             self.currentError = nil
@@ -379,13 +372,10 @@ class GlobalErrorHandler: ObservableObject {
         }
     }
 
-    /// 记录错误到日志
     private func logError(_ error: GlobalError) {
         Logger.shared.error("[GlobalError] \(error.chineseMessage) | Key: \(error.i18nKey) | Level: \(error.level.rawValue)")
     }
 }
-
-// MARK: - Error Handling View Modifier
 
 struct GlobalErrorHandlerModifier: ViewModifier {
     @StateObject private var errorHandler: GlobalErrorHandler
@@ -398,14 +388,11 @@ struct GlobalErrorHandlerModifier: ViewModifier {
         content
             .onReceive(errorHandler.$currentError) { error in
                 if let error = error {
-                    // 只记录日志，弹窗由 ErrorAlertModifier 处理
                     Logger.shared.error("Global error occurred: \(error.chineseMessage)")
                 }
             }
     }
 }
-
-// MARK: - View Extension
 
 extension View {
     func errorHandler() -> some View {

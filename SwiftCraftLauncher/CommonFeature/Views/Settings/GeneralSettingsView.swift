@@ -1,5 +1,13 @@
+//
+//  GeneralSettingsView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// A view for configuring general launcher settings.
 public struct GeneralSettingsView: View {
     @StateObject private var generalSettings: GeneralSettingsManager
     @StateObject private var themeManager: ThemeManager

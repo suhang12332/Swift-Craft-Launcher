@@ -1,11 +1,15 @@
 //
 //  ThemeManager.swift
-//  SwiftCraftLauncher
+//  CommonFeature
+//
+//  Manages app appearance themes including light, dark, and system modes.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import AppKit
 import SwiftUI
 
+/// The available theme modes for the application.
 public enum ThemeMode: String, CaseIterable {
     case light = "light"
     case dark = "dark"
@@ -38,6 +42,7 @@ public enum ThemeMode: String, CaseIterable {
     }
 }
 
+/// Manages the app's visual theme and applies the selected appearance.
 @MainActor
 final class ThemeManager: ObservableObject {
     static let shared = ThemeManager()

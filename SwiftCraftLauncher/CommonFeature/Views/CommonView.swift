@@ -1,9 +1,10 @@
 //
 //  CommonView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/6/2.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
 func errorView(_ error: GlobalError) -> some View {
@@ -28,7 +29,7 @@ func spacerView() -> some View {
     Spacer().frame(maxHeight: 20)
 }
 
-// 通用说明文本样式
+/// A view that displays descriptive text in a standard secondary style.
 struct CommonDescriptionText: View {
     let text: String
     var width: CGFloat = 320
@@ -42,7 +43,7 @@ struct CommonDescriptionText: View {
     }
 }
 
-// 路径设置行
+/// A row for configuring a directory path with choose and reset actions.
 struct DirectorySettingRow: View {
     let title: String
     let path: String
@@ -71,10 +72,11 @@ struct DirectorySettingRow: View {
         }
     }
 }
-// 路径分段显示控件（Finder风格图标）
+
+/// A breadcrumb-style path display with Finder-like icons.
 struct PathBreadcrumbView: View {
     let path: String
-    let maxVisible: Int = 3  // 最多显示几段（含首尾）
+    let maxVisible: Int = 3
 
     var body: some View {
         let components = path.split(separator: "/").map(String.init)
@@ -96,9 +98,7 @@ struct PathBreadcrumbView: View {
         let startTail = max(count - tailCount, headCount)
 
         func segmentView(idx: Int) -> some View {
-            // 安全获取文件图标，避免 NSXPC 警告
             let icon: NSImage = {
-                // 检查文件是否存在
                 guard FileManager.default.fileExists(atPath: paths[idx]) else {
                     if #available(macOS 12.0, *) {
                         return NSWorkspace.shared.icon(for: .folder)
@@ -119,7 +119,6 @@ struct PathBreadcrumbView: View {
         }
 
         return HStack(spacing: 0) {
-            // 开头
             ForEach(0..<headCount, id: \.self) { idx in
                 if idx > 0 {
                     Image(systemName: "chevron.right")
@@ -130,7 +129,6 @@ struct PathBreadcrumbView: View {
                 }
                 segmentView(idx: idx)
             }
-            // 省略号
             if showEllipsis {
                 if headCount > 0 {
                     Image(systemName: "chevron.right")
@@ -143,7 +141,6 @@ struct PathBreadcrumbView: View {
                     .font(.body)
                     .foregroundColor(.primary)
             }
-            // 结尾
             ForEach(startTail..<count, id: \.self) { idx in
                 if idx > headCount || (showEllipsis && idx == startTail) {
                     Image(systemName: "chevron.right")
@@ -162,7 +159,6 @@ struct PathBreadcrumbView: View {
     }
 }
 
-// MARK: - Extension
 extension View {
     @ViewBuilder
     func applyReplaceTransition() -> some View {
@@ -194,6 +190,7 @@ extension View {
         }
     }
 }
+
 extension Scene {
     func conditionalRestorationBehavior() -> some Scene {
         if #available(macOS 15.0, *) {
@@ -212,12 +209,11 @@ extension Scene {
     }
 }
 
-// MARK: - 通用信息图标组件（带 Popover）
-/// 一个通用的问号标记组件，鼠标悬浮时显示详细说明
+/// A help button that shows a popover on hover after a brief delay.
 struct InfoIconWithPopover<Content: View>: View {
-    /// Popover 中显示的内容
+    /// The content displayed in the popover.
     let content: Content
-    /// 延迟显示时间（秒）
+    /// The delay in seconds before the popover appears on hover.
     let delay: Double
 
     @State private var isHovering = false
@@ -270,7 +266,6 @@ struct InfoIconWithPopover<Content: View>: View {
     }
 }
 
-// MARK: - 便捷初始化方法（使用字符串）
 extension InfoIconWithPopover {
     init(
         text: String,

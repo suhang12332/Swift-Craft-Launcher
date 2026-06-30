@@ -1,5 +1,13 @@
+//
+//  AboutView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Displays the application's about information including version and credits.
 public struct AboutView: View {
     @State private var showingAcknowledgements: Bool
 
@@ -7,7 +15,6 @@ public struct AboutView: View {
         self._showingAcknowledgements = State(initialValue: showingAcknowledgements)
     }
 
-    // MARK: - Computed Properties
     private var appName: String { Bundle.main.appName }
     private var appVersion: String { Bundle.main.appVersion }
     private var buildNumber: String { Bundle.main.buildNumber }
@@ -22,8 +29,6 @@ public struct AboutView: View {
         .padding(.vertical, 16)
         .frame(width: 280, height: 600)
     }
-
-    // MARK: - Header Section
 
     private var headerSection: some View {
         VStack(spacing: 8) {
@@ -58,7 +63,6 @@ public struct AboutView: View {
         }
     }
 
-    // MARK: - Content Section
     private var contentSection: some View {
         VStack(spacing: 0) {
             if showingAcknowledgements {

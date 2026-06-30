@@ -1,22 +1,23 @@
 //
 //  AIChatModels.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 import SwiftUI
 
-/// 消息角色
+/// Identifies the sender of a chat message.
 enum MessageRole: String, Codable {
     case user = "user"
     case assistant = "assistant"
     case system = "system"
 }
 
-/// 附件类型
+/// Represents an attachment included with a chat message.
 enum MessageAttachmentType: Identifiable, Equatable {
-    case file(URL, String) // URL 和文件名
+    case file(URL, String)
 
     var id: String {
         switch self {
@@ -26,7 +27,7 @@ enum MessageAttachmentType: Identifiable, Equatable {
     }
 }
 
-/// 聊天消息
+/// A single message in an AI chat conversation.
 struct ChatMessage: Identifiable, Equatable {
     let id: UUID
     let role: MessageRole
@@ -49,7 +50,6 @@ struct ChatMessage: Identifiable, Equatable {
     }
 }
 
-/// 聊天状态
 @MainActor
 class ChatState: ObservableObject {
     @Published var messages: [ChatMessage] = []
@@ -71,10 +71,8 @@ class ChatState: ObservableObject {
     }
 }
 
-// MARK: - Extension for API Conversion
-
 extension ChatMessage {
-    /// 转换为 API 角色字符串
+    /// The role formatted for the chat API request.
     var apiRoleString: String {
         switch role {
         case .user:

@@ -1,7 +1,14 @@
+//
+//  GameFormView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A form view for creating games or importing mod packs.
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - Game Form Mode
 enum GameFormMode {
     case creation
     case modPackImport(file: URL, shouldProcess: Bool)
@@ -16,20 +23,17 @@ enum GameFormMode {
     }
 }
 
-// MARK: - GameFormView
 struct GameFormView: View {
     @EnvironmentObject private var gameRepository: GameRepository
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 
-    // MARK: - File Picker Type
     enum FilePickerType {
         case modPack
         case gameIcon
     }
 
-    // MARK: - State
     @State private var isDownloading = false
     @State private var isFormValid = false
     @State private var triggerConfirm = false
@@ -50,7 +54,6 @@ struct GameFormView: View {
         _mode = State(initialValue: initialMode)
     }
 
-    // MARK: - Body
     @ViewBuilder var body: some View {
         CommonSheetView(
             header: { headerView },
@@ -129,7 +132,6 @@ struct GameFormView: View {
         }
     }
 
-    // MARK: - View Components
     private var headerView: some View {
         HStack {
             Text(currentModeTitle)
@@ -187,10 +189,8 @@ struct GameFormView: View {
     private var cancelButton: some View {
         Button {
             if isDownloading {
-                // 当正在下载时，触发取消处理逻辑
                 triggerCancel = true
             } else {
-                // 非下载状态直接关闭窗口
                 dismiss()
             }
         } label: {

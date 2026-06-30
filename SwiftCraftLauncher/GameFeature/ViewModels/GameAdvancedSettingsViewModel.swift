@@ -1,17 +1,21 @@
+//
+//  GameAdvancedSettingsViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import UniformTypeIdentifiers
 
+/// View model for the game advanced settings view, managing JVM arguments, memory, garbage collector, and Java path configuration.
 @MainActor
 final class GameAdvancedSettingsViewModel: ObservableObject {
-
-    // MARK: - Dependencies
 
     let selectedGameManager: SelectedGameManager
     let gameSettingsManager: GameSettingsManager
     let javaManager: JavaManager
     var gameRepository: GameRepository?
-
-    // MARK: - Output (UI state)
 
     @Published var memoryRange: ClosedRange<Double>
     @Published var selectedGarbageCollector: GarbageCollector
@@ -23,8 +27,6 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
     @Published var error: GlobalError?
     @Published var isLoadingSettings: Bool
 
-    // MARK: - Internal optimization flags (derived / persisted into JVM args)
-
     var enableOptimizations: Bool = true
     var enableAikarFlags: Bool = false
     var enableMemoryOptimizations: Bool = true
@@ -32,8 +34,6 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
     var enableNetworkOptimizations: Bool = false
 
     var saveTask: Task<Void, Never>?
-
-    // MARK: - Init
 
     init(
         selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
@@ -54,19 +54,17 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
         self.isLoadingSettings = false
     }
 
-    // MARK: - Derived
-
     var currentGame: GameVersionInfo? {
         guard let gameId = selectedGameManager.selectedGameId else { return nil }
         return gameRepository?.getGame(by: gameId)
     }
 
-    /// 是否使用自定义JVM参数（与垃圾回收器和性能优化互斥）
+    /// A Boolean value indicating whether custom JVM arguments are in use, which mutually excludes garbage collector and optimization settings.
     var isUsingCustomArguments: Bool {
         !customJvmArguments.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
-    /// 当前生效的 Java 路径（优先使用本地修改，其次为存储在游戏配置中的路径）
+    /// The effective Java executable path, preferring the local override over the stored game configuration.
     var effectiveJavaPath: String {
         if !javaPath.isEmpty {
             return javaPath
@@ -74,7 +72,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
         return currentGame?.javaPath ?? ""
     }
 
-    /// Java 详细信息说明，用于 InfoIconWithPopover 展示
+    /// A description of the Java runtime details for display in an info popover.
     var javaDetailsDescription: String {
         JavaDetailsFormatting.description(
             javaExecutablePath: effectiveJavaPath,
@@ -82,26 +80,23 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
         )
     }
 
-    /// 获取当前游戏的 Java 版本
+    /// The Java version of the currently selected game.
     var currentJavaVersion: Int {
         currentGame?.javaVersion ?? 8
     }
 
-    /// 根据当前 Java 版本获取可用的垃圾回收器
+    /// The garbage collectors available for the current Java version.
     var availableGarbageCollectors: [GarbageCollector] {
         GarbageCollector.allCases.filter { $0.isSupported(by: currentJavaVersion) }
     }
 
-    /// 根据当前选择的垃圾回收器获取可用的优化预设
-    /// 最大优化仅在 G1GC 时可用
+    /// The optimization presets available for the currently selected garbage collector.
     var availableOptimizationPresets: [OptimizationPreset] {
         if selectedGarbageCollector == .g1gc {
             return OptimizationPreset.allCases
         }
         return OptimizationPreset.allCases.filter { $0 != .maximum }
     }
-
-    // MARK: - Bind / lifecycle
 
     func setRepository(_ repository: GameRepository) {
         self.gameRepository = repository
@@ -115,8 +110,6 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
     func onJavaPathChanged() {
         loadJavaVersionInfo()
     }
-
-    // MARK: - UI event handlers
 
     func didSelectGarbageCollector() {
         guard !isUsingCustomArguments else { return }

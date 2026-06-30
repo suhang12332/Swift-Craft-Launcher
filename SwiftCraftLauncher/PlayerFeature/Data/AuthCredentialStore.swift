@@ -1,13 +1,18 @@
+//
+//  AuthCredentialStore.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 认证凭据存储管理器
-/// 使用 Keychain 安全存储认证凭据
+/// Manages authentication credentials securely using the system Keychain.
 class AuthCredentialStore {
-    // MARK: - Public Methods
-
-    /// 保存认证凭据
-    /// - Parameter credential: 要保存的认证凭据
-    /// - Returns: 是否保存成功
+    /// Saves a credential to the Keychain.
+    ///
+    /// - Parameter credential: The credential to save.
+    /// - Returns: `true` if the credential was saved successfully.
     func saveCredential(_ credential: AuthCredential) -> Bool {
         do {
             let encoder = JSONEncoder()
@@ -19,9 +24,10 @@ class AuthCredentialStore {
         }
     }
 
-    /// 加载认证凭据
-    /// - Parameter userId: 用户ID
-    /// - Returns: 认证凭据，如果不存在或加载失败则返回 nil
+    /// Loads a credential from the Keychain.
+    ///
+    /// - Parameter userId: The identifier for the credential.
+    /// - Returns: The credential, or `nil` if none exists or loading fails.
     func loadCredential(userId: String) -> AuthCredential? {
         guard let data = KeychainManager.load(account: userId, key: AppConstants.KeychainKeys.authCredential) else {
             return nil
@@ -36,23 +42,26 @@ class AuthCredentialStore {
         }
     }
 
-    /// 删除认证凭据
-    /// - Parameter userId: 用户ID
-    /// - Returns: 是否删除成功
+    /// Deletes a credential from the Keychain.
+    ///
+    /// - Parameter userId: The identifier of the credential to delete.
+    /// - Returns: `true` if the credential was deleted successfully.
     func deleteCredential(userId: String) -> Bool {
         return KeychainManager.delete(account: userId, key: AppConstants.KeychainKeys.authCredential)
     }
 
-    /// 删除用户的所有认证凭据
-    /// - Parameter userId: 用户ID
-    /// - Returns: 是否删除成功
+    /// Deletes all credentials associated with the given user.
+    ///
+    /// - Parameter userId: The user whose credentials should be removed.
+    /// - Returns: `true` if the credentials were deleted successfully.
     func deleteAllCredentials(userId: String) -> Bool {
         return KeychainManager.deleteAll(account: userId)
     }
 
-    /// 更新认证凭据
-    /// - Parameter credential: 更新后的认证凭据
-    /// - Returns: 是否更新成功
+    /// Updates an existing credential in the Keychain.
+    ///
+    /// - Parameter credential: The updated credential.
+    /// - Returns: `true` if the credential was updated successfully.
     func updateCredential(_ credential: AuthCredential) -> Bool {
         return saveCredential(credential)
     }

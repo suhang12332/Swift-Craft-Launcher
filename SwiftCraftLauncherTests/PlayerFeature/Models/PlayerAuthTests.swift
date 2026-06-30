@@ -1,9 +1,14 @@
+//
+//  PlayerAuthTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class PlayerAuthTests: XCTestCase {
-
-    // MARK: - AuthCredential Codable Edge Cases
 
     func testAuthCredential_codable_nilExpiresAt() throws {
         let credential = AuthCredential(
@@ -79,8 +84,6 @@ final class PlayerAuthTests: XCTestCase {
         XCTAssertEqual(decoded.userId, "u")
     }
 
-    // MARK: - AuthCredential Equatable
-
     func testAuthCredential_notEqual_differentUserId() {
         let a = AuthCredential(userId: "a", accessToken: "t", refreshToken: "r")
         let b = AuthCredential(userId: "b", accessToken: "t", refreshToken: "r")
@@ -104,8 +107,6 @@ final class PlayerAuthTests: XCTestCase {
         let b = AuthCredential(userId: "u", accessToken: "t", refreshToken: "r", xuid: "x2")
         XCTAssertNotEqual(a, b)
     }
-
-    // MARK: - Player with Auth Credential
 
     func testPlayer_onlineAccount_withCredential() {
         let profile = UserProfile(id: "uuid-1", name: "OnlinePlayer", avatar: "https://example.com/skin.png")
@@ -151,7 +152,6 @@ final class PlayerAuthTests: XCTestCase {
         // With server map entry, remote avatar player is NOT considered online
         XCTAssertFalse(player.isOnlineAccount)
 
-        // Cleanup
         OfflineUserServerMap.removeServer(for: "uuid-4")
     }
 
@@ -202,8 +202,6 @@ final class PlayerAuthTests: XCTestCase {
         XCTAssertNotEqual(player.lastPlayed, original)
     }
 
-    // MARK: - Player Convenience Init with Auth
-
     func testPlayer_convenienceInit_offlineGeneratesUUID() throws {
         let player = try Player(name: "TestAuth")
         XCTAssertNotEqual(player.id, "")
@@ -243,8 +241,6 @@ final class PlayerAuthTests: XCTestCase {
         XCTAssertTrue(player.isCurrent)
     }
 
-    // MARK: - Player Init with Profile + Credential
-
     func testPlayer_init_profileAndCredential() {
         let profile = UserProfile(id: "id", name: "Name", avatar: "av")
         let credential = AuthCredential(userId: "id", accessToken: "at", refreshToken: "rt", xuid: "x1")
@@ -264,8 +260,6 @@ final class PlayerAuthTests: XCTestCase {
         XCTAssertFalse(player.isOnlineAccount)
         XCTAssertEqual(player.authAccessToken, "")
     }
-
-    // MARK: - AuthCredential Codable JSON Validation
 
     func testAuthCredential_codable_jsonStructure() throws {
         let credential = AuthCredential(

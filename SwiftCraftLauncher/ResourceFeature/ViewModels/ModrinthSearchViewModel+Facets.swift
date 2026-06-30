@@ -1,18 +1,30 @@
+//
+//  ModrinthSearchViewModel+Facets.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 extension ModrinthSearchViewModel {
+    /// Builds facet arrays for a Modrinth search request.
+    ///
+    /// Facets are grouped by OR within each inner array and AND between arrays.
+    /// - Parameters:
+    ///   - projectType: The project type facet value.
+    ///   - filterOptions: The user's current filter selections.
+    /// - Returns: An array of facet groups suitable for the Modrinth API.
     func buildFacets(
         projectType: String,
         filterOptions: FilterOptions
     ) -> [[String]] {
         var facets: [[String]] = []
 
-        // Project type is always required
         facets.append([
             "\(ModrinthConstants.API.FacetType.projectType):\(projectType)"
         ])
 
-        // Add versions if any
         if !filterOptions.versions.isEmpty {
             facets.append(
                 filterOptions.versions.map {
@@ -21,7 +33,6 @@ extension ModrinthSearchViewModel {
             )
         }
 
-        // Add categories if any
         if !filterOptions.categories.isEmpty {
             facets.append(
                 filterOptions.categories.map {
@@ -30,7 +41,6 @@ extension ModrinthSearchViewModel {
             )
         }
 
-        // Handle client_side and server_side based on features selection
         let (clientFacets, serverFacets) = buildEnvironmentFacets(features: filterOptions.features)
         if !clientFacets.isEmpty {
             facets.append(clientFacets)
@@ -39,17 +49,14 @@ extension ModrinthSearchViewModel {
             facets.append(serverFacets)
         }
 
-        // Add resolutions if any (as categories)
         if !filterOptions.resolutions.isEmpty {
             facets.append(filterOptions.resolutions.map { "categories:\($0)" })
         }
 
-        // Add performance impact if any (as categories)
         if !filterOptions.performanceImpact.isEmpty {
             facets.append(filterOptions.performanceImpact.map { "categories:\($0)" })
         }
 
-        // Add loaders if any (as categories)
         if !filterOptions.loaders.isEmpty && projectType != ResourceType.resourcepack.rawValue
             && projectType != ResourceType.datapack.rawValue {
             var loadersToUse = filterOptions.loaders
@@ -62,6 +69,9 @@ extension ModrinthSearchViewModel {
         return facets
     }
 
+    /// Builds client and server environment facet arrays.
+    /// - Parameter features: The list of selected environment features.
+    /// - Returns: A tuple of client-side and server-side facet groups.
     func buildEnvironmentFacets(features: [String]) -> (
         clientFacets: [String], serverFacets: [String]
     ) {

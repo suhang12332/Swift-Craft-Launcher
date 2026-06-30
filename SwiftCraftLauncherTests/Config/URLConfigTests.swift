@@ -1,9 +1,14 @@
+//
+//  URLConfigTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class URLConfigTests: XCTestCase {
-
-    // MARK: - URLConfig.applyGitProxyIfNeeded
 
     func testApplyGitProxy_githubURL() {
         let url = URL.require("https://github.com/user/repo/releases/download/v1.0/file.jar")
@@ -42,8 +47,6 @@ final class URLConfigTests: XCTestCase {
 
         XCTAssertEqual(result, url)
     }
-
-    // MARK: - API URLs
 
     func testAPIAuthentication_urls() {
         let auth = URLConfig.API.Authentication.authorize
@@ -121,8 +124,6 @@ final class URLConfigTests: XCTestCase {
         XCTAssertFalse(url.absoluteString.contains("gameVersion"))
     }
 
-    // MARK: - AuthlibInjector.serverApiRoot
-
     func testServerApiRoot_trailingSlash() {
         XCTAssertEqual(
             URLConfig.API.AuthlibInjector.serverApiRoot(for: "https://littleskin.cn/"),
@@ -151,15 +152,11 @@ final class URLConfigTests: XCTestCase {
         )
     }
 
-    // MARK: - ChunkBase.seedMap
-
     func testChunkBase_seedMap() {
         let url = URLConfig.API.ChunkBase.seedMap(seed: 12345)
         XCTAssertNotNil(url)
         XCTAssertTrue(url?.absoluteString.contains("seed=12345") ?? false)
     }
-
-    // MARK: - Community URLs
 
     func testCommunity_urls() {
         let website = URLConfig.API.Community.website()

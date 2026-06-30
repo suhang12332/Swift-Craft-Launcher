@@ -1,13 +1,13 @@
 //
 //  ElyflyProfileListParser.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2026/3/30.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// Ely.by 返回体解析
+/// Parses Ely.by profile list and texture responses.
 enum ElyflyProfileListParser {
     static func parse(data: Data, baseURL: String) async -> [YggdrasilProfileCandidate]? {
         _ = baseURL
@@ -96,7 +96,7 @@ enum ElyflyProfileListParser {
     }
 }
 
-/// Ely.by 通用解析器
+/// Parses Ely.by-style Yggdrasil profile list responses.
 struct ElyflyProfileStyleProfileListParser: YggdrasilProfileListParser {
     let id: YggdrasilProfileParserID = .ely
     private let baseURL: String

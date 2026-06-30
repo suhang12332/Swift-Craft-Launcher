@@ -1,9 +1,14 @@
+//
+//  ResourceFeatureModelsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ResourceFeatureModelsTests: XCTestCase {
-
-    // MARK: - LocalResourceFilter
 
     func testLocalResourceFilter_allCases() {
         XCTAssertEqual(LocalResourceFilter.allCases.count, 2)

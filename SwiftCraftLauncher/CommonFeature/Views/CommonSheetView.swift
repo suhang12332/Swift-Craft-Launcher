@@ -1,23 +1,20 @@
 //
 //  CommonSheetView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/1/1.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// 通用Sheet视图组件
-/// 分为头部、主体、底部三个部分，自适应内容大小
+/// A sheet view with header, body, and footer sections that adapts to content size.
 struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
 
-    // MARK: - Properties
     @ObservedObject private var generalSettings: GeneralSettingsManager
     private let header: () -> Header
     private let bodyContent: () -> BodyContent
     private let footer: () -> Footer
 
-    // MARK: - Initialization
     init(
         generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder header: @escaping () -> Header,
@@ -30,15 +27,12 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
         self.footer = footer
     }
 
-    // MARK: - Body
     var body: some View {
         VStack(spacing: 0) {
-            // 头部区域
             header()
                 .padding(.horizontal)
                 .padding()
             Divider()
-            // 主体区域
             if generalSettings.limitCommonSheetHeight {
                 ScrollView {
                     bodyContent()
@@ -51,7 +45,6 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
                     .padding(.horizontal)
                     .padding()
             }
-            // 底部区域
             Divider()
             footer()
                 .padding(.horizontal)
@@ -60,7 +53,6 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
     }
 }
 
-// MARK: - Convenience Initializers
 extension CommonSheetView where Header == EmptyView, Footer == EmptyView {
     init(
         generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,

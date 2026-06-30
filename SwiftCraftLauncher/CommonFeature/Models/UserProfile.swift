@@ -1,30 +1,36 @@
+//
+//  UserProfile.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 用户基本信息模型
-/// 存储在 plist 文件中
+/// A user profile stored in the local plist file.
 struct UserProfile: Identifiable, Codable, Equatable {
-    /// 用户唯一标识符
+    /// The unique user identifier.
     let id: String
 
-    /// 用户名称
+    /// The display name.
     let name: String
 
-    /// 头像名称或路径
+    /// The avatar image name or path.
     let avatar: String
 
-    /// 最后游玩时间
+    /// The last time the user played.
     var lastPlayed: Date
 
-    /// 是否为当前选中的用户
+    /// Whether this is the currently selected user.
     var isCurrent: Bool
 
-    /// 初始化用户基本信息
+    /// Creates a user profile.
     /// - Parameters:
-    ///   - id: 用户唯一标识符
-    ///   - name: 用户名称
-    ///   - avatar: 头像名称或路径
-    ///   - lastPlayed: 最后游玩时间，默认当前时间
-    ///   - isCurrent: 是否为当前选中的用户，默认 false
+    ///   - id: The unique user identifier.
+    ///   - name: The display name.
+    ///   - avatar: The avatar image name or path.
+    ///   - lastPlayed: The last play time. Defaults to the current date.
+    ///   - isCurrent: Whether this is the current user. Defaults to `false`.
     init(
         id: String,
         name: String,

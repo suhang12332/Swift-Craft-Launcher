@@ -1,12 +1,20 @@
 //
 //  InstanceFileCopier.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
+/// Copies files and directories for modpack installation, with optional filtering.
 enum InstanceFileCopier {
-
+    /// Recursively copies files from a source directory to a target directory.
+    /// - Parameters:
+    ///   - sourceDirectory: The directory to copy from.
+    ///   - targetDirectory: The directory to copy to.
+    ///   - fileFilter: An optional filter for file relative paths.
+    ///   - onProgress: A closure called with (fileName, completed, total).
     static func copyDirectory(
         from sourceDirectory: URL,
         to targetDirectory: URL,
@@ -93,6 +101,9 @@ enum InstanceFileCopier {
         Logger.shared.info("目录合并完成: \(completed)/\(totalFiles) 个文件")
     }
 
+    /// Returns all regular files within a directory.
+    /// - Parameter directory: The directory to scan.
+    /// - Returns: An array of file URLs.
     static func getAllFiles(in directory: URL) throws -> [URL] {
         let fileManager = FileManager.default
         var files: [URL] = []

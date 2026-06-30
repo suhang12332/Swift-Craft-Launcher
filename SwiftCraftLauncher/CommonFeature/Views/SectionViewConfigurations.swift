@@ -1,11 +1,13 @@
 //
 //  SectionViewConfigurations.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
-// MARK: - Section View Configuration Protocol
+/// A protocol defining the configuration for a section view.
 protocol SectionViewConfiguration {
     associatedtype Item: Identifiable
 
@@ -16,7 +18,7 @@ protocol SectionViewConfiguration {
     var iconName: String? { get }
 }
 
-// MARK: - Category Section Configuration
+/// Configuration for a category section displaying filter items.
 struct CategorySectionConfiguration: SectionViewConfiguration {
     typealias Item = FilterItem
 
@@ -41,7 +43,7 @@ struct CategorySectionConfiguration: SectionViewConfiguration {
     }
 }
 
-// MARK: - File Section Configuration
+/// Configuration for a file section with generic item type.
 struct FileSectionConfiguration<Item: Identifiable>: SectionViewConfiguration {
     let title: String
     let items: [Item]
@@ -64,7 +66,7 @@ struct FileSectionConfiguration<Item: Identifiable>: SectionViewConfiguration {
     }
 }
 
-// MARK: - Simple String Section Configuration
+/// Configuration for a section displaying simple string items.
 struct SimpleStringSectionConfiguration: SectionViewConfiguration {
     typealias Item = IdentifiableString
 
@@ -89,7 +91,7 @@ struct SimpleStringSectionConfiguration: SectionViewConfiguration {
     }
 }
 
-// MARK: - Identifiable String Helper
+/// A string wrapper that conforms to Identifiable.
 public struct IdentifiableString: Identifiable {
     public let id: String
 

@@ -1,12 +1,13 @@
 //
 //  CategorySectionSkeletonView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  分类页面的骨架加载视图
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
-// MARK: - Category Section Skeleton View
+/// A skeleton loading view for category sections.
 struct CategorySectionSkeletonView: View {
     let count: Int
     let iconName: String?

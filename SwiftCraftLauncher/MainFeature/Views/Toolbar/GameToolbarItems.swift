@@ -1,11 +1,13 @@
 //
 //  GameToolbarItems.swift
-//  SwiftCraftLauncher
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// 选中游戏时的详情工具栏内容：筛选菜单 + 操作按钮
+/// Composes the detail toolbar layout for a selected game, combining filter menus and action buttons.
 struct GameToolbarItems: View {
     let game: GameVersionInfo
 

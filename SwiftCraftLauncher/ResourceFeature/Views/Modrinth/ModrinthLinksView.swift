@@ -1,13 +1,14 @@
 //
 //  ModrinthLinksView.swift
-//  SwiftCraftLauncher
+//  ResourceFeature
 //
-//  Created by su on 2025/6/2.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 import AppKit
 
-// MARK: - Links Section
+/// Displays project resource links (issues, source, wiki, discord).
 struct ModrinthLinksSection: View {
     let project: ModrinthProjectDetail?
     let isLoading: Bool
@@ -37,14 +38,14 @@ struct ModrinthLinksSection: View {
     }
 }
 
-// MARK: - Link Models
+/// An identifiable link item.
 private struct IdentifiableLink: Identifiable {
     let id: String
     let text: String
     let url: String
 }
 
-// MARK: - Project Link
+/// A clickable project link chip.
 private struct ProjectLink: View {
     let text: String
     let url: String

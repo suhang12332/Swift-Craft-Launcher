@@ -1,9 +1,14 @@
+//
+//  AnnouncementModelsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class AnnouncementModelsTests: XCTestCase {
-
-    // MARK: - AnnouncementResponse
 
     func testAnnouncementResponse_init() {
         let response = AnnouncementResponse(
@@ -50,8 +55,6 @@ final class AnnouncementModelsTests: XCTestCase {
         XCTAssertTrue(decoded.success)
         XCTAssertEqual(decoded.data?.title, "T")
     }
-
-    // MARK: - AnnouncementData
 
     func testAnnouncementData_codable_roundTrip() throws {
         let original = AnnouncementData(

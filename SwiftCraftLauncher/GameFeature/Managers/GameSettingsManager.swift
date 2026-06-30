@@ -1,7 +1,14 @@
+//
+//  GameSettingsManager.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
-/// 数据源枚举
+/// Represents available mod data sources.
 enum DataSource: String, CaseIterable, Codable {
     case modrinth = "Modrinth"
     case curseforge = "CurseForge"
@@ -20,6 +27,7 @@ enum DataSource: String, CaseIterable, Codable {
     }
 }
 
+/// Manages global application settings for the launcher.
 class GameSettingsManager: ObservableObject {
     static let shared = GameSettingsManager()
 
@@ -45,25 +53,25 @@ class GameSettingsManager: ObservableObject {
         didSet { objectWillChange.send() }
     }
 
-    /// 是否在游戏版本选择中包含快照版（全局设置）
+    /// Whether to include snapshot versions in game version selection.
     @AppStorage(AppConstants.UserDefaultsKeys.includeSnapshotsForGameVersions)
     var includeSnapshotsForGameVersions: Bool = false {
         didSet { objectWillChange.send() }
     }
 
-    /// 是否在新游戏下载完成后，将游戏语言同步为当前启动器语言
+    /// Whether to sync the game language to the current launcher language after downloading a new game.
     @AppStorage(AppConstants.UserDefaultsKeys.syncLanguageForNewGames)
     var syncLanguageForNewGames: Bool = true {
         didSet { objectWillChange.send() }
     }
 
-    /// 整合包导出格式（游戏设置）
+    /// The default export format for mod packs.
     @AppStorage(AppConstants.UserDefaultsKeys.defaultModPackExportFormat)
     var defaultModPackExportFormat: ModPackExportFormat = .modrinth {
         didSet { objectWillChange.send() }
     }
 
-    /// 计算系统最大可用内存分配（基于物理内存的70%）
+    /// The maximum memory allocation based on 70% of physical RAM, rounded to the nearest 512 MB.
     var maximumMemoryAllocation: Int {
         let physicalMemoryBytes = ProcessInfo.processInfo.physicalMemory
         let physicalMemoryMB = physicalMemoryBytes / 1_048_576

@@ -1,12 +1,13 @@
 //
 //  ModPackDownloadSheet.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
 //
-//  Created by su on 2025/8/2.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
+/// A sheet for downloading and installing a modpack from a remote project.
 struct ModPackDownloadSheet: View {
     let projectId: String
     let gameInfo: GameVersionInfo?
@@ -23,7 +24,6 @@ struct ModPackDownloadSheet: View {
     @StateObject private var gameSetupService = GameSetupUtil()
     @StateObject private var gameNameValidator: GameNameValidator
 
-    // MARK: - Initializer
     init(
         projectId: String,
         gameInfo: GameVersionInfo?,
@@ -56,20 +56,14 @@ struct ModPackDownloadSheet: View {
         }
     }
 
-    // MARK: - 清除数据
-    /// 清除页面所有数据
     private func clearAllData() {
-        // 清理选中的版本
         selectedGameVersion = ""
         selectedModPackVersion = nil
-        // 清理 ViewModel 所有数据和临时文件 + 停止下载/安装状态
         coordinator.onDisappear(
             sheetViewModel: viewModel,
             gameSetupService: gameSetupService
         )
     }
-
-    // MARK: - View Components
 
     private var headerView: some View {
         Text("modpack.download.title".localized())
@@ -143,8 +137,6 @@ struct ModPackDownloadSheet: View {
         }
     }
 
-    // MARK: - Computed Properties
-
     private var shouldShowProgress: Bool {
         gameSetupService.downloadState.isDownloading
             || viewModel.modPackInstallState.isInstalling
@@ -185,8 +177,6 @@ struct ModPackDownloadSheet: View {
         .disabled(!canDownload || isDownloading)
     }
 
-    // MARK: - Helper Methods
-
     private func handleGameVersionChange(_ newValue: String) {
         if !newValue.isEmpty {
             Task {
@@ -226,8 +216,6 @@ struct ModPackDownloadSheet: View {
             dismiss()
         }
     }
-
-    // MARK: - Download Action
 
     @MainActor
     private func startDownload() async {

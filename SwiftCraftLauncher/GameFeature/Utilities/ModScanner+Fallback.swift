@@ -1,9 +1,15 @@
+//
+//  ModScanner+Fallback.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Creates fallback `ModrinthProjectDetail` instances when remote lookup fails.
 extension ModScanner {
-    // MARK: - Fallback Methods
-
-    /// 兜底 ModrinthProjectDetail 的公共字段结构体
+    /// Common fields for a fallback `ModrinthProjectDetail`.
     private struct CommonFallbackFields {
         let description: String
         let categories: [String]
@@ -28,7 +34,7 @@ extension ModScanner {
         let type: String?
     }
 
-    /// 创建基础 ModrinthProjectDetail 的公共字段
+    /// Extracts the file name and base name (without extension) from the file URL.
     private func createBaseFallbackDetail(fileURL: URL) -> (fileName: String, baseFileName: String) {
         let fileName = fileURL.lastPathComponent
         let baseFileName = fileName.replacingOccurrences(
@@ -38,7 +44,7 @@ extension ModScanner {
         return (fileName, baseFileName)
     }
 
-    /// 创建兜底 ModrinthProjectDetail 的公共部分
+    /// Creates common fallback fields with default values.
     private func createCommonFallbackFields(fileName: String, baseFileName: String) -> CommonFallbackFields {
         return CommonFallbackFields(
             description: "local：\(fileName)",
@@ -65,7 +71,7 @@ extension ModScanner {
         )
     }
 
-    /// 使用文件名创建最基础的兜底 ModrinthProjectDetail
+    /// Creates a minimal fallback `ModrinthProjectDetail` using the file name.
     func createFallbackDetailFromFileName(
         fileURL: URL
     ) -> ModrinthProjectDetail {

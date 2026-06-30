@@ -1,10 +1,17 @@
+//
+//  CurseForgeService+Catalog.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides catalog operations for CurseForge categories and game versions.
 extension CurseForgeService {
-    // MARK: - Category Methods
 
-    /// 获取分类列表（静默版本）
-    /// - Returns: 分类列表，失败时返回空数组
+    /// Fetches the list of CurseForge categories.
+    /// - Returns: An array of categories, or an empty array on failure.
     static func fetchCategories() async -> [CurseForgeCategory] {
         do {
             return try await fetchCategoriesThrowing()
@@ -16,9 +23,9 @@ extension CurseForgeService {
         }
     }
 
-    /// 获取分类列表（抛出异常版本）
-    /// - Returns: 分类列表
-    /// - Throws: GlobalError 当操作失败时
+    /// Fetches the list of CurseForge categories, throwing on failure.
+    /// - Returns: An array of categories.
+    /// - Throws: A `GlobalError` if the request fails.
     static func fetchCategoriesThrowing() async throws -> [CurseForgeCategory] {
         let headers = getHeaders()
         let data = try await APIClient.get(url: URLConfig.API.CurseForge.categories, headers: headers)
@@ -26,10 +33,8 @@ extension CurseForgeService {
         return result.data
     }
 
-    // MARK: - Game Version Methods
-
-    /// 获取游戏版本列表（静默版本）
-    /// - Returns: 游戏版本列表，失败时返回空数组
+    /// Fetches the list of supported game versions from CurseForge.
+    /// - Returns: An array of game versions, or an empty array on failure.
     static func fetchGameVersions() async -> [CurseForgeGameVersion] {
         do {
             return try await fetchGameVersionsThrowing()
@@ -41,14 +46,13 @@ extension CurseForgeService {
         }
     }
 
-    /// 获取游戏版本列表（抛出异常版本）
-    /// - Returns: 游戏版本列表
-    /// - Throws: GlobalError 当操作失败时
+    /// Fetches the list of supported game versions from CurseForge, throwing on failure.
+    /// - Returns: An array of approved release game versions.
+    /// - Throws: A `GlobalError` if the request fails.
     static func fetchGameVersionsThrowing() async throws -> [CurseForgeGameVersion] {
         let headers = getHeaders()
         let data = try await APIClient.get(url: URLConfig.API.CurseForge.gameVersions, headers: headers)
         let result = try JSONDecoder().decode(CurseForgeGameVersionsResponse.self, from: data)
-        // 只返回已批准且为正式版的版本
         return result.data.filter { $0.approved && $0.version_type == "release" }
     }
 }

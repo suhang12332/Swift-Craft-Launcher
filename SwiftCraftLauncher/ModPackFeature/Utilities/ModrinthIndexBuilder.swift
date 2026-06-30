@@ -1,22 +1,23 @@
 //
 //  ModrinthIndexBuilder.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// Modrinth 索引构建器
-/// 负责构建 modrinth.index.json 文件
+/// Builds the `modrinth.index.json` structure for Modrinth modpacks.
 enum ModrinthIndexBuilder {
-    /// 构建索引 JSON 字符串
+
+    /// Builds a JSON string representing the Modrinth index file.
     /// - Parameters:
-    ///   - gameInfo: 游戏信息
-    ///   - modPackName: 整合包名称
-    ///   - modPackVersion: 整合包版本
-    ///   - summary: 整合包描述
-    ///   - files: 索引文件列表
-    /// - Returns: JSON 字符串
+    ///   - gameInfo: The game version and mod loader information.
+    ///   - modPackName: The display name of the modpack.
+    ///   - modPackVersion: The version identifier of the modpack.
+    ///   - summary: An optional description of the modpack.
+    ///   - files: The list of files to include in the index.
+    /// - Returns: A JSON string.
     static func build(
         gameInfo: GameVersionInfo,
         modPackName: String,
@@ -29,14 +30,12 @@ enum ModrinthIndexBuilder {
 
         Logger.shared.info("导出整合包 - 加载器类型: \(loaderType), 版本: \(gameInfo.modVersion)")
 
-        // 构建依赖字典
         let dependencies = buildDependencies(
             gameVersion: gameVersion,
             loaderType: loaderType,
             loaderVersion: gameInfo.modVersion
         )
 
-        // 构建 JSON 字典
         var jsonDict: [String: Any] = [
             "formatVersion": 1,
             "game": "minecraft",
@@ -48,7 +47,6 @@ enum ModrinthIndexBuilder {
             jsonDict["summary"] = summary
         }
 
-        // 编码 files，排除非标准字段
         var filesArray: [[String: Any]] = []
         for file in files {
             var fileDict: [String: Any] = [
@@ -61,7 +59,6 @@ enum ModrinthIndexBuilder {
                 "fileSize": file.fileSize,
             ]
 
-            // 添加 env 字段（如果存在）
             if let env = file.env {
                 var envDict: [String: String] = [:]
                 if let client = env.client {
@@ -79,7 +76,6 @@ enum ModrinthIndexBuilder {
         }
         jsonDict["files"] = filesArray
 
-        // 编码 dependencies
         var depsDict: [String: Any] = [:]
         if let minecraft = dependencies.minecraft {
             depsDict["minecraft"] = minecraft
@@ -98,7 +94,6 @@ enum ModrinthIndexBuilder {
         }
         jsonDict["dependencies"] = depsDict
 
-        // 转换为 JSON 字符串
         let jsonData = try JSONSerialization.data(
             withJSONObject: jsonDict,
             options: [.prettyPrinted, .sortedKeys]
@@ -106,7 +101,7 @@ enum ModrinthIndexBuilder {
         return String(data: jsonData, encoding: .utf8) ?? ""
     }
 
-    /// 构建依赖字典
+    /// Builds the dependencies dictionary for the specified loader type.
     private static func buildDependencies(
         gameVersion: String,
         loaderType: String,

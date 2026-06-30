@@ -1,5 +1,13 @@
+//
+//  ContributorsStaticViewModel.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Manages loading and display of static contributor information.
 @MainActor
 final class ContributorsStaticViewModel: ObservableObject {
     @Published var contributors: [StaticContributor] = []
@@ -17,6 +25,7 @@ final class ContributorsStaticViewModel: ObservableObject {
         self.init(gitHubService: AppServices.gitHubService)
     }
 
+    /// Loads static contributor data from the GitHub service.
     func load() {
         loaded = false
         loadFailed = false
@@ -53,6 +62,7 @@ final class ContributorsStaticViewModel: ObservableObject {
         }
     }
 
+    /// Clears all loaded data and resets the loading state.
     func clearAllData() {
         loadTask?.cancel()
         loadTask = nil

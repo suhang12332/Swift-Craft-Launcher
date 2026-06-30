@@ -1,7 +1,14 @@
+//
+//  MinecraftFileManager.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import CommonCrypto
 import Foundation
 
-// MARK: - MinecraftFileManager
+/// Manages Minecraft version file downloads, verification, and directory setup.
 class MinecraftFileManager {
 
     private let fileManager = FileManager.default

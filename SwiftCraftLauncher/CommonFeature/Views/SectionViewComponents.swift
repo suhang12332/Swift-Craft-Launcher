@@ -1,35 +1,32 @@
 //
 //  SectionViewComponents.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
-// MARK: - Constants
+/// Constants for section view layout and behavior.
 enum SectionViewConstants {
-    // 布局常量
     static let defaultMaxHeight: CGFloat = 235
     static let defaultVerticalPadding: CGFloat = 4
     static let defaultHeaderBottomPadding: CGFloat = 4
 
-    // 占位符常量
     static let defaultPlaceholderCount: Int = 5
 
-    // 弹窗常量
     static let defaultPopoverWidth: CGFloat = 320
     static let defaultPopoverMaxHeight: CGFloat = 320
 
-    // 项目显示常量
     static let defaultMaxItems: Int = 6
     static let defaultMaxWidth: CGFloat = 320
 
-    // Chip 相关常量（用于行计算）
     static let defaultChipPadding: CGFloat = 16
     static let defaultEstimatedCharWidth: CGFloat = 10
     static let defaultMaxRows: Int = 5
 }
 
-// MARK: - Overflow Popover Content
+/// A view that displays overflow items in a scrollable popover.
 struct OverflowPopoverContent<Item: Identifiable, Content: View>: View {
     let items: [Item]
     let maxHeight: CGFloat
@@ -64,7 +61,7 @@ struct OverflowPopoverContent<Item: Identifiable, Content: View>: View {
     }
 }
 
-// MARK: - Content With Overflow
+/// A view that displays items in a flow layout with a maximum height.
 struct ContentWithOverflow<Item: Identifiable, Content: View>: View {
     let items: [Item]
     let maxHeight: CGFloat
@@ -99,7 +96,6 @@ struct ContentWithOverflow<Item: Identifiable, Content: View>: View {
     }
 }
 
-// MARK: - Array Extension
 extension Array {
     func computeVisibleAndOverflowItems(maxItems: Int) -> ([Element], [Element]) {
         let visibleItems = Array(prefix(maxItems))

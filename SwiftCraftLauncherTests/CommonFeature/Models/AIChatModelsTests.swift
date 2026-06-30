@@ -1,9 +1,14 @@
+//
+//  AIChatModelsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class AIChatModelsTests: XCTestCase {
-
-    // MARK: - MessageRole
 
     func testMessageRole_rawValues() {
         XCTAssertEqual(MessageRole.user.rawValue, "user")
@@ -18,15 +23,11 @@ final class AIChatModelsTests: XCTestCase {
         XCTAssertEqual(decoded, .user)
     }
 
-    // MARK: - MessageAttachmentType
-
     func testMessageAttachmentType_fileId() {
         let url = URL(fileURLWithPath: "/tmp/test.pdf")
         let type = MessageAttachmentType.file(url, "test.pdf")
         XCTAssertEqual(type.id, "file_/tmp/test.pdf")
     }
-
-    // MARK: - ChatMessage
 
     func testChatMessage_init_defaults() {
         let message = ChatMessage(role: .user, content: "hello")
@@ -57,8 +58,6 @@ final class AIChatModelsTests: XCTestCase {
         XCTAssertEqual(ChatMessage(role: .assistant).apiRoleString, "assistant")
         XCTAssertEqual(ChatMessage(role: .system).apiRoleString, "system")
     }
-
-    // MARK: - ChatState
 
     @MainActor
     func testChatState_addMessage() {

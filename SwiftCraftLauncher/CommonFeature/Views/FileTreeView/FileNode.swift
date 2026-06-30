@@ -1,5 +1,13 @@
+//
+//  FileNode.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// A node in the file tree representing a file or directory.
 final class FileNode: NSObject {
     let url: URL
     let isDirectory: Bool

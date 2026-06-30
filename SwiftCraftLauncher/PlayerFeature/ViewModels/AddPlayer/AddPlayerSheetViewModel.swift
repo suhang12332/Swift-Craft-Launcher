@@ -1,12 +1,20 @@
+//
+//  AddPlayerSheetViewModel.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Manages the state for the add-player sheet.
 @MainActor
 final class AddPlayerSheetViewModel: ObservableObject {
     @Published var selectedAuthType: AccountAuthType = .premium
 
-    /// 标记检查 loading
+    /// A Boolean value indicating whether the premium account flag check is in progress.
     @Published var isCheckingFlag: Bool = true
-    /// IP检查结果（仅在列表中没有正版账户且没有标记时使用）
+    /// Whether the user's IP is detected as non-domestic (foreign), checked when no premium flag exists.
     @Published var isForeignIP: Bool = false
 
     private let playerSettings: PlayerSettingsManager
@@ -23,20 +31,24 @@ final class AddPlayerSheetViewModel: ObservableObject {
         self.ipLocationService = ipLocationService
     }
 
+    /// Resets all selection state.
     func reset() {
         selectedAuthType = .premium
         isCheckingFlag = true
         isForeignIP = false
     }
 
+    /// Starts the premium (Microsoft) authentication flow.
     func startPremiumAuthentication(authService: MinecraftAuthService) async {
         await authService.startAuthentication()
     }
 
+    /// Starts the Yggdrasil authentication flow.
     func startYggdrasilAuthentication(yggdrasilAuthService: YggdrasilAuthService) async {
         await yggdrasilAuthService.startAuthentication()
     }
 
+    /// Checks whether a premium account flag exists and detects foreign IP if not.
     func checkPremiumAccountFlag() async {
         let hasFlag = premiumAccountFlagManager.hasAddedPremiumAccount()
 
@@ -52,6 +64,7 @@ final class AddPlayerSheetViewModel: ObservableObject {
         }
     }
 
+    /// The authentication types available to the user based on settings and flags.
     var availableAuthTypes: [AccountAuthType] {
         var types: [AccountAuthType] = [.premium]
 

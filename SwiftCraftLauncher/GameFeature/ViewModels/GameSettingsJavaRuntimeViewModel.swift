@@ -1,9 +1,17 @@
+//
+//  GameSettingsJavaRuntimeViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// View model for the Java runtime settings view, managing installed runtime detection and Java version info.
 @MainActor
 final class GameSettingsJavaRuntimeViewModel: ObservableObject {
 
-    /// `nil` 表示正在扫描；非空数组为已安装的运行时组件名
+    /// The installed runtime component names, or `nil` while scanning is in progress.
     @Published private(set) var installedRuntimeComponents: [String]?
     @Published var selectedRuntimeComponent: String = ""
 
@@ -18,7 +26,7 @@ final class GameSettingsJavaRuntimeViewModel: ObservableObject {
         self.javaManager = javaManager
     }
 
-    /// Java 详细信息说明，用于 InfoIconWithPopover 展示
+    /// A description of the Java runtime details for display in an info popover.
     var javaDetailsDescription: String {
         JavaDetailsFormatting.description(
             javaExecutablePath: javaExecutablePath,

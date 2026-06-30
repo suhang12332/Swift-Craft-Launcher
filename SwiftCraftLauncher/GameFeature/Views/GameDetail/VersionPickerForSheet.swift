@@ -1,6 +1,13 @@
+//
+//  VersionPickerForSheet.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A version picker for selecting resource versions within a sheet.
 import SwiftUI
 
-// MARK: - 版本选择区块
 struct VersionPickerForSheet: View {
     let project: ModrinthProject
     let resourceType: String
@@ -47,7 +54,6 @@ struct VersionPickerForSheet: View {
         .onAppear(perform: loadVersions)
         .onChange(of: selectedGame) { loadVersions() }
         .onChange(of: selectedVersion) { _, newValue in
-            // 更新主版本ID
             if let newValue = newValue {
                 mainVersionId = newValue.id
             } else {
@@ -102,7 +108,6 @@ struct VersionPickerForSheet: View {
         _ = await MainActor.run {
             availableVersions = filtered
             selectedVersion = filtered.first
-            // 更新主版本ID
             if let firstVersion = filtered.first {
                 mainVersionId = firstVersion.id
             } else {

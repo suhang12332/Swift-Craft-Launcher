@@ -1,12 +1,15 @@
 //
 //  ModPackDependencyInstaller+Dependencies.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
 extension ModPackDependencyInstaller {
 
+    /// Installs all required dependencies for the modpack.
     static func installModPackDependencies(
         dependencies: [ModrinthIndexProjectDependency],
         gameInfo: GameVersionInfo,

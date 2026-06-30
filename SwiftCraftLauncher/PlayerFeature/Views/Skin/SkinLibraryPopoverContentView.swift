@@ -1,5 +1,13 @@
+//
+//  SkinLibraryPopoverContentView.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Displays a grid of skin library items for selection.
 struct SkinLibraryPopoverContentView: View {
     private static let tileSize: CGFloat = 48
     private static let gridSpacing: CGFloat = 16

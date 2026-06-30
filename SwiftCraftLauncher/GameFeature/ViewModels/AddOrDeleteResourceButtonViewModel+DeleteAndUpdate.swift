@@ -1,5 +1,13 @@
+//
+//  AddOrDeleteResourceButtonViewModel+DeleteAndUpdate.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Extension providing delete, update, and disable state management for `AddOrDeleteResourceButtonViewModel`.
 extension AddOrDeleteResourceButtonViewModel {
     func confirmDelete() {
         deleteFile(fileName: effectiveFileName)

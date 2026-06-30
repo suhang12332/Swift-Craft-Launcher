@@ -1,12 +1,19 @@
+//
+//  YggdrasilMinecraftTokenParsers.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// Minecraft 令牌获取协议：不同三方站请求和响应格式各异，各自实现
+/// Defines a parser for fetching Minecraft access tokens from Yggdrasil-compatible servers.
 protocol YggdrasilMinecraftTokenParser {
-    /// 通过三方站获取 Minecraft access token
+    /// Fetches a Minecraft access token from the authentication server.
     func fetchMinecraftToken(profileId: String, minecraftTokenURL: URL, oauthToken: String) async throws -> String
 }
 
-/// Minecraft 令牌解析器注册表
+/// Registry for Minecraft token parsers by server type.
 enum YggdrasilMinecraftTokenParsers {
     static func make(for parserId: YggdrasilProfileParserID) -> YggdrasilMinecraftTokenParser? {
         switch parserId {
@@ -18,12 +25,7 @@ enum YggdrasilMinecraftTokenParsers {
     }
 }
 
-// MARK: - LittleSkin
-
-/// LittleSkin: POST {baseURL}/api/yggdrasil/authserver/oauth
-/// Headers: Authorization: Bearer {oauthToken}
-/// Body: { "uuid": "{profileId}" }
-/// Response: { "accessToken": "..." }
+/// Fetches Minecraft access tokens from LittleSkin authentication servers.
 struct LittleSkinMinecraftTokenParser: YggdrasilMinecraftTokenParser {
     struct Response: Codable {
         let accessToken: String

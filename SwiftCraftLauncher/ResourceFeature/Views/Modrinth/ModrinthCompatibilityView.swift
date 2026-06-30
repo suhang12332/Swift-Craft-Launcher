@@ -1,20 +1,20 @@
 //
 //  ModrinthCompatibilityView.swift
-//  SwiftCraftLauncher
+//  ResourceFeature
 //
-//  Created by su on 2025/6/2.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import Foundation
 import SwiftUI
 
-// MARK: - Constants
 private enum Constants {
     static let maxVisibleVersions = 15
     static let popoverWidth: CGFloat = 300
     static let popoverHeight: CGFloat = 400
 }
 
-// MARK: - Compatibility Section
+/// Displays game version compatibility, loaders, server info, and platform support for a project.
 struct ModrinthCompatibilitySection: View {
     let project: ModrinthProjectDetail?
     let isLoading: Bool
@@ -48,7 +48,7 @@ struct ModrinthCompatibilitySection: View {
     }
 }
 
-// MARK: - Game Versions Section
+/// Displays a list of supported game versions.
 private struct GameVersionsSection: View {
     let versions: [String]
     let isLoading: Bool
@@ -69,7 +69,7 @@ private struct GameVersionsSection: View {
     }
 }
 
-// MARK: - Game Versions Popover
+/// A popover displaying all game versions grouped by major version.
 private struct GameVersionsPopover: View {
     let versions: [String]
 
@@ -82,7 +82,7 @@ private struct GameVersionsPopover: View {
     }
 }
 
-// MARK: - Version Tag
+/// A single version tag chip.
 private struct VersionTag: View {
     let version: String
 
@@ -94,7 +94,7 @@ private struct VersionTag: View {
     }
 }
 
-// MARK: - Loaders Section
+/// Displays a list of supported mod loaders.
 private struct LoadersSection: View {
     let loaders: [String]
     let isLoading: Bool
@@ -110,7 +110,7 @@ private struct LoadersSection: View {
     }
 }
 
-// MARK: - Server Info Section
+/// Displays server connection info parsed from the file name.
 private struct ServerInfoSection: View {
     let fileName: String
     @State private var connectionStatus: ServerConnectionStatus = .unknown
@@ -145,7 +145,7 @@ private struct ServerInfoSection: View {
     }
 }
 
-// MARK: - Player Info Section
+/// Displays player count info parsed from the file name.
 private struct PlayerInfoSection: View {
     let fileName: String
 
@@ -174,7 +174,7 @@ private struct PlayerInfoSection: View {
     }
 }
 
-// MARK: - Platform Support Section
+/// Displays client-side and server-side platform support status.
 private struct PlatformSupportSection: View {
     let clientSide: String
     let serverSide: String
@@ -199,14 +199,14 @@ private struct PlatformSupportSection: View {
     }
 }
 
-// MARK: - Platform Item Models
+/// An identifiable platform item for the support display.
 private struct IdentifiablePlatformItem: Identifiable {
     let id: String
     let icon: String
     let text: String
 }
 
-// MARK: - Platform Support Item
+/// A platform support item showing an icon and status text.
 private struct PlatformSupportItem: View {
     let icon: String
     let text: String

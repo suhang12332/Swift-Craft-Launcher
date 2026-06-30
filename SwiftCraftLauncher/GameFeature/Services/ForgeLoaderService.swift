@@ -1,7 +1,14 @@
+//
+//  ForgeLoaderService.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Fetches and manages Forge mod loader versions and profiles.
 enum ForgeLoaderService {
-    /// 通过Modrinth API获取所有可用Forge版本详细信息
     static func fetchAllForgeVersions(for minecraftVersion: String) async throws -> LoaderVersion {
         guard let result = await CommonService.fetchAllLoaderVersions(type: GameLoader.forge.displayName, minecraftVersion: minecraftVersion) else {
             throw GlobalError.resource(
@@ -13,40 +20,24 @@ enum ForgeLoaderService {
         return result
     }
 
-    /// 获取指定版本的 Forge profile
-    /// - Parameters:
-    ///   - minecraftVersion: Minecraft 版本
-    ///   - loaderVersion: 指定的加载器版本
-    /// - Returns: 指定版本的 Forge profile
-    /// - Throws: GlobalError 当操作失败时
     static func fetchSpecificForgeProfile(for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
 
-        // 1. 查全局缓存
         if let cached = AppServices.appCacheManager.get(namespace: GameLoader.forge.displayName, key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
 
-        // 2. 直接下载指定版本的 version.json
         let url = URLConfig.API.Modrinth.loaderProfile(loader: GameLoader.forge.displayName, version: loaderVersion)
         let data = try await APIClient.get(url: url)
 
         var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
         result.version = loaderVersion
-        // 3. 存入缓存
         AppServices.appCacheManager.setSilently(namespace: GameLoader.forge.displayName, key: cacheKey, value: result)
 
         return result
     }
 
-    /// 设置指定版本的 Forge 加载器（静默版本）
-    /// - Parameters:
-    ///   - gameVersion: 游戏版本
-    ///   - loaderVersion: 指定的加载器版本
-    ///   - gameInfo: 游戏信息
-    ///   - onProgressUpdate: 进度更新回调
-    /// - Returns: 设置结果，失败时返回 nil
     static func setupWithSpecificVersion(
         for gameVersion: String,
         loaderVersion: String,
@@ -68,14 +59,6 @@ enum ForgeLoaderService {
         }
     }
 
-    /// 设置指定版本的 Forge 加载器（抛出异常版本）
-    /// - Parameters:
-    ///   - gameVersion: 游戏版本
-    ///   - loaderVersion: 指定的加载器版本
-    ///   - gameInfo: 游戏信息
-    ///   - onProgressUpdate: 进度更新回调
-    /// - Returns: 设置结果
-    /// - Throws: GlobalError 当操作失败时
     static func setupWithSpecificVersionThrowing(
         for gameVersion: String,
         loaderVersion: String,
@@ -88,7 +71,6 @@ enum ForgeLoaderService {
         let librariesDirectory = AppPaths.librariesDirectory
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
 
-        // 预计算总任务数（下载 + 处理器），从一开始就使用统一的 total
         let totalDownloads = forgeProfile.libraries.filter { $0.downloads != nil }.count
         let totalProcessors = (forgeProfile.processors ?? []).filter {
             ($0.sides ?? [AppConstants.EnvironmentTypes.client]).contains(AppConstants.EnvironmentTypes.client)
@@ -97,10 +79,8 @@ enum ForgeLoaderService {
 
         fileManager.onProgressUpdate = { name, completed, _ in onProgressUpdate(name, completed, totalTasks) }
 
-        // 第一步：下载所有downloadable=true的库文件
         await fileManager.downloadForgeJars(libraries: forgeProfile.libraries)
 
-        // 第二步：执行processors（如果存在）
         if let processors = forgeProfile.processors, totalProcessors > 0 {
             try await fileManager.executeProcessors(
                 processors: processors,

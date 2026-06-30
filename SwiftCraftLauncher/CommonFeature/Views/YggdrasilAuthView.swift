@@ -1,5 +1,13 @@
+//
+//  YggdrasilAuthView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// A view for authenticating with Yggdrasil-compatible Minecraft servers.
 struct YggdrasilAuthView: View {
     @StateObject private var authService: YggdrasilAuthService
     @StateObject private var viewModel = YggdrasilAuthViewModel()

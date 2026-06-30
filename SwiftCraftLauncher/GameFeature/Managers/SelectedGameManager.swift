@@ -1,20 +1,25 @@
+//
+//  SelectedGameManager.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
-/// 选中游戏管理器
-/// 主视图与设置页共享当前选中的游戏 ID
+/// Shares the currently selected game ID between the main view and settings.
 class SelectedGameManager: ObservableObject {
-    // MARK: - 单例实例
     static let shared = SelectedGameManager()
 
-    /// 当前选中的游戏ID
+    /// The currently selected game identifier.
     @Published var selectedGameId: String? {
         didSet {
             objectWillChange.send()
         }
     }
 
-    /// 是否应该打开高级设置标签
+    /// Whether the advanced settings tab should be opened.
     @Published var shouldOpenAdvancedSettings: Bool = false {
         didSet {
             objectWillChange.send()
@@ -24,20 +29,20 @@ class SelectedGameManager: ObservableObject {
     private init() {
     }
 
-    /// 设置选中的游戏ID
-    /// - Parameter gameId: 游戏ID，如果为nil则清除选中状态
+    /// Sets the selected game.
+    /// - Parameter gameId: The game identifier, or `nil` to clear the selection.
     func setSelectedGame(_ gameId: String?) {
         selectedGameId = gameId
     }
 
-    /// 清除选中的游戏
+    /// Clears the current selection and resets the advanced settings flag.
     func clearSelection() {
         selectedGameId = nil
         shouldOpenAdvancedSettings = false
     }
 
-    /// 设置选中的游戏并标记应该打开高级设置
-    /// - Parameter gameId: 游戏ID
+    /// Sets the selected game and flags the advanced settings tab to open.
+    /// - Parameter gameId: The game identifier.
     func setSelectedGameAndOpenAdvancedSettings(_ gameId: String?) {
         selectedGameId = gameId
         shouldOpenAdvancedSettings = true

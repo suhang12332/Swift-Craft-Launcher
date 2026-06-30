@@ -1,8 +1,16 @@
+//
+//  MinecraftSkinUtils+Loading.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import AppKit
 
 extension MinecraftSkinUtils {
 
+    /// Loads skin data from the appropriate source based on the skin type.
     func loadData() async throws -> Data {
         switch type {
         case .asset:
@@ -14,6 +22,7 @@ extension MinecraftSkinUtils {
         }
     }
 
+    /// Loads skin data from the app's asset catalog.
     private func loadAssetData() async throws -> Data {
         guard let image = NSImage(named: src),
               let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
@@ -36,6 +45,7 @@ extension MinecraftSkinUtils {
         return data
     }
 
+    /// Loads skin data from a remote URL.
     private func loadURLData() async throws -> Data {
         guard let url = URL(string: src) else {
             throw GlobalError.validation(
@@ -71,6 +81,7 @@ extension MinecraftSkinUtils {
         }
     }
 
+    /// Loads skin data from a local file path.
     private func loadLocalData() async throws -> Data {
         let fileURL = URL(fileURLWithPath: src)
         return try Data(contentsOf: fileURL)

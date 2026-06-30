@@ -1,18 +1,18 @@
 //
 //  FilterChip.swift
-//  Launcher
+//  CommonFeature
 //
-//  Created by su on 2025/5/8.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
-// MARK: - Filter Chip
+/// A chip-style button for filtering options with optional icon and loading state.
 struct FilterChip: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
 
-    // 可选参数
     let iconName: String?
     let isLoading: Bool
     let customBackgroundColor: Color?

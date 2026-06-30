@@ -1,5 +1,13 @@
+//
+//  MinecraftLaunchCommandBuilder.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Builds the JVM launch command array for a Minecraft game session.
 enum MinecraftLaunchCommandBuilder {
     static func build(
         manifest: MinecraftVersionManifest,
@@ -28,10 +36,8 @@ enum MinecraftLaunchCommandBuilder {
         launcherBrand: String,
         launcherVersion: String
     ) throws -> [String] {
-        // 验证并获取路径
         let paths = try validateAndGetPaths(gameInfo: gameInfo, manifest: manifest)
 
-        // 构建 classpath
         let classpath = buildClasspath(
             manifest.libraries,
             librariesDir: paths.librariesDir,
@@ -40,7 +46,6 @@ enum MinecraftLaunchCommandBuilder {
             minecraftVersion: manifest.id
         )
 
-        // 变量映射
         let variableMap: [String: String] = [
             "auth_player_name": "${auth_player_name}",
             "version_name": gameInfo.gameVersion,
@@ -59,31 +64,25 @@ enum MinecraftLaunchCommandBuilder {
             "classpath": classpath,
         ]
 
-        // 优先解析 arguments 字段
         var jvmArgs = manifest.arguments.jvm?
             .map { substituteVariables($0, with: variableMap) } ?? []
         var gameArgs = manifest.arguments.game?
             .map { substituteVariables($0, with: variableMap) } ?? []
 
-        // 额外拼接 JVM 内存参数
         let xmsArg = "-Xms${xms}M"
         let xmxArg = "-Xmx${xmx}M"
         jvmArgs.insert(contentsOf: [xmsArg, xmxArg], at: 0)
 
-        // 添加 macOS 特定的 JVM 参数
         jvmArgs.insert("-XstartOnFirstThread", at: 0)
 
-        // 拼接 modJvm
         if !gameInfo.modJvm.isEmpty {
             jvmArgs.append(contentsOf: gameInfo.modJvm)
         }
 
-        // 拼接 gameInfo 的 gameArguments
         if !gameInfo.gameArguments.isEmpty {
             gameArgs.append(contentsOf: gameInfo.gameArguments)
         }
 
-        // 拼接参数
         let allArgs = jvmArgs + [gameInfo.mainClass] + gameArgs
         return allArgs
     }
@@ -100,7 +99,6 @@ enum MinecraftLaunchCommandBuilder {
         gameInfo: GameVersionInfo,
         manifest: MinecraftVersionManifest
     ) throws -> GamePaths {
-        // 验证客户端 JAR 文件
         let clientJarPath = AppPaths.versionsDirectory.appendingPathComponent(manifest.id).appendingPathComponent("\(manifest.id).jar").path
         let fileManager = FileManager.default
         guard fileManager.fileExists(atPath: clientJarPath) else {
@@ -121,16 +119,13 @@ enum MinecraftLaunchCommandBuilder {
     }
 
     private static func substituteVariables(_ arg: String, with map: [String: String]) -> String {
-        // 快速检查：如果字符串不包含任何占位符，直接返回
         guard arg.contains("${") else {
             return arg
         }
 
-        // 使用 NSMutableString 避免在循环中创建大量临时字符串
         let result = NSMutableString(string: arg)
         for (key, value) in map {
             let placeholder = "${\(key)}"
-            // 先检查是否包含占位符，避免不必要的替换操作
             if result.range(of: placeholder).location != NSNotFound {
                 result.replaceOccurrences(
                     of: placeholder,
@@ -146,12 +141,10 @@ enum MinecraftLaunchCommandBuilder {
     private static func buildClasspath(_ libraries: [Library], librariesDir: URL, clientJarPath: String, modClassPath: String, minecraftVersion: String) -> String {
         Logger.shared.debug("开始构建类路径 - 库数量: \(libraries.count), mod类路径: \(modClassPath.isEmpty ? "无" : "\(modClassPath.split(separator: ":").count)个路径")")
 
-        // 解析 mod 类路径并提取已存在的库路径
         let modClassPaths = parseModClassPath(modClassPath, librariesDir: librariesDir)
         let existingModBasePaths = extractBasePaths(from: modClassPaths, librariesDir: librariesDir)
         Logger.shared.debug("解析到 \(modClassPaths.count) 个 mod 类路径，\(existingModBasePaths.count) 个基础路径")
 
-        // 过滤并处理 manifest 库
         let manifestLibraryPaths = libraries
             .filter { shouldIncludeLibrary($0, minecraftVersion: minecraftVersion) }
             .compactMap { library in
@@ -161,7 +154,6 @@ enum MinecraftLaunchCommandBuilder {
 
         Logger.shared.debug("处理完成 - manifest库路径: \(manifestLibraryPaths.count)个")
 
-        // 构建最终的类路径并去重
         let allPaths = manifestLibraryPaths + [clientJarPath] + modClassPaths
         let uniquePaths = removeDuplicatePaths(allPaths)
         let classpath = uniquePaths.joined(separator: ":")
@@ -170,12 +162,10 @@ enum MinecraftLaunchCommandBuilder {
         return classpath
     }
 
-    /// 解析 mod 类路径字符串
     private static func parseModClassPath(_ modClassPath: String, librariesDir: URL) -> [String] {
         return modClassPath.split(separator: ":").map { String($0) }
     }
 
-    /// 移除重复的路径，保持原始顺序
     private static func removeDuplicatePaths(_ paths: [String]) -> [String] {
         var seen = Set<String>()
         return paths.filter { path in
@@ -192,7 +182,6 @@ enum MinecraftLaunchCommandBuilder {
         }
     }
 
-    /// 从路径列表中提取基础路径（用于去重）
     private static func extractBasePaths(from paths: [String], librariesDir: URL) -> Set<String> {
         let librariesDirPath = librariesDir.path.appending("/")
 
@@ -203,21 +192,17 @@ enum MinecraftLaunchCommandBuilder {
         })
     }
 
-    /// 从相对路径中提取基础路径（去掉最后两级目录）
     private static func extractBasePath(from relativePath: String) -> String? {
         let pathComponents = relativePath.split(separator: "/")
         guard pathComponents.count >= 2 else { return nil }
         return pathComponents.dropLast(2).joined(separator: "/")
     }
 
-    /// 处理单个库，返回其所有相关路径
     private static func processLibrary(_ library: Library, librariesDir: URL, existingModBasePaths: Set<String>, minecraftVersion: String) -> [String]? {
         let artifact = library.downloads.artifact
 
-        // 获取主库路径
         let libraryPath = getLibraryPath(artifact: artifact, libraryName: library.name, librariesDir: librariesDir)
 
-        // 检查是否与 mod 路径重复
         let relativePath = String(libraryPath.dropFirst(librariesDir.path.appending("/").count))
         guard let basePath = extractBasePath(from: relativePath) else { return nil }
 
@@ -227,7 +212,6 @@ enum MinecraftLaunchCommandBuilder {
         return [libraryPath]
     }
 
-    /// 获取库文件路径
     private static func getLibraryPath(artifact: LibraryArtifact, libraryName: String, librariesDir: URL) -> String {
         if let existingPath = artifact.path {
             return librariesDir.appendingPathComponent(existingPath).path
@@ -238,20 +222,15 @@ enum MinecraftLaunchCommandBuilder {
         }
     }
 
-    // 已废弃：classifiers 库不再添加到 classpath
     private static func getClassifierPaths(library: Library, librariesDir: URL, minecraftVersion: String) -> [String] {
-        // 不再将 classifiers 添加到 classpath 中
         return []
     }
 
-    /// 判断该库是否应该包含在类路径中
     private static func shouldIncludeLibrary(_ library: Library, minecraftVersion: String? = nil) -> Bool {
-        // 检查基本条件：可下载且包含在类路径中
         guard library.downloadable == true && library.includeInClasspath == true else {
             return false
         }
 
-        // 使用统一的库过滤逻辑
         return LibraryFilter.isLibraryAllowed(library, minecraftVersion: minecraftVersion)
     }
 }

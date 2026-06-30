@@ -1,8 +1,16 @@
+//
+//  MinecraftAuthService.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 import AuthenticationServices
 import os
 
+/// Handles Microsoft OAuth authentication for Minecraft accounts.
 class MinecraftAuthService: NSObject, ObservableObject {
     static let shared = MinecraftAuthService()
 

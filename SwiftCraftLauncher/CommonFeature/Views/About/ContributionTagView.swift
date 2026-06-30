@@ -1,12 +1,13 @@
 //
 //  ContributionTagView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// 贡献类型标签视图
+/// Displays a contribution type tag with color-coded styling.
 struct ContributionTagView: View {
     let contribution: Contribution
 

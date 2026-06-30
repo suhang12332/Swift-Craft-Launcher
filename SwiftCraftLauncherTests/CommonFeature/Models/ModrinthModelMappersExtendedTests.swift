@@ -1,10 +1,15 @@
+//
+//  ModrinthModelMappersExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 import CFModrinthAdapterKit
 
 final class ModrinthModelMappersExtendedTests: XCTestCase {
-
-    // MARK: - ModrinthProjectDetail.fromV3
 
     func testFromV3_basicMapping() {
         let v3 = makeV3(
@@ -244,8 +249,6 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         XCTAssertNil(detail.fileName)
     }
 
-    // MARK: - ModrinthProject.from(detail:) additional coverage
-
     func testFromDetail_displayCategories_nilAdditional() throws {
         let detail = makeDetail(
             id: "id",
@@ -295,8 +298,6 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
         let project = ModrinthProject.from(detail: detail)
         XCTAssertNil(project.fileName)
     }
-
-    // MARK: - Helpers
 
     // swiftlint:disable:next function_parameter_count
     private func makeV3(

@@ -1,3 +1,11 @@
+//
+//  JavaDownloadProgressWindow.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A window displaying Java runtime download progress and status.
 import SwiftUI
 
 struct JavaDownloadProgressWindow: View {
@@ -15,10 +23,8 @@ struct JavaDownloadProgressWindow: View {
     }
 
     var body: some View {
-        // 下载项列表
         VStack {
             if downloadState.hasError {
-                // 错误状态 要显示重试按钮
                 DownloadItemView(
                     icon: "exclamationmark.triangle.fill",
                     title: downloadState.version,
@@ -30,7 +36,6 @@ struct JavaDownloadProgressWindow: View {
                     downloadState: downloadState
                 )
             } else if downloadState.isDownloading {
-                // 下载中状态
                 DownloadItemView(
                     icon: "cup.and.saucer.fill",
                     title: downloadState.version,
@@ -42,7 +47,6 @@ struct JavaDownloadProgressWindow: View {
                     downloadState: downloadState
                 )
             } else {
-                // 没有下载任务时的空状态
                 VStack(spacing: 16) {
                     Image(systemName: "tray")
                         .font(.system(size: 24))
@@ -57,7 +61,6 @@ struct JavaDownloadProgressWindow: View {
         .padding()
         .frame(width: AuxiliaryWindowID.javaDownload.defaultSize.width, height: AuxiliaryWindowID.javaDownload.defaultSize.height)
         .onAppear {
-            // 设置窗口关闭回调
             javaDownloadManager.setDismissCallback {
                 dismiss()
             }
@@ -65,7 +68,7 @@ struct JavaDownloadProgressWindow: View {
     }
 }
 
-// 下载项视图
+/// A single download item row with icon, progress, and action button.
 struct DownloadItemView: View {
     let icon: String
     let title: String
@@ -76,14 +79,12 @@ struct DownloadItemView: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            // 图标
             ZStack {
                 Image(systemName: icon)
                     .font(.system(size: 24))
                     .foregroundColor(iconColor)
             }
 
-            // 内容
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(title)
@@ -95,7 +96,6 @@ struct DownloadItemView: View {
                         .foregroundColor(.secondary)
                 }
 
-                // 进度条和进度信息（仅在下载中时显示）
                 if case .downloading(let progress) = status {
                     VStack(alignment: .leading, spacing: 2) {
                         ProgressView(value: progress)
@@ -105,7 +105,6 @@ struct DownloadItemView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            // 操作按钮（取消/重试）
             Button(action: onCancel) {
                 Image(systemName: buttonIcon)
                     .foregroundColor(buttonColor)
@@ -140,27 +139,27 @@ struct DownloadItemView: View {
     private var buttonIcon: String {
         switch status {
         case .downloading:
-            return "xmark.circle.fill"  // 取消图标
+            return "xmark.circle.fill"
         case .error:
-            return "arrow.clockwise.circle.fill"  // 重试图标
+            return "arrow.clockwise.circle.fill"
         case .completed, .cancelled:
-            return "xmark.circle.fill"  // 默认关闭图标
+            return "xmark.circle.fill"
         }
     }
 
     private var buttonColor: Color {
         switch status {
         case .downloading:
-            return .secondary  // 取消按钮用次要颜色
+            return .secondary
         case .error:
-            return .blue  // 重试按钮用蓝色
+            return .blue
         case .completed, .cancelled:
-            return .secondary  // 默认次要颜色
+            return .secondary
         }
     }
 }
 
-// 下载状态枚举
+/// Represents the current state of a download operation.
 enum DownloadStatus {
     case downloading(progress: Double)
     case completed

@@ -1,3 +1,11 @@
+//
+//  DependencySheetView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A sheet view for managing and downloading resource dependencies.
 import SwiftUI
 
 struct DependencySheetView: View {

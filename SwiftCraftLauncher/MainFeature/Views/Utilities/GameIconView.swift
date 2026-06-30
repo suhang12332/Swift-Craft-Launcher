@@ -1,6 +1,14 @@
+//
+//  GameIconView.swift
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Displays a game's icon with automatic cache-busting on refresh.
+
 import SwiftUI
 
-/// 游戏图标视图组件，支持图标刷新
 struct GameIconView: View {
     let game: GameVersionInfo
     let refreshTrigger: UUID
@@ -18,7 +26,7 @@ struct GameIconView: View {
         return url
     }
 
-    /// 获取图标URL（添加刷新触发器作为查询参数，强制AsyncImage重新加载）
+    /// The icon URL with a cache-busting query parameter derived from `refreshTrigger`.
     private var iconURL: URL {
         guard let baseURL = iconFileURL else { return profileDir }
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)

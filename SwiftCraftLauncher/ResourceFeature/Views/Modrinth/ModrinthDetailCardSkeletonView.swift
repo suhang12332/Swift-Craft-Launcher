@@ -1,11 +1,13 @@
 //
 //  ModrinthDetailCardSkeletonView.swift
-//  SwiftCraftLauncher
+//  ResourceFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
-// MARK: - Mod List Card Skeleton
+/// A skeleton placeholder for loading Modrinth list cards.
 struct ModrinthDetailCardSkeletonView: View {
     var body: some View {
         ModrinthDetailCardLayout(
@@ -68,7 +70,6 @@ struct SkeletonTag: Identifiable {
     let id = UUID()
     let text: String
 }
-// MARK: - Skeleton Placeholder Copy
 private extension ModrinthDetailCardSkeletonView {
     var skeletonDescription: String {
         placeholder(lengthRange: 50...90)
@@ -90,7 +91,7 @@ private extension ModrinthDetailCardSkeletonView {
     var skeletonFollows: String { placeholder(lengthRange: 3...7) }
 }
 
-// MARK: - Mod List Skeleton Rows
+/// A list of skeleton rows for loading state.
 struct ModrinthDetailListSkeletonRows: View {
     let count: Int
 

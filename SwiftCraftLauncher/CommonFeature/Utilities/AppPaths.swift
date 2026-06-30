@@ -1,14 +1,19 @@
+//
+//  AppPaths.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides file system paths used throughout the application.
 enum AppPaths {
     static var launcherSupportDirectory: URL {
-    // guard let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
-    //     return nil
-    // }
         .applicationSupportDirectory.appendingPathComponent(Bundle.main.appName)
     }
 
-    /// 认证相关文件根目录（Application Support/.../auth）
+    /// The root directory for authentication-related files.
     static var authDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.auth, isDirectory: true)
     }
@@ -17,7 +22,7 @@ enum AppPaths {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.runtime)
     }
 
-    /// 指定版本的 Java 可执行文件路径（runtime 目录下的 jre.bundle）
+    /// Returns the path to the Java executable for a given runtime version.
     static func javaExecutablePath(version: String) -> String {
         runtimeDirectory.appendingPathComponent(version).appendingPathComponent("jre.bundle/Contents/Home/bin/java").path
     }
@@ -49,7 +54,7 @@ enum AppPaths {
         profileRootDirectory.appendingPathComponent(gameName)
     }
 
-    /// 某个游戏实例的 options.txt 路径
+    /// Returns the path to a game instance's `options.txt` file.
     static func optionsFile(gameName: String) -> URL {
         profileDirectory(gameName: gameName).appendingPathComponent(AppConstants.DirectoryNames.option)
     }
@@ -82,13 +87,12 @@ enum AppPaths {
         AppConstants.DirectoryNames.crashReports,
     ]
 
-    /// 日志文件目录 - 使用系统标准日志目录，失败时回退到应用支持目录
+    /// The application logs directory, preferring the system standard location.
     static var logsDirectory: URL {
         if let libraryDirectory = FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first {
             return libraryDirectory.appendingPathComponent("Logs", isDirectory: true)
                 .appendingPathComponent(Bundle.main.appName, isDirectory: true)
         }
-        // 备用方案：使用应用支持目录下的 logs 子目录
         return launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.logs, isDirectory: true)
     }
 }
@@ -104,9 +108,9 @@ extension AppPaths {
         }
     }
 
-    /// 根据本地文件所在目录名推断资源类型（mod / shader / resourcepack / datapack）
-    /// - Parameter fileURL: 本地资源文件路径
-    /// - Returns: 资源类型字符串，或 nil 表示无法推断
+    /// Infers the resource type from the file's parent directory name.
+    /// - Parameter fileURL: The URL of the local resource file.
+    /// - Returns: A resource type string, or `nil` if the type cannot be determined.
     static func resourceType(for fileURL: URL) -> String? {
         let parentDirName = fileURL.deletingLastPathComponent().lastPathComponent.lowercased()
 
@@ -123,7 +127,8 @@ extension AppPaths {
             return nil
         }
     }
-    /// 全局缓存文件路径 - 使用系统标准缓存目录，异常时回退到应用支持目录下的 Cache
+
+    /// The application cache directory, preferring the system standard location.
     static var appCache: URL {
         if let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
             return cachesDirectory.appendingPathComponent(Bundle.main.identifier)
@@ -132,17 +137,17 @@ extension AppPaths {
         return launcherSupportDirectory.appendingPathComponent("Cache", isDirectory: true)
     }
 
-    /// 数据目录路径
+    /// The data directory for application-specific storage.
     static var dataDirectory: URL {
         launcherSupportDirectory.appendingPathComponent(AppConstants.DirectoryNames.data, isDirectory: true)
     }
 
-    /// 本地皮肤库存储目录
+    /// The directory for storing local skin library files.
     static var skinsDirectory: URL {
         dataDirectory.appendingPathComponent("skins", isDirectory: true)
     }
 
-    /// 游戏版本数据库路径
+    /// The path to the game version database file.
     static var gameVersionDatabase: URL {
         dataDirectory.appendingPathComponent("data.db")
     }

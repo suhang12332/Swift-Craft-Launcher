@@ -1,5 +1,13 @@
+//
+//  AppCacheManager.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides thread-safe JSON-based caching organized by namespaces.
 class AppCacheManager {
     static let shared = AppCacheManager()
     private let queue = DispatchQueue(label: "AppCacheManager.queue")
@@ -24,13 +32,12 @@ class AppCacheManager {
         return AppPaths.appCache.appendingPathComponent("\(namespace).json")
     }
 
-    // MARK: - Public API
-
+    /// Stores a codable value in the specified namespace.
     /// - Parameters:
-    ///   - namespace: 命名空间
-    ///   - key: 键
-    ///   - value: 值
-    /// - Throws: GlobalError 当操作失败时
+    ///   - namespace: The cache namespace.
+    ///   - key: The cache key.
+    ///   - value: The value to store.
+    /// - Throws: A `GlobalError` when encoding or persistence fails.
     func set<T: Codable>(namespace: String, key: String, value: T) throws {
         try queue.sync {
             var nsDict = try loadNamespace(namespace)
@@ -49,10 +56,11 @@ class AppCacheManager {
         }
     }
 
+    /// Stores a codable value silently, reporting errors to the error handler instead of throwing.
     /// - Parameters:
-    ///   - namespace: 命名空间
-    ///   - key: 键
-    ///   - value: 值
+    ///   - namespace: The cache namespace.
+    ///   - key: The cache key.
+    ///   - value: The value to store.
     func setSilently<T: Codable>(namespace: String, key: String, value: T) {
         do {
             try set(namespace: namespace, key: key, value: value)
@@ -61,12 +69,12 @@ class AppCacheManager {
         }
     }
 
-    /// 获取缓存值
+    /// Retrieves a cached value for the given key and namespace.
     /// - Parameters:
-    ///   - namespace: 命名空间
-    ///   - key: 键
-    ///   - type: 期望的类型
-    /// - Returns: 解码后的值，如果不存在或解码失败则返回 nil
+    ///   - namespace: The cache namespace.
+    ///   - key: The cache key.
+    ///   - type: The expected value type.
+    /// - Returns: The decoded value, or `nil` if not found or decoding fails.
     func get<T: Codable>(namespace: String, key: String, as type: T.Type) -> T? {
         return queue.sync {
             do {
@@ -90,12 +98,6 @@ class AppCacheManager {
         }
     }
 
-    // MARK: - Persistence
-
-    /// 加载命名空间数据
-    /// - Parameter namespace: 命名空间
-    /// - Returns: 命名空间数据字典
-    /// - Throws: GlobalError 当操作失败时
     private func loadNamespace(_ namespace: String) throws -> [String: Data] {
         let url = try fileURL(for: namespace)
 
@@ -115,11 +117,6 @@ class AppCacheManager {
         }
     }
 
-    /// 保存命名空间数据
-    /// - Parameters:
-    ///   - namespace: 命名空间
-    ///   - dict: 要保存的数据字典
-    /// - Throws: GlobalError 当操作失败时
     private func saveNamespace(_ namespace: String, dict: [String: Data]) throws {
         let url = try fileURL(for: namespace)
 

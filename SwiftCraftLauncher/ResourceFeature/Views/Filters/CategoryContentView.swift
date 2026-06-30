@@ -1,14 +1,14 @@
-//  CategoryContent.swift
-//  Launcher
 //
-//  Created by su on 2025/5/8.
+//  CategoryContentView.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-// MARK: - CategoryContent
+/// Displays category filter sections for a given project type.
 struct CategoryContentView: View {
-    // MARK: - Properties
     let project: String
     @StateObject private var viewModel: CategoryContentViewModel
     @Binding var selectedCategories: [String]
@@ -23,7 +23,6 @@ struct CategoryContentView: View {
     let dataSource: DataSource
     private let errorHandler: GlobalErrorHandler
 
-    // MARK: - Initialization
     init(
         project: String,
         type: String,
@@ -55,7 +54,6 @@ struct CategoryContentView: View {
         )
     }
 
-    // MARK: - Body
     var body: some View {
         VStack {
             if let error = viewModel.error {
@@ -79,7 +77,6 @@ struct CategoryContentView: View {
         }
     }
 
-    // MARK: - Setup Methods
     private func setupDefaultSelections() {
         if let gameVersion = gameVersion {
             selectedVersions = [gameVersion]
@@ -93,7 +90,6 @@ struct CategoryContentView: View {
         }
     }
 
-    // MARK: - Error Handling
     private func loadDataWithErrorHandling() async {
         do {
             try await loadDataThrowing()
@@ -119,7 +115,6 @@ struct CategoryContentView: View {
         await viewModel.loadData()
     }
 
-    // MARK: - Section Views
     private var categorySection: some View {
         CategorySectionView(
             title: "filter.category",
@@ -213,7 +208,7 @@ struct CategoryContentView: View {
     private var shaderSections: some View {
 
         Group {
-            // CurseForge 数据源不支持性能要求筛选，在 CF 标签下不显示该部分
+            // CurseForge does not support performance impact filtering.
             if dataSource == .modrinth {
                 CategorySectionView(
                     title: "filter.behavior",
@@ -235,7 +230,6 @@ struct CategoryContentView: View {
         }
     }
 
-    // MARK: - Minecraft Server Specific Sections
     private var serverMetaSection: some View {
         CategorySectionView(
             title: "filter.server.meta",

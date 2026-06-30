@@ -1,8 +1,14 @@
+//
+//  GameLoader.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// Minecraft 游戏加载器（Mod Loader）
+/// A Minecraft mod loader type.
 enum GameLoader: String, CaseIterable, Identifiable, Codable, Sendable {
-    /// 原版（Vanilla）
     case vanilla
     case fabric
     case forge
@@ -11,7 +17,7 @@ enum GameLoader: String, CaseIterable, Identifiable, Codable, Sendable {
 
     var id: String { rawValue }
 
-    /// UI 显示用名称（包含“原版”）
+    /// The display name shown in the UI.
     var displayName: String {
         switch self {
         case .vanilla: "vanilla"

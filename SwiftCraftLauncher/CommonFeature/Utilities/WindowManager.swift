@@ -1,10 +1,11 @@
 //
 //  WindowManager.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/1/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// Manages application window lifecycle, activation, and front-to-back ordering.
 import SwiftUI
 import AppKit
 
@@ -28,6 +29,7 @@ class WindowManager {
         NSApplication.shared.windows.first { $0.identifier?.rawValue == identifier }
     }
 
+    /// Opens the specified auxiliary window, or brings it to front if already open.
     func openWindow(id: AuxiliaryWindowID) {
         if let existingWindow = findWindow(id: id) {
             bringWindowToFront(existingWindow)
@@ -45,6 +47,7 @@ class WindowManager {
         }
     }
 
+    /// Opens the specified auxiliary window and activates the application.
     func showAndActivateWindow(id: AuxiliaryWindowID) {
         openWindow(id: id)
         NSApplication.shared.activate(ignoringOtherApps: true)
@@ -55,6 +58,7 @@ class WindowManager {
         }
     }
 
+    /// Activates the application and brings the main window to front.
     func showAndActivateMainWindow() {
         NSApplication.shared.activate(ignoringOtherApps: true)
         if let window = findWindow(identifier: AppWindowID.main.rawValue) {
@@ -77,6 +81,7 @@ class WindowManager {
         window.makeKeyAndOrderFront(nil)
     }
 
+    /// Closes the specified auxiliary window.
     func closeWindow(id: AuxiliaryWindowID) {
         if let window = findWindow(id: id) {
             window.close()

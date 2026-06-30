@@ -1,9 +1,14 @@
+//
+//  CurseForgeModelsAppExtensionsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class CurseForgeModelsAppExtensionsTests: XCTestCase {
-
-    // MARK: - ResourceType.overridesSubdirectory
 
     func testResourceType_overridesSubdirectory_mod() {
         XCTAssertEqual(ResourceType.mod.overridesSubdirectory, "mods")

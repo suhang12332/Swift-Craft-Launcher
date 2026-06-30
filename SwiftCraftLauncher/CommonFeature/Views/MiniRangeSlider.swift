@@ -1,8 +1,8 @@
 //
 //  MiniRangeSlider.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/8/11.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
@@ -192,6 +192,7 @@ private extension NSRect {
     }
 }
 
+/// An NSSlider subclass that supports a continuous range selection.
 final class RangeNSSlider: NSSlider {
     private let rangeCell = RangeSliderCell()
 
@@ -229,6 +230,7 @@ final class RangeNSSlider: NSSlider {
     }
 }
 
+/// A SwiftUI view that provides a compact range slider.
 struct MiniRangeSlider: NSViewRepresentable {
     @Binding var range: ClosedRange<Double>
     var bounds: ClosedRange<Double>

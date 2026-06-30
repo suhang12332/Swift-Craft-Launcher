@@ -1,5 +1,13 @@
+//
+//  MinecraftAuthService+TokenRefresh.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Handles Minecraft token validation and refresh operations.
 extension MinecraftAuthService {
 
     @MainActor

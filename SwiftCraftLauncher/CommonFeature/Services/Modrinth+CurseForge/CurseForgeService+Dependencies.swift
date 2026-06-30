@@ -1,16 +1,23 @@
+//
+//  CurseForgeService+Dependencies.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides dependency resolution for CurseForge projects.
 extension CurseForgeService {
-    // MARK: - Dependency Methods
 
-    /// 获取项目依赖（映射为 Modrinth 格式，静默版本）
+    /// Fetches project dependencies mapped to Modrinth format.
     /// - Parameters:
-    ///   - type: 项目类型
-    ///   - cachePath: 缓存路径
-    ///   - id: 项目 ID
-    ///   - selectedVersions: 选中的版本
-    ///   - selectedLoaders: 选中的加载器
-    /// - Returns: 项目依赖，失败时返回空依赖
+    ///   - type: The project type (e.g., "mod", "resourcepack").
+    ///   - cachePath: The local cache directory path.
+    ///   - id: The CurseForge project identifier.
+    ///   - selectedVersions: The selected game versions.
+    ///   - selectedLoaders: The selected mod loader types.
+    /// - Returns: The project dependencies, or empty dependencies on failure.
     static func fetchProjectDependenciesAsModrinth(
         type: String,
         cachePath: URL,
@@ -34,15 +41,15 @@ extension CurseForgeService {
         }
     }
 
-    /// 获取项目依赖（映射为 Modrinth 格式，抛出异常版本）
+    /// Fetches project dependencies mapped to Modrinth format, throwing on failure.
     /// - Parameters:
-    ///   - type: 项目类型
-    ///   - cachePath: 缓存路径
-    ///   - id: 项目 ID
-    ///   - selectedVersions: 选中的版本
-    ///   - selectedLoaders: 选中的加载器
-    /// - Returns: 项目依赖
-    /// - Throws: GlobalError 当操作失败时
+    ///   - type: The project type (e.g., "mod", "resourcepack").
+    ///   - cachePath: The local cache directory path.
+    ///   - id: The CurseForge project identifier.
+    ///   - selectedVersions: The selected game versions.
+    ///   - selectedLoaders: The selected mod loader types.
+    /// - Returns: The project dependencies.
+    /// - Throws: A `GlobalError` if the request fails.
     static func fetchProjectDependenciesThrowingAsModrinth(
         type: String,
         cachePath: URL,
@@ -50,7 +57,6 @@ extension CurseForgeService {
         selectedVersions: [String],
         selectedLoaders: [String]
     ) async throws -> ModrinthProjectDependency {
-        // 1. 获取所有筛选后的版本
         let versions = try await fetchProjectVersionsFilterAsModrinth(
             id: id,
             selectedVersions: selectedVersions,
@@ -58,17 +64,14 @@ extension CurseForgeService {
             type: type
         )
 
-        // 只取第一个版本
         guard let firstVersion = versions.first else {
             return ModrinthProjectDependency(projects: [])
         }
 
-        // 2. 并发获取所有依赖项目的兼容版本（使用批处理限制并发数量）
         let requiredDeps = firstVersion.dependencies.filter { $0.dependencyType == "required" && $0.projectId != nil }
-        let maxConcurrentTasks = 20 // 限制最大并发任务数
+        let maxConcurrentTasks = 20
         var allDependencyVersions: [ModrinthProjectDetailVersion] = []
 
-        // 分批处理依赖，每批最多 maxConcurrentTasks 个
         var currentIndex = 0
         while currentIndex < requiredDeps.count {
             let endIndex = min(currentIndex + maxConcurrentTasks, requiredDeps.count)
@@ -82,7 +85,6 @@ extension CurseForgeService {
                         do {
                             let depVersion: ModrinthProjectDetailVersion
 
-                            // 规范化 projectId：如果是纯数字，添加 "cf-" 前缀（CurseForge 依赖通常是纯数字）
                             let normalizedProjectId: String
                             if !projectId.hasPrefix("cf-") && Int(projectId) != nil {
                                 normalizedProjectId = "cf-\(projectId)"
@@ -91,11 +93,8 @@ extension CurseForgeService {
                             }
 
                             if let versionId = dep.versionId {
-                                // 如果有 versionId，需要检查是否是 CurseForge 版本
                                 if versionId.hasPrefix("cf-") {
-                                    // CurseForge 版本，需要从文件 ID 获取
                                     let fileId = Int(versionId.replacingOccurrences(of: "cf-", with: "")) ?? 0
-                                    // 需要从 projectId 获取 modId
                                     let (modId, _) = try parseCurseForgeId(normalizedProjectId)
                                     let cfFile = try await fetchFileDetailThrowing(projectId: modId, fileId: fileId)
                                     guard let convertedVersion = CFToModrinthAdapter.convertFile(cfFile, projectId: normalizedProjectId) else {
@@ -103,14 +102,10 @@ extension CurseForgeService {
                                     }
                                     depVersion = convertedVersion
                                 } else {
-                                    // Modrinth 版本，使用 ModrinthService
                                     depVersion = try await ModrinthService.fetchProjectVersionThrowing(id: versionId)
                                 }
                             } else {
-                                // 如果没有 versionId，使用过滤逻辑获取兼容版本
-                                // 检查是否是 CurseForge 项目
                                 if normalizedProjectId.hasPrefix("cf-") {
-                                    // CurseForge 项目
                                     let depVersions = try await fetchProjectVersionsFilterAsModrinth(
                                         id: normalizedProjectId,
                                         selectedVersions: selectedVersions,
@@ -122,7 +117,6 @@ extension CurseForgeService {
                                     }
                                     depVersion = firstDepVersion
                                 } else {
-                                    // Modrinth 项目
                                     let depVersions = try await ModrinthService.fetchProjectVersionsFilter(
                                         id: normalizedProjectId,
                                         selectedVersions: selectedVersions,
@@ -158,7 +152,6 @@ extension CurseForgeService {
             allDependencyVersions.append(contentsOf: batchResults)
         }
 
-        // 3. 使用统一的哈希检测逻辑，基于「所有兼容版本」判断依赖是否已安装
         var missingDependencyVersions: [ModrinthProjectDetailVersion] = []
 
         for version in allDependencyVersions {

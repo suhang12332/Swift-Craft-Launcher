@@ -1,12 +1,19 @@
+//
+//  GlobalResourceSheet.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-// MARK: - 主资源添加 Sheet
+/// A sheet for adding or downloading a project resource with version and dependency selection.
 struct GlobalResourceSheet: View {
     let project: ModrinthProject
     let resourceType: String
     @Binding var isPresented: Bool
-    let preloadedDetail: ModrinthProjectDetail?  // 预加载的项目详情
-    let preloadedCompatibleGames: [GameVersionInfo]  // 预检测的兼容游戏列表
+    let preloadedDetail: ModrinthProjectDetail?
+    let preloadedCompatibleGames: [GameVersionInfo]
     @EnvironmentObject private var gameRepository: GameRepository
     @State private var selectedGame: GameVersionInfo?
     @State private var selectedVersion: ModrinthProjectDetailVersion?
@@ -33,7 +40,7 @@ struct GlobalResourceSheet: View {
         self.errorHandler = errorHandler
     }
 
-    /// Sheet 标题（根据资源类型与是否选中游戏动态变化）
+    /// Sheet title that changes based on resource type and game selection.
     private var headerTitle: String {
         let isServer = resourceType == ResourceType.minecraftJavaServer.rawValue
         let baseKey = isServer ? "saveinfo.server.add" : "global_resource.add"
@@ -158,7 +165,7 @@ struct GlobalResourceSheet: View {
             )
         }
 
-        // 获取缺失的依赖项（包含版本信息）
+        // Fetch missing dependencies with version information.
         let missingWithVersions =
             await ModrinthDependencyDownloader
             .getMissingDependenciesWithVersions(

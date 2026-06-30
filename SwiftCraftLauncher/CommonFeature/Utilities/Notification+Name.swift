@@ -1,19 +1,22 @@
+//
+//  Notification+Name.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 项目内统一管理 Notification.Name 的扩展
+/// Centralized notification name definitions for the application.
 extension Notification.Name {
-    // MARK: - 玩家相关
     static let playerUpdated = Notification.Name("SwiftCraftLauncher.PlayerUpdated")
 
-    /// Minecraft 账号好友偏好（好友列表开关等）已在服务端更新；用于使后台 Presence 轮询重新拉取偏好。
+    /// Posted when the Minecraft friends account preferences are updated on the server.
     static let minecraftFriendsAccountPreferencesDidChange = Notification.Name("SwiftCraftLauncher.MinecraftFriendsAccountPreferencesDidChange")
 
-    // MARK: - 游戏运行相关
     static let gameCrashed = Notification.Name("SwiftCraftLauncher.GameCrashed")
 
-    // MARK: - 资源相关
     static let localResourceImported = Notification.Name("SwiftCraftLauncher.LocalResourceImported")
 
-    // MARK: - 窗口管理相关
     static let openWindow = Notification.Name("SwiftCraftLauncher.OpenWindow")
 }

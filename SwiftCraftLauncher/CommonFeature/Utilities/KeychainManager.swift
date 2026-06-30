@@ -1,20 +1,23 @@
+//
+//  KeychainManager.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import Security
 
-/// Keychain 管理工具类，用于安全存储敏感信息
+/// Manages secure storage of sensitive data in the system Keychain.
 enum KeychainManager {
-    // MARK: - Constants
-
     private static let service = Bundle.main.identifier
 
-    // MARK: - Public Methods
-
-    /// 保存数据到 Keychain
+    /// Stores data in the Keychain.
     /// - Parameters:
-    ///   - data: 要保存的数据
-    ///   - account: 账户标识符（通常是用户ID）
-    ///   - key: 键名
-    /// - Returns: 是否保存成功
+    ///   - data: The data to store.
+    ///   - account: The account identifier.
+    ///   - key: The key name.
+    /// - Returns: `true` if the operation succeeded.
     static func save(data: Data, account: String, key: String) -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -23,10 +26,8 @@ enum KeychainManager {
             kSecValueData as String: data,
         ]
 
-        // 先删除已存在的项
         SecItemDelete(query as CFDictionary)
 
-        // 添加新项
         let status = SecItemAdd(query as CFDictionary, nil)
 
         if status == errSecSuccess {
@@ -38,11 +39,11 @@ enum KeychainManager {
         }
     }
 
-    /// 从 Keychain 读取数据
+    /// Retrieves data from the Keychain.
     /// - Parameters:
-    ///   - account: 账户标识符（通常是用户ID）
-    ///   - key: 键名
-    /// - Returns: 读取的数据，如果不存在或读取失败则返回 nil
+    ///   - account: The account identifier.
+    ///   - key: The key name.
+    /// - Returns: The stored data, or `nil` if not found or the read fails.
     static func load(account: String, key: String) -> Data? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -71,11 +72,11 @@ enum KeychainManager {
         }
     }
 
-    /// 从 Keychain 删除数据
+    /// Deletes a single item from the Keychain.
     /// - Parameters:
-    ///   - account: 账户标识符（通常是用户ID）
-    ///   - key: 键名
-    /// - Returns: 是否删除成功
+    ///   - account: The account identifier.
+    ///   - key: The key name.
+    /// - Returns: `true` if the deletion succeeded or the item did not exist.
     static func delete(account: String, key: String) -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -94,10 +95,10 @@ enum KeychainManager {
         }
     }
 
-    /// 删除账户的所有 Keychain 数据
-    /// 保存时使用 kSecAttrAccount = "\(account).\(key)"，此处需先查出该 account 前缀的所有项再逐条删除
-    /// - Parameter account: 账户标识符（通常是用户ID）
-    /// - Returns: 是否全部删除成功
+    /// Deletes all Keychain items for the specified account.
+    /// Queries all items and removes those whose account attribute starts with the given prefix.
+    /// - Parameter account: The account identifier.
+    /// - Returns: `true` if all deletions succeeded.
     static func deleteAll(account: String) -> Bool {
         let accountPrefix = "\(account)."
         let query: [String: Any] = [

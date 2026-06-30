@@ -1,16 +1,19 @@
+//
+//  ModPackExportFormatTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModPackExportFormatTests: XCTestCase {
 
-    // MARK: - rawValues
-
     func testRawValues() {
         XCTAssertEqual(ModPackExportFormat.modrinth.rawValue, "modrinth")
         XCTAssertEqual(ModPackExportFormat.curseforge.rawValue, "curseforge")
     }
-
-    // MARK: - allCases
 
     func testAllCases_count() {
         XCTAssertEqual(ModPackExportFormat.allCases.count, 2)
@@ -21,8 +24,6 @@ final class ModPackExportFormatTests: XCTestCase {
         XCTAssertTrue(ModPackExportFormat.allCases.contains(.curseforge))
     }
 
-    // MARK: - displayName
-
     func testDisplayName_modrinth() {
         XCTAssertEqual(ModPackExportFormat.modrinth.displayName, "Modrinth (.mrpack)")
     }
@@ -30,8 +31,6 @@ final class ModPackExportFormatTests: XCTestCase {
     func testDisplayName_curseforge() {
         XCTAssertEqual(ModPackExportFormat.curseforge.displayName, "CurseForge (.zip)")
     }
-
-    // MARK: - fileExtension
 
     func testFileExtension_modrinth() {
         XCTAssertFalse(ModPackExportFormat.modrinth.fileExtension.isEmpty)
@@ -47,8 +46,6 @@ final class ModPackExportFormatTests: XCTestCase {
             ModPackExportFormat.curseforge.fileExtension
         )
     }
-
-    // MARK: - Codable
 
     func testCodable_roundTrip() throws {
         let enc = JSONEncoder()

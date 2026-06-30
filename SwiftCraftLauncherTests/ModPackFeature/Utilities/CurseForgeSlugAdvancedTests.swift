@@ -1,9 +1,14 @@
+//
+//  CurseForgeSlugAdvancedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class CurseForgeSlugAdvancedTests: XCTestCase {
-
-    // MARK: - toSlug comprehensive edge cases
 
     func testToSlug_allAllowedSpecialChars() {
         let result = CurseForgeSlugHelper.toSlug("!@#$%^&*()")
@@ -69,8 +74,6 @@ final class CurseForgeSlugAdvancedTests: XCTestCase {
         let result = CurseForgeSlugHelper.toSlug("a###b")
         XCTAssertEqual(result, "a-b")
     }
-
-    // MARK: - isValid comprehensive
 
     func testIsValid_onlyAllowedChars() {
         XCTAssertTrue(CurseForgeSlugHelper.isValid("test_name"))

@@ -1,6 +1,14 @@
+//
+//  ServerAddressEditActionViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
+/// View model for editing server addresses, managing save and delete operations with error handling.
 @MainActor
 final class ServerAddressEditActionViewModel: ObservableObject {
     @Published var isSaving: Bool = false

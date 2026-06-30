@@ -1,5 +1,13 @@
+//
+//  AcknowledgementsView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Displays open-source library acknowledgements.
 public struct AcknowledgementsView: View {
     @StateObject private var viewModel = AcknowledgementsViewModel()
     private let avatarSize: CGFloat = 40
@@ -26,7 +34,6 @@ public struct AcknowledgementsView: View {
         }
     }
 
-    // MARK: - Loading View
     private var loadingView: some View {
         VStack(spacing: 12) {
             ProgressView().controlSize(.small)
@@ -34,7 +41,6 @@ public struct AcknowledgementsView: View {
         .frame(maxWidth: .infinity, minHeight: 100)
     }
 
-    // MARK: - Libraries Content
     @ViewBuilder private var librariesContent: some View {
         if viewModel.loadFailed {
             errorView
@@ -43,7 +49,6 @@ public struct AcknowledgementsView: View {
         }
     }
 
-    // MARK: - Libraries List
     private var librariesList: some View {
         VStack(spacing: 0) {
             ForEach(viewModel.libraries) { library in
@@ -57,7 +62,6 @@ public struct AcknowledgementsView: View {
         }
     }
 
-    // MARK: - Library Row
     private func libraryRow(_ library: OpenSourceLibrary) -> some View {
         Group {
             if let url = URL(string: library.url) {
@@ -70,7 +74,6 @@ public struct AcknowledgementsView: View {
         }
     }
 
-    // MARK: - Library Row Content
     private func libraryRowContent(_ library: OpenSourceLibrary) -> some View {
         HStack(spacing: 12) {
             libraryAvatar(library)
@@ -96,7 +99,6 @@ public struct AcknowledgementsView: View {
         .contentShape(Rectangle())
     }
 
-    // MARK: - Library Avatar
     @ViewBuilder
     private func libraryAvatar(_ library: OpenSourceLibrary) -> some View {
         if let avatarURL = library.avatar,
@@ -146,7 +148,6 @@ public struct AcknowledgementsView: View {
             }
     }
 
-    // MARK: - Error View
     private var errorView: some View {
         VStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")

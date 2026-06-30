@@ -1,8 +1,16 @@
+//
+//  SkinToolDetailView.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
 import SkinRenderKit
 
+/// A sheet for managing the current player's skin and cape.
 struct SkinToolDetailView: View {
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @Environment(\.dismiss)
@@ -47,13 +55,11 @@ struct SkinToolDetailView: View {
         }
     }
 
-    // MARK: - Header
     private var headerView: some View {
         Text("skin.manager".localized()).font(.headline)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    // MARK: - Body
     private var bodyContentView: some View {
         VStack(spacing: 24) {
             PlayerInfoSectionView(
@@ -99,7 +105,6 @@ struct SkinToolDetailView: View {
         }
     }
 
-    // MARK: - Footer
     private var footerView: some View {
         HStack {
             Button("skin.cancel".localized()) { dismiss() }.keyboardShortcut(.cancelAction)

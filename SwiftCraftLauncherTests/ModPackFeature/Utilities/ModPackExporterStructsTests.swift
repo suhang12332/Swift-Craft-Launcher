@@ -1,9 +1,14 @@
+//
+//  ModPackExporterStructsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModPackExporterStructsTests: XCTestCase {
-
-    // MARK: - ExportResult
 
     func testExportResult_success() {
         let url = URL(fileURLWithPath: "/tmp/test.mrpack")
@@ -34,8 +39,6 @@ final class ModPackExporterStructsTests: XCTestCase {
         XCTAssertNotNil(result.error)
         XCTAssertEqual(result.message, "Failed")
     }
-
-    // MARK: - ExportProgress
 
     func testExportProgress_defaultValues() {
         let progress = ModPackExporter.ExportProgress()
@@ -79,8 +82,6 @@ final class ModPackExporterStructsTests: XCTestCase {
         XCTAssertEqual(progress.copyProgress?.progress, 1.0)
     }
 
-    // MARK: - CurseForgeModListItem
-
     func testCurseForgeModListItem_init() {
         let item = ModPackExporter.CurseForgeModListItem(
             projectID: 123,
@@ -109,8 +110,6 @@ final class ModPackExporterStructsTests: XCTestCase {
         XCTAssertNil(item.projectName)
         XCTAssertNil(item.authorsText)
     }
-
-    // MARK: - resolveSelectedFiles
 
     func testResolveSelectedFiles_emptyInput() {
         let result = ModPackExporter.resolveSelectedFiles(from: [])
@@ -145,8 +144,6 @@ final class ModPackExporterStructsTests: XCTestCase {
         let result = ModPackExporter.resolveSelectedFiles(from: [tempDir])
         XCTAssertEqual(result.count, 2)
     }
-
-    // MARK: - ExportProgress.ProgressItem
 
     func testProgressItem_allProperties() {
         let item = ModPackExporter.ExportProgress.ProgressItem(

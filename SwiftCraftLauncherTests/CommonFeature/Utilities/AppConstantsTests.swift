@@ -1,9 +1,14 @@
+//
+//  AppConstantsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class AppConstantsTests: XCTestCase {
-
-    // MARK: - DirectoryNames
 
     func testDirectoryNames_values() {
         XCTAssertEqual(AppConstants.DirectoryNames.mods, "mods")
@@ -22,8 +27,6 @@ final class AppConstantsTests: XCTestCase {
         XCTAssertEqual(AppConstants.DirectoryNames.option, "options.txt")
     }
 
-    // MARK: - FileExtensions
-
     func testFileExtensions_values() {
         XCTAssertEqual(AppConstants.FileExtensions.jar, "jar")
         XCTAssertEqual(AppConstants.FileExtensions.png, "png")
@@ -33,14 +36,10 @@ final class AppConstantsTests: XCTestCase {
         XCTAssertEqual(AppConstants.FileExtensions.mrpack, "mrpack")
     }
 
-    // MARK: - URLCacheConfig
-
     func testURLCacheConfig_values() {
         XCTAssertEqual(AppConstants.URLCacheConfig.memoryCapacity, 2 * 1024 * 1024)
         XCTAssertEqual(AppConstants.URLCacheConfig.diskCapacity, 10 * 1024 * 1024)
     }
-
-    // MARK: - UserDefaultsKeys
 
     func testUserDefaultsKeys_allExist() {
         XCTAssertFalse(AppConstants.UserDefaultsKeys.userProfiles.isEmpty)
@@ -51,8 +50,6 @@ final class AppConstantsTests: XCTestCase {
         XCTAssertFalse(AppConstants.UserDefaultsKeys.themeMode.isEmpty)
     }
 
-    // MARK: - KeychainAccounts & Keys
-
     func testKeychainAccounts_keys() {
         XCTAssertEqual(AppConstants.KeychainAccounts.aiSettings, "aiSettings")
     }
@@ -62,20 +59,14 @@ final class AppConstantsTests: XCTestCase {
         XCTAssertEqual(AppConstants.KeychainKeys.authCredential, "authCredential")
     }
 
-    // MARK: - MinecraftVersions
-
     func testMinecraftVersions_featureBaseline() {
         XCTAssertEqual(AppConstants.MinecraftVersions.featureBaseline, "1.13")
     }
-
-    // MARK: - EnvironmentTypes
 
     func testEnvironmentTypes_values() {
         XCTAssertEqual(AppConstants.EnvironmentTypes.client, "client")
         XCTAssertEqual(AppConstants.EnvironmentTypes.server, "server")
     }
-
-    // MARK: - ProcessorPlaceholders
 
     func testProcessorPlaceholders_values() {
         XCTAssertEqual(AppConstants.ProcessorPlaceholders.side, "{SIDE}")
@@ -85,14 +76,10 @@ final class AppConstantsTests: XCTestCase {
         XCTAssertEqual(AppConstants.ProcessorPlaceholders.workingDir, "{WORKING_DIR}")
     }
 
-    // MARK: - DatabaseTables
-
     func testDatabaseTables_values() {
         XCTAssertEqual(AppConstants.DatabaseTables.gameVersions, "game_versions")
         XCTAssertEqual(AppConstants.DatabaseTables.modCache, "mod_cache")
     }
-
-    // MARK: - AuthlibInjector
 
     func testAuthlibInjector_version() {
         XCTAssertEqual(AppConstants.AuthlibInjector.version, "1.2.7")
@@ -108,8 +95,6 @@ final class AppConstantsTests: XCTestCase {
         XCTAssertTrue(arg.contains("authlib-injector-1.2.7.jar"))
         XCTAssertTrue(arg.contains("https://littleskin.cn"))
     }
-
-    // MARK: - GameLoader
 
     func testGameLoader_allCases() {
         XCTAssertEqual(GameLoader.allCases.count, 5)
@@ -129,8 +114,6 @@ final class AppConstantsTests: XCTestCase {
         XCTAssertEqual(GameLoader.forge.id, "forge")
     }
 
-    // MARK: - ModPackExportFormat
-
     func testModPackExportFormat_displayName() {
         XCTAssertEqual(ModPackExportFormat.modrinth.displayName, "Modrinth (.mrpack)")
         XCTAssertEqual(ModPackExportFormat.curseforge.displayName, "CurseForge (.zip)")
@@ -140,8 +123,6 @@ final class AppConstantsTests: XCTestCase {
         XCTAssertEqual(ModPackExportFormat.modrinth.fileExtension, "mrpack")
         XCTAssertEqual(ModPackExportFormat.curseforge.fileExtension, "zip")
     }
-
-    // MARK: - Bundle Extension
 
     func testBundle_appVersion() {
         let version = Bundle.main.appVersion

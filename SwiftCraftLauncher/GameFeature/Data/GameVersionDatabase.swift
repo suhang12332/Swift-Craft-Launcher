@@ -1,27 +1,31 @@
+//
+//  GameVersionDatabase.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SQLite3
 
-/// 游戏版本数据库存储层
-/// 使用 SQLite (WAL + mmap + JSON1) 存储游戏版本信息
+/// Provides SQLite storage for game version information.
+///
+/// Uses WAL mode and mmap optimization for concurrent access and crash recovery.
+/// Game data is stored as JSON blobs, indexed by working path and game name.
 class GameVersionDatabase {
-    // MARK: - Properties
 
     private let db: SQLiteDatabase
     private let tableName = AppConstants.DatabaseTables.gameVersions
     private var isInitialized = false
 
-    // MARK: - Initialization
-
-    /// 初始化游戏版本数据库
-    /// - Parameter dbPath: 数据库文件路径
+    /// Creates a game version database.
+    ///
+    /// - Parameter dbPath: The file path for the SQLite database.
     init(dbPath: String) {
         self.db = SQLiteDatabase(path: dbPath)
     }
 
-    // MARK: - Database Setup
-
-    /// 打开数据库并初始化表结构
-    /// - Throws: GlobalError 当操作失败时
+    /// Opens the database and creates the table schema if needed.
     func initialize() throws {
         if isInitialized {
             return
@@ -31,10 +35,7 @@ class GameVersionDatabase {
         isInitialized = true
     }
 
-    /// 创建游戏版本表
-    /// 使用 JSON1 扩展存储完整的游戏版本信息
     private func createTable() throws {
-        // 创建表
         let createTableSQL = """
         CREATE TABLE IF NOT EXISTS \(tableName) (
             id TEXT PRIMARY KEY,
@@ -49,7 +50,6 @@ class GameVersionDatabase {
 
         try db.execute(createTableSQL)
 
-        // 创建索引（如果不存在）
         let indexes = [
             ("idx_working_path", "working_path"),
             ("idx_last_played", "last_played"),
@@ -60,19 +60,17 @@ class GameVersionDatabase {
             let createIndexSQL = """
             CREATE INDEX IF NOT EXISTS \(indexName) ON \(tableName)(\(column));
             """
-            try? db.execute(createIndexSQL) // 使用 try? 因为索引可能已存在
+            try? db.execute(createIndexSQL)
         }
 
         Logger.shared.debug("游戏版本表已创建或已存在")
     }
 
-    // MARK: - CRUD Operations
-
-    /// 保存游戏版本信息
+    /// Saves a game version to the database.
+    ///
     /// - Parameters:
-    ///   - game: 游戏版本信息
-    ///   - workingPath: 工作路径
-    /// - Throws: GlobalError 当操作失败时
+    ///   - game: The game version to save.
+    ///   - workingPath: The working path associated with the game.
     func saveGame(_ game: GameVersionInfo, workingPath: String) throws {
         try db.transaction {
             let encoder = JSONEncoder()
@@ -119,11 +117,11 @@ class GameVersionDatabase {
         }
     }
 
-    /// 批量保存游戏版本信息
+    /// Saves multiple game versions to the database within a single transaction.
+    ///
     /// - Parameters:
-    ///   - games: 游戏版本信息数组
-    ///   - workingPath: 工作路径
-    /// - Throws: GlobalError 当操作失败时
+    ///   - games: The game versions to save.
+    ///   - workingPath: The working path associated with the games.
     func saveGames(_ games: [GameVersionInfo], workingPath: String) throws {
         try db.transaction {
             let encoder = JSONEncoder()
@@ -170,10 +168,10 @@ class GameVersionDatabase {
         }
     }
 
-    /// 加载指定工作路径的所有游戏
-    /// - Parameter workingPath: 工作路径
-    /// - Returns: 游戏版本信息数组
-    /// - Throws: GlobalError 当操作失败时
+    /// Loads all games for the specified working path.
+    ///
+    /// - Parameter workingPath: The working path to load games for.
+    /// - Returns: An array of game versions, ordered by last played date.
     func loadGames(workingPath: String) throws -> [GameVersionInfo] {
         let sql = """
         SELECT data_json FROM \(tableName)
@@ -208,9 +206,9 @@ class GameVersionDatabase {
         return games
     }
 
-    /// 加载所有工作路径的游戏（按工作路径分组）
-    /// - Returns: 按工作路径分组的游戏字典
-    /// - Throws: GlobalError 当操作失败时
+    /// Loads all games grouped by working path.
+    ///
+    /// - Returns: A dictionary of working paths to their associated game arrays.
     func loadAllGames() throws -> [String: [GameVersionInfo]] {
         let sql = """
         SELECT working_path, data_json FROM \(tableName)
@@ -246,9 +244,9 @@ class GameVersionDatabase {
         return gamesByPath
     }
 
-    /// 按工作路径统计游戏数量（仅查 working_path + COUNT，不加载 JSON）
-    /// - Returns: [(工作路径, 游戏数量)]，按路径排序
-    /// - Throws: GlobalError 当操作失败时
+    /// Returns all working paths with their game counts.
+    ///
+    /// Uses a SQL `GROUP BY` query without loading JSON payloads.
     func loadWorkingPathsWithCounts() throws -> [(path: String, count: Int)] {
         let sql = """
         SELECT working_path, COUNT(*) FROM \(tableName)
@@ -266,10 +264,10 @@ class GameVersionDatabase {
         return result
     }
 
-    /// 根据 ID 获取游戏
-    /// - Parameter id: 游戏 ID
-    /// - Returns: 游戏版本信息，如果不存在则返回 nil
-    /// - Throws: GlobalError 当操作失败时
+    /// Retrieves a game by its identifier.
+    ///
+    /// - Parameter id: The unique identifier of the game.
+    /// - Returns: The game version, or `nil` if no matching record exists.
     func getGame(by id: String) throws -> GameVersionInfo? {
         let sql = "SELECT data_json FROM \(tableName) WHERE id = ? LIMIT 1"
 
@@ -289,9 +287,9 @@ class GameVersionDatabase {
         return try decoder.decode(GameVersionInfo.self, from: jsonData)
     }
 
-    /// 删除游戏
-    /// - Parameter id: 游戏 ID
-    /// - Throws: GlobalError 当操作失败时
+    /// Deletes a game by its identifier.
+    ///
+    /// - Parameter id: The unique identifier of the game to delete.
     func deleteGame(id: String) throws {
         try db.transaction {
             let sql = "DELETE FROM \(tableName) WHERE id = ?"
@@ -312,9 +310,9 @@ class GameVersionDatabase {
         }
     }
 
-    /// 删除指定工作路径的所有游戏
-    /// - Parameter workingPath: 工作路径
-    /// - Throws: GlobalError 当操作失败时
+    /// Deletes all games for the specified working path.
+    ///
+    /// - Parameter workingPath: The working path whose games should be deleted.
     func deleteGames(workingPath: String) throws {
         try db.transaction {
             let sql = "DELETE FROM \(tableName) WHERE working_path = ?"
@@ -335,11 +333,13 @@ class GameVersionDatabase {
         }
     }
 
-    /// 按工作路径和游戏名删除游戏（可能存在多个相同名称的记录）
+    /// Deletes games matching the specified working path and game name.
+    ///
+    /// Multiple records with the same name may exist for a single working path.
+    ///
     /// - Parameters:
-    ///   - workingPath: 工作路径
-    ///   - gameName: 游戏名称
-    /// - Throws: GlobalError 当操作失败时
+    ///   - workingPath: The working path to match.
+    ///   - gameName: The game name to match.
     func deleteGames(workingPath: String, gameName: String) throws {
         try db.transaction {
             let sql = "DELETE FROM \(tableName) WHERE working_path = ? AND game_name = ?"
@@ -361,11 +361,11 @@ class GameVersionDatabase {
         }
     }
 
-    /// 更新游戏最后游玩时间
+    /// Updates the last played date for a game.
+    ///
     /// - Parameters:
-    ///   - id: 游戏 ID
-    ///   - lastPlayed: 最后游玩时间
-    /// - Throws: GlobalError 当操作失败时
+    ///   - id: The unique identifier of the game.
+    ///   - lastPlayed: The new last played date.
     func updateLastPlayed(id: String, lastPlayed: Date) throws {
         try db.transaction {
             let timestamp = lastPlayed.timeIntervalSince1970

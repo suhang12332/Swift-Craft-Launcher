@@ -1,3 +1,10 @@
+//
+//  CommonServiceModLoaderTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
@@ -7,8 +14,6 @@ final class CommonServiceModLoaderTests: XCTestCase {
         let data = try JSONSerialization.data(withJSONObject: jsonObject)
         return try JSONDecoder().decode(type, from: data)
     }
-
-    // MARK: - generateFabricClasspath
 
     func testGenerateFabricClasspath_includesAllLibraries() throws {
         let libJson: [String: Any] = [
@@ -88,8 +93,6 @@ final class CommonServiceModLoaderTests: XCTestCase {
         XCTAssertTrue(classpath.contains("fabric-loader-0.14.21.jar"))
     }
 
-    // MARK: - generateClasspath (Forge/NeoForge)
-
     func testGenerateClasspath_filtersNonClasspathLibraries() throws {
         let lib1Json: [String: Any] = [
             "name": "test:lib:1.0",
@@ -162,8 +165,6 @@ final class CommonServiceModLoaderTests: XCTestCase {
         XCTAssertTrue(classpath.isEmpty)
     }
 
-    // MARK: - mavenCoordinateToDefaultPath
-
     func testMavenCoordinateToDefaultPath_standard() {
         let result = CommonService.mavenCoordinateToDefaultPath("org.example:lib:1.0")
         XCTAssertEqual(result, "org/example/lib/1.0/lib-1.0.jar")
@@ -184,8 +185,6 @@ final class CommonServiceModLoaderTests: XCTestCase {
         XCTAssertEqual(result, "invalid")
     }
 
-    // MARK: - mavenCoordinateToDefaultURL
-
     func testMavenCoordinateToDefaultURL_standard() {
         let baseURL = URL(fileURLWithPath: "/tmp/libraries")
         let result = CommonService.mavenCoordinateToDefaultURL("org.example:lib:1.0", url: baseURL)
@@ -197,8 +196,6 @@ final class CommonServiceModLoaderTests: XCTestCase {
         let result = CommonService.mavenCoordinateToDefaultURL("org.example:lib:1.0:natives-macos", url: baseURL)
         XCTAssertTrue(result.path.contains("lib-1.0-natives-macos.jar"))
     }
-
-    // MARK: - mavenCoordinateToURL
 
     func testMavenCoordinateToURL_withUrl() throws {
         let lib = ModrinthLoaderLibrary(
@@ -230,8 +227,6 @@ final class CommonServiceModLoaderTests: XCTestCase {
 
         XCTAssertNil(result)
     }
-
-    // MARK: - processGameVersionPlaceholders
 
     func testProcessGameVersionPlaceholders_replacesMultiple() throws {
         let libJson: [String: Any] = [

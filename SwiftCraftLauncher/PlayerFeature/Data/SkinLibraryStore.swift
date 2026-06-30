@@ -1,6 +1,18 @@
+//
+//  SkinLibraryStore.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SQLite3
 
+/// Manages a local SQLite-backed skin library.
+///
+/// The library stores metadata about imported skin files and tracks their
+/// usage history. Skin image files are cached on disk, and the database
+/// records are automatically cleaned up when the corresponding file is missing.
 final class SkinLibraryStore {
     private let fileManager: FileManager
     private let database: SQLiteDatabase
@@ -37,6 +49,7 @@ final class SkinLibraryStore {
         """
     }
 
+    /// Loads all skin library items, omitting entries whose files are missing.
     func loadItems() -> [SkinLibraryItem] {
         do {
             try initializeIfNeeded()
@@ -58,6 +71,15 @@ final class SkinLibraryStore {
         }
     }
 
+    /// Saves skin data to the library and writes the image file to disk.
+    ///
+    /// If a file with the same SHA-1 already exists, the existing file is reused.
+    ///
+    /// - Parameters:
+    ///   - data: The raw PNG data of the skin.
+    ///   - model: The skin model type.
+    ///   - originalFileName: The original file name, used for display purposes.
+    /// - Returns: The created library item, or `nil` if saving fails.
     @discardableResult
     func saveSkin(
         data: Data,
@@ -91,6 +113,10 @@ final class SkinLibraryStore {
         }
     }
 
+    /// Deletes a skin library item and its associated file.
+    ///
+    /// - Parameter item: The item to delete.
+    /// - Returns: `true` if the deletion was successful.
     func deleteItem(_ item: SkinLibraryItem) -> Bool {
         do {
             try initializeIfNeeded()

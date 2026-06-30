@@ -1,9 +1,15 @@
+//
+//  ModScanner+DirectoryHash.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Directory hash scanning and FSEvents watcher management for mod directories.
 extension ModScanner {
-    // MARK: - 目录 Hash 扫描
-
-    /// 读取目录并过滤 jar/zip 文件（抛出异常版本）
+    /// Reads the directory and returns all jar and zip files.
     func readJarZipFiles(from dir: URL) throws -> [URL] {
         guard FileManager.default.fileExists(atPath: dir.path) else {
             throw GlobalError.resource(
@@ -33,7 +39,7 @@ extension ModScanner {
         }
     }
 
-    /// 通用：重新扫描某个目录并更新 hash 缓存；如为 mods 目录则同步更新 ModInstallationCache
+    /// Rebuilds the hash set for a directory, updating both the general cache and the mod installation cache when applicable.
     func rebuildDirectoryHashes(
         dir: URL,
         gameNameHint: String? = nil
@@ -41,7 +47,6 @@ extension ModScanner {
         let standardizedDir = dir.standardizedFileURL
         let jarFiles = try readJarZipFiles(from: standardizedDir)
 
-        // 使用 TaskGroup 并发计算 hash
         let concurrentCount = AppServices.generalSettingsManager.concurrentDownloads
         let semaphore = AsyncSemaphore(value: concurrentCount)
 
@@ -67,10 +72,8 @@ extension ModScanner {
             return result
         }
 
-        // 写入通用目录 hash 缓存
         await AppServices.directoryHashCache.set(hashes, for: standardizedDir)
 
-        // 如果是 mods 目录，同步到 ModInstallationCache，供 isModInstalled* 使用
         if isModsDirectory(standardizedDir) {
             let gameName = gameNameHint ?? extractGameName(from: standardizedDir)
             if let gameName {
@@ -84,6 +87,7 @@ extension ModScanner {
         return hashes
     }
 
+    /// Ensures the FSEvents watcher is registered for the given directory.
     func ensureFSEventsWatcherRegistered(
         standardizedDirectory: URL,
         gameNameHint: String?
@@ -99,6 +103,7 @@ extension ModScanner {
         )
     }
 
+    /// Returns cached detail IDs or performs a full scan if no cache exists.
     func scanAllDetailIdsAfterWatcherRegisteredThrowing(
         standardizedDirectory: URL
     ) async throws -> Set<String> {
@@ -108,8 +113,7 @@ extension ModScanner {
         return try await rebuildDirectoryHashes(dir: standardizedDirectory)
     }
 
-    /// 异步扫描：仅获取所有 detailId（静默版本）
-    /// 在后台线程执行，只从缓存读取，不创建 fallback
+    /// Scans the directory for all detail IDs, returning the result via a completion handler.
     public func scanAllDetailIds(
         in dir: URL,
         completion: @escaping (Set<String>) -> Void
@@ -127,8 +131,7 @@ extension ModScanner {
         }
     }
 
-    // 返回 Set 以提高查找性能（O(1)）
-
+    /// Scans the directory for all detail IDs, returning a set for O(1) lookups.
     public func scanAllDetailIdsThrowing(in dir: URL) async throws -> Set<String> {
         let standardizedDir = dir.standardizedFileURL
         await ensureFSEventsWatcherRegistered(
@@ -140,10 +143,10 @@ extension ModScanner {
         )
     }
 
+    /// Scans the mods directory for the given game in the background.
     public func scanGameModsDirectory(game: GameVersionInfo) async {
         let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
 
-        // 检查目录是否存在
         guard FileManager.default.fileExists(atPath: modsDir.path) else {
             Logger.shared.debug("游戏 \(game.gameName) 的 mods 目录不存在，跳过扫描")
             return
@@ -163,14 +166,13 @@ extension ModScanner {
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.warning("扫描游戏 \(game.gameName) 的 mods 目录失败: \(globalError.chineseMessage)")
-            // 不显示错误通知，因为这是后台扫描
         }
     }
 
+    /// Synchronously scans the mods directory for the given game, blocking until complete.
     public func scanGameModsDirectorySync(game: GameVersionInfo) {
         let modsDir = AppPaths.modsDirectory(gameName: game.gameName)
 
-        // 检查目录是否存在
         guard FileManager.default.fileExists(atPath: modsDir.path) else {
             Logger.shared.debug("游戏 \(game.gameName) 的 mods 目录不存在，跳过扫描")
             return
@@ -192,17 +194,17 @@ extension ModScanner {
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.warning("扫描游戏 \(game.gameName) 的 mods 目录失败: \(globalError.chineseMessage)")
-                // 不显示错误通知，因为这是后台扫描
             }
         }
         semaphore.wait()
     }
 
+    /// Returns `true` if the directory is a mods directory.
     func isModsDirectory(_ dir: URL) -> Bool {
         return dir.lastPathComponent.lowercased() == "mods"
     }
 
-    // mods 目录结构：profileRootDirectory/gameName/mods
+    /// Extracts the game name from a mods directory path.
     func extractGameName(from modsDir: URL) -> String? {
         let parentDir = modsDir.deletingLastPathComponent()
         return parentDir.lastPathComponent

@@ -1,3 +1,11 @@
+//
+//  AddOrDeleteResourceButtonOverlays.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// View modifier that presents confirmation dialogs and sheets for resource button actions.
 import SwiftUI
 
 struct AddOrDeleteResourceButtonOverlays: ViewModifier {

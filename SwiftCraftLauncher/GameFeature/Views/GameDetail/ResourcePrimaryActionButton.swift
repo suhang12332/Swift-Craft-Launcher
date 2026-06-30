@@ -1,14 +1,20 @@
+//
+//  ResourcePrimaryActionButton.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A primary action button for installing or deleting resources.
 import SwiftUI
 
-/// 主安装/删除按钮视图
-/// 只负责展示 UI 和将点击事件向外转发
 struct ResourcePrimaryActionButton: View {
     let addButtonState: ModrinthDetailCardView.AddButtonState
-    /// true = server, false = local
+    /// When true the resource targets a server; when false, local.
     let type: Bool
-    /// 是否禁用按钮
+    /// Whether the button is disabled.
     let isDisabled: Bool
-    /// 点击回调
+    /// Called when the button is tapped.
     let onTap: () -> Void
 
     let query: String

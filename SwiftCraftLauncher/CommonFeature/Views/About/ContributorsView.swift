@@ -1,5 +1,13 @@
+//
+//  ContributorsView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Displays the list of project contributors from both GitHub and static sources.
 public struct ContributorsView: View {
     @StateObject private var viewModel = ContributorsViewModel()
     @StateObject private var staticViewModel = ContributorsStaticViewModel()
@@ -26,7 +34,6 @@ public struct ContributorsView: View {
         }
     }
 
-    // MARK: - Loading View
     private var loadingView: some View {
         VStack(spacing: 12) {
             ProgressView().controlSize(.small)
@@ -34,21 +41,17 @@ public struct ContributorsView: View {
         .frame(maxWidth: .infinity, minHeight: 100)
     }
 
-    // MARK: - Contributors Content
     private var contributorsContent: some View {
         VStack(spacing: 16) {
-            // GitHub贡献者列表
             if !viewModel.contributors.isEmpty {
                 contributorsList
             }
-            // 静态贡献者列表（只有成功加载时才显示）
             if staticViewModel.loaded && !staticViewModel.loadFailed {
                 staticContributorsList
             }
         }
     }
 
-    // MARK: - Static Contributors List
     private var staticContributorsList: some View {
         VStack(spacing: 0) {
             Text("contributors.core_contributors".localized())
@@ -72,10 +75,8 @@ public struct ContributorsView: View {
         }
     }
 
-    // MARK: - Contributors List
     private var contributorsList: some View {
         VStack(spacing: 0) {
-            // GitHub贡献者标题
             Text("contributors.github_contributors".localized())
                 .font(.title3)
                 .fontWeight(.semibold)
@@ -83,7 +84,6 @@ public struct ContributorsView: View {
                 .padding(.bottom, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            // 顶级贡献者
             if !viewModel.topContributors.isEmpty {
                 ForEach(
                     Array(viewModel.topContributors.enumerated()),
@@ -115,7 +115,6 @@ public struct ContributorsView: View {
                 }
             }
 
-            // 其他贡献者
             ForEach(
                 Array(viewModel.otherContributors.enumerated()),
                 id: \.element.id
@@ -142,7 +141,6 @@ public struct ContributorsView: View {
         }
     }
 
-    /// 清理所有数据
     private func clearAllData() {
         staticViewModel.clearAllData()
         viewModel.clearContributors()

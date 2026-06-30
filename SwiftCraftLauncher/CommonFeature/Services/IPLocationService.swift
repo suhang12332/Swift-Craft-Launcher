@@ -1,33 +1,38 @@
+//
+//  IPLocationService.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// IP地理位置服务
-/// 检测用户 IP 所在国家/地区
+/// Detects the user's geographic location by IP address.
 @MainActor
 class IPLocationService: ObservableObject {
     static let shared = IPLocationService()
 
     private init() {}
 
-    /// 检查是否为国外IP（静默版本）
-    /// - Returns: 是否为国外IP，如果检测失败则返回false（允许添加离线账户）
+    /// Checks whether the user's IP is outside the current region.
+    /// - Returns: `true` if the IP is foreign, `false` if detection fails or the IP is domestic.
     func isForeignIP() async -> Bool {
         do {
             return try await isForeignIPThrowing()
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error("检测IP地理位置失败: \(globalError.chineseMessage)")
-            // 静默失败，返回false（允许添加离线账户）
             return false
         }
     }
 
-    /// 检查是否为国外IP（抛出异常版本）
-    /// - Returns: 是否为国外IP
-    /// - Throws: GlobalError 当检测失败时
+    /// Checks whether the user's IP is outside the current region, throwing on failure.
+    /// - Returns: `true` if the IP is foreign.
+    /// - Throws: A `GlobalError` if detection fails.
     func isForeignIPThrowing() async throws -> Bool {
         let (data, statusCode) = try await APIClient.getUnchecked(url: URLConfig.API.IPLocation.currentLocation)
 
-        // 即使状态码不是200，也尝试解析响应（因为某些API可能返回429但仍在响应体中包含数据）
+        // Some APIs return non-200 status codes while still including data in the response body.
         let locationResponse: IPLocationResponse
         do {
             locationResponse = try JSONDecoder().decode(IPLocationResponse.self, from: data)

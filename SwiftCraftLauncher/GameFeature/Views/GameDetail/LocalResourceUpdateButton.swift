@@ -1,14 +1,21 @@
+//
+//  LocalResourceUpdateButton.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A button for updating an installed local resource.
 import SwiftUI
 
-/// 本地资源“更新”按钮视图
 struct LocalResourceUpdateButton: View {
-    /// 是否显示更新按钮（例如仅在本地模式且有更新时显示）
+    /// Whether the update button is visible.
     let isVisible: Bool
-    /// 更新按钮自身的 loading 状态
+    /// Whether the update operation is in progress.
     @Binding var isUpdateButtonLoading: Bool
-    /// 主安装按钮的状态（用于决定是否禁用更新按钮）
+    /// The current state of the primary action button.
     let addButtonState: ModrinthDetailCardView.AddButtonState
-    /// 点击回调
+    /// Called when the update button is tapped.
     let onTap: () -> Void
 
     var body: some View {

@@ -1,24 +1,25 @@
 //
 //  ResourceInstallationChecker.swift
-//  SwiftCraftLauncher
+//  ResourceFeature
 //
-//  Created by su on 2025/6/28.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// 资源安装状态检查器
-/// 负责检查资源是否已安装在指定游戏中
+/// Checks whether a resource is already installed for a given game.
 enum ResourceInstallationChecker {
-    /// 检查资源在服务端模式下是否已安装
+    /// Checks whether a resource is installed in server mode.
+    ///
+    /// Uses version and loader filters from user selection or falls back to the current game info.
     /// - Parameters:
-    ///   - project: Modrinth 项目
-    ///   - resourceType: 资源类型
-    ///   - installedHashes: 已安装资源的 hash 集合
-    ///   - selectedVersions: 选中的游戏版本列表
-    ///   - selectedLoaders: 选中的加载器列表
-    ///   - gameInfo: 游戏信息（可选，用于兜底）
-    /// - Returns: 是否已安装
+    ///   - project: The Modrinth project to check.
+    ///   - resourceType: The type of resource.
+    ///   - installedHashes: The set of installed resource hashes.
+    ///   - selectedVersions: The selected game versions.
+    ///   - selectedLoaders: The selected mod loaders.
+    ///   - gameInfo: Optional game info used as fallback.
+    /// - Returns: Whether the resource is installed.
     static func checkInstalledStateForServerMode(
         project: ModrinthProject,
         resourceType: String,
@@ -29,7 +30,7 @@ enum ResourceInstallationChecker {
     ) async -> Bool {
         guard !installedHashes.isEmpty else { return false }
 
-        // 构造版本/loader 过滤条件（优先使用用户选择，其次使用当前游戏信息）
+        // Build version and loader filters using user selection or game info as fallback.
         let versionFilters: [String] = {
             if !selectedVersions.isEmpty {
                 return selectedVersions

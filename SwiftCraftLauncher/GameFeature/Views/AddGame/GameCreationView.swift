@@ -1,8 +1,15 @@
+//
+//  GameCreationView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A view for creating a new game instance with version, mod loader, and name configuration.
 import SwiftUI
 import UniformTypeIdentifiers
 import UserNotifications
 
-// MARK: - Constants
 private enum Constants {
     static let formSpacing: CGFloat = 16
     static let iconSize: CGFloat = 80
@@ -15,7 +22,6 @@ private enum Constants {
     static let versionButtonVerticalPadding: CGFloat = 3
 }
 
-// MARK: - GameCreationView
 struct GameCreationView: View {
     @StateObject private var viewModel: GameCreationViewModel
     @EnvironmentObject private var gameRepository: GameRepository
@@ -23,13 +29,11 @@ struct GameCreationView: View {
     @Environment(\.dismiss)
     private var dismiss
 
-    // Bindings from parent
     private let triggerConfirm: Binding<Bool>
     private let triggerCancel: Binding<Bool>
     private let onRequestImagePicker: () -> Void
     private let onSetImagePickerHandler: (@escaping (Result<[URL], Error>) -> Void) -> Void
 
-    // MARK: - Initializer
     init(
         isDownloading: Binding<Bool>,
         isFormValid: Binding<Bool>,
@@ -55,7 +59,6 @@ struct GameCreationView: View {
         self._viewModel = StateObject(wrappedValue: GameCreationViewModel(configuration: configuration))
     }
 
-    // MARK: - Body
     var body: some View {
         formContentView
         .onAppear {
@@ -83,17 +86,12 @@ struct GameCreationView: View {
         }
     }
 
-    // MARK: - 清除数据
-    /// 清除页面所有数据
     private func clearAllData() {
-        // 如果正在下载，取消下载任务
         if viewModel.isDownloading {
             viewModel.handleCancel()
         }
         viewModel.clearLoadedVersionsOnClose()
     }
-
-    // MARK: - View Components
 
     private var formContentView: some View {
         VStack {

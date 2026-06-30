@@ -1,11 +1,14 @@
 //
 //  CacheInfoManager.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/7/31.
+//  Computes cache size information for data and game profiles.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
 import SwiftUI
 
+/// Manages cache size calculations for application data and game profiles.
 class CacheInfoManager: ObservableObject {
     static let shared = CacheInfoManager()
 
@@ -21,7 +24,7 @@ class CacheInfoManager: ObservableObject {
         self.calculator = calculator
     }
 
-    /// 计算数据缓存信息（静默版本）
+    /// Calculates cache size for application data.
     func calculateDataCacheInfo() {
         do {
             self.cacheInfo = try calculator.calculateCacheInfo()
@@ -32,8 +35,8 @@ class CacheInfoManager: ObservableObject {
         }
     }
 
-    /// 计算游戏缓存信息（静默版本）
-    /// - Parameter game: 游戏名称
+    /// Calculates cache size for a specific game's profile data.
+    /// - Parameter game: The game name to calculate cache for.
     func calculateGameCacheInfo(_ game: String) {
         do {
             self.cacheInfo = try calculator.calculateProfileCacheInfo(gameName: game)

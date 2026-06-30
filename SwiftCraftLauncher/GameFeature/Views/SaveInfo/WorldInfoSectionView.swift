@@ -1,8 +1,14 @@
+//
+//  WorldInfoSectionView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Displays world save files as selectable chips with detail sheet support.
 import SwiftUI
 
-// MARK: - 世界信息区域视图
 struct WorldInfoSectionView: View {
-    // MARK: - Properties
     let worlds: [WorldInfo]
     let isLoading: Bool
     let gameName: String
@@ -11,7 +17,6 @@ struct WorldInfoSectionView: View {
     @State private var loadTask: Task<Void, Never>?
     @State private var currentLoadToken: UUID?
 
-    // MARK: - Body
     var body: some View {
         GenericSectionView(
             title: "saveinfo.worlds",
@@ -37,7 +42,6 @@ struct WorldInfoSectionView: View {
         }
     }
 
-    // MARK: - Chip Builder
     private func worldChip(for world: WorldInfo) -> some View {
         FilterChip(
             title: world.name,

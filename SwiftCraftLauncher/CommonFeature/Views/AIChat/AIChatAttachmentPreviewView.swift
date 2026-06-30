@@ -1,12 +1,13 @@
 //
 //  AIChatAttachmentPreviewView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// AI 聊天附件预览区域视图
+/// Displays a horizontal scrollable preview of pending attachments.
 struct AIChatAttachmentPreviewView: View {
     let attachments: [MessageAttachmentType]
     let onRemove: (Int) -> Void

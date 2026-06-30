@@ -1,9 +1,14 @@
+//
+//  MinecraftAuthExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class MinecraftAuthExtendedTests: XCTestCase {
-
-    // MARK: - AuthorizationCodeResponse Edge Cases
 
     func testAuthorizationCodeResponse_invalidURL() {
         let response = AuthorizationCodeResponse(from: URL(fileURLWithPath: "/dev/null"))
@@ -45,8 +50,6 @@ final class MinecraftAuthExtendedTests: XCTestCase {
         XCTAssertFalse(response?.isUserDenied ?? true)
     }
 
-    // MARK: - TokenResponse
-
     func testTokenResponse_codable_withRefreshToken() throws {
         let json = Data("""
         {"access_token": "at", "refresh_token": "rt"}
@@ -81,8 +84,6 @@ final class MinecraftAuthExtendedTests: XCTestCase {
         XCTAssertNil(decoded)
     }
 
-    // MARK: - XboxLiveTokenResponse
-
     func testXboxLiveTokenResponse_codable_roundTrip() throws {
         let original = XboxLiveTokenResponse(
             token: "xbox-tok",
@@ -106,8 +107,6 @@ final class MinecraftAuthExtendedTests: XCTestCase {
         XCTAssertEqual(decoded.token, "tok")
         XCTAssertTrue(decoded.displayClaims.xui.isEmpty)
     }
-
-    // MARK: - MinecraftProfileResponse
 
     func testMinecraftProfileResponse_codable_withSkinsAndCapes() throws {
         let json = Data("""
@@ -179,8 +178,6 @@ final class MinecraftAuthExtendedTests: XCTestCase {
         XCTAssertNotEqual(a, c)
     }
 
-    // MARK: - Skin & Cape Equatable
-
     func testSkin_equatable_allFieldsEqual() {
         let a = Skin(state: "ACTIVE", url: "url", variant: "classic")
         let b = Skin(state: "ACTIVE", url: "url", variant: "classic")
@@ -220,8 +217,6 @@ final class MinecraftAuthExtendedTests: XCTestCase {
         XCTAssertNotEqual(a, b)
     }
 
-    // MARK: - MinecraftEntitlement
-
     func testMinecraftEntitlement_allCases() {
         XCTAssertEqual(MinecraftEntitlement.allCases.count, 2)
     }
@@ -236,8 +231,6 @@ final class MinecraftAuthExtendedTests: XCTestCase {
         XCTAssertEqual(MinecraftEntitlement(rawValue: "game_minecraft"), .gameMinecraft)
         XCTAssertNil(MinecraftEntitlement(rawValue: "invalid"))
     }
-
-    // MARK: - MinecraftEntitlementsResponse
 
     func testMinecraftEntitlementsResponse_codable() throws {
         let json = Data("""
@@ -267,8 +260,6 @@ final class MinecraftAuthExtendedTests: XCTestCase {
         let decoded = try JSONDecoder().decode(MinecraftEntitlementsResponse.self, from: json)
         XCTAssertTrue(decoded.items.isEmpty)
     }
-
-    // MARK: - AuthenticationState
 
     func testAuthenticationState_allDistinct() {
         let states: [AuthenticationState] = [

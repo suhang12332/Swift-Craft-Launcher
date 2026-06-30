@@ -1,19 +1,24 @@
+//
+//  ModPackImportView.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - ModPackImportView
+/// A form view for importing a modpack from a local file.
 struct ModPackImportView: View {
     @StateObject private var viewModel: ModPackImportViewModel
     @EnvironmentObject private var gameRepository: GameRepository
 
-    // Bindings from parent
     private let triggerConfirm: Binding<Bool>
     private let triggerCancel: Binding<Bool>
     @EnvironmentObject private var playerListViewModel: PlayerListViewModel
     @Environment(\.dismiss)
     private var dismiss
 
-    // MARK: - Initializer
     init(
         configuration: GameFormConfiguration,
         preselectedFile: URL? = nil,
@@ -31,7 +36,6 @@ struct ModPackImportView: View {
         ))
     }
 
-    // MARK: - Body
     var body: some View {
         formContentView
         .onAppear {
@@ -59,19 +63,15 @@ struct ModPackImportView: View {
             }
         }
         .onDisappear {
-            // 页面关闭后清除所有数据
             clearAllData()
         }
     }
 
-    // MARK: - 清除数据
     private func clearAllData() {
         if viewModel.isDownloading {
             viewModel.cancelDownloadIfNeeded()
         }
     }
-
-    // MARK: - View Components
 
     private var formContentView: some View {
         VStack {
@@ -89,7 +89,6 @@ struct ModPackImportView: View {
         }
     }
 
-    /// 整合包游戏版本不受支持时的提示
     private var gameVersionUnsupportedHint: some View {
         modPackErrorView(
             message: String(format: "error.resource.modpack_game_version_unsupported".localized(), AppConstants.MinecraftVersions.featureBaseline)
@@ -147,8 +146,6 @@ struct ModPackImportView: View {
         }
         .padding()
     }
-
-    // MARK: - ModPack Selection View Components
 
     private var selectedModPackView: some View {
         VStack(alignment: .leading, spacing: 4) {

@@ -1,5 +1,13 @@
+//
+//  MinecraftAuthService+TokenChain.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Performs the Microsoft OAuth token exchange chain to obtain Minecraft access tokens.
 extension MinecraftAuthService {
 
     func exchangeCodeForToken(code: String) async throws -> TokenResponse {

@@ -1,7 +1,15 @@
+//
+//  AddOrDeleteResourceButtonViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 import os
 
+/// View model that manages the add, delete, and update actions for a Modrinth resource button.
 @MainActor
 final class AddOrDeleteResourceButtonViewModel: ObservableObject {
     @Published var addButtonState: ModrinthDetailCardView.AddButtonState = .idle

@@ -1,5 +1,13 @@
+//
+//  DownloadProgressView.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Displays download and installation progress for game core files, mod loader, and modpack.
 struct DownloadProgressView: View {
     @ObservedObject var gameSetupService: GameSetupUtil
     @ObservedObject var modPackInstallState: ModPackInstallState
@@ -63,7 +71,6 @@ struct DownloadProgressView: View {
     private var modPackInstallProgress: some View {
         Group {
             if modPackInstallState.isInstalling {
-                // 显示 overrides 进度条（只有在有文件需要合并时才显示）
                 if modPackInstallState.overridesTotal > 0 {
                     progressRow(
                         title: "modpack.copying_files".localized(),
@@ -174,7 +181,6 @@ struct DownloadProgressView: View {
     }
 }
 
-// MARK: - Supporting Types
 private enum ProgressType {
     case core, resources
 }
@@ -183,7 +189,6 @@ private enum InstallProgressType {
     case files, dependencies, overrides
 }
 
-// MARK: - Progress Row Wrapper
 private struct ProgressRowWrapper: View {
     let title: String
     @ObservedObject var state: DownloadState

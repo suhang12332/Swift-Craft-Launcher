@@ -1,12 +1,14 @@
 //
 //  GameActionButtons.swift
-//  SwiftCraftLauncher
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import AppKit
 
-/// 详情工具栏中与当前游戏相关的操作按钮（启动/停止、设置、在访达中显示、导入、导出、删除）
+/// Provides action buttons for the selected game: launch/stop, show in Finder, import, and crash alert handling.
 struct GameActionButtons: View {
     let game: GameVersionInfo
     @Environment(\.controlActiveState)
@@ -51,7 +53,6 @@ struct GameActionButtons: View {
                     if isRunning {
                         await gameLaunchUseCase.stopGame(player: playerListViewModel.currentPlayer, game: game)
                     } else {
-                        // 检查是否有当前玩家
                         if playerListViewModel.currentPlayer == nil {
                             activeAlert = .noPlayerForLaunch
                             return

@@ -1,5 +1,13 @@
+//
+//  ModrinthService+Projects.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides project detail and version retrieval for Modrinth and CurseForge projects.
 extension ModrinthService {
 
     static func fetchProjectDetails(id: String, type: String = "") async -> ModrinthProjectDetail? {

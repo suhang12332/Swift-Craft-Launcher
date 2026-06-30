@@ -1,9 +1,14 @@
+//
+//  GlobalErrorHandlerTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class GlobalErrorHandlerTests: XCTestCase {
-
-    // MARK: - ErrorLevel
 
     func testErrorLevel_allCases() {
         XCTAssertEqual(ErrorLevel.allCases.count, 4)
@@ -22,8 +27,6 @@ final class GlobalErrorHandlerTests: XCTestCase {
         XCTAssertEqual(ErrorLevel.silent.rawValue, "silent")
         XCTAssertEqual(ErrorLevel.disabled.rawValue, "disabled")
     }
-
-    // MARK: - GlobalErrorKind
 
     func testGlobalErrorKind_allCases() {
         XCTAssertEqual(GlobalErrorKind.allCases.count, 11)
@@ -63,8 +66,6 @@ final class GlobalErrorHandlerTests: XCTestCase {
         XCTAssertTrue(GlobalErrorKind.unknown.notificationTitleKey.contains("unknown"))
     }
 
-    // MARK: - GlobalError
-
     func testGlobalError_init_defaultLevel() {
         let error = GlobalError(kind: .network, chineseMessage: "test", i18nKey: "test.key")
         XCTAssertEqual(error.level, .notification)
@@ -85,8 +86,6 @@ final class GlobalErrorHandlerTests: XCTestCase {
         let error = GlobalError(kind: .validation, chineseMessage: "test", i18nKey: "error.validation.test")
         XCTAssertEqual(error.errorDescription, "error.validation.test".localized())
     }
-
-    // MARK: - Convenience Constructors
 
     func testGlobalError_network() {
         let error = GlobalError.network(chineseMessage: "网络错误", i18nKey: "error.network.test")
@@ -147,8 +146,6 @@ final class GlobalErrorHandlerTests: XCTestCase {
         XCTAssertEqual(error.kind, .unknown)
         XCTAssertEqual(error.level, .silent)
     }
-
-    // MARK: - from() Conversion
 
     func testFrom_globalError_passthrough() {
         let original = GlobalError.network(chineseMessage: "test", i18nKey: "test.key")

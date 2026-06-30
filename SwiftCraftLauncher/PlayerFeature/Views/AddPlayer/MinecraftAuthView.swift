@@ -1,5 +1,13 @@
+//
+//  MinecraftAuthView.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Displays the Microsoft authentication flow with status feedback.
 struct MinecraftAuthView: View {
     @StateObject private var authService: MinecraftAuthService
     var onLoginSuccess: ((MinecraftProfileResponse) -> Void)?
@@ -36,14 +44,12 @@ struct MinecraftAuthView: View {
         }
     }
 
-    // MARK: - 清除数据
     private func clearAllData() {
         if case .notAuthenticated = authService.authState {
             authService.isLoading = false
         }
     }
 
-    // MARK: - 未认证状态
     private var notAuthenticatedView: some View {
         VStack(spacing: 16) {
             Image(systemName: "person.crop.circle.badge.plus")
@@ -62,7 +68,6 @@ struct MinecraftAuthView: View {
         }
     }
 
-    // MARK: - 等待浏览器授权状态
     private var waitingForBrowserAuthView: some View {
         VStack(spacing: 16) {
             Image(systemName: "person.crop.circle.badge.clock")
@@ -80,7 +85,6 @@ struct MinecraftAuthView: View {
         }
     }
 
-    // MARK: - 处理授权码状态
     private var processingAuthCodeView: some View {
         VStack(spacing: 16) {
             ProgressView().controlSize(.small)
@@ -96,7 +100,6 @@ struct MinecraftAuthView: View {
         }
     }
 
-    // MARK: - 认证成功状态
     private func authenticatedView(
         profile: MinecraftProfileResponse
     ) -> some View {
@@ -141,7 +144,6 @@ struct MinecraftAuthView: View {
         }
     }
 
-    // MARK: - 错误状态
     private func errorView(message: String) -> some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle")

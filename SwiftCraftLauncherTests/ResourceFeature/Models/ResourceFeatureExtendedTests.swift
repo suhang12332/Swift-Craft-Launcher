@@ -1,9 +1,14 @@
+//
+//  ResourceFeatureExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ResourceFeatureExtendedTests: XCTestCase {
-
-    // MARK: - CategoryModels
 
     func testFilterItem_init() {
         let item = FilterItem(id: "1", name: "Test")
@@ -44,8 +49,6 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         XCTAssertEqual(FilterTitle.version, "filter.version")
     }
 
-    // MARK: - ModrinthConstants
-
     func testModrinthConstants_UIConstants() {
         XCTAssertEqual(ModrinthConstants.UIConstants.pageSize, 20)
         XCTAssertEqual(ModrinthConstants.UIConstants.maxTags, 3)
@@ -66,8 +69,6 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         XCTAssertEqual(ModrinthConstants.API.FacetValue.unsupported, "unsupported")
     }
 
-    // MARK: - FilterOptions
-
     func testFilterOptions_init() {
         let options = FilterOptions(
             versions: ["1.20.1"],
@@ -84,8 +85,6 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         XCTAssertEqual(options.performanceImpact, ["low"])
         XCTAssertEqual(options.loaders, ["fabric"])
     }
-
-    // MARK: - buildEnvironmentFacets
 
     @MainActor
     func testBuildEnvironmentFacets_bothClientAndServer() {
@@ -118,8 +117,6 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         XCTAssertTrue(client.isEmpty)
         XCTAssertTrue(server.isEmpty)
     }
-
-    // MARK: - buildFacets
 
     @MainActor
     func testBuildFacets_projectTypeOnly() {

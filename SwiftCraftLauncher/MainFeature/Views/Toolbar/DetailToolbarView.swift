@@ -1,6 +1,13 @@
+//
+//  DetailToolbarView.swift
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-/// 详情区域工具栏内容
+/// Provides context-sensitive toolbar content for the detail panel.
 public struct DetailToolbarView: ToolbarContent {
     @EnvironmentObject private var filterState: ResourceFilterState
     @EnvironmentObject private var detailState: ResourceDetailState

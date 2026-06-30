@@ -1,10 +1,15 @@
+//
+//  ModrinthSearchConstants.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-// MARK: - Constants
-/// 定义 Modrinth 相关的常量
+/// Modrinth API and UI related constants.
 enum ModrinthConstants {
-    // MARK: - UI Constants
-    /// UI 相关的常量
+    /// UI layout and display constants.
     enum UIConstants {
         static let pageSize = 20
         static let iconSize: CGFloat = 48
@@ -20,8 +25,7 @@ enum ModrinthConstants {
         static let skeletonPlaceholderCount = 20
     }
 
-    // MARK: - API Constants
-    /// API 相关的常量
+    /// API endpoint and facet constants.
     enum API {
         enum FacetType {
             static let projectType = "project_type"
@@ -41,8 +45,7 @@ enum ModrinthConstants {
     }
 }
 
-// MARK: - Filter Options
-/// 过滤选项结构体，用于减少函数参数数量
+/// Groups filter parameters for search queries.
 struct FilterOptions {
     let versions: [String]
     let categories: [String]

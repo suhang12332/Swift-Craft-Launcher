@@ -1,6 +1,13 @@
-// AsyncSemaphore for Swift Concurrency
+//
+//  AsyncSemaphore.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// A semaphore that integrates with Swift's structured concurrency.
 public actor AsyncSemaphore {
     private var value: Int
     private var waiters: [CheckedContinuation<Void, Never>] = []

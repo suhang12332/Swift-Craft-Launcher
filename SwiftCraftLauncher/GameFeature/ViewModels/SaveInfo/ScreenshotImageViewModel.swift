@@ -1,6 +1,14 @@
+//
+//  ScreenshotImageViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import AppKit
 
+/// View model that loads a screenshot thumbnail asynchronously from a file URL.
 @MainActor
 final class ScreenshotThumbnailViewModel: ObservableObject {
     @Published var image: NSImage?
@@ -20,6 +28,7 @@ final class ScreenshotThumbnailViewModel: ObservableObject {
     }
 }
 
+/// View model that loads a full-size screenshot image asynchronously, tracking loading and failure states.
 @MainActor
 final class ScreenshotImageViewModel: ObservableObject {
     @Published var image: NSImage?

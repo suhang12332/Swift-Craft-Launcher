@@ -1,5 +1,13 @@
+//
+//  FileTreeCellView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import AppKit
 
+/// A table cell view for file tree items with checkbox, icon, and title.
 final class FileTreeCellView: NSTableCellView {
     let checkbox: NSButton
     let iconView: NSImageView

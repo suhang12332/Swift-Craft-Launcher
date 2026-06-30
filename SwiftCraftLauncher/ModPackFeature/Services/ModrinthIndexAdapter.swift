@@ -1,6 +1,13 @@
+//
+//  ModrinthIndexAdapter.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 解析包含 `modrinth.index.json` 的整合包（可以是 `.mrpack` 或 `.zip`）
+/// Parses mod packs that contain a `modrinth.index.json` file.
 struct ModrinthIndexAdapter: ModPackIndexAdapter {
     let id: String = "modrinth"
     private let errorHandler: GlobalErrorHandler

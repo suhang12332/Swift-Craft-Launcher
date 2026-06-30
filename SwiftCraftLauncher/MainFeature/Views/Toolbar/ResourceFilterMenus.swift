@@ -1,11 +1,13 @@
 //
 //  ResourceFilterMenus.swift
-//  SwiftCraftLauncher
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// 详情工具栏中的资源筛选相关菜单（资源类型切换、数据源、本地筛选等）
+/// Provides static menu builders for filtering resources in the detail toolbar.
 enum ResourceFilterMenus {
 
     private static func resourceTypesForCurrentGame(currentGame: GameVersionInfo?) -> [String] {
@@ -27,7 +29,7 @@ enum ResourceFilterMenus {
             : "resource.content.type.local".localized()
     }
 
-    /// 资源内容位置切换（本地 / 服务端）
+    /// Toggles the resource content location between local and remote.
     @ViewBuilder
     static func resourcesTypeMenu(detailState: ResourceDetailState) -> some View {
         Button {
@@ -44,7 +46,7 @@ enum ResourceFilterMenus {
         .help("resource.content.location.help".localized())
     }
 
-    /// 资源类型菜单（mod / datapack / resourcepack / shader）
+    /// Displays a menu for selecting the active resource type (mod, datapack, resourcepack, or shader).
     @ViewBuilder
     static func resourcesMenu(currentGame: GameVersionInfo?, detailState: ResourceDetailState) -> some View {
         Menu {
@@ -58,7 +60,7 @@ enum ResourceFilterMenus {
         }
     }
 
-    /// 数据源菜单（Modrinth / CurseForge）
+    /// Presents a menu for choosing between data sources such as Modrinth or CurseForge.
     @ViewBuilder
     static func dataSourceMenu(filterState: ResourceFilterState) -> some View {
         Menu {
@@ -73,7 +75,7 @@ enum ResourceFilterMenus {
         }
     }
 
-    /// 本地资源筛选菜单（全部 / 已禁用）
+    /// Provides a menu for filtering local resources by status, such as all or disabled.
     @ViewBuilder
     static func localResourceFilterMenu(filterState: ResourceFilterState) -> some View {
         Menu {

@@ -1,12 +1,19 @@
+//
+//  ModScanner+InstallationCache.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-// MARK: - Mod Installation Cache
+/// In-memory caches for directory file hashes and per-game mod installation state.
 extension ModScanner {
-    /// 按目录绝对路径缓存该目录下所有文件 hash 集合
+    /// Caches the set of file hashes for each directory, keyed by the absolute directory path.
     actor DirectoryHashCache {
         static let shared = DirectoryHashCache()
 
-        private var cache: [String: Set<String>] = [:] // key: standardized directory path
+        private var cache: [String: Set<String>] = [:]
 
         private init() {}
 

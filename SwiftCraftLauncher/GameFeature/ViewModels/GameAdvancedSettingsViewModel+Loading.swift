@@ -1,8 +1,14 @@
+//
+//  GameAdvancedSettingsViewModel+Loading.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Extension providing settings loading and Java version info retrieval.
 extension GameAdvancedSettingsViewModel {
-    // MARK: - Loading
-
     func loadCurrentSettings() {
         guard let game = currentGame else { return }
         isLoadingSettings = true
@@ -29,7 +35,7 @@ extension GameAdvancedSettingsViewModel {
         }
     }
 
-    /// 读取当前生效 Java 路径的 `java --version` 输出
+    /// Loads the `java --version` output for the currently effective Java path.
     func loadJavaVersionInfo() {
         let path = effectiveJavaPath
 

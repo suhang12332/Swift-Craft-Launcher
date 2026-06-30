@@ -1,6 +1,13 @@
+//
+//  IPLocationModels.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// IP地理位置响应模型 (ipapi.co API格式)
+/// A geolocation response from the ipapi.co API.
 struct IPLocationResponse: Codable {
     let countryCode: String?
     let error: Bool
@@ -19,17 +26,17 @@ struct IPLocationResponse: Codable {
         reason = try container.decodeIfPresent(String.self, forKey: .reason)
     }
 
-    /// 是否请求成功
+    /// Whether the request succeeded.
     var isSuccess: Bool {
         return !error && countryCode != nil
     }
 
-    /// 是否为中国IP
+    /// Whether the IP address is located in China.
     var isChina: Bool {
         return countryCode == "CN"
     }
 
-    /// 是否为国外IP
+    /// Whether the IP address is located outside China.
     var isForeign: Bool {
         return isSuccess && !isChina
     }

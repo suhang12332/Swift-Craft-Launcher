@@ -1,12 +1,13 @@
 //
 //  AIChatInputAreaView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// AI 聊天输入区域视图
+/// Provides the text input area for AI chat messages.
 struct AIChatInputAreaView: View {
     @Binding var inputText: String
     @Binding var selectedGameId: String?
@@ -26,9 +27,7 @@ struct AIChatInputAreaView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            // 游戏选择器
             HStack(spacing: Constants.messageSpacing) {
-                // 只有当游戏列表不为空时才显示 Picker
                 if !games.isEmpty {
                     gameSelector
                 }
@@ -40,8 +39,6 @@ struct AIChatInputAreaView: View {
             .padding(.vertical, Constants.inputVerticalPadding)
         }
     }
-
-    // MARK: - View Components
 
     private var selectedGame: GameVersionInfo? {
         guard let selectedGameId = selectedGameId else { return nil }

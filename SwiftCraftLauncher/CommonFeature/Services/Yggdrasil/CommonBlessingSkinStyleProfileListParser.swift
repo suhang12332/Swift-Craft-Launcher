@@ -1,6 +1,13 @@
+//
+//  CommonBlessingSkinStyleProfileListParser.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// Blessing Skin 返回体解析（MUA 格式）
+/// Parses Blessing Skin profile list responses in MUA format.
 enum BlessingSkinProfileListParser {
     static func parse(data: Data, baseURL: String) -> [YggdrasilProfileCandidate]? {
         struct BlessingSkinProfileItem: Decodable {
@@ -61,7 +68,7 @@ enum BlessingSkinProfileListParser {
     }
 }
 
-/// MUA（Blessing Skin）通用解析器
+/// Parses MUA (Blessing Skin) profile list responses.
 struct CommonBlessingSkinStyleProfileListParser: YggdrasilProfileListParser {
     let id: YggdrasilProfileParserID = .mua
     private let baseURL: String

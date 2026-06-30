@@ -1,7 +1,14 @@
+//
+//  ModsDirectoryTreeWatcher.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import CoreServices
 
-/// 使用 FSEvents 监控整个目录树变化（包含子目录）
+/// Watches an entire directory tree for changes using FSEvents, including subdirectories.
 final class ModsDirectoryTreeWatcher {
     private var stream: FSEventStreamRef?
     private let rootPath: String
@@ -43,7 +50,7 @@ final class ModsDirectoryTreeWatcher {
             &context,
             pathsToWatch,
             FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
-            0.5,  // 合并短时间内的多次变更事件
+            0.5,  // Coalesces multiple change events within a short time window
             FSEventStreamCreateFlags(kFSEventStreamCreateFlagFileEvents)
         )
 
@@ -53,7 +60,7 @@ final class ModsDirectoryTreeWatcher {
         }
     }
 
-    /// 只对根目录下的直接子文件事件做响应，忽略子目录更深层级的变化
+    /// Responds only to direct child file events under the root directory, ignoring deeper changes.
     private func handleEvents(changedPaths: [String]) {
         let standardizedRoot = rootPath
         let prefix = standardizedRoot.hasSuffix("/") ? standardizedRoot : standardizedRoot + "/"

@@ -1,10 +1,18 @@
+//
+//  ServerAddressSectionViewModel.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// View model that manages server connection status checks and visibility computation for a list of server addresses.
 final class ServerAddressSectionViewModel: ObservableObject {
     @Published var serverStatuses: [String: ServerConnectionStatus] = [:]
     @Published var serverInfos: [String: MinecraftServerInfo] = [:]
 
-    /// 计算可见与溢出的服务器列表
+    /// Splits servers into visible and overflow items based on the configured maximum.
     func computeVisibleAndOverflowItems(
         from servers: [ServerAddress]
     ) -> ([ServerAddress], [ServerAddress]) {
@@ -14,7 +22,7 @@ final class ServerAddressSectionViewModel: ObservableObject {
         return (visibleItems, overflowItems)
     }
 
-    /// 并发检测所有服务器的连接状态
+    /// Checks connection status for all provided servers concurrently.
     func checkAllServers(for servers: [ServerAddress]) {
         guard !servers.isEmpty else { return }
         Task {
@@ -40,12 +48,10 @@ final class ServerAddressSectionViewModel: ObservableObject {
                 for await (serverId, status, serverInfo) in group {
                     await MainActor.run {
                         self.serverStatuses[serverId] = status
-                        // 清除旧的服务器信息，除非是成功状态且有有效信息
                         if case .success = status {
                             if let info = serverInfo {
                                 self.serverInfos[serverId] = info
                             }
-                            // 如果 serverInfo 为 nil，保持现有服务器信息不变
                         } else {
                             self.serverInfos.removeValue(forKey: serverId)
                         }

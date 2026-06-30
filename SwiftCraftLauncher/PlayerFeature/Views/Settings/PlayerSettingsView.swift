@@ -1,5 +1,16 @@
+//
+//  PlayerSettingsView.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
+/// Displays and manages player-related settings in the launcher configuration.
+///
+/// This view provides toggles for ephemeral login, offline login, skin library,
+/// Minecraft friend presence notifications, and authlib-injector management.
 public struct PlayerSettingsView: View {
     @StateObject private var playerSettings: PlayerSettingsManager
     @StateObject private var viewModel = PlayerSettingsViewModel()

@@ -1,9 +1,14 @@
+//
+//  LitematicaModelsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class LitematicaModelsTests: XCTestCase {
-
-    // MARK: - LitematicaInfo
 
     func testLitematicaInfo_init_defaults() {
         let info = LitematicaInfo(
@@ -57,8 +62,6 @@ final class LitematicaModelsTests: XCTestCase {
         XCTAssertEqual(info.id, "MyProject.litematic")
     }
 
-    // MARK: - LitematicMetadata
-
     func testLitematicMetadata_init() {
         let meta = LitematicMetadata(
             name: "Castle",
@@ -81,8 +84,6 @@ final class LitematicaModelsTests: XCTestCase {
         XCTAssertEqual(meta.enclosingSize.x, 10)
         XCTAssertEqual(meta.regionCount, 1)
     }
-
-    // MARK: - Size
 
     func testSize_init() {
         let size = Size(x: 10, y: 20, z: 30)

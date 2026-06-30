@@ -1,3 +1,11 @@
+//
+//  GameHeaderListRow.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A list row displaying the game icon, name, version info, and cache size.
 import SwiftUI
 import Combine
 
@@ -80,7 +88,7 @@ struct GameHeaderListRow: View {
         )
     }
 
-    /// 图标文件 URL（基础路径）
+    /// The URL of the icon file in the game profile directory.
     private var iconFileURL: URL? {
         let trimmed = game.gameIcon.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
@@ -93,7 +101,7 @@ struct GameHeaderListRow: View {
         return url
     }
 
-    /// 带刷新参数的 URL，用于绕过 AsyncImage 的缓存命中
+    /// A cache-busting URL that appends a refresh query parameter.
     private var iconDisplayURL: URL? {
         guard let baseURL = iconFileURL else { return nil }
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
@@ -173,10 +181,10 @@ struct GameHeaderListRow: View {
 
     @ViewBuilder
     private func styledIcon(_ image: Image, size: CGFloat) -> some View {
-        let padding = size * Self.iconPaddingRatio // padding 为 size 的 12.5%（80 时是 10）
+        let padding = size * Self.iconPaddingRatio
         let innerSize = size - padding * 2
-        let innerCornerRadius = innerSize * Self.iconCornerRadiusRatio // 内层圆角为内层尺寸的 20%
-        let outerCornerRadius = size * Self.iconCornerRadiusRatio // 外层圆角为外层尺寸的 20%
+        let innerCornerRadius = innerSize * Self.iconCornerRadiusRatio
+        let outerCornerRadius = size * Self.iconCornerRadiusRatio
 
         image
             .resizable()

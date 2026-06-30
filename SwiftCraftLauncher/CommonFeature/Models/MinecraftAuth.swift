@@ -1,6 +1,12 @@
+//
+//  MinecraftAuth.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-// MARK: - Authorization Code Flow Response
 struct AuthorizationCodeResponse {
     let code: String?
     let error: String?
@@ -27,7 +33,6 @@ struct AuthorizationCodeResponse {
     }
 }
 
-// MARK: - Token Response
 struct TokenResponse: Codable {
     let accessToken: String
     let refreshToken: String?
@@ -38,7 +43,6 @@ struct TokenResponse: Codable {
     }
 }
 
-// MARK: - Xbox Live Token Response
 struct XboxLiveTokenResponse: Codable {
     let token: String
     let displayClaims: DisplayClaims
@@ -65,7 +69,6 @@ struct XUI: Codable {
     }
 }
 
-// MARK: - Minecraft Profile Response
 struct MinecraftProfileResponse: Codable, Equatable {
     let id: String
     let name: String
@@ -88,7 +91,6 @@ struct MinecraftProfileResponse: Codable, Equatable {
         name = try container.decode(String.self, forKey: .name)
         skins = try container.decode([Skin].self, forKey: .skins)
         capes = try container.decodeIfPresent([Cape].self, forKey: .capes)
-        // 这些字段将在外部设置
         accessToken = ""
         authXuid = ""
         refreshToken = ""
@@ -118,7 +120,6 @@ struct Cape: Codable, Equatable {
     let alias: String?
 }
 
-// MARK: - Minecraft Entitlements Response
 struct MinecraftEntitlementsResponse: Codable {
     let items: [EntitlementItem]
     let signature: String
@@ -130,7 +131,6 @@ struct EntitlementItem: Codable {
     let signature: String
 }
 
-// MARK: - Entitlement Names
 enum MinecraftEntitlement: String, CaseIterable {
     case productMinecraft = "product_minecraft"
     case gameMinecraft = "game_minecraft"
@@ -145,11 +145,11 @@ enum MinecraftEntitlement: String, CaseIterable {
     }
 }
 
-// MARK: - Authentication State
+/// The current state of the Microsoft authentication flow.
 enum AuthenticationState: Equatable {
     case notAuthenticated
-    case waitingForBrowserAuth          // 等待用户在浏览器中完成授权
-    case processingAuthCode             // 处理授权码
+    case waitingForBrowserAuth
+    case processingAuthCode
     case authenticated(profile: MinecraftProfileResponse)
     case error(String)
 }

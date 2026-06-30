@@ -1,19 +1,19 @@
 //
 //  ModrinthLoaderModels.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/7/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-// MARK: - SidedDataEntry
+/// A data entry with separate client and server values.
 struct SidedDataEntry: Codable {
     let client: String
     let server: String
 }
 
-// MARK: - Processor
+/// A processor that transforms library artifacts during installation.
 struct Processor: Codable {
     let sides: [String]?
     let jar: String?
@@ -26,26 +26,26 @@ struct Processor: Codable {
     }
 }
 
-// MARK: - LoaderVersion
+/// A loader version with its supported game versions.
 struct LoaderVersion: Decodable {
     let id: String
     let stable: Bool
     let loaders: [LoaderInfo]
 }
 
-// MARK: - LoaderInfo
+/// Loader metadata describing a specific mod loader.
 struct LoaderInfo: Decodable {
     let id: String
     let url: String
     let stable: Bool
 }
 
-// MARK: - ModrinthLoaderVersion
+/// The Modrinth loader version response containing game version mappings.
 struct ModrinthLoaderVersion: Decodable {
     let gameVersions: [LoaderVersion]
 }
 
-// MARK: - ModrinthLoader
+/// A Modrinth mod loader configuration with libraries and processors.
 struct ModrinthLoader: Codable {
     let mainClass: String
     let arguments: Arguments
@@ -78,7 +78,7 @@ struct ModrinthLoader: Codable {
     }
 }
 
-// MARK: - ModrinthLoaderLibrary
+/// A library dependency used by a Modrinth mod loader.
 struct ModrinthLoaderLibrary: Codable {
     var downloads: LibraryDownloads?
     var name: String

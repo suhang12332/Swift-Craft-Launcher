@@ -1,9 +1,14 @@
+//
+//  LoaderURLConfigTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class LoaderURLConfigTests: XCTestCase {
-
-    // MARK: - Fabric
 
     func testFabricLoaderURL() {
         let url = URLConfig.API.Fabric.loader
@@ -15,8 +20,6 @@ final class LoaderURLConfigTests: XCTestCase {
         XCTAssertTrue(url.absoluteString.hasSuffix("1.20.1"))
     }
 
-    // MARK: - Quilt
-
     func testQuiltLoaderBaseURL() {
         let url = URLConfig.API.Quilt.loaderBase
         XCTAssertEqual(url.absoluteString, "https://meta.quiltmc.org/v3/versions/loader/")
@@ -26,8 +29,6 @@ final class LoaderURLConfigTests: XCTestCase {
         let url = URLConfig.API.Quilt.loaderBase.appendingPathComponent("1.20.1")
         XCTAssertTrue(url.absoluteString.contains("1.20.1"))
     }
-
-    // MARK: - Modrinth Loader Profile
 
     func testModrinthLoaderProfile_fabric() {
         let url = URLConfig.API.Modrinth.loaderProfile(loader: "fabric", version: "0.14.21")
@@ -54,8 +55,6 @@ final class LoaderURLConfigTests: XCTestCase {
         XCTAssertTrue(url.absoluteString.contains("0.26.0"))
     }
 
-    // MARK: - Modrinth Loader Manifest
-
     func testModrinthLoaderManifest_fabric() {
         let url = URLConfig.API.Modrinth.loaderManifest(loader: "fabric")
         XCTAssertTrue(url.absoluteString.contains("fabric"))
@@ -67,8 +66,6 @@ final class LoaderURLConfigTests: XCTestCase {
         XCTAssertTrue(url.absoluteString.contains("neo"))
         XCTAssertTrue(url.absoluteString.contains("manifest.json"))
     }
-
-    // MARK: - URL Structure Validation
 
     func testLoaderProfileURL_hasCorrectScheme() {
         let url = URLConfig.API.Modrinth.loaderProfile(loader: "fabric", version: "0.14.21")

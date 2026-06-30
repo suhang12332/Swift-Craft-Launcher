@@ -1,6 +1,14 @@
+//
+//  SkinToolDetailViewModel+Cleanup.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 extension SkinToolDetailViewModel {
+    /// Resets all selected and cached data, cancels all pending operations, and cleans up temporary files.
     func clearAllData() {
         loadCapeTask?.cancel()
         loadSkinImageTask?.cancel()
@@ -42,6 +50,7 @@ extension SkinToolDetailViewModel {
         lastCurrentActiveCapeId = nil
     }
 
+    /// Deletes temporary skin and cape files that were written to the system temporary directory.
     func deleteTemporaryFiles() {
         let fileManager = FileManager.default
 

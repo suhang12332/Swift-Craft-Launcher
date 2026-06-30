@@ -1,21 +1,32 @@
+//
+//  AIChatScrollCoordinatorViewModel.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Coordinates automatic scroll behavior in the AI chat interface.
 @MainActor
 final class AIChatScrollCoordinatorViewModel: ObservableObject {
     private var lastContentLength: Int = 0
     private var scrollTask: Task<Void, Never>?
     private var periodicScrollTask: Task<Void, Never>?
 
+    /// Handles changes to the last message content length.
     func onLastMessageChanged(contentLength: Int, scrollToBottom: @escaping @MainActor () -> Void) {
         lastContentLength = contentLength
         scheduleScroll(scrollToBottom: scrollToBottom)
     }
 
+    /// Handles changes to the message count.
     func onMessagesCountChanged(hasLastMessage: Bool, scrollToBottom: @escaping @MainActor () -> Void) {
         guard hasLastMessage else { return }
         scheduleScroll(scrollToBottom: scrollToBottom)
     }
 
+    /// Handles transitions between sending and idle states.
     func onSendingChanged(
         wasSending: Bool,
         isSending: Bool,
@@ -35,6 +46,7 @@ final class AIChatScrollCoordinatorViewModel: ObservableObject {
         }
     }
 
+    /// Starts periodic scroll checking if currently sending.
     func onAppearIfSending(
         isSending: Bool,
         scrollToBottom: @escaping @MainActor () -> Void,
@@ -49,13 +61,12 @@ final class AIChatScrollCoordinatorViewModel: ObservableObject {
         }
     }
 
+    /// Stops all scroll tasks when the view disappears.
     func onDisappear() {
         stopPeriodicScrollCheck()
         scrollTask?.cancel()
         scrollTask = nil
     }
-
-    // MARK: - Internal
 
     private func scheduleScroll(scrollToBottom: @escaping @MainActor () -> Void) {
         scrollTask?.cancel()

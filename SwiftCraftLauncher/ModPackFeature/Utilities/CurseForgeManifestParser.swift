@@ -1,17 +1,21 @@
+//
+//  CurseForgeManifestParser.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import ZIPFoundation
 
-/// CurseForge 整合包 manifest.json 解析器
+/// Parses a CurseForge modpack's manifest.json file.
 enum CurseForgeManifestParser {
 
-    // MARK: - Public Methods
-
-    /// 解析 CurseForge 整合包的 manifest.json 文件
-    /// - Parameter extractedPath: 解压后的整合包路径
-    /// - Returns: 解析后的 Modrinth 索引信息
+    /// Parses the manifest.json file within an extracted CurseForge modpack.
+    /// - Parameter extractedPath: The path to the extracted modpack directory.
+    /// - Returns: The parsed Modrinth index information, or `nil` if parsing fails.
     static func parseManifest(extractedPath: URL) async -> ModrinthIndexInfo? {
         do {
-            // 查找 manifest.json 文件
             let manifestPath = extractedPath.appendingPathComponent("manifest.json")
 
             Logger.shared.info("尝试解析 CurseForge manifest.json: \(manifestPath.path)")
@@ -31,7 +35,6 @@ enum CurseForgeManifestParser {
                 return nil
             }
 
-            // 获取文件大小
             let fileAttributes = try FileManager.default.attributesOfItem(atPath: manifestPath.path)
             let fileSize = fileAttributes[.size] as? Int64 ?? 0
             Logger.shared.info("manifest.json 文件大小: \(fileSize) 字节")
@@ -41,24 +44,19 @@ enum CurseForgeManifestParser {
                 return nil
             }
 
-            // 读取并解析文件
             let manifestData = try Data(contentsOf: manifestPath)
             Logger.shared.info("成功读取 manifest.json 数据，大小: \(manifestData.count) 字节")
 
-            // 尝试解析 JSON
             let manifest = try JSONDecoder().decode(CurseForgeManifest.self, from: manifestData)
 
-            // 提取加载器信息
             let loaderInfo = determineLoaderInfo(from: manifest.minecraft.modLoaders)
 
-            // 生成版本信息
             let modPackVersion = manifest.version ?? generateAutoVersion(
                 modPackName: manifest.name,
                 gameVersion: manifest.minecraft.version,
                 loaderInfo: loaderInfo
             )
 
-            // 转换为 Modrinth 格式
             let modrinthInfo = await convertToModrinthFormat(
                 manifest: manifest,
                 loaderInfo: loaderInfo,
@@ -84,32 +82,26 @@ enum CurseForgeManifestParser {
         }
     }
 
-    // MARK: - Helper Methods
-
-    /// 从模组加载器列表中确定加载器类型和版本
-    /// - Parameter modLoaders: 模组加载器列表
-    /// - Returns: 加载器类型和版本
+    /// Determines the loader type and version from a list of mod loaders.
+    /// - Parameter modLoaders: The list of mod loaders from the manifest.
+    /// - Returns: A tuple containing the loader type and version.
     private static func determineLoaderInfo(from modLoaders: [CurseForgeModLoader]) -> (type: String, version: String) {
-        // 查找主要的模组加载器
         guard let primaryLoader = modLoaders.first(where: { $0.primary }) ?? modLoaders.first else {
             return (GameLoader.vanilla.displayName, "unknown")
         }
 
         let loaderId = primaryLoader.id.lowercased()
 
-        // 解析加载器 ID，格式通常是 "forge-40.2.0" 或 "fabric-0.14.21"
         let components = loaderId.split(separator: "-")
 
         if components.count >= 2 {
             let loaderType = String(components[0])
             let loaderVersion = components.dropFirst().joined(separator: "-")
 
-            // 标准化加载器类型名称
             let normalizedType = normalizeLoaderType(loaderType)
 
             return (normalizedType, loaderVersion)
         } else {
-            // 如果格式不标准，尝试从 ID 中提取类型
             if loaderId.contains(GameLoader.forge.displayName) {
                 return (GameLoader.forge.displayName, "unknown")
             } else if loaderId.contains(GameLoader.fabric.displayName) {
@@ -124,9 +116,9 @@ enum CurseForgeManifestParser {
         }
     }
 
-    /// 标准化加载器类型名称
-    /// - Parameter loaderType: 原始加载器类型
-    /// - Returns: 标准化后的加载器类型
+    /// Normalizes a loader type string to its canonical display name.
+    /// - Parameter loaderType: The raw loader type string.
+    /// - Returns: The normalized loader type.
     private static func normalizeLoaderType(_ loaderType: String) -> String {
         switch loaderType.lowercased() {
         case GameLoader.forge.displayName:
@@ -142,36 +134,33 @@ enum CurseForgeManifestParser {
         }
     }
 
-    /// 自动生成整合包版本号
+    /// Generates an automatic version string for a modpack.
     /// - Parameters:
-    ///   - modPackName: 整合包名称
-    ///   - gameVersion: 游戏版本
-    ///   - loaderInfo: 加载器信息
-    /// - Returns: 自动生成的版本号
+    ///   - modPackName: The name of the modpack.
+    ///   - gameVersion: The Minecraft game version.
+    ///   - loaderInfo: The mod loader information.
+    /// - Returns: A generated version string in the format `gameVersion-loaderType-date`.
     private static func generateAutoVersion(
         modPackName: String,
         gameVersion: String,
         loaderInfo: (type: String, version: String)
     ) -> String {
-        // 创建当前时间戳
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyyMMdd"
         let dateString = dateFormatter.string(from: Date())
 
-        // 生成版本格式：游戏版本-加载器类型-日期
-        // 例如：1.20.1-forge-20241212
         let autoVersion = "\(gameVersion)-\(loaderInfo.type)-\(dateString)"
 
         Logger.shared.info("自动生成整合包版本: \(autoVersion)")
         return autoVersion
     }
 
-    /// 将 CurseForge manifest 转换为 Modrinth 格式
+    /// Converts a CurseForge manifest to Modrinth index format.
     /// - Parameters:
-    ///   - manifest: CurseForge manifest
-    ///   - loaderInfo: 加载器信息
-    ///   - generatedVersion: 生成的版本号（用于缺少version字段的情况）
-    /// - Returns: Modrinth 索引信息
+    ///   - manifest: The CurseForge manifest to convert.
+    ///   - loaderInfo: The mod loader information.
+    ///   - generatedVersion: The version string (used when the manifest lacks a version field).
+    /// - Returns: A Modrinth index info with placeholder file entries.
     private static func convertToModrinthFormat(
         manifest: CurseForgeManifest,
         loaderInfo: (type: String, version: String),
@@ -182,15 +171,15 @@ enum CurseForgeManifestParser {
         var modrinthFiles: [ModrinthIndexFile] = []
 
         for file in manifest.files {
-            let placeholderPath = "mods/curseforge_\(file.projectID)_\(file.fileID).jar" // 临时路径
+            let placeholderPath = "mods/curseforge_\(file.projectID)_\(file.fileID).jar"
 
             modrinthFiles.append(ModrinthIndexFile(
                 path: placeholderPath,
-                hashes: ModrinthIndexFileHashes(from: [:]), // CurseForge 不提供哈希
-                downloads: [], // 下载URL将在下载时获取
-                fileSize: 0, // 文件大小将在下载时获取
-                env: nil, // 默认环境
-                source: .curseforge, // 标记来源为 CurseForge
+                hashes: ModrinthIndexFileHashes(from: [:]),
+                downloads: [],
+                fileSize: 0,
+                env: nil,
+                source: .curseforge,
                 curseForgeProjectId: file.projectID,
                 curseForgeFileId: file.fileID
             ))
@@ -205,8 +194,8 @@ enum CurseForgeManifestParser {
             modPackName: manifest.name,
             modPackVersion: generatedVersion,
             summary: "",
-            files: modrinthFiles, // CurseForge 文件转换为 Modrinth 文件（占位符）
-            dependencies: [], // CurseForge 格式没有额外的依赖项
+            files: modrinthFiles,
+            dependencies: [],
             source: .curseforge
         )
     }

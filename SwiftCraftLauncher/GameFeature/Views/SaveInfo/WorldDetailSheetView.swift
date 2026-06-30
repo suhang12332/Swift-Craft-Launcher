@@ -1,15 +1,14 @@
 //
 //  WorldDetailSheetView.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/29.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// Displays world details read from level.dat including game settings, seed, and NBT data.
 import SwiftUI
 
-/// 世界详细信息视图（读取 level.dat）
 struct WorldDetailSheetView: View {
-    // MARK: - Properties
     @StateObject private var viewModel: WorldDetailSheetViewModel
     @Environment(\.dismiss)
     private var dismiss
@@ -18,7 +17,6 @@ struct WorldDetailSheetView: View {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
 
-    // MARK: - Body
     var body: some View {
         CommonSheetView(
             header: { headerView },
@@ -41,7 +39,6 @@ struct WorldDetailSheetView: View {
         }
     }
 
-    // MARK: - Header View
     private var headerView: some View {
         HStack {
             Text(viewModel.world.name)
@@ -60,7 +57,6 @@ struct WorldDetailSheetView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    // MARK: - Body View
     private var bodyView: some View {
         Group {
             if let metadata = viewModel.metadata {
@@ -99,7 +95,6 @@ struct WorldDetailSheetView: View {
         }
     }
 
-    // MARK: - Footer View
     private var footerView: some View {
         HStack {
             Label {

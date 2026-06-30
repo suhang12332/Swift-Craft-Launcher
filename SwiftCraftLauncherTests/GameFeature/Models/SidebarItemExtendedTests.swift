@@ -1,9 +1,14 @@
+//
+//  SidebarItemExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class SidebarItemExtendedTests: XCTestCase {
-
-    // MARK: - title
 
     func testTitle_game() {
         let item = SidebarItem.game("test-game")
@@ -40,8 +45,6 @@ final class SidebarItemExtendedTests: XCTestCase {
         XCTAssertFalse(item.title.isEmpty)
     }
 
-    // MARK: - Equatable
-
     func testEquatable_game_sameId() {
         let a = SidebarItem.game("id1")
         let b = SidebarItem.game("id1")
@@ -71,8 +74,6 @@ final class SidebarItemExtendedTests: XCTestCase {
         let b = SidebarItem.resource(.mod)
         XCTAssertNotEqual(a, b)
     }
-
-    // MARK: - ResourceType
 
     func testResourceType_localizedName_notEmpty() {
         for type in ResourceType.allCases {

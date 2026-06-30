@@ -1,9 +1,14 @@
+//
+//  ModrinthModelMappersTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModrinthModelMappersTests: XCTestCase {
-
-    // MARK: - ModrinthProject.from(detail:)
 
     func testModrinthProject_fromDetail() throws {
         let detail = try makeDetail(DetailParams(
@@ -69,8 +74,6 @@ final class ModrinthModelMappersTests: XCTestCase {
 
         XCTAssertEqual(project.displayCategories, ["library", "utility"])
     }
-
-    // MARK: - Helpers
 
     private struct DetailParams {
         var id: String

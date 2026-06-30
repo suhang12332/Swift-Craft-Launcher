@@ -1,12 +1,15 @@
 //
 //  ModPackExporter+CopyAndArchive.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
 extension ModPackExporter {
 
+    /// Copies selected resource files to the overrides directory during export.
     static func copyFiles(
         params: CopyFilesParams,
         copyCounter: CopyCounter,
@@ -63,6 +66,7 @@ extension ModPackExporter {
         }
     }
 
+    /// Builds the manifest file and creates the final archive.
     static func buildIndexAndArchive(
         params: IndexBuildParams,
         tempDir: URL,
@@ -80,6 +84,7 @@ extension ModPackExporter {
         try ModPackArchiver.archive(tempDir: tempDir, outputPath: outputPath, rootFiles: rootFileNames)
     }
 
+    /// Writes the export manifest file (Modrinth or CurseForge) to the temp directory.
     static func writeManifestFile(params: IndexBuildParams, tempDir: URL) async throws -> [String] {
         switch params.exportFormat {
         case .modrinth:
@@ -90,10 +95,9 @@ extension ModPackExporter {
     }
 }
 
-// MARK: - Progress Management Types
-
 extension ModPackExporter {
 
+    /// Tracks scan and copy progress during export.
     actor ProgressUpdater {
         private var scanProgress: ExportProgress.ProgressItem?
         private var copyProgress: ExportProgress.ProgressItem?
@@ -160,6 +164,7 @@ extension ModPackExporter {
         }
     }
 
+    /// Thread-safe counter for processed scan items.
     actor ProcessedCounter {
         private var count = 0
 
@@ -169,6 +174,7 @@ extension ModPackExporter {
         }
     }
 
+    /// Thread-safe counter for copied files.
     actor CopyCounter {
         private var count = 0
         private let total: Int

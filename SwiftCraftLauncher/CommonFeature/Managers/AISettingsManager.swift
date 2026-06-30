@@ -1,13 +1,15 @@
 //
 //  AISettingsManager.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  Manages AI service configuration including provider selection, API keys, and model settings.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 import SwiftUI
 
-/// AI 提供商枚举
+/// Represents an available AI service provider.
 enum AIProvider: String, CaseIterable, Identifiable {
     case openai = "openai"
     case ollama = "ollama"
@@ -37,7 +39,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         }
     }
 
-    /// API 格式类型
+    /// The API request format for this provider.
     var apiFormat: APIFormat {
         switch self {
         case .openai:
@@ -49,7 +51,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         }
     }
 
-    /// API 路径
+    /// The API endpoint path for chat completions.
     var apiPath: String {
         switch self {
         case .openai:
@@ -62,14 +64,14 @@ enum AIProvider: String, CaseIterable, Identifiable {
     }
 }
 
-/// API 格式枚举
+/// The request format used to communicate with an AI provider.
 enum APIFormat {
-    case openAI  // OpenAI 格式（兼容 DeepSeek 等）
+    case openAI  // Compatible with DeepSeek and similar services
     case ollama
 //    case gemini
 }
 
-/// AI 设置管理器
+/// Manages persistent AI service settings including provider, API key, and model configuration.
 class AISettingsManager: ObservableObject {
     static let shared = AISettingsManager()
 
@@ -88,35 +90,28 @@ class AISettingsManager: ObservableObject {
 
     private var _cachedApiKey: String?
 
-    /// AI API Key（使用 Keychain 安全存储，带内存缓存）
+    /// The API key for the selected AI provider, stored securely in Keychain with in-memory caching.
     var apiKey: String {
         get {
-            // 如果缓存已存在，直接返回
             if let cached = _cachedApiKey {
                 return cached
             }
 
-            // 从 Keychain 读取并缓存
             if let data = KeychainManager.load(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey),
                let key = String(data: data, encoding: .utf8) {
                 _cachedApiKey = key
                 return key
             }
 
-            // Keychain 中没有数据，缓存空字符串
             _cachedApiKey = ""
             return ""
         }
         set {
-            // 更新缓存
             _cachedApiKey = newValue.isEmpty ? "" : newValue
 
-            // 保存到 Keychain
             if newValue.isEmpty {
-                // 如果为空，删除 Keychain 中的项
                 _ = KeychainManager.delete(account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
             } else {
-                // 保存到 Keychain
                 if let data = newValue.data(using: .utf8) {
                     _ = KeychainManager.save(data: data, account: AppConstants.KeychainAccounts.aiSettings, key: AppConstants.KeychainKeys.apiKey)
                 }
@@ -153,6 +148,7 @@ class AISettingsManager: ObservableObject {
         }
     }
 
+    /// Returns the full API endpoint URL for the current provider.
     func getAPIURL() -> String {
         if selectedProvider == .ollama {
             let url = ollamaBaseURL.isEmpty ? selectedProvider.baseURL : ollamaBaseURL
@@ -165,6 +161,7 @@ class AISettingsManager: ObservableObject {
         }
     }
 
+    /// Returns the configured model name, trimmed of whitespace.
     func getModel() -> String {
         return modelOverride.trimmingCharacters(in: .whitespacesAndNewlines)
     }

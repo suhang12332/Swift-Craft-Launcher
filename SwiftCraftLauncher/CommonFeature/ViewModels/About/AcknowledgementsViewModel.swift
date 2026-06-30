@@ -1,5 +1,13 @@
+//
+//  AcknowledgementsViewModel.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Manages loading and display of open-source library acknowledgements.
 @MainActor
 final class AcknowledgementsViewModel: ObservableObject {
     @Published var libraries: [OpenSourceLibrary] = []
@@ -17,6 +25,7 @@ final class AcknowledgementsViewModel: ObservableObject {
         self.init(gitHubService: AppServices.gitHubService)
     }
 
+    /// Loads acknowledgement data from the GitHub service.
     func load() {
         loadTask?.cancel()
 
@@ -48,6 +57,7 @@ final class AcknowledgementsViewModel: ObservableObject {
         }
     }
 
+    /// Clears all loaded data and resets the loading state.
     func clearAllData() {
         loadTask?.cancel()
         loadTask = nil
@@ -58,6 +68,7 @@ final class AcknowledgementsViewModel: ObservableObject {
     }
 }
 
+/// Represents an open-source library used in the project.
 struct OpenSourceLibrary: Codable, Hashable, Identifiable {
     var id: String { "\(name)|\(url)" }
 

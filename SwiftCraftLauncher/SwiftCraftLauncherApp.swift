@@ -1,10 +1,9 @@
 //
 //  SwiftCraftLauncherApp.swift
-//  Swift Craft Launcher
-//
-//  Created by su on 2025/5/30.
+//  SwiftCraftLauncher
 //
 //  Swift Craft Launcher - A modern macOS Minecraft launcher
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -28,9 +27,9 @@ import SwiftUI
 import UserNotifications
 import Combine
 
+/// The entry point and root scene of SwiftCraftLauncher.
 @main
 struct SwiftCraftLauncherApp: App {
-    // MARK: - StateObjects
     @StateObject var playerListViewModel = PlayerListViewModel()
     @StateObject var gameRepository = GameRepository()
     @StateObject var gameLaunchUseCase = GameLaunchUseCase()
@@ -40,9 +39,9 @@ struct SwiftCraftLauncherApp: App {
     @Environment(\.openSettings)
     private var openSettings
 
-    // MARK: - Notification Delegate
     private let notificationCenterDelegate = NotificationCenterDelegate()
 
+    /// Configures global services and applies app‑level settings.
     init() {
         _generalSettingsManager = StateObject(wrappedValue: AppServices.generalSettingsManager)
         _themeManager = StateObject(wrappedValue: AppServices.themeManager)
@@ -53,7 +52,7 @@ struct SwiftCraftLauncherApp: App {
         AppServices.freeze()
     }
 
-    // MARK: - Body
+    /// The app's scene hierarchy.
     var body: some Scene {
         Window(Bundle.main.appName, id: AppWindowID.main.rawValue) {
             MainView()
@@ -124,6 +123,7 @@ struct SwiftCraftLauncherApp: App {
         )
     }
 
+    /// Configures the shared URL cache with app‑defined capacity limits.
     private static func configureURLCache() {
         URLCache.shared = URLCache(
             memoryCapacity: AppConstants.URLCacheConfig.memoryCapacity,
@@ -132,6 +132,8 @@ struct SwiftCraftLauncherApp: App {
         )
     }
 
+    /// Sets up the notification center delegate and requests authorization.
+    /// - Parameter delegate: The delegate for `UNUserNotificationCenter`.
     private static func configureNotifications(delegate: UNUserNotificationCenterDelegate) {
         UNUserNotificationCenter.current().delegate = delegate
         Task {
@@ -139,6 +141,7 @@ struct SwiftCraftLauncherApp: App {
         }
     }
 
+    /// Cleans up window‑specific persisted data that should not survive a launch.
     private func cleanupWindowDataOnLaunch() {
         AppServices.windowDataStore.cleanup(for: .aiChat)
         AppServices.windowDataStore.cleanup(for: .skinPreview)

@@ -1,8 +1,11 @@
 //
 //  MenuBarExtraContentView.swift
-//  Swift Craft Launcher
+//  MainFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
+
+/// Content view for the macOS menu bar extra, listing games, players, and app actions.
 
 import AppKit
 import SwiftUI
@@ -28,6 +31,7 @@ struct MenuBarExtraContentView: View {
         self.aiChatManager = aiChatManager
     }
 
+    /// Returns the SF Symbol name reflecting the game's current launch or running state.
     private func gameStatusSymbolName(for game: GameVersionInfo) -> String {
         let userId = playerListViewModel.currentPlayer?.id ?? ""
         let isRunning = gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: userId)
@@ -107,6 +111,7 @@ struct MenuBarExtraContentView: View {
         }
     }
 
+    /// Synchronizes cached running states for all games.
     private func syncMenuBarGameStatuses() {
         gameStatusManager.syncRunningStates(
             for: gameRepository.games,

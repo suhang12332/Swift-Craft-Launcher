@@ -1,12 +1,13 @@
 //
 //  ContributorsModels.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// 贡献类型枚举
+/// Defines contribution types for contributors.
 enum Contribution: String, CaseIterable {
     case code = "contributor.contribution.code"
     case design = "contributor.contribution.design"
@@ -31,7 +32,7 @@ enum Contribution: String, CaseIterable {
     }
 }
 
-/// 静态贡献者
+/// Represents a contributor defined in static configuration.
 struct StaticContributor {
     let name: String
     let url: String
@@ -39,7 +40,7 @@ struct StaticContributor {
     let contributions: [Contribution]
 }
 
-/// JSON 数据模型
+/// The root model for contributors data loaded from JSON.
 struct ContributorsData: Codable {
     let contributors: [ContributorData]
 }

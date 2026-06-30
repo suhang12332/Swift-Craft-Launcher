@@ -1,6 +1,13 @@
+//
+//  YggdrasilServerPresets.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// Yggdrasil 服务器预设（LittleSkin / MUA）
+/// Predefined Yggdrasil server configurations.
 enum YggdrasilServerPresets {
     static let servers: [YggdrasilServerConfig] = [
         YggdrasilServerConfig(

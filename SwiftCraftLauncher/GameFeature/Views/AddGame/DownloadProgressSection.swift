@@ -1,12 +1,13 @@
 //
 //  DownloadProgressSection.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// Displays download progress for game core files, mod loaders, and mod packs.
 import SwiftUI
 
-// MARK: - Download Progress Section
 struct DownloadProgressSection: View {
     @ObservedObject var gameSetupService: GameSetupUtil
     var modPackViewModel: ModPackDownloadSheetViewModel?
@@ -27,18 +28,14 @@ struct DownloadProgressSection: View {
 
     var body: some View {
         VStack(spacing: 24) {
-            // 游戏核心下载进度
             gameDownloadProgressView
-            // 模组加载器下载进度
             modLoaderProgressView
-            // 整合包安装进度
             if let modPackViewModel = modPackViewModel {
                 ModPackProgressView(modPackViewModel: modPackViewModel)
             }
         }
     }
 
-    // MARK: - Game Download Progress
     private var gameDownloadProgressView: some View {
         VStack(spacing: 24) {
             progressSection(
@@ -54,7 +51,6 @@ struct DownloadProgressSection: View {
         }
     }
 
-    // MARK: - Mod Loader Progress
     @ViewBuilder private var modLoaderProgressView: some View {
         if let loaderProgressInfo = getLoaderProgressInfo() {
             progressSection(
@@ -65,8 +61,6 @@ struct DownloadProgressSection: View {
             )
         }
     }
-
-    // MARK: - Helper Methods
 
     private enum ProgressType {
         case core
@@ -100,7 +94,6 @@ struct DownloadProgressSection: View {
     private func getLoaderProgressInfo() -> LoaderProgressInfo? {
         let loaderType = selectedModLoader.lowercased()
 
-        // 如果是整合包模式，使用整合包的加载器信息
         if let indexInfo = modPackIndexInfo {
             let loaderState = getLoaderDownloadState(for: indexInfo.loaderType)
             let title = getLoaderTitle(for: indexInfo.loaderType)
@@ -113,7 +106,6 @@ struct DownloadProgressSection: View {
                 )
             }
         } else {
-            // 普通游戏创建模式
             let state = getLoaderDownloadState(for: loaderType)
             let title = getLoaderTitle(for: loaderType)
 
@@ -158,14 +150,13 @@ struct DownloadProgressSection: View {
     }
 }
 
-// MARK: - ModPack Progress View
+/// Displays download progress for mod pack installation components.
 private struct ModPackProgressView: View {
     @ObservedObject var modPackViewModel: ModPackDownloadSheetViewModel
 
     var body: some View {
         if modPackViewModel.modPackInstallState.isInstalling {
             VStack(spacing: 24) {
-                // 显示 overrides 进度条（只有在有文件需要合并时才显示）
                 if modPackViewModel.modPackInstallState.overridesTotal > 0 {
                     modPackProgressSection(
                         title: "modpack.copying_files".localized(),

@@ -1,23 +1,29 @@
+//
+//  CurseForgeService+Search.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides search operations for CurseForge projects.
 extension CurseForgeService {
-    // MARK: - Search Methods
 
-    /// 搜索项目（静默版本）
+    /// Searches CurseForge projects.
     /// - Parameters:
-    ///   - gameId: 游戏 ID（Minecraft 为 432）
-    ///   - classId: 内容类型 ID（可选）
-    ///   - categoryId: 分类 ID（可选，会被 categoryIds 覆盖）
-    ///   - categoryIds: 分类 ID 列表（可选，会覆盖 categoryId，最多 10 个）
-    ///   - gameVersion: 游戏版本（可选，会被 gameVersions 覆盖）
-    ///   - gameVersions: 游戏版本列表（可选，会覆盖 gameVersion，最多 4 个）
-    ///   - searchFilter: 搜索关键词（可选）
-    ///   - modLoaderType: 模组加载器类型（可选，会被 modLoaderTypes 覆盖）
-    ///   - modLoaderTypes: 模组加载器类型列表（可选，会覆盖 modLoaderType，最多 5 个）
-    ///   - index: 页码索引（可选）
-    ///   - pageSize: 每页大小（可选）
-    /// - Returns: 搜索结果，失败时返回空结果
-    /// - Note: API 限制：categoryIds 最多 10 个，gameVersions 最多 4 个，modLoaderTypes 最多 5 个
+    ///   - gameId: The game identifier (432 for Minecraft).
+    ///   - classId: An optional content type identifier.
+    ///   - categoryId: An optional category identifier (overridden by `categoryIds`).
+    ///   - categoryIds: An optional array of category identifiers (overrides `categoryId`, max 10).
+    ///   - gameVersion: An optional game version (overridden by `gameVersions`).
+    ///   - gameVersions: An optional array of game versions (overrides `gameVersion`, max 4).
+    ///   - searchFilter: An optional search keyword.
+    ///   - modLoaderType: An optional mod loader type (overridden by `modLoaderTypes`).
+    ///   - modLoaderTypes: An optional array of mod loader types (overrides `modLoaderType`, max 5).
+    ///   - index: The page index.
+    ///   - pageSize: The number of results per page.
+    /// - Returns: The search results, or empty results on failure.
     static func searchProjects(
         gameId: Int = 432,
         classId: Int? = nil,
@@ -53,24 +59,21 @@ extension CurseForgeService {
         }
     }
 
-    /// 搜索项目（抛出异常版本）
+    /// Searches CurseForge projects, throwing on failure.
     /// - Parameters:
-    ///   - gameId: 游戏 ID（Minecraft 为 432）
-    ///   - classId: 内容类型 ID（可选）
-    ///   - categoryId: 分类 ID（可选，会被 categoryIds 覆盖）
-    ///   - categoryIds: 分类 ID 列表（可选，会覆盖 categoryId，最多 10 个）
-    ///   - gameVersion: 游戏版本（可选，会被 gameVersions 覆盖）
-    ///   - gameVersions: 游戏版本列表（可选，会覆盖 gameVersion，最多 4 个）
-    ///   - searchFilter: 搜索关键词（可选）
-    ///   - modLoaderType: 模组加载器类型（可选，会被 modLoaderTypes 覆盖）
-    ///   - modLoaderTypes: 模组加载器类型列表（可选，会覆盖 modLoaderType，最多 5 个）
-    ///   - index: 页码索引（可选）
-    ///   - pageSize: 每页大小（可选）
-    /// - Returns: 搜索结果
-    /// - Throws: GlobalError 当操作失败时
-    /// - Note:
-    ///   - 如果不传递 sortField 和 sortOrder，将使用 CurseForge API 的默认排序（通常按相关性排序）
-    ///   - API 限制：categoryIds 最多 10 个，gameVersions 最多 4 个，modLoaderTypes 最多 5 个
+    ///   - gameId: The game identifier (432 for Minecraft).
+    ///   - classId: An optional content type identifier.
+    ///   - categoryId: An optional category identifier (overridden by `categoryIds`).
+    ///   - categoryIds: An optional array of category identifiers (overrides `categoryId`, max 10).
+    ///   - gameVersion: An optional game version (overridden by `gameVersions`).
+    ///   - gameVersions: An optional array of game versions (overrides `gameVersion`, max 4).
+    ///   - searchFilter: An optional search keyword (whitespace is folded and joined with "+").
+    ///   - modLoaderType: An optional mod loader type (overridden by `modLoaderTypes`).
+    ///   - modLoaderTypes: An optional array of mod loader types (overrides `modLoaderType`, max 5).
+    ///   - index: The page index.
+    ///   - pageSize: The number of results per page.
+    /// - Returns: The search results.
+    /// - Throws: A `GlobalError` if the request fails.
     static func searchProjectsThrowing(
         gameId: Int = 432,
         classId: Int? = nil,
@@ -78,14 +81,12 @@ extension CurseForgeService {
         categoryIds: [Int]? = nil,
         gameVersion: String? = nil,
         gameVersions: [String]? = nil,
-        /// 原始搜索关键字（会自动将空白折叠并用 "+" 连接，例如 "fabric api" -> "fabric+api"）
         searchFilter: String? = nil,
         modLoaderType: Int? = nil,
         modLoaderTypes: [Int]? = nil,
         index: Int = 0,
         pageSize: Int = 20
     ) async throws -> CurseForgeSearchResult {
-        // 强制使用按总下载量降序
         let effectiveSortField = 6
         let effectiveSortOrder = "desc"
 
@@ -104,11 +105,8 @@ extension CurseForgeService {
             queryItems.append(URLQueryItem(name: "classId", value: String(classId)))
         }
 
-        // categoryIds 会覆盖 categoryId
-        // API 限制：最多 10 个分类 ID
         if let categoryIds = categoryIds, !categoryIds.isEmpty {
             let limitedCategoryIds = Array(categoryIds.prefix(10))
-            // 按文档要求，使用 JSON 数组字符串格式：["6","7"]
             let stringIds = limitedCategoryIds.map { String($0) }
             let data = try JSONEncoder().encode(stringIds)
             guard let jsonArrayString = String(data: data, encoding: .utf8) else {
@@ -123,11 +121,8 @@ extension CurseForgeService {
             queryItems.append(URLQueryItem(name: "categoryId", value: String(categoryId)))
         }
 
-        // gameVersions 会覆盖 gameVersion
-        // API 限制：最多 4 个游戏版本
         if let gameVersions = gameVersions, !gameVersions.isEmpty {
             let limitedGameVersions = Array(gameVersions.prefix(4))
-            // 按 API 文档要求，使用 JSON 数组字符串格式：["1.0","1.1"]
             let data = try JSONEncoder().encode(limitedGameVersions)
             guard let jsonArrayString = String(data: data, encoding: .utf8) else {
                 throw GlobalError.validation(
@@ -144,7 +139,6 @@ extension CurseForgeService {
         if let rawSearchFilter = searchFilter?
             .trimmingCharacters(in: .whitespacesAndNewlines),
            !rawSearchFilter.isEmpty {
-            // 将连续空白折叠，并用 "+" 连接，得到类似 "fabric+api" 的格式
             let components = rawSearchFilter
                 .split { $0.isWhitespace }
                 .map(String.init)
@@ -152,16 +146,12 @@ extension CurseForgeService {
             queryItems.append(URLQueryItem(name: "searchFilter", value: normalizedSearchFilter))
         }
 
-        // 排序参数：默认强制添加 sortField=6, sortOrder=desc（总下载量倒序）
         queryItems.append(URLQueryItem(name: "sortField", value: String(effectiveSortField)))
         queryItems.append(URLQueryItem(name: "sortOrder", value: effectiveSortOrder))
 
-        // modLoaderTypes 会覆盖 modLoaderType
-        // API 限制：最多 5 个加载器类型
         if let modLoaderTypes = modLoaderTypes, !modLoaderTypes.isEmpty {
             let limitedModLoaderTypes = Array(modLoaderTypes.prefix(5))
             let stringTypes = limitedModLoaderTypes.map { String($0) }
-            // 使用 JSON 数组字符串格式：["1","4"]
             let data = try JSONEncoder().encode(stringTypes)
             guard let jsonArrayString = String(data: data, encoding: .utf8) else {
                 throw GlobalError.validation(

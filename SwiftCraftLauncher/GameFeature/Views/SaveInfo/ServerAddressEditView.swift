@@ -1,7 +1,14 @@
+//
+//  ServerAddressEditView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A sheet for editing server address details including name, address, port, and options.
 import SwiftUI
 import AppKit
 
-// MARK: - Server Address Edit View
 struct ServerAddressEditView: View {
     let server: ServerAddress?
     let gameName: String
@@ -30,7 +37,6 @@ struct ServerAddressEditView: View {
         if let server {
             _serverName = State(initialValue: server.name)
             _serverAddress = State(initialValue: server.address)
-            // 如果端口为0，表示未设置，显示为空
             _serverPort = State(initialValue: server.port > 0 ? String(server.port) : "")
             _isHidden = State(initialValue: server.hidden)
             _acceptTextures = State(initialValue: server.acceptTextures)
@@ -101,7 +107,6 @@ struct ServerAddressEditView: View {
 
     private var bodyView: some View {
         VStack(alignment: .leading, spacing: 20) {
-            // 服务器信息卡片
             if let serverInfo = serverInfo {
                 serverInfoCard(serverInfo)
             }
@@ -116,11 +121,9 @@ struct ServerAddressEditView: View {
                     TextField("saveinfo.server.address".localized(), text: $serverAddress)
                         .textFieldStyle(.roundedBorder)
                         .onChange(of: serverAddress) { _, newValue in
-                            // 如果地址包含端口，自动分离到端口字段
                             if let colonIndex = newValue.lastIndex(of: ":") {
                                 let afterColon = String(newValue[newValue.index(after: colonIndex)...])
                                 if let port = Int(afterColon), port > 0 && port <= 65535 {
-                                    // 地址包含有效端口
                                     let addressOnly = String(newValue[..<colonIndex])
                                     if serverAddress != addressOnly {
                                         serverAddress = addressOnly
@@ -190,12 +193,10 @@ struct ServerAddressEditView: View {
         let trimmedAddress = serverAddress.trimmingCharacters(in: .whitespaces)
         let trimmedPort = serverPort.trimmingCharacters(in: .whitespaces)
 
-        // 名称和地址必填，端口可选
         guard !trimmedName.isEmpty && !trimmedAddress.isEmpty else {
             return false
         }
 
-        // 如果端口不为空，则必须是有效数字
         if !trimmedPort.isEmpty {
             return Int(trimmedPort) != nil
         }
@@ -203,7 +204,6 @@ struct ServerAddressEditView: View {
         return true
     }
 
-    /// 获取端口号，如果为空则返回 nil
     private var portValue: Int? {
         let trimmedPort = serverPort.trimmingCharacters(in: .whitespaces)
         if trimmedPort.isEmpty {
@@ -227,17 +227,14 @@ struct ServerAddressEditView: View {
         actionViewModel.saveServer(request: request, dismiss: { dismiss() }, onRefresh: onRefresh)
     }
 
-    /// 删除服务器
     private func deleteServer() {
         guard server != nil else {
             return
         }
 
-        // 显示删除确认弹窗
         showDeleteConfirmation = true
     }
 
-    /// 确认删除服务器
     private func confirmDeleteServer() {
         actionViewModel.deleteServer(
             serverToDelete: server,

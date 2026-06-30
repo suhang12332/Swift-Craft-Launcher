@@ -1,10 +1,15 @@
+//
+//  DownloadStateExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 @MainActor
 final class DownloadStateExtendedTests: XCTestCase {
-
-    // MARK: - calculateProgress edge cases
 
     func testUpdateProgress_zeroTotal() {
         let state = DownloadState()
@@ -81,8 +86,6 @@ final class DownloadStateExtendedTests: XCTestCase {
         XCTAssertEqual(state.currentCoreFile, "")
         XCTAssertEqual(state.currentResourceFile, "")
     }
-
-    // MARK: - startDownload overwrites previous state
 
     func testStartDownload_overwritesPreviousState() {
         let state = DownloadState()

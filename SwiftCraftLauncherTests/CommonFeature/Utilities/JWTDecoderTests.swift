@@ -1,9 +1,14 @@
+//
+//  JWTDecoderTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class JWTDecoderTests: XCTestCase {
-
-    // MARK: - extractExpirationTime
 
     func testExtractExpirationTime_validJWT() throws {
         let payload: [String: Any] = ["exp": 1700000000.0]
@@ -40,8 +45,6 @@ final class JWTDecoderTests: XCTestCase {
         XCTAssertNil(JWTDecoder.extractExpirationTime(from: jwt))
     }
 
-    // MARK: - extractAllInfo
-
     func testExtractAllInfo_validJWT() throws {
         let payload: [String: Any] = ["sub": "1234567890", "name": "TestUser", "exp": 1700000000.0]
         let jwt = try Self.makeJWT(payload: payload)
@@ -60,8 +63,6 @@ final class JWTDecoderTests: XCTestCase {
     func testExtractAllInfo_emptyString() {
         XCTAssertNil(JWTDecoder.extractAllInfo(from: ""))
     }
-
-    // MARK: - isTokenExpiringSoon
 
     func testIsTokenExpiringSoon_alreadyExpired() throws {
         let payload: [String: Any] = ["exp": 1000000000.0]
@@ -98,8 +99,6 @@ final class JWTDecoderTests: XCTestCase {
         XCTAssertTrue(JWTDecoder.isTokenExpiringSoon("invalid"))
     }
 
-    // MARK: - getMinecraftTokenExpiration
-
     func testGetMinecraftTokenExpiration_validJWT() throws {
         let payload: [String: Any] = ["exp": 1700000000.0]
         let jwt = try Self.makeJWT(payload: payload)
@@ -119,8 +118,6 @@ final class JWTDecoderTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(expiration, expectedDefault.addingTimeInterval(-1))
         XCTAssertLessThanOrEqual(expiration, expectedDefaultAfter.addingTimeInterval(1))
     }
-
-    // MARK: - Helpers
 
     private static func makeJWT(payload: [String: Any]) throws -> String {
         let header = try base64Encode(["alg": "HS256", "typ": "JWT"])

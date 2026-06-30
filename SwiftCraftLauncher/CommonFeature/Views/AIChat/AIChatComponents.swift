@@ -1,13 +1,14 @@
 //
 //  AIChatComponents.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import AppKit
 
-/// AI 头像视图
+/// Displays the AI assistant's avatar.
 struct AIAvatarView: View {
     let size: CGFloat
     let url: String
@@ -26,7 +27,7 @@ struct AIAvatarView: View {
     }
 }
 
-/// 消息气泡视图
+/// Displays a chat message with avatar, content, and timestamp.
 struct MessageBubble: View {
     let message: ChatMessage
     let currentPlayer: Player?
@@ -62,18 +63,13 @@ struct MessageBubble: View {
         .padding(.vertical, Constants.messageVerticalPadding)
     }
 
-    // MARK: - User Message View
-
     @ViewBuilder private var userMessageView: some View {
         Spacer(minLength: Constants.spacerMinLength)
         messageContentView(alignment: .trailing, isUser: true)
         userAvatarView
     }
 
-    // MARK: - AI Message View
-
     @ViewBuilder private var aiMessageView: some View {
-        // 使用缓存的 AI 头像，避免每次重新加载
         if let cachedAvatar = cachedAIAvatar {
             cachedAvatar
         } else {
@@ -82,8 +78,6 @@ struct MessageBubble: View {
         messageContentView(alignment: .leading, isUser: false)
         Spacer(minLength: Constants.spacerMinLength)
     }
-
-    // MARK: - Message Content
 
     private func messageContentView(alignment: HorizontalAlignment, isUser: Bool) -> some View {
         VStack(alignment: alignment, spacing: 4) {
@@ -125,10 +119,7 @@ struct MessageBubble: View {
             .padding(.top, Constants.timestampTopPadding)
     }
 
-    // MARK: - Avatar Views
-
     @ViewBuilder private var userAvatarView: some View {
-        // 使用缓存的用户头像，避免每次重新加载
         if let cachedAvatar = cachedUserAvatar {
             cachedAvatar
         } else if let player = currentPlayer {
@@ -145,7 +136,7 @@ struct MessageBubble: View {
     }
 }
 
-/// 附件预览视图（输入区域）
+/// Displays an attachment preview in the input area.
 struct AttachmentPreview: View {
     let attachment: MessageAttachmentType
     let onRemove: () -> Void
@@ -188,7 +179,7 @@ struct AttachmentPreview: View {
     }
 }
 
-/// 附件显示视图（消息中）
+/// Displays an attachment within a chat message.
 struct AttachmentView: View {
     let attachment: MessageAttachmentType
 

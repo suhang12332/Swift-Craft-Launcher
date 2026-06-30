@@ -1,14 +1,14 @@
 //
 //  GameInfoDetailView.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/6/2.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// Displays game information details with local and remote resource browsing.
 import SwiftUI
 import UniformTypeIdentifiers
 
-// MARK: - Views
 struct GameInfoDetailView: View {
     let game: GameVersionInfo
 
@@ -21,7 +21,7 @@ struct GameInfoDetailView: View {
     @Binding var selectedPerformanceImpact: [String]
     @Binding var selectedProjectId: String?
     @Binding var selectedLoaders: [String]
-    @Binding var gameType: Bool  // false = local,   = server
+    @Binding var gameType: Bool
     @EnvironmentObject private var gameRepository: GameRepository
     @Binding var selectedItem: SidebarItem
     @Binding var searchText: String
@@ -30,12 +30,10 @@ struct GameInfoDetailView: View {
     @State private var localRefreshToken = UUID()
     @StateObject private var ioViewModel = GameInfoDetailIOViewModel()
 
-    // 扫描结果：detailId Set，用于快速查找（O(1)）
     @State private var scannedResources: Set<String> = []
 
     @State private var header: AnyView?
 
-    // 文件选择器状态
     @State private var showIconFilePicker = false
     private let errorHandler: GlobalErrorHandler
     private let iconRefreshNotifier: IconRefreshNotifier
@@ -111,40 +109,30 @@ struct GameInfoDetailView: View {
                 )
             }
         }
-        // 刷新逻辑：
-        // 1. 游戏名变化时刷新
-        // 2. gameType 变化且游戏名不变时刷新
         .onChange(of: game.gameName) { _, _ in
-            // 游戏名变化时刷新
             performRefresh()
         }
         .onChange(of: gameType) { _, _ in
             performRefresh()
         }
-        // 4. 详情关闭时（selectedProjectId 从非 nil 变为 nil），重新扫描已安装资源，
-        //    用于刷新远程列表中的安装状态（安装按钮）
         .onChange(of: selectedProjectId) { oldValue, newValue in
             if oldValue != nil && newValue == nil {
                 resetScanState()
                 scanAllResources()
             }
         }
-        // 3. 资源类型（query）变化时，重新扫描已安装资源，用于更新安装状态
         .onChange(of: query) { _, _ in
             resetScanState()
             scanAllResources()
         }
         .onAppear {
-            // 初始化 header
             updateHeaders()
             cacheInfoManager.calculateGameCacheInfo(game.gameName)
         }
         .onChange(of: cacheInfoManager.cacheInfo) { _, _ in
-            // 当 cacheInfo 更新时，更新 header（但不重建整个视图）
             updateHeaders()
         }
         .onDisappear {
-            // 页面关闭后清除所有数据
             clearAllData()
         }
         .fileImporter(
@@ -156,29 +144,22 @@ struct GameInfoDetailView: View {
         }
     }
 
-    // MARK: - 刷新逻辑
-    /// 执行刷新操作（游戏名变化或 gameType 变化且游戏名不变时调用）
     private func performRefresh() {
         updateHeaders()
         cacheInfoManager.calculateGameCacheInfo(game.gameName)
-        // 仅在本地视图时刷新本地资源
         if !gameType {
             triggerLocalRefresh()
         }
-        // 重新扫描资源
         resetScanState()
         scanAllResources()
     }
 
     private func triggerLocalRefresh() {
-        // 仅在本地视图时更新刷新令牌
         guard !gameType else { return }
         localRefreshToken = UUID()
     }
 
-    // MARK: - 更新 Header
     private func updateHeaders() {
-        // 尝试从 gameRepository 获取最新的游戏信息，如果找不到则使用传入的 game
         let currentGame = gameRepository.games.first { $0.id == game.id } ?? game
 
         header = AnyView(
@@ -192,27 +173,18 @@ struct GameInfoDetailView: View {
         )
     }
 
-    // MARK: - 清除数据
-    /// 清除页面所有数据
     private func clearAllData() {
-        // 重置缓存信息为默认值
         cacheInfoManager.cacheInfo = CacheInfo(fileCount: 0, totalSize: 0)
-        // 仅在本地视图时重置刷新令牌
         if !gameType {
             localRefreshToken = UUID()
         }
-        // 重置扫描结果
         scannedResources = []
     }
 
-    // MARK: - 重置扫描状态
-    /// 重置扫描状态，准备重新扫描
     private func resetScanState() {
         scannedResources = []
     }
 
-    // MARK: - 扫描所有资源
-    /// 异步扫描所有资源，收集 detailId（不阻塞视图渲染）
     private func scanAllResources() {
         Task {
             scannedResources = await ioViewModel.scanAllDetailIds(
@@ -222,8 +194,6 @@ struct GameInfoDetailView: View {
         }
     }
 
-    // MARK: - 处理图标文件选择
-    /// 处理用户选择的图标文件
     private func handleIconFileSelection(_ result: Result<[URL], Error>) {
         let gameName = game.gameName
         Task {

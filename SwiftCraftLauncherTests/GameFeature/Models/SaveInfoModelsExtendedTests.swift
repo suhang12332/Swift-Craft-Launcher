@@ -1,9 +1,14 @@
+//
+//  SaveInfoModelsExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class SaveInfoModelsExtendedTests: XCTestCase {
-
-    // MARK: - WorldInfo edge cases
 
     func testWorldInfo_idFromPath() {
         let url = URL(fileURLWithPath: "/tmp/some deeply/nested/world_folder")
@@ -45,8 +50,6 @@ final class SaveInfoModelsExtendedTests: XCTestCase {
         XCTAssertEqual(world.seed, Int64.max)
     }
 
-    // MARK: - ScreenshotInfo edge cases
-
     func testScreenshotInfo_idFromPath() {
         let url = URL(fileURLWithPath: "/tmp/screenshots/2024-01-01_12.00.00.png")
         let screenshot = ScreenshotInfo(name: "2024-01-01_12.00.00.png", path: url)
@@ -76,8 +79,6 @@ final class SaveInfoModelsExtendedTests: XCTestCase {
 
         XCTAssertEqual(screenshot.fileSize, Int64.max)
     }
-
-    // MARK: - LogInfo edge cases
 
     func testLogInfo_idFromPath() {
         let url = URL(fileURLWithPath: "/tmp/logs/crash-2024-01-01.log")
@@ -109,8 +110,6 @@ final class SaveInfoModelsExtendedTests: XCTestCase {
 
         XCTAssertNil(log.createdDate)
     }
-
-    // MARK: - WorldDetailMetadata
 
     func testWorldDetailMetadata_init() {
         let url = URL(fileURLWithPath: "/tmp/World")

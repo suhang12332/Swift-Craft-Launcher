@@ -1,9 +1,14 @@
+//
+//  GameLoaderTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class GameLoaderTests: XCTestCase {
-
-    // MARK: - rawValues
 
     func testRawValues() {
         XCTAssertEqual(GameLoader.vanilla.rawValue, "vanilla")
@@ -12,8 +17,6 @@ final class GameLoaderTests: XCTestCase {
         XCTAssertEqual(GameLoader.neoforge.rawValue, "neoforge")
         XCTAssertEqual(GameLoader.quilt.rawValue, "quilt")
     }
-
-    // MARK: - allCases
 
     func testAllCases_count() {
         XCTAssertEqual(GameLoader.allCases.count, 5)
@@ -27,8 +30,6 @@ final class GameLoaderTests: XCTestCase {
         XCTAssertTrue(GameLoader.allCases.contains(.quilt))
     }
 
-    // MARK: - id
-
     func testId_equalsRawValue() {
         XCTAssertEqual(GameLoader.vanilla.id, "vanilla")
         XCTAssertEqual(GameLoader.fabric.id, "fabric")
@@ -36,8 +37,6 @@ final class GameLoaderTests: XCTestCase {
         XCTAssertEqual(GameLoader.neoforge.id, "neoforge")
         XCTAssertEqual(GameLoader.quilt.id, "quilt")
     }
-
-    // MARK: - displayName
 
     func testDisplayName_vanilla() {
         XCTAssertEqual(GameLoader.vanilla.displayName, "vanilla")
@@ -58,8 +57,6 @@ final class GameLoaderTests: XCTestCase {
     func testDisplayName_quilt() {
         XCTAssertEqual(GameLoader.quilt.displayName, "quilt")
     }
-
-    // MARK: - Codable
 
     func testCodable_roundTrip() throws {
         let enc = JSONEncoder()

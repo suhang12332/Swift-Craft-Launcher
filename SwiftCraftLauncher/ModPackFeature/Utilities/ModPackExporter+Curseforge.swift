@@ -1,6 +1,23 @@
+//
+//  ModPackExporter+Curseforge.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
 extension ModPackExporter {
+    /// Identifies a resource for inclusion in a CurseForge-format mod pack.
+    ///
+    /// Performs fingerprint-based lookup against the CurseForge API to match
+    /// jar files in the `mods` directory. Non-mod resources are copied to overrides.
+    ///
+    /// - Parameters:
+    ///   - file: The file to identify.
+    ///   - relativePath: The path relative to the game directory.
+    ///   - gameDirectory: The root directory of the game instance.
+    /// - Returns: A result describing how the resource should be processed.
     static func identifyCurseForgeResource(
         file: URL,
         relativePath: String,
@@ -70,6 +87,12 @@ extension ModPackExporter {
         )
     }
 
+    /// Writes the CurseForge manifest and mod list HTML to the temporary export directory.
+    ///
+    /// - Parameters:
+    ///   - params: The parameters used to build the manifest.
+    ///   - tempDir: The temporary directory for the export.
+    /// - Returns: The list of filenames written to the temporary directory.
     static func writeCurseForgeManifest(
         params: IndexBuildParams,
         tempDir: URL
@@ -90,12 +113,14 @@ extension ModPackExporter {
         return [manifestFileName, modListFileName]
     }
 
+    /// Determines whether a file is a jar file inside the `mods` directory.
     private static func isModsJarFile(_ file: URL, gameDirectory: URL) -> Bool {
         let topLevel = topLevelDirectoryName(of: file, gameDirectory: gameDirectory)?.lowercased()
         return topLevel == AppConstants.DirectoryNames.mods.lowercased() &&
             file.pathExtension.lowercased() == AppConstants.FileExtensions.jar
     }
 
+    /// Builds an HTML list of mods for the CurseForge mod list file.
     private static func buildCurseForgeModListHTML(items: [CurseForgeModListItem]) -> String {
         let modProjectBaseURL = URLConfig.API.CurseForge.webProjectURL(projectType: ResourceType.mod.rawValue)
         let listItems = items
@@ -112,6 +137,7 @@ extension ModPackExporter {
         return listItems.isEmpty ? "" : "<ul>\n\(listItems)\n</ul>"
     }
 
+    /// Escapes special characters for safe HTML embedding.
     private static func escapeHTML(_ text: String) -> String {
         text
             .replacingOccurrences(of: "&", with: "&amp;")
@@ -121,6 +147,7 @@ extension ModPackExporter {
             .replacingOccurrences(of: "'", with: "&#39;")
     }
 
+    /// Returns the display title for a mod list item, preferring the project name.
     private static func displayTitle(for item: CurseForgeModListItem) -> String {
         if let projectName = item.projectName, !projectName.isEmpty {
             return projectName

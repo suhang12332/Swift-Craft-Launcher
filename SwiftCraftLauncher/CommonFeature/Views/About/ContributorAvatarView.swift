@@ -1,13 +1,14 @@
 //
 //  ContributorAvatarView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import Foundation
 
-/// 贡献者头像视图
+/// Displays a contributor's avatar from a remote URL.
 struct ContributorAvatarView: View {
     let avatarUrl: String
     let size: CGFloat
@@ -22,7 +23,7 @@ struct ContributorAvatarView: View {
     }
 }
 
-/// 静态贡献者头像视图（支持 emoji）
+/// Displays a contributor's avatar, supporting both remote URLs and emoji.
 struct StaticContributorAvatarView: View {
     let avatar: String
     let size: CGFloat

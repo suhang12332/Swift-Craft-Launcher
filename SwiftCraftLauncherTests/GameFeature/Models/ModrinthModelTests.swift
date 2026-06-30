@@ -1,10 +1,15 @@
+//
+//  ModrinthModelTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 import CFModrinthAdapterKit
 
 final class ModrinthModelTests: XCTestCase {
-
-    // MARK: - ModrinthProjectDetail Codable
 
     func testModrinthProjectDetail_codable_roundTrip() throws {
         let detail = makeDetail(
@@ -138,8 +143,6 @@ final class ModrinthModelTests: XCTestCase {
         XCTAssertNil(decoded)
     }
 
-    // MARK: - ModrinthProjectDetailVersion Codable
-
     func testModrinthProjectDetailVersion_codable_roundTrip() throws {
         let version = makeVersion(
             id: "ver-1",
@@ -225,8 +228,6 @@ final class ModrinthModelTests: XCTestCase {
         XCTAssertNotEqual(a, c)
     }
 
-    // MARK: - ModrinthVersionFile Codable
-
     func testModrinthVersionFile_codable_roundTrip() throws {
         let file = ModrinthVersionFile(
             hashes: ModrinthVersionFileHashes(sha512: "abc512", sha1: "abc1"),
@@ -265,8 +266,6 @@ final class ModrinthModelTests: XCTestCase {
         XCTAssertNil(decoded.fileType)
     }
 
-    // MARK: - ModrinthVersionFileHashes Codable
-
     func testModrinthVersionFileHashes_codable_roundTrip() throws {
         let hashes = ModrinthVersionFileHashes(sha512: "sha512val", sha1: "sha1val")
         let encoded = try JSONEncoder().encode(hashes)
@@ -275,8 +274,6 @@ final class ModrinthModelTests: XCTestCase {
         XCTAssertEqual(decoded.sha512, "sha512val")
         XCTAssertEqual(decoded.sha1, "sha1val")
     }
-
-    // MARK: - ModrinthVersionDependency Codable
 
     func testModrinthVersionDependency_codable_roundTrip() throws {
         let dep = ModrinthVersionDependency(projectId: "p1", versionId: "v1", dependencyType: "required")
@@ -297,8 +294,6 @@ final class ModrinthModelTests: XCTestCase {
         XCTAssertNil(decoded.versionId)
         XCTAssertEqual(decoded.dependencyType, "incompatible")
     }
-
-    // MARK: - ModrinthProject Codable
 
     func testModrinthProject_codable_roundTrip() throws {
         let project = ModrinthProject(
@@ -331,8 +326,6 @@ final class ModrinthModelTests: XCTestCase {
         XCTAssertEqual(decoded.iconUrl, "https://icon.png")
         XCTAssertEqual(decoded.fileName, "my-mod.jar")
     }
-
-    // MARK: - License Codable
 
     func testLicense_codable_roundTrip() throws {
         let license = License(id: "mit", name: "MIT License", url: "https://opensource.org/licenses/MIT")
@@ -371,8 +364,6 @@ final class ModrinthModelTests: XCTestCase {
         XCTAssertEqual(set.count, 1)
     }
 
-    // MARK: - ModrinthProjectDependency Codable
-
     func testModrinthProjectDependency_codable_roundTrip() throws {
         let version = makeVersion(id: "v1", projectId: "p1", name: "V1", versionNumber: "1.0", gameVersions: [], loaders: [])
         let dep = ModrinthProjectDependency(projects: [version])
@@ -383,8 +374,6 @@ final class ModrinthModelTests: XCTestCase {
         XCTAssertEqual(decoded.projects.count, 1)
         XCTAssertEqual(decoded.projects[0].id, "v1")
     }
-
-    // MARK: - ModrinthResult Codable
 
     func testModrinthResult_codable_roundTrip() throws {
         let project = ModrinthProject(
@@ -416,8 +405,6 @@ final class ModrinthModelTests: XCTestCase {
         XCTAssertEqual(decoded.totalHits, 100)
     }
 
-    // MARK: - ModrinthLoaderLibrary with downloads
-
     func testModrinthLoaderLibrary_withDownloads() throws {
         let json = """
         {
@@ -441,8 +428,6 @@ final class ModrinthModelTests: XCTestCase {
         XCTAssertEqual(lib.downloads?.artifact.sha1, "abc123")
         XCTAssertEqual(lib.downloads?.artifact.size, 1024)
     }
-
-    // MARK: - Helpers
 
     // swiftlint:disable:next function_parameter_count
     private func makeDetail(

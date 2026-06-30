@@ -1,11 +1,16 @@
+//
+//  ModScannerFallbackTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModScannerFallbackTests: XCTestCase {
 
     private lazy var modScanner = ModScanner(errorHandler: GlobalErrorHandler.shared)
-
-    // MARK: - createFallbackDetailFromFileName
 
     func testCreateFallbackDetail_jarFile() {
         let fileURL = URL(fileURLWithPath: "/tmp/mods/MyMod-1.0.jar")

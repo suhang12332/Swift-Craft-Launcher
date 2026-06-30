@@ -1,5 +1,13 @@
+//
+//  ModrinthService+Decoding.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Configures JSON decoding for Modrinth API date formats.
 extension JSONDecoder {
     func configureForModrinth() {
         dateDecodingStrategy = .custom { decoder in

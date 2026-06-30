@@ -1,3 +1,11 @@
+//
+//  GameLocalResourceView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A searchable list view for browsing locally installed game resources.
 import SwiftUI
 import AppKit
 

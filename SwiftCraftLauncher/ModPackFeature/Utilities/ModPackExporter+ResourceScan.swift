@@ -1,12 +1,15 @@
 //
 //  ModPackExporter+ResourceScan.swift
-//  SwiftCraftLauncher
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
 extension ModPackExporter {
 
+    /// The result of processing a single selected resource during export.
     struct SelectedResourceProcessResult {
         let indexFile: ModrinthIndexFile?
         let curseForgeFile: CurseForgeManifestBuilder.ManifestFile?
@@ -16,6 +19,8 @@ extension ModPackExporter {
         let relativePath: String
     }
 
+    /// Creates temporary export directories including overrides subdirectories.
+    /// - Returns: A tuple of the temp directory and overrides directory.
     static func prepareDirectories() throws -> (tempDir: URL, overridesDir: URL) {
         let tempDir = try createTempDirectory()
         let overridesDir = tempDir.appendingPathComponent("overrides")
@@ -29,6 +34,7 @@ extension ModPackExporter {
         return (tempDir, overridesDir)
     }
 
+    /// Scans selected resources and categorizes them by export format.
     static func identifySelectedResources(
         gameInfo: GameVersionInfo,
         selectedFiles: [URL],

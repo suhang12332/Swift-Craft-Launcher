@@ -1,12 +1,19 @@
+//
+//  CurseForgeService+Private.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides internal CurseForge API request and parsing utilities.
 extension CurseForgeService {
-    // MARK: - Private Methods
 
-    /// 尝试从指定 URL 获取文件详情
-    /// - Parameter urlString: API URL
-    /// - Returns: 文件详情
-    /// - Throws: 网络错误或解析错误
+    /// Fetches file details from a specified URL.
+    /// - Parameter urlString: The API endpoint URL.
+    /// - Returns: The file details.
+    /// - Throws: A network or parsing error.
     static func tryFetchFileDetail(from urlString: String) async throws -> CurseForgeModFileDetail {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
@@ -16,19 +23,17 @@ extension CurseForgeService {
             )
         }
 
-        // 使用统一的 API 客户端
         let headers = getHeaders()
         let data = try await APIClient.get(url: url, headers: headers)
 
-        // 解析响应
         let result = try JSONDecoder().decode(CurseForgeFileResponse.self, from: data)
         return result.data
     }
 
-    /// 尝试从指定 URL 获取模组详情
-    /// - Parameter urlString: API URL
-    /// - Returns: 模组详情
-    /// - Throws: 网络错误或解析错误
+    /// Fetches mod details from a specified URL.
+    /// - Parameter urlString: The API endpoint URL.
+    /// - Returns: The mod details.
+    /// - Throws: A network or parsing error.
     static func tryFetchModDetail(from urlString: String) async throws -> CurseForgeModDetail {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
@@ -38,19 +43,17 @@ extension CurseForgeService {
             )
         }
 
-        // 使用统一的 API 客户端
         let headers = getHeaders()
         let data = try await APIClient.get(url: url, headers: headers)
 
-        // 解析响应
         let result = try JSONDecoder().decode(CurseForgeModDetailResponse.self, from: data)
         return result.data
     }
 
-    /// 尝试从指定 URL 获取模组描述
-    /// - Parameter urlString: API URL
-    /// - Returns: HTML 格式的描述内容
-    /// - Throws: 网络错误或解析错误
+    /// Fetches the HTML description for a mod from a specified URL.
+    /// - Parameter urlString: The API endpoint URL.
+    /// - Returns: The HTML-formatted description content.
+    /// - Throws: A network or parsing error.
     static func tryFetchModDescription(from urlString: String) async throws -> String {
         guard let url = URL(string: urlString) else {
             throw GlobalError.validation(
@@ -60,16 +63,14 @@ extension CurseForgeService {
             )
         }
 
-        // 使用统一的 API 客户端
         let headers = getHeaders()
         let data = try await APIClient.get(url: url, headers: headers)
 
-        // 解析响应
         let result = try JSONDecoder().decode(CurseForgeModDescriptionResponse.self, from: data)
         return result.data
     }
 
-    /// 解析 CF ID，返回纯数字 ID 与带前缀的标准 ID
+    /// Parses a CurseForge identifier into its numeric ID and normalized form.
     static func parseCurseForgeId(_ id: String) throws -> (modId: Int, normalized: String) {
         let cleanId = id.replacingOccurrences(of: "cf-", with: "")
         guard let modId = Int(cleanId) else {
@@ -95,7 +96,7 @@ extension CurseForgeService {
     }
 }
 
-/// CurseForge 文件响应（供 extension 解码使用）
+/// Represents a CurseForge API file response.
 struct CurseForgeFileResponse: Codable {
     let data: CurseForgeModFileDetail
 }

@@ -1,10 +1,13 @@
 //
 //  NBTType.swift
-//  SwiftCraftLauncher
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
+/// NBT tag type identifiers used in Minecraft's Named Binary Tag format.
 enum NBTType: UInt8 {
     case end = 0
     case byte = 1

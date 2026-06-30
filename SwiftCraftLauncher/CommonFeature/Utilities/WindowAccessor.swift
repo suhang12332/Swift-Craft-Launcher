@@ -1,14 +1,14 @@
 //
 //  WindowAccessor.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/9/19.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 import AppKit
 
-/// SwiftUI 组件，用于访问和操作底层的 macOS NSWindow 对象
+/// A SwiftUI wrapper that provides access to the underlying `NSWindow` instance.
 struct WindowAccessor: NSViewRepresentable {
     var synchronous: Bool = false
     var callback: (NSWindow) -> Void
@@ -25,7 +25,6 @@ struct WindowAccessor: NSViewRepresentable {
     }
 }
 
-/// 自定义 NSView 用于监听窗口变化
 private class WindowAccessorView: NSView {
     var callback: (NSWindow) -> Void
     var synchronous: Bool
@@ -46,14 +45,12 @@ private class WindowAccessorView: NSView {
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
 
-        // 当视图添加到窗口时，立即配置窗口
         if let window = window, !hasConfigured {
             hasConfigured = true
 
             if synchronous {
                 configureWindow(window)
             } else {
-                // 异步执行
                 DispatchQueue.main.async { [weak self] in
                     self?.configureWindow(window)
                 }

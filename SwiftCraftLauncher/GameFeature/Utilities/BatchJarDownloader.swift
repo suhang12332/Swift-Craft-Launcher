@@ -1,12 +1,21 @@
+//
+//  BatchJarDownloader.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// A task representing a single JAR file download.
 struct JarDownloadTask {
-    let name: String         // 用于进度回调显示
+    let name: String
     let url: URL
-    let destinationPath: String // 相对于 metaLibrariesDir 的路径
+    let destinationPath: String
     let expectedSha1: String?
 }
 
+/// Downloads multiple JAR files concurrently with controlled parallelism.
 enum BatchJarDownloader {
     static func download(
         tasks: [JarDownloadTask],
@@ -16,7 +25,6 @@ enum BatchJarDownloader {
         let total = tasks.count
         let counter = Counter()
 
-        // 创建信号量控制并发数量
         let semaphore = AsyncSemaphore(value: AppServices.generalSettingsManager.concurrentDownloads)
 
         try await withThrowingTaskGroup(of: Void.self) { group in
@@ -43,6 +51,7 @@ enum BatchJarDownloader {
         }
     }
 
+    /// An actor that safely increments a counter from concurrent tasks.
     actor Counter {
         private var value = 0
 

@@ -1,13 +1,18 @@
+//
+//  LogSectionView.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Displays log files as selectable chips with crash log highlighting.
 import SwiftUI
 import AppKit
 
-// MARK: - 日志信息区域视图
 struct LogSectionView: View {
-    // MARK: - Properties
     let logs: [LogInfo]
     let isLoading: Bool
 
-    // MARK: - Body
     var body: some View {
         GenericSectionView(
             title: "saveinfo.logs",
@@ -19,7 +24,6 @@ struct LogSectionView: View {
         }
     }
 
-    // MARK: - Chip Builder
     private func logChip(for log: LogInfo) -> some View {
         FilterChip(
             title: log.name,
@@ -35,8 +39,6 @@ struct LogSectionView: View {
         )
     }
 
-    // MARK: - Actions
-    /// 使用Console应用打开日志文件
     private func openLogInConsole(log: LogInfo) {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/open")

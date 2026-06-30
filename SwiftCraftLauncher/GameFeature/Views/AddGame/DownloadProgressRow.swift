@@ -1,3 +1,11 @@
+//
+//  DownloadProgressRow.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// A row displaying download progress with title, progress bar, and file count.
 import SwiftUI
 
 struct DownloadProgressRow: View {

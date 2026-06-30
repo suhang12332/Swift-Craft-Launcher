@@ -1,11 +1,16 @@
+//
+//  ModScannerLogicTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ModScannerLogicTests: XCTestCase {
 
     private let scanner = ModScanner(errorHandler: GlobalErrorHandler.shared)
-
-    // MARK: - isModsDirectory
 
     func testIsModsDirectory_mods() {
         let url = URL(fileURLWithPath: "/path/to/game/mods")
@@ -37,8 +42,6 @@ final class ModScannerLogicTests: XCTestCase {
         XCTAssertFalse(scanner.isModsDirectory(url))
     }
 
-    // MARK: - extractGameName
-
     func testExtractGameName_standard() {
         let url = URL(fileURLWithPath: "/Users/user/.minecraft/games/MyGame/mods")
         XCTAssertEqual(scanner.extractGameName(from: url), "MyGame")
@@ -58,8 +61,6 @@ final class ModScannerLogicTests: XCTestCase {
         let url = URL(fileURLWithPath: "/a/b/c/d/mods")
         XCTAssertEqual(scanner.extractGameName(from: url), "d")
     }
-
-    // MARK: - calculatePageRange edge cases
 
     func testCalculatePageRange_singleItem() {
         let result = scanner.calculatePageRange(totalCount: 1, page: 1, pageSize: 10)

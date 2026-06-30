@@ -1,9 +1,14 @@
+//
+//  MinecraftServerInfoExtendedTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class MinecraftServerInfoExtendedTests: XCTestCase {
-
-    // MARK: - Description.plainText
 
     func testDescription_plainText_textOnly() {
         let desc = MinecraftServerInfo.Description(text: "Hello World", extra: nil)
@@ -64,8 +69,6 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
         XCTAssertEqual(desc.plainText, "A Obj B")
     }
 
-    // MARK: - DescriptionElement
-
     func testDescriptionElement_stringCodable() throws {
         let element = MinecraftServerInfo.Description.DescriptionElement.string("test")
         let data = try JSONEncoder().encode(element)
@@ -101,8 +104,6 @@ final class MinecraftServerInfoExtendedTests: XCTestCase {
         let element = MinecraftServerInfo.Description.DescriptionElement.object(inner)
         XCTAssertEqual(element.plainText, "world")
     }
-
-    // MARK: - MinecraftServerInfo Codable
 
     func testMinecraftServerInfo_codable_minimal() throws {
         let json = """

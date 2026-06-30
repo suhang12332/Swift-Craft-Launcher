@@ -1,9 +1,14 @@
+//
+//  PlayerFeatureModelsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class PlayerFeatureModelsTests: XCTestCase {
-
-    // MARK: - Player
 
     func testPlayer_init_profile() {
         let profile = UserProfile(id: "id-1", name: "Steve", avatar: "steve")
@@ -84,8 +89,6 @@ final class PlayerFeatureModelsTests: XCTestCase {
 
         XCTAssertEqual(a, b)
     }
-
-    // MARK: - SkinLibraryItem
 
     func testSkinLibraryItem_displayName() {
         let item = SkinLibraryItem(

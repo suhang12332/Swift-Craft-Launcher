@@ -1,11 +1,13 @@
 //
 //  AISettingsView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
+/// A view for configuring AI service settings.
 public struct AISettingsView: View {
     @StateObject private var aiSettings: AISettingsManager
     @State private var showApiKey = false
@@ -62,7 +64,6 @@ public struct AISettingsView: View {
                 .labeledContentStyle(.custom)
                 CommonDescriptionText(text: "settings.ai.api_key.description".localized())
             }
-            // Ollama 地址设置（仅在选择 Ollama 时显示）
             if aiSettings.selectedProvider == .ollama {
                 LabeledContent("settings.ai.ollama.url.label".localized()) {
                     TextField(URLConfig.API.AIService.ollamaDefaultBaseURL, text: $aiSettings.ollamaBaseURL)
@@ -75,7 +76,6 @@ public struct AISettingsView: View {
                 .labeledContentStyle(.custom)
             }
 
-            // OpenAI 格式的自定义接口地址设置（可用于 DeepSeek 等兼容服务）
             if aiSettings.selectedProvider.apiFormat == .openAI {
                 LabeledContent("settings.ai.api_url.label".localized()) {
                     TextField(aiSettings.selectedProvider.baseURL, text: $aiSettings.openAIBaseURL)
@@ -88,7 +88,6 @@ public struct AISettingsView: View {
                 .labeledContentStyle(.custom)
             }
 
-            // 模型设置（必填）
             LabeledContent("settings.ai.model.label".localized()) {
                 TextField("settings.ai.model.placeholder".localized(), text: $aiSettings.modelOverride)
                     .textFieldStyle(.roundedBorder)
@@ -99,7 +98,6 @@ public struct AISettingsView: View {
             }
             .labeledContentStyle(.custom)
 
-            // AI 头像设置
             Group {
                 MinecraftSkinUtils(
                     type: .url,

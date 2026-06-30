@@ -1,10 +1,15 @@
+//
+//  FabricLoaderService.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Fetches and manages Fabric mod loader versions and profiles.
 enum FabricLoaderService {
 
-    /// 获取所有 Loader 版本（静默版本）
-    /// - Parameter minecraftVersion: Minecraft 版本
-    /// - Returns: 加载器版本列表，失败时返回空数组
     static func fetchAllLoaderVersions(for minecraftVersion: String) async -> [FabricLoader] {
         do {
             return try await fetchAllLoaderVersionsThrowing(for: minecraftVersion)
@@ -16,10 +21,6 @@ enum FabricLoaderService {
         }
     }
 
-    /// 获取所有 Loader 版本（抛出异常版本）
-    /// - Parameter minecraftVersion: Minecraft 版本
-    /// - Returns: 加载器版本列表
-    /// - Throws: GlobalError 当操作失败时
     static func fetchAllLoaderVersionsThrowing(for minecraftVersion: String) async throws -> [FabricLoader] {
         let url = URLConfig.API.Fabric.loader.appendingPathComponent(minecraftVersion)
         let data = try await APIClient.get(url: url)
@@ -45,39 +46,23 @@ enum FabricLoaderService {
         }
     }
 
-    /// 获取指定版本的 Fabric Loader
-    /// - Parameters:
-    ///   - minecraftVersion: Minecraft 版本
-    ///   - loaderVersion: 指定的加载器版本
-    /// - Returns: 指定版本的加载器
-    /// - Throws: GlobalError 当操作失败时
     static func fetchSpecificLoaderVersion(for minecraftVersion: String, loaderVersion: String) async throws -> ModrinthLoader {
         let cacheKey = "\(minecraftVersion)-\(loaderVersion)"
 
-        // 1. 查全局缓存
         if let cached = AppServices.appCacheManager.get(namespace: GameLoader.fabric.displayName, key: cacheKey, as: ModrinthLoader.self) {
             return cached
         }
 
-        // 2. 直接下载指定版本的 version.json
         let url = URLConfig.API.Modrinth.loaderProfile(loader: GameLoader.fabric.displayName, version: loaderVersion)
         let data = try await APIClient.get(url: url)
 
         var result = try JSONDecoder().decode(ModrinthLoader.self, from: data)
         result.version = loaderVersion
         result = CommonService.processGameVersionPlaceholders(loader: result, gameVersion: minecraftVersion)
-        // 3. 存入缓存
         AppServices.appCacheManager.setSilently(namespace: GameLoader.fabric.displayName, key: cacheKey, value: result)
         return result
     }
 
-    /// 设置指定版本的 Fabric 加载器（静默版本）
-    /// - Parameters:
-    ///   - gameVersion: 游戏版本
-    ///   - loaderVersion: 指定的加载器版本
-    ///   - gameInfo: 游戏信息
-    ///   - onProgressUpdate: 进度更新回调
-    /// - Returns: 设置结果，失败时返回 nil
     static func setupWithSpecificVersion(
         for gameVersion: String,
         loaderVersion: String,
@@ -99,14 +84,6 @@ enum FabricLoaderService {
         }
     }
 
-    /// 设置指定版本的 Fabric 加载器（抛出异常版本）
-    /// - Parameters:
-    ///   - gameVersion: 游戏版本
-    ///   - loaderVersion: 指定的加载器版本
-    ///   - gameInfo: 游戏信息
-    ///   - onProgressUpdate: 进度更新回调
-    /// - Returns: 设置结果
-    /// - Throws: GlobalError 当操作失败时
     static func setupWithSpecificVersionThrowing(
         for gameVersion: String,
         loaderVersion: String,

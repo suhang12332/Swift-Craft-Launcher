@@ -1,13 +1,13 @@
 //
 //  LitematicaModels.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
-//  Created by su on 2025/1/20.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import Foundation
 
-/// Litematica 投影文件信息模型
+/// Represents a Litematica schematic file.
 struct LitematicaInfo: Identifiable, Equatable {
     let id: String
     let name: String
@@ -20,6 +20,17 @@ struct LitematicaInfo: Identifiable, Equatable {
     let regionCount: Int?
     let totalBlocks: Int?
 
+    /// Creates a Litematica info with the specified parameters.
+    /// - Parameters:
+    ///   - name: The display name of the schematic.
+    ///   - path: The file URL of the schematic.
+    ///   - createdDate: The creation date, if available.
+    ///   - fileSize: The file size in bytes.
+    ///   - author: The author name, if available.
+    ///   - description: A description of the schematic, if available.
+    ///   - version: The schematic version string, if available.
+    ///   - regionCount: The number of regions, if available.
+    ///   - totalBlocks: The total block count, if available.
     init(
         name: String,
         path: URL,
@@ -44,7 +55,7 @@ struct LitematicaInfo: Identifiable, Equatable {
     }
 }
 
-/// Litematica 投影完整元数据结构（用于详情显示）
+/// Complete metadata for a Litematica schematic, used for detail display.
 struct LitematicMetadata {
     let name: String
     let author: String
@@ -57,7 +68,7 @@ struct LitematicMetadata {
     let regionCount: Int32
 }
 
-/// 尺寸结构
+/// A three-dimensional size value.
 struct Size {
     let x: Int32
     let y: Int32

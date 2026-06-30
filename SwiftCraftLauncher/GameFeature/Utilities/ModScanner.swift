@@ -1,7 +1,14 @@
+//
+//  ModScanner.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import CryptoKit
 import Foundation
 
-/// Mod / 资源文件扫描与 Modrinth 详情解析
+/// Scans mod and resource files, resolving details from Modrinth and CurseForge.
 class ModScanner {
     static let shared = ModScanner()
     let errorHandler: GlobalErrorHandler
@@ -10,6 +17,7 @@ class ModScanner {
         self.errorHandler = errorHandler
     }
 
+    /// Schedules an asynchronous rebuild of directory hashes.
     nonisolated func scheduleDirectoryHashRebuild(
         standardizedDirectoryURL: URL,
         gameNameHint: String?
@@ -35,7 +43,7 @@ class ModScanner {
         }
     }
 
-    /// 主入口：获取 ModrinthProjectDetail（静默版本）
+    /// Retrieves a Modrinth project detail for the given file, returning the result via a completion handler.
     func getModrinthProjectDetail(
         for fileURL: URL,
         completion: @escaping (ModrinthProjectDetail?) -> Void
@@ -57,7 +65,7 @@ class ModScanner {
         }
     }
 
-    /// 主入口：获取 ModrinthProjectDetail（抛出异常版本）
+    /// Retrieves a Modrinth project detail for the given file.
     func getModrinthProjectDetailThrowing(
         for fileURL: URL
     ) async throws -> ModrinthProjectDetail? {
@@ -71,13 +79,11 @@ class ModScanner {
 
         let inferredType = AppPaths.resourceType(for: fileURL)
         if let cached = getModCacheFromDatabase(hash: hash) {
-            // 更新文件名为当前实际文件名（可能已重命名为 .disabled）
             var updatedCached = cached
             updatedCached.fileName = fileURL.lastPathComponent
             return updatedCached
         }
 
-        // 使用 fetchModrinthDetail 通过文件 hash 查询
         let detail = await withCheckedContinuation { continuation in
             ModrinthService.fetchModrinthDetail(by: hash) { detail in
                 continuation.resume(returning: detail)
@@ -86,7 +92,6 @@ class ModScanner {
 
         if var detail = detail {
             detail.type = inferredType
-            // 设置本地文件名
             var detailWithFileName = detail
             detailWithFileName.fileName = fileURL.lastPathComponent
             saveToCache(hash: hash, detail: detailWithFileName)
@@ -111,8 +116,7 @@ class ModScanner {
         return fallbackDetail
     }
 
-    // MARK: - Mod Cache (Database)
-
+    /// Returns a cached mod detail for the given hash, or `nil` if absent.
     func getModCacheFromDatabase(hash: String) -> ModrinthProjectDetail? {
         guard let jsonData = AppServices.modCacheManager.get(hash: hash) else {
             return nil
@@ -126,6 +130,7 @@ class ModScanner {
         }
     }
 
+    /// Encodes and persists a mod detail to the local cache.
     func saveToCache(hash: String, detail: ModrinthProjectDetail) {
         do {
             let jsonData = try JSONEncoder().encode(detail)
@@ -140,12 +145,12 @@ class ModScanner {
         }
     }
 
-    // MARK: - Hash
-
+    /// Computes the SHA-1 hash of the file at the given URL, returning `nil` on failure.
     static func sha1Hash(of url: URL) -> String? {
         return SHA1Calculator.sha1Silent(ofFileAt: url)
     }
 
+    /// Computes the SHA-1 hash of the file at the given URL, throwing on I/O errors.
     static func sha1HashThrowing(of url: URL) throws -> String? {
         return try SHA1Calculator.sha1(ofFileAt: url)
     }

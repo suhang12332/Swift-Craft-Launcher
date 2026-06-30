@@ -1,12 +1,13 @@
 //
 //  GameFormProtocols.swift
-//  SwiftCraftLauncher
+//  GameFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
+/// Protocols and configuration types for game form state management.
 import SwiftUI
 
-// MARK: - Game Form State Protocol
 @MainActor
 protocol GameFormStateProtocol: ObservableObject {
     var isDownloading: Bool { get set }
@@ -18,25 +19,25 @@ protocol GameFormStateProtocol: ObservableObject {
     func updateParentState()
 }
 
-// MARK: - Download Progress Provider Protocol
+/// Provides access to download progress state.
 protocol DownloadProgressProvider {
     var gameSetupService: GameSetupUtil { get }
     var shouldShowProgress: Bool { get }
 }
 
-// MARK: - Form Validation Provider Protocol
+/// Provides form validation state for game creation.
 protocol FormValidationProvider {
     var gameNameValidator: GameNameValidator { get }
     var isFormValid: Bool { get }
 }
 
-// MARK: - Game Form Actions
+/// Action callbacks for game form confirm and cancel operations.
 struct GameFormActions {
     let onCancel: () -> Void
     let onConfirm: () -> Void
 }
 
-// MARK: - Game Form Configuration
+/// Configuration bindings and actions for a game form.
 struct GameFormConfiguration {
     let isDownloading: Binding<Bool>
     let isFormValid: Binding<Bool>

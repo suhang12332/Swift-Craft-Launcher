@@ -1,7 +1,15 @@
+//
+//  GeneralSettingsViewModel.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import AppKit
 import Foundation
 import SwiftUI
 
+/// Manages general application settings including working directory and download preferences.
 @MainActor
 final class GeneralSettingsViewModel: ObservableObject {
     @Published var showDirectoryPicker = false
@@ -23,18 +31,19 @@ final class GeneralSettingsViewModel: ObservableObject {
         self.concurrentDownloadsDraft = Double(generalSettings.concurrentDownloads)
     }
 
+    /// Configures the view model with a game repository reference.
     func configure(gameRepository: GameRepository) {
         self.gameRepository = gameRepository
     }
 
-    // MARK: - Working Directory
-
+    /// Returns a display string for a working directory path and game count.
     func workingPathDisplayString(for item: (path: String, count: Int)) -> String {
         let lastComponent = (item.path as NSString).lastPathComponent
         let countStr = String(format: "settings.working_path.game_count".localized(), item.count)
         return "\(lastComponent) (\(countStr))"
     }
 
+    /// Resets the working directory to the default application support path.
     func resetWorkingDirectorySafely() {
         do {
             guard let supportDir = FileManager.default
@@ -57,6 +66,7 @@ final class GeneralSettingsViewModel: ObservableObject {
         }
     }
 
+    /// Handles the result from a directory picker.
     func handleDirectoryImport(_ result: Result<[URL], Error>) {
         switch result {
         case .success(let urls):
@@ -87,23 +97,25 @@ final class GeneralSettingsViewModel: ObservableObject {
         }
     }
 
+    /// Refreshes working path options when the directory changes.
     func onWorkingDirectoryChanged() {
         Task { [weak self] in
             await self?.gameRepository?.refreshWorkingPathOptions()
         }
     }
 
-    // MARK: - Concurrent Downloads
-
+    /// Syncs the concurrent downloads draft value with current settings.
     func onAppearSyncConcurrentDownloads() {
         concurrentDownloadsDraft = Double(generalSettings.concurrentDownloads)
     }
 
+    /// Updates the concurrent downloads draft when not actively editing.
     func onConcurrentDownloadsChanged(_ newValue: Int) {
         guard !isEditingConcurrentDownloads else { return }
         concurrentDownloadsDraft = Double(newValue)
     }
 
+    /// Commits the concurrent downloads value when editing ends.
     func commitConcurrentDownloadsIfNeeded(isEditing: Bool) {
         isEditingConcurrentDownloads = isEditing
         if !isEditing {
@@ -111,8 +123,7 @@ final class GeneralSettingsViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Errors
-
+    /// Clears the current error state.
     func clearError() {
         error = nil
     }

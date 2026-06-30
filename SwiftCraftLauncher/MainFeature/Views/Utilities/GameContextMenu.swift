@@ -1,3 +1,12 @@
+//
+//  GameContextMenu.swift
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Context menu for game entries providing play/stop, settings, export, and delete actions.
+
 import SwiftUI
 
 struct GameContextMenu: View {
@@ -35,8 +44,7 @@ struct GameContextMenu: View {
     @EnvironmentObject private var gameLaunchUseCase: GameLaunchUseCase
     @StateObject private var actionViewModel = GameContextMenuActionViewModel()
 
-    /// 使用缓存的游戏状态，避免每次渲染都检查进程
-    /// key 为 processKey(gameId, userId)，当前选中的玩家决定 userId
+    /// Whether the game is currently running, determined by cached process state.
     private var isRunning: Bool {
         let userId = playerListViewModel.currentPlayer?.id ?? ""
         return gameStatusManager.cachedIsGameRunning(gameId: game.id, userId: userId)
@@ -98,7 +106,7 @@ struct GameContextMenu: View {
         })
     }
 
-    /// 启动或停止游戏
+    /// Toggles the game between running and stopped states.
     private func toggleGameState() {
         actionViewModel.toggleGameState(
             isRunning: isRunning,

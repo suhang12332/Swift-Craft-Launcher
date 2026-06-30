@@ -1,20 +1,28 @@
+//
+//  YggdrasilAuthService.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 import AuthenticationServices
 
+/// Manages OAuth2 authentication with Yggdrasil-compatible authentication servers.
 final class YggdrasilAuthService: NSObject, ObservableObject {
     static let shared = YggdrasilAuthService()
 
-    /// 当前认证状态
+    /// The current authentication state.
     @Published var authState: YggdrasilAuthState = .idle
 
-    /// 是否处于加载/网络请求中
+    /// Whether an authentication request is in progress.
     @Published var isLoading: Bool = false
 
-    /// 当前选中的 Yggdrasil 服务器配置
+    /// The currently selected Yggdrasil server configuration.
     @Published var currentServer: YggdrasilServerConfig?
 
-    /// 认证后拿到的玩家资料列表（多角色时用于 UI 选择）
+    /// The list of player profiles returned after authentication.
     @Published var authenticatedProfiles: [YggdrasilProfile] = []
 
     private var webAuthSession: ASWebAuthenticationSession?
@@ -25,7 +33,7 @@ final class YggdrasilAuthService: NSObject, ObservableObject {
 }
 
 extension YggdrasilAuthService {
-    /// 设置当前要使用的 Yggdrasil 服务器
+    /// Sets the Yggdrasil server to use for authentication.
     func setServer(_ config: YggdrasilServerConfig) {
         currentServer = config
         authenticatedProfiles = []
@@ -34,14 +42,14 @@ extension YggdrasilAuthService {
         }
     }
 
-    /// 在多角色场景下切换当前选中的玩家资料
+    /// Selects a player profile from the authenticated profiles list.
     @MainActor
     func selectAuthenticatedProfile(id: String) {
         guard let profile = authenticatedProfiles.first(where: { $0.id == id }) else { return }
         authState = .authenticated(profile: profile)
     }
 
-    /// 启动 Yggdrasil OAuth2 授权码登录流程
+    /// Starts the Yggdrasil OAuth2 authorization code login flow.
     @MainActor
     func startAuthentication() async {
         webAuthSession?.cancel()
@@ -127,7 +135,7 @@ extension YggdrasilAuthService {
         }
     }
 
-    /// 登出/清理认证状态
+    /// Clears the authentication state and cancels any active sessions.
     @MainActor
     func logout() {
         authState = .idle
@@ -139,7 +147,6 @@ extension YggdrasilAuthService {
     }
 }
 
-// MARK: - 内部流程
 private extension YggdrasilAuthService {
     func buildAuthorizationURL(for server: YggdrasilServerConfig) -> URL? {
         guard let authorizeURL = server.authorizeURL,

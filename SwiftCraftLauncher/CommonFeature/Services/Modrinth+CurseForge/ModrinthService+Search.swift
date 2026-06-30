@@ -1,5 +1,13 @@
+//
+//  ModrinthService+Search.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides search operations for Modrinth projects.
 extension ModrinthService {
 
     static func searchProjects(

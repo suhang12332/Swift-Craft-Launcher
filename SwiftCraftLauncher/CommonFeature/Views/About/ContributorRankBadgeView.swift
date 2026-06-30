@@ -1,12 +1,13 @@
 //
 //  ContributorRankBadgeView.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
-/// 贡献者排名徽章视图
+/// Displays a rank badge for top contributors.
 struct ContributorRankBadgeView: View {
     let rank: Int
 

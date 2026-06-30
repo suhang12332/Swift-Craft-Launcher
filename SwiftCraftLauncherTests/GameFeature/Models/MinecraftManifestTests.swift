@@ -1,9 +1,14 @@
+//
+//  MinecraftManifestTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class MinecraftManifestTests: XCTestCase {
-
-    // MARK: - MinecraftVersionManifest
 
     func testMinecraftVersionManifest_decodeMinimal() throws {
         let json = """
@@ -58,8 +63,6 @@ final class MinecraftManifestTests: XCTestCase {
         XCTAssertNil(manifest.complianceLevel)
     }
 
-    // MARK: - ArgumentValue
-
     func testArgumentValue_string() throws {
         let json = "\"--width\""
         let data = Data(json.utf8)
@@ -90,8 +93,6 @@ final class MinecraftManifestTests: XCTestCase {
         }
     }
 
-    // MARK: - ArgumentValueArrayOrString
-
     func testArgumentValueArrayOrString_string() throws {
         let json = "\"hello\""
         let data = Data(json.utf8)
@@ -115,8 +116,6 @@ final class MinecraftManifestTests: XCTestCase {
             XCTFail("Expected array")
         }
     }
-
-    // MARK: - Features
 
     func testFeatures_missingKeys_defaultsFalse() throws {
         let json = "{}"
@@ -145,8 +144,6 @@ final class MinecraftManifestTests: XCTestCase {
         XCTAssertFalse(features.has_custom_resolution)
         XCTAssertFalse(features.has_quick_plays_support)
     }
-
-    // MARK: - Library
 
     func testLibrary_decodeDefaults() throws {
         let json = """
@@ -184,8 +181,6 @@ final class MinecraftManifestTests: XCTestCase {
         XCTAssertNotNil(library.rules)
         XCTAssertEqual(library.natives?["osx"], "natives-osx")
     }
-
-    // MARK: - LibraryArtifact
 
     func testLibraryArtifact_decodeEmptyURL() throws {
         let json = """
@@ -225,8 +220,6 @@ final class MinecraftManifestTests: XCTestCase {
         XCTAssertEqual(decoded.size, artifact.size)
         XCTAssertEqual(decoded.url, artifact.url)
     }
-
-    // MARK: - Rule
 
     func testRule_decode() throws {
         let json = """

@@ -1,6 +1,13 @@
+//
+//  SidebarView.swift
+//  MainFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-/// 侧边栏：游戏列表与资源列表导航
+/// Sidebar view for navigating between game and resource sections.
 public struct SidebarView: View {
     @EnvironmentObject private var detailState: ResourceDetailState
     @EnvironmentObject private var gameRepository: GameRepository
@@ -16,6 +23,10 @@ public struct SidebarView: View {
     @Environment(\.openSettings)
     private var openSettings
 
+    /// Creates a sidebar view with the required presenters.
+    /// - Parameters:
+    ///   - gameDialogsPresenter: Handles game dialog presentations.
+    ///   - selectedGameManager: Tracks the currently selected game.
     init(
         gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter,
         selectedGameManager: SelectedGameManager = AppServices.selectedGameManager
@@ -26,7 +37,6 @@ public struct SidebarView: View {
 
     public var body: some View {
         List(selection: detailState.selectedItemOptionalBinding) {
-            // 资源部分
             Section(header: Text("sidebar.resources.title".localized())) {
                 ForEach(ResourceType.allCases, id: \.self) { type in
                     NavigationLink(value: SidebarItem.resource(type)) {
@@ -37,7 +47,6 @@ public struct SidebarView: View {
                 }
             }
 
-            // 游戏部分
             Section(header: Text("sidebar.games.title".localized())) {
                 ForEach(filteredGames) { game in
                     NavigationLink(value: SidebarItem.game(game.id)) {
@@ -64,7 +73,6 @@ public struct SidebarView: View {
                 }
             }
 
-            // 损坏游戏部分（数据库和文件夹不一致）
             if !filteredCorruptedGames.isEmpty {
                 Section(header: Text("sidebar.corrupted_games.title".localized())) {
                     ForEach(filteredCorruptedGames, id: \.self) { name in
@@ -105,7 +113,6 @@ public struct SidebarView: View {
         }
     }
 
-    // 只对游戏名做模糊搜索
     private var filteredGames: [GameVersionInfo] {
         if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return gameRepository.games
@@ -114,7 +121,6 @@ public struct SidebarView: View {
         return gameRepository.games.filter { $0.gameName.lowercased().contains(lower) }
     }
 
-    /// 损坏游戏名称的模糊搜索
     private var filteredCorruptedGames: [String] {
         let names = gameRepository.corruptedGames
         let trimmed = searchText.trimmingCharacters(in: .whitespacesAndNewlines)

@@ -1,20 +1,24 @@
+//
+//  VersionGroupedView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-// MARK: - Version Grouped View
-/// 版本分组展示组件，用于按版本系列分组显示版本列表
+/// A view that displays versions grouped by major version series.
 struct VersionGroupedView: View {
-    // MARK: - Properties
     let items: [FilterItem]
     @Binding var selectedItems: [String]
     let onItemTap: (String) -> Void
-    var isMultiSelect: Bool = true  // 是否支持多选，默认为true
+    var isMultiSelect: Bool = true
     @State private var visibleItemCounts: [String: Int] = [:]
     @State private var visibleGroupCount: Int = Constants.initialVisibleGroupCount
 
     @Binding var selectedItem: String?
 
-    // MARK: - Initializers
-    /// 多选模式初始化
+    /// Initializes the view for multi-select mode.
     init(items: [FilterItem], selectedItems: Binding<[String]>, onItemTap: @escaping (String) -> Void) {
         self.items = items
         self._selectedItems = selectedItems
@@ -23,7 +27,7 @@ struct VersionGroupedView: View {
         self._selectedItem = .constant(nil)
     }
 
-    /// 单选模式初始化
+    /// Initializes the view for single-select mode.
     init(items: [FilterItem], selectedItem: Binding<String?>, onItemTap: @escaping (String) -> Void) {
         self.items = items
         self._selectedItem = selectedItem
@@ -32,7 +36,6 @@ struct VersionGroupedView: View {
         self._selectedItems = .constant([])
     }
 
-    // MARK: - Constants
     private enum Constants {
         static let groupSpacing: CGFloat = 8
         static let itemSpacing: CGFloat = 4
@@ -43,7 +46,6 @@ struct VersionGroupedView: View {
         static let incrementalLoadBatchSize = 12
     }
 
-    // MARK: - Body
     var body: some View {
         let groups = groupVersions(items)
         let groupKeys = orderedVersionKeys(from: items)
@@ -63,7 +65,6 @@ struct VersionGroupedView: View {
         }
     }
 
-    // MARK: - Private Views
     @ViewBuilder
     private func versionGroupView(key: String, items: [FilterItem]) -> some View {
         VStack(alignment: .leading, spacing: Constants.itemSpacing) {
@@ -89,8 +90,6 @@ struct VersionGroupedView: View {
         }
     }
 
-    // MARK: - Helper Methods
-    /// 判断项目是否被选中
     private func isSelected(_ itemId: String) -> Bool {
         if isMultiSelect {
             return selectedItems.contains(itemId)
@@ -131,14 +130,12 @@ struct VersionGroupedView: View {
         )
     }
 
-    /// 将版本项按主版本号分组
     private func groupVersions(_ items: [FilterItem]) -> [String: [FilterItem]] {
         Dictionary(grouping: items) { item in
             versionGroupKey(for: item.name)
         }
     }
 
-    /// 保持分组顺序与传入版本列表一致，不做额外排序。
     private func orderedVersionKeys(from items: [FilterItem]) -> [String] {
         var seen = Set<String>()
         return items.compactMap { item in
@@ -147,11 +144,6 @@ struct VersionGroupedView: View {
         }
     }
 
-    /// 兼容正式版、预发布版和快照版的分组键。
-    /// 例如：
-    /// - 1.21.1 -> 1.21
-    /// - 1.21-pre1 -> 1.21
-    /// - 24w14a -> 24w
     private func versionGroupKey(for version: String) -> String {
         let trimmedVersion = version.trimmingCharacters(in: .whitespacesAndNewlines)
 

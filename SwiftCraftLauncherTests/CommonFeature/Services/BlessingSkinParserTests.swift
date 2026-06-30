@@ -1,9 +1,14 @@
+//
+//  BlessingSkinParserTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class BlessingSkinParserTests: XCTestCase {
-
-    // MARK: - BlessingSkinProfileListParser.parse
 
     func testParse_emptyArray_returnsNil() {
         let data = Data("[]".utf8)
@@ -92,8 +97,6 @@ final class BlessingSkinParserTests: XCTestCase {
         XCTAssertNotNil(result)
         XCTAssertEqual(result?.count, 3)
     }
-
-    // MARK: - CommonBlessingSkinStyleProfileListParser
 
     func testParser_id_isMUA() {
         let parser = CommonBlessingSkinStyleProfileListParser(baseURL: "https://bs.example.com")

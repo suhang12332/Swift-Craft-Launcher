@@ -1,7 +1,14 @@
+//
+//  PlayerListViewModel.swift
+//  PlayerFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import SwiftUI
 
-/// A view model that manages the list of players and interacts with PlayerDataManager.
+/// Manages the player list and coordinates with ``PlayerDataManager`` for persistence.
 class PlayerListViewModel: ObservableObject {
     @Published var players: [Player] = []
     @Published var currentPlayer: Player?
@@ -36,20 +43,20 @@ class PlayerListViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Public Methods
-
+    /// Loads the player list on first invocation; subsequent calls are ignored.
     func loadPlayersIfNeeded() {
         guard !hasLoadedPlayers else { return }
         loadPlayersSafely()
     }
 
-    /// 加载玩家列表（静默版本）
+    /// Loads the player list, returning an empty list on failure.
     func loadPlayers() {
         loadPlayersSafely()
     }
 
-    /// 加载玩家列表（抛出异常版本）
-    /// - Throws: GlobalError 当操作失败时
+    /// Loads the player list, throwing on failure.
+    ///
+    /// - Throws: A `GlobalError` if loading fails.
     func loadPlayersThrowing() throws {
         players = try dataManager.loadPlayersThrowing()
         currentPlayer = players.first { $0.isCurrent }
@@ -57,7 +64,6 @@ class PlayerListViewModel: ObservableObject {
         Logger.shared.debug("当前玩家 (加载后): \(currentPlayer?.name ?? "无")")
     }
 
-    /// 安全地加载玩家列表
     private func loadPlayersSafely() {
         do {
             try loadPlayersThrowing()
@@ -66,13 +72,13 @@ class PlayerListViewModel: ObservableObject {
             let globalError = GlobalError.from(error)
             Logger.shared.error("加载玩家列表失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
-            // 保持现有状态
         }
     }
 
-    /// 添加新玩家（静默版本）
-    /// - Parameter name: 要添加的玩家名称
-    /// - Returns: 是否成功添加
+    /// Adds an offline player with the given name.
+    ///
+    /// - Parameter name: The player's display name.
+    /// - Returns: `true` if the player was added successfully.
     func addPlayer(name: String) -> Bool {
         do {
             try addPlayerThrowing(name: name)
@@ -85,9 +91,10 @@ class PlayerListViewModel: ObservableObject {
         }
     }
 
-    /// 添加新玩家（抛出异常版本）
-    /// - Parameter name: 要添加的玩家名称
-    /// - Throws: GlobalError 当操作失败时
+    /// Adds an offline player with the given name, throwing on failure.
+    ///
+    /// - Parameter name: The player's display name.
+    /// - Throws: A `GlobalError` if adding the player fails.
     func addPlayerThrowing(name: String) throws {
         try dataManager.addPlayer(name: name, isOnline: false, avatarName: "")
         try loadPlayersThrowing()
@@ -95,9 +102,10 @@ class PlayerListViewModel: ObservableObject {
         Logger.shared.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
     }
 
-    /// 添加在线玩家（静默版本）
-    /// - Parameter profile: Minecraft 配置文件
-    /// - Returns: 是否成功添加
+    /// Adds an online (Minecraft) player from a profile response.
+    ///
+    /// - Parameter profile: The Minecraft profile response.
+    /// - Returns: `true` if the player was added successfully.
     func addOnlinePlayer(profile: MinecraftProfileResponse) -> Bool {
         do {
             try addOnlinePlayerThrowing(profile: profile)
@@ -110,9 +118,10 @@ class PlayerListViewModel: ObservableObject {
         }
     }
 
-    /// 添加在线玩家（抛出异常版本）
-    /// - Parameter profile: Minecraft 配置文件
-    /// - Throws: GlobalError 当操作失败时
+    /// Adds an online (Minecraft) player from a profile response, throwing on failure.
+    ///
+    /// - Parameter profile: The Minecraft profile response.
+    /// - Throws: A `GlobalError` if adding the player fails.
     func addOnlinePlayerThrowing(profile: MinecraftProfileResponse) throws {
         let avatarUrl =
             profile.skins.isEmpty ? "" : profile.skins[0].url.httpToHttps()
@@ -130,9 +139,10 @@ class PlayerListViewModel: ObservableObject {
         Logger.shared.debug("当前玩家 (添加后): \(currentPlayer?.name ?? "无")")
     }
 
-    /// 添加 Yggdrasil 在线玩家（静默版本）
-    /// - Parameter profile: Yggdrasil 玩家资料
-    /// - Returns: 是否成功添加
+    /// Adds a Yggdrasil-authenticated player from a profile.
+    ///
+    /// - Parameter profile: The Yggdrasil player profile.
+    /// - Returns: `true` if the player was added successfully.
     func addOnlinePlayer(profile: YggdrasilProfile) -> Bool {
         do {
             try addOnlinePlayerThrowing(profile: profile)
@@ -145,9 +155,10 @@ class PlayerListViewModel: ObservableObject {
         }
     }
 
-    /// 添加 Yggdrasil 在线玩家（抛出异常版本）
-    /// - Parameter profile: Yggdrasil 玩家资料
-    /// - Throws: GlobalError 当操作失败时
+    /// Adds a Yggdrasil-authenticated player from a profile, throwing on failure.
+    ///
+    /// - Parameter profile: The Yggdrasil player profile.
+    /// - Throws: A `GlobalError` if adding the player fails.
     func addOnlinePlayerThrowing(profile: YggdrasilProfile) throws {
         let avatarUrl = profile.skins.isEmpty ? "" : profile.skins[0].url.httpToHttps()
         try dataManager.addPlayer(
@@ -163,9 +174,10 @@ class PlayerListViewModel: ObservableObject {
         Logger.shared.debug("Yggdrasil 玩家 \(profile.name) 添加成功，列表已更新。")
     }
 
-    /// 删除玩家（静默版本）
-    /// - Parameter id: 要删除的玩家ID
-    /// - Returns: 是否成功删除
+    /// Deletes a player by identifier.
+    ///
+    /// - Parameter id: The identifier of the player to delete.
+    /// - Returns: `true` if the player was deleted successfully.
     func deletePlayer(byID id: String) -> Bool {
         do {
             try deletePlayerThrowing(byID: id)
@@ -178,9 +190,10 @@ class PlayerListViewModel: ObservableObject {
         }
     }
 
-    /// 删除玩家（抛出异常版本）
-    /// - Parameter id: 要删除的玩家ID
-    /// - Throws: GlobalError 当操作失败时
+    /// Deletes a player by identifier, throwing on failure.
+    ///
+    /// - Parameter id: The identifier of the player to delete.
+    /// - Throws: A `GlobalError` if deletion fails.
     func deletePlayerThrowing(byID id: String) throws {
         try dataManager.deletePlayer(byID: id)
         try loadPlayersThrowing()
@@ -188,8 +201,9 @@ class PlayerListViewModel: ObservableObject {
         Logger.shared.debug("当前玩家 (删除后): \(currentPlayer?.name ?? "无")")
     }
 
-    /// 设置当前玩家（静默版本）
-    /// - Parameter playerId: 要设置为当前玩家的ID
+    /// Sets the current player by identifier, without propagating errors.
+    ///
+    /// - Parameter playerId: The identifier of the player to set as current.
     func setCurrentPlayer(byID playerId: String) {
         if playerId != currentPlayer?.id {
             do {
@@ -202,9 +216,10 @@ class PlayerListViewModel: ObservableObject {
         }
     }
 
-    /// 设置当前玩家（抛出异常版本）
-    /// - Parameter playerId: 要设置为当前玩家的ID
-    /// - Throws: GlobalError 当操作失败时
+    /// Sets the current player by identifier, throwing on failure.
+    ///
+    /// - Parameter playerId: The identifier of the player to set as current.
+    /// - Throws: A `GlobalError` if the player is not found.
     func setCurrentPlayerThrowing(byID playerId: String) throws {
         guard let index = players.firstIndex(where: { $0.id == playerId })
         else {
@@ -226,15 +241,17 @@ class PlayerListViewModel: ObservableObject {
         )
     }
 
-    /// 检查玩家是否存在
-    /// - Parameter name: 要检查的名称
-    /// - Returns: 如果存在同名玩家则返回 true，否则返回 false
+    /// Checks whether a player with the given name already exists.
+    ///
+    /// - Parameter name: The name to check.
+    /// - Returns: `true` if a matching player exists.
     func playerExists(name: String) -> Bool {
         dataManager.playerExists(name: name)
     }
 
-    /// 更新玩家列表中的指定玩家信息
-    /// - Parameter updatedPlayer: 更新后的玩家对象
+    /// Updates a player in the local list from an external update notification.
+    ///
+    /// - Parameter updatedPlayer: The player with updated values.
     func updatePlayerInList(_ updatedPlayer: Player) {
         do {
             try updatePlayerInListThrowing(updatedPlayer)
@@ -245,9 +262,10 @@ class PlayerListViewModel: ObservableObject {
         }
     }
 
-    /// 更新玩家列表中的指定玩家信息（抛出异常版本）
-    /// - Parameter updatedPlayer: 更新后的玩家对象
-    /// - Throws: GlobalError 当操作失败时
+    /// Updates a player in the local list, throwing on failure.
+    ///
+    /// - Parameter updatedPlayer: The player with updated values.
+    /// - Throws: A `GlobalError` if the update fails.
     func updatePlayerInListThrowing(_ updatedPlayer: Player) throws {
         Logger.shared.info("[updatePlayerInListThrowing] 更新前当前玩家信息:")
         if let index = players.firstIndex(where: { $0.id == updatedPlayer.id }) {

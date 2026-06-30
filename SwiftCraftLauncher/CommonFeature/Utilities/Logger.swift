@@ -1,3 +1,11 @@
+//
+//  Logger.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
+/// Provides unified logging to both the system log and a daily rotating file.
 import Foundation
 import os.log
 import AppKit
@@ -9,7 +17,6 @@ class Logger: AppLogging {
         category: Bundle.main.appCategory
     )
 
-    // 文件日志相关属性
     private var logFileHandle: FileHandle?
     private let logQueue = DispatchQueue(label: AppConstants.logTag, qos: .utility)
     private let dateFormatter: DateFormatter = {
@@ -18,18 +25,10 @@ class Logger: AppLogging {
         return formatter
     }()
 
-    // 日志文件路径
     private var logFileURL: URL? {
-        // 使用AppPaths中定义的logsDirectory（现在总是返回有效路径）
         let logsDirectory = AppPaths.logsDirectory
-
-        // 获取应用名称，移除空格并转换为小写
         let appName = Bundle.main.appName.replacingOccurrences(of: " ", with: "-").lowercased()
-
-        // 创建 logs 目录
         try? FileManager.default.createDirectory(at: logsDirectory, withIntermediateDirectories: true)
-
-        // 使用应用名称-日期格式作为文件名
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         let today = dateFormatter.string(from: Date())
@@ -37,7 +36,6 @@ class Logger: AppLogging {
     }
 
     private init() {
-        // 启动时清理旧日志文件
         cleanupOldLogs()
         setupLogFile()
     }
@@ -46,23 +44,17 @@ class Logger: AppLogging {
         closeLogFile()
     }
 
-    // MARK: - 文件日志设置
-
     private func setupLogFile() {
         guard let logURL = logFileURL else { return }
 
-        // 如果文件不存在，创建文件
         if !FileManager.default.fileExists(atPath: logURL.path) {
             FileManager.default.createFile(atPath: logURL.path, contents: nil)
         }
 
-        // 打开文件句柄
         do {
             logFileHandle = try FileHandle(forWritingTo: logURL)
-            // 移动到文件末尾
             logFileHandle?.seekToEndOfFile()
 
-            // 写入启动日志
             let startupMessage = "=== Launcher Started at \(dateFormatter.string(from: Date())) ===\n"
             if let data = startupMessage.data(using: .utf8) {
                 logFileHandle?.write(data)
@@ -77,11 +69,8 @@ class Logger: AppLogging {
         logFileHandle = nil
     }
 
-    // MARK: - 写入日志文件
-
     private func writeToLogFile(_ message: String) {
         logQueue.async {
-            // 检查是否需要切换到新的日志文件（日期变化）
             self.checkAndSwitchLogFile()
 
             let timestamp = self.dateFormatter.string(from: Date())
@@ -89,51 +78,37 @@ class Logger: AppLogging {
 
             if let data = logEntry.data(using: .utf8) {
                 self.logFileHandle?.write(data)
-                // 强制同步到磁盘
                 self.logFileHandle?.synchronizeFile()
             }
         }
     }
 
-    // MARK: - 日志文件切换
-
     private func checkAndSwitchLogFile() {
         guard let currentLogURL = logFileURL else { return }
 
-        // 检查当前文件句柄是否指向正确的文件
         if let currentHandle = logFileHandle {
-            // 如果文件句柄存在但指向的文件路径不匹配，需要切换
             if currentHandle.fileDescriptor != -1 {
-                // 检查文件路径是否匹配当前日期
                 let expectedFileName = currentLogURL.lastPathComponent
                 let currentFileName = currentLogURL.lastPathComponent
 
                 if expectedFileName != currentFileName {
-                    // 日期变化，切换到新文件
                     switchToNewLogFile()
                 }
             }
         } else {
-            // 文件句柄不存在，重新设置
             setupLogFile()
         }
     }
 
     private func switchToNewLogFile() {
-        // 关闭当前文件句柄
         closeLogFile()
-
-        // 设置新的日志文件
         setupLogFile()
 
-        // 记录文件切换日志
         let switchMessage = "=== Log file switched at \(dateFormatter.string(from: Date())) ===\n"
         if let data = switchMessage.data(using: .utf8) {
             logFileHandle?.write(data)
         }
     }
-
-    // MARK: - AppLogging
 
     func logDebug(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         log(items, type: .debug, prefix: "🔍", file: file, function: function, line: line)
@@ -148,8 +123,6 @@ class Logger: AppLogging {
     func logError(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         log(items, type: .error, prefix: "❌", file: file, function: function, line: line)
     }
-
-    // MARK: - Core Logging
 
     fileprivate func log(
         _ items: [Any],
@@ -169,21 +142,17 @@ class Logger: AppLogging {
         }
         let logMessage = "\(prefix) [\(fileName):\(line)] \(function): \(message)"
 
-        // 输出到控制台。 本地调试可以开启
         os_log("%{public}@", log: logger, type: type, logMessage)
 
-        // 写入到文件
         writeToLogFile(logMessage)
     }
 
-    // MARK: - 日志文件管理
-
-    /// 获取日志文件路径
+    /// Returns the path to the current log file.
     func getLogFilePath() -> String? {
         return logFileURL?.path
     }
 
-    /// 获取当前日志文件信息
+    /// Returns metadata about the current log file.
     func getCurrentLogInfo() -> (path: String, fileName: String, date: String)? {
         guard let logURL = logFileURL else { return nil }
 
@@ -198,29 +167,24 @@ class Logger: AppLogging {
         )
     }
 
-    /// 手动触发日志清理
+    /// Removes log files older than seven days.
     func manualCleanup() {
         cleanupOldLogs()
     }
 
-    /// 打开当前日志文件
+    /// Opens the current log file in the default system application.
     func openLogFile() {
         guard let logURL = logFileURL else {
             Self.shared.error("无法获取日志文件路径")
             return
         }
 
-        // 检查文件是否存在
         if FileManager.default.fileExists(atPath: logURL.path) {
-            // 使用系统默认应用打开日志文件
             NSWorkspace.shared.open(logURL)
         } else {
-            // 如果日志文件不存在，创建并打开
             do {
-                // 确保目录存在
                 try FileManager.default.createDirectory(at: logURL.deletingLastPathComponent(), withIntermediateDirectories: true)
 
-                // 创建日志文件
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyy-MM-dd"
                 let dateString = dateFormatter.string(from: Date())
@@ -233,20 +197,18 @@ class Logger: AppLogging {
         }
     }
 
-    /// 清理旧日志文件（保留最近7天的日志）
+    /// Removes log files older than seven days.
     func cleanupOldLogs() {
         logQueue.async {
             let calendar = Calendar.current
             let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
 
-            // 使用AppPaths中定义的logsDirectory进行清理（现在总是返回有效路径）
             let logsDirectory = AppPaths.logsDirectory
             self.cleanupLogsInDirectory(logsDirectory, sevenDaysAgo: sevenDaysAgo)
         }
     }
 
     private func cleanupLogsInDirectory(_ directory: URL, sevenDaysAgo: Date) {
-        // 检查目录是否存在，如果不存在则跳过清理
         guard FileManager.default.fileExists(atPath: directory.path) else {
             return
         }
@@ -269,8 +231,6 @@ class Logger: AppLogging {
             Self.shared.error("Failed to cleanup old logs in \(directory.path): \(error)")
         }
     }
-
-    // MARK: - Stringify Helper
 
     static func stringify(_ value: Any) -> String {
         switch value {
@@ -342,7 +302,6 @@ class Logger: AppLogging {
     }
 }
 
-// Helper for encoding any Encodable
 private struct AnyEncodable: Encodable {
 
     private let _encode: (Encoder) throws -> Void

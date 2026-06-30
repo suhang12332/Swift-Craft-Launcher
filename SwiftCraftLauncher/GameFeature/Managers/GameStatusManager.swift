@@ -1,12 +1,18 @@
+//
+//  GameStatusManager.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 游戏状态管理器
-/// 基于实际进程状态管理游戏运行状态，key 为 gameId_userId 拼接，同一游戏不同玩家分别追踪
+/// Tracks game running and launching states per player using process keys.
 class GameStatusManager: ObservableObject {
     static let shared = GameStatusManager()
-    /// 游戏运行状态字典，key 为 processKey(gameId, userId)，value 为是否正在运行
+    /// Running states keyed by processKey(gameId, userId).
     @Published private var gameRunningStates: [String: Bool] = [:]
-    /// 游戏启动中状态字典，key 为 processKey(gameId, userId)，value 为是否正在启动（尚未进入运行态）
+    /// Launching states keyed by processKey(gameId, userId).
     @Published private var gameLaunchingStates: [String: Bool] = [:]
 
     private init() {}
@@ -65,10 +71,10 @@ class GameStatusManager: ObservableObject {
         }
     }
 
-    /// 强制刷新指定 (gameId, userId) 的状态
+    /// Force-refreshes the running state for a specific game and player.
     /// - Parameters:
-    ///   - gameId: 游戏ID
-    ///   - userId: 玩家ID
+    ///   - gameId: The game identifier.
+    ///   - userId: The player identifier.
     func refreshGameStatus(gameId: String, userId: String) {
         let actuallyRunning = AppServices.gameProcessManager.isGameRunning(gameId: gameId, userId: userId)
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
@@ -79,10 +85,11 @@ class GameStatusManager: ObservableObject {
         }
     }
 
+    /// Updates the running state for a specific game and player.
     /// - Parameters:
-    ///   - gameId: 游戏ID
-    ///   - userId: 玩家ID
-    ///   - isRunning: 是否正在运行
+    ///   - gameId: The game identifier.
+    ///   - userId: The player identifier.
+    ///   - isRunning: Whether the game is currently running.
     func setGameRunning(gameId: String, userId: String, isRunning: Bool) {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
         applyOnMain { [weak self] in
@@ -95,7 +102,7 @@ class GameStatusManager: ObservableObject {
         }
     }
 
-    /// 清理已停止的游戏状态
+    /// Removes cached states for games that are no longer running.
     func cleanupStoppedGames() {
         let processManager = AppServices.gameProcessManager
 
@@ -113,24 +120,23 @@ class GameStatusManager: ObservableObject {
         }
     }
 
-    /// 获取所有正在运行的 processKey 列表
+    /// A list of process keys for games that are currently running.
     var runningProcessKeys: [String] {
         gameRunningStates.compactMap { key, isRunning in
             isRunning ? key : nil
         }
     }
 
-    /// 获取所有游戏状态（key 为 processKey）
+    /// All cached game states keyed by processKey.
     var allGameStates: [String: Bool] {
         return gameRunningStates
     }
 
-    // MARK: - 启动中状态管理
-
+    /// Updates the launching state for a specific game and player.
     /// - Parameters:
-    ///   - gameId: 游戏ID
-    ///   - userId: 玩家ID
-    ///   - isLaunching: 是否正在启动
+    ///   - gameId: The game identifier.
+    ///   - userId: The player identifier.
+    ///   - isLaunching: Whether the game is currently launching.
     func setGameLaunching(gameId: String, userId: String, isLaunching: Bool) {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
         applyOnMain { [weak self] in
@@ -143,17 +149,18 @@ class GameStatusManager: ObservableObject {
         }
     }
 
+    /// Returns whether the specified game is currently launching.
     /// - Parameters:
-    ///   - gameId: 游戏ID
-    ///   - userId: 玩家ID
-    /// - Returns: 是否正在启动
+    ///   - gameId: The game identifier.
+    ///   - userId: The player identifier.
+    /// - Returns: `true` if the game is launching.
     func isGameLaunching(gameId: String, userId: String) -> Bool {
         let key = GameProcessManager.processKey(gameId: gameId, userId: userId)
         return gameLaunchingStates[key] ?? false
     }
 
-    /// 移除指定 gameId 下所有 userId 的状态（删除游戏时调用）
-    /// - Parameter gameId: 游戏ID
+    /// Removes all cached states for a specific game across all players.
+    /// - Parameter gameId: The game identifier.
     func removeGameState(gameId: String) {
         let prefix = "\(gameId)_"
         applyOnMain { [weak self] in

@@ -1,3 +1,10 @@
+//
+//  CommonServiceTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
@@ -7,8 +14,6 @@ final class CommonServiceTests: XCTestCase {
         let data = try JSONSerialization.data(withJSONObject: jsonObject)
         return try JSONDecoder().decode(type, from: data)
     }
-
-    // MARK: - mavenCoordinateToRelativePath
 
     func testMavenCoordinateToRelativePath_threeParts() {
         let result = CommonService.mavenCoordinateToRelativePath("org.example:lib:1.0")
@@ -40,8 +45,6 @@ final class CommonServiceTests: XCTestCase {
         XCTAssertNil(result)
     }
 
-    // MARK: - parseMavenCoordinateWithAtSymbol
-
     func testParseMavenCoordinateWithAtSymbol_versionAtExtension() {
         let result = CommonService.parseMavenCoordinateWithAtSymbol("org.example:lib:1.0@lzma")
         XCTAssertTrue(result.contains("org/example/lib/1.0"))
@@ -63,8 +66,6 @@ final class CommonServiceTests: XCTestCase {
         XCTAssertEqual(result, "org:lib")
     }
 
-    // MARK: - mavenCoordinateToRelativePathForURL
-
     func testMavenCoordinateToRelativePathForURL_standard() {
         let result = CommonService.mavenCoordinateToRelativePathForURL("org.example:lib:1.0")
         XCTAssertEqual(result, "org/example/lib/1.0/lib-1.0.jar")
@@ -79,8 +80,6 @@ final class CommonServiceTests: XCTestCase {
         let result = CommonService.mavenCoordinateToRelativePathForURL("invalid")
         XCTAssertEqual(result, "invalid")
     }
-
-    // MARK: - generateClasspath
 
     func testGenerateClasspath_filtersNonClasspathLibraries() throws {
         let lib1Json: [String: Any] = [
@@ -122,8 +121,6 @@ final class CommonServiceTests: XCTestCase {
         XCTAssertTrue(classpath.contains("a/b/c.jar"))
         XCTAssertFalse(classpath.contains("d/e/f.jar"))
     }
-
-    // MARK: - processGameVersionPlaceholders
 
     func testProcessGameVersionPlaceholders_replacesModrinthGameVersion() throws {
         let libJson: [String: Any] = [

@@ -1,3 +1,10 @@
+//
+//  ModrinthServiceTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import CFModrinthAdapterKit
 import XCTest
 @testable import SwiftCraftLauncher

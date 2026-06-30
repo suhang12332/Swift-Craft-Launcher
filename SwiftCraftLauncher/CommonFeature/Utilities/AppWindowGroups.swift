@@ -1,12 +1,13 @@
 //
 //  AppWindowGroups.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/1/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import SwiftUI
 
+/// Defines the auxiliary window groups for the application.
 extension SwiftCraftLauncherApp {
     @SceneBuilder
     func auxiliaryWindowGroup() -> some Scene {

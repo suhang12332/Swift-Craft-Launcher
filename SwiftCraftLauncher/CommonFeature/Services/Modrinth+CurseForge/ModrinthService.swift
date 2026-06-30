@@ -1,5 +1,13 @@
+//
+//  ModrinthService.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides access to the Modrinth API for Minecraft mod information and versions.
 enum ModrinthService {
 
     static func fetchVersionInfo(from version: String) async throws -> MinecraftVersionManifest {

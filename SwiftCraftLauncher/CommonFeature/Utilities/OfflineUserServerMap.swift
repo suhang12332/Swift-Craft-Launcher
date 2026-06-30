@@ -1,9 +1,14 @@
+//
+//  OfflineUserServerMap.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 离线玩家对应的第三方认证/皮肤服务器映射
-/// 不修改 `UserProfile` 结构，通过 UserDefaults 维护 [userId: YggdrasilProfile] 映射
+/// Maps offline player IDs to their Yggdrasil authentication profiles.
 enum OfflineUserServerMap {
-    /// 加载完整映射
     private static func loadMap() -> [String: YggdrasilProfile] {
         guard let data = UserDefaults.standard.data(forKey: AppConstants.UserDefaultsKeys.offlineUserServerMap),
               let map = try? JSONDecoder().decode([String: YggdrasilProfile].self, from: data) else {
@@ -12,7 +17,7 @@ enum OfflineUserServerMap {
         return map
     }
 
-    /// 为指定用户设置 Yggdrasil 配置
+    /// Associates a Yggdrasil profile with the specified user.
     static func setServer(_ profile: YggdrasilProfile, for userId: String) {
         var map = loadMap()
         map[userId] = profile
@@ -21,8 +26,8 @@ enum OfflineUserServerMap {
         }
     }
 
-    /// 删除指定用户对应的 Yggdrasil 配置
-    /// - Parameter userId: 玩家 ID
+    /// Removes the Yggdrasil profile for the specified user.
+    /// - Parameter userId: The player identifier.
     static func removeServer(for userId: String) {
         var map = loadMap()
         map.removeValue(forKey: userId)
@@ -31,14 +36,14 @@ enum OfflineUserServerMap {
         }
     }
 
-    /// 读取指定用户对应的 Yggdrasil 配置
-    /// - Parameter userId: 玩家 ID
-    /// - Returns: Yggdrasil 配置，如果不存在则返回 nil
+    /// Returns the Yggdrasil profile for the specified user.
+    /// - Parameter userId: The player identifier.
+    /// - Returns: The associated profile, or `nil` if none exists.
     static func serverKey(for userId: String) -> YggdrasilProfile? {
         loadMap()[userId]
     }
 
-    /// 判断指定用户是否绑定了 Yggdrasil 配置
+    /// Indicates whether the specified user has an associated Yggdrasil profile.
     static func contains(userId: String) -> Bool {
         loadMap()[userId] != nil
     }

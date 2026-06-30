@@ -1,5 +1,13 @@
+//
+//  ModrinthDetailCoordinatorViewModel.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Captures the search parameters used for a Modrinth search query.
 struct ModrinthSearchContext: Equatable {
     let query: String
     let selectedVersions: [String]
@@ -29,6 +37,7 @@ struct ModrinthSearchContext: Equatable {
     }
 }
 
+/// Coordinates pagination, debounce, and error handling for Modrinth search.
 @MainActor
 final class ModrinthDetailCoordinatorViewModel: ObservableObject {
     @Published var error: GlobalError?
@@ -43,24 +52,29 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
         self.errorHandler = errorHandler
     }
 
+    /// Whether more pages of results are available.
     var hasMoreResults: Bool {
         false
     }
 
+    /// Resets pagination back to page one.
     func resetPagination() {
         currentPage = 1
         lastSearchParams = ""
     }
 
+    /// Clears the current error.
     func clearError() {
         error = nil
     }
 
+    /// Cancels any pending debounced search.
     func cancelDebounce() {
         debounceTask?.cancel()
         debounceTask = nil
     }
 
+    /// Performs the initial search on first load if game type is enabled.
     func initialLoadIfNeeded(
         gameType: Bool,
         searchViewModel: ModrinthSearchViewModel,
@@ -78,6 +92,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
         )
     }
 
+    /// Triggers an immediate search with the given context.
     func triggerSearch(
         searchViewModel: ModrinthSearchViewModel,
         context: ModrinthSearchContext
@@ -92,6 +107,11 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
         }
     }
 
+    /// Triggers a search after the specified delay, canceling any previous pending search.
+    /// - Parameters:
+    ///   - delaySeconds: The delay before triggering the search.
+    ///   - searchViewModel: The search view model.
+    ///   - context: The search context.
     func debounceSearch(
         delaySeconds: Double = 0.5,
         searchViewModel: ModrinthSearchViewModel,
@@ -114,6 +134,11 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
         }
     }
 
+    /// Loads the next page of results if the current item is near the end of the list.
+    /// - Parameters:
+    ///   - currentItem: The current project item triggering the pagination check.
+    ///   - searchViewModel: The search view model.
+    ///   - context: The search context.
     func loadNextPageIfNeeded(
         currentItem: ModrinthProject,
         searchViewModel: ModrinthSearchViewModel,

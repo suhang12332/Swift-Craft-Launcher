@@ -1,21 +1,28 @@
+//
+//  GameLaunchUseCase.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
-/// 游戏启动/停止用例
+/// A use case that manages launching and stopping a Minecraft game session.
 final class GameLaunchUseCase: ObservableObject {
 
-    /// 启动游戏
+    /// Launches a Minecraft game session.
     /// - Parameters:
-    ///   - player: 当前玩家（可为 nil，使用默认认证参数）
-    ///   - game: 要启动的游戏
+    ///   - player: The current player, or `nil` to use default authentication parameters.
+    ///   - game: The game version to launch.
     func launchGame(player: Player?, game: GameVersionInfo) async {
         let command = MinecraftLaunchCommand(player: player, game: game)
         await command.launchGame()
     }
 
-    /// 停止游戏
+    /// Stops a running Minecraft game session.
     /// - Parameters:
-    ///   - player: 当前玩家（与启动时一致，用于定位要停止的进程；nil 则用空 userId）
-    ///   - game: 要停止的游戏
+    ///   - player: The current player, used to locate the process to stop. Pass `nil` to use an empty user ID.
+    ///   - game: The game version to stop.
     func stopGame(player: Player?, game: GameVersionInfo) async {
         let command = MinecraftLaunchCommand(player: player, game: game)
         await command.stopGame()

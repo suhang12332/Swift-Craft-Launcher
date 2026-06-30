@@ -1,8 +1,14 @@
+//
+//  GameCreationViewModel+Save.swift
+//  GameFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Extension providing game save logic for `GameCreationViewModel`.
 extension GameCreationViewModel {
-    // MARK: - Game Save Methods
-
     func saveGame() async {
         guard let gameRepository = gameRepository,
               let playerListViewModel = playerListViewModel else {
@@ -10,7 +16,6 @@ extension GameCreationViewModel {
             return
         }
 
-        // 对于非vanilla加载器，如果没有选择版本，则不允许保存
         let loaderVersion = selectedModLoader == GameLoader.vanilla.displayName ? selectedModLoader : selectedLoaderVersion
 
         var finalGameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)

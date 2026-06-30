@@ -1,9 +1,14 @@
+//
+//  ResourceEnableDisableManagerTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ResourceEnableDisableManagerTests: XCTestCase {
-
-    // MARK: - isDisabled
 
     func testIsDisabled_nil_returnsFalse() {
         XCTAssertFalse(ResourceEnableDisableManager.isDisabled(fileName: nil))
@@ -28,8 +33,6 @@ final class ResourceEnableDisableManagerTests: XCTestCase {
     func testIsDisabled_partialDisableSuffix_returnsFalse() {
         XCTAssertFalse(ResourceEnableDisableManager.isDisabled(fileName: "mod.disable.jar"))
     }
-
-    // MARK: - toggleDisableState
 
     func testToggleDisableState_enableToDisable() throws {
         let tmpDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)

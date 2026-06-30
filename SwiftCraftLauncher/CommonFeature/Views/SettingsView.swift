@@ -1,7 +1,14 @@
+//
+//  SettingsView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 import Foundation
 
-/// 设置标签页枚举
+/// An enumeration of settings tabs.
 enum SettingsTab: Int {
     case general = 0
     case player = 1
@@ -10,8 +17,7 @@ enum SettingsTab: Int {
     case ai = 4
 }
 
-/// 通用设置视图
-/// 应用设置
+/// The main settings view with tabbed navigation.
 public struct SettingsView: View {
     @StateObject private var general: GeneralSettingsManager
     @StateObject private var selectedGameManager: SelectedGameManager

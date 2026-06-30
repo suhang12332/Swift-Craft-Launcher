@@ -1,9 +1,14 @@
+//
+//  ConstantsAndPresetsTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class ConstantsAndPresetsTests: XCTestCase {
-
-    // MARK: - YggdrasilServerPresets
 
     func testYggdrasilServerPresets_hasThreeServers() {
         XCTAssertEqual(Self.makeTestServers().count, 3)
@@ -84,8 +89,6 @@ final class ConstantsAndPresetsTests: XCTestCase {
         ]
     }
 
-    // MARK: - YggdrasilProfileParserID
-
     func testYggdrasilProfileParserID_allCases() {
         XCTAssertEqual(YggdrasilProfileParserID.allCases.count, 3)
     }
@@ -95,8 +98,6 @@ final class ConstantsAndPresetsTests: XCTestCase {
         XCTAssertEqual(YggdrasilProfileParserID.mua.rawValue, "mua")
         XCTAssertEqual(YggdrasilProfileParserID.ely.rawValue, "ely")
     }
-
-    // MARK: - MinecraftSkinConstants
 
     func testMinecraftSkinConstants_values() {
         XCTAssertEqual(MinecraftSkinConstants.padding, 6)
@@ -119,14 +120,10 @@ final class ConstantsAndPresetsTests: XCTestCase {
         XCTAssertEqual(MinecraftSkinConstants.layerHeight, 8)
     }
 
-    // MARK: - SkinType
-
     func testSkinType_allCases() {
         let types: [SkinType] = [.url, .asset, .local]
         XCTAssertEqual(types.count, 3)
     }
-
-    // MARK: - YggdrasilServerConfig
 
     func testYggdrasilServerConfig_authorizeURL() {
         let config = YggdrasilServerConfig(

@@ -1,7 +1,14 @@
+//
+//  FileTreeView.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 import AppKit
 
-/// SwiftUI 包装的文件树（内部使用 NSOutlineView；NSOutlineView 是 NSTableView 的子类）
+/// A SwiftUI wrapper for a file tree backed by NSOutlineView.
 public struct FileTreeView: NSViewRepresentable {
     public typealias NSViewType = NSScrollView
 

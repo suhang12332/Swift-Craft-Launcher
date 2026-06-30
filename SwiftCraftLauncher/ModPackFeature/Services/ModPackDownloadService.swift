@@ -1,6 +1,14 @@
+//
+//  ModPackDownloadService.swift
+//  ModPackFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 import ZIPFoundation
 
+/// Downloads modpack archives and game icons with progress reporting.
 @MainActor
 final class ModPackDownloadService {
     var progressHandler: ((Int64, Int64) -> Void)?
@@ -11,6 +19,7 @@ final class ModPackDownloadService {
         self.errorHandler = errorHandler
     }
 
+    /// Cleans up temporary download and extraction directories.
     func cleanupTempFiles() {
         Task.detached(priority: .utility) {
             let fm = FileManager.default
@@ -36,6 +45,11 @@ final class ModPackDownloadService {
         }
     }
 
+    /// Downloads a modpack file to a temporary directory.
+    /// - Parameters:
+    ///   - file: The version file to download.
+    ///   - projectDetail: The project detail for reference.
+    /// - Returns: The local file URL, or nil on failure.
     func downloadModPackFile(
         file: ModrinthVersionFile,
         projectDetail: ModrinthProjectDetail
@@ -66,6 +80,11 @@ final class ModPackDownloadService {
         }
     }
 
+    /// Downloads the game icon for a project.
+    /// - Parameters:
+    ///   - projectDetail: The project detail containing the icon URL.
+    ///   - gameName: The game name to associate with the icon.
+    /// - Returns: The icon file name, or nil on failure.
     func downloadGameIcon(
         projectDetail: ModrinthProjectDetail,
         gameName: String
@@ -107,6 +126,9 @@ final class ModPackDownloadService {
         }
     }
 
+    /// Extracts a modpack archive to a temporary directory.
+    /// - Parameter modPackPath: The path to the modpack archive.
+    /// - Returns: The extraction directory, or nil on failure.
     func extractModPack(modPackPath: URL) async -> URL? {
         do {
             let fileExtension = modPackPath.pathExtension.lowercased()
@@ -148,8 +170,6 @@ final class ModPackDownloadService {
             return nil
         }
     }
-
-    // MARK: - Private
 
     private func downloadFileWithProgress(
         urlString: String,

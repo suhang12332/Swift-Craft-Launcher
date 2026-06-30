@@ -1,9 +1,14 @@
+//
+//  MacRuleEvaluatorTests.swift
+//  SwiftCraftLauncherTests
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import XCTest
 @testable import SwiftCraftLauncher
 
 final class MacRuleEvaluatorTests: XCTestCase {
-
-    // MARK: - MacOS.fromJavaArch
 
     func testMacOS_fromJavaArch_aarch64() {
         XCTAssertEqual(MacOS.fromJavaArch("aarch64"), .osxArm64)
@@ -25,15 +30,11 @@ final class MacRuleEvaluatorTests: XCTestCase {
         XCTAssertEqual(MacOS.fromJavaArch("AARCH64"), .osxArm64)
     }
 
-    // MARK: - MacOS raw values
-
     func testMacOS_rawValues() {
         XCTAssertEqual(MacOS.osx.rawValue, "osx")
         XCTAssertEqual(MacOS.osxArm64.rawValue, "osx-arm64")
         XCTAssertEqual(MacOS.osxX86_64.rawValue, "osx-x86_64")
     }
-
-    // MARK: - isLowVersion
 
     func testIsLowVersion_below1_19() {
         XCTAssertTrue(MacRuleEvaluator.isLowVersion("1.18.2"))
@@ -52,8 +53,6 @@ final class MacRuleEvaluatorTests: XCTestCase {
         XCTAssertFalse(MacRuleEvaluator.isLowVersion("invalid"))
         XCTAssertFalse(MacRuleEvaluator.isLowVersion("a.b"))
     }
-
-    // MARK: - convertFromMinecraftRules
 
     func testConvertFromMinecraftRules_empty() {
         let result = MacRuleEvaluator.convertFromMinecraftRules([])
@@ -98,14 +97,10 @@ final class MacRuleEvaluatorTests: XCTestCase {
         XCTAssertTrue(result.isEmpty)
     }
 
-    // MARK: - RuleAction raw values
-
     func testRuleAction_rawValues() {
         XCTAssertEqual(RuleAction.allow.rawValue, "allow")
         XCTAssertEqual(RuleAction.disallow.rawValue, "disallow")
     }
-
-    // MARK: - MacRule
 
     func testMacRule_struct() {
         let rule = MacRule(action: .allow, os: .osx)

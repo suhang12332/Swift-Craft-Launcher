@@ -1,11 +1,18 @@
+//
+//  CurseForgeService+ModrinthAdapter.swift
+//  CommonFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import Foundation
 
+/// Provides CurseForge project operations with Modrinth-compatible data formats.
 extension CurseForgeService {
-    // MARK: - Project Detail Methods (as Modrinth format)
 
-    /// 获取项目详情（映射为 Modrinth 格式，静默版本）
-    /// - Parameter id: 项目 ID
-    /// - Returns: Modrinth 格式的项目详情，失败时返回 nil
+    /// Fetches project details and converts them to Modrinth format.
+    /// - Parameter id: The CurseForge project identifier (may include "cf-" prefix).
+    /// - Returns: The project details in Modrinth format, or `nil` on failure.
     static func fetchProjectDetailsAsModrinth(id: String) async -> ModrinthProjectDetail? {
         do {
             return try await fetchProjectDetailsAsModrinthThrowing(id: id)
@@ -17,14 +24,13 @@ extension CurseForgeService {
         }
     }
 
-    /// 获取项目详情（映射为 Modrinth 格式，抛出异常版本）
-    /// - Parameter id: 项目 ID（可能包含 "cf-" 前缀）
-    /// - Returns: Modrinth 格式的项目详情
-    /// - Throws: GlobalError 当操作失败时
+    /// Fetches project details and converts them to Modrinth format, throwing on failure.
+    /// - Parameter id: The CurseForge project identifier (may include "cf-" prefix).
+    /// - Returns: The project details in Modrinth format.
+    /// - Throws: A `GlobalError` if the request fails.
     static func fetchProjectDetailsAsModrinthThrowing(id: String) async throws -> ModrinthProjectDetail {
         let (modId, _) = try parseCurseForgeId(id)
 
-        // 并发获取项目详情和描述
         async let cfDetailTask = fetchModDetailThrowing(modId: modId)
         async let descriptionTask = fetchModDescriptionThrowing(modId: modId)
 
@@ -47,9 +53,9 @@ extension CurseForgeService {
         return modrinthDetail
     }
 
-    /// 通过文件 fingerprint 获取项目详情（映射为 Modrinth 格式）
-    /// - Parameter fingerprint: CurseForge file fingerprint（UInt32）
-    /// - Returns: Modrinth 格式的项目详情，如果未匹配或失败返回 nil
+    /// Fetches project details by file fingerprint in Modrinth format.
+    /// - Parameter fingerprint: The CurseForge file fingerprint (UInt32).
+    /// - Returns: The project details in Modrinth format, or `nil` if no match or on failure.
     static func fetchProjectDetailsAsModrinthByFingerprint(fingerprint: UInt32) async -> ModrinthProjectDetail? {
         do {
             return try await fetchProjectDetailsAsModrinthByFingerprintThrowing(fingerprint: fingerprint)
@@ -59,12 +65,11 @@ extension CurseForgeService {
         }
     }
 
-    /// 通过文件 fingerprint 获取项目详情（映射为 Modrinth 格式）
-    /// - Parameter fingerprint: CurseForge file fingerprint（UInt32）
-    /// - Returns: Modrinth 格式的项目详情
+    /// Fetches project details by file fingerprint in Modrinth format.
+    /// - Parameter fingerprint: The CurseForge file fingerprint (UInt32).
+    /// - Returns: The project details in Modrinth format.
     static func fetchProjectDetailsAsModrinthByFingerprintThrowing(fingerprint: UInt32) async throws -> ModrinthProjectDetail? {
         let matches = try await fetchFingerprintMatchesThrowing(fingerprint: fingerprint)
-        // 仅使用 exactMatches 的第一个 modId；找不到则返回 nil
         let modId = matches
             .data
             .exactMatches?
@@ -75,9 +80,9 @@ extension CurseForgeService {
         return try await fetchProjectDetailsAsModrinthThrowing(id: "\(modId)")
     }
 
-    /// 通过文件 fingerprint 获取 CurseForge 的 projectId/fileId
-    /// - Parameter fingerprint: CurseForge file fingerprint（UInt32）
-    /// - Returns: (projectId, fileId)，如果无精确匹配返回 nil
+    /// Fetches the CurseForge project and file identifiers for a file fingerprint.
+    /// - Parameter fingerprint: The CurseForge file fingerprint (UInt32).
+    /// - Returns: A tuple of (projectId, fileId), or `nil` if no exact match.
     static func fetchProjectAndFileByFingerprint(fingerprint: UInt32) async -> (projectId: Int, fileId: Int)? {
         do {
             let matches = try await fetchFingerprintMatchesThrowing(fingerprint: fingerprint)
@@ -96,9 +101,9 @@ extension CurseForgeService {
         }
     }
 
-    /// 获取项目版本列表（映射为 Modrinth 格式，静默版本）
-    /// - Parameter id: 项目 ID
-    /// - Returns: Modrinth 格式的版本列表，失败时返回空数组
+    /// Fetches the version list for a CurseForge project in Modrinth format.
+    /// - Parameter id: The CurseForge project identifier.
+    /// - Returns: An array of versions in Modrinth format, or an empty array on failure.
     static func fetchProjectVersionsAsModrinth(id: String) async -> [ModrinthProjectDetailVersion] {
         do {
             return try await fetchProjectVersionsAsModrinthThrowing(id: id)
@@ -110,10 +115,10 @@ extension CurseForgeService {
         }
     }
 
-    /// 获取项目版本列表（映射为 Modrinth 格式，抛出异常版本）
-    /// - Parameter id: 项目 ID（可能包含 "cf-" 前缀）
-    /// - Returns: Modrinth 格式的版本列表
-    /// - Throws: GlobalError 当操作失败时
+    /// Fetches the version list for a CurseForge project in Modrinth format, throwing on failure.
+    /// - Parameter id: The CurseForge project identifier (may include "cf-" prefix).
+    /// - Returns: An array of versions in Modrinth format.
+    /// - Throws: A `GlobalError` if the request fails.
     static func fetchProjectVersionsAsModrinthThrowing(id: String) async throws -> [ModrinthProjectDetailVersion] {
         let (modId, normalizedId) = try parseCurseForgeId(id)
 
@@ -121,14 +126,14 @@ extension CurseForgeService {
         return cfFiles.compactMap { CFToModrinthAdapter.convertFile($0, projectId: normalizedId) }
     }
 
-    /// 获取项目版本列表（过滤版本，映射为 Modrinth 格式）
+    /// Fetches and filters project versions in Modrinth format.
     /// - Parameters:
-    ///   - id: 项目 ID（可能包含 "cf-" 前缀）
-    ///   - selectedVersions: 选中的版本
-    ///   - selectedLoaders: 选中的加载器
-    ///   - type: 项目类型
-    /// - Returns: 过滤后的 Modrinth 格式版本列表
-    /// - Throws: GlobalError 当操作失败时
+    ///   - id: The CurseForge project identifier (may include "cf-" prefix).
+    ///   - selectedVersions: The selected game versions to filter by.
+    ///   - selectedLoaders: The selected mod loader types to filter by.
+    ///   - type: The project type.
+    /// - Returns: An array of filtered versions in Modrinth format.
+    /// - Throws: A `GlobalError` if the request fails.
     static func fetchProjectVersionsFilterAsModrinth(
         id: String,
         selectedVersions: [String],
@@ -137,13 +142,11 @@ extension CurseForgeService {
     ) async throws -> [ModrinthProjectDetailVersion] {
         let (modId, normalizedId) = try parseCurseForgeId(id)
 
-        // 对于光影包、资源包、数据包，CurseForge API 不支持 modLoaderType 过滤
         let resourceTypeLowercased = type.lowercased()
         let shouldFilterByLoader = !(resourceTypeLowercased == ResourceType.shader.rawValue ||
                                      resourceTypeLowercased == ResourceType.resourcepack.rawValue ||
                                      resourceTypeLowercased == ResourceType.datapack.rawValue)
 
-        // 转换加载器名称到 CurseForge ModLoaderType（仅对需要过滤加载器的资源类型）
         var modLoaderTypes: [Int] = []
         if shouldFilterByLoader {
             for loader in selectedLoaders {
@@ -153,12 +156,9 @@ extension CurseForgeService {
             }
         }
 
-        // 获取文件列表
         var cfFiles: [CurseForgeModFileDetail] = []
         if !selectedVersions.isEmpty && selectedVersions.count <= 3 {
-            // 版本数量较少时，为每个版本获取文件（更精确）
             for version in selectedVersions {
-                // 对于光影包、资源包、数据包，不传递 modLoaderType 参数
                 let modLoaderType = shouldFilterByLoader && !modLoaderTypes.isEmpty ? modLoaderTypes.first : nil
                 let files = try await fetchProjectFilesThrowing(
                     projectId: modId,
@@ -168,7 +168,6 @@ extension CurseForgeService {
                 cfFiles.append(contentsOf: files)
             }
         } else {
-            // 版本数量较多或为空时，一次性获取所有文件，然后进行过滤（减少API调用和内存占用）
             cfFiles = try await fetchProjectFilesThrowing(
                 projectId: modId,
                 gameVersion: nil,
@@ -176,7 +175,6 @@ extension CurseForgeService {
             )
         }
 
-        // 去重：按 fileId 去重，保留第一个
         var seenFileIds = Set<Int>()
         cfFiles = cfFiles.filter { file in
             if seenFileIds.contains(file.id) {
@@ -186,25 +184,19 @@ extension CurseForgeService {
             return true
         }
 
-        // 过滤文件
         let filteredFiles = cfFiles.filter { file in
-            // 版本匹配
             let versionMatch = selectedVersions.isEmpty || !Set(file.gameVersions).isDisjoint(with: selectedVersions)
 
-            // 对于光影包、资源包、数据包，不需要检查加载器匹配
-            // 其他类型需匹配加载器，CurseForge API 可能不返回，简化处理
             let loaderMatch = !shouldFilterByLoader || modLoaderTypes.isEmpty || true
 
             return versionMatch && loaderMatch
         }
 
-        // 转换为 Modrinth 格式，确保 projectId 包含 "cf-" 前缀
         return filteredFiles.compactMap { CFToModrinthAdapter.convertFile($0, projectId: normalizedId) }
     }
 
-    /// 过滤出主要文件
+    /// Returns the first file from the list as the primary file.
     static func filterPrimaryFiles(from files: [CurseForgeModFileDetail]?) -> CurseForgeModFileDetail? {
-        // CurseForge 没有 primary 字段，返回第一个文件
         return files?.first
     }
 }

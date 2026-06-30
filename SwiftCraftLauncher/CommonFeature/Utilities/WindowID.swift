@@ -1,17 +1,19 @@
 //
 //  WindowID.swift
-//  SwiftCraftLauncher
+//  CommonFeature
 //
-//  Created by su on 2025/1/27.
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
 import CoreGraphics
 import SwiftUI
 
+/// Identifies the main application window.
 enum AppWindowID: String {
     case main = "main"
 }
 
+/// Identifies auxiliary windows with their display properties.
 enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
     case contributors = "contributors"
     case acknowledgements = "acknowledgements"

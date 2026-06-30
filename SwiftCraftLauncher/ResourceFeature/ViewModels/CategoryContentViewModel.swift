@@ -1,9 +1,15 @@
+//
+//  CategoryContentViewModel.swift
+//  ResourceFeature
+//
+//  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
+//
+
 import SwiftUI
 
-// MARK: - ViewModel
+/// Loads and organizes category, version, and loader data for filtering.
 @MainActor
 final class CategoryContentViewModel: ObservableObject {
-    // MARK: - Published Properties
     @Published private(set) var categories: [Category] = []
     @Published private(set) var features: [Category] = []
     @Published private(set) var resolutions: [Category] = []
@@ -17,12 +23,10 @@ final class CategoryContentViewModel: ObservableObject {
     @Published private(set) var serverFeatures: [Category] = []
     @Published private(set) var communitys: [Category] = []
 
-    // MARK: - Private Properties
     private let project: String
     private let errorHandler: GlobalErrorHandler
     private var loadTask: Task<Void, Never>?
 
-    // MARK: - Initialization
     init(project: String, errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
         self.project = project
         self.errorHandler = errorHandler
@@ -32,7 +36,7 @@ final class CategoryContentViewModel: ObservableObject {
         loadTask?.cancel()
     }
 
-    // MARK: - Public Methods
+    /// Loads categories, versions, and loaders from the API or cache.
     func loadData() async {
         loadTask?.cancel()
         loadTask = nil
@@ -42,12 +46,14 @@ final class CategoryContentViewModel: ObservableObject {
         }
     }
 
+    /// Cancels loading and resets all cached data.
     func clearCache() {
         loadTask?.cancel()
         loadTask = nil
         resetData()
     }
 
+    /// Sets the current error value.
     func setError(_ error: GlobalError?) {
         self.error = error
     }
@@ -77,7 +83,6 @@ final class CategoryContentViewModel: ObservableObject {
 
             try Task.checkCancellation()
 
-            // 验证返回的数据
             guard !categoriesResult.isEmpty else {
                 throw GlobalError.resource(
                     chineseMessage: "无法获取分类数据",
@@ -109,8 +114,6 @@ final class CategoryContentViewModel: ObservableObject {
         isLoading = false
     }
 
-    /// 获取静态加载器列表（不调用 API）
-    /// - Returns: 四个主要加载器：fabric、forge、quilt、neoforge
     private static func getStaticLoaders() -> [Loader] {
         return [
             Loader(
