@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModPackFeatureExtendedTests: XCTestCase {
-
     func testModrinthIndexFileHashes_fromDict() {
         let dict = ["sha1": "abc123", "sha512": "def456"]
         let hashes = ModrinthIndexFileHashes(from: dict)
@@ -57,7 +56,7 @@ final class ModPackFeatureExtendedTests: XCTestCase {
             projectID: 123,
             fileID: 456,
             required: true,
-            isLocked: false
+            isLocked: false,
         )
         let data = try JSONEncoder().encode(file)
         let decoded = try JSONDecoder().decode(CurseForgeManifestBuilder.ManifestFile.self, from: data)

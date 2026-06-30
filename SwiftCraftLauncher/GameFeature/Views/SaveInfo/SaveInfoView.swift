@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Main view displaying save information including worlds, screenshots, servers, and schematics.
+// Main view displaying save information including worlds, screenshots, servers, and schematics.
 import SwiftUI
 
 struct SaveInfoView: View {
@@ -41,7 +41,7 @@ struct SaveInfoView: View {
                 WorldInfoSectionView(
                     worlds: manager.worlds,
                     isLoading: manager.isLoadingWorlds,
-                    gameName: gameName
+                    gameName: gameName,
                 )
             }
 
@@ -49,14 +49,14 @@ struct SaveInfoView: View {
                 ScreenshotSectionView(
                     screenshots: manager.screenshots,
                     isLoading: manager.isLoadingScreenshots,
-                    gameName: gameName
+                    gameName: gameName,
                 )
             }
 
             ServerAddressSectionView(
                 servers: manager.servers,
                 isLoading: manager.isLoadingServers,
-                gameName: gameName
+                gameName: gameName,
             ) {
                 Task {
                     await manager.loadData()
@@ -67,14 +67,14 @@ struct SaveInfoView: View {
                 LitematicaSectionView(
                     litematicaFiles: manager.litematicaFiles,
                     isLoading: manager.isLoadingLitematica,
-                    gameName: gameName
+                    gameName: gameName,
                 )
             }
 
             if manager.hasLogsType {
                 LogSectionView(
                     logs: manager.logs,
-                    isLoading: manager.isLoadingLogs
+                    isLoading: manager.isLoadingLogs,
                 )
             }
         }
@@ -87,7 +87,7 @@ struct SaveInfoView: View {
             await manager.loadData()
         }
         .onChange(of: currentGameRunningState) { oldValue, newValue in
-            if oldValue == true && newValue == false {
+            if oldValue == true, newValue == false {
                 Task {
                     await manager.loadData()
                 }

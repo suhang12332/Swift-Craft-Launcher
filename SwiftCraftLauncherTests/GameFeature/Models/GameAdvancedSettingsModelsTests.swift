@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class GameAdvancedSettingsModelsTests: XCTestCase {
-
     func testGarbageCollector_allCases() {
         XCTAssertEqual(GarbageCollector.allCases.count, 5)
     }

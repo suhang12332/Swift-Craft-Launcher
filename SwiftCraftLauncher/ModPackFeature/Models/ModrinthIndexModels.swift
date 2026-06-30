@@ -18,9 +18,9 @@ struct ModrinthIndex: Codable {
     let dependencies: ModrinthIndexDependencies
 
     enum CodingKeys: String, CodingKey {
-        case formatVersion = "formatVersion"
+        case formatVersion
         case game
-        case versionId = "versionId"
+        case versionId
         case name
         case summary
         case files
@@ -39,16 +39,16 @@ struct ModrinthIndexFileHashes: Codable {
 
     /// Creates an instance from a dictionary.
     init(from dict: [String: String]) {
-        self.sha1 = dict["sha1"]
-        self.sha512 = dict["sha512"]
+        sha1 = dict["sha1"]
+        sha512 = dict["sha512"]
 
         var otherDict: [String: String] = [:]
         for (key, value) in dict {
-            if key != "sha1" && key != "sha512" {
+            if key != "sha1", key != "sha512" {
                 otherDict[key] = value
             }
         }
-        self.other = otherDict.isEmpty ? nil : otherDict
+        other = otherDict.isEmpty ? nil : otherDict
     }
 
     /// Decodes the hashes from a JSON dictionary.
@@ -63,13 +63,13 @@ struct ModrinthIndexFileHashes: Codable {
         var container = encoder.singleValueContainer()
         var dict: [String: String] = [:]
 
-        if let sha1 = sha1 {
+        if let sha1 {
             dict["sha1"] = sha1
         }
-        if let sha512 = sha512 {
+        if let sha512 {
             dict["sha512"] = sha512
         }
-        if let other = other {
+        if let other {
             dict.merge(other) { _, new in new }
         }
 
@@ -103,7 +103,7 @@ struct ModrinthIndexFile: Codable {
         case path
         case hashes
         case downloads
-        case fileSize = "fileSize"
+        case fileSize
         case env
         case source
         case curseForgeProjectId
@@ -118,7 +118,7 @@ struct ModrinthIndexFile: Codable {
         env: ModrinthIndexFileEnv? = nil,
         source: FileSource? = nil,
         curseForgeProjectId: Int? = nil,
-        curseForgeFileId: Int? = nil
+        curseForgeFileId: Int? = nil,
     ) {
         self.path = path
         self.hashes = hashes
@@ -133,8 +133,8 @@ struct ModrinthIndexFile: Codable {
 
 /// Identifies the source platform of a mod file.
 enum FileSource: String, Codable {
-    case modrinth = "modrinth"
-    case curseforge = "curseforge"
+    case modrinth
+    case curseforge
 }
 
 /// Environment compatibility for a mod file.
@@ -204,7 +204,7 @@ struct ModrinthIndexInfo {
         summary: String?,
         files: [ModrinthIndexFile],
         dependencies: [ModrinthIndexProjectDependency],
-        source: FileSource = .modrinth
+        source: FileSource = .modrinth,
     ) {
         self.gameVersion = gameVersion
         self.loaderType = loaderType

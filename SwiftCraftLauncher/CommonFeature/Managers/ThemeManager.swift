@@ -11,9 +11,9 @@ import SwiftUI
 
 /// The available theme modes for the application.
 public enum ThemeMode: String, CaseIterable {
-    case light = "light"
-    case dark = "dark"
-    case system = "system"
+    case light
+    case dark
+    case system
 
     public var localizedName: String {
         "settings.theme.\(rawValue)".localized()

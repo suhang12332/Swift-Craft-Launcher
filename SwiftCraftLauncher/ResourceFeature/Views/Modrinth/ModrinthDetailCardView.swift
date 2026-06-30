@@ -41,7 +41,7 @@ struct ModrinthDetailCardPlaceholderIcon: View {
         Color.gray.opacity(0.2)
             .frame(
                 width: ModrinthConstants.UIConstants.iconSize,
-                height: ModrinthConstants.UIConstants.iconSize
+                height: ModrinthConstants.UIConstants.iconSize,
             )
             .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
     }
@@ -54,7 +54,7 @@ struct ModrinthDetailCardView: View {
     let selectedLoaders: [String]
     let gameInfo: GameVersionInfo?
     let query: String
-    let type: Bool  // false = local, true = server
+    let type: Bool // false = local, true = server
     @Binding var selectedItem: SidebarItem
     var onResourceChanged: (() -> Void)?
     /// Callback for local resource enable/disable state changes.
@@ -81,7 +81,7 @@ struct ModrinthDetailCardView: View {
             title: { titleView },
             description: { descriptionView },
             tags: { tagsView },
-            trailing: { infoView }
+            trailing: { infoView },
         )
         .onAppear {
             isResourceDisabled = ResourceEnableDisableManager.isDisabled(fileName: project.fileName)
@@ -100,13 +100,13 @@ struct ModrinthDetailCardView: View {
                 AsyncImage(
                     url: url,
                     transaction: Transaction(
-                        animation: .easeInOut(duration: 0.2)
-                    )
+                        animation: .easeInOut(duration: 0.2),
+                    ),
                 ) { phase in
                     switch phase {
                     case .empty:
                         placeholderIcon
-                    case .success(let image):
+                    case let .success(image):
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -119,13 +119,13 @@ struct ModrinthDetailCardView: View {
                 }
                 .frame(
                     width: ModrinthConstants.UIConstants.iconSize,
-                    height: ModrinthConstants.UIConstants.iconSize
+                    height: ModrinthConstants.UIConstants.iconSize,
                 )
                 .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
                 .clipped()
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(
-                        for: URLRequest(url: url)
+                        for: URLRequest(url: url),
                     )
                 }
             } else {
@@ -144,7 +144,7 @@ struct ModrinthDetailCardView: View {
             .foregroundColor(.secondary)
             .frame(
                 width: ModrinthConstants.UIConstants.iconSize,
-                height: ModrinthConstants.UIConstants.iconSize
+                height: ModrinthConstants.UIConstants.iconSize,
             )
             .background(Color.gray.opacity(0.2))
             .cornerRadius(ModrinthConstants.UIConstants.cornerRadius)
@@ -183,16 +183,16 @@ struct ModrinthDetailCardView: View {
             ForEach(
                 Array(
                     project.displayCategories.prefix(
-                        ModrinthConstants.UIConstants.maxTags
-                    )
+                        ModrinthConstants.UIConstants.maxTags,
+                    ),
                 ),
-                id: \.self
+                id: \.self,
             ) { tag in
                 ModrinthDetailCardTagView(text: tag)
             }
             if project.displayCategories.count > ModrinthConstants.UIConstants.maxTags {
                 Text(
-                    "+\(project.displayCategories.count - ModrinthConstants.UIConstants.maxTags)"
+                    "+\(project.displayCategories.count - ModrinthConstants.UIConstants.maxTags)",
                 )
                 .font(.caption2)
                 .foregroundColor(.secondary)
@@ -215,7 +215,7 @@ struct ModrinthDetailCardView: View {
                 onResourceChanged: onResourceChanged,
                 scannedDetailIds: $scannedDetailIds,
                 isResourceDisabled: $isResourceDisabled,
-                onResourceUpdated: onResourceUpdated
+                onResourceUpdated: onResourceUpdated,
             ) { isDisabled in
                 onLocalDisableStateChanged?(project, isDisabled)
             }
@@ -226,22 +226,22 @@ struct ModrinthDetailCardView: View {
     private var downloadInfoView: some View {
         ModrinthDetailCardInfoRowView(
             icon: "arrow.down.circle",
-            text: Self.formatNumber(project.downloads)
+            text: Self.formatNumber(project.downloads),
         )
     }
 
     private var followerInfoView: some View {
         ModrinthDetailCardInfoRowView(
             icon: "heart",
-            text: Self.formatNumber(project.follows)
+            text: Self.formatNumber(project.follows),
         )
     }
 
     static func formatNumber(_ num: Int) -> String {
         if num >= 1_000_000 {
             return String(format: "%.1fM", Double(num) / 1_000_000)
-        } else if num >= 1_000 {
-            return String(format: "%.1fk", Double(num) / 1_000)
+        } else if num >= 1000 {
+            return String(format: "%.1fk", Double(num) / 1000)
         } else {
             return "\(num)"
         }

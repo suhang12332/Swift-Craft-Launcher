@@ -12,7 +12,7 @@ extension ModScanner {
     /// Returns whether the mod with the given hash is installed for the specified game.
     func checkModInstalledCore(
         hash: String,
-        gameName: String
+        gameName: String,
     ) async -> Bool {
         let cachedMods = await AppServices.modInstallationCache.getAllModsInstalled(for: gameName)
         return cachedMods.contains(hash)
@@ -25,7 +25,7 @@ extension ModScanner {
     /// - Returns: `true` if the resource is installed, based on the directory hash cache.
     func isResourceInstalledByHash(
         _ hash: String,
-        in dir: URL
+        in dir: URL,
     ) async -> Bool {
         do {
             let hashes = try await scanAllDetailIdsThrowing(in: dir)
@@ -56,7 +56,7 @@ extension ModScanner {
     public func localModDetailsThrowing(in dir: URL) throws -> [(
         file: URL, hash: String, detail: ModrinthProjectDetail?
     )] {
-        return try scanDirectoryForDetails(in: dir)
+        try scanDirectoryForDetails(in: dir)
     }
 
     /// Synchronously checks whether a mod is installed by consulting the cache.
@@ -64,7 +64,7 @@ extension ModScanner {
         do {
             return try isModInstalledSyncThrowing(
                 hash: hash,
-                in: modsDir
+                in: modsDir,
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -77,7 +77,7 @@ extension ModScanner {
     /// Synchronously checks whether a mod is installed, throwing on errors.
     func isModInstalledSyncThrowing(
         hash: String,
-        in modsDir: URL
+        in modsDir: URL,
     ) throws -> Bool {
         guard let gameName = extractGameName(from: modsDir) else {
             return false
@@ -99,19 +99,19 @@ extension ModScanner {
     func isModInstalled(
         hash: String,
         in modsDir: URL,
-        completion: @escaping (Bool) -> Void
+        completion: @escaping (Bool) -> Void,
     ) {
         Task {
             do {
                 let result = try await isModInstalledThrowing(
                     hash: hash,
-                    in: modsDir
+                    in: modsDir,
                 )
                 completion(result)
             } catch {
                 let globalError = GlobalError.from(error)
                 Logger.shared.error(
-                    "检查 mod 安装状态失败: \(globalError.chineseMessage)"
+                    "检查 mod 安装状态失败: \(globalError.chineseMessage)",
                 )
                 errorHandler.handle(globalError)
                 completion(false)
@@ -122,7 +122,7 @@ extension ModScanner {
     /// Asynchronously checks whether a mod is installed.
     func isModInstalledThrowing(
         hash: String,
-        in modsDir: URL
+        in modsDir: URL,
     ) async throws -> Bool {
         guard let gameName = extractGameName(from: modsDir) else {
             return false

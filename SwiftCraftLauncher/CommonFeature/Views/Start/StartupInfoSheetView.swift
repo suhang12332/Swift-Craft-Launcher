@@ -10,7 +10,6 @@ import SwiftUI
 
 /// A sheet view for displaying startup information and announcements.
 struct StartupInfoSheetView: View {
-
     @Environment(\.dismiss)
     private var dismiss
 
@@ -40,11 +39,11 @@ struct StartupInfoSheetView: View {
                         }
                         .padding(.bottom, 8)
 
-                        if let announcementData = announcementData {
+                        if let announcementData {
                             let placeholderPattern = /%(\d+\$)?@/
                             let localizedContent = announcementData.content.replacing(
                                 placeholderPattern,
-                                with: Bundle.main.appName
+                                with: Bundle.main.appName,
                             )
                             MixedMarkdownView(localizedContent)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -70,7 +69,7 @@ struct StartupInfoSheetView: View {
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.defaultAction)
                 }
-            }
+            },
         )
     }
 }

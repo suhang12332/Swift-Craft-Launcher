@@ -5,16 +5,15 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CommonFeatureModelsTests: XCTestCase {
-
     func testAuthCredential_init_defaults() {
         let credential = AuthCredential(
             userId: "user-1",
             accessToken: "at",
-            refreshToken: "rt"
+            refreshToken: "rt",
         )
 
         XCTAssertEqual(credential.userId, "user-1")
@@ -28,7 +27,7 @@ final class CommonFeatureModelsTests: XCTestCase {
             userId: "user-2",
             accessToken: "token",
             refreshToken: "refresh",
-            xuid: "xbox-id"
+            xuid: "xbox-id",
         )
 
         XCTAssertEqual(credential.userId, "user-2")
@@ -51,7 +50,7 @@ final class CommonFeatureModelsTests: XCTestCase {
             userId: "uid",
             accessToken: "at123",
             refreshToken: "rt456",
-            xuid: "xuid789"
+            xuid: "xuid789",
         )
 
         let encoded = try JSONEncoder().encode(original)
@@ -92,7 +91,7 @@ final class CommonFeatureModelsTests: XCTestCase {
     }
 
     func testUserProfile_codable_roundTrip() throws {
-        let date = Date(timeIntervalSince1970: 1700000000)
+        let date = Date(timeIntervalSince1970: 1_700_000_000)
         let original = UserProfile(id: "uid", name: "Player", avatar: "skin.png", lastPlayed: date, isCurrent: true)
 
         let encoded = try JSONEncoder().encode(original)
@@ -180,7 +179,7 @@ final class CommonFeatureModelsTests: XCTestCase {
             login: "test",
             avatarUrl: "https://example.com/a.png",
             htmlUrl: "https://github.com/test",
-            contributions: 10
+            contributions: 10,
         )
 
         let encoded = try JSONEncoder().encode(original)

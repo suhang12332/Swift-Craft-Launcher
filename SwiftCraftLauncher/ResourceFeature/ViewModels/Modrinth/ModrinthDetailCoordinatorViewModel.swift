@@ -78,7 +78,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
     func initialLoadIfNeeded(
         gameType: Bool,
         searchViewModel: ModrinthSearchViewModel,
-        context: ModrinthSearchContext
+        context: ModrinthSearchContext,
     ) async {
         guard gameType else { return }
         guard !hasLoaded else { return }
@@ -88,21 +88,21 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
             searchViewModel: searchViewModel,
             context: context,
             page: 1,
-            append: false
+            append: false,
         )
     }
 
     /// Triggers an immediate search with the given context.
     func triggerSearch(
         searchViewModel: ModrinthSearchViewModel,
-        context: ModrinthSearchContext
+        context: ModrinthSearchContext,
     ) {
         Task {
             await performSearchWithErrorHandling(
                 searchViewModel: searchViewModel,
                 context: context,
                 page: 1,
-                append: false
+                append: false,
             )
         }
     }
@@ -115,7 +115,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
     func debounceSearch(
         delaySeconds: Double = 0.5,
         searchViewModel: ModrinthSearchViewModel,
-        context: ModrinthSearchContext
+        context: ModrinthSearchContext,
     ) {
         debounceTask?.cancel()
         debounceTask = Task { [weak self] in
@@ -125,11 +125,11 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
             } catch {
                 return
             }
-            await self.performSearchWithErrorHandling(
+            await performSearchWithErrorHandling(
                 searchViewModel: searchViewModel,
                 context: context,
                 page: 1,
-                append: false
+                append: false,
             )
         }
     }
@@ -142,7 +142,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
     func loadNextPageIfNeeded(
         currentItem: ModrinthProject,
         searchViewModel: ModrinthSearchViewModel,
-        context: ModrinthSearchContext
+        context: ModrinthSearchContext,
     ) {
         guard searchViewModel.results.count < searchViewModel.totalHits,
               !searchViewModel.isLoading,
@@ -163,7 +163,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
                 searchViewModel: searchViewModel,
                 context: context,
                 page: nextPage,
-                append: true
+                append: true,
             )
         }
     }
@@ -172,14 +172,14 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
         searchViewModel: ModrinthSearchViewModel,
         context: ModrinthSearchContext,
         page: Int,
-        append: Bool
+        append: Bool,
     ) async {
         do {
             try await performSearchThrowing(
                 searchViewModel: searchViewModel,
                 context: context,
                 page: page,
-                append: append
+                append: append,
             )
             preloadImages(searchViewModel: searchViewModel)
         } catch {
@@ -194,7 +194,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
         searchViewModel: ModrinthSearchViewModel,
         context: ModrinthSearchContext,
         page: Int,
-        append: Bool
+        append: Bool,
     ) async throws {
         let params = context.paramsKey(page: page)
         if params == lastSearchParams {
@@ -205,7 +205,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
             throw GlobalError.validation(
                 chineseMessage: "查询类型不能为空",
                 i18nKey: "error.validation.query_type_empty",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -223,18 +223,18 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
                 features: context.selectedFeatures,
                 resolutions: context.selectedResolutions,
                 performanceImpact: context.selectedPerformanceImpact,
-                loaders: context.selectedLoader
+                loaders: context.selectedLoader,
             ),
             page: page,
             append: append,
-            dataSource: context.dataSource
+            dataSource: context.dataSource,
         )
     }
 
     private func preloadImages(searchViewModel: ModrinthSearchViewModel) {
         _ = searchViewModel.results
             .prefix(20)
-            .compactMap { $0.iconUrl }
+            .compactMap(\.iconUrl)
             .compactMap(URL.init(string:))
     }
 }

@@ -5,9 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Displays screenshots as selectable chips with thumbnail and detail views.
-import SwiftUI
 import AppKit
+
+// Displays screenshots as selectable chips with thumbnail and detail views.
+import SwiftUI
 
 private enum ScreenshotSectionConstants {
     static let thumbnailSize: CGFloat = 60
@@ -25,7 +26,7 @@ struct ScreenshotSectionView: View {
             title: "saveinfo.screenshots",
             items: screenshots,
             isLoading: isLoading,
-            iconName: "photo.fill"
+            iconName: "photo.fill",
         ) { screenshot in
             screenshotChip(for: screenshot)
         }
@@ -42,7 +43,7 @@ struct ScreenshotSectionView: View {
             },
             iconName: "photo.fill",
             isLoading: false,
-            maxTextWidth: 150
+            maxTextWidth: 150,
         )
     }
 }
@@ -68,12 +69,12 @@ struct ScreenshotThumbnail: View {
             }
             .frame(
                 width: ScreenshotSectionConstants.thumbnailSize,
-                height: ScreenshotSectionConstants.thumbnailSize
+                height: ScreenshotSectionConstants.thumbnailSize,
             )
             .clipShape(RoundedRectangle(cornerRadius: 4))
             .overlay(
                 RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1),
             )
         }
         .buttonStyle(.plain)
@@ -97,7 +98,7 @@ struct ScreenshotDetailView: View {
         CommonSheetView(
             header: { headerView },
             body: { bodyView },
-            footer: { footerView }
+            footer: { footerView },
         )
         .frame(minWidth: 600, minHeight: 400)
     }

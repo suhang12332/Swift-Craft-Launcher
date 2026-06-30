@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModScannerLogicTests: XCTestCase {
-
     private let scanner = ModScanner(errorHandler: GlobalErrorHandler.shared)
 
     func testIsModsDirectory_mods() {

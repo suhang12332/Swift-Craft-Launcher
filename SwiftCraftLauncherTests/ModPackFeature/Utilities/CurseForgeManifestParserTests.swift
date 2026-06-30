@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CurseForgeManifestParserTests: XCTestCase {
     func testParseManifest_forgeLoader() async throws {
@@ -78,7 +78,7 @@ final class CurseForgeManifestParserTests: XCTestCase {
         let fixtureURL = TestSupport.fixtureURL(
             subdirectory: "Fixtures/curseforge",
             name: name,
-            extension: "json"
+            extension: "json",
         )
         let destination = directory.appendingPathComponent("manifest.json")
         try FileManager.default.copyItem(at: fixtureURL, to: destination)

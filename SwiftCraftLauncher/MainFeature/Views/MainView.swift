@@ -26,7 +26,7 @@ struct MainView: View {
     init(
         general: GeneralSettingsManager = AppServices.generalSettingsManager,
         openURLModPackImportPresenter: OpenURLModPackImportPresenter = AppServices.openURLModPackImportPresenter,
-        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager
+        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
     ) {
         _general = StateObject(wrappedValue: general)
         _openURLModPackImportPresenter = ObservedObject(wrappedValue: openURLModPackImportPresenter)
@@ -62,7 +62,7 @@ struct MainView: View {
                         .environmentObject(playerListViewModel)
                         .presentationBackgroundInteraction(.automatic)
                 }
-            }
+            },
         )
         .onChange(of: detailState.selectedItem) { oldValue, newValue in
             handleSidebarItemChange(from: oldValue, to: newValue)
@@ -83,14 +83,14 @@ struct MainView: View {
         .frame(minWidth: 900, minHeight: 500)
     }
 
-    @ViewBuilder private var middleColumnDetailView: some View {
+    private var middleColumnDetailView: some View {
         DetailView()
             .toolbar {
                 DetailToolbarView()
             }
     }
 
-    @ViewBuilder private var middleColumnContentView: some View {
+    private var middleColumnContentView: some View {
         ContentView()
             .toolbar { ContentToolbarView() }
             .navigationSplitViewColumnWidth(min: 235, ideal: 235, max: 280)
@@ -98,10 +98,10 @@ struct MainView: View {
 
     private func handleSidebarItemChange(
         from oldValue: SidebarItem,
-        to newValue: SidebarItem
+        to newValue: SidebarItem,
     ) {
         switch (oldValue, newValue) {
-        case (.resource, .game(let id)):
+        case let (.resource, .game(id)):
             handleResourceToGameTransition(gameId: id)
         case (.game, .resource):
             resetToResourceDefaults()
@@ -116,7 +116,7 @@ struct MainView: View {
         if detailState.gameId != nil, detailState.selectedProjectId == nil {
             filterState.clearSearchText()
         }
-        if detailState.gameType == true && detailState.gameId == nil {
+        if detailState.gameType == true, detailState.gameId == nil {
             filterState.clearSearchText()
             detailState.gameType = false
         }
@@ -138,7 +138,7 @@ struct MainView: View {
                 if detailState.selectedProjectId == nil {
                     detailState.gameResourcesType = ResourceType.mod.rawValue
                 }
-                if detailState.selectedProjectId != nil && detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue {
+                if detailState.selectedProjectId != nil, detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue {
                     detailState.gameResourcesType = ResourceType.mod.rawValue
                 }
                 if gameId != detailState.gameId {
@@ -154,8 +154,8 @@ struct MainView: View {
     }
 
     private func handleGameToGameTransition(
-        from oldId: String,
-        to newId: String
+        from _: String,
+        to newId: String,
     ) {
         filterState.clearSearchText()
         detailState.gameType = false
@@ -176,30 +176,30 @@ struct MainView: View {
         }
         selectedGameManager.clearSelection()
 
-        if !detailState.gameType && detailState.selectedProjectId == nil {
+        if !detailState.gameType, detailState.selectedProjectId == nil {
             detailState.gameType = true
         }
         filterState.sortIndex = AppConstants.modrinthIndex
 
-        if case .resource(let resourceType) = detailState.selectedItem {
+        if case let .resource(resourceType) = detailState.selectedItem {
             detailState.gameResourcesType = resourceType.rawValue
         }
         filterState.clearFiltersAndPagination()
 
-        if detailState.gameId == nil && detailState.selectedProjectId != nil {
+        if detailState.gameId == nil, detailState.selectedProjectId != nil {
             detailState.selectedProjectId = nil
         }
-        if detailState.selectedProjectId == nil && detailState.gameId != nil {
+        if detailState.selectedProjectId == nil, detailState.gameId != nil {
             detailState.gameId = nil
             filterState.clearSearchText()
         }
-        if detailState.loadedProjectDetail != nil && detailState.gameId != nil
-            && detailState.selectedProjectId != nil {
+        if detailState.loadedProjectDetail != nil, detailState.gameId != nil,
+            detailState.selectedProjectId != nil {
             detailState.gameId = nil
             detailState.loadedProjectDetail = nil
             detailState.selectedProjectId = nil
         }
-        if !detailState.gameType && detailState.selectedProjectId == nil {
+        if !detailState.gameType, detailState.selectedProjectId == nil {
             detailState.gameType = true
         }
         if detailState.gameResourcesType == ResourceType.minecraftJavaServer.rawValue {

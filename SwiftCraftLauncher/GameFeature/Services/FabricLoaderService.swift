@@ -9,7 +9,6 @@ import Foundation
 
 /// Fetches and manages Fabric mod loader versions and profiles.
 enum FabricLoaderService {
-
     static func fetchAllLoaderVersions(for minecraftVersion: String) async -> [FabricLoader] {
         do {
             return try await fetchAllLoaderVersionsThrowing(for: minecraftVersion)
@@ -41,7 +40,7 @@ enum FabricLoaderService {
             throw GlobalError.validation(
                 chineseMessage: "解析 Fabric 加载器版本数据失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.fabric_loader_parse_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -67,14 +66,14 @@ enum FabricLoaderService {
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void
+        onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async -> (loaderVersion: String, classpath: String, mainClass: String)? {
         do {
             return try await setupWithSpecificVersionThrowing(
                 for: gameVersion,
                 loaderVersion: loaderVersion,
                 gameInfo: gameInfo,
-                onProgressUpdate: onProgressUpdate
+                onProgressUpdate: onProgressUpdate,
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -87,8 +86,8 @@ enum FabricLoaderService {
     static func setupWithSpecificVersionThrowing(
         for gameVersion: String,
         loaderVersion: String,
-        gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void
+        gameInfo _: GameVersionInfo,
+        onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         Logger.shared.info("开始设置指定版本的 Fabric 加载器: \(loaderVersion)")
 
@@ -105,11 +104,11 @@ enum FabricLoaderService {
             throw GlobalError.validation(
                 chineseMessage: "Fabric 加载器版本信息缺失",
                 i18nKey: "error.validation.fabric_loader_version_missing",
-                level: .notification
+                level: .notification,
             )
         }
         return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)
     }
 }
 
-extension FabricLoaderService: ModLoaderHandler {}
+extension FabricLoaderService: ModLoaderHandler { }

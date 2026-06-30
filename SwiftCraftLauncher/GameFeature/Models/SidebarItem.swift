@@ -15,9 +15,9 @@ public enum SidebarItem: Hashable, Identifiable {
     /// The unique identifier for this sidebar item.
     public var id: String {
         switch self {
-        case .game(let gameId):
+        case let .game(gameId):
             return "game_\(gameId)"
-        case .resource(let type):
+        case let .resource(type):
             return "resource_\(type.rawValue)"
         }
     }
@@ -25,9 +25,9 @@ public enum SidebarItem: Hashable, Identifiable {
     /// The display title for this sidebar item.
     public var title: String {
         switch self {
-        case .game(let gameId):
+        case let .game(gameId):
             return gameId
-        case .resource(let type):
+        case let .resource(type):
             return type.localizedName
         }
     }
@@ -35,11 +35,11 @@ public enum SidebarItem: Hashable, Identifiable {
 
 /// The type of content resource available in the launcher.
 public enum ResourceType: String, CaseIterable {
-    case mod = "mod"
-    case datapack = "datapack"
-    case shader = "shader"
-    case resourcepack = "resourcepack"
-    case modpack = "modpack"
+    case mod
+    case datapack
+    case shader
+    case resourcepack
+    case modpack
     case minecraftJavaServer = "minecraft_java_server"
 
     /// The localized name of this resource type.

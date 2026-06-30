@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import SwiftUI
 import os
+import SwiftUI
 
 /// View model that manages the add, delete, and update actions for a Modrinth resource button.
 @MainActor
@@ -60,7 +60,7 @@ final class AddOrDeleteResourceButtonViewModel: ObservableObject {
         setIsResourceDisabled: @escaping (Bool) -> Void,
         addScannedHash: @escaping (String) -> Void,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        modScanner: ModScanner = AppServices.modScanner
+        modScanner: ModScanner = AppServices.modScanner,
     ) {
         self.project = project
         self.selectedVersions = selectedVersions
@@ -79,7 +79,7 @@ final class AddOrDeleteResourceButtonViewModel: ObservableObject {
 
     func setDependencies(
         gameRepository: GameRepository,
-        playerListViewModel: PlayerListViewModel
+        playerListViewModel: PlayerListViewModel,
     ) {
         self.gameRepository = gameRepository
         self.playerListViewModel = playerListViewModel

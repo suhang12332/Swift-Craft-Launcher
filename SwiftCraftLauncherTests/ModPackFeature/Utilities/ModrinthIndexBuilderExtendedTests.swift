@@ -5,15 +5,14 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModrinthIndexBuilderExtendedTests: XCTestCase {
-
     private func makeGameInfo(
         gameVersion: String = "1.20.1",
         modLoader: String = "fabric",
-        modVersion: String = "0.14.21"
+        modVersion: String = "0.14.21",
     ) -> GameVersionInfo {
         GameVersionInfo(
             gameName: "TestGame",
@@ -22,21 +21,21 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modVersion: modVersion,
             assetIndex: "17",
             modLoader: modLoader,
-            mainClass: "net.minecraft.client.main.Main"
+            mainClass: "net.minecraft.client.main.Main",
         )
     }
 
     private func makeFile(
         path: String = "mods/test.jar",
         sha1: String = "abc123",
-        sha512: String = "def456"
+        sha512: String = "def456",
     ) -> ModrinthIndexFile {
         ModrinthIndexFile(
             path: path,
             hashes: ModrinthIndexFileHashes(from: ["sha1": sha1, "sha512": sha512]),
             downloads: ["https://example.com/test.jar"],
             fileSize: 1024,
-            env: ModrinthIndexFileEnv(client: "required", server: nil)
+            env: ModrinthIndexFileEnv(client: "required", server: nil),
         )
     }
 
@@ -46,7 +45,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("\"formatVersion\""))
@@ -59,7 +58,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("\"game\""))
@@ -72,7 +71,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "My Pack",
             modPackVersion: "3.2.1",
             summary: nil,
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("My Pack"))
@@ -85,7 +84,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: "This is a test pack",
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("This is a test pack"))
@@ -97,7 +96,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: []
+            files: [],
         )
 
         XCTAssertFalse(json.contains("summary"))
@@ -110,7 +109,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: files
+            files: files,
         )
 
         XCTAssertTrue(json.contains("sha1val"))
@@ -122,14 +121,14 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             path: "mods/test.jar",
             hashes: ModrinthIndexFileHashes(from: ["sha1": "abc"]),
             downloads: ["https://cdn.example.com/mod.jar"],
-            fileSize: 1024
+            fileSize: 1024,
         )
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: [file]
+            files: [file],
         )
 
         XCTAssertTrue(json.contains("cdn.example.com"))
@@ -141,14 +140,14 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             path: "mods/test.jar",
             hashes: ModrinthIndexFileHashes(from: ["sha1": "abc"]),
             downloads: [],
-            fileSize: 9999
+            fileSize: 9999,
         )
         let json = try await ModrinthIndexBuilder.build(
             gameInfo: makeGameInfo(),
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: [file]
+            files: [file],
         )
 
         XCTAssertTrue(json.contains("9999"))
@@ -161,7 +160,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: files
+            files: files,
         )
 
         XCTAssertTrue(json.contains("\"env\""))
@@ -180,7 +179,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "MultiFile",
             modPackVersion: "1.0",
             summary: nil,
-            files: files
+            files: files,
         )
 
         XCTAssertTrue(json.contains("hash_a"))
@@ -194,7 +193,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("\"fabric-loader\""))
@@ -207,7 +206,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("\"forge-loader\""))
@@ -220,7 +219,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("\"neoforge-loader\""))
@@ -233,7 +232,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("\"quilt-loader\""))
@@ -246,7 +245,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("\"minecraft\""))
@@ -260,7 +259,7 @@ final class ModrinthIndexBuilderExtendedTests: XCTestCase {
             modPackName: "Test",
             modPackVersion: "1.0",
             summary: nil,
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("\"dependencies\""))

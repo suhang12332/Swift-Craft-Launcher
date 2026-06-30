@@ -39,7 +39,7 @@ struct LittleSkinMinecraftTokenParser: YggdrasilMinecraftTokenParser {
             headers: [
                 APIClient.Header.authorization: APIClient.bearer(oauthToken),
                 APIClient.Header.contentType: APIClient.MimeType.json,
-            ]
+            ],
         )
         return try JSONDecoder().decode(Response.self, from: data).accessToken
     }

@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class MinecraftSkinUtilsCacheTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
         MinecraftSkinUtils.clearCache()
@@ -31,13 +30,13 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
         let cacheEntry = RenderedImageCache(
             headImage: headImage,
             layerImage: layerImage,
-            hasLayerContent: false
+            hasLayerContent: false,
         )
         let key = "test-clear-key"
         MinecraftSkinUtils.imageCache.setObject(
             cacheEntry,
             forKey: key as NSString,
-            cost: cacheEntry.cost
+            cost: cacheEntry.cost,
         )
 
         XCTAssertNotNil(MinecraftSkinUtils.getCachedRenderedImage(for: key))
@@ -61,13 +60,13 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
         let cacheEntry = RenderedImageCache(
             headImage: headImage,
             layerImage: layerImage,
-            hasLayerContent: false
+            hasLayerContent: false,
         )
         let key = "test-hit-key"
         MinecraftSkinUtils.imageCache.setObject(
             cacheEntry,
             forKey: key as NSString,
-            cost: cacheEntry.cost
+            cost: cacheEntry.cost,
         )
 
         let result = MinecraftSkinUtils.getCachedRenderedImage(for: key)
@@ -86,7 +85,7 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
         let cache = RenderedImageCache(
             headImage: headImage,
             layerImage: layerImage,
-            hasLayerContent: true
+            hasLayerContent: true,
         )
         let expectedCost = width * height * 4 * 2 + 2 * 1024
         XCTAssertEqual(cache.cost, expectedCost)
@@ -101,7 +100,7 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
         let cache = RenderedImageCache(
             headImage: headImage,
             layerImage: layerImage,
-            hasLayerContent: false
+            hasLayerContent: false,
         )
         XCTAssertFalse(cache.hasLayerContent)
         XCTAssertEqual(cache.headImage.width, 4)
@@ -117,7 +116,7 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
         let cache = RenderedImageCache(
             headImage: headImage,
             layerImage: layerImage,
-            hasLayerContent: true
+            hasLayerContent: true,
         )
         XCTAssertTrue(cache.hasLayerContent)
     }
@@ -131,7 +130,7 @@ final class MinecraftSkinUtilsCacheTests: XCTestCase {
             bitsPerComponent: 8,
             bytesPerRow: Int(size.width) * 4,
             space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
         ) else {
             return nil
         }

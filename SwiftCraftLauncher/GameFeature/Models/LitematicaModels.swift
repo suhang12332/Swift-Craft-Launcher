@@ -40,9 +40,9 @@ struct LitematicaInfo: Identifiable, Equatable {
         description: String? = nil,
         version: String? = nil,
         regionCount: Int? = nil,
-        totalBlocks: Int? = nil
+        totalBlocks: Int? = nil,
     ) {
-        self.id = path.lastPathComponent
+        id = path.lastPathComponent
         self.name = name
         self.path = path
         self.createdDate = createdDate

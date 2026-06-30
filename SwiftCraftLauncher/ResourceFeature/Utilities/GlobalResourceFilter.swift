@@ -18,7 +18,7 @@ func filterCompatibleGames(
     detail: ModrinthProjectDetail,
     gameRepository: GameRepository,
     resourceType: String,
-    projectId: String
+    projectId: String,
 ) async -> [GameVersionInfo] {
     let supportedVersions = Set(detail.gameVersions)
     let supportedLoaders = Set(detail.loaders.map { $0.lowercased() })
@@ -63,7 +63,7 @@ func filterCompatibleGames(
                     selectedVersions: [game.gameVersion],
                     selectedLoaders: [game.modLoader],
                     type: resourceType,
-                    modsDir: resourceDir
+                    modsDir: resourceDir,
                 )
 
                 if isInstalled {
@@ -76,7 +76,7 @@ func filterCompatibleGames(
 
         var results: [GameVersionInfo] = []
         for await game in group {
-            if let game = game {
+            if let game {
                 results.append(game)
             }
         }

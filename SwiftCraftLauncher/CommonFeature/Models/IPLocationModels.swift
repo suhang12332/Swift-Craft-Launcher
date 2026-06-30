@@ -28,16 +28,16 @@ struct IPLocationResponse: Codable {
 
     /// Whether the request succeeded.
     var isSuccess: Bool {
-        return !error && countryCode != nil
+        !error && countryCode != nil
     }
 
     /// Whether the IP address is located in China.
     var isChina: Bool {
-        return countryCode == "CN"
+        countryCode == "CN"
     }
 
     /// Whether the IP address is located outside China.
     var isForeign: Bool {
-        return isSuccess && !isChina
+        isSuccess && !isChina
     }
 }

@@ -18,7 +18,7 @@ enum ModPackArchiver {
     static func archive(
         tempDir: URL,
         outputPath: URL,
-        rootFiles: [String] = [AppConstants.modrinthIndexFileName]
+        rootFiles: [String] = [AppConstants.modrinthIndexFileName],
     ) throws {
         if Task.isCancelled { throw CancellationError() }
 
@@ -33,7 +33,7 @@ enum ModPackArchiver {
             throw GlobalError.fileSystem(
                 chineseMessage: "无法创建压缩文件: \(outputPath.path)",
                 i18nKey: "error.modpack.export.archive_creation_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -46,11 +46,11 @@ enum ModPackArchiver {
                     with: fileName,
                     type: .file,
                     uncompressedSize: Int64(fileData.count),
-                    compressionMethod: .deflate
+                    compressionMethod: .deflate,
                 ) { position, size -> Data in
                     let start = Int(position)
                     let end = min(start + size, fileData.count)
-                    return fileData.subdata(in: start..<end)
+                    return fileData.subdata(in: start ..< end)
                 }
             }
         }
@@ -60,7 +60,7 @@ enum ModPackArchiver {
             let overridesEnumerator = FileManager.default.enumerator(
                 at: overridesDir,
                 includingPropertiesForKeys: [.isRegularFileKey],
-                options: [.skipsHiddenFiles]
+                options: [.skipsHiddenFiles],
             )
 
             let overridesDirPath = (overridesDir.path as NSString).standardizingPath
@@ -89,11 +89,11 @@ enum ModPackArchiver {
                         with: relativePath,
                         type: .file,
                         uncompressedSize: fileSize,
-                        compressionMethod: .deflate
+                        compressionMethod: .deflate,
                     ) { position, size -> Data in
                         let start = Int(position)
                         let end = min(start + size, fileData.count)
-                        return fileData.subdata(in: start..<end)
+                        return fileData.subdata(in: start ..< end)
                     }
                 }
             }

@@ -30,6 +30,7 @@ extension CurseForgeModDetail {
     var directoryName: String {
         contentType?.directoryName ?? AppConstants.DirectoryNames.mods
     }
+
     /// The project type string (mod, resourcepack, shader, datapack, or modpack).
     var projectType: String {
         switch contentType {

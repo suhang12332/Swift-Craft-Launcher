@@ -9,11 +9,11 @@ import Foundation
 
 /// Java garbage collector options available for game configuration.
 enum GarbageCollector: String, CaseIterable {
-    case g1gc = "g1gc"
-    case zgc = "zgc"
-    case shenandoah = "shenandoah"
-    case parallel = "parallel"
-    case serial = "serial"
+    case g1gc
+    case zgc
+    case shenandoah
+    case parallel
+    case serial
 
     /// The minimum Java major version required by this garbage collector.
     var minimumJavaVersion: Int {
@@ -67,10 +67,10 @@ enum GarbageCollector: String, CaseIterable {
 
 /// JVM optimization presets for game performance tuning.
 enum OptimizationPreset: String, CaseIterable {
-    case disabled = "disabled"
-    case basic = "basic"
-    case balanced = "balanced"
-    case maximum = "maximum"
+    case disabled
+    case basic
+    case balanced
+    case maximum
 
     /// The localized display name for this optimization preset.
     var displayName: String {

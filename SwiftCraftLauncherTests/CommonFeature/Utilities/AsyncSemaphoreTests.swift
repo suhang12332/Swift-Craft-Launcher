@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class AsyncSemaphoreTests: XCTestCase {
-
     func testWait_withAvailableSlots() async {
         let semaphore = AsyncSemaphore(value: 2)
         await semaphore.wait()
@@ -29,7 +28,7 @@ final class AsyncSemaphoreTests: XCTestCase {
         var counter = 0
 
         await withTaskGroup(of: Void.self) { group in
-            for _ in 0..<5 {
+            for _ in 0 ..< 5 {
                 group.addTask {
                     await semaphore.wait()
                     counter += 1

@@ -13,14 +13,14 @@ enum MinecraftLaunchCommandBuilder {
         manifest: MinecraftVersionManifest,
         gameInfo: GameVersionInfo,
         launcherBrand: String,
-        launcherVersion: String
+        launcherVersion: String,
     ) -> [String] {
         do {
             return try buildThrowing(
                 manifest: manifest,
                 gameInfo: gameInfo,
                 launcherBrand: launcherBrand,
-                launcherVersion: launcherVersion
+                launcherVersion: launcherVersion,
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -33,8 +33,8 @@ enum MinecraftLaunchCommandBuilder {
     static func buildThrowing(
         manifest: MinecraftVersionManifest,
         gameInfo: GameVersionInfo,
-        launcherBrand: String,
-        launcherVersion: String
+        launcherBrand _: String,
+        launcherVersion: String,
     ) throws -> [String] {
         let paths = try validateAndGetPaths(gameInfo: gameInfo, manifest: manifest)
 
@@ -43,7 +43,7 @@ enum MinecraftLaunchCommandBuilder {
             librariesDir: paths.librariesDir,
             clientJarPath: paths.clientJarPath,
             modClassPath: gameInfo.modClassPath,
-            minecraftVersion: manifest.id
+            minecraftVersion: manifest.id,
         )
 
         let variableMap: [String: String] = [
@@ -83,8 +83,7 @@ enum MinecraftLaunchCommandBuilder {
             gameArgs.append(contentsOf: gameInfo.gameArguments)
         }
 
-        let allArgs = jvmArgs + [gameInfo.mainClass] + gameArgs
-        return allArgs
+        return jvmArgs + [gameInfo.mainClass] + gameArgs
     }
 
     private struct GamePaths {
@@ -97,7 +96,7 @@ enum MinecraftLaunchCommandBuilder {
 
     private static func validateAndGetPaths(
         gameInfo: GameVersionInfo,
-        manifest: MinecraftVersionManifest
+        manifest: MinecraftVersionManifest,
     ) throws -> GamePaths {
         let clientJarPath = AppPaths.versionsDirectory.appendingPathComponent(manifest.id).appendingPathComponent("\(manifest.id).jar").path
         let fileManager = FileManager.default
@@ -105,7 +104,7 @@ enum MinecraftLaunchCommandBuilder {
             throw GlobalError.resource(
                 chineseMessage: "客户端 JAR 文件不存在: \(clientJarPath)",
                 i18nKey: "error.resource.client_jar_not_found",
-                level: .popup
+                level: .popup,
             )
         }
 
@@ -114,7 +113,7 @@ enum MinecraftLaunchCommandBuilder {
             librariesDir: AppPaths.librariesDirectory,
             assetsDir: AppPaths.assetsDirectory.path,
             gameDir: AppPaths.profileDirectory(gameName: gameInfo.gameName).path,
-            clientJarPath: clientJarPath
+            clientJarPath: clientJarPath,
         )
     }
 
@@ -131,7 +130,7 @@ enum MinecraftLaunchCommandBuilder {
                     of: placeholder,
                     with: value,
                     options: [],
-                    range: NSRange(location: 0, length: result.length)
+                    range: NSRange(location: 0, length: result.length),
                 )
             }
         }
@@ -150,7 +149,7 @@ enum MinecraftLaunchCommandBuilder {
             .compactMap { library in
                 processLibrary(library, librariesDir: librariesDir, existingModBasePaths: existingModBasePaths, minecraftVersion: minecraftVersion)
             }
-            .flatMap { $0 }
+            .flatMap(\.self)
 
         Logger.shared.debug("处理完成 - manifest库路径: \(manifestLibraryPaths.count)个")
 
@@ -162,8 +161,8 @@ enum MinecraftLaunchCommandBuilder {
         return classpath
     }
 
-    private static func parseModClassPath(_ modClassPath: String, librariesDir: URL) -> [String] {
-        return modClassPath.split(separator: ":").map { String($0) }
+    private static func parseModClassPath(_ modClassPath: String, librariesDir _: URL) -> [String] {
+        modClassPath.split(separator: ":").map { String($0) }
     }
 
     private static func removeDuplicatePaths(_ paths: [String]) -> [String] {
@@ -198,7 +197,7 @@ enum MinecraftLaunchCommandBuilder {
         return pathComponents.dropLast(2).joined(separator: "/")
     }
 
-    private static func processLibrary(_ library: Library, librariesDir: URL, existingModBasePaths: Set<String>, minecraftVersion: String) -> [String]? {
+    private static func processLibrary(_ library: Library, librariesDir: URL, existingModBasePaths: Set<String>, minecraftVersion _: String) -> [String]? {
         let artifact = library.downloads.artifact
 
         let libraryPath = getLibraryPath(artifact: artifact, libraryName: library.name, librariesDir: librariesDir)
@@ -222,12 +221,12 @@ enum MinecraftLaunchCommandBuilder {
         }
     }
 
-    private static func getClassifierPaths(library: Library, librariesDir: URL, minecraftVersion: String) -> [String] {
-        return []
+    private static func getClassifierPaths(library _: Library, librariesDir _: URL, minecraftVersion _: String) -> [String] {
+        []
     }
 
     private static func shouldIncludeLibrary(_ library: Library, minecraftVersion: String? = nil) -> Bool {
-        guard library.downloadable == true && library.includeInClasspath == true else {
+        guard library.downloadable == true, library.includeInClasspath == true else {
             return false
         }
 

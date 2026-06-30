@@ -13,22 +13,22 @@ struct AuthorizationCodeResponse {
     let errorDescription: String?
 
     var isSuccess: Bool {
-        return code != nil && error == nil
+        code != nil && error == nil
     }
 
     var isUserDenied: Bool {
-        return error == "access_denied"
+        error == "access_denied"
     }
 
     init?(from url: URL) {
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let queryItems = components.queryItems else { return nil }
-        self.code = queryItems.first { $0.name == "code" }?.value
-        self.error = queryItems.first { $0.name == "error" }?.value
+        code = queryItems.first { $0.name == "code" }?.value
+        error = queryItems.first { $0.name == "error" }?.value
         if let encodedDescription = queryItems.first(where: { $0.name == "error_description" })?.value {
-            self.errorDescription = encodedDescription.removingPercentEncoding
+            errorDescription = encodedDescription.removingPercentEncoding
         } else {
-            self.errorDescription = nil
+            errorDescription = nil
         }
     }
 }
@@ -57,7 +57,7 @@ struct DisplayClaims: Codable {
     let xui: [XUI]
 
     enum CodingKeys: String, CodingKey {
-        case xui = "xui"
+        case xui
     }
 }
 

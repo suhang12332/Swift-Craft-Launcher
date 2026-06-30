@@ -19,7 +19,7 @@ class PlayerDataManager {
 
     init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
         self.errorHandler = errorHandler
-        self.profileStore = UserProfileStore(errorHandler: errorHandler)
+        profileStore = UserProfileStore(errorHandler: errorHandler)
     }
 
     /// Adds a new player with the specified properties.
@@ -40,7 +40,7 @@ class PlayerDataManager {
         avatarName: String,
         accToken: String = "",
         refreshToken: String = "",
-        xuid: String = ""
+        xuid: String = "",
     ) throws {
         let players = try loadPlayersThrowing()
 
@@ -48,13 +48,13 @@ class PlayerDataManager {
             throw GlobalError.player(
                 chineseMessage: "玩家已存在: \(name)",
                 i18nKey: "error.player.already_exists",
-                level: .notification
+                level: .notification,
             )
         }
 
         do {
             let credential: AuthCredential?
-            if isOnline && !accToken.isEmpty {
+            if isOnline, !accToken.isEmpty {
                 let tempId: String
                 if let providedUUID = uuid {
                     tempId = providedUUID
@@ -65,7 +65,7 @@ class PlayerDataManager {
                     userId: tempId,
                     accessToken: accToken,
                     refreshToken: refreshToken,
-                    xuid: xuid
+                    xuid: xuid,
                 )
             } else {
                 credential = nil
@@ -76,7 +76,7 @@ class PlayerDataManager {
                 uuid: uuid,
                 avatar: avatarName.isEmpty ? nil : avatarName,
                 credential: credential,
-                isCurrent: players.isEmpty
+                isCurrent: players.isEmpty,
             )
 
             try profileStore.addProfile(newPlayer.profile)
@@ -87,7 +87,7 @@ class PlayerDataManager {
                     throw GlobalError.validation(
                         chineseMessage: "保存认证凭据失败",
                         i18nKey: "error.validation.credential_save_failed",
-                        level: .notification
+                        level: .notification,
                     )
                 }
             }
@@ -97,7 +97,7 @@ class PlayerDataManager {
             throw GlobalError.player(
                 chineseMessage: "玩家创建失败: \(error.localizedDescription)",
                 i18nKey: "error.player.creation_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -120,7 +120,7 @@ class PlayerDataManager {
         avatarName: String,
         accToken: String = "",
         refreshToken: String = "",
-        xuid: String = ""
+        xuid: String = "",
     ) -> Bool {
         do {
             try addPlayer(
@@ -130,7 +130,7 @@ class PlayerDataManager {
                 avatarName: avatarName,
                 accToken: accToken,
                 refreshToken: refreshToken,
-                xuid: xuid
+                xuid: xuid,
             )
             return true
         } catch {
@@ -162,11 +162,9 @@ class PlayerDataManager {
     func loadPlayersThrowing() throws -> [Player] {
         let profiles = try profileStore.loadProfilesThrowing()
 
-        let players = profiles.map { profile in
+        return profiles.map { profile in
             Player(profile: profile, credential: nil)
         }
-
-        return players
     }
 
     /// Loads the authentication credential for the specified player.
@@ -275,12 +273,12 @@ class PlayerDataManager {
             throw GlobalError.validation(
                 chineseMessage: "保存认证凭据失败: \(credential.userId)",
                 i18nKey: "error.validation.credential_save_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
-        let existingProfileIds = Set(profiles.map { $0.id })
-        let allCredentials = try loadPlayersThrowing().compactMap { $0.credential }
+        let existingProfileIds = Set(profiles.map(\.id))
+        let allCredentials = try loadPlayersThrowing().compactMap(\.credential)
         for credential in allCredentials where !existingProfileIds.contains(credential.userId) {
             _ = credentialStore.deleteCredential(userId: credential.userId)
         }
@@ -300,7 +298,7 @@ class PlayerDataManager {
                 throw GlobalError.validation(
                     chineseMessage: "更新认证凭据失败",
                     i18nKey: "error.validation.credential_update_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         } else {

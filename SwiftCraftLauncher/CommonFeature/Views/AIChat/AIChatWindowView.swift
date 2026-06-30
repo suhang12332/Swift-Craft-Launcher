@@ -26,7 +26,7 @@ struct AIChatWindowView: View {
         chatState: ChatState,
         aiSettings: AISettingsManager = AppServices.aiSettingsManager,
         aiChatManager: AIChatManager = AppServices.aiChatManager,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.chatState = chatState
         _aiSettings = StateObject(wrappedValue: aiSettings)
@@ -41,14 +41,14 @@ struct AIChatWindowView: View {
                 currentPlayer: playerListViewModel.currentPlayer,
                 cachedAIAvatar: viewModel.cachedAIAvatar,
                 cachedUserAvatar: viewModel.cachedUserAvatar,
-                aiAvatarURL: aiSettings.aiAvatarURL
+                aiAvatarURL: aiSettings.aiAvatarURL,
             )
 
             Divider()
 
             if !attachmentManager.pendingAttachments.isEmpty {
                 AIChatAttachmentPreviewView(
-                    attachments: attachmentManager.pendingAttachments
+                    attachments: attachmentManager.pendingAttachments,
                 ) { index in
                     attachmentManager.removeAttachment(at: index)
                 }
@@ -61,7 +61,7 @@ struct AIChatWindowView: View {
                 games: gameRepository.games,
                 isSending: chatState.isSending,
                 canSend: canSend,
-                onSend: sendMessage
+                onSend: sendMessage,
             ) {
                 showFilePicker = true
             }
@@ -70,19 +70,19 @@ struct AIChatWindowView: View {
         .fileImporter(
             isPresented: $showFilePicker,
             allowedContentTypes: [.text, .pdf, .json, .plainText, .log],
-            allowsMultipleSelection: true
+            allowsMultipleSelection: true,
         ) { result in
             handleFileSelection(result)
         }
         .fileDialogDefaultDirectory(
-            selectedGame.map { AppPaths.profileDirectory(gameName: $0.gameName) } ?? FileManager.default.homeDirectoryForCurrentUser
+            selectedGame.map { AppPaths.profileDirectory(gameName: $0.gameName) } ?? FileManager.default.homeDirectoryForCurrentUser,
         )
         .onAppear {
             isInputFocused = true
             viewModel.onAppear(
                 games: gameRepository.games,
                 currentPlayer: playerListViewModel.currentPlayer,
-                aiAvatarURL: aiSettings.aiAvatarURL
+                aiAvatarURL: aiSettings.aiAvatarURL,
             )
         }
         .onChange(of: chatState.isSending) { wasSending, isSendingNow in
@@ -137,9 +137,9 @@ struct AIChatWindowView: View {
 
     private func handleFileSelection(_ result: Result<[URL], Error>) {
         switch result {
-        case .success(let urls):
+        case let .success(urls):
             attachmentManager.handleFileSelection(urls)
-        case .failure(let error):
+        case let .failure(error):
             let globalError = GlobalError.from(error)
             errorHandler.handle(globalError)
         }

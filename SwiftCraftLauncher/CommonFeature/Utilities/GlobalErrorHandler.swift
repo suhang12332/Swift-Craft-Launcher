@@ -11,10 +11,10 @@ import SwiftUI
 
 /// Defines how an error should be presented to the user.
 enum ErrorLevel: String, CaseIterable {
-    case popup = "popup"
-    case notification = "notification"
-    case silent = "silent"
-    case disabled = "disabled"
+    case popup
+    case notification
+    case silent
+    case disabled
 
     var displayName: String {
         switch self {
@@ -105,7 +105,7 @@ struct GlobalError: Error, LocalizedError, Identifiable {
         chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel? = nil,
-        statusCode: Int? = nil
+        statusCode: Int? = nil,
     ) {
         self.kind = kind
         self.chineseMessage = chineseMessage
@@ -141,7 +141,7 @@ extension GlobalError {
         chineseMessage: String,
         i18nKey: String,
         level: ErrorLevel = .notification,
-        statusCode: Int? = nil
+        statusCode: Int? = nil,
     ) -> GlobalError {
         GlobalError(kind: .network, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level, statusCode: statusCode)
     }
@@ -149,7 +149,7 @@ extension GlobalError {
     static func fileSystem(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .notification
+        level: ErrorLevel = .notification,
     ) -> GlobalError {
         GlobalError(kind: .fileSystem, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
@@ -157,7 +157,7 @@ extension GlobalError {
     static func authentication(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .popup
+        level: ErrorLevel = .popup,
     ) -> GlobalError {
         GlobalError(kind: .authentication, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
@@ -165,7 +165,7 @@ extension GlobalError {
     static func validation(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .notification
+        level: ErrorLevel = .notification,
     ) -> GlobalError {
         GlobalError(kind: .validation, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
@@ -173,7 +173,7 @@ extension GlobalError {
     static func download(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .notification
+        level: ErrorLevel = .notification,
     ) -> GlobalError {
         GlobalError(kind: .download, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
@@ -181,7 +181,7 @@ extension GlobalError {
     static func installation(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .notification
+        level: ErrorLevel = .notification,
     ) -> GlobalError {
         GlobalError(kind: .installation, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
@@ -189,7 +189,7 @@ extension GlobalError {
     static func gameLaunch(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .popup
+        level: ErrorLevel = .popup,
     ) -> GlobalError {
         GlobalError(kind: .gameLaunch, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
@@ -197,7 +197,7 @@ extension GlobalError {
     static func resource(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .notification
+        level: ErrorLevel = .notification,
     ) -> GlobalError {
         GlobalError(kind: .resource, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
@@ -205,7 +205,7 @@ extension GlobalError {
     static func player(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .notification
+        level: ErrorLevel = .notification,
     ) -> GlobalError {
         GlobalError(kind: .player, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
@@ -213,7 +213,7 @@ extension GlobalError {
     static func configuration(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .notification
+        level: ErrorLevel = .notification,
     ) -> GlobalError {
         GlobalError(kind: .configuration, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
@@ -221,7 +221,7 @@ extension GlobalError {
     static func unknown(
         chineseMessage: String,
         i18nKey: String,
-        level: ErrorLevel = .silent
+        level: ErrorLevel = .silent,
     ) -> GlobalError {
         GlobalError(kind: .unknown, chineseMessage: chineseMessage, i18nKey: i18nKey, level: level)
     }
@@ -243,7 +243,7 @@ extension GlobalError {
                 return Self.network(
                     chineseMessage: urlError.localizedDescription,
                     i18nKey: "error.network.url",
-                    level: level
+                    level: level,
                 )
             }
 
@@ -252,14 +252,14 @@ extension GlobalError {
                 return Self.fileSystem(
                     chineseMessage: nsError.localizedDescription,
                     i18nKey: "error.filesystem.cocoa",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
             return Self.unknown(
                 chineseMessage: error.localizedDescription,
                 i18nKey: "error.unknown.generic",
-                level: .silent
+                level: .silent,
             )
         }
     }
@@ -278,19 +278,19 @@ extension GlobalError {
             return Self.network(
                 chineseMessage: message,
                 i18nKey: key,
-                level: minecraftFriendsErrorLevel(level)
+                level: minecraftFriendsErrorLevel(level),
             )
         case let .authentication(message, key, level):
             return Self.authentication(
                 chineseMessage: message,
                 i18nKey: key,
-                level: minecraftFriendsErrorLevel(level)
+                level: minecraftFriendsErrorLevel(level),
             )
         case let .validation(message, key, level):
             return Self.validation(
                 chineseMessage: message,
                 i18nKey: key,
-                level: minecraftFriendsErrorLevel(level)
+                level: minecraftFriendsErrorLevel(level),
             )
         }
     }
@@ -305,7 +305,7 @@ class GlobalErrorHandler: ObservableObject {
 
     private let maxHistoryCount = 100
 
-    private init() {}
+    private init() { }
 
     func handle(_ error: Error) {
         let globalError = GlobalError.from(error)
@@ -330,7 +330,7 @@ class GlobalErrorHandler: ObservableObject {
             Task {
                 await NotificationManager.sendSilently(
                     title: error.notificationTitle,
-                    body: error.localizedDescription
+                    body: error.localizedDescription,
                 )
             }
 
@@ -387,7 +387,7 @@ struct GlobalErrorHandlerModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onReceive(errorHandler.$currentError) { error in
-                if let error = error {
+                if let error {
                     Logger.shared.error("Global error occurred: \(error.chineseMessage)")
                 }
             }
@@ -396,6 +396,6 @@ struct GlobalErrorHandlerModifier: ViewModifier {
 
 extension View {
     func errorHandler() -> some View {
-        self.modifier(GlobalErrorHandlerModifier())
+        modifier(GlobalErrorHandlerModifier())
     }
 }

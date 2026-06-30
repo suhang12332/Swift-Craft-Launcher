@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class LocalResourceInstallerTests: XCTestCase {
-
     func testLocalResourceType_directoryName_mod() {
         XCTAssertEqual(LocalResourceInstaller.LocalResourceType.mod.directoryName, "mods")
     }
@@ -52,7 +51,7 @@ final class LocalResourceInstallerTests: XCTestCase {
         XCTAssertThrowsError(try LocalResourceInstaller.install(
             fileURL: fileURL,
             resourceType: .mod,
-            gameRoot: tempDir
+            gameRoot: tempDir,
         ))
     }
 
@@ -63,7 +62,7 @@ final class LocalResourceInstallerTests: XCTestCase {
         XCTAssertThrowsError(try LocalResourceInstaller.install(
             fileURL: fileURL,
             resourceType: .mod,
-            gameRoot: nonExistentDir
+            gameRoot: nonExistentDir,
         ))
     }
 }

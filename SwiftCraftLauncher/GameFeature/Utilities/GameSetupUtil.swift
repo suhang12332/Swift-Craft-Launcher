@@ -11,7 +11,6 @@ import SwiftUI
 /// Manages the complete game installation flow including download, configuration, and setup.
 @MainActor
 class GameSetupUtil: ObservableObject {
-
     @Published var downloadState = DownloadState()
     @Published var fabricDownloadState = DownloadState()
     @Published var forgeDownloadState = DownloadState()
@@ -29,7 +28,7 @@ class GameSetupUtil: ObservableObject {
         javaManager: JavaManager = AppServices.javaManager,
         gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager,
         modScanner: ModScanner = AppServices.modScanner,
-        languageManager: LanguageManager = AppServices.languageManager
+        languageManager: LanguageManager = AppServices.languageManager,
     ) {
         self.errorHandler = errorHandler
         self.javaManager = javaManager
@@ -51,18 +50,18 @@ class GameSetupUtil: ObservableObject {
         playerListViewModel: PlayerListViewModel?,
         gameRepository: GameRepository,
         onSuccess: @escaping () -> Void,
-        onError: @escaping (GlobalError, String) -> Void
+        onError: @escaping (GlobalError, String) -> Void,
     ) async {
-        if let playerListViewModel = playerListViewModel {
+        if let playerListViewModel {
             guard playerListViewModel.currentPlayer != nil else {
                 Logger.shared.error("无法保存游戏，因为没有选择当前玩家。")
                 onError(
                     GlobalError.configuration(
                         chineseMessage: "没有选择当前玩家",
                         i18nKey: "error.configuration.no_current_player",
-                        level: .popup
+                        level: .popup,
                     ),
-                    "error.no.current.player.title".localized()
+                    "error.no.current.player.title".localized(),
                 )
                 return
             }
@@ -85,7 +84,7 @@ class GameSetupUtil: ObservableObject {
         let standardIconPresent = await saveGameIcon(
             gameName: input.gameName,
             modLoader: input.selectedModLoader,
-            pendingIconData: input.pendingIconData
+            pendingIconData: input.pendingIconData,
         )
         let persistedGameIcon = standardIconPresent ? AppConstants.defaultGameIcon : ""
 
@@ -95,14 +94,14 @@ class GameSetupUtil: ObservableObject {
             gameIcon: persistedGameIcon,
             gameVersion: input.selectedGameVersion,
             assetIndex: "",
-            modLoader: input.selectedModLoader
+            modLoader: input.selectedModLoader,
         )
 
         do {
             let downloadedManifest = try await ModrinthService.fetchVersionInfo(from: input.selectedGameVersion)
 
             let javaPath = await javaManager.ensureJavaExists(
-                version: downloadedManifest.javaVersion.component
+                version: downloadedManifest.javaVersion.component,
             )
 
             let fileManager = try await setupFileManager(manifest: downloadedManifest, modLoader: gameInfo.modLoader)
@@ -110,7 +109,7 @@ class GameSetupUtil: ObservableObject {
             try await startDownloadProcess(
                 fileManager: fileManager,
                 manifest: downloadedManifest,
-                gameName: input.gameName
+                gameName: input.gameName,
             )
 
             let modLoaderResult = try await setupModLoaderIfNeeded(
@@ -118,7 +117,7 @@ class GameSetupUtil: ObservableObject {
                 selectedGameVersion: input.selectedGameVersion,
                 gameName: input.gameName,
                 gameIcon: persistedGameIcon,
-                specifiedLoaderVersion: input.specifiedLoaderVersion
+                specifiedLoaderVersion: input.specifiedLoaderVersion,
             )
 
             gameInfo = await finalizeGameInfo(
@@ -130,7 +129,7 @@ class GameSetupUtil: ObservableObject {
                 fabricResult: input.selectedModLoader.lowercased() == GameLoader.fabric.displayName ? modLoaderResult : nil,
                 forgeResult: input.selectedModLoader.lowercased() == GameLoader.forge.displayName ? modLoaderResult : nil,
                 neoForgeResult: input.selectedModLoader.lowercased() == GameLoader.neoforge.displayName ? modLoaderResult : nil,
-                quiltResult: input.selectedModLoader.lowercased() == GameLoader.quilt.rawValue ? modLoaderResult : nil
+                quiltResult: input.selectedModLoader.lowercased() == GameLoader.quilt.rawValue ? modLoaderResult : nil,
             )
             gameInfo.javaPath = javaPath
             gameRepository.addGameSilently(gameInfo)
@@ -145,7 +144,7 @@ class GameSetupUtil: ObservableObject {
 
             await NotificationManager.sendSilently(
                 title: "notification.download.complete.title".localized(),
-                body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader)
+                body: String(format: "notification.download.complete.body".localized(), gameInfo.gameName, gameInfo.gameVersion, gameInfo.modLoader),
             )
             onSuccess()
         } catch {
@@ -161,7 +160,6 @@ class GameSetupUtil: ObservableObject {
             await cleanupGameDirectories(gameName: input.gameName)
             errorHandler.handle(error)
         }
-        return
     }
 
     private func isSaveGameDownloadCancelled(_ error: Error) -> Bool {
@@ -186,7 +184,7 @@ class GameSetupUtil: ObservableObject {
     private func saveGameIcon(
         gameName: String,
         modLoader: String,
-        pendingIconData: Data?
+        pendingIconData: Data?,
     ) async -> Bool {
         guard !gameName.isEmpty else {
             return false
@@ -204,19 +202,19 @@ class GameSetupUtil: ObservableObject {
                 _ = try await DownloadManager.downloadFile(
                     urlString: remoteIconURL.absoluteString,
                     destinationURL: iconURL,
-                    expectedSha1: nil
+                    expectedSha1: nil,
                 )
             }
         } catch {
             Logger.shared.warning(
-                "游戏图标保存失败，将继续安装: \(error.localizedDescription)"
+                "游戏图标保存失败，将继续安装: \(error.localizedDescription)",
             )
             errorHandler.handle(
                 GlobalError.fileSystem(
                     chineseMessage: "图片保存失败",
                     i18nKey: "error.filesystem.image_save_failed",
-                    level: .silent
-                )
+                    level: .silent,
+                ),
             )
         }
 
@@ -232,7 +230,7 @@ class GameSetupUtil: ObservableObject {
         return true
     }
 
-    private func setupFileManager(manifest: MinecraftVersionManifest, modLoader: String) async throws -> MinecraftFileManager {
+    private func setupFileManager(manifest _: MinecraftVersionManifest, modLoader _: String) async throws -> MinecraftFileManager {
         let nativesDir = AppPaths.nativesDirectory
         try FileManager.default.createDirectory(at: nativesDir, withIntermediateDirectories: true)
         return MinecraftFileManager()
@@ -241,14 +239,14 @@ class GameSetupUtil: ObservableObject {
     private func startDownloadProcess(
         fileManager: MinecraftFileManager,
         manifest: MinecraftVersionManifest,
-        gameName: String
+        gameName: String,
     ) async throws {
         let assetIndex = try await downloadAssetIndex(manifest: manifest)
         let resourceTotalFiles = assetIndex.objects.count
 
         downloadState.startDownload(
             coreTotalFiles: 1 + manifest.libraries.count + 1,
-            resourcesTotalFiles: resourceTotalFiles
+            resourcesTotalFiles: resourceTotalFiles,
         )
 
         fileManager.onProgressUpdate = { fileName, completed, total, type in
@@ -262,7 +260,6 @@ class GameSetupUtil: ObservableObject {
     }
 
     private func downloadAssetIndex(manifest: MinecraftVersionManifest) async throws -> DownloadedAssetIndex {
-
         let destinationURL = AppPaths.metaDirectory.appendingPathComponent("assets/indexes").appendingPathComponent("\(manifest.assetIndex.id).json")
 
         do {
@@ -280,14 +277,14 @@ class GameSetupUtil: ObservableObject {
                 url: manifest.assetIndex.url,
                 sha1: manifest.assetIndex.sha1,
                 totalSize: totalSize,
-                objects: assetIndexData.objects
+                objects: assetIndexData.objects,
             )
         } catch {
             let globalError = GlobalError.from(error)
             throw GlobalError.download(
                 chineseMessage: "下载资源索引失败: \(globalError.chineseMessage)",
                 i18nKey: "error.download.asset_index_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -297,7 +294,7 @@ class GameSetupUtil: ObservableObject {
         selectedGameVersion: String,
         gameName: String,
         gameIcon: String,
-        specifiedLoaderVersion: String
+        specifiedLoaderVersion: String,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String)? {
         let loaderType = selectedModLoader.lowercased()
         let handler: (any ModLoaderHandler.Type)?
@@ -322,12 +319,12 @@ class GameSetupUtil: ObservableObject {
             gameIcon: gameIcon,
             gameVersion: selectedGameVersion,
             assetIndex: "",
-            modLoader: selectedModLoader
+            modLoader: selectedModLoader,
         )
 
         let progressCallback: (String, Int, Int) -> Void = { [weak self] fileName, completed, total in
             Task { @MainActor in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.objectWillChange.send()
                 switch loaderType {
                 case GameLoader.fabric.displayName:
@@ -348,7 +345,7 @@ class GameSetupUtil: ObservableObject {
             for: selectedGameVersion,
             loaderVersion: specifiedLoaderVersion,
             gameInfo: gameInfo,
-            onProgressUpdate: progressCallback
+            onProgressUpdate: progressCallback,
         )
     }
 
@@ -361,7 +358,7 @@ class GameSetupUtil: ObservableObject {
         fabricResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil,
         forgeResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil,
         neoForgeResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil,
-        quiltResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil
+        quiltResult: (loaderVersion: String, classpath: String, mainClass: String)? = nil,
     ) async -> GameVersionInfo {
         var updatedGameInfo = gameInfo
         updatedGameInfo.assetIndex = manifest.assetIndex.id
@@ -426,19 +423,19 @@ class GameSetupUtil: ObservableObject {
                             of: "${version_name}",
                             with: selectedGameVersion,
                             options: [],
-                            range: NSRange(location: 0, length: mutableArg.length)
+                            range: NSRange(location: 0, length: mutableArg.length),
                         )
                         mutableArg.replaceOccurrences(
                             of: "${classpath_separator}",
                             with: ":",
                             options: [],
-                            range: NSRange(location: 0, length: mutableArg.length)
+                            range: NSRange(location: 0, length: mutableArg.length),
                         )
                         mutableArg.replaceOccurrences(
                             of: "${library_directory}",
                             with: AppPaths.librariesDirectory.path,
                             options: [],
-                            range: NSRange(location: 0, length: mutableArg.length)
+                            range: NSRange(location: 0, length: mutableArg.length),
                         )
                         return mutableArg as String
                     }
@@ -456,7 +453,7 @@ class GameSetupUtil: ObservableObject {
             manifest: manifest,
             gameInfo: updatedGameInfo,
             launcherBrand: launcherBrand,
-            launcherVersion: launcherVersion
+            launcherVersion: launcherVersion,
         )
 
         return updatedGameInfo

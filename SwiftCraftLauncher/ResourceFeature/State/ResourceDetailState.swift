@@ -11,9 +11,8 @@ import SwiftUI
 ///
 /// Intended to be provided via `@EnvironmentObject` to reduce `@Binding` proliferation.
 public final class ResourceDetailState: ObservableObject {
-
     @Published public var selectedItem: SidebarItem
-    @Published public var gameType: Bool  // false = local, true = server
+    @Published public var gameType: Bool // false = local, true = server
     @Published public var gameId: String?
     @Published public var gameResourcesType: String
     @Published public var selectedProjectId: String? {
@@ -23,6 +22,7 @@ public final class ResourceDetailState: ObservableObject {
             }
         }
     }
+
     @Published public var loadedProjectDetail: ModrinthProjectDetail?
     @Published public var showInstallSheet: Bool = false
     @Published public var currentProject: ModrinthProject?
@@ -35,7 +35,7 @@ public final class ResourceDetailState: ObservableObject {
         gameResourcesType: String = ResourceType.mod.rawValue,
         selectedProjectId: String? = nil,
         loadedProjectDetail: ModrinthProjectDetail? = nil,
-        loadedProjectDetailV3: ModrinthProjectDetailV3? = nil
+        loadedProjectDetailV3 _: ModrinthProjectDetailV3? = nil,
     ) {
         self.selectedItem = selectedItem
         self.gameType = gameType
@@ -75,36 +75,42 @@ public final class ResourceDetailState: ObservableObject {
             DispatchQueue.main.async { if let v = value { self.selectedItem = v } }
         })
     }
+
     public var gameTypeBinding: Binding<Bool> {
         Binding(get: { [weak self] in self?.gameType ?? true }, set: { [weak self] value in
             guard let self else { return }
             DispatchQueue.main.async { self.gameType = value }
         })
     }
+
     public var gameIdBinding: Binding<String?> {
         Binding(get: { [weak self] in self?.gameId }, set: { [weak self] value in
             guard let self else { return }
             DispatchQueue.main.async { self.gameId = value }
         })
     }
+
     public var gameResourcesTypeBinding: Binding<String> {
         Binding(get: { [weak self] in self?.gameResourcesType ?? ResourceType.mod.rawValue }, set: { [weak self] value in
             guard let self else { return }
             DispatchQueue.main.async { self.gameResourcesType = value }
         })
     }
+
     public var selectedProjectIdBinding: Binding<String?> {
         Binding(get: { [weak self] in self?.selectedProjectId }, set: { [weak self] value in
             guard let self else { return }
             DispatchQueue.main.async { self.selectedProjectId = value }
         })
     }
+
     public var loadedProjectDetailBinding: Binding<ModrinthProjectDetail?> {
         Binding(get: { [weak self] in self?.loadedProjectDetail }, set: { [weak self] value in
             guard let self else { return }
             DispatchQueue.main.async { self.loadedProjectDetail = value }
         })
     }
+
     public var showInstallSheetBinding: Binding<Bool> {
         Binding(get: { [weak self] in self?.showInstallSheet ?? false }, set: { [weak self] value in
             guard let self else { return }

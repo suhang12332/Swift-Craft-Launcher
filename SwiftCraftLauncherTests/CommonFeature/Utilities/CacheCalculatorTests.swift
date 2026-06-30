@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CacheCalculatorTests: XCTestCase {
-
     func testCacheInfo_init() {
         let info = CacheInfo(fileCount: 10, totalSize: 1024)
         XCTAssertEqual(info.fileCount, 10)

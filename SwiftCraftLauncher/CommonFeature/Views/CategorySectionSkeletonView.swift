@@ -22,7 +22,7 @@ struct CategorySectionSkeletonView: View {
         maxHeight: CGFloat = SectionViewConstants.defaultMaxHeight,
         verticalPadding: CGFloat = SectionViewConstants.defaultVerticalPadding,
         maxTextWidth: CGFloat? = 150,
-        verticalPaddingForChip: CGFloat = 4
+        verticalPaddingForChip: CGFloat = 4,
     ) {
         self.count = count
         self.iconName = iconName
@@ -35,13 +35,13 @@ struct CategorySectionSkeletonView: View {
     var body: some View {
         ScrollView {
             FlowLayout {
-                ForEach(0..<count, id: \.self) { _ in
+                ForEach(0 ..< count, id: \.self) { _ in
                     FilterChip(
                         title: "common.loading".localized(),
                         iconName: iconName,
                         isLoading: true,
                         verticalPadding: verticalPaddingForChip,
-                        maxTextWidth: maxTextWidth
+                        maxTextWidth: maxTextWidth,
                     )
                     .redacted(reason: .placeholder)
                 }

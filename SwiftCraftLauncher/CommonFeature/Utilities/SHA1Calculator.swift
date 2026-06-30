@@ -5,13 +5,12 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import CommonCrypto
 import CryptoKit
+import Foundation
 
 /// Provides SHA1 hash computation for data and files.
 public enum SHA1Calculator {
-
     /// Computes the SHA1 hash of in-memory data.
     /// - Parameter data: The data to hash.
     /// - Returns: A lowercase hexadecimal SHA1 string.
@@ -46,7 +45,7 @@ public enum SHA1Calculator {
                     return true
                 }
                 return false
-            }) {}
+            }) { }
 
             var digest = [UInt8](repeating: 0, count: Int(CC_SHA1_DIGEST_LENGTH))
             _ = CC_SHA1_Final(&digest, &context)
@@ -56,7 +55,7 @@ public enum SHA1Calculator {
             throw GlobalError.fileSystem(
                 chineseMessage: "计算文件 SHA1 失败: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.sha1_calculation_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -87,6 +86,6 @@ public enum SHA1Calculator {
 extension Data {
     /// The SHA1 hash of this data instance.
     var sha1: String {
-        return SHA1Calculator.sha1(of: self)
+        SHA1Calculator.sha1(of: self)
     }
 }

@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import AppKit
+import Foundation
 
 extension MinecraftSkinUtils {
-
     /// Loads skin data from the appropriate source based on the skin type.
     func loadData() async throws -> Data {
         switch type {
@@ -29,7 +28,7 @@ extension MinecraftSkinUtils {
             throw GlobalError.resource(
                 chineseMessage: "Asset 资源未找到: \(src)",
                 i18nKey: "error.resource.asset_not_found",
-                level: .silent
+                level: .silent,
             )
         }
 
@@ -38,7 +37,7 @@ extension MinecraftSkinUtils {
             throw GlobalError.validation(
                 chineseMessage: "无效的图像数据",
                 i18nKey: "error.validation.invalid_image_data",
-                level: .silent
+                level: .silent,
             )
         }
 
@@ -51,7 +50,7 @@ extension MinecraftSkinUtils {
             throw GlobalError.validation(
                 chineseMessage: "无效的URL: \(src)",
                 i18nKey: "error.validation.invalid_url",
-                level: .silent
+                level: .silent,
             )
         }
 
@@ -63,19 +62,19 @@ extension MinecraftSkinUtils {
                 throw GlobalError.resource(
                     chineseMessage: "皮肤资源未找到: \(src)",
                     i18nKey: "error.resource.skin_not_found",
-                    level: .silent
+                    level: .silent,
                 )
             case 408, 504:
                 throw GlobalError.download(
                     chineseMessage: "网络请求超时: \(src)",
                     i18nKey: "error.download.network_timeout",
-                    level: .silent
+                    level: .silent,
                 )
             default:
                 throw GlobalError.download(
                     chineseMessage: "皮肤下载失败: HTTP \(error.statusCode ?? 0)",
                     i18nKey: "error.download.skin_download_failed",
-                    level: .silent
+                    level: .silent,
                 )
             }
         }

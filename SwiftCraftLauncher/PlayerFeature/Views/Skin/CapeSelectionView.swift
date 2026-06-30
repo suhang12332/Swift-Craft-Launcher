@@ -18,7 +18,7 @@ struct CapeTextureView: View {
             switch phase {
             case .empty:
                 ProgressView().controlSize(.mini)
-            case .success(let image):
+            case let .success(image):
                 capeImageContent(image: image)
             case .failure:
                 Image(systemName: "photo")
@@ -33,13 +33,12 @@ struct CapeTextureView: View {
         .onDisappear {
             if let url {
                 URLCache.shared.removeCachedResponse(
-                    for: URLRequest(url: url)
+                    for: URLRequest(url: url),
                 )
             }
         }
     }
 
-    @ViewBuilder
     private func capeImageContent(image: Image) -> some View {
         GeometryReader { geometry in
             let containerWidth = geometry.size.width
@@ -62,7 +61,7 @@ struct CapeTextureView: View {
                 .clipped()
         }
     }
-    @ViewBuilder
+
     private func capeImageContent(image: NSImage) -> some View {
         GeometryReader { geometry in
             let containerWidth = geometry.size.width
@@ -102,18 +101,18 @@ struct CapeSelectionView: View {
         selectedCapeId: Binding<String?>,
         selectedCapeImageURL: Binding<String?>,
         selectedCapeImage: Binding<NSImage?>,
-        onCapeSelected: @escaping (String?, String?) -> Void
+        onCapeSelected: @escaping (String?, String?) -> Void,
     ) {
         self.playerProfile = playerProfile
-        self._selectedCapeId = selectedCapeId
-        self._selectedCapeImageURL = selectedCapeImageURL
-        self._selectedCapeImage = selectedCapeImage
+        _selectedCapeId = selectedCapeId
+        _selectedCapeImageURL = selectedCapeImageURL
+        _selectedCapeImage = selectedCapeImage
         self.onCapeSelected = onCapeSelected
-        self._viewModel = StateObject(
+        _viewModel = StateObject(
             wrappedValue: CapeSelectionViewModel(
                 selectedCapeImageURL: selectedCapeImageURL,
-                selectedCapeImage: selectedCapeImage
-            )
+                selectedCapeImage: selectedCapeImage,
+            ),
         )
     }
 
@@ -121,7 +120,7 @@ struct CapeSelectionView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("skin.cape".localized()).font(.headline)
 
-            if let playerProfile = playerProfile, let capes = playerProfile.capes, !capes.isEmpty {
+            if let playerProfile, let capes = playerProfile.capes, !capes.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         capeOption(id: nil, name: "skin.no_cape".localized(), isSystemOption: true)
@@ -174,11 +173,11 @@ struct CapeSelectionView: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(
                             isSelected ? Color.accentColor : Color.gray.opacity(0.3),
-                            lineWidth: isSelected ? 2 : 1
-                        )
+                            lineWidth: isSelected ? 2 : 1,
+                        ),
                 )
 
-            if let imageURL = imageURL {
+            if let imageURL {
                 CapeTextureView(imageURL: imageURL)
                     .id(imageURL).frame(width: 42, height: 62).clipped().cornerRadius(6)
             } else if isSystemOption {

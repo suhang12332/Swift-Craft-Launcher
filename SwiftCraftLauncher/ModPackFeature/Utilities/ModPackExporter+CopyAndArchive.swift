@@ -8,13 +8,12 @@
 import Foundation
 
 extension ModPackExporter {
-
     /// Copies selected resource files to the overrides directory during export.
     static func copyFiles(
         params: CopyFilesParams,
         copyCounter: CopyCounter,
         progressUpdater: ProgressUpdater,
-        progressCallback: ((ExportProgress) -> Void)?
+        progressCallback: ((ExportProgress) -> Void)?,
     ) async throws {
         try Task.checkCancellation()
 
@@ -36,33 +35,33 @@ extension ModPackExporter {
                         try ResourceProcessor.copyToOverrides(
                             file: file,
                             relativePath: relativePath,
-                            overridesDir: overridesDir
+                            overridesDir: overridesDir,
                         )
 
                         let (processed, total) = await copyCounter.increment()
                         let updatedProgress = await progressUpdater.advanceCopyProgress(
                             processed: processed,
                             total: total,
-                            currentFile: file.lastPathComponent
+                            currentFile: file.lastPathComponent,
                         )
                         progressCallback?(updatedProgress)
                     } catch {
                         Logger.shared.warning(
-                            "复制资源文件失败: \(file.lastPathComponent), 错误: \(error.localizedDescription)"
+                            "复制资源文件失败: \(file.lastPathComponent), 错误: \(error.localizedDescription)",
                         )
 
                         let (processed, total) = await copyCounter.increment()
                         let updatedProgress = await progressUpdater.advanceCopyProgress(
                             processed: processed,
                             total: total,
-                            currentFile: file.lastPathComponent
+                            currentFile: file.lastPathComponent,
                         )
                         progressCallback?(updatedProgress)
                     }
                 }
             }
 
-            for await _ in group {}
+            for await _ in group { }
         }
     }
 
@@ -72,7 +71,7 @@ extension ModPackExporter {
         tempDir: URL,
         outputPath: URL,
         progressUpdater: ProgressUpdater,
-        progressCallback: ((ExportProgress) -> Void)?
+        progressCallback: ((ExportProgress) -> Void)?,
     ) async throws {
         try Task.checkCancellation()
         let rootFileNames = try await writeManifestFile(params: params, tempDir: tempDir)
@@ -96,7 +95,6 @@ extension ModPackExporter {
 }
 
 extension ModPackExporter {
-
     /// Tracks scan and copy progress during export.
     actor ProgressUpdater {
         private var scanProgress: ExportProgress.ProgressItem?
@@ -109,7 +107,7 @@ extension ModPackExporter {
                     progress: existing.progress,
                     currentFile: existing.currentFile,
                     completed: existing.completed,
-                    total: total
+                    total: total,
                 )
             } else {
                 copyProgress = ExportProgress.ProgressItem(
@@ -117,7 +115,7 @@ extension ModPackExporter {
                     progress: 0.0,
                     currentFile: "",
                     completed: 0,
-                    total: total
+                    total: total,
                 )
             }
         }
@@ -125,7 +123,7 @@ extension ModPackExporter {
         func advanceScanProgress(
             processed: Int,
             total: Int,
-            currentFile: String
+            currentFile: String,
         ) -> ExportProgress {
             let safeTotal = max(total, 1)
             let scanItem = ExportProgress.ProgressItem(
@@ -133,7 +131,7 @@ extension ModPackExporter {
                 progress: Double(processed) / Double(safeTotal),
                 currentFile: currentFile,
                 completed: processed,
-                total: safeTotal
+                total: safeTotal,
             )
             scanProgress = scanItem
             return getFullProgress()
@@ -142,7 +140,7 @@ extension ModPackExporter {
         func advanceCopyProgress(
             processed: Int,
             total: Int,
-            currentFile: String
+            currentFile: String,
         ) -> ExportProgress {
             let safeTotal = max(total, 1)
             let copyItem = ExportProgress.ProgressItem(
@@ -150,7 +148,7 @@ extension ModPackExporter {
                 progress: Double(processed) / Double(safeTotal),
                 currentFile: currentFile,
                 completed: processed,
-                total: safeTotal
+                total: safeTotal,
             )
             copyProgress = copyItem
             return getFullProgress()
@@ -159,7 +157,7 @@ extension ModPackExporter {
         func getFullProgress() -> ExportProgress {
             ExportProgress(
                 scanProgress: scanProgress,
-                copyProgress: copyProgress
+                copyProgress: copyProgress,
             )
         }
     }

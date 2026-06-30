@@ -9,7 +9,6 @@ import Foundation
 
 /// Handles Minecraft token validation and refresh operations.
 extension MinecraftAuthService {
-
     @MainActor
     func refreshPlayerToken(for player: Player) async -> Result<Player, GlobalError> {
         isLoading = true
@@ -25,7 +24,7 @@ extension MinecraftAuthService {
             let globalError = GlobalError.authentication(
                 chineseMessage: "刷新 Token 时发生未知错误: \(error.localizedDescription)",
                 i18nKey: "error.authentication.unknown_refresh_error",
-                level: .popup
+                level: .popup,
             )
             return .failure(globalError)
         }
@@ -36,7 +35,7 @@ extension MinecraftAuthService {
             throw GlobalError.authentication(
                 chineseMessage: "缺少访问令牌，请重新登录",
                 i18nKey: "error.authentication.missing_token",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -55,7 +54,7 @@ extension MinecraftAuthService {
             throw GlobalError.authentication(
                 chineseMessage: "登录已过期，请重新登录该账户",
                 i18nKey: "error.authentication.token_expired_relogin_required",
-                level: .popup
+                level: .popup,
             )
         }
 
@@ -89,7 +88,7 @@ extension MinecraftAuthService {
         let xboxToken = try await getXboxLiveTokenThrowing(accessToken: refreshedTokens.accessToken)
         let minecraftToken = try await getMinecraftTokenThrowing(
             xboxToken: xboxToken.token,
-            uhs: xboxToken.displayClaims.xui.first?.uhs ?? ""
+            uhs: xboxToken.displayClaims.xui.first?.uhs ?? "",
         )
 
         var updatedProfile = player.profile
@@ -107,7 +106,7 @@ extension MinecraftAuthService {
                 userId: player.id,
                 accessToken: minecraftToken,
                 refreshToken: refreshedTokens.refreshToken ?? "",
-                xuid: xboxToken.displayClaims.xui.first?.uhs ?? ""
+                xuid: xboxToken.displayClaims.xui.first?.uhs ?? "",
             )
         }
 
@@ -125,7 +124,7 @@ extension MinecraftAuthService {
         let (data, statusCode) = try await APIClient.postUnchecked(
             url: url,
             body: APIClient.formURLEncodedBody(from: bodyParameters),
-            headers: APIClient.DefaultHeaders.contentTypeFormURLEncodedUTF8
+            headers: APIClient.DefaultHeaders.contentTypeFormURLEncodedUTF8,
         )
 
         guard statusCode == 200 else {
@@ -136,20 +135,20 @@ extension MinecraftAuthService {
                     throw GlobalError.authentication(
                         chineseMessage: "刷新令牌已过期或无效",
                         i18nKey: "error.authentication.invalid_refresh_token",
-                        level: .notification
+                        level: .notification,
                     )
                 default:
                     throw GlobalError.authentication(
                         chineseMessage: "刷新令牌错误: \(error)",
                         i18nKey: "error.authentication.refresh_token_error",
-                        level: .notification
+                        level: .notification,
                     )
                 }
             }
             throw GlobalError.authentication(
                 chineseMessage: "刷新访问令牌失败: HTTP \(statusCode)",
                 i18nKey: "error.authentication.refresh_token_request_failed",
-                level: .notification
+                level: .notification,
             )
         }
         return try JSONDecoder().decode(TokenResponse.self, from: data)
@@ -163,7 +162,7 @@ extension MinecraftAuthService {
         let notification = GlobalError.authentication(
             chineseMessage: "玩家 \(player.name) 的登录已过期，请在玩家管理中重新登录该账户后再启动游戏",
             i18nKey: "error.authentication.reauth_required",
-            level: .notification
+            level: .notification,
         )
 
         AppServices.errorHandler.handle(notification)

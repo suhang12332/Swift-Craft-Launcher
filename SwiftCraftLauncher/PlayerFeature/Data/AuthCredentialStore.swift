@@ -47,7 +47,7 @@ class AuthCredentialStore {
     /// - Parameter userId: The identifier of the credential to delete.
     /// - Returns: `true` if the credential was deleted successfully.
     func deleteCredential(userId: String) -> Bool {
-        return KeychainManager.delete(account: userId, key: AppConstants.KeychainKeys.authCredential)
+        KeychainManager.delete(account: userId, key: AppConstants.KeychainKeys.authCredential)
     }
 
     /// Deletes all credentials associated with the given user.
@@ -55,7 +55,7 @@ class AuthCredentialStore {
     /// - Parameter userId: The user whose credentials should be removed.
     /// - Returns: `true` if the credentials were deleted successfully.
     func deleteAllCredentials(userId: String) -> Bool {
-        return KeychainManager.deleteAll(account: userId)
+        KeychainManager.deleteAll(account: userId)
     }
 
     /// Updates an existing credential in the Keychain.
@@ -63,6 +63,6 @@ class AuthCredentialStore {
     /// - Parameter credential: The updated credential.
     /// - Returns: `true` if the credential was updated successfully.
     func updateCredential(_ credential: AuthCredential) -> Bool {
-        return saveCredential(credential)
+        saveCredential(credential)
     }
 }

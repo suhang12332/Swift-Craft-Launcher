@@ -6,8 +6,8 @@
 //
 
 import CFModrinthAdapterKit
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModrinthServiceTests: XCTestCase {
     private func makeFile(filename: String, primary: Bool) -> ModrinthVersionFile {
@@ -17,7 +17,7 @@ final class ModrinthServiceTests: XCTestCase {
             filename: filename,
             primary: primary,
             size: 1024,
-            fileType: nil
+            fileType: nil,
         )
     }
 

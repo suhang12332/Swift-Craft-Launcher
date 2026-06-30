@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A row displaying download progress with title, progress bar, and file count.
+// A row displaying download progress with title, progress bar, and file count.
 import SwiftUI
 
 struct DownloadProgressRow: View {
@@ -21,7 +21,7 @@ struct DownloadProgressRow: View {
             HStack {
                 Text(title)
                     .font(.headline)
-                if let version = version, !version.isEmpty {
+                if let version, !version.isEmpty {
                     Text(version)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
@@ -33,14 +33,14 @@ struct DownloadProgressRow: View {
             }
             ProgressView(value: progress).animation(
                 .easeOut(duration: 0.5),
-                value: progress
+                value: progress,
             )
             HStack {
                 Text(
                     String(
                         format: "download.current.file".localized(),
-                        currentFile
-                    )
+                        currentFile,
+                    ),
                 )
                 .font(.caption)
                 .foregroundColor(.secondary)
@@ -50,8 +50,8 @@ struct DownloadProgressRow: View {
                     String(
                         format: "download.files".localized(),
                         completed,
-                        total
-                    )
+                        total,
+                    ),
                 )
                 .font(.caption)
                 .foregroundColor(.secondary)

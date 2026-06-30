@@ -9,7 +9,6 @@ import Foundation
 
 /// Provides project detail and version retrieval for Modrinth and CurseForge projects.
 extension ModrinthService {
-
     static func fetchProjectDetails(id: String, type: String = "") async -> ModrinthProjectDetail? {
         if id.hasPrefix("cf-") {
             return await CurseForgeService.fetchProjectDetailsAsModrinth(id: id)
@@ -102,14 +101,14 @@ extension ModrinthService {
         id: String,
         selectedVersions: [String],
         selectedLoaders: [String],
-        type: String
+        type: String,
     ) async throws -> [ModrinthProjectDetailVersion] {
         if id.hasPrefix("cf-") {
             return try await CurseForgeService.fetchProjectVersionsFilterAsModrinth(
                 id: id,
                 selectedVersions: selectedVersions,
                 selectedLoaders: selectedLoaders,
-                type: type
+                type: type,
             )
         }
 

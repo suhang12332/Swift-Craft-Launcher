@@ -21,7 +21,7 @@ final class ServerAddressEditActionViewModel: ObservableObject {
         self.serverAddressService = serverAddressService
     }
 
-    struct SaveRequest: Sendable {
+    struct SaveRequest {
         let existing: ServerAddress?
         let gameName: String
         let name: String
@@ -35,19 +35,19 @@ final class ServerAddressEditActionViewModel: ObservableObject {
         let trimmedName = request.name.trimmingCharacters(in: .whitespaces)
         let trimmedAddress = request.address.trimmingCharacters(in: .whitespaces)
 
-        guard !trimmedName.isEmpty && !trimmedAddress.isEmpty else {
+        guard !trimmedName.isEmpty, !trimmedAddress.isEmpty else {
             errorMessage = "saveinfo.server.invalid_fields".localized()
             showError = true
             return
         }
 
-        guard !isSaving && !isDeleting else { return }
+        guard !isSaving, !isDeleting else { return }
         isSaving = true
 
         Task { [weak self] in
             guard let self else { return }
             do {
-                var currentServers = try await self.serverAddressService.loadServerAddresses(for: request.gameName)
+                var currentServers = try await serverAddressService.loadServerAddresses(for: request.gameName)
 
                 if let existingServer = request.existing {
                     let updatedServer = ServerAddress(
@@ -57,7 +57,7 @@ final class ServerAddressEditActionViewModel: ObservableObject {
                         port: request.port,
                         hidden: request.hidden,
                         icon: existingServer.icon,
-                        acceptTextures: request.acceptTextures
+                        acceptTextures: request.acceptTextures,
                     )
 
                     if let index = currentServers.firstIndex(where: { $0.id == existingServer.id }) {
@@ -72,20 +72,20 @@ final class ServerAddressEditActionViewModel: ObservableObject {
                         port: request.port,
                         hidden: request.hidden,
                         icon: nil,
-                        acceptTextures: request.acceptTextures
+                        acceptTextures: request.acceptTextures,
                     )
                     currentServers.append(newServer)
                 }
 
-                try await self.serverAddressService.saveServerAddresses(currentServers, for: request.gameName)
+                try await serverAddressService.saveServerAddresses(currentServers, for: request.gameName)
 
-                self.isSaving = false
+                isSaving = false
                 dismiss()
                 onRefresh?()
             } catch {
-                self.isSaving = false
-                self.errorMessage = error.localizedDescription
-                self.showError = true
+                isSaving = false
+                errorMessage = error.localizedDescription
+                showError = true
             }
         }
     }
@@ -94,26 +94,26 @@ final class ServerAddressEditActionViewModel: ObservableObject {
         serverToDelete: ServerAddress?,
         gameName: String,
         dismiss: @escaping () -> Void,
-        onRefresh: (() -> Void)?
+        onRefresh: (() -> Void)?,
     ) {
         guard let serverToDelete else { return }
-        guard !isSaving && !isDeleting else { return }
+        guard !isSaving, !isDeleting else { return }
 
         isDeleting = true
         Task { [weak self] in
             guard let self else { return }
             do {
-                var currentServers = try await self.serverAddressService.loadServerAddresses(for: gameName)
+                var currentServers = try await serverAddressService.loadServerAddresses(for: gameName)
                 currentServers.removeAll { $0.id == serverToDelete.id }
-                try await self.serverAddressService.saveServerAddresses(currentServers, for: gameName)
+                try await serverAddressService.saveServerAddresses(currentServers, for: gameName)
 
-                self.isDeleting = false
+                isDeleting = false
                 dismiss()
                 onRefresh?()
             } catch {
-                self.isDeleting = false
-                self.errorMessage = error.localizedDescription
-                self.showError = true
+                isDeleting = false
+                errorMessage = error.localizedDescription
+                showError = true
             }
         }
     }

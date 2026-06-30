@@ -46,7 +46,7 @@ struct ServerAddress: Codable, Identifiable, Hashable {
         port: Int = 25565,
         hidden: Bool = false,
         icon: String? = nil,
-        acceptTextures: Bool = false
+        acceptTextures: Bool = false,
     ) {
         self.id = id
         self.name = name
@@ -59,6 +59,6 @@ struct ServerAddress: Codable, Identifiable, Hashable {
 
     /// The full server address including port.
     var fullAddress: String {
-        return "\(address):\(String(port))"
+        "\(address):\(String(port))"
     }
 }

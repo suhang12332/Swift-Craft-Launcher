@@ -5,17 +5,16 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class PlayerSkinServiceTests: XCTestCase {
-
     func testHasSkinChanges_withSelectedData_alwaysTrue() {
         let data = Data("skin".utf8)
         XCTAssertTrue(PlayerSkinService.hasSkinChanges(
             selectedSkinData: data,
             currentModel: .classic,
-            originalModel: .classic
+            originalModel: .classic,
         ))
     }
 
@@ -23,7 +22,7 @@ final class PlayerSkinServiceTests: XCTestCase {
         XCTAssertFalse(PlayerSkinService.hasSkinChanges(
             selectedSkinData: nil,
             currentModel: .classic,
-            originalModel: .classic
+            originalModel: .classic,
         ))
     }
 
@@ -31,7 +30,7 @@ final class PlayerSkinServiceTests: XCTestCase {
         XCTAssertTrue(PlayerSkinService.hasSkinChanges(
             selectedSkinData: nil,
             currentModel: .slim,
-            originalModel: .classic
+            originalModel: .classic,
         ))
     }
 
@@ -39,7 +38,7 @@ final class PlayerSkinServiceTests: XCTestCase {
         XCTAssertTrue(PlayerSkinService.hasSkinChanges(
             selectedSkinData: nil,
             currentModel: .slim,
-            originalModel: nil
+            originalModel: nil,
         ))
     }
 
@@ -47,7 +46,7 @@ final class PlayerSkinServiceTests: XCTestCase {
         XCTAssertFalse(PlayerSkinService.hasSkinChanges(
             selectedSkinData: nil,
             currentModel: .classic,
-            originalModel: nil
+            originalModel: nil,
         ))
     }
 
@@ -55,42 +54,42 @@ final class PlayerSkinServiceTests: XCTestCase {
         XCTAssertTrue(PlayerSkinService.hasSkinChanges(
             selectedSkinData: nil,
             currentModel: .classic,
-            originalModel: .slim
+            originalModel: .slim,
         ))
     }
 
     func testHasCapeChanges_bothNil_returnsFalse() {
         XCTAssertFalse(PlayerSkinService.hasCapeChanges(
             selectedCapeId: nil,
-            currentActiveCapeId: nil
+            currentActiveCapeId: nil,
         ))
     }
 
     func testHasCapeChanges_sameValue_returnsFalse() {
         XCTAssertFalse(PlayerSkinService.hasCapeChanges(
             selectedCapeId: "cape-1",
-            currentActiveCapeId: "cape-1"
+            currentActiveCapeId: "cape-1",
         ))
     }
 
     func testHasCapeChanges_differentValues_returnsTrue() {
         XCTAssertTrue(PlayerSkinService.hasCapeChanges(
             selectedCapeId: "cape-1",
-            currentActiveCapeId: "cape-2"
+            currentActiveCapeId: "cape-2",
         ))
     }
 
     func testHasCapeChanges_selectedNil_currentNot_returnsTrue() {
         XCTAssertTrue(PlayerSkinService.hasCapeChanges(
             selectedCapeId: nil,
-            currentActiveCapeId: "cape-1"
+            currentActiveCapeId: "cape-1",
         ))
     }
 
     func testHasCapeChanges_selectedNot_currentNil_returnsTrue() {
         XCTAssertTrue(PlayerSkinService.hasCapeChanges(
             selectedCapeId: "cape-1",
-            currentActiveCapeId: nil
+            currentActiveCapeId: nil,
         ))
     }
 
@@ -105,7 +104,7 @@ final class PlayerSkinServiceTests: XCTestCase {
             skins: [],
             capes: [],
             accessToken: "token",
-            authXuid: "xuid"
+            authXuid: "xuid",
         )
         XCTAssertNil(PlayerSkinService.getActiveCapeId(from: profile))
     }
@@ -121,7 +120,7 @@ final class PlayerSkinServiceTests: XCTestCase {
             skins: [],
             capes: capes,
             accessToken: "token",
-            authXuid: "xuid"
+            authXuid: "xuid",
         )
         XCTAssertNil(PlayerSkinService.getActiveCapeId(from: profile))
     }
@@ -137,7 +136,7 @@ final class PlayerSkinServiceTests: XCTestCase {
             skins: [],
             capes: capes,
             accessToken: "token",
-            authXuid: "xuid"
+            authXuid: "xuid",
         )
         XCTAssertEqual(PlayerSkinService.getActiveCapeId(from: profile), "cape-active")
     }
@@ -153,7 +152,7 @@ final class PlayerSkinServiceTests: XCTestCase {
             skins: [],
             capes: capes,
             accessToken: "token",
-            authXuid: "xuid"
+            authXuid: "xuid",
         )
         XCTAssertEqual(PlayerSkinService.getActiveCapeId(from: profile), "cape-active-1")
     }
@@ -163,7 +162,7 @@ final class PlayerSkinServiceTests: XCTestCase {
             skinURL: "https://example.com/skin.png",
             model: .slim,
             capeURL: "https://example.com/cape.png",
-            fetchedAt: Date(timeIntervalSince1970: 1000000)
+            fetchedAt: Date(timeIntervalSince1970: 1_000_000),
         )
         let data = try JSONEncoder().encode(info)
         let decoded = try JSONDecoder().decode(PlayerSkinService.PublicSkinInfo.self, from: data)
@@ -177,7 +176,7 @@ final class PlayerSkinServiceTests: XCTestCase {
             skinURL: nil,
             model: .classic,
             capeURL: nil,
-            fetchedAt: Date()
+            fetchedAt: Date(),
         )
         let data = try JSONEncoder().encode(info)
         let decoded = try JSONDecoder().decode(PlayerSkinService.PublicSkinInfo.self, from: data)
@@ -189,10 +188,10 @@ final class PlayerSkinServiceTests: XCTestCase {
     func testPublicSkinInfo_equatable() {
         let date = Date()
         let a = PlayerSkinService.PublicSkinInfo(
-            skinURL: "url", model: .classic, capeURL: nil, fetchedAt: date
+            skinURL: "url", model: .classic, capeURL: nil, fetchedAt: date,
         )
         let b = PlayerSkinService.PublicSkinInfo(
-            skinURL: "url", model: .classic, capeURL: nil, fetchedAt: date
+            skinURL: "url", model: .classic, capeURL: nil, fetchedAt: date,
         )
         XCTAssertEqual(a, b)
     }

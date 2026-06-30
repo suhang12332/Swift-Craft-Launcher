@@ -40,19 +40,19 @@ final class AcknowledgementsViewModel: ObservableObject {
                 try Task.checkCancellation()
                 guard !Task.isCancelled else { return }
 
-                self.libraries = decodedLibraries
-                self.isLoading = false
-                self.loadFailed = false
+                libraries = decodedLibraries
+                isLoading = false
+                loadFailed = false
                 Logger.shared.info(
                     "Successfully loaded",
                     decodedLibraries.count,
-                    "libraries from GitHubService"
+                    "libraries from GitHubService",
                 )
             } catch {
                 guard !Task.isCancelled else { return }
                 Logger.shared.error("Failed to load libraries from GitHubService:", error)
-                self.loadFailed = true
-                self.isLoading = false
+                loadFailed = true
+                isLoading = false
             }
         }
     }

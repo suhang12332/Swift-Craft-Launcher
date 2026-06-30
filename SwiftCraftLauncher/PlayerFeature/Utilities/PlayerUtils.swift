@@ -26,7 +26,7 @@ enum PlayerUtils {
             throw GlobalError.player(
                 chineseMessage: "无效的用户名: 用户名不能为空",
                 i18nKey: "error.player.invalid_username_empty",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -34,7 +34,7 @@ enum PlayerUtils {
             throw GlobalError.validation(
                 chineseMessage: "用户名编码失败: \(username)",
                 i18nKey: "error.validation.username_encode_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -66,7 +66,7 @@ enum PlayerUtils {
         let uStr = String(cleanUUID.dropFirst(16).prefix(16))
         guard let i = UInt64(iStr, radix: 16), let u = UInt64(uStr, radix: 16) else { return nil }
         let f = i ^ u
-        let mixedBits = (f ^ (f >> 32)) & 0xffff_ffff
+        let mixedBits = (f ^ (f >> 32)) & 0xFFFF_FFFF
         let ii = Int32(bitPattern: UInt32(truncatingIfNeeded: mixedBits))
         return (Int(ii) % names.count + names.count) % names.count
     }

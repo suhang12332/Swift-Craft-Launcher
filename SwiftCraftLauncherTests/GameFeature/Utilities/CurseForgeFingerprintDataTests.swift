@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CurseForgeFingerprintDataTests: XCTestCase {
-
     func testFingerprint_deterministic() {
         let data = Data("deterministic-test-content".utf8)
         let h1 = CurseForgeFingerprint.fingerprint(data: data)
@@ -28,7 +27,7 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         let withoutTabs = Data("helloworld".utf8)
         XCTAssertEqual(
             CurseForgeFingerprint.fingerprint(data: withTabs),
-            CurseForgeFingerprint.fingerprint(data: withoutTabs)
+            CurseForgeFingerprint.fingerprint(data: withoutTabs),
         )
     }
 
@@ -37,7 +36,7 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         let withoutNewlines = Data("helloworld".utf8)
         XCTAssertEqual(
             CurseForgeFingerprint.fingerprint(data: withNewlines),
-            CurseForgeFingerprint.fingerprint(data: withoutNewlines)
+            CurseForgeFingerprint.fingerprint(data: withoutNewlines),
         )
     }
 
@@ -46,7 +45,7 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         let withoutCR = Data("helloworld".utf8)
         XCTAssertEqual(
             CurseForgeFingerprint.fingerprint(data: withCR),
-            CurseForgeFingerprint.fingerprint(data: withoutCR)
+            CurseForgeFingerprint.fingerprint(data: withoutCR),
         )
     }
 
@@ -55,7 +54,7 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         let withoutSpaces = Data("helloworld".utf8)
         XCTAssertEqual(
             CurseForgeFingerprint.fingerprint(data: withSpaces),
-            CurseForgeFingerprint.fingerprint(data: withoutSpaces)
+            CurseForgeFingerprint.fingerprint(data: withoutSpaces),
         )
     }
 
@@ -64,7 +63,7 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         let clean = Data("helloworld".utf8)
         XCTAssertEqual(
             CurseForgeFingerprint.fingerprint(data: mixed),
-            CurseForgeFingerprint.fingerprint(data: clean)
+            CurseForgeFingerprint.fingerprint(data: clean),
         )
     }
 
@@ -83,12 +82,12 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         let empty = Data()
         XCTAssertEqual(
             CurseForgeFingerprint.fingerprint(data: whitespace),
-            CurseForgeFingerprint.fingerprint(data: empty)
+            CurseForgeFingerprint.fingerprint(data: empty),
         )
     }
 
     func testFingerprint_binaryData() {
-        let bytes: [UInt8] = Array(0...255)
+        let bytes: [UInt8] = Array(0 ... 255)
         let data = Data(bytes)
         let hash = CurseForgeFingerprint.fingerprint(data: data)
         XCTAssertNotEqual(hash, 0)
@@ -99,7 +98,7 @@ final class CurseForgeFingerprintDataTests: XCTestCase {
         let bytesWithoutSpace: [UInt8] = [0x41, 0x42]
         XCTAssertEqual(
             CurseForgeFingerprint.fingerprint(data: Data(bytesWithSpace)),
-            CurseForgeFingerprint.fingerprint(data: Data(bytesWithoutSpace))
+            CurseForgeFingerprint.fingerprint(data: Data(bytesWithoutSpace)),
         )
     }
 

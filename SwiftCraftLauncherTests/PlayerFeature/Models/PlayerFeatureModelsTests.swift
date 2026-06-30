@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class PlayerFeatureModelsTests: XCTestCase {
-
     func testPlayer_init_profile() {
         let profile = UserProfile(id: "id-1", name: "Steve", avatar: "steve")
         let player = Player(profile: profile)
@@ -95,7 +94,7 @@ final class PlayerFeatureModelsTests: XCTestCase {
             originalFileName: "my skin.png",
             sha1: "abc123",
             model: .classic,
-            lastUsedAt: Date()
+            lastUsedAt: Date(),
         )
 
         XCTAssertEqual(item.displayName, "my skin.png")
@@ -106,7 +105,7 @@ final class PlayerFeatureModelsTests: XCTestCase {
             originalFileName: "   ",
             sha1: "def456",
             model: .classic,
-            lastUsedAt: Date()
+            lastUsedAt: Date(),
         )
 
         XCTAssertEqual(item.displayName, "def456.png")
@@ -117,7 +116,7 @@ final class PlayerFeatureModelsTests: XCTestCase {
             originalFileName: "",
             sha1: "ghi789",
             model: .slim,
-            lastUsedAt: Date()
+            lastUsedAt: Date(),
         )
 
         XCTAssertEqual(item.displayName, "ghi789.png")
@@ -128,7 +127,7 @@ final class PlayerFeatureModelsTests: XCTestCase {
             originalFileName: "skin.png",
             sha1: "hash-value",
             model: .classic,
-            lastUsedAt: Date()
+            lastUsedAt: Date(),
         )
 
         XCTAssertEqual(item.id, "hash-value")
@@ -139,7 +138,7 @@ final class PlayerFeatureModelsTests: XCTestCase {
             originalFileName: "skin.png",
             sha1: "abc123",
             model: .classic,
-            lastUsedAt: Date()
+            lastUsedAt: Date(),
         )
 
         XCTAssertTrue(item.fileURL.absoluteString.contains("abc123.png"))
@@ -150,7 +149,7 @@ final class PlayerFeatureModelsTests: XCTestCase {
             originalFileName: "test.png",
             sha1: "sha1hash",
             model: .slim,
-            lastUsedAt: Date(timeIntervalSince1970: 1700000000)
+            lastUsedAt: Date(timeIntervalSince1970: 1_700_000_000),
         )
 
         let encoded = try JSONEncoder().encode(original)

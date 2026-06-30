@@ -45,7 +45,7 @@ final class ModrinthSearchViewModel: ObservableObject {
         filterOptions: FilterOptions,
         page: Int = 1,
         append: Bool = false,
-        dataSource: DataSource = .modrinth
+        dataSource: DataSource = .modrinth,
     ) async {
         searchTask?.cancel()
 
@@ -63,7 +63,7 @@ final class ModrinthSearchViewModel: ObservableObject {
                 let offset = (page - 1) * pageSize
                 let facets = buildFacets(
                     projectType: projectType,
-                    filterOptions: filterOptions
+                    filterOptions: filterOptions,
                 )
 
                 try Task.checkCancellation()
@@ -74,7 +74,7 @@ final class ModrinthSearchViewModel: ObservableObject {
                         facets: facets,
                         offset: offset,
                         limit: pageSize,
-                        query: query
+                        query: query,
                     )
                 } else {
                     let cfParams = ModrinthToCurseForgeSearchAdapter.convertToSearchParams(
@@ -83,7 +83,7 @@ final class ModrinthSearchViewModel: ObservableObject {
                         categories: filterOptions.categories,
                         resolutions: filterOptions.resolutions,
                         loaders: filterOptions.loaders,
-                        query: query
+                        query: query,
                     )
                     let cfResult = await CurseForgeService.searchProjects(
                         gameId: 432, // Minecraft
@@ -96,7 +96,7 @@ final class ModrinthSearchViewModel: ObservableObject {
                         modLoaderType: nil,
                         modLoaderTypes: cfParams.modLoaderTypes,
                         index: offset,
-                        pageSize: pageSize
+                        pageSize: pageSize,
                     )
                     result = CFToModrinthAdapter.convertSearchResult(cfResult)
                 }

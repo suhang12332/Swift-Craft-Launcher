@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class PlayerFeatureExtendedTests: XCTestCase {
-
     func testSkinSelectionStore_select_setsId() {
         let store = SkinSelectionStore()
         store.select("player1")
@@ -140,7 +139,7 @@ final class PlayerFeatureExtendedTests: XCTestCase {
             bitsPerComponent: 8,
             bytesPerRow: Int(size.width) * 4,
             space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
         ) else {
             return nil
         }
@@ -158,7 +157,7 @@ final class PlayerFeatureExtendedTests: XCTestCase {
             bitsPerComponent: 8,
             bytesPerRow: Int(size.width) * 4,
             space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
         ) else {
             return nil
         }

@@ -10,7 +10,6 @@ import Foundation
 
 /// Manages Minecraft version file downloads, verification, and directory setup.
 class MinecraftFileManager {
-
     private let fileManager = FileManager.default
     let coreFilesCount = NSLockingCounter()
     let resourceFilesCount = NSLockingCounter()
@@ -42,25 +41,25 @@ class MinecraftFileManager {
             throw GlobalError.fileSystem(
                 chineseMessage: "清理游戏文件夹失败",
                 i18nKey: "error.filesystem.game_deletion_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
 
     func downloadVersionFiles(
         manifest: MinecraftVersionManifest,
-        gameName: String
+        gameName: String,
     ) async -> Bool {
         do {
             try await downloadVersionFilesThrowing(
                 manifest: manifest,
-                gameName: gameName
+                gameName: gameName,
             )
             return true
         } catch {
             let globalError = GlobalError.from(error)
             Logger.shared.error(
-                "下载 Minecraft 版本文件失败: \(globalError.chineseMessage)"
+                "下载 Minecraft 版本文件失败: \(globalError.chineseMessage)",
             )
             errorHandler.handle(globalError)
             return false
@@ -69,7 +68,7 @@ class MinecraftFileManager {
 
     func downloadVersionFilesThrowing(
         manifest: MinecraftVersionManifest,
-        gameName: String
+        gameName: String,
     ) async throws {
         try createDirectories(manifestId: manifest.id, gameName: gameName)
 
@@ -111,7 +110,7 @@ class MinecraftFileManager {
 
     func createDirectories(
         manifestId: String,
-        gameName: String
+        gameName: String,
     ) throws {
         let profileDirectory = AppPaths.profileDirectory(gameName: gameName)
         let directoriesToCreate =
@@ -131,13 +130,13 @@ class MinecraftFileManager {
             do {
                 try fileManager.createDirectory(
                     at: directory,
-                    withIntermediateDirectories: true
+                    withIntermediateDirectories: true,
                 )
             } catch {
                 throw GlobalError.fileSystem(
                     chineseMessage: "创建目录失败",
                     i18nKey: "error.filesystem.directory_creation_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -145,7 +144,7 @@ class MinecraftFileManager {
 
     func incrementCompletedFilesCount(
         fileName: String,
-        type: DownloadType
+        type: DownloadType,
     ) {
         let currentCount: Int
         let total: Int
@@ -164,7 +163,7 @@ class MinecraftFileManager {
 
     func verifyExistingFile(
         at url: URL,
-        expectedSha1: String
+        expectedSha1: String,
     ) async throws -> Bool {
         let fileSha1 = try await calculateFileSHA1(at: url)
         return fileSha1 == expectedSha1
@@ -179,19 +178,19 @@ class MinecraftFileManager {
         to destinationURL: URL,
         sha1: String?,
         fileNameForNotification: String? = nil,
-        type: DownloadType
+        type: DownloadType,
     ) async throws {
         do {
             _ = try await DownloadManager.downloadFile(
                 urlString: url.absoluteString,
                 destinationURL: destinationURL,
-                expectedSha1: sha1
+                expectedSha1: sha1,
             )
 
             incrementCompletedFilesCount(
                 fileName: fileNameForNotification
                     ?? destinationURL.lastPathComponent,
-                type: type
+                type: type,
             )
         } catch {
             if let globalError = error as? GlobalError {
@@ -200,7 +199,7 @@ class MinecraftFileManager {
                 throw GlobalError.download(
                     chineseMessage: "下载文件失败",
                     i18nKey: "error.download.file_download_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -211,7 +210,7 @@ class MinecraftFileManager {
     }
 
     func isLibraryAllowedOnOSX(_ rules: [Rule]?) -> Bool {
-        guard let rules = rules, !rules.isEmpty else { return true }
+        guard let rules, !rules.isEmpty else { return true }
         return MacRuleEvaluator.isAllowed(rules)
     }
 }

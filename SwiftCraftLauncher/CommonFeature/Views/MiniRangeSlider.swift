@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 private final class RangeSliderCell: NSSliderCell {
     enum ActiveKnob {
@@ -67,7 +67,7 @@ private final class RangeSliderCell: NSSliderCell {
         withDoubleValue(value) { super.knobRect(flipped: flipped) }
     }
 
-    override func drawBar(inside rect: NSRect, flipped: Bool) {
+    override func drawBar(inside _: NSRect, flipped: Bool) {
         let barRect = barRect(flipped: flipped)
 
         withDoubleValue(minValue) {
@@ -81,7 +81,7 @@ private final class RangeSliderCell: NSSliderCell {
             x: lowerKnobRect.midX,
             y: barRect.minY,
             width: upperKnobRect.midX - lowerKnobRect.midX,
-            height: barRect.height
+            height: barRect.height,
         )
 
         guard activeRect.width > 0 else { return }
@@ -97,7 +97,7 @@ private final class RangeSliderCell: NSSliderCell {
         }
     }
 
-    override func drawKnob(_ knobRect: NSRect) {
+    override func drawKnob(_: NSRect) {
         let flipped = controlView?.isFlipped ?? false
         withDoubleValue(lowerValue) {
             super.drawKnob(super.knobRect(flipped: flipped))
@@ -179,8 +179,8 @@ private final class RangeSliderCell: NSSliderCell {
     }
 
     private func calculatedMinimumGap() -> Double {
-        let track = self.trackRect
-        let visualKnobSize = max(self.knobThickness - 3, 0)
+        let track = trackRect
+        let visualKnobSize = max(knobThickness - 3, 0)
         let usableWidth = max(track.width - visualKnobSize, 1)
         return Double(visualKnobSize / usableWidth) * (maxValue - minValue)
     }
@@ -250,7 +250,7 @@ struct MiniRangeSlider: NSViewRepresentable {
         return slider
     }
 
-    func updateNSView(_ nsView: RangeNSSlider, context: Context) {
+    func updateNSView(_ nsView: RangeNSSlider, context _: Context) {
         var needsUpdate = false
 
         if abs(nsView.minValue - bounds.lowerBound) > 1e-10 {
@@ -283,7 +283,7 @@ struct MiniRangeSlider: NSViewRepresentable {
         }
 
         @objc func valueChanged(_ sender: RangeNSSlider) {
-            parent.range = sender.lowerValue...sender.upperValue
+            parent.range = sender.lowerValue ... sender.upperValue
         }
     }
 }

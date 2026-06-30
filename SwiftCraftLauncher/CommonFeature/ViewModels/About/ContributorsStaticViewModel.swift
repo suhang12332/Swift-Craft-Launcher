@@ -36,28 +36,28 @@ final class ContributorsStaticViewModel: ObservableObject {
             do {
                 let contributorsData: ContributorsData = try await gitHubService.fetchStaticContributors()
                 guard !Task.isCancelled else { return }
-                self.contributors = contributorsData.contributors.map { contributorData in
+                contributors = contributorsData.contributors.map { contributorData in
                     StaticContributor(
                         name: contributorData.name,
                         url: contributorData.url,
                         avatar: contributorData.avatar,
                         contributions: contributorData.contributions.compactMap {
                             Contribution(rawValue: "contributor.contribution.\($0)")
-                        }
+                        },
                     )
                 }
-                self.loaded = true
-                self.loadFailed = false
+                loaded = true
+                loadFailed = false
                 Logger.shared.info(
                     "Successfully loaded",
-                    self.contributors.count,
-                    "contributors from GitHubService"
+                    contributors.count,
+                    "contributors from GitHubService",
                 )
             } catch {
                 guard !Task.isCancelled else { return }
                 Logger.shared.error("Failed to load contributors from GitHubService:", error)
-                self.loadFailed = true
-                self.loaded = false
+                loadFailed = true
+                loaded = false
             }
         }
     }

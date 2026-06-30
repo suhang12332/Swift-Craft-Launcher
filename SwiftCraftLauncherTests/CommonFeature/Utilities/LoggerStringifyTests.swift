@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class LoggerStringifyTests: XCTestCase {
-
     func testStringify_string() {
         let result = Logger.stringify("hello")
         XCTAssertEqual(result, "hello")
@@ -55,7 +54,7 @@ final class LoggerStringifyTests: XCTestCase {
     }
 
     func testStringify_array_truncation() {
-        let array = Array(0..<150)
+        let array = Array(0 ..< 150)
         let result = Logger.stringify(array)
         XCTAssertTrue(result.hasPrefix("["))
         XCTAssertTrue(result.contains("... (50 more)"))
@@ -70,7 +69,7 @@ final class LoggerStringifyTests: XCTestCase {
 
     func testStringify_dictionary_truncation() {
         var dict: [String: Any] = [:]
-        for i in 0..<60 {
+        for i in 0 ..< 60 {
             dict["key\(i)"] = i
         }
         let result = Logger.stringify(dict)

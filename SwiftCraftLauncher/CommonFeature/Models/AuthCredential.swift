@@ -31,7 +31,7 @@ struct AuthCredential: Codable, Equatable {
         userId: String,
         accessToken: String,
         refreshToken: String,
-        xuid: String = ""
+        xuid: String = "",
     ) {
         self.userId = userId
         self.accessToken = accessToken

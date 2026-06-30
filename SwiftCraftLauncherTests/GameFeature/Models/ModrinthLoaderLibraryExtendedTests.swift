@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
-
     func testCodingKeys_includeInClasspath() throws {
         let json = """
         {
@@ -43,7 +42,7 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
             downloads: nil,
             name: "test:lib:1.0",
             includeInClasspath: true,
-            downloadable: false
+            downloadable: false,
         )
 
         let data = try JSONEncoder().encode(original)
@@ -59,7 +58,7 @@ final class ModrinthLoaderLibraryExtendedTests: XCTestCase {
             downloads: nil,
             name: "test:lib:1.0",
             includeInClasspath: true,
-            downloadable: true
+            downloadable: true,
         )
 
         XCTAssertNil(lib.downloads)

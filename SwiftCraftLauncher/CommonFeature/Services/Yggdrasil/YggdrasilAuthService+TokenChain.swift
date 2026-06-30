@@ -9,13 +9,12 @@ import Foundation
 
 /// Performs Yggdrasil OAuth2 token exchange and profile retrieval.
 extension YggdrasilAuthService {
-
     func exchangeCodeForToken(code: String, server: YggdrasilServerConfig) async throws -> TokenResponse {
         guard let tokenURL = server.tokenURL else {
             throw GlobalError.validation(
                 chineseMessage: "Token 地址无效",
                 i18nKey: "error.validation.yggdrasil_token_url_invalid",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -35,7 +34,7 @@ extension YggdrasilAuthService {
         let data = try await APIClient.post(
             url: tokenURL,
             body: APIClient.formURLEncodedBody(from: parameters),
-            headers: APIClient.DefaultHeaders.contentTypeFormURLEncoded
+            headers: APIClient.DefaultHeaders.contentTypeFormURLEncoded,
         )
 
         do {
@@ -44,20 +43,20 @@ extension YggdrasilAuthService {
             throw GlobalError.validation(
                 chineseMessage: "解析 Yggdrasil Token 响应失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.yggdrasil_token_response_parse_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
 
     func fetchProfileList(
         accessToken: String,
-        server: YggdrasilServerConfig
+        server: YggdrasilServerConfig,
     ) async throws -> [YggdrasilProfileCandidate] {
         guard let profileURL = server.profileURL else {
             throw GlobalError.validation(
                 chineseMessage: "玩家资料地址无效",
                 i18nKey: "error.validation.yggdrasil_profile_url_invalid",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -68,7 +67,7 @@ extension YggdrasilAuthService {
             throw GlobalError.validation(
                 chineseMessage: "未找到对应的 Yggdrasil 玩家资料解析器",
                 i18nKey: "error.validation.yggdrasil_profile_parse_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -79,7 +78,7 @@ extension YggdrasilAuthService {
         throw GlobalError.validation(
             chineseMessage: "解析 Yggdrasil 玩家资料失败：格式无法识别",
             i18nKey: "error.validation.yggdrasil_profile_parse_failed",
-            level: .notification
+            level: .notification,
         )
     }
 
@@ -91,7 +90,7 @@ extension YggdrasilAuthService {
         return try await parser.fetchMinecraftToken(
             profileId: profile.id,
             minecraftTokenURL: server.minecraftTokenURL,
-            oauthToken: profile.accessToken
+            oauthToken: profile.accessToken,
         )
     }
 }

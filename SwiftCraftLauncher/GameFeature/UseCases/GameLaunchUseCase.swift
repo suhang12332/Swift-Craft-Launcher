@@ -9,7 +9,6 @@ import Foundation
 
 /// A use case that manages launching and stopping a Minecraft game session.
 final class GameLaunchUseCase: ObservableObject {
-
     /// Launches a Minecraft game session.
     /// - Parameters:
     ///   - player: The current player, or `nil` to use default authentication parameters.

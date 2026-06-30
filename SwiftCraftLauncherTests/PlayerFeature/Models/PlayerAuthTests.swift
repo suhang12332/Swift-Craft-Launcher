@@ -5,17 +5,16 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class PlayerAuthTests: XCTestCase {
-
     func testAuthCredential_codable_nilExpiresAt() throws {
         let credential = AuthCredential(
             userId: "u1",
             accessToken: "access",
             refreshToken: "refresh",
-            xuid: ""
+            xuid: "",
         )
 
         let encoded = try JSONEncoder().encode(credential)
@@ -30,7 +29,7 @@ final class PlayerAuthTests: XCTestCase {
             userId: "u2",
             accessToken: "",
             refreshToken: "",
-            xuid: ""
+            xuid: "",
         )
 
         let encoded = try JSONEncoder().encode(credential)
@@ -45,7 +44,7 @@ final class PlayerAuthTests: XCTestCase {
             userId: "user/with=special&chars",
             accessToken: "at+with/special=chars",
             refreshToken: "rt&with%special",
-            xuid: "xuid-123"
+            xuid: "xuid-123",
         )
 
         let encoded = try JSONEncoder().encode(credential)
@@ -61,7 +60,7 @@ final class PlayerAuthTests: XCTestCase {
             userId: "u",
             accessToken: "at",
             refreshToken: "rt",
-            xuid: ""
+            xuid: "",
         )
 
         let encoded = try JSONEncoder().encode(credential)
@@ -75,7 +74,7 @@ final class PlayerAuthTests: XCTestCase {
             userId: "u",
             accessToken: "at",
             refreshToken: "rt",
-            xuid: ""
+            xuid: "",
         )
 
         let encoded = try JSONEncoder().encode(credential)
@@ -146,7 +145,7 @@ final class PlayerAuthTests: XCTestCase {
         // Simulate offline third-party server mapping
         OfflineUserServerMap.setServer(
             YggdrasilProfile(id: "uuid-4", name: "OfflineThirdParty", skins: [], capes: nil, accessToken: "token", refreshToken: "refresh", serverBaseURL: "https://yggdrasil-server.com"),
-            for: "uuid-4"
+            for: "uuid-4",
         )
 
         // With server map entry, remote avatar player is NOT considered online
@@ -196,7 +195,7 @@ final class PlayerAuthTests: XCTestCase {
         var player = Player(profile: profile)
         let original = player.lastPlayed
 
-        let newDate = Date(timeIntervalSince1970: 999999)
+        let newDate = Date(timeIntervalSince1970: 999_999)
         player.lastPlayed = newDate
         XCTAssertEqual(player.lastPlayed, newDate)
         XCTAssertNotEqual(player.lastPlayed, original)
@@ -266,7 +265,7 @@ final class PlayerAuthTests: XCTestCase {
             userId: "test-user",
             accessToken: "access-token",
             refreshToken: "refresh-token",
-            xuid: "test-xuid"
+            xuid: "test-xuid",
         )
 
         let encoded = try JSONEncoder().encode(credential)

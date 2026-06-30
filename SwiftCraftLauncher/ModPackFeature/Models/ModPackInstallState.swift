@@ -45,21 +45,21 @@ class ModPackInstallState: ObservableObject {
     func startInstallation(
         filesTotal: Int,
         dependenciesTotal: Int,
-        overridesTotal: Int = 0
+        overridesTotal: Int = 0,
     ) {
         self.filesTotal = filesTotal
         self.dependenciesTotal = dependenciesTotal
         if self.overridesTotal == 0 {
             self.overridesTotal = overridesTotal
         }
-        self.isInstalling = true
-        self.filesProgress = 0
-        self.dependenciesProgress = 0
-        if self.overridesCompleted == 0 {
-            self.overridesProgress = 0
+        isInstalling = true
+        filesProgress = 0
+        dependenciesProgress = 0
+        if overridesCompleted == 0 {
+            overridesProgress = 0
         }
-        self.filesCompleted = 0
-        self.dependenciesCompleted = 0
+        filesCompleted = 0
+        dependenciesCompleted = 0
     }
 
     /// Updates progress for a file download.
@@ -75,14 +75,14 @@ class ModPackInstallState: ObservableObject {
     func updateDependenciesProgress(
         dependencyName: String,
         completed: Int,
-        total: Int
+        total: Int,
     ) {
         currentDependency = dependencyName
         dependenciesCompleted = completed
         dependenciesTotal = total
         dependenciesProgress = calculateProgress(
             completed: completed,
-            total: total
+            total: total,
         )
         objectWillChange.send()
     }
@@ -91,14 +91,14 @@ class ModPackInstallState: ObservableObject {
     func updateOverridesProgress(
         overrideName: String,
         completed: Int,
-        total: Int
+        total: Int,
     ) {
         currentOverride = overrideName
         overridesCompleted = completed
         overridesTotal = total
         overridesProgress = calculateProgress(
             completed: completed,
-            total: total
+            total: total,
         )
         objectWillChange.send()
     }

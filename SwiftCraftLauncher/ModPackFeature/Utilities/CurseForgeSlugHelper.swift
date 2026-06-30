@@ -55,7 +55,7 @@ enum CurseForgeSlugHelper {
     /// - Parameter slug: The slug to validate.
     /// - Returns: `true` if the slug meets length and character requirements.
     static func isValid(_ slug: String) -> Bool {
-        guard slug.count >= 3 && slug.count <= 64 else {
+        guard slug.count >= 3, slug.count <= 64 else {
             return false
         }
 

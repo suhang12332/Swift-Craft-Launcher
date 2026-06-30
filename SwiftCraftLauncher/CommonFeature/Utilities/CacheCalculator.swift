@@ -16,7 +16,7 @@ struct CacheInfo: Equatable {
     init(fileCount: Int, totalSize: Int64) {
         self.fileCount = fileCount
         self.totalSize = totalSize
-        self.formattedSize = Self.formatFileSize(totalSize)
+        formattedSize = Self.formatFileSize(totalSize)
     }
 
     static func formatFileSize(_ size: Int64) -> String {
@@ -31,7 +31,7 @@ struct CacheInfo: Equatable {
 class CacheCalculator {
     static let shared = CacheCalculator()
 
-    private init() {}
+    private init() { }
 
     /// Calculates cache information for game resource metadata.
     /// - Throws: A ``GlobalError`` if the operation fails.
@@ -74,7 +74,7 @@ class CacheCalculator {
             throw GlobalError.fileSystem(
                 chineseMessage: "无法枚举目录: \(directory.path)",
                 i18nKey: "error.filesystem.directory_enumeration_failed",
-                level: .silent
+                level: .silent,
             )
         }
 
@@ -102,7 +102,6 @@ class CacheCalculator {
     /// - Returns: Cache information for the profile.
     /// - Throws: A ``GlobalError`` if the operation fails.
     func calculateProfileCacheInfo(gameName: String) throws -> CacheInfo {
-
         let subdirectories = AppPaths.profileSubdirectories
         var totalFileCount = 0
         var totalSize: Int64 = 0

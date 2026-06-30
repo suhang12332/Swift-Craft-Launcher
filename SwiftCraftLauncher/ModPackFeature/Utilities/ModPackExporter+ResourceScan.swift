@@ -8,7 +8,6 @@
 import Foundation
 
 extension ModPackExporter {
-
     /// The result of processing a single selected resource during export.
     struct SelectedResourceProcessResult {
         let indexFile: ModrinthIndexFile?
@@ -41,7 +40,7 @@ extension ModPackExporter {
         totalResources: Int,
         exportFormat: ModPackExportFormat,
         progressUpdater: ProgressUpdater,
-        progressCallback: ((ExportProgress) -> Void)?
+        progressCallback: ((ExportProgress) -> Void)?,
     ) async -> SelectedResourcesResult {
         var indexFiles: [ModrinthIndexFile] = []
         var curseForgeFiles: [CurseForgeManifestBuilder.ManifestFile] = []
@@ -75,14 +74,14 @@ extension ModPackExporter {
                             curseForgeModListItem: nil,
                             shouldCopyToOverrides: false,
                             sourceFile: file,
-                            relativePath: relativePath
+                            relativePath: relativePath,
                         )
                     }
                     let result = await identifyResourceByFormat(
                         file: file,
                         relativePath: relativePath,
                         gameDirectory: gameDirectory,
-                        exportFormat: exportFormat
+                        exportFormat: exportFormat,
                     )
 
                     let processed = await processedCounter.increment()
@@ -90,7 +89,7 @@ extension ModPackExporter {
                     let updatedProgress = await progressUpdater.advanceScanProgress(
                         processed: processed,
                         total: scanTotal,
-                        currentFile: result.sourceFile.lastPathComponent
+                        currentFile: result.sourceFile.lastPathComponent,
                     )
                     progressCallback?(updatedProgress)
 
@@ -116,7 +115,7 @@ extension ModPackExporter {
                 indexFiles: indexFiles,
                 curseForgeFiles: curseForgeFiles,
                 curseForgeModListItems: curseForgeModListItems,
-                filesToCopy: filesToCopy
+                filesToCopy: filesToCopy,
             )
         }
     }
@@ -125,7 +124,7 @@ extension ModPackExporter {
         file: URL,
         relativePath: String,
         gameDirectory: URL,
-        exportFormat: ModPackExportFormat
+        exportFormat: ModPackExportFormat,
     ) async -> SelectedResourceProcessResult {
         switch exportFormat {
         case .modrinth:
@@ -134,7 +133,7 @@ extension ModPackExporter {
             return await identifyCurseForgeResource(
                 file: file,
                 relativePath: relativePath,
-                gameDirectory: gameDirectory
+                gameDirectory: gameDirectory,
             )
         }
     }
@@ -231,7 +230,7 @@ extension ModPackExporter {
                 if let enumerator = fm.enumerator(
                     at: url,
                     includingPropertiesForKeys: [.isRegularFileKey],
-                    options: [.skipsHiddenFiles]
+                    options: [.skipsHiddenFiles],
                 ) {
                     for case let fileURL as URL in enumerator {
                         if let isRegularFile = try? fileURL.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile,

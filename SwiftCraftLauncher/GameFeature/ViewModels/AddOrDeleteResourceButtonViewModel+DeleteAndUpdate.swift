@@ -20,20 +20,20 @@ extension AddOrDeleteResourceButtonViewModel {
             let globalError = GlobalError.configuration(
                 chineseMessage: "无法删除文件：不支持删除此类型的资源",
                 i18nKey: "error.configuration.delete_file_failed",
-                level: .notification
+                level: .notification,
             )
             Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
             return
         }
 
-        guard let gameInfo = gameInfo,
+        guard let gameInfo,
               let resourceDir = AppPaths.resourceDirectory(for: query, gameName: gameInfo.gameName)
         else {
             let globalError = GlobalError.configuration(
                 chineseMessage: "无法删除文件：游戏信息或资源目录无效",
                 i18nKey: "error.configuration.delete_file_failed",
-                level: .notification
+                level: .notification,
             )
             Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
@@ -44,7 +44,7 @@ extension AddOrDeleteResourceButtonViewModel {
             let globalError = GlobalError.resource(
                 chineseMessage: "无法删除文件：缺少文件名信息",
                 i18nKey: "error.resource.file_name_missing",
-                level: .notification
+                level: .notification,
             )
             Logger.shared.error("删除文件失败: \(globalError.chineseMessage)")
             errorHandler.handle(globalError)
@@ -85,7 +85,7 @@ extension AddOrDeleteResourceButtonViewModel {
     }
 
     func toggleDisableState() {
-        guard let gameInfo = gameInfo,
+        guard let gameInfo,
               let resourceDir = AppPaths.resourceDirectory(for: query, gameName: gameInfo.gameName)
         else {
             Logger.shared.error("切换资源启用状态失败：资源目录不存在")
@@ -101,13 +101,13 @@ extension AddOrDeleteResourceButtonViewModel {
         do {
             let newFileName = try ResourceEnableDisableManager.toggleDisableState(
                 fileName: fileName,
-                resourceDir: resourceDir
+                resourceDir: resourceDir,
             )
             currentFileName = newFileName
             syncDisableState(using: newFileName)
             onToggleDisableState?(isDisabled)
 
-            if !isDisabled && type == false {
+            if !isDisabled, type == false {
                 checkForUpdate()
             }
         } catch {
@@ -120,10 +120,10 @@ extension AddOrDeleteResourceButtonViewModel {
     }
 
     func checkForUpdate() {
-        guard let gameInfo = gameInfo,
+        guard let gameInfo,
               type == false,
               !isDisabled,
-              !project.projectId.hasPrefix("local_") && !project.projectId.hasPrefix("file_")
+              !project.projectId.hasPrefix("local_"), !project.projectId.hasPrefix("file_")
         else { return }
 
         Task {
@@ -131,7 +131,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 projectId: project.projectId,
                 gameInfo: gameInfo,
                 resourceType: query,
-                installedFileName: effectiveFileName
+                installedFileName: effectiveFileName,
             )
             if result.hasUpdate {
                 addButtonState = .update
@@ -156,7 +156,7 @@ extension AddOrDeleteResourceButtonViewModel {
             throw GlobalError.resource(
                 chineseMessage: "文件不存在: \(fileURL.lastPathComponent)",
                 i18nKey: "error.resource.file_not_found",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -177,7 +177,7 @@ extension AddOrDeleteResourceButtonViewModel {
                 chineseMessage:
                     "删除文件失败: \(fileURL.lastPathComponent), 错误: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.file_deletion_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }

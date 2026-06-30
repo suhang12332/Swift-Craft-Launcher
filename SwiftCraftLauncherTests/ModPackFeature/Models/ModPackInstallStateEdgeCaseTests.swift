@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 @MainActor
 final class ModPackInstallStateEdgeCaseTests: XCTestCase {
-
     func testUpdateFilesProgress_zeroTotal_progressZero() {
         let state = ModPackInstallState()
         state.updateFilesProgress(fileName: "mod.jar", completed: 5, total: 0)

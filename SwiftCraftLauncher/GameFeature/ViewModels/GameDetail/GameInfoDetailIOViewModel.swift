@@ -16,7 +16,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
 
     init(
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        modScanner: ModScanner = AppServices.modScanner
+        modScanner: ModScanner = AppServices.modScanner,
     ) {
         self.errorHandler = errorHandler
         self.modScanner = modScanner
@@ -49,12 +49,12 @@ final class GameInfoDetailIOViewModel: ObservableObject {
     /// Saves a game icon from a file picker result, returning whether the operation succeeded.
     func saveGameIcon(from result: Result<[URL], Error>, gameName: String) async -> Bool {
         switch result {
-        case .success(let urls):
+        case let .success(urls):
             guard let url = urls.first else {
                 let globalError = GlobalError.validation(
                     chineseMessage: "未选择文件",
                     i18nKey: "error.validation.no_file_selected",
-                    level: .notification
+                    level: .notification,
                 )
                 errorHandler.handle(globalError)
                 return false
@@ -64,7 +64,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
                 let globalError = GlobalError.fileSystem(
                     chineseMessage: "无法访问所选文件",
                     i18nKey: "error.filesystem.file_access_failed",
-                    level: .notification
+                    level: .notification,
                 )
                 errorHandler.handle(globalError)
                 return false
@@ -80,7 +80,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
                     let iconURL = profileDir.appendingPathComponent(iconFileName)
                     try FileManager.default.createDirectory(
                         at: profileDir,
-                        withIntermediateDirectories: true
+                        withIntermediateDirectories: true,
                     )
                     try optimizedImageData.write(to: iconURL)
                 }.value
@@ -94,7 +94,7 @@ final class GameInfoDetailIOViewModel: ObservableObject {
                 return false
             }
 
-        case .failure(let error):
+        case let .failure(error):
             let globalError = GlobalError.from(error)
             errorHandler.handle(globalError)
             return false

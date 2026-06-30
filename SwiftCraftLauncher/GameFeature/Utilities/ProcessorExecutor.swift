@@ -10,7 +10,6 @@ import ZIPFoundation
 
 /// Executes Forge/NeoForge processor configurations by invoking Java.
 enum ProcessorExecutor {
-
     /// Executes a single processor configuration.
     /// - Parameters:
     ///   - processor: The processor configuration to execute.
@@ -24,17 +23,17 @@ enum ProcessorExecutor {
         librariesDir: URL,
         gameVersion: String,
         javaPath: String,
-        data: [String: String]? = nil
+        data: [String: String]? = nil,
     ) async throws {
         let jarPath = try validateAndGetJarPath(
             processor.jar,
-            librariesDir: librariesDir
+            librariesDir: librariesDir,
         )
 
         let classpath = try buildClasspath(
             processor.classpath,
             jarPath: jarPath,
-            librariesDir: librariesDir
+            librariesDir: librariesDir,
         )
 
         let mainClass = try getMainClassFromJar(jarPath: jarPath)
@@ -45,7 +44,7 @@ enum ProcessorExecutor {
             args: processor.args,
             gameVersion: gameVersion,
             librariesDir: librariesDir,
-            data: data
+            data: data,
         )
 
         try await executeJavaCommand(command, javaPath: javaPath, workingDir: librariesDir)
@@ -57,13 +56,13 @@ enum ProcessorExecutor {
 
     private static func validateAndGetJarPath(
         _ jar: String?,
-        librariesDir: URL
+        librariesDir: URL,
     ) throws -> URL {
-        guard let jar = jar else {
+        guard let jar else {
             throw GlobalError.validation(
                 chineseMessage: "处理器缺少JAR文件配置",
                 i18nKey: "error.validation.processor_missing_jar",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -74,9 +73,9 @@ enum ProcessorExecutor {
                 chineseMessage: "无效的Maven坐标: \(jar)",
                 i18nKey: String(
                     format: "error.validation.invalid_maven_coordinate",
-                    jar
+                    jar,
                 ),
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -86,9 +85,9 @@ enum ProcessorExecutor {
                 chineseMessage: "找不到处理器JAR文件: \(jar)",
                 i18nKey: String(
                     format: "error.resource.processor_jar_not_found",
-                    jar
+                    jar,
                 ),
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -98,11 +97,11 @@ enum ProcessorExecutor {
     private static func buildClasspath(
         _ processorClasspath: [String]?,
         jarPath: URL,
-        librariesDir: URL
+        librariesDir: URL,
     ) throws -> [String] {
         var classpath: [String] = []
 
-        if let processorClasspath = processorClasspath {
+        if let processorClasspath {
             for cp in processorClasspath {
                 let cpPath =
                     cp.contains(":")
@@ -124,27 +123,27 @@ enum ProcessorExecutor {
 
     private static func getMavenPath(
         _ coordinate: String,
-        librariesDir: URL
+        librariesDir: URL,
     ) throws -> URL {
         let relativePath: String
 
         if coordinate.contains("@") {
             relativePath = CommonService.parseMavenCoordinateWithAtSymbol(
-                coordinate
+                coordinate,
             )
         } else {
             guard
                 let path = CommonService.mavenCoordinateToRelativePath(
-                    coordinate
+                    coordinate,
                 )
             else {
                 throw GlobalError.validation(
                     chineseMessage: "无效的Maven坐标: \(coordinate)",
                     i18nKey: String(
                         format: "error.validation.invalid_maven_coordinate",
-                        coordinate
+                        coordinate,
                     ),
-                    level: .notification
+                    level: .notification,
                 )
             }
             relativePath = path
@@ -159,12 +158,12 @@ enum ProcessorExecutor {
         args: [String]?,
         gameVersion: String,
         librariesDir: URL,
-        data: [String: String]?
+        data: [String: String]?,
     ) -> [String] {
         var command = ["-cp", classpath.joined(separator: ":")]
         command.append(mainClass)
 
-        if let args = args {
+        if let args {
             let processedArgs: [String] = args.compactMap { arg in
                 guard let extractedValue = CommonFileManager.extractClientValue(from: arg) else {
                     Logger.shared.warning("无法提取客户端值: \(arg)")
@@ -174,7 +173,7 @@ enum ProcessorExecutor {
                     extractedValue,
                     gameVersion: gameVersion,
                     librariesDir: librariesDir,
-                    data: data
+                    data: data,
                 )
             }
             command.append(contentsOf: processedArgs)
@@ -187,7 +186,7 @@ enum ProcessorExecutor {
         _ arg: String,
         gameVersion: String,
         librariesDir: URL,
-        data: [String: String]?
+        data: [String: String]?,
     ) -> String {
         guard arg.contains("{") else {
             return arg
@@ -208,11 +207,11 @@ enum ProcessorExecutor {
                 of: placeholder,
                 with: value,
                 options: [],
-                range: NSRange(location: 0, length: processedArg.length)
+                range: NSRange(location: 0, length: processedArg.length),
             )
         }
 
-        if let data = data {
+        if let data {
             for (key, value) in data {
                 let placeholder = "{\(key)}"
                 if processedArg.range(of: placeholder).location != NSNotFound {
@@ -227,7 +226,7 @@ enum ProcessorExecutor {
                         of: placeholder,
                         with: replacementValue,
                         options: [],
-                        range: NSRange(location: 0, length: processedArg.length)
+                        range: NSRange(location: 0, length: processedArg.length),
                     )
                 }
             }
@@ -239,7 +238,7 @@ enum ProcessorExecutor {
     private static func executeJavaCommand(
         _ command: [String],
         javaPath: String,
-        workingDir: URL
+        workingDir: URL,
     ) async throws {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: javaPath)
@@ -270,14 +269,14 @@ enum ProcessorExecutor {
                     chineseMessage:
                         "处理器执行失败 (退出码: \(process.terminationStatus))",
                     i18nKey: "error.download.processor_execution_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         } catch {
             throw GlobalError.download(
                 chineseMessage: "启动处理器失败: \(error.localizedDescription)",
                 i18nKey: "error.download.processor_start_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -285,20 +284,18 @@ enum ProcessorExecutor {
     private static func setupOutputHandlers(outputPipe: Pipe, errorPipe: Pipe) {
         outputPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
-            if !data.isEmpty, String(data: data, encoding: .utf8) != nil {
-            }
+            if !data.isEmpty, String(data: data, encoding: .utf8) != nil { }
         }
 
         errorPipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
-            if !data.isEmpty, String(data: data, encoding: .utf8) != nil {
-            }
+            if !data.isEmpty, String(data: data, encoding: .utf8) != nil { }
         }
     }
 
     private static func processOutputs(
         _ outputs: [String: String],
-        workingDir: URL
+        workingDir: URL,
     ) async throws {
         let fileManager = FileManager.default
 
@@ -308,7 +305,7 @@ enum ProcessorExecutor {
 
             try fileManager.createDirectory(
                 at: destURL.deletingLastPathComponent(),
-                withIntermediateDirectories: true
+                withIntermediateDirectories: true,
             )
 
             if fileManager.fileExists(atPath: sourceURL.path) {
@@ -325,7 +322,7 @@ enum ProcessorExecutor {
             throw GlobalError.download(
                 chineseMessage: "无法打开JAR文件: \(jarPath.lastPathComponent)",
                 i18nKey: "error.download.jar_open_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -334,7 +331,7 @@ enum ProcessorExecutor {
                 chineseMessage:
                     "无法从processor JAR文件中获取主类: \(jarPath.lastPathComponent)",
                 i18nKey: "error.download.processor_main_class_not_found",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -348,7 +345,7 @@ enum ProcessorExecutor {
             throw GlobalError.download(
                 chineseMessage: "无法解析MANIFEST.MF内容",
                 i18nKey: "error.download.manifest_parse_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -356,9 +353,8 @@ enum ProcessorExecutor {
         for line in lines {
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)
             if trimmedLine.hasPrefix("Main-Class:") {
-                let mainClass = trimmedLine.dropFirst("Main-Class:".count)
+                return trimmedLine.dropFirst("Main-Class:".count)
                     .trimmingCharacters(in: .whitespaces)
-                return mainClass
             }
         }
 
@@ -366,7 +362,7 @@ enum ProcessorExecutor {
             chineseMessage:
                 "无法从processor JAR文件中获取主类: \(jarPath.lastPathComponent)",
             i18nKey: "error.download.processor_main_class_not_found",
-            level: .notification
+            level: .notification,
         )
     }
 }

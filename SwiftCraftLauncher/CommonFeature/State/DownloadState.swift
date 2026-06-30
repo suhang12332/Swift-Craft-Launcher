@@ -42,12 +42,12 @@ class DownloadState: ObservableObject {
     func startDownload(coreTotalFiles: Int, resourcesTotalFiles: Int) {
         self.coreTotalFiles = coreTotalFiles
         self.resourcesTotalFiles = resourcesTotalFiles
-        self.isDownloading = true
-        self.coreProgress = 0
-        self.resourcesProgress = 0
-        self.coreCompletedFiles = 0
-        self.resourcesCompletedFiles = 0
-        self.isCancelled = false
+        isDownloading = true
+        coreProgress = 0
+        resourcesProgress = 0
+        coreCompletedFiles = 0
+        resourcesCompletedFiles = 0
+        isCancelled = false
     }
 
     /// Cancels the download by setting the cancelled flag.
@@ -65,7 +65,7 @@ class DownloadState: ObservableObject {
         fileName: String,
         completed: Int,
         total: Int,
-        type: MinecraftFileManager.DownloadType
+        type: MinecraftFileManager.DownloadType,
     ) {
         switch type {
         case .core:

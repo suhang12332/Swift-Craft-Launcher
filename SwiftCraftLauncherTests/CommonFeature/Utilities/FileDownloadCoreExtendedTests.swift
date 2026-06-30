@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class FileDownloadCoreExtendedTests: XCTestCase {
-
     private var tmpDir: URL?
 
     override func setUp() {
@@ -69,7 +68,7 @@ final class FileDownloadCoreExtendedTests: XCTestCase {
         let url = try FileDownloadCore.parseURL(from: "https://github.com/user/repo/releases/download/v1.0/file.jar")
         let result = FileDownloadCore.normalizedDownloadURL(from: url)
         XCTAssertTrue(
-            result.absoluteString.contains("github.com") || result.absoluteString.contains("gh-proxy")
+            result.absoluteString.contains("github.com") || result.absoluteString.contains("gh-proxy"),
         )
     }
 

@@ -53,11 +53,11 @@ enum CurseForgeManifestBuilder {
         gameInfo: GameVersionInfo,
         modPackName: String,
         modPackVersion: String,
-        files: [ManifestFile]
+        files: [ManifestFile],
     ) throws -> String {
         let minecraft = Minecraft(
             version: gameInfo.gameVersion,
-            modLoaders: buildModLoaders(gameInfo: gameInfo)
+            modLoaders: buildModLoaders(gameInfo: gameInfo),
         )
 
         let manifest = Manifest(
@@ -68,7 +68,7 @@ enum CurseForgeManifestBuilder {
             version: modPackVersion,
             author: "",
             files: files,
-            overrides: "overrides"
+            overrides: "overrides",
         )
 
         let data = try JSONEncoder.prettySorted.encode(manifest)

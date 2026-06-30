@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Displays world details read from level.dat including game settings, seed, and NBT data.
+// Displays world details read from level.dat including game settings, seed, and NBT data.
 import SwiftUI
 
 struct WorldDetailSheetView: View {
@@ -21,15 +21,15 @@ struct WorldDetailSheetView: View {
         CommonSheetView(
             header: { headerView },
             body: { bodyView },
-            footer: { footerView }
+            footer: { footerView },
         )
         .frame(minWidth: 500, minHeight: 400)
         .alert(
             "common.error".localized(),
             isPresented: Binding(
                 get: { viewModel.showError },
-                set: { viewModel.showError = $0 }
-            )
+                set: { viewModel.showError = $0 },
+            ),
         ) {
             Button("common.ok".localized(), role: .cancel) { }
         } message: {
@@ -87,7 +87,7 @@ struct WorldDetailSheetView: View {
                 if let filteredRaw = viewModel.filteredRawData {
                     WorldDetailRawDataToggleView(
                         filteredRawData: filteredRaw,
-                        showRawData: $viewModel.showRawData
+                        showRawData: $viewModel.showRawData,
                     )
                 }
             }

@@ -24,11 +24,11 @@ final class GeneralSettingsViewModel: ObservableObject {
 
     init(
         generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.generalSettings = generalSettings
         self.errorHandler = errorHandler
-        self.concurrentDownloadsDraft = Double(generalSettings.concurrentDownloads)
+        concurrentDownloadsDraft = Double(generalSettings.concurrentDownloads)
     }
 
     /// Configures the view model with a game repository reference.
@@ -54,7 +54,7 @@ final class GeneralSettingsViewModel: ObservableObject {
                 throw GlobalError.configuration(
                     chineseMessage: "无法获取应用支持目录",
                     i18nKey: "error.configuration.app_support_directory_not_found",
-                    level: .popup
+                    level: .popup,
                 )
             }
 
@@ -69,7 +69,7 @@ final class GeneralSettingsViewModel: ObservableObject {
     /// Handles the result from a directory picker.
     func handleDirectoryImport(_ result: Result<[URL], Error>) {
         switch result {
-        case .success(let urls):
+        case let .success(urls):
             guard let url = urls.first else { return }
             do {
                 let resourceValues = try url.resourceValues(forKeys: [.isDirectoryKey, .isReadableKey])
@@ -77,7 +77,7 @@ final class GeneralSettingsViewModel: ObservableObject {
                     throw GlobalError.fileSystem(
                         chineseMessage: "选择的路径不是可读的目录",
                         i18nKey: "error.filesystem.invalid_directory_selected",
-                        level: .notification
+                        level: .notification,
                     )
                 }
 
@@ -86,13 +86,13 @@ final class GeneralSettingsViewModel: ObservableObject {
             } catch {
                 present(GlobalError.from(error))
             }
-        case .failure(let error):
+        case let .failure(error):
             present(
                 GlobalError.fileSystem(
                     chineseMessage: "选择目录失败: \(error.localizedDescription)",
                     i18nKey: "error.filesystem.directory_selection_failed",
-                    level: .notification
-                )
+                    level: .notification,
+                ),
             )
         }
     }

@@ -26,7 +26,7 @@ struct MinecraftVersionManifest: Codable {
 
     enum CodingKeys: String, CodingKey {
         case arguments, assetIndex, assets, downloads, id, javaVersion, libraries, logging, mainClass, minimumLauncherVersion, releaseTime, time, type
-        case complianceLevel = "complianceLevel"
+        case complianceLevel
     }
 
     init(from decoder: Decoder) throws {
@@ -99,11 +99,12 @@ enum ArgumentValue: Codable {
             self = .objectWithRules(try container.decode(ArgumentRuleObject.self))
         }
     }
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
-        case .string(let value): try container.encode(value)
-        case .objectWithRules(let value): try container.encode(value)
+        case let .string(value): try container.encode(value)
+        case let .objectWithRules(value): try container.encode(value)
         }
     }
 }
@@ -126,11 +127,12 @@ enum ArgumentValueArrayOrString: Codable {
             self = .array(try container.decode([String].self))
         }
     }
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
-        case .string(let value): try container.encode(value)
-        case .array(let value): try container.encode(value)
+        case let .string(value): try container.encode(value)
+        case let .array(value): try container.encode(value)
         }
     }
 }

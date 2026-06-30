@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModrinthIndexFileExtendedTests: XCTestCase {
-
     func testModrinthIndexFile_withCurseForgeIds() {
         let file = ModrinthIndexFile(
             path: "mods/test.jar",
@@ -18,7 +17,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             fileSize: 1024,
             source: .curseforge,
             curseForgeProjectId: 100,
-            curseForgeFileId: 200
+            curseForgeFileId: 200,
         )
         XCTAssertEqual(file.curseForgeProjectId, 100)
         XCTAssertEqual(file.curseForgeFileId, 200)
@@ -30,7 +29,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             path: "mods/test.jar",
             hashes: ModrinthIndexFileHashes(from: [:]),
             downloads: [],
-            fileSize: 1024
+            fileSize: 1024,
         )
         XCTAssertNil(file.curseForgeProjectId)
         XCTAssertNil(file.curseForgeFileId)
@@ -44,7 +43,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             downloads: ["https://example.com/fabric-api.jar"],
             fileSize: 2048,
             env: ModrinthIndexFileEnv(client: "required", server: "unsupported"),
-            source: .modrinth
+            source: .modrinth,
         )
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(ModrinthIndexFile.self, from: data)
@@ -66,7 +65,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             fileSize: 0,
             source: .curseforge,
             curseForgeProjectId: 100,
-            curseForgeFileId: 200
+            curseForgeFileId: 200,
         )
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(ModrinthIndexFile.self, from: data)
@@ -212,7 +211,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             fabric: nil,
             quilt: nil,
             neoforge: nil,
-            dependencies: nil
+            dependencies: nil,
         )
         let data = try JSONEncoder().encode(deps)
         guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
@@ -236,7 +235,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             fabric: "0.14.21",
             quilt: "0.26.0",
             neoforge: "21.0.0",
-            dependencies: nil
+            dependencies: nil,
         )
         let data = try JSONEncoder().encode(deps)
         guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
@@ -259,7 +258,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             fabric: nil,
             quilt: nil,
             neoforge: nil,
-            dependencies: nil
+            dependencies: nil,
         )
         let data = try JSONEncoder().encode(deps)
         guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
@@ -282,7 +281,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             neoforge: nil,
             dependencies: [
                 ModrinthIndexProjectDependency(projectId: "abc", versionId: "123", dependencyType: "required"),
-            ]
+            ],
         )
         let data = try JSONEncoder().encode(deps)
         guard let dict = try JSONSerialization.jsonObject(with: data) as? [String: Any],
@@ -298,7 +297,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
         let dep = ModrinthIndexProjectDependency(
             projectId: "abc",
             versionId: "123",
-            dependencyType: "required"
+            dependencyType: "required",
         )
         let data = try JSONEncoder().encode(dep)
         let decoded = try JSONDecoder().decode(ModrinthIndexProjectDependency.self, from: data)
@@ -327,7 +326,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             summary: "A test pack",
             files: [],
             dependencies: [],
-            source: .modrinth
+            source: .modrinth,
         )
         XCTAssertEqual(info.gameVersion, "1.20.1")
         XCTAssertEqual(info.loaderType, "fabric")
@@ -349,7 +348,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             modPackVersion: "1.0",
             summary: nil,
             files: [],
-            dependencies: []
+            dependencies: [],
         )
         XCTAssertEqual(info.source, .modrinth)
     }
@@ -364,7 +363,7 @@ final class ModrinthIndexFileExtendedTests: XCTestCase {
             summary: nil,
             files: [],
             dependencies: [],
-            source: .curseforge
+            source: .curseforge,
         )
         XCTAssertEqual(info.source, .curseforge)
     }

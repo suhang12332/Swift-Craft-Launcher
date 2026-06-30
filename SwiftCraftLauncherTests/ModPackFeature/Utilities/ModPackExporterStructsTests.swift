@@ -5,18 +5,17 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModPackExporterStructsTests: XCTestCase {
-
     func testExportResult_success() {
         let url = URL(fileURLWithPath: "/tmp/test.mrpack")
         let result = ModPackExporter.ExportResult(
             success: true,
             outputPath: url,
             error: nil,
-            message: "OK"
+            message: "OK",
         )
 
         XCTAssertTrue(result.success)
@@ -31,7 +30,7 @@ final class ModPackExporterStructsTests: XCTestCase {
             success: false,
             outputPath: nil,
             error: error,
-            message: "Failed"
+            message: "Failed",
         )
 
         XCTAssertFalse(result.success)
@@ -53,7 +52,7 @@ final class ModPackExporterStructsTests: XCTestCase {
             progress: 0.5,
             currentFile: "mod.jar",
             completed: 5,
-            total: 10
+            total: 10,
         )
         let progress = ModPackExporter.ExportProgress(scanProgress: scanItem, copyProgress: nil)
 
@@ -72,7 +71,7 @@ final class ModPackExporterStructsTests: XCTestCase {
             progress: 1.0,
             currentFile: "done.jar",
             completed: 3,
-            total: 3
+            total: 3,
         )
         let progress = ModPackExporter.ExportProgress(scanProgress: nil, copyProgress: copyItem)
 
@@ -88,7 +87,7 @@ final class ModPackExporterStructsTests: XCTestCase {
             fileID: 456,
             fileName: "mod.jar",
             projectName: "TestMod",
-            authorsText: "Author1"
+            authorsText: "Author1",
         )
 
         XCTAssertEqual(item.projectID, 123)
@@ -104,7 +103,7 @@ final class ModPackExporterStructsTests: XCTestCase {
             fileID: 2,
             fileName: "f.jar",
             projectName: nil,
-            authorsText: nil
+            authorsText: nil,
         )
 
         XCTAssertNil(item.projectName)
@@ -151,7 +150,7 @@ final class ModPackExporterStructsTests: XCTestCase {
             progress: 0.75,
             currentFile: "file.jar",
             completed: 75,
-            total: 100
+            total: 100,
         )
 
         XCTAssertEqual(item.title, "Title")

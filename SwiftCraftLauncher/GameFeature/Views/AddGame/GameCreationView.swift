@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A view for creating a new game instance with version, mod loader, and name configuration.
+// A view for creating a new game instance with version, mod loader, and name configuration.
 import SwiftUI
 import UniformTypeIdentifiers
 import UserNotifications
@@ -42,7 +42,7 @@ struct GameCreationView: View {
         onCancel: @escaping () -> Void,
         onConfirm: @escaping () -> Void,
         onRequestImagePicker: @escaping () -> Void,
-        onSetImagePickerHandler: @escaping (@escaping (Result<[URL], Error>) -> Void) -> Void
+        onSetImagePickerHandler: @escaping (@escaping (Result<[URL], Error>) -> Void) -> Void,
     ) {
         self.triggerConfirm = triggerConfirm
         self.triggerCancel = triggerCancel
@@ -54,9 +54,9 @@ struct GameCreationView: View {
             triggerConfirm: triggerConfirm,
             triggerCancel: triggerCancel,
             onCancel: onCancel,
-            onConfirm: onConfirm
+            onConfirm: onConfirm,
         )
-        self._viewModel = StateObject(wrappedValue: GameCreationViewModel(configuration: configuration))
+        _viewModel = StateObject(wrappedValue: GameCreationViewModel(configuration: configuration))
     }
 
     var body: some View {
@@ -148,19 +148,19 @@ struct GameCreationView: View {
                     case .empty:
                         ProgressView()
                             .controlSize(.small)
-                    case .success(let image):
+                    case let .success(image):
                         image
                             .resizable()
                             .interpolation(.none)
                             .scaledToFill()
                             .frame(
                                 width: Constants.iconSize,
-                                height: Constants.iconSize
+                                height: Constants.iconSize,
                             )
                             .clipShape(
                                 RoundedRectangle(
-                                    cornerRadius: Constants.cornerRadius
-                                )
+                                    cornerRadius: Constants.cornerRadius,
+                                ),
                             )
                             .contentShape(Rectangle())
                     case .failure:
@@ -172,7 +172,7 @@ struct GameCreationView: View {
                 .id(url.absoluteString)
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(
-                        for: URLRequest(url: url)
+                        for: URLRequest(url: url),
                     )
                 }
             } else {
@@ -205,7 +205,7 @@ struct GameCreationView: View {
         CustomVersionPicker(
             selected: $viewModel.selectedGameVersion,
             availableVersions: viewModel.availableVersions,
-            time: $viewModel.versionTime
+            time: $viewModel.versionTime,
         ) { version in
             await ModrinthService.queryVersionTime(from: version)
         }
@@ -218,7 +218,7 @@ struct GameCreationView: View {
                 .foregroundColor(.primary)
             CommonMenuPicker(
                 selection: $viewModel.selectedModLoader,
-                hidesLabel: true
+                hidesLabel: true,
             ) {
                 Text("")
             } content: {
@@ -252,7 +252,7 @@ struct GameCreationView: View {
                 .foregroundColor(.primary)
             CommonMenuPicker(
                 selection: $viewModel.selectedLoaderVersion,
-                hidesLabel: true
+                hidesLabel: true,
             ) {
                 Text("")
             } content: {
@@ -269,14 +269,14 @@ struct GameCreationView: View {
             GameNameInputView(
                 gameName: Binding(
                     get: { viewModel.gameNameValidator.gameName },
-                    set: { viewModel.gameNameValidator.gameName = $0 }
+                    set: { viewModel.gameNameValidator.gameName = $0 },
                 ),
                 isGameNameDuplicate: Binding(
                     get: { viewModel.gameNameValidator.isGameNameDuplicate },
-                    set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 }
+                    set: { viewModel.gameNameValidator.isGameNameDuplicate = $0 },
                 ),
                 isDisabled: viewModel.gameSetupService.downloadState.isDownloading,
-                gameSetupService: viewModel.gameSetupService
+                gameSetupService: viewModel.gameSetupService,
             )
         }
     }
@@ -284,7 +284,7 @@ struct GameCreationView: View {
     private var downloadProgressSection: some View {
         DownloadProgressSection(
             gameSetupService: viewModel.gameSetupService,
-            selectedModLoader: viewModel.selectedModLoader
+            selectedModLoader: viewModel.selectedModLoader,
         )
     }
 }

@@ -5,17 +5,16 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModrinthIndexInfoExtendedTests: XCTestCase {
-
     private func makeFile(path: String = "mods/test.jar") -> ModrinthIndexFile {
         ModrinthIndexFile(
             path: path,
             hashes: ModrinthIndexFileHashes(from: ["sha1": "abc"]),
             downloads: [],
-            fileSize: 1024
+            fileSize: 1024,
         )
     }
 
@@ -23,7 +22,7 @@ final class ModrinthIndexInfoExtendedTests: XCTestCase {
         let dep = ModrinthIndexProjectDependency(
             projectId: "proj1",
             versionId: "ver1",
-            dependencyType: "required"
+            dependencyType: "required",
         )
         let file = makeFile()
         let info = ModrinthIndexInfo(
@@ -35,7 +34,7 @@ final class ModrinthIndexInfoExtendedTests: XCTestCase {
             summary: "A test",
             files: [file],
             dependencies: [dep],
-            source: .modrinth
+            source: .modrinth,
         )
 
         XCTAssertEqual(info.gameVersion, "1.20.1")
@@ -58,7 +57,7 @@ final class ModrinthIndexInfoExtendedTests: XCTestCase {
             modPackVersion: "1.0",
             summary: nil,
             files: [],
-            dependencies: []
+            dependencies: [],
         )
 
         XCTAssertEqual(info.source, .modrinth)
@@ -74,7 +73,7 @@ final class ModrinthIndexInfoExtendedTests: XCTestCase {
             summary: nil,
             files: [],
             dependencies: [],
-            source: .curseforge
+            source: .curseforge,
         )
 
         XCTAssertEqual(info.source, .curseforge)
@@ -89,7 +88,7 @@ final class ModrinthIndexInfoExtendedTests: XCTestCase {
             modPackVersion: "1.0",
             summary: nil,
             files: [],
-            dependencies: []
+            dependencies: [],
         )
 
         XCTAssertTrue(info.dependencies.isEmpty)
@@ -115,7 +114,7 @@ final class ModrinthIndexInfoExtendedTests: XCTestCase {
             summary: "Many mods",
             files: files,
             dependencies: deps,
-            source: .modrinth
+            source: .modrinth,
         )
 
         XCTAssertEqual(info.files.count, 3)

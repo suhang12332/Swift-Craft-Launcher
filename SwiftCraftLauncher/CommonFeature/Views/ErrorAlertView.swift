@@ -19,7 +19,7 @@ struct ErrorAlertModifier: ViewModifier {
         content
             .alert(
                 errorHandler.currentError?.notificationTitle ?? "",
-                isPresented: .constant(errorHandler.currentError != nil && errorHandler.currentError?.level == .popup)
+                isPresented: .constant(errorHandler.currentError != nil && errorHandler.currentError?.level == .popup),
             ) {
                 Button("common.close".localized()) {
                     errorHandler.clearCurrentError()
@@ -35,6 +35,6 @@ struct ErrorAlertModifier: ViewModifier {
 extension View {
     /// Adds error alert handling to the view.
     func errorAlert() -> some View {
-        self.modifier(ErrorAlertModifier())
+        modifier(ErrorAlertModifier())
     }
 }

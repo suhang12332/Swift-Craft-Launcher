@@ -33,7 +33,7 @@ struct PlayerListView: View {
         .confirmationDialog(
             "player.remove".localized(),
             isPresented: $showDeleteAlert,
-            titleVisibility: .visible
+            titleVisibility: .visible,
         ) {
             Button("player.remove".localized(), role: .destructive) {
                 if let player = playerToDelete {
@@ -54,7 +54,7 @@ private struct PlayerSelectorLabel: View {
     let selectedPlayer: Player?
 
     var body: some View {
-        if let selectedPlayer = selectedPlayer {
+        if let selectedPlayer {
             HStack(spacing: 8) {
                 PlayerAvatarView(player: selectedPlayer, size: 32)
                 Text(selectedPlayer.name)
@@ -62,8 +62,6 @@ private struct PlayerSelectorLabel: View {
                     .font(.system(size: 13).bold())
                     .lineLimit(1)
             }
-        } else {
-            EmptyView()
         }
     }
 }

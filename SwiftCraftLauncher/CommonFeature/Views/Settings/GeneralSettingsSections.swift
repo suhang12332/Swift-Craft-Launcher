@@ -87,7 +87,7 @@ struct GeneralSettingsWorkingDirectoryRow: View {
                                 ? AppPaths.launcherSupportDirectory.path
                                 : generalSettings.launcherWorkingDirectory
                         },
-                        set: { generalSettings.launcherWorkingDirectory = $0 }
+                        set: { generalSettings.launcherWorkingDirectory = $0 },
                     )) {
                         ForEach(gameRepository.workingPathOptions, id: \.path) { item in
                             Text(viewModel.workingPathDisplayString(for: item))
@@ -105,7 +105,7 @@ struct GeneralSettingsWorkingDirectoryRow: View {
                     path: generalSettings.launcherWorkingDirectory.isEmpty ? AppPaths.launcherSupportDirectory.path : generalSettings.launcherWorkingDirectory,
                     description: "settings.working_directory.description".localized(),
                     onChoose: { viewModel.showDirectoryPicker = true },
-                    onReset: { viewModel.resetWorkingDirectorySafely() }
+                    onReset: { viewModel.resetWorkingDirectorySafely() },
                 )
                 .fixedSize()
                 .fileImporter(isPresented: $viewModel.showDirectoryPicker, allowedContentTypes: [.folder], allowsMultipleSelection: false) { result in
@@ -133,7 +133,7 @@ struct GeneralSettingsConcurrentDownloadsRow: View {
             HStack {
                 Slider(
                     value: $viewModel.concurrentDownloadsDraft,
-                    in: 1...64
+                    in: 1 ... 64,
                 ) { isEditing in
                     viewModel.commitConcurrentDownloadsIfNeeded(isEditing: isEditing)
                 }
@@ -208,7 +208,7 @@ struct GeneralSettingsCommonSheetHeightLimitRow: View {
         LabeledContent("settings.common_sheet_height_limit.label".localized()) {
             Toggle(
                 "settings.common_sheet_height_limit.enable".localized(),
-                isOn: $generalSettings.limitCommonSheetHeight
+                isOn: $generalSettings.limitCommonSheetHeight,
             )
         }
         .labeledContentStyle(.custom)

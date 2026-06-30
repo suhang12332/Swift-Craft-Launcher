@@ -5,17 +5,16 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModPackExporterExtendedTests: XCTestCase {
-
     func testExportResult_successWithMessage() {
         let result = ModPackExporter.ExportResult(
             success: true,
             outputPath: URL(fileURLWithPath: "/tmp/pack.mrpack"),
             error: nil,
-            message: "Export completed successfully"
+            message: "Export completed successfully",
         )
 
         XCTAssertTrue(result.success)
@@ -29,7 +28,7 @@ final class ModPackExporterExtendedTests: XCTestCase {
             success: false,
             outputPath: nil,
             error: error,
-            message: "导出失败: Disk full"
+            message: "导出失败: Disk full",
         )
 
         XCTAssertFalse(result.success)
@@ -43,7 +42,7 @@ final class ModPackExporterExtendedTests: XCTestCase {
             success: false,
             outputPath: nil,
             error: error,
-            message: "已取消"
+            message: "已取消",
         )
 
         XCTAssertFalse(result.success)
@@ -57,7 +56,7 @@ final class ModPackExporterExtendedTests: XCTestCase {
             progress: 0.0,
             currentFile: "",
             completed: 0,
-            total: 100
+            total: 100,
         )
 
         XCTAssertEqual(item.progress, 0.0)
@@ -71,7 +70,7 @@ final class ModPackExporterExtendedTests: XCTestCase {
             progress: 1.0,
             currentFile: "last.jar",
             completed: 100,
-            total: 100
+            total: 100,
         )
 
         XCTAssertEqual(item.progress, 1.0)
@@ -84,14 +83,14 @@ final class ModPackExporterExtendedTests: XCTestCase {
             progress: 0.5,
             currentFile: "a.jar",
             completed: 5,
-            total: 10
+            total: 10,
         )
         let copy = ModPackExporter.ExportProgress.ProgressItem(
             title: "Copy",
             progress: 0.3,
             currentFile: "b.jar",
             completed: 3,
-            total: 10
+            total: 10,
         )
         let progress = ModPackExporter.ExportProgress(scanProgress: scan, copyProgress: copy)
 
@@ -103,15 +102,15 @@ final class ModPackExporterExtendedTests: XCTestCase {
 
     func testCurseForgeModListItem_allFields() {
         let item = ModPackExporter.CurseForgeModListItem(
-            projectID: 999999,
-            fileID: 888888,
+            projectID: 999_999,
+            fileID: 888_888,
             fileName: "awesome-mod-3.0.jar",
             projectName: "Awesome Mod",
-            authorsText: "Author1, Author2"
+            authorsText: "Author1, Author2",
         )
 
-        XCTAssertEqual(item.projectID, 999999)
-        XCTAssertEqual(item.fileID, 888888)
+        XCTAssertEqual(item.projectID, 999_999)
+        XCTAssertEqual(item.fileID, 888_888)
         XCTAssertEqual(item.fileName, "awesome-mod-3.0.jar")
         XCTAssertEqual(item.projectName, "Awesome Mod")
         XCTAssertEqual(item.authorsText, "Author1, Author2")
@@ -123,7 +122,7 @@ final class ModPackExporterExtendedTests: XCTestCase {
             fileID: 0,
             fileName: "empty.jar",
             projectName: nil,
-            authorsText: nil
+            authorsText: nil,
         )
 
         XCTAssertEqual(item.projectID, 0)
@@ -137,7 +136,7 @@ final class ModPackExporterExtendedTests: XCTestCase {
             indexFiles: [],
             curseForgeFiles: [],
             curseForgeModListItems: [],
-            filesToCopy: []
+            filesToCopy: [],
         )
 
         XCTAssertTrue(result.indexFiles.isEmpty)
@@ -151,18 +150,18 @@ final class ModPackExporterExtendedTests: XCTestCase {
             path: "mods/test.jar",
             hashes: ModrinthIndexFileHashes(from: ["sha1": "abc"]),
             downloads: [],
-            fileSize: 0
+            fileSize: 0,
         )
         let copyItem: (file: URL, relativePath: String) = (
             file: URL(fileURLWithPath: "/tmp/config.json"),
-            relativePath: "config"
+            relativePath: "config",
         )
 
         let result = ModPackExporter.SelectedResourcesResult(
             indexFiles: [indexFile],
             curseForgeFiles: [],
             curseForgeModListItems: [],
-            filesToCopy: [copyItem]
+            filesToCopy: [copyItem],
         )
 
         XCTAssertEqual(result.indexFiles.count, 1)
@@ -173,7 +172,7 @@ final class ModPackExporterExtendedTests: XCTestCase {
     func testCopyFilesParams_empty() {
         let params = ModPackExporter.CopyFilesParams(
             filesToCopy: [],
-            overridesDir: URL(fileURLWithPath: "/tmp/overrides")
+            overridesDir: URL(fileURLWithPath: "/tmp/overrides"),
         )
 
         XCTAssertTrue(params.filesToCopy.isEmpty)
@@ -187,7 +186,7 @@ final class ModPackExporterExtendedTests: XCTestCase {
             modVersion: "0.14.21",
             assetIndex: "17",
             modLoader: "fabric",
-            mainClass: "net.minecraft.client.main.Main"
+            mainClass: "net.minecraft.client.main.Main",
         )
         let params = ModPackExporter.IndexBuildParams(
             gameInfo: gameInfo,
@@ -197,7 +196,7 @@ final class ModPackExporterExtendedTests: XCTestCase {
             indexFiles: [],
             curseForgeFiles: [],
             curseForgeModListItems: [],
-            exportFormat: .modrinth
+            exportFormat: .modrinth,
         )
 
         XCTAssertEqual(params.modPackName, "Pack")

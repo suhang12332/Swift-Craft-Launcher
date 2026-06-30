@@ -10,16 +10,16 @@ import SwiftUI
 
 /// Identifies the main application window.
 enum AppWindowID: String {
-    case main = "main"
+    case main
 }
 
 /// Identifies auxiliary windows with their display properties.
 enum AuxiliaryWindowID: String, Identifiable, Hashable, Codable, CaseIterable {
-    case contributors = "contributors"
-    case acknowledgements = "acknowledgements"
-    case aiChat = "aiChat"
-    case javaDownload = "javaDownload"
-    case skinPreview = "skinPreview"
+    case contributors
+    case acknowledgements
+    case aiChat
+    case javaDownload
+    case skinPreview
 
     var id: String { rawValue }
 

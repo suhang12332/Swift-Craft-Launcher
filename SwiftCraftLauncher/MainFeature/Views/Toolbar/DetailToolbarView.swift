@@ -14,7 +14,7 @@ public struct DetailToolbarView: ToolbarContent {
     @EnvironmentObject private var gameRepository: GameRepository
 
     private var currentGame: GameVersionInfo? {
-        if case .game(let gameId) = detailState.selectedItem {
+        if case let .game(gameId) = detailState.selectedItem {
             return gameRepository.getGame(by: gameId)
         }
         return nil

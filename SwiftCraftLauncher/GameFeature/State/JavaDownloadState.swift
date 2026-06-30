@@ -10,7 +10,6 @@ import Foundation
 /// An observable state object that tracks the progress of a Java runtime download.
 @MainActor
 class JavaDownloadState: ObservableObject {
-
     /// Indicates whether a download is currently in progress.
     @Published var isDownloading = false
 
@@ -47,11 +46,11 @@ class JavaDownloadState: ObservableObject {
     /// - Parameter version: The Java version to download.
     func startDownload(version: String) {
         self.version = version
-        self.isDownloading = true
-        self.progress = 0
-        self.isCancelled = false
-        self.hasError = false
-        self.errorMessage = ""
+        isDownloading = true
+        progress = 0
+        isCancelled = false
+        hasError = false
+        errorMessage = ""
     }
 
     /// Cancels the current download.

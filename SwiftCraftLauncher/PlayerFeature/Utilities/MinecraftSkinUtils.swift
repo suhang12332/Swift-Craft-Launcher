@@ -5,10 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
+import AppKit
 import CoreImage
 import Foundation
-import AppKit
+import SwiftUI
 
 /// Renders a Minecraft player skin as a head avatar.
 ///
@@ -59,20 +59,20 @@ struct MinecraftSkinUtils: View {
         .frame(width: size, height: size)
         .onAppear {
             if let cached = Self.getCachedRenderedImage(for: cacheKey) {
-                self.renderedCache = cached
-                self.isLoading = false
+                renderedCache = cached
+                isLoading = false
             } else {
                 loadSkinData()
             }
         }
         .onChange(of: src) { _, _ in
             if let cached = Self.getCachedRenderedImage(for: cacheKey) {
-                self.renderedCache = cached
-                self.isLoading = false
-                self.error = nil
+                renderedCache = cached
+                isLoading = false
+                error = nil
             } else {
-                self.renderedCache = nil
-                self.error = nil
+                renderedCache = nil
+                error = nil
                 loadSkinData()
             }
         }
@@ -82,7 +82,6 @@ struct MinecraftSkinUtils: View {
         }
     }
 
-    @ViewBuilder
     private func avatarLayers(for cache: RenderedImageCache) -> some View {
         ZStack {
             Image(decorative: cache.headImage, scale: 1.0)
@@ -90,7 +89,7 @@ struct MinecraftSkinUtils: View {
                 .resizable()
                 .frame(
                     width: cache.hasLayerContent ? size * 0.9 : size,
-                    height: cache.hasLayerContent ? size * 0.9 : size
+                    height: cache.hasLayerContent ? size * 0.9 : size,
                 )
                 .clipped()
             if cache.hasLayerContent {
@@ -124,15 +123,15 @@ struct MinecraftSkinUtils: View {
                     throw GlobalError.validation(
                         chineseMessage: "无效的图像数据",
                         i18nKey: "error.validation.invalid_image_data",
-                        level: .silent
+                        level: .silent,
                     )
                 }
 
-                guard ciImage.extent.width == 64 && ciImage.extent.height == 64 else {
+                guard ciImage.extent.width == 64, ciImage.extent.height == 64 else {
                     throw GlobalError.validation(
                         chineseMessage: "不支持的皮肤格式，仅支持64x64像素",
                         i18nKey: "error.validation.unsupported_skin_format",
-                        level: .silent
+                        level: .silent,
                     )
                 }
 
@@ -140,28 +139,28 @@ struct MinecraftSkinUtils: View {
 
                 let cacheKeyValue = cacheKey
                 let renderedCache = await Task.detached {
-                    return await Self.renderAndCacheImage(ciImage, for: cacheKeyValue, context: Self.ciContext)
+                    await Self.renderAndCacheImage(ciImage, for: cacheKeyValue, context: Self.ciContext)
                 }.value
 
                 await MainActor.run {
                     self.renderedCache = renderedCache
-                    self.isLoading = false
+                    isLoading = false
                 }
             } catch is CancellationError {
                 await MainActor.run {
-                    self.isLoading = false
+                    isLoading = false
                 }
                 return
             } catch let urlError as URLError where urlError.code == .cancelled {
                 await MainActor.run {
-                    self.isLoading = false
+                    isLoading = false
                 }
                 return
             } catch {
                 let globalError = GlobalError.from(error)
                 await MainActor.run {
                     self.error = globalError.localizedDescription
-                    self.isLoading = false
+                    isLoading = false
                 }
                 Logger.shared.error("❌ 皮肤加载失败: \(globalError.chineseMessage)")
                 AppServices.errorHandler.handle(globalError)

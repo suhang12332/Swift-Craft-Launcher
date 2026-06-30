@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
-@testable import SwiftCraftLauncher
 import CFModrinthAdapterKit
+@testable import SwiftCraftLauncher
+import XCTest
 
 final class ModrinthModelTests: XCTestCase {
-
     func testModrinthProjectDetail_codable_roundTrip() throws {
         let detail = makeDetail(
             id: "proj-1",
@@ -20,7 +19,7 @@ final class ModrinthModelTests: XCTestCase {
             categories: ["fabric", "library"],
             projectType: "mod",
             downloads: 1234,
-            team: "Team1"
+            team: "Team1",
         )
 
         let encoded = try JSONEncoder().encode(detail)
@@ -45,7 +44,7 @@ final class ModrinthModelTests: XCTestCase {
             categories: [],
             projectType: "mod",
             downloads: 0,
-            team: "team"
+            team: "team",
         )
 
         let encoded = try JSONEncoder().encode(detail)
@@ -82,15 +81,15 @@ final class ModrinthModelTests: XCTestCase {
             iconUrl: "https://icon.png",
             id: "full-id",
             team: "FullTeam",
-            published: Date(timeIntervalSince1970: 1700000000),
-            updated: Date(timeIntervalSince1970: 1700100000),
+            published: Date(timeIntervalSince1970: 1_700_000_000),
+            updated: Date(timeIntervalSince1970: 1_700_100_000),
             followers: 42,
             license: license,
             versions: ["1.20.1", "1.21"],
             gameVersions: ["1.20.1", "1.21"],
             loaders: ["fabric", "quilt"],
             type: nil,
-            fileName: "full-mod-1.0.jar"
+            fileName: "full-mod-1.0.jar",
         )
 
         let encoded = try JSONEncoder().encode(detail)
@@ -150,7 +149,7 @@ final class ModrinthModelTests: XCTestCase {
             name: "Version 1.0",
             versionNumber: "1.0.0",
             gameVersions: ["1.20.1"],
-            loaders: ["fabric"]
+            loaders: ["fabric"],
         )
 
         let encoded = try JSONEncoder().encode(version)
@@ -176,7 +175,7 @@ final class ModrinthModelTests: XCTestCase {
             versionNumber: "1.0",
             gameVersions: ["1.20"],
             loaders: ["fabric"],
-            dependencies: deps
+            dependencies: deps,
         )
 
         let encoded = try JSONEncoder().encode(version)
@@ -196,7 +195,7 @@ final class ModrinthModelTests: XCTestCase {
             filename: "mod.jar",
             primary: true,
             size: 1024,
-            fileType: "jar"
+            fileType: "jar",
         )
         let version = makeVersion(
             id: "ver-file",
@@ -205,7 +204,7 @@ final class ModrinthModelTests: XCTestCase {
             versionNumber: "1.0",
             gameVersions: ["1.20"],
             loaders: ["fabric"],
-            files: [file]
+            files: [file],
         )
 
         let encoded = try JSONEncoder().encode(version)
@@ -235,7 +234,7 @@ final class ModrinthModelTests: XCTestCase {
             filename: "file.jar",
             primary: true,
             size: 2048,
-            fileType: "jar"
+            fileType: "jar",
         )
 
         let encoded = try JSONEncoder().encode(file)
@@ -257,7 +256,7 @@ final class ModrinthModelTests: XCTestCase {
             filename: "file",
             primary: false,
             size: 0,
-            fileType: nil
+            fileType: nil,
         )
 
         let encoded = try JSONEncoder().encode(file)
@@ -312,7 +311,7 @@ final class ModrinthModelTests: XCTestCase {
             license: "MIT",
             clientSide: "required",
             serverSide: "optional",
-            fileName: "my-mod.jar"
+            fileName: "my-mod.jar",
         )
 
         let encoded = try JSONEncoder().encode(project)
@@ -392,7 +391,7 @@ final class ModrinthModelTests: XCTestCase {
             license: "",
             clientSide: "required",
             serverSide: "optional",
-            fileName: nil
+            fileName: nil,
         )
         let result = ModrinthResult(hits: [project], offset: 0, limit: 10, totalHits: 100)
 
@@ -440,7 +439,7 @@ final class ModrinthModelTests: XCTestCase {
         projectType: String,
         downloads: Int,
         team: String,
-        license: License? = nil
+        license: License? = nil,
     ) -> ModrinthProjectDetail {
         ModrinthProjectDetail(
             slug: slug,
@@ -460,15 +459,15 @@ final class ModrinthModelTests: XCTestCase {
             iconUrl: nil,
             id: id,
             team: team,
-            published: Date(timeIntervalSince1970: 1700000000),
-            updated: Date(timeIntervalSince1970: 1700000000),
+            published: Date(timeIntervalSince1970: 1_700_000_000),
+            updated: Date(timeIntervalSince1970: 1_700_000_000),
             followers: 0,
             license: license,
             versions: ["1.20.1"],
             gameVersions: ["1.20.1"],
             loaders: ["fabric"],
             type: nil,
-            fileName: nil
+            fileName: nil,
         )
     }
 
@@ -480,7 +479,7 @@ final class ModrinthModelTests: XCTestCase {
         gameVersions: [String],
         loaders: [String],
         files: [ModrinthVersionFile] = [],
-        dependencies: [ModrinthVersionDependency] = []
+        dependencies: [ModrinthVersionDependency] = [],
     ) -> ModrinthProjectDetailVersion {
         ModrinthProjectDetailVersion(
             gameVersions: gameVersions,
@@ -493,13 +492,13 @@ final class ModrinthModelTests: XCTestCase {
             versionNumber: versionNumber,
             changelog: nil,
             changelogUrl: nil,
-            datePublished: Date(timeIntervalSince1970: 1700000000),
+            datePublished: Date(timeIntervalSince1970: 1_700_000_000),
             downloads: 0,
             versionType: "release",
             status: "listed",
             requestedStatus: nil,
             files: files,
-            dependencies: dependencies
+            dependencies: dependencies,
         )
     }
 }

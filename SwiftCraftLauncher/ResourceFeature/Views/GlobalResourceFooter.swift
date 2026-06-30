@@ -39,31 +39,31 @@ struct GlobalResourceFooter: View {
         gameRepository: GameRepository,
         loadDependencies: @escaping (ModrinthProjectDetailVersion, GameVersionInfo) -> Void,
         mainVersionId: Binding<String>,
-        compatibleGames: [GameVersionInfo]
+        compatibleGames: [GameVersionInfo],
     ) {
         self.project = project
         self.resourceType = resourceType
-        self._isPresented = isPresented
+        _isPresented = isPresented
         self.projectDetail = projectDetail
         self.selectedGame = selectedGame
         self.selectedVersion = selectedVersion
         self.dependencyState = dependencyState
-        self._isDownloadingAll = isDownloadingAll
-        self._isDownloadingMainOnly = isDownloadingMainOnly
+        _isDownloadingAll = isDownloadingAll
+        _isDownloadingMainOnly = isDownloadingMainOnly
         self.gameRepository = gameRepository
         self.loadDependencies = loadDependencies
-        self._mainVersionId = mainVersionId
+        _mainVersionId = mainVersionId
         self.compatibleGames = compatibleGames
 
-        self._viewModel = StateObject(
+        _viewModel = StateObject(
             wrappedValue: GlobalResourceFooterViewModel(
                 project: project,
                 resourceType: resourceType,
                 isPresented: isPresented,
                 isDownloadingAll: isDownloadingAll,
                 isDownloadingMainOnly: isDownloadingMainOnly,
-                gameRepository: gameRepository
-            )
+                gameRepository: gameRepository,
+            ),
         )
     }
 
@@ -86,7 +86,7 @@ struct GlobalResourceFooter: View {
                                         viewModel.downloadAllManual(
                                             selectedGame: selectedGame,
                                             dependencyState: dependencyState,
-                                            mainVersionId: mainVersionId
+                                            mainVersionId: mainVersionId,
                                         )
                                     }, label: {
                                         if isDownloadingAll {
@@ -94,7 +94,7 @@ struct GlobalResourceFooter: View {
                                         } else {
                                             Text(
                                                 "global_resource.download_all"
-                                                    .localized()
+                                                    .localized(),
                                             )
                                         }
                                     })
@@ -107,7 +107,7 @@ struct GlobalResourceFooter: View {
                                 Button(action: {
                                     viewModel.addServerResource(
                                         selectedGame: selectedGame,
-                                        projectDetail: projectDetail
+                                        projectDetail: projectDetail,
                                     )
                                 }, label: {
                                     if isDownloadingAll {

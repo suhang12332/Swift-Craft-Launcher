@@ -44,10 +44,10 @@ struct AddPlayerSheetView: View {
         playerListViewModel: PlayerListViewModel,
         authService: MinecraftAuthService = AppServices.minecraftAuthService,
         yggdrasilAuthService: YggdrasilAuthService = AppServices.yggdrasilAuthService,
-        playerSettings: PlayerSettingsManager = AppServices.playerSettingsManager
+        playerSettings: PlayerSettingsManager = AppServices.playerSettingsManager,
     ) {
-        self._playerName = playerName
-        self._isPlayerNameValid = isPlayerNameValid
+        _playerName = playerName
+        _isPlayerNameValid = isPlayerNameValid
         self.onAdd = onAdd
         self.onCancel = onCancel
         self.onLogin = onLogin
@@ -104,7 +104,7 @@ struct AddPlayerSheetView: View {
             footer: {
                 HStack {
                     Button(
-                        "common.cancel".localized()
+                        "common.cancel".localized(),
                     ) {
                         authService.isLoading = false
                         yggdrasilAuthService.logout()
@@ -121,8 +121,7 @@ struct AddPlayerSheetView: View {
                             }
                             .keyboardShortcut(.defaultAction)
 
-                        case .authenticated(let profile):
-
+                        case let .authenticated(profile):
                             Button("addplayer.auth.add".localized()) {
                                 onLogin(profile)
                             }
@@ -145,13 +144,13 @@ struct AddPlayerSheetView: View {
                             Button("addplayer.auth.start_login".localized()) {
                                 Task {
                                     await viewModel.startYggdrasilAuthentication(
-                                        yggdrasilAuthService: yggdrasilAuthService
+                                        yggdrasilAuthService: yggdrasilAuthService,
                                     )
                                 }
                             }
                             .keyboardShortcut(.defaultAction)
                             .disabled(yggdrasilAuthService.currentServer == nil)
-                        case .authenticated(let profile):
+                        case let .authenticated(profile):
                             Button("addplayer.auth.add".localized()) {
                                 onYggdrasilLogin?(profile)
                             }
@@ -161,7 +160,7 @@ struct AddPlayerSheetView: View {
                         }
                     } else {
                         Button(
-                            "addplayer.purchase.minecraft".localized()
+                            "addplayer.purchase.minecraft".localized(),
                         ) {
                             openURL(URLConfig.Store.minecraftPurchase)
                         }
@@ -169,7 +168,7 @@ struct AddPlayerSheetView: View {
                         .tint(.accentColor)
 
                         Button(
-                            "addplayer.create".localized()
+                            "addplayer.create".localized(),
                         ) {
                             authService.isLoading = false
                             onAdd()
@@ -178,7 +177,7 @@ struct AddPlayerSheetView: View {
                         .keyboardShortcut(.defaultAction)
                     }
                 }
-            }
+            },
         )
         .task {
             await viewModel.checkPremiumAccountFlag()
@@ -217,7 +216,7 @@ struct AddPlayerSheetView: View {
     private var playerInfoSection: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("addplayer.info.title".localized())
-                .font(.headline) .padding(.bottom, 4)
+                .font(.headline).padding(.bottom, 4)
             Text("addplayer.info.line1".localized())
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -239,14 +238,14 @@ struct AddPlayerSheetView: View {
                 .font(.headline.bold())
             TextField(
                 "addplayer.name.placeholder".localized(),
-                text: $playerName
+                text: $playerName,
             )
             .textFieldStyle(.roundedBorder)
             .focused($isTextFieldFocused)
             .focusEffectDisabled()
             .overlay(
                 RoundedRectangle(cornerRadius: 5)
-                    .stroke(borderColor, lineWidth: 2)
+                    .stroke(borderColor, lineWidth: 2),
             )
             .popover(isPresented: $showErrorPopover, arrowEdge: .trailing) {
                 if let errorMessage = playerNameError {

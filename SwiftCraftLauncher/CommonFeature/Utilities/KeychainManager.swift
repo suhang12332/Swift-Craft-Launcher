@@ -130,7 +130,7 @@ enum KeychainManager {
                 kSecAttrAccount as String: storedAccount,
             ]
             let deleteStatus = SecItemDelete(deleteQuery as CFDictionary)
-            if deleteStatus != errSecSuccess && deleteStatus != errSecItemNotFound {
+            if deleteStatus != errSecSuccess, deleteStatus != errSecItemNotFound {
                 Logger.shared.error("Keychain 删除单项失败 - account: \(storedAccount), status: \(deleteStatus)")
                 allSucceeded = false
             }

@@ -35,22 +35,22 @@ struct CategoryContentView: View {
         gameVersion: String? = nil,
         gameLoader: String? = nil,
         dataSource: DataSource,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.project = project
         self.type = type
-        self._selectedCategories = selectedCategories
-        self._selectedFeatures = selectedFeatures
-        self._selectedResolutions = selectedResolutions
-        self._selectedPerformanceImpacts = selectedPerformanceImpacts
-        self._selectedVersions = selectedVersions
-        self._selectedLoaders = selectedLoaders
+        _selectedCategories = selectedCategories
+        _selectedFeatures = selectedFeatures
+        _selectedResolutions = selectedResolutions
+        _selectedPerformanceImpacts = selectedPerformanceImpacts
+        _selectedVersions = selectedVersions
+        _selectedLoaders = selectedLoaders
         self.gameVersion = gameVersion
         self.gameLoader = gameLoader
         self.dataSource = dataSource
         self.errorHandler = errorHandler
-        self._viewModel = StateObject(
-            wrappedValue: CategoryContentViewModel(project: project)
+        _viewModel = StateObject(
+            wrappedValue: CategoryContentViewModel(project: project),
         )
     }
 
@@ -78,10 +78,10 @@ struct CategoryContentView: View {
     }
 
     private func setupDefaultSelections() {
-        if let gameVersion = gameVersion {
+        if let gameVersion {
             selectedVersions = [gameVersion]
         }
-        if let gameLoader = gameLoader {
+        if let gameLoader {
             if project != ResourceType.shader.rawValue {
                 selectedLoaders = [gameLoader]
             } else {
@@ -108,7 +108,7 @@ struct CategoryContentView: View {
             throw GlobalError.validation(
                 chineseMessage: "项目类型不能为空",
                 i18nKey: "error.validation.project_type_empty",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -122,7 +122,7 @@ struct CategoryContentView: View {
                 FilterItem(id: $0.name, name: $0.name)
             },
             selectedItems: $selectedCategories,
-            isLoading: viewModel.isLoading
+            isLoading: viewModel.isLoading,
         )
     }
 
@@ -134,7 +134,7 @@ struct CategoryContentView: View {
             },
             selectedItems: $selectedVersions,
             isLoading: viewModel.isLoading,
-            isVersionSection: true
+            isVersionSection: true,
         )
     }
 
@@ -145,7 +145,7 @@ struct CategoryContentView: View {
                 FilterItem(id: $0.name, name: $0.name)
             },
             selectedItems: $selectedLoaders,
-            isLoading: viewModel.isLoading
+            isLoading: viewModel.isLoading,
         )
     }
 
@@ -180,7 +180,7 @@ struct CategoryContentView: View {
             title: "filter.environment",
             items: environmentItems,
             selectedItems: $selectedFeatures,
-            isLoading: viewModel.isLoading
+            isLoading: viewModel.isLoading,
         )
     }
 
@@ -192,7 +192,7 @@ struct CategoryContentView: View {
                     FilterItem(id: $0.name, name: $0.name)
                 },
                 selectedItems: $selectedFeatures,
-                isLoading: viewModel.isLoading
+                isLoading: viewModel.isLoading,
             )
             CategorySectionView(
                 title: "filter.resolutions",
@@ -200,13 +200,12 @@ struct CategoryContentView: View {
                     FilterItem(id: $0.name, name: $0.name)
                 },
                 selectedItems: $selectedResolutions,
-                isLoading: viewModel.isLoading
+                isLoading: viewModel.isLoading,
             )
         }
     }
 
     private var shaderSections: some View {
-
         Group {
             // CurseForge does not support performance impact filtering.
             if dataSource == .modrinth {
@@ -216,7 +215,7 @@ struct CategoryContentView: View {
                         FilterItem(id: $0.name, name: $0.name)
                     },
                     selectedItems: $selectedFeatures,
-                    isLoading: viewModel.isLoading
+                    isLoading: viewModel.isLoading,
                 )
                 CategorySectionView(
                     title: "filter.performance",
@@ -224,7 +223,7 @@ struct CategoryContentView: View {
                         FilterItem(id: $0.name, name: $0.name)
                     },
                     selectedItems: $selectedPerformanceImpacts,
-                    isLoading: viewModel.isLoading
+                    isLoading: viewModel.isLoading,
                 )
             }
         }
@@ -237,7 +236,7 @@ struct CategoryContentView: View {
                 FilterItem(id: $0.name, name: $0.name)
             },
             selectedItems: $selectedCategories,
-            isLoading: viewModel.isLoading
+            isLoading: viewModel.isLoading,
         )
     }
 
@@ -248,7 +247,7 @@ struct CategoryContentView: View {
                 FilterItem(id: $0.name, name: $0.name)
             },
             selectedItems: $selectedFeatures,
-            isLoading: viewModel.isLoading
+            isLoading: viewModel.isLoading,
         )
     }
 
@@ -259,7 +258,7 @@ struct CategoryContentView: View {
                 FilterItem(id: $0.name, name: $0.name)
             },
             selectedItems: $selectedResolutions,
-            isLoading: viewModel.isLoading
+            isLoading: viewModel.isLoading,
         )
     }
 
@@ -270,7 +269,7 @@ struct CategoryContentView: View {
                 FilterItem(id: $0.name, name: $0.name)
             },
             selectedItems: $selectedPerformanceImpacts,
-            isLoading: viewModel.isLoading
+            isLoading: viewModel.isLoading,
         )
     }
 

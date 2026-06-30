@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class MinecraftAuthTests: XCTestCase {
-
     func testAuthorizationCodeResponse_success() {
         let url = URL.require("swift-craft-launcher://callback?code=abc123")
         let response = AuthorizationCodeResponse(from: url)

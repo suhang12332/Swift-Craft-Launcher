@@ -9,7 +9,6 @@ import Foundation
 
 /// Unified library filtering utilities for download and classpath construction.
 enum LibraryFilter {
-
     /// Determines whether a library is allowed based on platform rules.
     /// - Parameters:
     ///   - library: The library to check.
@@ -36,7 +35,7 @@ enum LibraryFilter {
     ///   - minecraftVersion: The Minecraft version string, if available.
     /// - Returns: `true` if the library should be included in the classpath; `false` otherwise.
     static func shouldIncludeInClasspath(_ library: Library, minecraftVersion: String? = nil) -> Bool {
-        guard library.downloadable == true && library.includeInClasspath == true else {
+        guard library.downloadable == true, library.includeInClasspath == true else {
             return false
         }
         return isLibraryAllowed(library, minecraftVersion: minecraftVersion)

@@ -12,12 +12,11 @@ import Foundation
 /// This service interacts with the Minecraft Services API to upload, reset,
 /// and retrieve skin and cape data for authenticated online players.
 enum PlayerSkinService {
-
     private static func notifyPlayerUpdated(_ updatedPlayer: Player) {
         NotificationCenter.default.post(
             name: .playerUpdated,
             object: nil,
-            userInfo: ["updatedPlayer": updatedPlayer]
+            userInfo: ["updatedPlayer": updatedPlayer],
         )
     }
 
@@ -32,7 +31,7 @@ enum PlayerSkinService {
             throw GlobalError.authentication(
                 chineseMessage: "缺少访问令牌，请重新登录",
                 i18nKey: "error.authentication.missing_token",
-                level: .popup
+                level: .popup,
             )
         }
     }
@@ -43,30 +42,30 @@ enum PlayerSkinService {
             throw GlobalError.validation(
                 chineseMessage: "无效的请求参数",
                 i18nKey: "error.validation.invalid_request",
-                level: .notification
+                level: .notification,
             )
         case 401:
             throw GlobalError.authentication(
                 chineseMessage: "访问令牌无效或已过期，请重新登录",
                 i18nKey: "error.authentication.token_expired",
-                level: .popup
+                level: .popup,
             )
         case 403:
             throw GlobalError.authentication(
                 chineseMessage: "没有\(operation)的权限 (403)",
                 i18nKey: "error.authentication.\(operation)_forbidden",
-                level: .notification
+                level: .notification,
             )
         case 404:
             throw GlobalError.resource(
                 chineseMessage: "未找到相关资源",
                 i18nKey: "error.resource.not_found",
-                level: .notification
+                level: .notification,
             )
         case 429:
             throw GlobalError.network(
                 chineseMessage: "请求过于频繁，请稍后再试",
-                i18nKey: "error.network.rate_limited"
+                i18nKey: "error.network.rate_limited",
             )
         default:
             throw error
@@ -103,7 +102,7 @@ enum PlayerSkinService {
                 name: player.profile.name,
                 avatar: skinInfo.skinURL?.httpToHttps() ?? player.avatarName,
                 lastPlayed: player.lastPlayed,
-                isCurrent: player.isCurrent
+                isCurrent: player.isCurrent,
             )
 
             let updatedCredential = player.credential
@@ -141,14 +140,12 @@ enum PlayerSkinService {
                 return nil
             }
 
-            let skinInfo = PublicSkinInfo(
+            return PublicSkinInfo(
                 skinURL: skin.url,
                 model: skin.variant == "SLIM" ? .slim : .classic,
                 capeURL: nil,
-                fetchedAt: Date()
+                fetchedAt: Date(),
             )
-
-            return skinInfo
         } catch {
             Logger.shared.error("从 Minecraft Services API 获取皮肤信息失败: \(error.localizedDescription)")
             return nil
@@ -165,13 +162,13 @@ enum PlayerSkinService {
     static func uploadSkin(
         imageData: Data,
         model: PublicSkinInfo.SkinModel,
-        player: Player
+        player: Player,
     ) async -> Bool {
         do {
             try await uploadSkinThrowing(
                 imageData: imageData,
                 model: model,
-                player: player
+                player: player,
             )
             return true
         } catch {
@@ -199,7 +196,7 @@ enum PlayerSkinService {
     static func uploadSkinAndRefresh(
         imageData: Data,
         model: PublicSkinInfo.SkinModel,
-        player: Player
+        player: Player,
     ) async -> Bool {
         let success = await uploadSkin(imageData: imageData, model: model, player: player)
         if success {
@@ -226,7 +223,7 @@ enum PlayerSkinService {
     static func uploadSkinThrowing(
         imageData: Data,
         model: PublicSkinInfo.SkinModel,
-        player: Player
+        player: Player,
     ) async throws {
         try validateAccessToken(player)
 
@@ -243,7 +240,7 @@ enum PlayerSkinService {
             name: String,
             filename: String,
             mime: String,
-            data: Data
+            data: Data,
         ) {
             var part = Data()
             func appendString(_ s: String) {
@@ -251,7 +248,7 @@ enum PlayerSkinService {
             }
             appendString("--\(boundary)\r\n")
             appendString(
-                "Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"\r\n"
+                "Content-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"\r\n",
             )
             appendString("Content-Type: \(mime)\r\n\r\n")
             part.append(data)
@@ -266,7 +263,7 @@ enum PlayerSkinService {
             name: "file",
             filename: "skin.png",
             mime: "image/png",
-            data: imageData
+            data: imageData,
         )
         if let closing = "--\(boundary)--\r\n".data(using: .utf8) {
             body.append(closing)
@@ -279,7 +276,7 @@ enum PlayerSkinService {
                 headers: [
                     APIClient.Header.authorization: APIClient.bearer(player.authAccessToken),
                     APIClient.Header.contentType: "\(APIClient.MimeType.multipart); boundary=\(boundary)",
-                ]
+                ],
             )
         } catch let error as GlobalError where error.kind == .network {
             switch error.statusCode {
@@ -287,7 +284,7 @@ enum PlayerSkinService {
                 throw GlobalError.validation(
                     chineseMessage: "无效的皮肤文件",
                     i18nKey: "error.validation.skin_invalid_file",
-                    level: .popup
+                    level: .popup,
                 )
             default:
                 try handleHTTPError(error, operation: "皮肤上传")
@@ -314,7 +311,7 @@ enum PlayerSkinService {
     ///
     /// - Parameter profile: The player's Minecraft profile response.
     static func getActiveCapeId(from profile: MinecraftProfileResponse?) -> String? {
-        return profile?.capes?.first { $0.state == "ACTIVE" }?.id
+        profile?.capes?.first { $0.state == "ACTIVE" }?.id
     }
 
     /// A Boolean value indicating whether the skin configuration has changed.
@@ -327,13 +324,13 @@ enum PlayerSkinService {
     static func hasSkinChanges(
         selectedSkinData: Data?,
         currentModel: PublicSkinInfo.SkinModel,
-        originalModel: PublicSkinInfo.SkinModel?
+        originalModel: PublicSkinInfo.SkinModel?,
     ) -> Bool {
         if selectedSkinData != nil {
             return true
         }
 
-        if originalModel == nil && currentModel != .classic {
+        if originalModel == nil, currentModel != .classic {
             return true
         }
 
@@ -351,7 +348,7 @@ enum PlayerSkinService {
     ///   - currentActiveCapeId: The currently active cape identifier.
     /// - Returns: `true` if the selected cape differs from the current one.
     static func hasCapeChanges(selectedCapeId: String?, currentActiveCapeId: String?) -> Bool {
-        return selectedCapeId != currentActiveCapeId
+        selectedCapeId != currentActiveCapeId
     }
 
     /// Fetches the player's Minecraft profile including cape information.
@@ -375,12 +372,12 @@ enum PlayerSkinService {
 
         let data = try await APIClient.get(
             url: URLConfig.API.Authentication.minecraftProfile,
-            headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)]
+            headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)],
         )
 
         let profile = try JSONDecoder().decode(
             MinecraftProfileResponse.self,
-            from: data
+            from: data,
         )
         return MinecraftProfileResponse(
             id: profile.id,
@@ -389,7 +386,7 @@ enum PlayerSkinService {
             capes: profile.capes,
             accessToken: player.authAccessToken,
             authXuid: player.authXuid,
-            refreshToken: player.authRefreshToken
+            refreshToken: player.authRefreshToken,
         )
     }
 
@@ -425,7 +422,7 @@ enum PlayerSkinService {
                 headers: [
                     APIClient.Header.authorization: APIClient.bearer(player.authAccessToken),
                     APIClient.Header.contentType: APIClient.MimeType.json,
-                ]
+                ],
             )
         } catch let error as GlobalError where error.kind == .network {
             switch error.statusCode {
@@ -433,7 +430,7 @@ enum PlayerSkinService {
                 throw GlobalError.resource(
                     chineseMessage: "未找到斗篷或未拥有",
                     i18nKey: "error.resource.cape_not_found",
-                    level: .notification
+                    level: .notification,
                 )
             default:
                 try handleHTTPError(error, operation: "装备斗篷")
@@ -463,7 +460,7 @@ enum PlayerSkinService {
         do {
             _ = try await APIClient.delete(
                 url: URLConfig.API.Authentication.minecraftProfileActiveCape,
-                headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)]
+                headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)],
             )
         } catch let error as GlobalError where error.kind == .network {
             try handleHTTPError(error, operation: "隐藏斗篷")
@@ -476,7 +473,7 @@ enum PlayerSkinService {
         do {
             _ = try await APIClient.delete(
                 url: URLConfig.API.Authentication.minecraftProfileActiveSkin,
-                headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)]
+                headers: [APIClient.Header.authorization: APIClient.bearer(player.authAccessToken)],
             )
         } catch let error as GlobalError where error.kind == .network {
             try handleHTTPError(error, operation: "重置皮肤")

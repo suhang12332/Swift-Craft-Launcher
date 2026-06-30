@@ -8,7 +8,7 @@
 import Foundation
 
 /// A Minecraft mod loader type.
-enum GameLoader: String, CaseIterable, Identifiable, Codable, Sendable {
+enum GameLoader: String, CaseIterable, Identifiable, Codable {
     case vanilla
     case fabric
     case forge

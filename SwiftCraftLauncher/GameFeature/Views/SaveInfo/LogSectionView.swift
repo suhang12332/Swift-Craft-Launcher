@@ -5,9 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Displays log files as selectable chips with crash log highlighting.
-import SwiftUI
 import AppKit
+
+// Displays log files as selectable chips with crash log highlighting.
+import SwiftUI
 
 struct LogSectionView: View {
     let logs: [LogInfo]
@@ -18,7 +19,7 @@ struct LogSectionView: View {
             title: "saveinfo.logs",
             items: logs,
             isLoading: isLoading,
-            iconName: "doc.text.fill"
+            iconName: "doc.text.fill",
         ) { log in
             logChip(for: log)
         }
@@ -35,7 +36,7 @@ struct LogSectionView: View {
             customBackgroundColor: log.isCrashLog ? Color.red.opacity(0.1) : nil,
             customBorderColor: log.isCrashLog ? Color.red.opacity(0.3) : nil,
             maxTextWidth: 150,
-            iconColor: log.isCrashLog ? .red : nil
+            iconColor: log.isCrashLog ? .red : nil,
         )
     }
 

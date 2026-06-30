@@ -18,7 +18,7 @@ struct MainViewPresentationModifier: ViewModifier {
 
     init(
         detailState: ResourceDetailState,
-        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter
+        gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter,
     ) {
         self.detailState = detailState
         _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
@@ -46,7 +46,7 @@ struct MainViewPresentationModifier: ViewModifier {
             }
             .deleteGameConfirmationDialog(
                 gamePendingDeletion: $gameDialogsPresenter.gamePendingDeletion,
-                detailState: detailState
+                detailState: detailState,
             )
             .authlibInjectorMissingAlert()
     }
@@ -56,8 +56,8 @@ extension View {
     func mainViewPresentations(detailState: ResourceDetailState) -> some View {
         modifier(
             MainViewPresentationModifier(
-                detailState: detailState
-            )
+                detailState: detailState,
+            ),
         )
     }
 }

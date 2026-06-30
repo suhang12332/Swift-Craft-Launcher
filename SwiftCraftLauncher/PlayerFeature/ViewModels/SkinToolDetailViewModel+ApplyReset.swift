@@ -50,7 +50,7 @@ extension SkinToolDetailViewModel {
                 try Task.checkCancellation()
 
                 self.operationInProgress = false
-                if skinSuccess && capeSuccess {
+                if skinSuccess, capeSuccess {
                     onAllSuccess()
                 }
             } catch is CancellationError {
@@ -73,7 +73,7 @@ extension SkinToolDetailViewModel {
                 let result = await PlayerSkinService.uploadSkinAndRefresh(
                     imageData: skinData,
                     model: currentModel,
-                    player: player
+                    player: player,
                 )
                 try Task.checkCancellation()
                 if result {
@@ -91,7 +91,7 @@ extension SkinToolDetailViewModel {
                 } else {
                     return false
                 }
-            } else if originalModel == nil && currentModel != .classic {
+            } else if originalModel == nil, currentModel != .classic {
                 return false
             }
             return true
@@ -118,9 +118,9 @@ extension SkinToolDetailViewModel {
                     try Task.checkCancellation()
                     if result {
                         if let newProfile = await PlayerSkinService.fetchPlayerProfile(player: player) {
-                            self.playerProfile = newProfile
-                            self.selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
-                            self.updateHasChanges()
+                            playerProfile = newProfile
+                            selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
+                            updateHasChanges()
                         }
                     }
                     return result
@@ -129,9 +129,9 @@ extension SkinToolDetailViewModel {
                     try Task.checkCancellation()
                     if result {
                         if let newProfile = await PlayerSkinService.fetchPlayerProfile(player: player) {
-                            self.playerProfile = newProfile
-                            self.selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
-                            self.updateHasChanges()
+                            playerProfile = newProfile
+                            selectedCapeId = PlayerSkinService.getActiveCapeId(from: newProfile)
+                            updateHasChanges()
                         }
                     }
                     return result
@@ -168,7 +168,7 @@ extension SkinToolDetailViewModel {
             let result = await PlayerSkinService.uploadSkin(
                 imageData: data,
                 model: currentModel,
-                player: p
+                player: p,
             )
             try Task.checkCancellation()
             return result
@@ -188,7 +188,7 @@ extension SkinToolDetailViewModel {
         if let item = skinLibraryStore.saveSkin(
             data: selectedSkinData,
             model: currentModel,
-            originalFileName: originalFileName
+            originalFileName: originalFileName,
         ) {
             selectedSkinPath = item.fileURL.path
         }

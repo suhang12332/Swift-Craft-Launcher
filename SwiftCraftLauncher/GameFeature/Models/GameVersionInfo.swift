@@ -105,7 +105,7 @@ struct GameVersionInfo: Codable, Identifiable, Hashable {
         javaVersion: Int = 8,
         mainClass: String = "",
         gameArguments: [String] = [],
-        environmentVariables: String = ""
+        environmentVariables: String = "",
     ) {
         self.id = id.uuidString
         self.gameName = gameName

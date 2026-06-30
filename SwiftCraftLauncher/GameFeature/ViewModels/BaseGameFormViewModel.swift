@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 /// Base view model for game form views, providing common download management and form validation.
 @MainActor
@@ -19,18 +19,18 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     let gameSetupService = GameSetupUtil()
     let gameNameValidator: GameNameValidator
 
-    internal var downloadTask: Task<Void, Error>?
+    var downloadTask: Task<Void, Error>?
     private var cancellables = Set<AnyCancellable>()
     let configuration: GameFormConfiguration
     let errorHandler: GlobalErrorHandler
 
     init(
         configuration: GameFormConfiguration,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.configuration = configuration
         self.errorHandler = errorHandler
-        self.gameNameValidator = GameNameValidator(gameSetupService: gameSetupService)
+        gameNameValidator = GameNameValidator(gameSetupService: gameSetupService)
 
         setupObservers()
         updateParentState()
@@ -100,11 +100,11 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     }
 
     func computeIsDownloading() -> Bool {
-        return gameSetupService.downloadState.isDownloading
+        gameSetupService.downloadState.isDownloading
     }
 
     func computeIsFormValid() -> Bool {
-        return gameNameValidator.isFormValid
+        gameNameValidator.isFormValid
     }
 
     func startDownloadTask(_ task: @escaping () async -> Void) {

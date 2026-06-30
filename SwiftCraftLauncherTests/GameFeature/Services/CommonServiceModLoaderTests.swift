@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CommonServiceModLoaderTests: XCTestCase {
-
     private func decode<T: Decodable>(_ type: T.Type, from jsonObject: Any) throws -> T {
         let data = try JSONSerialization.data(withJSONObject: jsonObject)
         return try JSONDecoder().decode(type, from: data)
@@ -197,12 +196,12 @@ final class CommonServiceModLoaderTests: XCTestCase {
         XCTAssertTrue(result.path.contains("lib-1.0-natives-macos.jar"))
     }
 
-    func testMavenCoordinateToURL_withUrl() throws {
+    func testMavenCoordinateToURL_withUrl() {
         let lib = ModrinthLoaderLibrary(
             downloads: nil,
             name: "org.example:lib:1.0",
             includeInClasspath: true,
-            downloadable: true
+            downloadable: true,
         )
         var libWithUrl = lib
         libWithUrl.url = URL(fileURLWithPath: "/tmp/repo")
@@ -215,12 +214,12 @@ final class CommonServiceModLoaderTests: XCTestCase {
         XCTAssertTrue(result.path.contains("org/example/lib/1.0/lib-1.0.jar"))
     }
 
-    func testMavenCoordinateToURL_nilUrl() throws {
+    func testMavenCoordinateToURL_nilUrl() {
         let lib = ModrinthLoaderLibrary(
             downloads: nil,
             name: "org.example:lib:1.0",
             includeInClasspath: true,
-            downloadable: true
+            downloadable: true,
         )
 
         let result = CommonService.mavenCoordinateToURL(lib: lib)

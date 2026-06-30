@@ -15,7 +15,7 @@ enum FileDownloadCore {
                 throw GlobalError.validation(
                     chineseMessage: "无效的下载地址",
                     i18nKey: "error.validation.invalid_download_url",
-                    level: .notification
+                    level: .notification,
                 )
             }
             return url
@@ -32,13 +32,13 @@ enum FileDownloadCore {
         do {
             try fileManager.createDirectory(
                 at: destinationURL.deletingLastPathComponent(),
-                withIntermediateDirectories: true
+                withIntermediateDirectories: true,
             )
         } catch {
             throw GlobalError.fileSystem(
                 chineseMessage: "创建目标目录失败",
                 i18nKey: "error.filesystem.download_directory_creation_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -46,7 +46,7 @@ enum FileDownloadCore {
     static func existingFileSizeIfReusable(
         at destinationURL: URL,
         expectedSha1: String?,
-        fileManager: FileManager = .default
+        fileManager: FileManager = .default,
     ) -> Int64? {
         guard fileManager.fileExists(atPath: destinationURL.path) else {
             return nil
@@ -82,7 +82,7 @@ enum FileDownloadCore {
             throw GlobalError.validation(
                 chineseMessage: "SHA1 校验失败",
                 i18nKey: "error.validation.sha1_check_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -90,7 +90,7 @@ enum FileDownloadCore {
     static func moveDownloadedFile(
         from tempURL: URL,
         to destinationURL: URL,
-        fileManager: FileManager = .default
+        fileManager: FileManager = .default,
     ) throws {
         if fileManager.fileExists(atPath: destinationURL.path) {
             try fileManager.replaceItem(
@@ -98,7 +98,7 @@ enum FileDownloadCore {
                 withItemAt: tempURL,
                 backupItemName: nil,
                 options: [],
-                resultingItemURL: nil
+                resultingItemURL: nil,
             )
         } else {
             try fileManager.moveItem(at: tempURL, to: destinationURL)

@@ -13,7 +13,7 @@ extension ModPackImportViewModel {
         guard let archiveURL = selectedModPackFile,
               let extractedPath = extractedModPackPath,
               let indexInfo = modPackIndexInfo,
-              let gameRepository = gameRepository else { return }
+              let gameRepository else { return }
 
         if !CommonUtil.isVersionAtLeast(indexInfo.gameVersion) {
             return
@@ -38,9 +38,9 @@ extension ModPackImportViewModel {
                 prepared: .init(
                     extractedPath: extractedPath,
                     indexInfo: indexInfo,
-                    projectDetailForIcon: nil
-                )
-            )
+                    projectDetailForIcon: nil,
+                ),
+            ),
         )
 
         handleModPackInstallationResult(success: success, gameName: gameNameValidator.gameName)
@@ -66,7 +66,7 @@ extension ModPackImportViewModel {
             let globalError = GlobalError.resource(
                 chineseMessage: "本地整合包导入失败",
                 i18nKey: "error.resource.local_modpack_import_failed",
-                level: .notification
+                level: .notification,
             )
             errorHandler.handle(globalError)
             modPackViewModel.modPackInstallState.reset()

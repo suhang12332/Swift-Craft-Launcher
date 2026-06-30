@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ConstantsAndPresetsTests: XCTestCase {
-
     func testYggdrasilServerPresets_hasThreeServers() {
         XCTAssertEqual(Self.makeTestServers().count, 3)
     }
@@ -58,7 +57,7 @@ final class ConstantsAndPresetsTests: XCTestCase {
                 profilePath: "/api/yggdrasil/sessionserver/session/minecraft/profile",
                 scope: "Yggdrasil.MinecraftToken.Create Yggdrasil.PlayerProfiles.Read",
                 parserId: .littleskin,
-                token: "/api/yggdrasil/authserver/oauth"
+                token: "/api/yggdrasil/authserver/oauth",
             ),
             YggdrasilServerConfig(
                 name: "Mua",
@@ -71,7 +70,7 @@ final class ConstantsAndPresetsTests: XCTestCase {
                 profilePath: "/api/players",
                 scope: "Player.Read User.Read",
                 parserId: .mua,
-                token: "/api/yggdrasil/authserver/oauth"
+                token: "/api/yggdrasil/authserver/oauth",
             ),
             YggdrasilServerConfig(
                 name: "Ely.By",
@@ -84,7 +83,7 @@ final class ConstantsAndPresetsTests: XCTestCase {
                 profilePath: "/api/account/v1/info",
                 scope: "account_info",
                 parserId: .ely,
-                token: "/api/yggdrasil/authserver/oauth"
+                token: "/api/yggdrasil/authserver/oauth",
             ),
         ]
     }
@@ -135,7 +134,7 @@ final class ConstantsAndPresetsTests: XCTestCase {
             profilePath: "/api/profile",
             scope: "read",
             parserId: .littleskin,
-            token: "/api/yggdrasil/authserver/oauth"
+            token: "/api/yggdrasil/authserver/oauth",
         )
 
         XCTAssertEqual(config.authorizeURL?.absoluteString, "https://example.com/oauth/authorize")
@@ -153,7 +152,7 @@ final class ConstantsAndPresetsTests: XCTestCase {
             profilePath: "/profile",
             scope: "  read write  ",
             parserId: .littleskin,
-            token: "/api/yggdrasil/authserver/oauth"
+            token: "/api/yggdrasil/authserver/oauth",
         )
 
         XCTAssertEqual(config.scope, "read write")

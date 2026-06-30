@@ -36,7 +36,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         shouldShowClearButton: @escaping () -> Bool = { true },
         isVersionSection: Bool = false,
         customVisibleItems: [Item]? = nil,
-        customOverflowItems: [Item]? = nil
+        customOverflowItems: [Item]? = nil,
     ) {
         self.title = title
         self.items = items
@@ -74,12 +74,12 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
                 if !overflowItems.isEmpty {
                     OverflowButton(
                         count: overflowItems.count,
-                        isPresented: $showOverflowPopover
+                        isPresented: $showOverflowPopover,
                     ) {
                         overflowPopoverContent(overflowItems: overflowItems)
                     }
                 }
-                if let clearAction = clearAction, shouldShowClearButton() {
+                if let clearAction, shouldShowClearButton() {
                     clearButton(action: clearAction)
                 }
             }
@@ -92,7 +92,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
             count: SectionViewConstants.defaultPlaceholderCount,
             iconName: iconName,
             maxHeight: SectionViewConstants.defaultMaxHeight,
-            verticalPadding: SectionViewConstants.defaultVerticalPadding
+            verticalPadding: SectionViewConstants.defaultVerticalPadding,
         )
     }
 
@@ -102,7 +102,7 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
         return ContentWithOverflow(
             items: visibleItems,
             maxHeight: SectionViewConstants.defaultMaxHeight,
-            verticalPadding: SectionViewConstants.defaultVerticalPadding
+            verticalPadding: SectionViewConstants.defaultVerticalPadding,
         ) { item in
             chipBuilder(item)
         }
@@ -116,14 +116,13 @@ struct GenericSectionView<Item: Identifiable, ChipContent: View>: View {
             OverflowPopoverContent(
                 items: overflowItems,
                 maxHeight: SectionViewConstants.defaultPopoverMaxHeight,
-                width: SectionViewConstants.defaultPopoverWidth
+                width: SectionViewConstants.defaultPopoverWidth,
             ) { item in
                 chipBuilder(item)
             }
         }
     }
 
-    @ViewBuilder
     private func clearButton(action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: "xmark.circle.fill")
@@ -142,7 +141,7 @@ extension GenericSectionView {
         overflowContentBuilder: (([Item]) -> AnyView)? = nil,
         clearAction: (() -> Void)? = nil,
         shouldShowClearButton: @escaping () -> Bool = { true },
-        isVersionSection: Bool = false
+        isVersionSection: Bool = false,
     ) where Config.Item == Item {
         self.init(
             title: configuration.title,
@@ -154,7 +153,7 @@ extension GenericSectionView {
             overflowContentBuilder: overflowContentBuilder,
             clearAction: clearAction,
             shouldShowClearButton: shouldShowClearButton,
-            isVersionSection: isVersionSection
+            isVersionSection: isVersionSection,
         )
     }
 }

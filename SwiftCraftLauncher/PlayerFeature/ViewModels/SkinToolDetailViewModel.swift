@@ -6,9 +6,9 @@
 //
 
 import Foundation
+import SkinRenderKit
 import SwiftUI
 import UniformTypeIdentifiers
-import SkinRenderKit
 
 /// Manages the state and operations for the skin tool detail view.
 @MainActor
@@ -21,7 +21,7 @@ final class SkinToolDetailViewModel: ObservableObject {
     init(
         preloadedSkinInfo: PlayerSkinService.PublicSkinInfo?,
         preloadedProfile: MinecraftProfileResponse?,
-        skinLibraryStore: SkinLibraryStore = SkinLibraryStore()
+        skinLibraryStore: SkinLibraryStore = SkinLibraryStore(),
     ) {
         self.preloadedSkinInfo = preloadedSkinInfo
         self.preloadedProfile = preloadedProfile
@@ -90,7 +90,7 @@ final class SkinToolDetailViewModel: ObservableObject {
         loadCapeTask?.cancel()
         loadCapeTask = Task(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            await self.loadCurrentActiveCapeIfNeeded(from: profile, resolvedPlayer: resolvedPlayer)
+            await loadCurrentActiveCapeIfNeeded(from: profile, resolvedPlayer: resolvedPlayer)
         }
 
         updateHasChanges()
@@ -132,11 +132,11 @@ final class SkinToolDetailViewModel: ObservableObject {
         let hasSkinChange = PlayerSkinService.hasSkinChanges(
             selectedSkinData: selectedSkinData,
             currentModel: currentModel,
-            originalModel: originalModel
+            originalModel: originalModel,
         )
         let hasCapeChange = PlayerSkinService.hasCapeChanges(
             selectedCapeId: selectedCapeId,
-            currentActiveCapeId: currentActiveCapeId
+            currentActiveCapeId: currentActiveCapeId,
         )
 
         hasChanges = hasSkinChange || hasCapeChange
@@ -147,7 +147,7 @@ final class SkinToolDetailViewModel: ObservableObject {
         loadCapeTask?.cancel()
         loadCapeTask = nil
 
-        if let imageURL = imageURL, id != nil {
+        if let imageURL, id != nil {
             selectedCapeImage = nil
             downloadCapeTask?.cancel()
             downloadCapeTask = Task {

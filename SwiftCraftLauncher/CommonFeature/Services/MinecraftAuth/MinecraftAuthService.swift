@@ -5,10 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
-import SwiftUI
 import AuthenticationServices
+import Foundation
 import os
+import SwiftUI
 
 /// Handles Microsoft OAuth authentication for Minecraft accounts.
 class MinecraftAuthService: NSObject, ObservableObject {
@@ -22,7 +22,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
     let scope = AppConstants.minecraftScope
     let redirectUri = URLConfig.API.Authentication.redirectUri
 
-    let refreshTasksLock = OSAllocatedUnfairLock<[String: Task<Player, Error> ]>(initialState: [:])
+    let refreshTasksLock = OSAllocatedUnfairLock<[String: Task<Player, Error>]>(initialState: [:])
 
     override private init() {
         super.init()
@@ -45,10 +45,10 @@ class MinecraftAuthService: NSObject, ObservableObject {
         await withCheckedContinuation { continuation in
             webAuthSession = ASWebAuthenticationSession(
                 url: authURL,
-                callbackURLScheme: URL(string: redirectUri)?.scheme
+                callbackURLScheme: URL(string: redirectUri)?.scheme,
             ) { [weak self] callbackURL, error in
                 Task { @MainActor in
-                    if let error = error {
+                    if let error {
                         if let authError = error as? ASWebAuthenticationSessionError {
                             if authError.code == .canceledLogin {
                                 Logger.shared.info("用户取消了 Microsoft 认证")
@@ -66,7 +66,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
                         return
                     }
 
-                    guard let callbackURL = callbackURL,
+                    guard let callbackURL,
                           let authResponse = AuthorizationCodeResponse(from: callbackURL) else {
                         Logger.shared.error("Microsoft 无效的回调 URL")
                         self?.authState = .error("minecraft.auth.error.invalid_callback_url".localized())
@@ -141,7 +141,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
             let xboxToken = try await getXboxLiveTokenThrowing(accessToken: tokenResponse.accessToken)
             let minecraftToken = try await getMinecraftTokenThrowing(
                 xboxToken: xboxToken.token,
-                uhs: xboxToken.displayClaims.xui.first?.uhs ?? ""
+                uhs: xboxToken.displayClaims.xui.first?.uhs ?? "",
             )
             try await checkMinecraftOwnership(accessToken: minecraftToken)
 
@@ -151,7 +151,7 @@ class MinecraftAuthService: NSObject, ObservableObject {
             let profile = try await getMinecraftProfileThrowing(
                 accessToken: minecraftToken,
                 authXuid: xboxToken.displayClaims.xui.first?.uhs ?? "",
-                refreshToken: tokenResponse.refreshToken ?? ""
+                refreshToken: tokenResponse.refreshToken ?? "",
             )
 
             Logger.shared.info("Minecraft 认证成功，用户: \(profile.name)")

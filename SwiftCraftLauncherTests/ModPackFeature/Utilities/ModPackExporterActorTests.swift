@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 @MainActor
 final class ModPackExporterActorTests: XCTestCase {
-
     func testProcessedCounter_increment() async {
         let counter = ModPackExporter.ProcessedCounter()
         let count1 = await counter.increment()

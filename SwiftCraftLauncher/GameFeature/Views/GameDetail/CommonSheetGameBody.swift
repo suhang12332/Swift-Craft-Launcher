@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A game selection picker used within resource sheets.
+// A game selection picker used within resource sheets.
 import SwiftUI
 
 struct CommonSheetGameBody: View {
@@ -14,12 +14,12 @@ struct CommonSheetGameBody: View {
 
     var body: some View {
         CommonMenuPicker(
-            selection: $selectedGame
+            selection: $selectedGame,
         ) {
             Text("global_resource.select_game".localized())
         } content: {
             Text("global_resource.please_select_game".localized()).tag(
-                GameVersionInfo?(nil)
+                GameVersionInfo?(nil),
             )
             ForEach(compatibleGames, id: \.id) { game in
                 game.displayText

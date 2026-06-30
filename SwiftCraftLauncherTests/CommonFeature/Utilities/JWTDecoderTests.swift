@@ -5,17 +5,16 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class JWTDecoderTests: XCTestCase {
-
     func testExtractExpirationTime_validJWT() throws {
-        let payload: [String: Any] = ["exp": 1700000000.0]
+        let payload: [String: Any] = ["exp": 1_700_000_000.0]
         let jwt = try Self.makeJWT(payload: payload)
 
         let result = JWTDecoder.extractExpirationTime(from: jwt)
-        XCTAssertEqual(result, Date(timeIntervalSince1970: 1700000000))
+        XCTAssertEqual(result, Date(timeIntervalSince1970: 1_700_000_000))
     }
 
     func testExtractExpirationTime_invalidFormat_notThreeParts() {
@@ -46,14 +45,14 @@ final class JWTDecoderTests: XCTestCase {
     }
 
     func testExtractAllInfo_validJWT() throws {
-        let payload: [String: Any] = ["sub": "1234567890", "name": "TestUser", "exp": 1700000000.0]
+        let payload: [String: Any] = ["sub": "1234567890", "name": "TestUser", "exp": 1_700_000_000.0]
         let jwt = try Self.makeJWT(payload: payload)
 
         let info = JWTDecoder.extractAllInfo(from: jwt)
         XCTAssertNotNil(info)
         XCTAssertEqual(info?["sub"] as? String, "1234567890")
         XCTAssertEqual(info?["name"] as? String, "TestUser")
-        XCTAssertEqual(info?["exp"] as? TimeInterval, 1700000000)
+        XCTAssertEqual(info?["exp"] as? TimeInterval, 1_700_000_000)
     }
 
     func testExtractAllInfo_invalidFormat() {
@@ -65,7 +64,7 @@ final class JWTDecoderTests: XCTestCase {
     }
 
     func testIsTokenExpiringSoon_alreadyExpired() throws {
-        let payload: [String: Any] = ["exp": 1000000000.0]
+        let payload: [String: Any] = ["exp": 1_000_000_000.0]
         let jwt = try Self.makeJWT(payload: payload)
 
         XCTAssertTrue(JWTDecoder.isTokenExpiringSoon(jwt))
@@ -100,11 +99,11 @@ final class JWTDecoderTests: XCTestCase {
     }
 
     func testGetMinecraftTokenExpiration_validJWT() throws {
-        let payload: [String: Any] = ["exp": 1700000000.0]
+        let payload: [String: Any] = ["exp": 1_700_000_000.0]
         let jwt = try Self.makeJWT(payload: payload)
 
         let expiration = JWTDecoder.getMinecraftTokenExpiration(from: jwt)
-        XCTAssertEqual(expiration, Date(timeIntervalSince1970: 1700000000))
+        XCTAssertEqual(expiration, Date(timeIntervalSince1970: 1_700_000_000))
     }
 
     func testGetMinecraftTokenExpiration_invalidJWT_usesDefault() {

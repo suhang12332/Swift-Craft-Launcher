@@ -9,7 +9,6 @@ import Foundation
 
 /// Checks whether locally installed mods have updates available on Modrinth.
 enum ModUpdateChecker {
-
     /// The result of an update check.
     struct UpdateCheckResult {
         /// Whether a newer version is available.
@@ -33,31 +32,31 @@ enum ModUpdateChecker {
         projectId: String,
         gameInfo: GameVersionInfo,
         resourceType: String,
-        installedFileName: String? = nil
+        installedFileName: String? = nil,
     ) async -> UpdateCheckResult {
         guard let resourceDir = AppPaths.resourceDirectory(
             for: resourceType,
-            gameName: gameInfo.gameName
+            gameName: gameInfo.gameName,
         ) else {
             return UpdateCheckResult(
                 hasUpdate: false,
                 currentHash: nil,
                 latestHash: nil,
-                latestVersion: nil
+                latestVersion: nil,
             )
         }
 
         let currentHash = await getCurrentInstalledHash(
             resourceDir: resourceDir,
-            installedFileName: installedFileName
+            installedFileName: installedFileName,
         )
 
-        guard let currentHash = currentHash else {
+        guard let currentHash else {
             return UpdateCheckResult(
                 hasUpdate: false,
                 currentHash: nil,
                 latestHash: nil,
-                latestVersion: nil
+                latestVersion: nil,
             )
         }
 
@@ -69,18 +68,18 @@ enum ModUpdateChecker {
                 id: projectId,
                 selectedVersions: versionFilters,
                 selectedLoaders: loaderFilters,
-                type: resourceType
+                type: resourceType,
             )
 
             guard let latestVersion = versions.first,
                   let primaryFile = ModrinthService.filterPrimaryFiles(
-                      from: latestVersion.files
+                      from: latestVersion.files,
                   ) else {
                 return UpdateCheckResult(
                     hasUpdate: false,
                     currentHash: currentHash,
                     latestHash: nil,
-                    latestVersion: nil
+                    latestVersion: nil,
                 )
             }
 
@@ -92,7 +91,7 @@ enum ModUpdateChecker {
                 hasUpdate: hasUpdate,
                 currentHash: currentHash,
                 latestHash: latestHash,
-                latestVersion: latestVersion
+                latestVersion: latestVersion,
             )
         } catch {
             Logger.shared.error("检测 mod 更新失败: \(error.localizedDescription)")
@@ -100,7 +99,7 @@ enum ModUpdateChecker {
                 hasUpdate: false,
                 currentHash: currentHash,
                 latestHash: nil,
-                latestVersion: nil
+                latestVersion: nil,
             )
         }
     }
@@ -112,7 +111,7 @@ enum ModUpdateChecker {
     /// - Returns: The SHA-1 hash, or `nil` if the file does not exist.
     private static func getCurrentInstalledHash(
         resourceDir: URL,
-        installedFileName: String?
+        installedFileName: String?,
     ) async -> String? {
         if let fileName = installedFileName {
             let fileURL = resourceDir.appendingPathComponent(fileName)

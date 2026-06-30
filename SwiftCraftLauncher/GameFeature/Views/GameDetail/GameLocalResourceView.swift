@@ -5,9 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A searchable list view for browsing locally installed game resources.
-import SwiftUI
 import AppKit
+
+// A searchable list view for browsing locally installed game resources.
+import SwiftUI
 
 struct GameLocalResourceView: View {
     let game: GameVersionInfo
@@ -33,7 +34,7 @@ struct GameLocalResourceView: View {
                 viewModel: viewModel,
                 selectedItem: $selectedItem,
                 selectedProjectId: $selectedProjectId,
-                onResourceChanged: viewModel.refreshResources
+                onResourceChanged: viewModel.refreshResources,
             )
             if viewModel.isLoadingMore {
                 loadingMoreIndicator
@@ -44,14 +45,14 @@ struct GameLocalResourceView: View {
         .searchable(
             text: $searchText,
             placement: .toolbar,
-            prompt: "search.resources".localized()
+            prompt: "search.resources".localized(),
         )
         .onAppear {
             viewModel.updateContextOnRefreshToken(
                 game: game,
                 query: query,
                 localFilter: localFilter,
-                searchText: searchText
+                searchText: searchText,
             )
         }
         .onDisappear {
@@ -62,7 +63,7 @@ struct GameLocalResourceView: View {
                 game: game,
                 query: query,
                 localFilter: localFilter,
-                searchText: searchText
+                searchText: searchText,
             )
         }
         .onReceive(NotificationCenter.default.publisher(for: .localResourceImported)) { _ in
@@ -70,7 +71,7 @@ struct GameLocalResourceView: View {
                 game: game,
                 query: query,
                 localFilter: localFilter,
-                searchText: searchText
+                searchText: searchText,
             )
         }
         .onChange(of: query) { oldValue, newValue in
@@ -79,7 +80,7 @@ struct GameLocalResourceView: View {
                 viewModel.updateContextOnQueryChanged(
                     game: game,
                     query: newValue,
-                    localFilter: localFilter
+                    localFilter: localFilter,
                 )
             }
         }
@@ -93,7 +94,7 @@ struct GameLocalResourceView: View {
                 game: game,
                 query: query,
                 localFilter: localFilter,
-                searchText: searchText
+                searchText: searchText,
             )
         }
         .alert(
@@ -102,8 +103,8 @@ struct GameLocalResourceView: View {
                 get: { viewModel.error != nil },
                 set: { newValue in
                     if !newValue { viewModel.error = nil }
-                }
-            )
+                },
+            ),
         ) {
             Button("common.close".localized()) {
                 viewModel.error = nil

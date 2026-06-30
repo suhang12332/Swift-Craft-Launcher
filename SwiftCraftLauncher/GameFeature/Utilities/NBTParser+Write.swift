@@ -8,7 +8,6 @@
 import Foundation
 
 extension NBTParser {
-
     /// Writes a single byte to the output buffer.
     /// - Parameter value: The byte to write.
     func writeByte(_ value: UInt8) {
@@ -100,7 +99,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "无法将值转换为 Byte 类型",
                     i18nKey: "error.filesystem.nbt_invalid_byte_value",
-                    level: .notification
+                    level: .notification,
                 )
             }
         case .short:
@@ -113,7 +112,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "无法将值转换为 Short 类型",
                     i18nKey: "error.filesystem.nbt_invalid_short_value",
-                    level: .notification
+                    level: .notification,
                 )
             }
             writeShort(UInt16(bitPattern: shortValue))
@@ -127,7 +126,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "无法将值转换为 Int 类型",
                     i18nKey: "error.filesystem.nbt_invalid_int_value",
-                    level: .notification
+                    level: .notification,
                 )
             }
             writeInt(intValue)
@@ -141,7 +140,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "无法将值转换为 Long 类型",
                     i18nKey: "error.filesystem.nbt_invalid_long_value",
-                    level: .notification
+                    level: .notification,
                 )
             }
             writeLong(longValue)
@@ -150,7 +149,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "无法将值转换为 Float 类型",
                     i18nKey: "error.filesystem.nbt_invalid_float_value",
-                    level: .notification
+                    level: .notification,
                 )
             }
             writeFloat(floatValue)
@@ -159,7 +158,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "无法将值转换为 Double 类型",
                     i18nKey: "error.filesystem.nbt_invalid_double_value",
-                    level: .notification
+                    level: .notification,
                 )
             }
             writeDouble(doubleValue)
@@ -178,7 +177,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "无法将值转换为 Compound 类型",
                     i18nKey: "error.filesystem.nbt_invalid_compound_value",
-                    level: .notification
+                    level: .notification,
                 )
             }
             try writeCompound(compoundValue)
@@ -187,7 +186,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "无法将值转换为 ByteArray 类型",
                     i18nKey: "error.filesystem.nbt_invalid_byte_array_value",
-                    level: .notification
+                    level: .notification,
                 )
             }
             writeInt(Int32(array.count))
@@ -197,7 +196,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "无法将值转换为 IntArray 类型",
                     i18nKey: "error.filesystem.nbt_invalid_int_array_value",
-                    level: .notification
+                    level: .notification,
                 )
             }
             writeInt(Int32(array.count))
@@ -209,7 +208,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "无法将值转换为 LongArray 类型",
                     i18nKey: "error.filesystem.nbt_invalid_long_array_value",
-                    level: .notification
+                    level: .notification,
                 )
             }
             writeInt(Int32(array.count))

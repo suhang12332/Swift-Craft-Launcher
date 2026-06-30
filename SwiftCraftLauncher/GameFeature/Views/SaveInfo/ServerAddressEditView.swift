@@ -5,9 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A sheet for editing server address details including name, address, port, and options.
-import SwiftUI
 import AppKit
+
+// A sheet for editing server address details including name, address, port, and options.
+import SwiftUI
 
 struct ServerAddressEditView: View {
     let server: ServerAddress?
@@ -53,7 +54,7 @@ struct ServerAddressEditView: View {
         CommonSheetView(
             header: { headerView },
             body: { bodyView },
-            footer: { footerView }
+            footer: { footerView },
         )
         .alert("common.error".localized(), isPresented: $actionViewModel.showError) {
             Button("common.ok".localized(), role: .cancel) { }
@@ -107,7 +108,7 @@ struct ServerAddressEditView: View {
 
     private var bodyView: some View {
         VStack(alignment: .leading, spacing: 20) {
-            if let serverInfo = serverInfo {
+            if let serverInfo {
                 serverInfoCard(serverInfo)
             }
 
@@ -123,7 +124,7 @@ struct ServerAddressEditView: View {
                         .onChange(of: serverAddress) { _, newValue in
                             if let colonIndex = newValue.lastIndex(of: ":") {
                                 let afterColon = String(newValue[newValue.index(after: colonIndex)...])
-                                if let port = Int(afterColon), port > 0 && port <= 65535 {
+                                if let port = Int(afterColon), port > 0, port <= 65535 {
                                     let addressOnly = String(newValue[..<colonIndex])
                                     if serverAddress != addressOnly {
                                         serverAddress = addressOnly
@@ -161,7 +162,7 @@ struct ServerAddressEditView: View {
             serverName: name,
             serverAddress: address,
             serverPort: port,
-            serverInfo: info
+            serverInfo: info,
         )
     }
 
@@ -193,7 +194,7 @@ struct ServerAddressEditView: View {
         let trimmedAddress = serverAddress.trimmingCharacters(in: .whitespaces)
         let trimmedPort = serverPort.trimmingCharacters(in: .whitespaces)
 
-        guard !trimmedName.isEmpty && !trimmedAddress.isEmpty else {
+        guard !trimmedName.isEmpty, !trimmedAddress.isEmpty else {
             return false
         }
 
@@ -221,7 +222,7 @@ struct ServerAddressEditView: View {
             address: serverAddress,
             port: port,
             hidden: isHidden,
-            acceptTextures: acceptTextures
+            acceptTextures: acceptTextures,
         )
 
         actionViewModel.saveServer(request: request, dismiss: { dismiss() }, onRefresh: onRefresh)
@@ -240,7 +241,7 @@ struct ServerAddressEditView: View {
             serverToDelete: server,
             gameName: gameName,
             dismiss: { dismiss() },
-            onRefresh: onRefresh
+            onRefresh: onRefresh,
         )
     }
 }

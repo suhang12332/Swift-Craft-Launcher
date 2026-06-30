@@ -21,14 +21,14 @@ final class GameFormImportViewModel: ObservableObject {
     /// - Returns: A `GameFormMode` for mod pack import, or `nil` if preparation fails.
     func prepareModPackImportMode(from result: Result<[URL], Error>) async -> GameFormMode? {
         switch result {
-        case .success(let urls):
+        case let .success(urls):
             guard let url = urls.first else { return nil }
 
             guard url.startAccessingSecurityScopedResource() else {
                 let globalError = GlobalError.fileSystem(
                     chineseMessage: "无法访问所选文件",
                     i18nKey: "error.filesystem.file_access_failed",
-                    level: .notification
+                    level: .notification,
                 )
                 errorHandler.handle(globalError)
                 return nil
@@ -44,7 +44,7 @@ final class GameFormImportViewModel: ObservableObject {
                 return nil
             }
 
-        case .failure(let error):
+        case let .failure(error):
             errorHandler.handle(GlobalError.from(error))
             return nil
         }
@@ -58,7 +58,7 @@ final class GameFormImportViewModel: ObservableObject {
 
             try FileManager.default.createDirectory(
                 at: tempDir,
-                withIntermediateDirectories: true
+                withIntermediateDirectories: true,
             )
 
             let tempFile = tempDir.appendingPathComponent(url.lastPathComponent)

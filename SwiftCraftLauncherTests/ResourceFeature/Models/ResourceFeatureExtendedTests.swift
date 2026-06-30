@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ResourceFeatureExtendedTests: XCTestCase {
-
     func testFilterItem_init() {
         let item = FilterItem(id: "1", name: "Test")
         XCTAssertEqual(item.id, "1")
@@ -76,7 +75,7 @@ final class ResourceFeatureExtendedTests: XCTestCase {
             features: ["client"],
             resolutions: ["16x"],
             performanceImpact: ["low"],
-            loaders: ["fabric"]
+            loaders: ["fabric"],
         )
         XCTAssertEqual(options.versions, ["1.20.1"])
         XCTAssertEqual(options.categories, ["technology"])
@@ -124,7 +123,7 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         let options = FilterOptions(versions: [], categories: [], features: [], resolutions: [], performanceImpact: [], loaders: [])
         let facets = vm.buildFacets(
             projectType: "mod",
-            filterOptions: options
+            filterOptions: options,
         )
         XCTAssertEqual(facets.count, 1)
         XCTAssertEqual(facets[0], ["project_type:mod"])
@@ -136,7 +135,7 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         let options = FilterOptions(versions: ["1.20.1", "1.19.4"], categories: [], features: [], resolutions: [], performanceImpact: [], loaders: [])
         let facets = vm.buildFacets(
             projectType: "mod",
-            filterOptions: options
+            filterOptions: options,
         )
         XCTAssertEqual(facets.count, 2)
         XCTAssertTrue(facets[1].contains("versions:1.20.1"))
@@ -149,7 +148,7 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         let options = FilterOptions(versions: [], categories: ["technology"], features: [], resolutions: [], performanceImpact: [], loaders: [])
         let facets = vm.buildFacets(
             projectType: "mod",
-            filterOptions: options
+            filterOptions: options,
         )
         XCTAssertEqual(facets.count, 2)
         XCTAssertTrue(facets[1].contains("categories:technology"))
@@ -161,7 +160,7 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         let options = FilterOptions(versions: [], categories: [], features: [], resolutions: [], performanceImpact: [], loaders: ["fabric"])
         let facets = vm.buildFacets(
             projectType: "resourcepack",
-            filterOptions: options
+            filterOptions: options,
         )
         // Loaders should not be added for resourcepack
         for facet in facets {
@@ -175,7 +174,7 @@ final class ResourceFeatureExtendedTests: XCTestCase {
         let options = FilterOptions(versions: [], categories: [], features: [], resolutions: [], performanceImpact: [], loaders: ["vanilla"])
         let facets = vm.buildFacets(
             projectType: "mod",
-            filterOptions: options
+            filterOptions: options,
         )
         let loaderFacets = facets.first { $0.contains("categories:minecraft") }
         XCTAssertNotNil(loaderFacets)

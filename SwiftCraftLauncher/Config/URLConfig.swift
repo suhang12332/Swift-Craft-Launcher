@@ -70,7 +70,7 @@ enum URLConfig {
     /// - Parameter urlString: The original URL string.
     /// - Returns: A proxied URL string if applicable; otherwise the original string.
     static func applyGitProxyIfNeeded(_ urlString: String) -> String {
-        return autoreleasepool {
+        autoreleasepool {
             guard let url = URL(string: urlString) else { return urlString }
             return applyGitProxyIfNeeded(url).absoluteString
         }
@@ -157,7 +157,7 @@ enum URLConfig {
         enum AuthlibInjector {
             /// The download URL for the current version of Authlib Injector.
             static let download = URLConfig.applyGitProxyIfNeeded(
-                URLConfig.url("https://github.com/yushijinhun/authlib-injector/releases/download/v\(AppConstants.AuthlibInjector.version)/\(AppConstants.AuthlibInjector.jarFileName)")
+                URLConfig.url("https://github.com/yushijinhun/authlib-injector/releases/download/v\(AppConstants.AuthlibInjector.version)/\(AppConstants.AuthlibInjector.jarFileName)"),
             )
 
             /// Returns the normalized API root address expected by Authlib Injector.
@@ -217,7 +217,7 @@ enum URLConfig {
                 let url = repositoryApiBaseURL
                     .appendingPathComponent("contributors")
                     .appending(queryItems: [
-                        URLQueryItem(name: "per_page", value: "\(perPage)")
+                        URLQueryItem(name: "per_page", value: "\(perPage)"),
                     ])
                 return URLConfig.applyGitProxyIfNeeded(url)
             }
@@ -420,7 +420,7 @@ enum URLConfig {
             /// - Parameter loader: The mod loader name (e.g. "fabric", "forge").
             /// - Returns: The manifest JSON URL.
             static func loaderManifest(loader: String) -> URL {
-                return URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/manifest.json")
+                URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/manifest.json")
             }
 
             /// Returns the Minecraft version metadata URL.
@@ -428,7 +428,7 @@ enum URLConfig {
             /// - Parameter version: The Minecraft version string.
             /// - Returns: The version metadata JSON URL.
             static func versionInfo(version: String) -> URL {
-                return URLConfig.url("https://launcher-meta.modrinth.com/minecraft/v0/versions/\(version).json")
+                URLConfig.url("https://launcher-meta.modrinth.com/minecraft/v0/versions/\(version).json")
             }
 
             /// Returns the loader profile URL for a specific loader and Minecraft version.
@@ -438,7 +438,7 @@ enum URLConfig {
             ///   - version: The Minecraft version string.
             /// - Returns: The loader profile JSON URL.
             static func loaderProfile(loader: String, version: String) -> URL {
-                return URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/versions/\(version).json")
+                URLConfig.url("https://launcher-meta.modrinth.com/\(loader)/v0/versions/\(version).json")
             }
         }
 
@@ -479,7 +479,7 @@ enum URLConfig {
             /// - Returns: The project list base URL string.
             static func webProjectURL(projectType: String) -> String {
                 let type = projectType.lowercased()
-                let pathPrefix: String = switch type {
+                let pathPrefix = switch type {
                 case ResourceType.mod.rawValue:
                     "mc-mods/"
                 case ResourceType.resourcepack.rawValue:
@@ -548,11 +548,11 @@ enum URLConfig {
                 var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
                 var queryItems: [URLQueryItem] = []
 
-                if let gameVersion = gameVersion {
+                if let gameVersion {
                     queryItems.append(URLQueryItem(name: "gameVersion", value: gameVersion))
                 }
 
-                if let modLoaderType = modLoaderType {
+                if let modLoaderType {
                     queryItems.append(URLQueryItem(name: "modLoaderType", value: String(modLoaderType)))
                 }
 

@@ -20,24 +20,20 @@ public extension AppLogging {
     func debug(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         logDebug(items, file: file, function: function, line: line)
     }
+
     func info(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         logInfo(items, file: file, function: function, line: line)
     }
+
     func warning(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         logWarning(items, file: file, function: function, line: line)
     }
+
     func error(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         logError(items, file: file, function: function, line: line)
     }
 }
 
-private struct AppLoggerKey: EnvironmentKey {
-    static let defaultValue: AppLogging = Logger.shared
-}
-
 public extension EnvironmentValues {
-    var appLogger: AppLogging {
-        get { self[AppLoggerKey.self] }
-        set { self[AppLoggerKey.self] = newValue }
-    }
+    @Entry var appLogger: AppLogging = Logger.shared
 }

@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class BlessingSkinParserTests: XCTestCase {
-
     func testParse_emptyArray_returnsNil() {
         let data = Data("[]".utf8)
         let result = BlessingSkinProfileListParser.parse(data: data, baseURL: "https://example.com")

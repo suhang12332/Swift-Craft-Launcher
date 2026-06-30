@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class YggdrasilModelsTests: XCTestCase {
-
     func testParserID_rawValues() {
         XCTAssertEqual(YggdrasilProfileParserID.littleskin.rawValue, "littleskin")
         XCTAssertEqual(YggdrasilProfileParserID.mua.rawValue, "mua")
@@ -46,7 +45,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/api/profile",
             scope: "openid",
             parserId: .littleskin,
-            token: "/api/yggdrasil/authserver/oauth"
+            token: "/api/yggdrasil/authserver/oauth",
         )
 
         XCTAssertEqual(config.name, "test")
@@ -67,7 +66,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/api/profile",
             scope: "openid",
             parserId: .littleskin,
-            token: "/api/yggdrasil/authserver/oauth"
+            token: "/api/yggdrasil/authserver/oauth",
         )
 
         XCTAssertEqual(config.name, "LittleSkin")
@@ -86,7 +85,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/profile",
             scope: "  openid  ",
             parserId: .mua,
-            token: "/token/path"
+            token: "/token/path",
         )
 
         XCTAssertEqual(config.scope, "openid")
@@ -102,7 +101,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/api/profile",
             scope: "openid",
             parserId: .littleskin,
-            token: "/api/yggdrasil/authserver/oauth"
+            token: "/api/yggdrasil/authserver/oauth",
         )
 
         let url = config.authorizeURL
@@ -120,7 +119,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/api/profile",
             scope: "openid",
             parserId: .littleskin,
-            token: "/api/yggdrasil/authserver/oauth"
+            token: "/api/yggdrasil/authserver/oauth",
         )
 
         let url = config.tokenURL
@@ -138,7 +137,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/api/profile",
             scope: "openid",
             parserId: .littleskin,
-            token: "/api/yggdrasil/authserver/oauth"
+            token: "/api/yggdrasil/authserver/oauth",
         )
 
         let url = config.profileURL
@@ -156,7 +155,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/p",
             scope: "s",
             parserId: .littleskin,
-            token: "/token"
+            token: "/token",
         )
         let b = YggdrasilServerConfig(
             name: "A",
@@ -167,7 +166,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/p",
             scope: "s",
             parserId: .littleskin,
-            token: "/token"
+            token: "/token",
         )
         let c = YggdrasilServerConfig(
             name: "C",
@@ -178,7 +177,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/p",
             scope: "s",
             parserId: .littleskin,
-            token: "/token"
+            token: "/token",
         )
 
         XCTAssertEqual(a, b)
@@ -197,7 +196,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/profile",
             scope: "openid",
             parserId: .ely,
-            token: "/token/path"
+            token: "/token/path",
         )
 
         let data = try JSONEncoder().encode(original)
@@ -218,7 +217,7 @@ final class YggdrasilModelsTests: XCTestCase {
             profilePath: "/p",
             scope: "s",
             parserId: .littleskin,
-            token: "/token"
+            token: "/token",
         )
         let b = a
         var set = Set<YggdrasilServerConfig>()
@@ -235,7 +234,7 @@ final class YggdrasilModelsTests: XCTestCase {
             capes: nil,
             accessToken: "token123",
             refreshToken: "refresh456",
-            serverBaseURL: "https://littleskin.cn"
+            serverBaseURL: "https://littleskin.cn",
         )
 
         let data = try JSONEncoder().encode(original)
@@ -255,7 +254,7 @@ final class YggdrasilModelsTests: XCTestCase {
             capes: nil,
             accessToken: "at",
             refreshToken: "rt",
-            serverBaseURL: "url"
+            serverBaseURL: "url",
         )
         let b = YggdrasilProfile(
             id: "id",
@@ -264,7 +263,7 @@ final class YggdrasilModelsTests: XCTestCase {
             capes: nil,
             accessToken: "at",
             refreshToken: "rt",
-            serverBaseURL: "url"
+            serverBaseURL: "url",
         )
         XCTAssertEqual(a, b)
     }
@@ -301,10 +300,10 @@ final class YggdrasilModelsTests: XCTestCase {
             capes: nil,
             accessToken: "at",
             refreshToken: "rt",
-            serverBaseURL: "url"
+            serverBaseURL: "url",
         )
         let state = YggdrasilAuthState.authenticated(profile: profile)
-        if case .authenticated(let p) = state {
+        if case let .authenticated(p) = state {
             XCTAssertEqual(p.id, "id")
         } else {
             XCTFail("Expected authenticated state")
@@ -328,25 +327,25 @@ final class YggdrasilModelsTests: XCTestCase {
 
     func testPresets_hasLittleSkin() {
         let servers = Self.makeTestServers()
-        let names = servers.compactMap { $0.name }
+        let names = servers.compactMap(\.name)
         XCTAssertTrue(names.contains("LittleSkin"))
     }
 
     func testPresets_hasMua() {
         let servers = Self.makeTestServers()
-        let names = servers.compactMap { $0.name }
+        let names = servers.compactMap(\.name)
         XCTAssertTrue(names.contains("Mua"))
     }
 
     func testPresets_hasEly() {
         let servers = Self.makeTestServers()
-        let names = servers.compactMap { $0.name }
+        let names = servers.compactMap(\.name)
         XCTAssertTrue(names.contains("Ely.By"))
     }
 
     func testPresets_parserIds() {
         let servers = Self.makeTestServers()
-        let parserIds = servers.map { $0.parserId }
+        let parserIds = servers.map(\.parserId)
         XCTAssertTrue(parserIds.contains(.littleskin))
         XCTAssertTrue(parserIds.contains(.mua))
         XCTAssertTrue(parserIds.contains(.ely))
@@ -365,7 +364,7 @@ final class YggdrasilModelsTests: XCTestCase {
                 profilePath: "/api/yggdrasil/sessionserver/session/minecraft/profile",
                 scope: "Yggdrasil.MinecraftToken.Create Yggdrasil.PlayerProfiles.Read",
                 parserId: .littleskin,
-                token: "/api/yggdrasil/authserver/oauth"
+                token: "/api/yggdrasil/authserver/oauth",
             ),
             YggdrasilServerConfig(
                 name: "Mua",
@@ -378,7 +377,7 @@ final class YggdrasilModelsTests: XCTestCase {
                 profilePath: "/api/players",
                 scope: "Player.Read User.Read",
                 parserId: .mua,
-                token: "/token"
+                token: "/token",
             ),
             YggdrasilServerConfig(
                 name: "Ely.By",
@@ -391,7 +390,7 @@ final class YggdrasilModelsTests: XCTestCase {
                 profilePath: "/api/account/v1/info",
                 scope: "account_info",
                 parserId: .ely,
-                token: "/api/oauth2/v1/token"
+                token: "/api/oauth2/v1/token",
             ),
         ]
     }

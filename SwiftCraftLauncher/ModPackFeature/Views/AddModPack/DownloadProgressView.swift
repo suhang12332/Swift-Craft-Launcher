@@ -26,12 +26,12 @@ struct DownloadProgressView: View {
             progressRow(
                 title: "download.core.title".localized(),
                 state: gameSetupService.downloadState,
-                type: .core
+                type: .core,
             )
             progressRow(
                 title: "download.resources.title".localized(),
                 state: gameSetupService.downloadState,
-                type: .resources
+                type: .resources,
             )
         }
     }
@@ -47,21 +47,21 @@ struct DownloadProgressView: View {
                         title: title,
                         state: gameSetupService.fabricDownloadState,
                         type: .core,
-                        version: indexInfo.loaderVersion
+                        version: indexInfo.loaderVersion,
                     )
                 } else if loaderType == GameLoader.forge.displayName {
                     progressRow(
                         title: title,
                         state: gameSetupService.forgeDownloadState,
                         type: .core,
-                        version: indexInfo.loaderVersion
+                        version: indexInfo.loaderVersion,
                     )
                 } else if loaderType == GameLoader.neoforge.displayName {
                     progressRow(
                         title: title,
                         state: gameSetupService.neoForgeDownloadState,
                         type: .core,
-                        version: indexInfo.loaderVersion
+                        version: indexInfo.loaderVersion,
                     )
                 }
             }
@@ -75,21 +75,21 @@ struct DownloadProgressView: View {
                     progressRow(
                         title: "modpack.copying_files".localized(),
                         installState: modPackInstallState,
-                        type: .overrides
+                        type: .overrides,
                     )
                 }
 
                 progressRow(
                     title: "modpack.files.title".localized(),
                     installState: modPackInstallState,
-                    type: .files
+                    type: .files,
                 )
 
                 if modPackInstallState.dependenciesTotal > 0 {
                     progressRow(
                         title: "modpack.dependencies.title".localized(),
                         installState: modPackInstallState,
-                        type: .dependencies
+                        type: .dependencies,
                     )
                 }
             }
@@ -100,14 +100,14 @@ struct DownloadProgressView: View {
         title: String,
         state: DownloadState,
         type: ProgressType,
-        version: String? = nil
+        version: String? = nil,
     ) -> some View {
         FormSection {
             ProgressRowWrapper(
                 title: title,
                 state: state,
                 type: type,
-                version: version
+                version: version,
             )
         }
     }
@@ -115,7 +115,7 @@ struct DownloadProgressView: View {
     private func progressRow(
         title: String,
         installState: ModPackInstallState,
-        type: InstallProgressType
+        type: InstallProgressType,
     ) -> some View {
         FormSection {
             DownloadProgressRow(
@@ -160,7 +160,7 @@ struct DownloadProgressView: View {
                         return installState.overridesTotal
                     }
                 }(),
-                version: nil
+                version: nil,
             )
         }
     }
@@ -206,7 +206,7 @@ private struct ProgressRowWrapper: View {
                 ? state.coreCompletedFiles : state.resourcesCompletedFiles,
             total: type == .core
                 ? state.coreTotalFiles : state.resourcesTotalFiles,
-            version: version
+            version: version,
         )
     }
 }

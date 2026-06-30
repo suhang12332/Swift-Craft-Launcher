@@ -31,16 +31,16 @@ final class AIChatScrollCoordinatorViewModel: ObservableObject {
         wasSending: Bool,
         isSending: Bool,
         scrollToBottom: @escaping @MainActor () -> Void,
-        getLastMessageContentLength: @escaping @MainActor () -> Int?
+        getLastMessageContentLength: @escaping @MainActor () -> Int?,
     ) {
-        if !wasSending && isSending {
+        if !wasSending, isSending {
             startPeriodicScrollCheck(
                 scrollToBottom: scrollToBottom,
-                getLastMessageContentLength: getLastMessageContentLength
+                getLastMessageContentLength: getLastMessageContentLength,
             ) {
                 isSending
             }
-        } else if wasSending && !isSending {
+        } else if wasSending, !isSending {
             stopPeriodicScrollCheck()
             scheduleScroll(scrollToBottom: scrollToBottom)
         }
@@ -50,12 +50,12 @@ final class AIChatScrollCoordinatorViewModel: ObservableObject {
     func onAppearIfSending(
         isSending: Bool,
         scrollToBottom: @escaping @MainActor () -> Void,
-        getLastMessageContentLength: @escaping @MainActor () -> Int?
+        getLastMessageContentLength: @escaping @MainActor () -> Int?,
     ) {
         guard isSending else { return }
         startPeriodicScrollCheck(
             scrollToBottom: scrollToBottom,
-            getLastMessageContentLength: getLastMessageContentLength
+            getLastMessageContentLength: getLastMessageContentLength,
         ) {
             isSending
         }
@@ -82,11 +82,11 @@ final class AIChatScrollCoordinatorViewModel: ObservableObject {
     private func startPeriodicScrollCheck(
         scrollToBottom: @escaping @MainActor () -> Void,
         getLastMessageContentLength: @escaping @MainActor () -> Int?,
-        isSending: @escaping @MainActor () -> Bool
+        isSending: @escaping @MainActor () -> Bool,
     ) {
         stopPeriodicScrollCheck()
         periodicScrollTask = Task { @MainActor in
-            while !Task.isCancelled && isSending() {
+            while !Task.isCancelled, isSending() {
                 if let currentLength = getLastMessageContentLength(),
                    currentLength > lastContentLength {
                     lastContentLength = currentLength

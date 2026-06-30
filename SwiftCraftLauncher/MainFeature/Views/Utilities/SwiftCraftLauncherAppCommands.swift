@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Custom menu commands for the app, including update checks, help links, and community resources.
+// Custom menu commands for the app, including update checks, help links, and community resources.
 
 import SwiftUI
 
@@ -21,7 +21,7 @@ struct SwiftCraftLauncherAppCommands: Commands {
             CommandMenu(String(format: "menu.update.released.title".localized(), sparkleUpdateService.versionString)) {
                 Link(
                     "menu.view.release.details".localized(),
-                    destination: URLConfig.API.GitHub.releaseTag(version: sparkleUpdateService.versionString)
+                    destination: URLConfig.API.GitHub.releaseTag(version: sparkleUpdateService.versionString),
                 )
             }
         }

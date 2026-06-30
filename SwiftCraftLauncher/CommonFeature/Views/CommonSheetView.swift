@@ -9,7 +9,6 @@ import SwiftUI
 
 /// A sheet view with header, body, and footer sections that adapts to content size.
 struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
-
     @ObservedObject private var generalSettings: GeneralSettingsManager
     private let header: () -> Header
     private let bodyContent: () -> BodyContent
@@ -19,11 +18,11 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
         generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder header: @escaping () -> Header,
         @ViewBuilder body: @escaping () -> BodyContent,
-        @ViewBuilder footer: @escaping () -> Footer
+        @ViewBuilder footer: @escaping () -> Footer,
     ) {
         self.generalSettings = generalSettings
         self.header = header
-        self.bodyContent = body
+        bodyContent = body
         self.footer = footer
     }
 
@@ -56,12 +55,12 @@ struct CommonSheetView<Header: View, BodyContent: View, Footer: View>: View {
 extension CommonSheetView where Header == EmptyView, Footer == EmptyView {
     init(
         generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
-        @ViewBuilder body: @escaping () -> BodyContent
+        @ViewBuilder body: @escaping () -> BodyContent,
     ) {
         self.generalSettings = generalSettings
-        self.header = { EmptyView() }
-        self.bodyContent = body
-        self.footer = { EmptyView() }
+        header = { EmptyView() }
+        bodyContent = body
+        footer = { EmptyView() }
     }
 }
 
@@ -69,12 +68,12 @@ extension CommonSheetView where Footer == EmptyView {
     init(
         generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder header: @escaping () -> Header,
-        @ViewBuilder body: @escaping () -> BodyContent
+        @ViewBuilder body: @escaping () -> BodyContent,
     ) {
         self.generalSettings = generalSettings
         self.header = header
-        self.bodyContent = body
-        self.footer = { EmptyView() }
+        bodyContent = body
+        footer = { EmptyView() }
     }
 }
 
@@ -82,11 +81,11 @@ extension CommonSheetView where Header == EmptyView {
     init(
         generalSettings: GeneralSettingsManager = AppServices.generalSettingsManager,
         @ViewBuilder body: @escaping () -> BodyContent,
-        @ViewBuilder footer: @escaping () -> Footer
+        @ViewBuilder footer: @escaping () -> Footer,
     ) {
         self.generalSettings = generalSettings
-        self.header = { EmptyView() }
-        self.bodyContent = body
+        header = { EmptyView() }
+        bodyContent = body
         self.footer = footer
     }
 }

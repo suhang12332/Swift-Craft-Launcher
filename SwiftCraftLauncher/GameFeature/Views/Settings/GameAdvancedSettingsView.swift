@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Per-game advanced settings for Java path, garbage collector, memory, and JVM arguments.
+// Per-game advanced settings for Java path, garbage collector, memory, and JVM arguments.
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -31,17 +31,17 @@ struct GameAdvancedSettingsView: View {
                         onChoose: { showJavaPathPicker = true },
                         onReset: {
                             viewModel.resetJavaPathSafely()
-                        }
+                        },
                     ).fixedSize()
                         .fileImporter(
                             isPresented: $showJavaPathPicker,
                             allowedContentTypes: [.item],
-                            allowsMultipleSelection: false
+                            allowsMultipleSelection: false,
                         ) { result in
                             viewModel.handleJavaPathSelection(result)
                         }
                     InfoIconWithPopover(
-                        text: viewModel.javaDetailsDescription
+                        text: viewModel.javaDetailsDescription,
                     )
                 }
             }.labeledContentStyle(.custom)
@@ -88,7 +88,7 @@ struct GameAdvancedSettingsView: View {
                 HStack {
                     MiniRangeSlider(
                         range: $viewModel.memoryRange,
-                        bounds: 512...Double(viewModel.gameSettingsManager.maximumMemoryAllocation)
+                        bounds: 512 ... Double(viewModel.gameSettingsManager.maximumMemoryAllocation),
                     )
                     .frame(width: 200)
                     .controlSize(.mini)
@@ -108,7 +108,7 @@ struct GameAdvancedSettingsView: View {
                         .focusable(false)
                         .labelsHidden()
                         .textFieldStyle(.roundedBorder)
-                        .lineLimit(2...4)
+                        .lineLimit(2 ... 4)
                         .frame(width: 300)
                         .onChange(of: viewModel.customJvmArguments) { _, _ in viewModel.didChangeCustomJvmArguments() }
                 }
@@ -122,7 +122,7 @@ struct GameAdvancedSettingsView: View {
                         .focusable(false)
                         .labelsHidden()
                         .textFieldStyle(.roundedBorder)
-                        .lineLimit(2...4)
+                        .lineLimit(2 ... 4)
                         .frame(width: 300)
                         .onChange(of: viewModel.environmentVariables) { _, _ in viewModel.didChangeEnvironmentVariables() }
                 }
@@ -144,7 +144,7 @@ struct GameAdvancedSettingsView: View {
         .errorHandler()
         .alert(
             "error.notification.validation.title".localized(),
-            isPresented: .constant(viewModel.error != nil && viewModel.error?.level == .popup)
+            isPresented: .constant(viewModel.error != nil && viewModel.error?.level == .popup),
         ) {
             Button("common.close".localized()) {
                 viewModel.error = nil

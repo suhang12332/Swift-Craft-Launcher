@@ -18,7 +18,7 @@ extension SwiftCraftLauncherApp {
                     generalSettingsManager: generalSettingsManager,
                     themeManager: themeManager,
                     playerListViewModel: playerListViewModel,
-                    gameRepository: gameRepository
+                    gameRepository: gameRepository,
                 )
             }
         }
@@ -57,7 +57,7 @@ private struct AuxiliaryWindowScene: View {
             minWidth: windowID.defaultSize.width,
             idealWidth: windowID.defaultSize.width,
             minHeight: windowID.defaultSize.height,
-            idealHeight: windowID.defaultSize.height
+            idealHeight: windowID.defaultSize.height,
         )
         .windowStyleConfig(for: windowID)
         .windowCleanup(for: windowID)
@@ -90,8 +90,6 @@ private struct AIChatWindowContent: View {
         Group {
             if let chatState = windowDataStore.aiChatState {
                 AIChatWindowView(chatState: chatState)
-            } else {
-                EmptyView()
             }
         }
     }
@@ -111,10 +109,8 @@ private struct SkinPreviewWindowContent: View {
                     skinImage: data.skinImage,
                     skinPath: data.skinPath,
                     capeImage: data.capeImage,
-                    playerModel: data.playerModel
+                    playerModel: data.playerModel,
                 )
-            } else {
-                EmptyView()
             }
         }
     }

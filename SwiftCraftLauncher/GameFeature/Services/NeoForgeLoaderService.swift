@@ -14,7 +14,7 @@ enum NeoForgeLoaderService {
             throw GlobalError.resource(
                 chineseMessage: "未找到 Minecraft \(minecraftVersion) 的 NeoForge 加载器版本",
                 i18nKey: "error.resource.neoforge_loader_version_not_found",
-                level: .notification
+                level: .notification,
             )
         }
         return result
@@ -42,14 +42,14 @@ enum NeoForgeLoaderService {
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void
+        onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async -> (loaderVersion: String, classpath: String, mainClass: String)? {
         do {
             return try await setupWithSpecificVersionThrowing(
                 for: gameVersion,
                 loaderVersion: loaderVersion,
                 gameInfo: gameInfo,
-                onProgressUpdate: onProgressUpdate
+                onProgressUpdate: onProgressUpdate,
             )
         } catch {
             let globalError = GlobalError.from(error)
@@ -63,7 +63,7 @@ enum NeoForgeLoaderService {
         for gameVersion: String,
         loaderVersion: String,
         gameInfo: GameVersionInfo,
-        onProgressUpdate: @escaping (String, Int, Int) -> Void
+        onProgressUpdate: @escaping (String, Int, Int) -> Void,
     ) async throws -> (loaderVersion: String, classpath: String, mainClass: String) {
         Logger.shared.info("开始设置指定版本的 NeoForge 加载器: \(loaderVersion)")
 
@@ -71,10 +71,10 @@ enum NeoForgeLoaderService {
         let librariesDirectory = AppPaths.librariesDirectory
         let fileManager = CommonFileManager(librariesDir: librariesDirectory)
 
-        let totalDownloads = neoForgeProfile.libraries.filter { $0.downloads != nil }.count
-        let totalProcessors = (neoForgeProfile.processors ?? []).filter {
+        let totalDownloads = neoForgeProfile.libraries.count { $0.downloads != nil }
+        let totalProcessors = (neoForgeProfile.processors ?? []).count {
             ($0.sides ?? [AppConstants.EnvironmentTypes.client]).contains(AppConstants.EnvironmentTypes.client)
-        }.count
+        }
         let totalTasks = totalDownloads + totalProcessors
 
         fileManager.onProgressUpdate = { name, completed, _ in onProgressUpdate(name, completed, totalTasks) }
@@ -87,7 +87,7 @@ enum NeoForgeLoaderService {
                 librariesDir: librariesDirectory,
                 gameVersion: gameVersion,
                 data: neoForgeProfile.data,
-                gameName: gameInfo.gameName
+                gameName: gameInfo.gameName,
             ) { message, current, _ in
                 onProgressUpdate(message, totalDownloads + current, totalTasks)
             }
@@ -100,7 +100,7 @@ enum NeoForgeLoaderService {
             throw GlobalError.resource(
                 chineseMessage: "NeoForge profile 缺少版本信息",
                 i18nKey: "error.resource.neoforge_missing_version",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -108,4 +108,4 @@ enum NeoForgeLoaderService {
     }
 }
 
-extension NeoForgeLoaderService: ModLoaderHandler {}
+extension NeoForgeLoaderService: ModLoaderHandler { }

@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CurseForgeFingerprintTests: XCTestCase {
     func testFingerprint_sameData_sameHash() {
@@ -19,7 +19,7 @@ final class CurseForgeFingerprintTests: XCTestCase {
         let withoutSpaces = Data("helloworld".utf8)
         XCTAssertEqual(
             CurseForgeFingerprint.fingerprint(data: withSpaces),
-            CurseForgeFingerprint.fingerprint(data: withoutSpaces)
+            CurseForgeFingerprint.fingerprint(data: withoutSpaces),
         )
     }
 

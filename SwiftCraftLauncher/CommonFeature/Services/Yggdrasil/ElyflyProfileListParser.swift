@@ -44,7 +44,7 @@ enum ElyflyProfileListParser {
                     skins.append(Skin(
                         state: "ACTIVE",
                         url: skin.url,
-                        variant: skin.metadata?.model ?? "classic"
+                        variant: skin.metadata?.model ?? "classic",
                     ))
                 }
                 if let cape = textures.CAPE {
@@ -52,7 +52,7 @@ enum ElyflyProfileListParser {
                         id: "ely_cape_\(nickname)",
                         state: "ACTIVE",
                         url: cape.url,
-                        alias: nil
+                        alias: nil,
                     ))
                 }
             }
@@ -73,7 +73,7 @@ enum ElyflyProfileListParser {
                 id: compactUUID,
                 name: resolvedName,
                 skins: textures.skins,
-                capes: textures.capes.isEmpty ? nil : textures.capes
+                capes: textures.capes.isEmpty ? nil : textures.capes,
             )
         }
 

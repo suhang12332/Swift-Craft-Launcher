@@ -17,7 +17,7 @@ enum Contribution: String, CaseIterable {
     case infra = "contributor.contribution.infra"
 
     var localizedString: String {
-        return rawValue.localized()
+        rawValue.localized()
     }
 
     var color: Color {

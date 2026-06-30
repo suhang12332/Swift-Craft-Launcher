@@ -6,22 +6,20 @@
 //
 
 import Foundation
-import UserNotifications
 import os
+import UserNotifications
 
 final class NotificationCenterDelegate: NSObject, UNUserNotificationCenterDelegate {
-
     func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
-        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+        _: UNUserNotificationCenter,
+        willPresent _: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void,
     ) {
         completionHandler([.banner, .list, .sound, .badge])
     }
 }
 
 enum NotificationManager {
-
     /// Sends a local notification with the specified title and body.
     /// - Parameters:
     ///   - title: The notification title.
@@ -36,14 +34,14 @@ enum NotificationManager {
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             UNUserNotificationCenter.current().add(request) { error in
-                if let error = error {
+                if let error {
                     Logger.shared.error("添加通知请求时出错：\(error.localizedDescription)")
                     continuation.resume(
                         throwing: GlobalError.resource(
                             chineseMessage: "发送通知失败: \(error.localizedDescription)",
                             i18nKey: "error.resource.notification_send_failed",
-                            level: .silent
-                        )
+                            level: .silent,
+                        ),
                     )
                     return
                 }
@@ -79,7 +77,7 @@ enum NotificationManager {
                 throw GlobalError.configuration(
                     chineseMessage: "用户拒绝了通知权限",
                     i18nKey: "error.configuration.notification_permission_denied",
-                    level: .notification
+                    level: .notification,
                 )
             }
         } catch {
@@ -89,7 +87,7 @@ enum NotificationManager {
                 throw GlobalError.configuration(
                     chineseMessage: "请求通知权限失败: \(error.localizedDescription)",
                     i18nKey: "error.configuration.notification_permission_request_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -108,7 +106,7 @@ enum NotificationManager {
 
     /// Returns the current notification authorization status.
     static func checkAuthorizationStatus() async -> UNAuthorizationStatus {
-        return await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
+        await UNUserNotificationCenter.current().notificationSettings().authorizationStatus
     }
 
     /// Returns whether the app is authorized to send notifications.

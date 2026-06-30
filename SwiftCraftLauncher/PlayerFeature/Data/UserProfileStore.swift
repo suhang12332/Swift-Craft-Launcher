@@ -48,7 +48,7 @@ class UserProfileStore {
             throw GlobalError.validation(
                 chineseMessage: "加载用户基本信息失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.user_profile_load_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -80,7 +80,7 @@ class UserProfileStore {
             throw GlobalError.validation(
                 chineseMessage: "保存用户基本信息失败: \(error.localizedDescription)",
                 i18nKey: "error.validation.user_profile_save_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -98,7 +98,7 @@ class UserProfileStore {
             throw GlobalError.player(
                 chineseMessage: "用户已存在: \(profile.name)",
                 i18nKey: "error.player.already_exists",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -125,7 +125,7 @@ class UserProfileStore {
             throw GlobalError.player(
                 chineseMessage: "要更新的用户不存在: \(profile.name)",
                 i18nKey: "error.player.not_found_for_update",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -148,7 +148,7 @@ class UserProfileStore {
         profiles.removeAll { $0.id == id }
 
         if profiles.count < initialCount {
-            if isDeletingCurrentUser && !profiles.isEmpty {
+            if isDeletingCurrentUser, !profiles.isEmpty {
                 profiles[0].isCurrent = true
                 Logger.shared.debug("当前用户被删除，已设置第一个用户为当前用户: \(profiles[0].name)")
             }
@@ -159,7 +159,7 @@ class UserProfileStore {
             throw GlobalError.player(
                 chineseMessage: "用户不存在: \(id)",
                 i18nKey: "error.player.not_found",
-                level: .notification
+                level: .notification,
             )
         }
     }

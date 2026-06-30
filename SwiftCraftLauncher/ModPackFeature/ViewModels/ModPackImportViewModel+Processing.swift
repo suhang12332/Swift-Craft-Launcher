@@ -28,7 +28,7 @@ extension ModPackImportViewModel {
         let defaultName = GameNameGenerator.generateImportName(
             modPackName: prepared.indexInfo.modPackName,
             modPackVersion: prepared.indexInfo.modPackVersion,
-            includeTimestamp: true
+            includeTimestamp: true,
         )
         gameNameValidator.setDefaultName(defaultName)
         isProcessingModPack = false

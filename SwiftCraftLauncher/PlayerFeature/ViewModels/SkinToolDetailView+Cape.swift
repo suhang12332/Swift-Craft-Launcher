@@ -6,14 +6,14 @@
 //
 
 import Foundation
-import SwiftUI
 import SkinRenderKit
+import SwiftUI
 
 extension SkinToolDetailViewModel {
     /// Loads the currently active cape image if one exists and no manual selection has been made.
     func loadCurrentActiveCapeIfNeeded(
         from profile: MinecraftProfileResponse,
-        resolvedPlayer: Player?
+        resolvedPlayer: Player?,
     ) async {
         do {
             try Task.checkCancellation()
@@ -102,7 +102,7 @@ extension SkinToolDetailViewModel {
             _ = try await DownloadManager.downloadFile(
                 urlString: urlString.httpToHttps(),
                 destinationURL: tempFile,
-                expectedSha1: nil
+                expectedSha1: nil,
             )
             if selectedCapeImageURL == urlString {
                 selectedCapeLocalPath = tempFile.path
@@ -115,7 +115,7 @@ extension SkinToolDetailViewModel {
     /// Downloads a cape texture and sets the image for display.
     func downloadCapeTextureAndSetImage(
         from urlString: String,
-        resolvedPlayer: Player?
+        resolvedPlayer: Player?,
     ) async {
         if let currentURL = selectedCapeImageURL,
            currentURL == urlString,

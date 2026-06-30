@@ -5,16 +5,17 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Provides unified logging to both the system log and a daily rotating file.
+import AppKit
+
+// Provides unified logging to both the system log and a daily rotating file.
 import Foundation
 import os.log
-import AppKit
 
 class Logger: AppLogging {
     static let shared = Logger()
     private let logger = OSLog(
         subsystem: Bundle.main.identifier,
-        category: Bundle.main.appCategory
+        category: Bundle.main.appCategory,
     )
 
     private var logFileHandle: FileHandle?
@@ -117,9 +118,11 @@ class Logger: AppLogging {
     func logInfo(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         log(items, type: .info, prefix: "ℹ️", file: file, function: function, line: line)
     }
+
     func logWarning(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         log(items, type: .default, prefix: "⚠️", file: file, function: function, line: line)
     }
+
     func logError(_ items: Any..., file: String = #file, function: String = #function, line: Int = #line) {
         log(items, type: .error, prefix: "❌", file: file, function: function, line: line)
     }
@@ -130,7 +133,7 @@ class Logger: AppLogging {
         prefix: String,
         file: String,
         function: String,
-        line: Int
+        line: Int,
     ) {
         let fileName = (file as NSString).lastPathComponent
         let message = NSMutableString()
@@ -149,7 +152,7 @@ class Logger: AppLogging {
 
     /// Returns the path to the current log file.
     func getLogFilePath() -> String? {
-        return logFileURL?.path
+        logFileURL?.path
     }
 
     /// Returns metadata about the current log file.
@@ -163,7 +166,7 @@ class Logger: AppLogging {
         return (
             path: logURL.path,
             fileName: logURL.lastPathComponent,
-            date: today
+            date: today,
         )
     }
 
@@ -217,7 +220,7 @@ class Logger: AppLogging {
             let fileURLs = try FileManager.default.contentsOfDirectory(
                 at: directory,
                 includingPropertiesForKeys: [.creationDateKey],
-                options: [.skipsHiddenFiles]
+                options: [.skipsHiddenFiles],
             )
 
             for fileURL in fileURLs where fileURL.pathExtension == "log" {
@@ -303,10 +306,9 @@ class Logger: AppLogging {
 }
 
 private struct AnyEncodable: Encodable {
-
     private let _encode: (Encoder) throws -> Void
 
-    init<T: Encodable>(_ wrapped: T) {
+    init(_ wrapped: some Encodable) {
         _encode = wrapped.encode
     }
 

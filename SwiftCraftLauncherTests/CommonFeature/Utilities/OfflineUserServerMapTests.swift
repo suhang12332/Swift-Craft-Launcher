@@ -5,18 +5,17 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class OfflineUserServerMapTests: XCTestCase {
-
     private let suiteName = "OfflineUserServerMapTests_\(UUID().uuidString)"
     private var defaults: UserDefaults?
 
     private func makeProfile(
         id: String = UUID().uuidString,
         name: String = "TestPlayer",
-        serverBaseURL: String = "https://littleskin.cn/api"
+        serverBaseURL: String = "https://littleskin.cn/api",
     ) -> YggdrasilProfile {
         YggdrasilProfile(
             id: id,
@@ -25,7 +24,7 @@ final class OfflineUserServerMapTests: XCTestCase {
             capes: nil,
             accessToken: "token-\(id)",
             refreshToken: "refresh-\(id)",
-            serverBaseURL: serverBaseURL
+            serverBaseURL: serverBaseURL,
         )
     }
 

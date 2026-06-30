@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A version picker for selecting resource versions within a sheet.
+// A version picker for selecting resource versions within a sheet.
 import SwiftUI
 
 struct VersionPickerForSheet: View {
@@ -26,20 +26,20 @@ struct VersionPickerForSheet: View {
             } else if !availableVersions.isEmpty {
                 Text(project.title).font(.headline).bold().frame(
                     maxWidth: .infinity,
-                    alignment: .leading
+                    alignment: .leading,
                 )
                 CommonMenuPicker(
-                    selection: $selectedVersion
+                    selection: $selectedVersion,
                 ) {
                     Text("global_resource.select_version".localized())
                 } content: {
                     ForEach(availableVersions, id: \.id) { version in
                         if resourceType == ResourceType.shader.rawValue {
                             let loaders = version.loaders.joined(
-                                separator: ", "
+                                separator: ", ",
                             )
                             Text(version.name + loaders).tag(
-                                Optional(version)
+                                Optional(version),
                             )
                         } else {
                             Text(version.name).tag(Optional(version))
@@ -54,7 +54,7 @@ struct VersionPickerForSheet: View {
         .onAppear(perform: loadVersions)
         .onChange(of: selectedGame) { loadVersions() }
         .onChange(of: selectedVersion) { _, newValue in
-            if let newValue = newValue {
+            if let newValue {
                 mainVersionId = newValue.id
             } else {
                 mainVersionId = ""
@@ -73,7 +73,7 @@ struct VersionPickerForSheet: View {
                 let globalError = GlobalError.from(error)
                 _ = await MainActor.run {
                     self.error = globalError
-                    self.isLoading = false
+                    isLoading = false
                 }
             }
         }
@@ -84,7 +84,7 @@ struct VersionPickerForSheet: View {
             throw GlobalError.validation(
                 chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -102,7 +102,7 @@ struct VersionPickerForSheet: View {
             id: project.projectId,
             selectedVersions: [game.gameVersion],
             selectedLoaders: [game.modLoader],
-            type: resourceType
+            type: resourceType,
         )
 
         _ = await MainActor.run {

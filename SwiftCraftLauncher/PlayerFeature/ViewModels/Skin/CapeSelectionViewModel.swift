@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
 import AppKit
+import Foundation
 import SwiftUI
 
 /// Manages cape image loading and selection state.
@@ -19,7 +19,7 @@ final class CapeSelectionViewModel: ObservableObject {
 
     init(
         selectedCapeImageURL: Binding<String?>,
-        selectedCapeImage: Binding<NSImage?>
+        selectedCapeImage: Binding<NSImage?>,
     ) {
         self.selectedCapeImageURL = selectedCapeImageURL
         self.selectedCapeImage = selectedCapeImage
@@ -41,8 +41,8 @@ final class CapeSelectionViewModel: ObservableObject {
             do {
                 let data = try await DownloadManager.downloadData(from: url)
                 guard !Task.isCancelled else { return }
-                self.selectedCapeImageURL.wrappedValue = imageURL
-                self.selectedCapeImage.wrappedValue = NSImage(data: data)
+                selectedCapeImageURL.wrappedValue = imageURL
+                selectedCapeImage.wrappedValue = NSImage(data: data)
             } catch {
                 return
             }

@@ -25,7 +25,7 @@ struct ModrinthCompatibilitySection: View {
             if isLoading {
                 GameVersionsSection(versions: [], isLoading: true)
                 LoadersSection(loaders: [], isLoading: true)
-            } else if let project = project {
+            } else if let project {
                 if !project.gameVersions.isEmpty {
                     GameVersionsSection(versions: project.gameVersions, isLoading: false)
                 }
@@ -40,7 +40,7 @@ struct ModrinthCompatibilitySection: View {
                 if resourceType != ProjectType.minecraftJavaServer {
                     PlatformSupportSection(
                         clientSide: project.clientSide,
-                        serverSide: project.serverSide
+                        serverSide: project.serverSide,
                     )
                 }
             }
@@ -58,12 +58,12 @@ private struct GameVersionsSection: View {
             title: "game.version",
             items: versions.map { IdentifiableString(id: $0) },
             isLoading: isLoading,
-            maxItems: Constants.maxVisibleVersions
+            maxItems: Constants.maxVisibleVersions,
         ) { item in
             VersionTag(version: item.id)
         } overflowContentBuilder: { _ in
             AnyView(
-                GameVersionsPopover(versions: versions)
+                GameVersionsPopover(versions: versions),
             )
         }
     }
@@ -76,7 +76,7 @@ private struct GameVersionsPopover: View {
     var body: some View {
         VersionGroupedView(
             items: versions.map { FilterItem(id: $0, name: $0) },
-            selectedItems: .constant([])
+            selectedItems: .constant([]),
         ) { _ in }
         .frame(width: Constants.popoverWidth, height: Constants.popoverHeight)
     }
@@ -89,8 +89,8 @@ private struct VersionTag: View {
     var body: some View {
         FilterChip(
             title: version,
-            isSelected: false
-        ) {}
+            isSelected: false,
+        ) { }
     }
 }
 
@@ -103,7 +103,7 @@ private struct LoadersSection: View {
         GenericSectionView(
             title: "project.info.platforms",
             items: loaders.map { IdentifiableString(id: $0) },
-            isLoading: isLoading
+            isLoading: isLoading,
         ) { item in
             VersionTag(version: item.id)
         }
@@ -123,21 +123,21 @@ private struct ServerInfoSection: View {
         GenericSectionView(
             title: "project.info.server",
             items: items,
-            isLoading: false
+            isLoading: false,
         ) { item in
             FilterChip(
                 title: item.id,
                 isSelected: false,
-                action: {},
+                action: { },
                 iconName: "server.rack",
-                iconColor: connectionStatus.statusColor
+                iconColor: connectionStatus.statusColor,
             )
             .frame(maxWidth: 160, alignment: .leading)
             .lineLimit(1)
         }
         .task(id: displayAddress) {
             await CommonUtil.updateServerConnectionStatus(
-                for: displayAddress
+                for: displayAddress,
             ) { newStatus in
                 connectionStatus = newStatus
             }
@@ -161,14 +161,14 @@ private struct PlayerInfoSection: View {
         return GenericSectionView(
             title: "project.info.players",
             items: items,
-            isLoading: false
+            isLoading: false,
         ) { item in
             FilterChip(
                 title: item.id,
                 isSelected: false,
-                action: {},
+                action: { },
                 iconName: "person.2",
-                iconColor: .secondary
+                iconColor: .secondary,
             )
         }
     }
@@ -191,7 +191,7 @@ private struct PlatformSupportSection: View {
                     IdentifiablePlatformItem(id: "server", icon: "server.rack", text: "platform.server.\(serverSide)".localized()),
                 ],
                 maxHeight: SectionViewConstants.defaultMaxHeight,
-                verticalPadding: SectionViewConstants.defaultVerticalPadding
+                verticalPadding: SectionViewConstants.defaultVerticalPadding,
             ) { item in
                 PlatformSupportItem(icon: item.icon, text: item.text)
             }
@@ -215,9 +215,9 @@ private struct PlatformSupportItem: View {
         FilterChip(
             title: text,
             isSelected: false,
-            action: {},
+            action: { },
             iconName: icon,
-            iconColor: .secondary
+            iconColor: .secondary,
         )
     }
 }

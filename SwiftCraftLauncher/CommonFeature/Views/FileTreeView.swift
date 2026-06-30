@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 /// A SwiftUI wrapper for a file tree backed by NSOutlineView.
 public struct FileTreeView: NSViewRepresentable {
@@ -19,7 +19,7 @@ public struct FileTreeView: NSViewRepresentable {
     public init(
         rootURL: URL,
         showHiddenFiles: Bool = false,
-        onSelectionChange: (([URL]) -> Void)? = nil
+        onSelectionChange: (([URL]) -> Void)? = nil,
     ) {
         self.rootURL = rootURL
         self.showHiddenFiles = showHiddenFiles

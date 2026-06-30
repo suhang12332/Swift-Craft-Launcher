@@ -17,7 +17,7 @@ final class OpenURLModPackImportPresenter: ObservableObject {
 
     private let importViewModel = GameFormImportViewModel()
 
-    private init() {}
+    private init() { }
 
     func handle(url: URL) {
         guard url.isFileURL else { return }

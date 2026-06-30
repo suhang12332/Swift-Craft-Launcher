@@ -9,7 +9,6 @@ import Foundation
 
 /// Provides catalog operations for CurseForge categories and game versions.
 extension CurseForgeService {
-
     /// Fetches the list of CurseForge categories.
     /// - Returns: An array of categories, or an empty array on failure.
     static func fetchCategories() async -> [CurseForgeCategory] {

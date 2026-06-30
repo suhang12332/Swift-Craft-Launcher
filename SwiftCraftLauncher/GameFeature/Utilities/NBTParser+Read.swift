@@ -8,7 +8,6 @@
 import Foundation
 
 extension NBTParser {
-
     /// Reads a length-prefixed UTF-8 string from the data buffer.
     /// - Throws: A `GlobalError` if there is insufficient data or the string length exceeds the buffer.
     /// - Returns: The decoded string.
@@ -17,7 +16,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "NBT 数据不足，无法读取字符串长度",
                 i18nKey: "error.filesystem.nbt_insufficient_data",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -26,11 +25,11 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "NBT 字符串长度超出数据范围",
                 i18nKey: "error.filesystem.nbt_string_out_of_range",
-                level: .notification
+                level: .notification,
             )
         }
 
-        let stringData = data.subdata(in: offset..<(offset + length))
+        let stringData = data.subdata(in: offset ..< (offset + length))
         offset += length
 
         return String(data: stringData, encoding: .utf8) ?? ""
@@ -50,7 +49,7 @@ extension NBTParser {
     func readInt() -> Int32 {
         guard offset + 4 <= data.count else { return 0 }
         var value: Int32 = 0
-        for i in 0..<4 {
+        for i in 0 ..< 4 {
             value = (value << 8) | Int32(data[offset + i])
         }
         offset += 4
@@ -118,23 +117,23 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     chineseMessage: "NBT 字节数组长度超出数据范围",
                     i18nKey: "error.filesystem.nbt_byte_array_out_of_range",
-                    level: .notification
+                    level: .notification,
                 )
             }
-            let array = Array(data.subdata(in: offset..<(offset + length)))
+            let array = Array(data.subdata(in: offset ..< (offset + length)))
             offset += length
             return array
         case .intArray:
             let length = Int(readInt())
             var array: [Int32] = []
-            for _ in 0..<length {
+            for _ in 0 ..< length {
                 array.append(readInt())
             }
             return array
         case .longArray:
             let length = Int(readInt())
             var array: [Int64] = []
-            for _ in 0..<length {
+            for _ in 0 ..< length {
                 array.append(readLong())
             }
             return array
@@ -142,7 +141,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "NBT 解析遇到 End 标签",
                 i18nKey: "error.filesystem.nbt_unexpected_end_tag",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -152,7 +151,7 @@ extension NBTParser {
     func readLong() -> Int64 {
         guard offset + 8 <= data.count else { return 0 }
         var value: Int64 = 0
-        for i in 0..<8 {
+        for i in 0 ..< 8 {
             value = (value << 8) | Int64(data[offset + i])
         }
         offset += 8
@@ -183,7 +182,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "NBT 数据不足，无法读取列表类型",
                 i18nKey: "error.filesystem.nbt_insufficient_data_for_list",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -193,7 +192,7 @@ extension NBTParser {
         let length = Int(readInt())
         var result: [Any] = []
 
-        for _ in 0..<length {
+        for _ in 0 ..< length {
             let value = try readTagValue(type: listType)
             result.append(value)
         }

@@ -22,7 +22,7 @@ enum LocalResourceInstaller {
 
         /// The file extensions that are allowed for this resource type.
         var allowedExtensions: [String] {
-            return ["jar", "zip"]
+            ["jar", "zip"]
         }
     }
 
@@ -38,7 +38,7 @@ enum LocalResourceInstaller {
             throw GlobalError.resource(
                 chineseMessage: "不支持的文件类型。请导入 .jar 或 .zip 文件。",
                 i18nKey: "error.resource.invalid_file_type",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -47,7 +47,7 @@ enum LocalResourceInstaller {
             throw GlobalError.fileSystem(
                 chineseMessage: "目标文件夹不存在。",
                 i18nKey: "error.filesystem.destination_unavailable",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -57,7 +57,7 @@ enum LocalResourceInstaller {
             throw GlobalError.fileSystem(
                 chineseMessage: "无法访问所选文件。",
                 i18nKey: "error.filesystem.security_scope_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -73,7 +73,7 @@ enum LocalResourceInstaller {
             throw GlobalError.fileSystem(
                 chineseMessage: "文件复制失败：\(error.localizedDescription)",
                 i18nKey: "error.filesystem.copy_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }

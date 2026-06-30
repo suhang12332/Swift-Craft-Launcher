@@ -5,9 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Displays server addresses as chips with connection status and overflow popover.
-import SwiftUI
 import AppKit
+
+// Displays server addresses as chips with connection status and overflow popover.
+import SwiftUI
 
 struct ServerAddressSectionView: View {
     let servers: [ServerAddress]
@@ -41,7 +42,7 @@ struct ServerAddressSectionView: View {
                 server: server,
                 gameName: gameName,
                 serverInfo: viewModel.serverInfos[server.id],
-                onRefresh: onRefresh
+                onRefresh: onRefresh,
             )
         }
         .sheet(isPresented: $showAddServer) {
@@ -112,7 +113,7 @@ struct ServerAddressSectionView: View {
                             address: server.address,
                             port: server.port,
                             isLoading: false,
-                            connectionStatus: viewModel.serverStatuses[server.id] ?? .unknown
+                            connectionStatus: viewModel.serverStatuses[server.id] ?? .unknown,
                         ) {
                             selectedServer = server
                         }
@@ -129,15 +130,15 @@ struct ServerAddressSectionView: View {
         ScrollView {
             FlowLayout {
                 ForEach(
-                    0..<ServerAddressSectionConstants.placeholderCount,
-                    id: \.self
+                    0 ..< ServerAddressSectionConstants.placeholderCount,
+                    id: \.self,
                 ) { _ in
                     ServerAddressChip(
                         title: "common.loading".localized(),
                         address: "",
                         port: nil,
                         isLoading: true,
-                        connectionStatus: .unknown
+                        connectionStatus: .unknown,
                     )
                     .redacted(reason: .placeholder)
                 }
@@ -167,7 +168,7 @@ struct ServerAddressSectionView: View {
                             address: server.address,
                             port: server.port,
                             isLoading: false,
-                            connectionStatus: viewModel.serverStatuses[server.id] ?? .unknown
+                            connectionStatus: viewModel.serverStatuses[server.id] ?? .unknown,
                         ) {
                             selectedServer = server
                         }

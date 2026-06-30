@@ -13,7 +13,6 @@ import SQLite3
 /// Uses WAL mode and mmap optimization for concurrent access and crash recovery.
 /// Game data is stored as JSON blobs, indexed by working path and game name.
 class GameVersionDatabase {
-
     private let db: SQLiteDatabase
     private let tableName = AppConstants.DatabaseTables.gameVersions
     private var isInitialized = false
@@ -22,7 +21,7 @@ class GameVersionDatabase {
     ///
     /// - Parameter dbPath: The file path for the SQLite database.
     init(dbPath: String) {
-        self.db = SQLiteDatabase(path: dbPath)
+        db = SQLiteDatabase(path: dbPath)
     }
 
     /// Opens the database and creates the table schema if needed.
@@ -80,7 +79,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "无法编码游戏数据为 JSON",
                     i18nKey: "error.validation.json_encode_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
 
@@ -111,7 +110,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "保存游戏失败: \(errorMessage)",
                     i18nKey: "error.validation.game_save_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -161,7 +160,7 @@ class GameVersionDatabase {
                     throw GlobalError.validation(
                         chineseMessage: "批量保存游戏失败: \(errorMessage)",
                         i18nKey: "error.validation.games_batch_save_failed",
-                        level: .notification
+                        level: .notification,
                     )
                 }
             }
@@ -304,7 +303,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "删除游戏失败: \(errorMessage)",
                     i18nKey: "error.validation.game_delete_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -327,7 +326,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "删除工作路径游戏失败: \(errorMessage)",
                     i18nKey: "error.validation.games_delete_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -355,7 +354,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "删除游戏失败: \(errorMessage)",
                     i18nKey: "error.validation.game_delete_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -391,7 +390,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     chineseMessage: "更新最后游玩时间失败: \(errorMessage)",
                     i18nKey: "error.validation.last_played_update_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }

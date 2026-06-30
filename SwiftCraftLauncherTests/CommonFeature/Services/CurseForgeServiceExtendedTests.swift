@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CurseForgeServiceExtendedTests: XCTestCase {
-
     func testGetHeaders_containsAcceptJSON() {
         let headers = APIClient.DefaultHeaders.acceptJSON
         XCTAssertFalse(headers.isEmpty)
@@ -34,7 +33,7 @@ final class CurseForgeServiceExtendedTests: XCTestCase {
                 filename: "file.jar",
                 primary: false,
                 size: 100,
-                fileType: nil
+                fileType: nil,
             ),
         ]
         let result = ModrinthService.filterPrimaryFiles(from: files)
@@ -48,7 +47,7 @@ final class CurseForgeServiceExtendedTests: XCTestCase {
             filename: "primary.jar",
             primary: true,
             size: 100,
-            fileType: nil
+            fileType: nil,
         )
         let secondaryFile = ModrinthVersionFile(
             hashes: ModrinthVersionFileHashes(sha512: "def", sha1: "def"),
@@ -56,7 +55,7 @@ final class CurseForgeServiceExtendedTests: XCTestCase {
             filename: "secondary.jar",
             primary: false,
             size: 200,
-            fileType: nil
+            fileType: nil,
         )
         let result = ModrinthService.filterPrimaryFiles(from: [secondaryFile, primaryFile])
 
@@ -70,7 +69,7 @@ final class CurseForgeServiceExtendedTests: XCTestCase {
             filename: "1.jar",
             primary: true,
             size: 100,
-            fileType: nil
+            fileType: nil,
         )
         let file2 = ModrinthVersionFile(
             hashes: ModrinthVersionFileHashes(sha512: "b", sha1: "b"),
@@ -78,7 +77,7 @@ final class CurseForgeServiceExtendedTests: XCTestCase {
             filename: "2.jar",
             primary: true,
             size: 200,
-            fileType: nil
+            fileType: nil,
         )
         let result = ModrinthService.filterPrimaryFiles(from: [file1, file2])
 

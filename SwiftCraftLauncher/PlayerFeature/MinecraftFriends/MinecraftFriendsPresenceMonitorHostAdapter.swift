@@ -22,13 +22,13 @@ final class MinecraftFriendsPresenceMonitorHostAdapter: MinecraftFriendsPresence
         player: Player? = nil,
         authService: MinecraftAuthService = AppServices.minecraftAuthService,
         dataManager: PlayerDataManager = AppServices.playerDataManager,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.player = player
         self.authService = authService
-        self.sideEffects = MinecraftFriendsMicrosoftPlayerSideEffects(
+        sideEffects = MinecraftFriendsMicrosoftPlayerSideEffects(
             dataManager: dataManager,
-            errorHandler: errorHandler
+            errorHandler: errorHandler,
         )
     }
 
@@ -61,7 +61,7 @@ final class MinecraftFriendsPresenceMonitorHostAdapter: MinecraftFriendsPresence
             },
             applyRefreshedPlayer: { self.player = $0 },
             onMissingMinecraftAccessToken: { self.sideEffects.reportMissingAccessToken() },
-            onRefreshFailure: { self.sideEffects.reportGlobalError($0) }
+            onRefreshFailure: { self.sideEffects.reportGlobalError($0) },
         )
     }
 

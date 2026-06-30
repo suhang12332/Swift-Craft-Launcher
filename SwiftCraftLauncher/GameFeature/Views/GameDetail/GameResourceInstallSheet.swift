@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A sheet for installing resources to a specific game with version selection and dependency handling.
+// A sheet for installing resources to a specific game with version selection and dependency handling.
 import SwiftUI
 
 struct GameResourceInstallSheet: View {
@@ -28,12 +28,12 @@ struct GameResourceInstallSheet: View {
         isPresented: Binding<Bool>,
         preloadedDetail: ModrinthProjectDetail?,
         isUpdateMode: Bool = false,
-        onDownloadSuccess: ((String?, String?) -> Void)? = nil
+        onDownloadSuccess: ((String?, String?) -> Void)? = nil,
     ) {
         self.project = project
         self.resourceType = resourceType
         self.gameInfo = gameInfo
-        self._isPresented = isPresented
+        _isPresented = isPresented
         self.preloadedDetail = preloadedDetail
         self.isUpdateMode = isUpdateMode
         self.onDownloadSuccess = onDownloadSuccess
@@ -42,8 +42,8 @@ struct GameResourceInstallSheet: View {
                 project: project,
                 resourceType: resourceType,
                 gameInfo: gameInfo,
-                isUpdateMode: isUpdateMode
-            )
+                isUpdateMode: isUpdateMode,
+            ),
         )
     }
 
@@ -53,8 +53,8 @@ struct GameResourceInstallSheet: View {
                 Text(
                     String(
                         format: "global_resource.add_for_game".localized(),
-                        gameInfo.gameName
-                    )
+                        gameInfo.gameName,
+                    ),
                 )
                 .font(.headline)
                 .lineLimit(1)
@@ -65,7 +65,7 @@ struct GameResourceInstallSheet: View {
                 if let detail = preloadedDetail {
                     VStack {
                         ModrinthProjectTitleView(
-                            projectDetail: detail
+                            projectDetail: detail,
                         ).padding(.bottom, 18)
                         VersionPickerForSheet(
                             project: project,
@@ -73,7 +73,7 @@ struct GameResourceInstallSheet: View {
                             selectedGame: .constant(gameInfo),
                             selectedVersion: $viewModel.selectedVersion,
                             availableVersions: $viewModel.availableVersions,
-                            mainVersionId: $viewModel.mainVersionId
+                            mainVersionId: $viewModel.mainVersionId,
                         ) { version in
                             viewModel.onVersionChanged(version)
                         }
@@ -91,9 +91,9 @@ struct GameResourceInstallSheet: View {
                     isPresented: $isPresented,
                     projectDetail: preloadedDetail,
                     viewModel: viewModel,
-                    onDownloadSuccess: onDownloadSuccess
+                    onDownloadSuccess: onDownloadSuccess,
                 )
-            }
+            },
         )
         .onAppear { viewModel.setDependencies(gameRepository: gameRepository) }
         .onDisappear { viewModel.cleanup() }
@@ -123,7 +123,7 @@ struct GameResourceInstallFooter: View {
                                         onSuccess: { fileName, hash in
                                             onDownloadSuccess?(fileName, hash)
                                         },
-                                        dismiss: { isPresented = false }
+                                        dismiss: { isPresented = false },
                                     )
                                 } label: {
                                     if viewModel.isDownloadingAll {
@@ -131,7 +131,7 @@ struct GameResourceInstallFooter: View {
                                     } else {
                                         Text(
                                             "global_resource.download_all"
-                                                .localized()
+                                                .localized(),
                                         )
                                     }
                                 }
@@ -146,7 +146,7 @@ struct GameResourceInstallFooter: View {
                                     onSuccess: { fileName, hash in
                                         onDownloadSuccess?(fileName, hash)
                                     },
-                                    dismiss: { isPresented = false }
+                                    dismiss: { isPresented = false },
                                 )
                             } label: {
                                 if viewModel.isDownloadingAll {

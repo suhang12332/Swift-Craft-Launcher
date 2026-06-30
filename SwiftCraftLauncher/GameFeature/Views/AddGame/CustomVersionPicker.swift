@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A version picker with popover for selecting Minecraft game versions.
+// A version picker with popover for selecting Minecraft game versions.
 import SwiftUI
 
 private enum Constants {
@@ -28,7 +28,7 @@ struct CustomVersionPicker: View {
         availableVersions: [String],
         time: Binding<String>,
         onVersionSelected: @escaping (String) async -> String,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         _selected = selected
         self.availableVersions = availableVersions
@@ -50,7 +50,7 @@ struct CustomVersionPicker: View {
                 if let articleURL = releaseArticleURL, !time.isEmpty {
                     Link(
                         "release.time.prefix".localized() + time,
-                        destination: articleURL
+                        destination: articleURL,
                     )
                     .font(.subheadline)
                     .applyPointerHandIfAvailable()
@@ -65,13 +65,13 @@ struct CustomVersionPicker: View {
         }
         .alert(
             "error.notification.validation.title".localized(),
-            isPresented: .constant(error != nil)
+            isPresented: .constant(error != nil),
         ) {
             Button("common.close".localized()) {
                 error = nil
             }
         } message: {
-            if let error = error {
+            if let error {
                 Text(error.localizedDescription)
             }
         }
@@ -87,7 +87,7 @@ struct CustomVersionPicker: View {
                 Text(
                     selected.isEmpty
                         ? "game.form.version.placeholder".localized()
-                        : selected
+                        : selected,
                 )
                 .foregroundColor(.primary)
                 .padding(.horizontal, 6)
@@ -113,15 +113,15 @@ struct CustomVersionPicker: View {
             selectedItem: Binding<String?>(
                 get: { selected.isEmpty ? nil : selected },
                 set: { newValue in
-                    if let newValue = newValue {
+                    if let newValue {
                         selected = newValue
                         showMenu = false
                         Task {
                             time = await onVersionSelected(newValue)
                         }
                     }
-                }
-            )
+                },
+            ),
         ) { version in
             selected = version
             showMenu = false
@@ -133,7 +133,7 @@ struct CustomVersionPicker: View {
             minWidth: Constants.versionPopoverMinWidth,
             maxWidth: Constants.versionPopoverMinWidth,
             minHeight: Constants.versionPopoverMinHeight,
-            maxHeight: Constants.versionPopoverMaxHeight
+            maxHeight: Constants.versionPopoverMaxHeight,
         )
     }
 
@@ -149,7 +149,7 @@ struct CustomVersionPicker: View {
         let globalError = GlobalError.resource(
             chineseMessage: "没有可用的版本",
             i18nKey: "error.resource.no_versions_available",
-            level: .notification
+            level: .notification,
         )
         Logger.shared.error("版本选择器错误: \(globalError.chineseMessage)")
         errorHandler.handle(globalError)

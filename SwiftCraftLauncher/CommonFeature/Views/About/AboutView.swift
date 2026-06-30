@@ -12,7 +12,7 @@ public struct AboutView: View {
     @State private var showingAcknowledgements: Bool
 
     public init(showingAcknowledgements: Bool = true) {
-        self._showingAcknowledgements = State(initialValue: showingAcknowledgements)
+        _showingAcknowledgements = State(initialValue: showingAcknowledgements)
     }
 
     private var appName: String { Bundle.main.appName }

@@ -12,7 +12,7 @@ extension ModScanner {
     /// Scans a resource directory and returns all recognized `ModrinthProjectDetail` instances.
     func scanResourceDirectory(
         _ dir: URL,
-        completion: @escaping ([ModrinthProjectDetail]) -> Void
+        completion: @escaping ([ModrinthProjectDetail]) -> Void,
     ) {
         Task {
             do {
@@ -29,17 +29,17 @@ extension ModScanner {
 
     /// Scans a resource directory and returns all recognized `ModrinthProjectDetail` instances.
     func scanResourceDirectoryThrowing(
-        _ dir: URL
+        _ dir: URL,
     ) async throws -> [ModrinthProjectDetail] {
         let items = try scanDirectoryForDetails(in: dir)
-        return items.compactMap { $0.detail }
+        return items.compactMap(\.detail)
     }
 
     /// Calculates the start index, end index, and whether more pages remain for the given pagination parameters.
     func calculatePageRange(
         totalCount: Int,
         page: Int,
-        pageSize: Int
+        pageSize: Int,
     ) -> (startIndex: Int, endIndex: Int, hasMore: Bool)? {
         guard totalCount > 0 else {
             return nil
@@ -60,7 +60,7 @@ extension ModScanner {
     /// Concurrently scans a list of file URLs and returns their resolved details.
     func scanFilesConcurrently(
         fileURLs: [URL],
-        semaphore: AsyncSemaphore
+        semaphore: AsyncSemaphore,
     ) async -> [ModrinthProjectDetail] {
         await withTaskGroup(of: ModrinthProjectDetail?.self) { group in
             for fileURL in fileURLs {
@@ -69,7 +69,7 @@ extension ModScanner {
                     defer { Task { await semaphore.signal() } }
 
                     return try? await self.getModrinthProjectDetailThrowing(
-                        for: fileURL
+                        for: fileURL,
                     )
                 }
             }
@@ -86,7 +86,7 @@ extension ModScanner {
 
     /// Scans all jar and zip files in the directory, returning each file's URL, hash, and resolved detail.
     func scanDirectoryForDetails(
-        in dir: URL
+        in dir: URL,
     ) throws -> [(
         file: URL, hash: String, detail: ModrinthProjectDetail?
     )] {
@@ -100,7 +100,7 @@ extension ModScanner {
 
             if detail == nil {
                 detail = createFallbackDetailFromFileName(fileURL: fileURL)
-                if let detail = detail {
+                if let detail {
                     saveToCache(hash: hash, detail: detail)
                 }
             } else {
@@ -137,14 +137,14 @@ extension ModScanner {
         _ dir: URL,
         page: Int,
         pageSize: Int,
-        completion: @escaping ([ModrinthProjectDetail], Bool) -> Void
+        completion: @escaping ([ModrinthProjectDetail], Bool) -> Void,
     ) {
         Task {
             do {
                 let (results, hasMore) = try await scanResourceDirectoryPageThrowing(
                     dir,
                     page: page,
-                    pageSize: pageSize
+                    pageSize: pageSize,
                 )
                 completion(results, hasMore)
             } catch {
@@ -161,14 +161,14 @@ extension ModScanner {
         fileURLs: [URL],
         page: Int,
         pageSize: Int,
-        completion: @escaping ([ModrinthProjectDetail], Bool) -> Void
+        completion: @escaping ([ModrinthProjectDetail], Bool) -> Void,
     ) {
         Task {
             do {
                 let (results, hasMore) = try await scanResourceFilesPageThrowing(
                     fileURLs: fileURLs,
                     page: page,
-                    pageSize: pageSize
+                    pageSize: pageSize,
                 )
                 completion(results, hasMore)
             } catch {
@@ -184,17 +184,17 @@ extension ModScanner {
     func scanResourceFilesPageThrowing(
         fileURLs: [URL],
         page: Int,
-        pageSize: Int
+        pageSize: Int,
     ) async throws -> ([ModrinthProjectDetail], Bool) {
         guard let pageRange = calculatePageRange(
             totalCount: fileURLs.count,
             page: page,
-            pageSize: pageSize
+            pageSize: pageSize,
         ) else {
             return ([], false)
         }
 
-        let pageFiles = Array(fileURLs[pageRange.startIndex..<pageRange.endIndex])
+        let pageFiles = Array(fileURLs[pageRange.startIndex ..< pageRange.endIndex])
         let concurrentCount = AppServices.generalSettingsManager.concurrentDownloads
         let semaphore = AsyncSemaphore(value: concurrentCount)
         let results = await scanFilesConcurrently(fileURLs: pageFiles, semaphore: semaphore)
@@ -206,13 +206,13 @@ extension ModScanner {
     func scanResourceDirectoryPageThrowing(
         _ dir: URL,
         page: Int,
-        pageSize: Int
+        pageSize: Int,
     ) async throws -> ([ModrinthProjectDetail], Bool) {
         let jarFiles = try readJarZipFiles(from: dir)
         return try await scanResourceFilesPageThrowing(
             fileURLs: jarFiles,
             page: page,
-            pageSize: pageSize
+            pageSize: pageSize,
         )
     }
 }

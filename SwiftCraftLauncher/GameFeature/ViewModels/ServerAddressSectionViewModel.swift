@@ -14,7 +14,7 @@ final class ServerAddressSectionViewModel: ObservableObject {
 
     /// Splits servers into visible and overflow items based on the configured maximum.
     func computeVisibleAndOverflowItems(
-        from servers: [ServerAddress]
+        from servers: [ServerAddress],
     ) -> ([ServerAddress], [ServerAddress]) {
         let maxItems = ServerAddressSectionConstants.maxItems
         let visibleItems = Array(servers.prefix(maxItems))
@@ -34,10 +34,10 @@ final class ServerAddressSectionViewModel: ObservableObject {
                         await CommonUtil.updateServerConnectionStatus(
                             for: server.address,
                             port: server.port,
-                            timeout: 5.0
+                            timeout: 5.0,
                         ) { newStatus in
                             latestStatus = newStatus
-                            if case .success(let info) = newStatus {
+                            if case let .success(info) = newStatus {
                                 serverInfo = info
                             }
                         }

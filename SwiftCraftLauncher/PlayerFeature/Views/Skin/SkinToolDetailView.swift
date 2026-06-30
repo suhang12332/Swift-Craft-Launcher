@@ -6,9 +6,9 @@
 //
 
 import Foundation
+import SkinRenderKit
 import SwiftUI
 import UniformTypeIdentifiers
-import SkinRenderKit
 
 /// A sheet for managing the current player's skin and cape.
 struct SkinToolDetailView: View {
@@ -21,13 +21,13 @@ struct SkinToolDetailView: View {
 
     init(
         preloadedSkinInfo: PlayerSkinService.PublicSkinInfo? = nil,
-        preloadedProfile: MinecraftProfileResponse? = nil
+        preloadedProfile: MinecraftProfileResponse? = nil,
     ) {
         _viewModel = StateObject(
             wrappedValue: SkinToolDetailViewModel(
                 preloadedSkinInfo: preloadedSkinInfo,
-                preloadedProfile: preloadedProfile
-            )
+                preloadedProfile: preloadedProfile,
+            ),
         )
     }
 
@@ -35,12 +35,12 @@ struct SkinToolDetailView: View {
         CommonSheetView(
             header: { headerView },
             body: { bodyContentView },
-            footer: { footerView }
+            footer: { footerView },
         )
         .fileImporter(
             isPresented: $viewModel.showingFileImporter,
             allowedContentTypes: [.png],
-            allowsMultipleSelection: false
+            allowsMultipleSelection: false,
         ) { result in
             viewModel.handleFileSelection(result)
         }
@@ -64,7 +64,7 @@ struct SkinToolDetailView: View {
         VStack(spacing: 24) {
             PlayerInfoSectionView(
                 player: resolvedPlayer,
-                currentModel: $viewModel.currentModel
+                currentModel: $viewModel.currentModel,
             )
             .onChange(of: viewModel.currentModel) { _, _ in
                 viewModel.updateHasChanges()
@@ -91,14 +91,14 @@ struct SkinToolDetailView: View {
                 },
                 onSelectSkinLibraryItem: { item in
                     viewModel.selectSkinLibraryItem(item)
-                }
+                },
             )
 
             CapeSelectionView(
                 playerProfile: viewModel.playerProfile,
                 selectedCapeId: $viewModel.selectedCapeId,
                 selectedCapeImageURL: $viewModel.selectedCapeImageURL,
-                selectedCapeImage: $viewModel.selectedCapeImage
+                selectedCapeImage: $viewModel.selectedCapeImage,
             ) { id, imageURL in
                 viewModel.handleCapeSelection(id: id, imageURL: imageURL, resolvedPlayer: resolvedPlayer)
             }

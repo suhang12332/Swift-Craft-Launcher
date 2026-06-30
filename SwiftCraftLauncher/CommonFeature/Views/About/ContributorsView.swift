@@ -12,7 +12,7 @@ public struct ContributorsView: View {
     @StateObject private var viewModel = ContributorsViewModel()
     @StateObject private var staticViewModel = ContributorsStaticViewModel()
 
-    public init() {}
+    public init() { }
 
     public var body: some View {
         ScrollView {
@@ -46,7 +46,7 @@ public struct ContributorsView: View {
             if !viewModel.contributors.isEmpty {
                 contributorsList
             }
-            if staticViewModel.loaded && !staticViewModel.loadFailed {
+            if staticViewModel.loaded, !staticViewModel.loadFailed {
                 staticContributorsList
             }
         }
@@ -63,7 +63,7 @@ public struct ContributorsView: View {
 
             ForEach(staticViewModel.contributors.indices, id: \.self) { index in
                 StaticContributorCardView(
-                    contributor: staticViewModel.contributors[index]
+                    contributor: staticViewModel.contributors[index],
                 )
                     .id("static-\(index)")
 
@@ -87,7 +87,7 @@ public struct ContributorsView: View {
             if !viewModel.topContributors.isEmpty {
                 ForEach(
                     Array(viewModel.topContributors.enumerated()),
-                    id: \.element.id
+                    id: \.element.id,
                 ) { index, contributor in
                     ContributorCardView(
                         contributor: contributor,
@@ -97,9 +97,9 @@ public struct ContributorsView: View {
                             format: "contributors.contributions.format"
                                 .localized(),
                             viewModel.formatContributions(
-                                contributor.contributions
-                            )
-                        )
+                                contributor.contributions,
+                            ),
+                        ),
                     )
                     .id("top-\(contributor.id)")
 
@@ -117,7 +117,7 @@ public struct ContributorsView: View {
 
             ForEach(
                 Array(viewModel.otherContributors.enumerated()),
-                id: \.element.id
+                id: \.element.id,
             ) { index, contributor in
                 ContributorCardView(
                     contributor: contributor,
@@ -127,9 +127,9 @@ public struct ContributorsView: View {
                         format: "contributors.contributions.format"
                             .localized(),
                         viewModel.formatContributions(
-                            contributor.contributions
-                        )
-                    )
+                            contributor.contributions,
+                        ),
+                    ),
                 )
                 .id("other-\(contributor.id)")
 

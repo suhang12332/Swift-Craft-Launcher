@@ -27,7 +27,7 @@ final class StartupAnnouncementViewModel: ObservableObject {
     init(
         announcementStateManager: AnnouncementStateManager = AppServices.announcementStateManager,
         languageManager: LanguageManager = AppServices.languageManager,
-        gitHubService: GitHubService = AppServices.gitHubService
+        gitHubService: GitHubService = AppServices.gitHubService,
     ) {
         self.announcementStateManager = announcementStateManager
         self.languageManager = languageManager
@@ -41,7 +41,7 @@ final class StartupAnnouncementViewModel: ObservableObject {
 
         await Task(priority: .utility) { [weak self] in
             guard let self else { return }
-            await self.checkAnnouncement()
+            await checkAnnouncement()
         }.value
     }
 
@@ -60,10 +60,10 @@ final class StartupAnnouncementViewModel: ObservableObject {
         do {
             let data = try await gitHubService.fetchAnnouncement(
                 version: version,
-                language: language
+                language: language,
             )
 
-            if let data = data {
+            if let data {
                 hasAnnouncement = true
                 announcementData = data
             } else {

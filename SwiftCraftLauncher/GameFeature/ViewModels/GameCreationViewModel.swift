@@ -20,11 +20,13 @@ class GameCreationViewModel: BaseGameFormViewModel {
             updateParentState()
         }
     }
+
     @Published var selectedLoaderVersion = "" {
         didSet {
             updateDefaultGameName()
         }
     }
+
     @Published var availableLoaderVersions: [String] = []
     @Published var availableVersions: [String] = []
 
@@ -39,7 +41,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
     init(
         configuration: GameFormConfiguration,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
-        gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager
+        gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager,
     ) {
         self.gameSettingsManager = gameSettingsManager
         super.init(configuration: configuration, errorHandler: errorHandler)
@@ -81,7 +83,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
         let gameName = gameNameValidator.gameName.trimmingCharacters(in: .whitespacesAndNewlines)
         if !gameName.isEmpty {
             let isGameSaved = await MainActor.run {
-                guard let gameRepository = gameRepository else { return false }
+                guard let gameRepository else { return false }
                 return gameRepository.games.contains { $0.gameName == gameName }
             }
 
@@ -108,7 +110,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
     }
 
     override func computeIsDownloading() -> Bool {
-        return gameSetupService.downloadState.isDownloading
+        gameSetupService.downloadState.isDownloading
     }
 
     override func computeIsFormValid() -> Bool {

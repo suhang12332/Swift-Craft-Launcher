@@ -34,25 +34,25 @@ final class MinecraftFriendsPresencePollingCoordinator {
         AppServices.playerSettingsManager.enableMinecraftFriendsPresenceNotifications
 
     private init(
-        friendsService: MinecraftFriendsService = AppServices.minecraftFriendsService
+        friendsService: MinecraftFriendsService = AppServices.minecraftFriendsService,
     ) {
         hostAdapter = MinecraftFriendsPresenceMonitorHostAdapter()
         credentialSideEffects = MinecraftFriendsMicrosoftPlayerSideEffects(
             dataManager: AppServices.playerDataManager,
-            errorHandler: AppServices.errorHandler
+            errorHandler: AppServices.errorHandler,
         )
         let localize = Self.makeLocalize()
         presenceMonitor = MinecraftFriendsPresenceMonitor(
             friendsService: friendsService,
             host: hostAdapter,
             preferencesDidChangeNotification: .minecraftFriendsAccountPreferencesDidChange,
-            localize: localize
+            localize: localize,
         )
         friendListMonitor = MinecraftFriendsFriendListMonitor(
             friendsService: friendsService,
             host: hostAdapter,
             preferencesDidChangeNotification: .minecraftFriendsAccountPreferencesDidChange,
-            localize: localize
+            localize: localize,
         )
     }
 
@@ -146,13 +146,13 @@ final class MinecraftFriendsPresencePollingCoordinator {
 
                 let presenceContext = MinecraftFriendsPresenceTickContext(
                     playerId: boundPlayer.id,
-                    canUseMicrosoftMinecraftServices: true
+                    canUseMicrosoftMinecraftServices: true,
                 )
                 await presenceMonitor.tick(context: presenceContext)
 
                 let friendListContext = MinecraftFriendsFriendListTickContext(
                     playerId: boundPlayer.id,
-                    canUseMicrosoftMinecraftServices: true
+                    canUseMicrosoftMinecraftServices: true,
                 )
                 await friendListMonitor.tick(context: friendListContext)
                 return true
@@ -181,7 +181,7 @@ final class MinecraftFriendsPresencePollingCoordinator {
     private static func makeLocalize() -> (String) -> String {
         MinecraftFriendsSheetLocalize.resolver(
             localeIdentifier: { AppServices.languageManager.selectedLanguage },
-            fallback: { $0.localized() }
+            fallback: { $0.localized() },
         )
     }
 }

@@ -41,7 +41,7 @@ final class ModPackExportSheetCoordinatorViewModel: ObservableObject {
     }
 
     func cleanupExporterStateIfNeeded(oldValue: Bool, newValue: Bool) {
-        if oldValue && !newValue && exportDocument != nil {
+        if oldValue, !newValue, exportDocument != nil {
             exportDocument = nil
         }
     }

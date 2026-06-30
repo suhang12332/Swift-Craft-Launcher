@@ -12,6 +12,7 @@ struct FilterItem: Identifiable, Equatable, Hashable {
     let id: String
     let name: String
 }
+
 /// Project type string constants used for categorization.
 enum ProjectType {
     static let modpack = "modpack"

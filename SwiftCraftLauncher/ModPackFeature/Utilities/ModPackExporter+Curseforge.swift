@@ -21,7 +21,7 @@ extension ModPackExporter {
     static func identifyCurseForgeResource(
         file: URL,
         relativePath: String,
-        gameDirectory: URL
+        gameDirectory: URL,
     ) async -> SelectedResourceProcessResult {
         if Task.isCancelled {
             return SelectedResourceProcessResult(
@@ -30,7 +30,7 @@ extension ModPackExporter {
                 curseForgeModListItem: nil,
                 shouldCopyToOverrides: false,
                 sourceFile: file,
-                relativePath: relativePath
+                relativePath: relativePath,
             )
         }
         guard isModsJarFile(file, gameDirectory: gameDirectory) else {
@@ -40,7 +40,7 @@ extension ModPackExporter {
                 curseForgeModListItem: nil,
                 shouldCopyToOverrides: true,
                 sourceFile: file,
-                relativePath: relativePath
+                relativePath: relativePath,
             )
         }
 
@@ -51,7 +51,7 @@ extension ModPackExporter {
                 curseForgeModListItem: nil,
                 shouldCopyToOverrides: false,
                 sourceFile: file,
-                relativePath: relativePath
+                relativePath: relativePath,
             )
         }
         guard let fingerprint = try? CurseForgeFingerprint.fingerprint(fileAt: file),
@@ -62,7 +62,7 @@ extension ModPackExporter {
                 curseForgeModListItem: nil,
                 shouldCopyToOverrides: true,
                 sourceFile: file,
-                relativePath: relativePath
+                relativePath: relativePath,
             )
         }
 
@@ -72,18 +72,18 @@ extension ModPackExporter {
                 projectID: match.projectId,
                 fileID: match.fileId,
                 required: true,
-                isLocked: false
+                isLocked: false,
             ),
             curseForgeModListItem: CurseForgeModListItem(
                 projectID: match.projectId,
                 fileID: match.fileId,
                 fileName: file.lastPathComponent,
                 projectName: nil,
-                authorsText: nil
+                authorsText: nil,
             ),
             shouldCopyToOverrides: false,
             sourceFile: file,
-            relativePath: relativePath
+            relativePath: relativePath,
         )
     }
 
@@ -95,13 +95,13 @@ extension ModPackExporter {
     /// - Returns: The list of filenames written to the temporary directory.
     static func writeCurseForgeManifest(
         params: IndexBuildParams,
-        tempDir: URL
+        tempDir: URL,
     ) async throws -> [String] {
         let manifestJson = try CurseForgeManifestBuilder.build(
             gameInfo: params.gameInfo,
             modPackName: params.modPackName,
             modPackVersion: params.modPackVersion,
-            files: params.curseForgeFiles
+            files: params.curseForgeFiles,
         )
         let manifestFileName = "manifest.json"
         let manifestPath = tempDir.appendingPathComponent(manifestFileName)

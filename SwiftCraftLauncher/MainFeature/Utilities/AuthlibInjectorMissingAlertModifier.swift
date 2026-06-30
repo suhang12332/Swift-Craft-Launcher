@@ -12,7 +12,7 @@ struct AuthlibInjectorMissingAlertModifier: ViewModifier {
     @ObservedObject private var presenter: AuthlibInjectorMissingPresenter
 
     init(
-        presenter: AuthlibInjectorMissingPresenter = AppServices.authlibInjectorMissingPresenter
+        presenter: AuthlibInjectorMissingPresenter = AppServices.authlibInjectorMissingPresenter,
     ) {
         _presenter = ObservedObject(wrappedValue: presenter)
     }
@@ -24,7 +24,7 @@ struct AuthlibInjectorMissingAlertModifier: ViewModifier {
                 if !newValue {
                     presenter.dismissIfNeeded(as: .cancel)
                 }
-            }
+            },
         )
     }
 
@@ -32,7 +32,7 @@ struct AuthlibInjectorMissingAlertModifier: ViewModifier {
         content
             .alert(
                 "game_launch.authlib_injector_missing.title".localized(),
-                isPresented: alertBinding
+                isPresented: alertBinding,
             ) {
                 Button("common.continue".localized()) {
                     presenter.resolve(.continueWithoutInjector)

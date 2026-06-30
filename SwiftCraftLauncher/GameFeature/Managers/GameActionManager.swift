@@ -5,16 +5,15 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import AppKit
+import SwiftUI
 
 /// Provides game-related actions such as revealing in Finder and deletion.
 @MainActor
 class GameActionManager: ObservableObject {
-
     static let shared = GameActionManager()
 
-    private init() {}
+    private init() { }
 
     /// Reveals the game directory in Finder.
     /// - Parameter game: The game version to locate.
@@ -40,7 +39,7 @@ class GameActionManager: ObservableObject {
         game: GameVersionInfo,
         gameRepository: GameRepository,
         selectedItem: Binding<SidebarItem>? = nil,
-        gameType: Binding<Bool>? = nil
+        gameType: Binding<Bool>? = nil,
     ) {
         Task {
             do {
@@ -52,13 +51,13 @@ class GameActionManager: ObservableObject {
                     let error = GlobalError.validation(
                         chineseMessage: "游戏运行中，无法删除",
                         i18nKey: "error.validation.game_running_cannot_delete",
-                        level: .notification
+                        level: .notification,
                     )
                     AppServices.errorHandler.handle(error)
                     return
                 }
 
-                if let selectedItem = selectedItem {
+                if let selectedItem {
                     await MainActor.run {
                         if let firstGame = gameRepository.games.first(where: {
                             $0.id != game.id
@@ -90,7 +89,7 @@ class GameActionManager: ObservableObject {
                 let globalError = GlobalError.fileSystem(
                     chineseMessage: "删除游戏失败: \(error.localizedDescription)",
                     i18nKey: "error.filesystem.game_deletion_failed",
-                    level: .notification
+                    level: .notification,
                 )
                 Logger.shared.error("删除游戏失败: \(globalError.chineseMessage)")
                 AppServices.errorHandler.handle(globalError)
@@ -104,7 +103,7 @@ class GameActionManager: ObservableObject {
     ///   - gameRepository: The game repository for record management.
     func deleteCorruptedGame(
         name: String,
-        gameRepository: GameRepository
+        gameRepository: GameRepository,
     ) {
         Task {
             do {
@@ -124,7 +123,7 @@ class GameActionManager: ObservableObject {
                 let globalError = GlobalError.fileSystem(
                     chineseMessage: "删除损坏游戏失败: \(error.localizedDescription)",
                     i18nKey: "error.filesystem.game_deletion_failed",
-                    level: .notification
+                    level: .notification,
                 )
                 Logger.shared.error("删除损坏游戏失败: \(globalError.chineseMessage)")
                 AppServices.errorHandler.handle(globalError)

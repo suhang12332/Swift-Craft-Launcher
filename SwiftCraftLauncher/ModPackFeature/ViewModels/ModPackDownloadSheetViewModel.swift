@@ -54,7 +54,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     private var gameRepository: GameRepository?
 
     func setGameRepository(_ repository: GameRepository) {
-        self.gameRepository = repository
+        gameRepository = repository
     }
 
     init(errorHandler: GlobalErrorHandler = AppServices.errorHandler) {
@@ -82,17 +82,17 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         gameName: String,
         selectedGameVersion: String,
         gameSetupService: GameSetupUtil,
-        onFinished: @escaping @MainActor (_ success: Bool) -> Void
+        onFinished: @escaping @MainActor (_ success: Bool) -> Void,
     ) {
         downloadTask?.cancel()
         downloadTask = Task { [weak self] in
             guard let self else { return }
-            let success = await self.performModPackDownloadAndInstall(
+            let success = await performModPackDownloadAndInstall(
                 selectedVersion: selectedVersion,
                 projectDetail: projectDetail,
                 gameName: gameName,
                 selectedGameVersion: selectedGameVersion,
-                gameSetupService: gameSetupService
+                gameSetupService: gameSetupService,
             )
             onFinished(success)
         }
@@ -126,7 +126,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         projectDetail: ModrinthProjectDetail,
         gameName: String,
         selectedGameVersion: String,
-        gameSetupService: GameSetupUtil
+        gameSetupService: GameSetupUtil,
     ) async -> Bool {
         guard let gameRepository else {
             return false
@@ -144,15 +144,15 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 GlobalError.resource(
                     chineseMessage: "没有找到可下载的文件",
                     i18nKey: "error.resource.no_downloadable_file",
-                    level: .notification
-                )
+                    level: .notification,
+                ),
             )
             return false
         }
 
         guard let archivePath = await downloadService.downloadModPackFile(
             file: fileToDownload,
-            projectDetail: projectDetail
+            projectDetail: projectDetail,
         ) else {
             isProcessing = false
             return false
@@ -173,8 +173,8 @@ class ModPackDownloadSheetViewModel: ObservableObject {
                 setLastParsedIndexInfo: { [weak self] info in
                     self?.lastParsedIndexInfo = info
                 },
-                prepared: nil
-            )
+                prepared: nil,
+            ),
         )
 
         if success {
@@ -198,7 +198,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         do {
             projectDetail =
                 try await ModrinthService.fetchProjectDetailsThrowing(
-                    id: projectId
+                    id: projectId,
                 )
             availableGameVersions = projectDetail?.gameVersions ?? []
         } catch {
@@ -210,14 +210,14 @@ class ModPackDownloadSheetViewModel: ObservableObject {
     }
 
     func loadModPackVersions(for gameVersion: String) async {
-        guard let projectDetail = projectDetail else { return }
+        guard let projectDetail else { return }
 
         isLoadingModPackVersions = true
 
         do {
             allModPackVersions =
                 try await ModrinthService.fetchProjectVersionsThrowing(
-                    id: projectDetail.id
+                    id: projectDetail.id,
                 )
             filteredModPackVersions = allModPackVersions
                 .filter { version in
@@ -236,15 +236,16 @@ class ModPackDownloadSheetViewModel: ObservableObject {
 
     func downloadModPackFile(
         file: ModrinthVersionFile,
-        projectDetail: ModrinthProjectDetail
+        projectDetail: ModrinthProjectDetail,
     ) async -> URL? {
         modPackDownloadProgress = 0
         modPackTotalSize = 0
         return await downloadService.downloadModPackFile(file: file, projectDetail: projectDetail)
     }
+
     func downloadGameIcon(
         projectDetail: ModrinthProjectDetail,
-        gameName: String
+        gameName: String,
     ) async -> String? {
         await downloadService.downloadGameIcon(projectDetail: projectDetail, gameName: gameName)
     }
@@ -257,7 +258,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         let globalError = GlobalError.resource(
             chineseMessage: message,
             i18nKey: i18nKey,
-            level: .notification
+            level: .notification,
         )
         errorHandler.handle(globalError)
     }

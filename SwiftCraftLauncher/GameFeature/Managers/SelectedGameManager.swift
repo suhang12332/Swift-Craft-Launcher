@@ -26,8 +26,7 @@ class SelectedGameManager: ObservableObject {
         }
     }
 
-    private init() {
-    }
+    private init() { }
 
     /// Sets the selected game.
     /// - Parameter gameId: The game identifier, or `nil` to clear the selection.

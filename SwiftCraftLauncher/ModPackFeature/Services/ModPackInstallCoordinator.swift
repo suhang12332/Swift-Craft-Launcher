@@ -37,7 +37,7 @@ final class ModPackInstallCoordinator {
 
     init(
         downloadService: ModPackDownloadService,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.downloadService = downloadService
         self.errorHandler = errorHandler
@@ -50,7 +50,7 @@ final class ModPackInstallCoordinator {
     /// - Returns: A prepared modpack, or nil on failure.
     func prepare(
         archivePath: URL,
-        projectDetailForIcon: ModrinthProjectDetail? = nil
+        projectDetailForIcon: ModrinthProjectDetail? = nil,
     ) async -> PreparedModPack? {
         guard let extractedPath = await downloadService.extractModPack(modPackPath: archivePath) else {
             return nil
@@ -61,8 +61,8 @@ final class ModPackInstallCoordinator {
                 GlobalError.resource(
                     chineseMessage: "不支持的整合包格式，请使用 Modrinth (.mrpack) 或 CurseForge (.zip) 格式的整合包",
                     i18nKey: "error.resource.unsupported_modpack_format",
-                    level: .notification
-                )
+                    level: .notification,
+                ),
             )
             return nil
         }
@@ -70,7 +70,7 @@ final class ModPackInstallCoordinator {
         return .init(
             extractedPath: extractedPath,
             indexInfo: indexInfo,
-            projectDetailForIcon: projectDetailForIcon
+            projectDetailForIcon: projectDetailForIcon,
         )
     }
 
@@ -83,7 +83,7 @@ final class ModPackInstallCoordinator {
             await handleCancelledInstallation(
                 gameName: input.gameName,
                 gameSetupService: input.gameSetupService,
-                modPackInstallState: input.modPackInstallState
+                modPackInstallState: input.modPackInstallState,
             )
             return false
         }
@@ -95,7 +95,7 @@ final class ModPackInstallCoordinator {
         let indexInfo = preparedPack.indexInfo
         let iconPath = await downloadOptionalIcon(
             projectDetailForIcon: preparedPack.projectDetailForIcon,
-            gameName: input.gameName
+            gameName: input.gameName,
         )
 
         let profileCreated = await createProfileDirectories(for: input.gameName)
@@ -104,7 +104,7 @@ final class ModPackInstallCoordinator {
                 success: false,
                 gameName: input.gameName,
                 gameSetupService: input.gameSetupService,
-                modPackInstallState: input.modPackInstallState
+                modPackInstallState: input.modPackInstallState,
             )
             return false
         }
@@ -115,7 +115,7 @@ final class ModPackInstallCoordinator {
         guard await installOverridesStep(
             extractedPath: extractedPath,
             resourceDir: resourceDir,
-            input: input
+            input: input,
         ) else {
             return await handleStepFailure(input)
         }
@@ -126,20 +126,20 @@ final class ModPackInstallCoordinator {
             gameIcon: iconPath ?? AppConstants.defaultGameIcon,
             gameVersion: input.selectedGameVersion,
             assetIndex: "",
-            modLoader: indexInfo.loaderType
+            modLoader: indexInfo.loaderType,
         )
 
         let (filesToDownload, requiredDependencies) = calculateInstallationCounts(from: indexInfo)
         input.modPackInstallState.startInstallation(
             filesTotal: filesToDownload.count,
-            dependenciesTotal: requiredDependencies.count
+            dependenciesTotal: requiredDependencies.count,
         )
 
         guard await installFilesStep(
             indexInfo: indexInfo,
             resourceDir: resourceDir,
             gameInfo: tempGameInfo,
-            input: input
+            input: input,
         ) else {
             return await handleStepFailure(input)
         }
@@ -148,21 +148,21 @@ final class ModPackInstallCoordinator {
             indexInfo: indexInfo,
             resourceDir: resourceDir,
             gameInfo: tempGameInfo,
-            input: input
+            input: input,
         ) else {
             return await handleStepFailure(input)
         }
 
         let gameSuccess = await installGameStep(
             input: input,
-            indexInfo: indexInfo
+            indexInfo: indexInfo,
         )
 
         await handleInstallationResult(
             success: gameSuccess,
             gameName: input.gameName,
             gameSetupService: input.gameSetupService,
-            modPackInstallState: input.modPackInstallState
+            modPackInstallState: input.modPackInstallState,
         )
 
         downloadService.cleanupTempFiles()
@@ -176,13 +176,13 @@ final class ModPackInstallCoordinator {
         }
         guard let prepared = await prepare(
             archivePath: input.archivePath,
-            projectDetailForIcon: input.projectDetailForIcon
+            projectDetailForIcon: input.projectDetailForIcon,
         ) else {
             if Task.isCancelled {
                 await handleCancelledInstallation(
                     gameName: input.gameName,
                     gameSetupService: input.gameSetupService,
-                    modPackInstallState: input.modPackInstallState
+                    modPackInstallState: input.modPackInstallState,
                 )
             }
             return nil
@@ -193,19 +193,19 @@ final class ModPackInstallCoordinator {
 
     private func downloadOptionalIcon(
         projectDetailForIcon: ModrinthProjectDetail?,
-        gameName: String
+        gameName: String,
     ) async -> String? {
         guard let projectDetailForIcon else { return nil }
         return await downloadService.downloadGameIcon(
             projectDetail: projectDetailForIcon,
-            gameName: gameName
+            gameName: gameName,
         )
     }
 
     private func installOverridesStep(
         extractedPath: URL,
         resourceDir: URL,
-        input: RunInput
+        input: RunInput,
     ) async -> Bool {
         let overridesTotal = await calculateOverridesTotal(extractedPath: extractedPath)
         if overridesTotal > 0 {
@@ -217,7 +217,7 @@ final class ModPackInstallCoordinator {
 
         return await ModPackDependencyInstaller.installOverrides(
             extractedPath: extractedPath,
-            resourceDir: resourceDir
+            resourceDir: resourceDir,
         ) { fileName, completed, total, type in
             Task { @MainActor in
                 self.updateInstallProgress(
@@ -225,7 +225,7 @@ final class ModPackInstallCoordinator {
                     fileName: fileName,
                     completed: completed,
                     total: total,
-                    type: type
+                    type: type,
                 )
                 input.modPackInstallState.objectWillChange.send()
             }
@@ -236,12 +236,12 @@ final class ModPackInstallCoordinator {
         indexInfo: ModrinthIndexInfo,
         resourceDir: URL,
         gameInfo: GameVersionInfo,
-        input: RunInput
+        input: RunInput,
     ) async -> Bool {
         await ModPackDependencyInstaller.installModPackFiles(
             files: indexInfo.files,
             resourceDir: resourceDir,
-            gameInfo: gameInfo
+            gameInfo: gameInfo,
         ) { fileName, completed, total, type in
             Task { @MainActor in
                 self.updateInstallProgress(
@@ -249,7 +249,7 @@ final class ModPackInstallCoordinator {
                     fileName: fileName,
                     completed: completed,
                     total: total,
-                    type: type
+                    type: type,
                 )
                 input.modPackInstallState.objectWillChange.send()
             }
@@ -260,12 +260,12 @@ final class ModPackInstallCoordinator {
         indexInfo: ModrinthIndexInfo,
         resourceDir: URL,
         gameInfo: GameVersionInfo,
-        input: RunInput
+        input: RunInput,
     ) async -> Bool {
         await ModPackDependencyInstaller.installModPackDependencies(
             dependencies: indexInfo.dependencies,
             gameInfo: gameInfo,
-            resourceDir: resourceDir
+            resourceDir: resourceDir,
         ) { fileName, completed, total, type in
             Task { @MainActor in
                 self.updateInstallProgress(
@@ -273,7 +273,7 @@ final class ModPackInstallCoordinator {
                     fileName: fileName,
                     completed: completed,
                     total: total,
-                    type: type
+                    type: type,
                 )
                 input.modPackInstallState.objectWillChange.send()
             }
@@ -282,7 +282,7 @@ final class ModPackInstallCoordinator {
 
     private func installGameStep(
         input: RunInput,
-        indexInfo: ModrinthIndexInfo
+        indexInfo: ModrinthIndexInfo,
     ) async -> Bool {
         await withCheckedContinuation { continuation in
             Task {
@@ -292,7 +292,7 @@ final class ModPackInstallCoordinator {
                         selectedGameVersion: input.selectedGameVersion,
                         selectedModLoader: indexInfo.loaderType,
                         specifiedLoaderVersion: indexInfo.loaderVersion,
-                        pendingIconData: nil
+                        pendingIconData: nil,
                     ),
                     playerListViewModel: nil,
                     gameRepository: input.gameRepository,
@@ -305,7 +305,7 @@ final class ModPackInstallCoordinator {
                             self.errorHandler.handle(error)
                         }
                         continuation.resume(returning: false)
-                    }
+                    },
                 )
             }
         }
@@ -316,7 +316,7 @@ final class ModPackInstallCoordinator {
             await handleCancelledInstallation(
                 gameName: input.gameName,
                 gameSetupService: input.gameSetupService,
-                modPackInstallState: input.modPackInstallState
+                modPackInstallState: input.modPackInstallState,
             )
             return false
         }
@@ -324,7 +324,7 @@ final class ModPackInstallCoordinator {
             success: false,
             gameName: input.gameName,
             gameSetupService: input.gameSetupService,
-            modPackInstallState: input.modPackInstallState
+            modPackInstallState: input.modPackInstallState,
         )
         return false
     }
@@ -365,18 +365,18 @@ final class ModPackInstallCoordinator {
             do {
                 try FileManager.default.createDirectory(
                     at: dir,
-                    withIntermediateDirectories: true
+                    withIntermediateDirectories: true,
                 )
             } catch {
                 Logger.shared.error(
-                    "创建目录失败: \(dir.path), 错误: \(error.localizedDescription)"
+                    "创建目录失败: \(dir.path), 错误: \(error.localizedDescription)",
                 )
                 errorHandler.handle(
                     GlobalError.fileSystem(
                         chineseMessage: "创建目录失败: \(dir.path)",
                         i18nKey: "error.filesystem.directory_creation_failed",
-                        level: .notification
-                    )
+                        level: .notification,
+                    ),
                 )
                 return false
             }
@@ -385,7 +385,7 @@ final class ModPackInstallCoordinator {
     }
 
     private func calculateInstallationCounts(
-        from indexInfo: ModrinthIndexInfo
+        from indexInfo: ModrinthIndexInfo,
     ) -> ([ModrinthIndexFile], [ModrinthIndexProjectDependency]) {
         let filesToDownload = indexInfo.files.filter { file in
             if let env = file.env, let client = env.client,
@@ -406,26 +406,26 @@ final class ModPackInstallCoordinator {
         fileName: String,
         completed: Int,
         total: Int,
-        type: ModPackDependencyInstaller.DownloadType
+        type: ModPackDependencyInstaller.DownloadType,
     ) {
         switch type {
         case .files:
             modPackInstallState.updateFilesProgress(
                 fileName: fileName,
                 completed: completed,
-                total: total
+                total: total,
             )
         case .dependencies:
             modPackInstallState.updateDependenciesProgress(
                 dependencyName: fileName,
                 completed: completed,
-                total: total
+                total: total,
             )
         case .overrides:
             modPackInstallState.updateOverridesProgress(
                 overrideName: fileName,
                 completed: completed,
-                total: total
+                total: total,
             )
         }
     }
@@ -434,13 +434,13 @@ final class ModPackInstallCoordinator {
         success: Bool,
         gameName: String,
         gameSetupService: GameSetupUtil,
-        modPackInstallState: ModPackInstallState
+        modPackInstallState: ModPackInstallState,
     ) async {
         if Task.isCancelled {
             await handleCancelledInstallation(
                 gameName: gameName,
                 gameSetupService: gameSetupService,
-                modPackInstallState: modPackInstallState
+                modPackInstallState: modPackInstallState,
             )
             return
         }
@@ -454,8 +454,8 @@ final class ModPackInstallCoordinator {
                 GlobalError.resource(
                     chineseMessage: "整合包依赖安装失败",
                     i18nKey: "error.resource.modpack_dependencies_failed",
-                    level: .notification
-                )
+                    level: .notification,
+                ),
             )
             modPackInstallState.reset()
             gameSetupService.downloadState.reset()
@@ -465,7 +465,7 @@ final class ModPackInstallCoordinator {
     private func handleCancelledInstallation(
         gameName: String,
         gameSetupService: GameSetupUtil,
-        modPackInstallState: ModPackInstallState
+        modPackInstallState: ModPackInstallState,
     ) async {
         Logger.shared.info("整合包安装已取消: \(gameName)")
         await cleanupGameDirectories(gameName: gameName)

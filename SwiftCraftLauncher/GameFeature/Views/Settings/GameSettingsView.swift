@@ -5,25 +5,24 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Global game settings view for API source, memory allocation, Java runtime, and cache management.
+// Global game settings view for API source, memory allocation, Java runtime, and cache management.
 import Foundation
 import SwiftUI
 
 public struct GameSettingsView: View {
-
     @StateObject private var gameSettings: GameSettingsManager
     @ObservedObject private var javaDownloadManager: JavaDownloadManager
     @StateObject private var viewModel: GameSettingsJavaRuntimeViewModel
     private let modCacheManager: ModCacheManager
 
-    @State private var globalMemoryRange: ClosedRange<Double> = 512...4096
+    @State private var globalMemoryRange: ClosedRange<Double> = 512 ... 4096
 
     @MainActor
     public init() {
         _gameSettings = StateObject(wrappedValue: AppServices.gameSettingsManager)
         _javaDownloadManager = ObservedObject(wrappedValue: AppServices.javaDownloadManager)
         _viewModel = StateObject(wrappedValue: GameSettingsJavaRuntimeViewModel())
-        self.modCacheManager = AppServices.modCacheManager
+        modCacheManager = AppServices.modCacheManager
     }
 
     @MainActor
@@ -31,7 +30,7 @@ public struct GameSettingsView: View {
         gameSettings: GameSettingsManager,
         javaDownloadManager: JavaDownloadManager,
         viewModel: GameSettingsJavaRuntimeViewModel,
-        modCacheManager: ModCacheManager = AppServices.modCacheManager
+        modCacheManager: ModCacheManager = AppServices.modCacheManager,
     ) {
         _gameSettings = StateObject(wrappedValue: gameSettings)
         _javaDownloadManager = ObservedObject(wrappedValue: javaDownloadManager)
@@ -71,7 +70,7 @@ public struct GameSettingsView: View {
                     HStack {
                         Toggle(
                             "",
-                            isOn: $gameSettings.includeSnapshotsForGameVersions
+                            isOn: $gameSettings.includeSnapshotsForGameVersions,
                         )
                         .labelsHidden()
                         Text("settings.game_versions.include_snapshots.label".localized())
@@ -84,7 +83,7 @@ public struct GameSettingsView: View {
                     HStack {
                         Toggle(
                             "",
-                            isOn: $gameSettings.enableAICrashAnalysis
+                            isOn: $gameSettings.enableAICrashAnalysis,
                         ).labelsHidden()
                         Text("settings.ai_crash_analysis.description".localized())
                     }
@@ -96,7 +95,7 @@ public struct GameSettingsView: View {
                     HStack {
                         Toggle(
                             "",
-                            isOn: $gameSettings.syncLanguageForNewGames
+                            isOn: $gameSettings.syncLanguageForNewGames,
                         )
                         .labelsHidden()
                         Text("settings.game.language.sync_with_launcher".localized())
@@ -111,7 +110,7 @@ public struct GameSettingsView: View {
                             MiniRangeSlider(
                                 range: $globalMemoryRange,
                                 bounds:
-                                    512...Double(gameSettings.maximumMemoryAllocation)
+                                    512 ... Double(gameSettings.maximumMemoryAllocation),
                             )
                             .frame(width: 200)
                             .controlSize(.mini)
@@ -122,11 +121,11 @@ public struct GameSettingsView: View {
                             .onAppear {
                                 globalMemoryRange =
                                 Double(
-                                    gameSettings.globalXms
-                                )...Double(gameSettings.globalXmx)
+                                    gameSettings.globalXms,
+                                ) ... Double(gameSettings.globalXmx)
                             }
                             Text(
-                                "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB"
+                                "\(Int(globalMemoryRange.lowerBound)) MB-\(Int(globalMemoryRange.upperBound)) MB",
                             )
                             .font(.subheadline)
                             .foregroundColor(.primary)
@@ -136,7 +135,7 @@ public struct GameSettingsView: View {
                     }
                     .labeledContentStyle(.custom)
                     CommonDescriptionText(
-                        text: "settings.default_memory_allocation.description".localized()
+                        text: "settings.default_memory_allocation.description".localized(),
                     )
                 }
                 LabeledContent("settings.game.java.runtimes.section".localized()) {
@@ -159,14 +158,14 @@ public struct GameSettingsView: View {
                         Button("settings.game.java.runtime.reinstall".localized()) {
                             Task {
                                 await javaDownloadManager.downloadJavaRuntime(
-                                    version: viewModel.selectedRuntimeComponent
+                                    version: viewModel.selectedRuntimeComponent,
                                 )
                             }
                         }
                         .disabled(
                             viewModel.selectedRuntimeComponent.isEmpty
                                 || javaDownloadManager.downloadState.isDownloading
-                                || (viewModel.installedRuntimeComponents ?? []).isEmpty
+                                || (viewModel.installedRuntimeComponents ?? []).isEmpty,
                         )
 
                         if !viewModel.selectedRuntimeComponent.isEmpty {

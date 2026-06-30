@@ -11,21 +11,21 @@ import Foundation
 class NBTParser {
     var data: Data
     var offset: Int = 0
-    var outputData: Data = Data()
+    var outputData: Data = .init()
 
     init(data: Data) {
         self.data = data
     }
 
     private init() {
-        self.data = Data()
+        data = Data()
     }
 
     /// Parses the NBT data into a dictionary.
     /// - Throws: A `GlobalError` if the data is empty or the root tag is not a compound.
     /// - Returns: The root compound as a dictionary.
     func parse() throws -> [String: Any] {
-        if data.count >= 2 && data[0] == 0x1F && data[1] == 0x8B {
+        if data.count >= 2, data[0] == 0x1F, data[1] == 0x8B {
             data = try decompressGzip(data: data)
             offset = 0
         }
@@ -34,7 +34,7 @@ class NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "NBT 数据为空",
                 i18nKey: "error.filesystem.nbt_empty_data",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -43,7 +43,7 @@ class NBTParser {
             throw GlobalError.fileSystem(
                 chineseMessage: "NBT 根标签不是 Compound 类型",
                 i18nKey: "error.filesystem.nbt_invalid_root",
-                level: .notification
+                level: .notification,
             )
         }
 

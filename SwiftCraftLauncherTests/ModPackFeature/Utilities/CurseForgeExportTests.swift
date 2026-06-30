@@ -5,15 +5,14 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CurseForgeExportTests: XCTestCase {
-
     private func makeGameInfo(
         gameVersion: String = "1.20.1",
         modLoader: String = "forge",
-        modVersion: String = "47.2.0"
+        modVersion: String = "47.2.0",
     ) -> GameVersionInfo {
         GameVersionInfo(
             gameName: "TestGame",
@@ -22,7 +21,7 @@ final class CurseForgeExportTests: XCTestCase {
             modVersion: modVersion,
             assetIndex: "17",
             modLoader: modLoader,
-            mainClass: "net.minecraft.client.main.Main"
+            mainClass: "net.minecraft.client.main.Main",
         )
     }
 
@@ -33,7 +32,7 @@ final class CurseForgeExportTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "VanillaPack",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("manifestType"))
@@ -50,7 +49,7 @@ final class CurseForgeExportTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "EmptyLoader",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         XCTAssertFalse(json.contains("vanilla-"))
@@ -63,7 +62,7 @@ final class CurseForgeExportTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "ForgePack",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("forge-47.2.0"))
@@ -76,7 +75,7 @@ final class CurseForgeExportTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "ForgeNoVersion",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("forge"))
@@ -89,7 +88,7 @@ final class CurseForgeExportTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "TestPack",
             modPackVersion: "2.0",
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("\"manifestType\""))
@@ -109,7 +108,7 @@ final class CurseForgeExportTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "My Awesome Pack",
             modPackVersion: "3.0",
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("My Awesome Pack"))
@@ -122,7 +121,7 @@ final class CurseForgeExportTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "Pack",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         XCTAssertTrue(json.contains("1.21.4"))
@@ -130,17 +129,17 @@ final class CurseForgeExportTests: XCTestCase {
 
     func testManifestFile_codable_roundTrip() throws {
         let file = CurseForgeManifestBuilder.ManifestFile(
-            projectID: 238222,
-            fileID: 4567890,
+            projectID: 238_222,
+            fileID: 4_567_890,
             required: true,
-            isLocked: false
+            isLocked: false,
         )
 
         let data = try JSONEncoder().encode(file)
         let decoded = try JSONDecoder().decode(CurseForgeManifestBuilder.ManifestFile.self, from: data)
 
-        XCTAssertEqual(decoded.projectID, 238222)
-        XCTAssertEqual(decoded.fileID, 4567890)
+        XCTAssertEqual(decoded.projectID, 238_222)
+        XCTAssertEqual(decoded.fileID, 4_567_890)
         XCTAssertTrue(decoded.required)
         XCTAssertFalse(decoded.isLocked)
     }
@@ -150,7 +149,7 @@ final class CurseForgeExportTests: XCTestCase {
             projectID: 1,
             fileID: 2,
             required: false,
-            isLocked: true
+            isLocked: true,
         )
 
         let data = try JSONEncoder().encode(file)
@@ -183,7 +182,7 @@ final class CurseForgeExportTests: XCTestCase {
             gameInfo: gameInfo,
             modPackName: "OrderedPack",
             modPackVersion: "1.0",
-            files: files
+            files: files,
         )
 
         // Verify all project IDs are present

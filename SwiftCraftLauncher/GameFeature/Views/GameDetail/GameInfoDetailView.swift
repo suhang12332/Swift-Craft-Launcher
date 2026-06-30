@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Displays game information details with local and remote resource browsing.
+// Displays game information details with local and remote resource browsing.
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -55,7 +55,7 @@ struct GameInfoDetailView: View {
         localResourceFilter: Binding<LocalResourceFilter>,
         errorHandler: GlobalErrorHandler = AppServices.errorHandler,
         iconRefreshNotifier: IconRefreshNotifier = AppServices.iconRefreshNotifier,
-        cacheInfoManager: CacheInfoManager = AppServices.cacheInfoManager
+        cacheInfoManager: CacheInfoManager = AppServices.cacheInfoManager,
     ) {
         self.game = game
         _cacheInfoManager = StateObject(wrappedValue: cacheInfoManager)
@@ -77,7 +77,7 @@ struct GameInfoDetailView: View {
     }
 
     var body: some View {
-        return Group {
+        Group {
             if gameType {
                 GameRemoteResourceView(
                     game: game,
@@ -94,7 +94,7 @@ struct GameInfoDetailView: View {
                     header: header,
                     scannedDetailIds: $scannedResources,
                     dataSource: $dataSource,
-                    searchText: $searchText
+                    searchText: $searchText,
                 )
             } else {
                 GameLocalResourceView(
@@ -105,7 +105,7 @@ struct GameInfoDetailView: View {
                     selectedProjectId: $selectedProjectId,
                     refreshToken: localRefreshToken,
                     searchText: $searchText,
-                    localFilter: $localResourceFilter
+                    localFilter: $localResourceFilter,
                 )
             }
         }
@@ -116,7 +116,7 @@ struct GameInfoDetailView: View {
             performRefresh()
         }
         .onChange(of: selectedProjectId) { oldValue, newValue in
-            if oldValue != nil && newValue == nil {
+            if oldValue != nil, newValue == nil {
                 resetScanState()
                 scanAllResources()
             }
@@ -138,7 +138,7 @@ struct GameInfoDetailView: View {
         .fileImporter(
             isPresented: $showIconFilePicker,
             allowedContentTypes: [.png, .jpeg, .gif],
-            allowsMultipleSelection: false
+            allowsMultipleSelection: false,
         ) { result in
             handleIconFileSelection(result)
         }
@@ -166,10 +166,10 @@ struct GameInfoDetailView: View {
             GameHeaderListRow(
                 game: currentGame,
                 cacheInfo: cacheInfoManager.cacheInfo,
-                query: query
+                query: query,
             ) {
                 showIconFilePicker = true
-            }
+            },
         )
     }
 
@@ -189,7 +189,7 @@ struct GameInfoDetailView: View {
         Task {
             scannedResources = await ioViewModel.scanAllDetailIds(
                 query: query,
-                gameName: game.gameName
+                gameName: game.gameName,
             )
         }
     }

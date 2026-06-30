@@ -66,7 +66,7 @@ class ModPackExportViewModel: ObservableObject {
                 modPackVersion: modPackVersion,
                 summary: summary.isEmpty ? nil : summary,
                 exportFormat: currentExportFormat,
-                selectedFiles: selectedFileURLs
+                selectedFiles: selectedFileURLs,
             ) { progress in
                 Task { @MainActor in
                     self.exportProgress = progress

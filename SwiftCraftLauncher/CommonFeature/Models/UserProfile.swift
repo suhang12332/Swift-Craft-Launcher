@@ -36,7 +36,7 @@ struct UserProfile: Identifiable, Codable, Equatable {
         name: String,
         avatar: String,
         lastPlayed: Date = Date(),
-        isCurrent: Bool = false
+        isCurrent: Bool = false,
     ) {
         self.id = id
         self.name = name

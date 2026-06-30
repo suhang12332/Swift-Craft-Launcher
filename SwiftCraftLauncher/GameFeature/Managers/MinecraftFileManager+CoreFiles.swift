@@ -9,7 +9,6 @@ import Foundation
 
 /// Core file download extension for MinecraftFileManager.
 extension MinecraftFileManager {
-
     func downloadCoreFiles(manifest: MinecraftVersionManifest) async throws {
         coreTotalFiles = calculateTotalFiles(manifest)
 
@@ -29,24 +28,24 @@ extension MinecraftFileManager {
     }
 
     private func downloadClientJar(
-        manifest: MinecraftVersionManifest
+        manifest: MinecraftVersionManifest,
     ) async throws {
         let versionDir = AppPaths.versionsDirectory.appendingPathComponent(
-            manifest.id
+            manifest.id,
         )
         let destinationURL = versionDir.appendingPathComponent(
-            "\(manifest.id).jar"
+            "\(manifest.id).jar",
         )
 
         do {
             _ = try await DownloadManager.downloadFile(
                 urlString: manifest.downloads.client.url.absoluteString,
                 destinationURL: destinationURL,
-                expectedSha1: manifest.downloads.client.sha1
+                expectedSha1: manifest.downloads.client.sha1,
             )
             incrementCompletedFilesCount(
                 fileName: "client.jar",
-                type: .core
+                type: .core,
             )
         } catch {
             if let globalError = error as? GlobalError {
@@ -55,21 +54,21 @@ extension MinecraftFileManager {
                 throw GlobalError.download(
                     chineseMessage: "下载客户端 JAR 文件失败",
                     i18nKey: "error.download.client_jar_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
     }
 
     private func downloadLibraries(
-        manifest: MinecraftVersionManifest
+        manifest: MinecraftVersionManifest,
     ) async throws {
         let osxLibraries = manifest.libraries.filter {
             shouldDownloadLibrary($0, minecraftVersion: manifest.id)
         }
 
         let semaphore = AsyncSemaphore(
-            value: AppServices.generalSettingsManager.concurrentDownloads
+            value: AppServices.generalSettingsManager.concurrentDownloads,
         )
 
         let metaDirectory = AppPaths.metaDirectory
@@ -84,7 +83,7 @@ extension MinecraftFileManager {
                     try await self?.downloadLibrary(
                         library,
                         metaDirectory: metaDirectory,
-                        minecraftVersion: minecraftVersion
+                        minecraftVersion: minecraftVersion,
                     )
                 }
             }
@@ -95,7 +94,7 @@ extension MinecraftFileManager {
     private func downloadLibrary(
         _ library: Library,
         metaDirectory: URL,
-        minecraftVersion: String
+        minecraftVersion: String,
     ) async throws {
         guard shouldDownloadLibrary(library, minecraftVersion: minecraftVersion) else {
             return
@@ -118,7 +117,7 @@ extension MinecraftFileManager {
             throw GlobalError.download(
                 chineseMessage: "库文件缺少下载 URL",
                 i18nKey: "error.download.missing_library_url",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -127,12 +126,12 @@ extension MinecraftFileManager {
             _ = try await DownloadManager.downloadFile(
                 urlString: urlString,
                 destinationURL: destinationURL,
-                expectedSha1: library.downloads.artifact.sha1
+                expectedSha1: library.downloads.artifact.sha1,
             )
             await handleLibraryDownloadComplete(
                 library: library,
                 metaDirectory: metaDirectory,
-                minecraftVersion: minecraftVersion
+                minecraftVersion: minecraftVersion,
             )
         } catch {
             if let globalError = error as? GlobalError {
@@ -141,7 +140,7 @@ extension MinecraftFileManager {
                 throw GlobalError.download(
                     chineseMessage: "下载库文件失败",
                     i18nKey: "error.download.library_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -151,7 +150,7 @@ extension MinecraftFileManager {
         library: Library,
         classifiers: [String: LibraryArtifact],
         metaDirectory: URL,
-        minecraftVersion: String
+        minecraftVersion: String,
     ) async throws {
         guard let natives = library.natives else { return }
 
@@ -181,7 +180,7 @@ extension MinecraftFileManager {
             throw GlobalError.download(
                 chineseMessage: "原生库文件 \(library.name) 缺少下载 URL",
                 i18nKey: "error.download.missing_native_url",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -189,12 +188,12 @@ extension MinecraftFileManager {
             _ = try await DownloadManager.downloadFile(
                 urlString: nativeURL.absoluteString,
                 destinationURL: destinationURL,
-                expectedSha1: nativeArtifact.sha1
+                expectedSha1: nativeArtifact.sha1,
             )
 
             incrementCompletedFilesCount(
                 fileName: library.name,
-                type: .core
+                type: .core,
             )
         } catch {
             if let globalError = error as? GlobalError {
@@ -203,18 +202,18 @@ extension MinecraftFileManager {
                 throw GlobalError.download(
                     chineseMessage: "下载原生库文件失败",
                     i18nKey: "error.download.native_library_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
     }
 
     private func downloadLoggingConfig(
-        manifest: MinecraftVersionManifest
+        manifest: MinecraftVersionManifest,
     ) async throws {
         let loggingFile = manifest.logging.client.file
         let versionDir = AppPaths.metaDirectory.appendingPathComponent(
-            AppConstants.DirectoryNames.versions
+            AppConstants.DirectoryNames.versions,
         )
         .appendingPathComponent(manifest.id)
 
@@ -224,11 +223,11 @@ extension MinecraftFileManager {
             _ = try await DownloadManager.downloadFile(
                 urlString: loggingFile.url.absoluteString,
                 destinationURL: destinationURL,
-                expectedSha1: loggingFile.sha1
+                expectedSha1: loggingFile.sha1,
             )
             incrementCompletedFilesCount(
                 fileName: "logging.config",
-                type: .core
+                type: .core,
             )
         } catch {
             if let globalError = error as? GlobalError {
@@ -237,7 +236,7 @@ extension MinecraftFileManager {
                 throw GlobalError.download(
                     chineseMessage: "下载日志配置文件失败",
                     i18nKey: "error.download.logging_config_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -246,11 +245,11 @@ extension MinecraftFileManager {
     func handleLibraryDownloadComplete(
         library: Library,
         metaDirectory: URL,
-        minecraftVersion: String
+        minecraftVersion: String,
     ) async {
         incrementCompletedFilesCount(
             fileName: library.name,
-            type: .core
+            type: .core,
         )
 
         if let classifiers = library.downloads.classifiers {
@@ -259,7 +258,7 @@ extension MinecraftFileManager {
                     library: library,
                     classifiers: classifiers,
                     metaDirectory: metaDirectory,
-                    minecraftVersion: minecraftVersion
+                    minecraftVersion: minecraftVersion,
                 )
             } catch {
                 Logger.shared.error("下载原生库失败")

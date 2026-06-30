@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A recursive tree view for displaying NBT data structures.
+// A recursive tree view for displaying NBT data structures.
 import SwiftUI
 
 struct NBTStructureView: View {
@@ -21,7 +21,7 @@ struct NBTStructureView: View {
                         value: value,
                         expandedKeys: $expandedKeys,
                         indentLevel: 0,
-                        fullKey: key
+                        fullKey: key,
                     )
                 }
             }
@@ -42,7 +42,7 @@ struct NBTEntryView: View {
     init(key: String, value: Any, expandedKeys: Binding<Set<String>>, indentLevel: Int, fullKey: String? = nil) {
         self.key = key
         self.value = value
-        self._expandedKeys = expandedKeys
+        _expandedKeys = expandedKeys
         self.indentLevel = indentLevel
         self.fullKey = fullKey ?? key
     }
@@ -55,7 +55,7 @@ struct NBTEntryView: View {
                     label: key,
                     suffix: "{\(dict.count)}",
                     indentLevel: indentLevel,
-                    isHovered: $isHovered
+                    isHovered: $isHovered,
                 ) {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         if expandedKeys.contains(fullKey) {
@@ -74,7 +74,7 @@ struct NBTEntryView: View {
                                 value: subValue,
                                 expandedKeys: $expandedKeys,
                                 indentLevel: indentLevel + 1,
-                                fullKey: "\(fullKey).\(subKey)"
+                                fullKey: "\(fullKey).\(subKey)",
                             )
                         }
                     }
@@ -85,7 +85,7 @@ struct NBTEntryView: View {
                     label: key,
                     suffix: "[\(array.count)]",
                     indentLevel: indentLevel,
-                    isHovered: $isHovered
+                    isHovered: $isHovered,
                 ) {
                     withAnimation(.easeInOut(duration: 0.2)) {
                         if expandedKeys.contains(fullKey) {
@@ -105,13 +105,13 @@ struct NBTEntryView: View {
                                 value: itemDict,
                                 expandedKeys: $expandedKeys,
                                 indentLevel: indentLevel + 1,
-                                fullKey: arrayItemKey
+                                fullKey: arrayItemKey,
                             )
                         } else {
                             NBTValueRow(
                                 label: "[\(index)]",
                                 value: formatNBTValue(item),
-                                indentLevel: indentLevel + 1
+                                indentLevel: indentLevel + 1,
                             )
                         }
                     }
@@ -120,7 +120,7 @@ struct NBTEntryView: View {
                 NBTValueRow(
                     label: key,
                     value: formatNBTValue(value),
-                    indentLevel: indentLevel
+                    indentLevel: indentLevel,
                 )
             }
         }
@@ -177,7 +177,7 @@ struct NBTDisclosureButton: View {
             .padding(.leading, CGFloat(indentLevel) * 20)
             .background(
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(isHovered ? Color.secondary.opacity(0.1) : Color.clear)
+                    .fill(isHovered ? Color.secondary.opacity(0.1) : Color.clear),
             )
         }
         .buttonStyle(.plain)
@@ -213,7 +213,7 @@ struct NBTValueRow: View {
         .padding(.leading, CGFloat(indentLevel) * 20 + 14)
         .background(
             RoundedRectangle(cornerRadius: 4)
-                .fill(isHovered ? Color.secondary.opacity(0.08) : Color.clear)
+                .fill(isHovered ? Color.secondary.opacity(0.08) : Color.clear),
         )
         .applyPointerHandIfAvailable()
     }

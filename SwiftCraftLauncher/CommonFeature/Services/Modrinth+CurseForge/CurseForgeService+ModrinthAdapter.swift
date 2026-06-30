@@ -9,7 +9,6 @@ import Foundation
 
 /// Provides CurseForge project operations with Modrinth-compatible data formats.
 extension CurseForgeService {
-
     /// Fetches project details and converts them to Modrinth format.
     /// - Parameter id: The CurseForge project identifier (may include "cf-" prefix).
     /// - Returns: The project details in Modrinth format, or `nil` on failure.
@@ -41,7 +40,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 chineseMessage: "转换项目详情失败",
                 i18nKey: "error.validation.project_detail_convert_failed",
-                level: .notification
+                level: .notification,
             )
         }
         let releaseGameVersions = modrinthDetail.gameVersions.filter {
@@ -138,7 +137,7 @@ extension CurseForgeService {
         id: String,
         selectedVersions: [String],
         selectedLoaders: [String],
-        type: String
+        type: String,
     ) async throws -> [ModrinthProjectDetailVersion] {
         let (modId, normalizedId) = try parseCurseForgeId(id)
 
@@ -157,13 +156,13 @@ extension CurseForgeService {
         }
 
         var cfFiles: [CurseForgeModFileDetail] = []
-        if !selectedVersions.isEmpty && selectedVersions.count <= 3 {
+        if !selectedVersions.isEmpty, selectedVersions.count <= 3 {
             for version in selectedVersions {
                 let modLoaderType = shouldFilterByLoader && !modLoaderTypes.isEmpty ? modLoaderTypes.first : nil
                 let files = try await fetchProjectFilesThrowing(
                     projectId: modId,
                     gameVersion: version,
-                    modLoaderType: modLoaderType
+                    modLoaderType: modLoaderType,
                 )
                 cfFiles.append(contentsOf: files)
             }
@@ -171,7 +170,7 @@ extension CurseForgeService {
             cfFiles = try await fetchProjectFilesThrowing(
                 projectId: modId,
                 gameVersion: nil,
-                modLoaderType: shouldFilterByLoader && !modLoaderTypes.isEmpty ? modLoaderTypes.first : nil
+                modLoaderType: shouldFilterByLoader && !modLoaderTypes.isEmpty ? modLoaderTypes.first : nil,
             )
         }
 
@@ -197,6 +196,6 @@ extension CurseForgeService {
 
     /// Returns the first file from the list as the primary file.
     static func filterPrimaryFiles(from files: [CurseForgeModFileDetail]?) -> CurseForgeModFileDetail? {
-        return files?.first
+        files?.first
     }
 }

@@ -5,10 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
+import AppKit
 import CoreImage
 import Foundation
-import AppKit
+import SwiftUI
 
 /// The source type of a skin image.
 enum SkinType {
@@ -37,7 +37,7 @@ final class RenderedImageCache: NSObject {
         self.hasLayerContent = hasLayerContent
         let headCost = Int(headImage.width * headImage.height * 4)
         let layerCost = Int(layerImage.width * layerImage.height * 4)
-        self.cost = headCost + layerCost + 2 * 1024
+        cost = headCost + layerCost + 2 * 1024
         super.init()
     }
 }

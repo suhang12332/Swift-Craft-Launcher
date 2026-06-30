@@ -5,15 +5,14 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class AnnouncementModelsTests: XCTestCase {
-
     func testAnnouncementResponse_init() {
         let response = AnnouncementResponse(
             success: true,
-            data: AnnouncementData(title: "Title", content: "Content", author: "Author")
+            data: AnnouncementData(title: "Title", content: "Content", author: "Author"),
         )
 
         XCTAssertTrue(response.success)
@@ -33,7 +32,7 @@ final class AnnouncementModelsTests: XCTestCase {
     func testAnnouncementResponse_codable_roundTrip() throws {
         let original = AnnouncementResponse(
             success: true,
-            data: AnnouncementData(title: "Update", content: "New features", author: "Dev")
+            data: AnnouncementData(title: "Update", content: "New features", author: "Dev"),
         )
 
         let data = try JSONEncoder().encode(original)
@@ -60,7 +59,7 @@ final class AnnouncementModelsTests: XCTestCase {
         let original = AnnouncementData(
             title: "Patch Notes",
             content: "Bug fixes and improvements",
-            author: "Team"
+            author: "Team",
         )
 
         let data = try JSONEncoder().encode(original)

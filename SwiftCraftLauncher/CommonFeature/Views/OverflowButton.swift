@@ -16,10 +16,10 @@ struct OverflowButton<Content: View>: View {
     init(
         count: Int,
         isPresented: Binding<Bool>,
-        @ViewBuilder popoverContent: @escaping () -> Content
+        @ViewBuilder popoverContent: @escaping () -> Content,
     ) {
         self.count = count
-        self._isPresented = isPresented
+        _isPresented = isPresented
         self.popoverContent = popoverContent
     }
 

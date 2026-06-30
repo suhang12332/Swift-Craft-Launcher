@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// Displays detailed metadata for a Litematica schematic file.
+// Displays detailed metadata for a Litematica schematic file.
 import SwiftUI
 
 struct LitematicaDetailSheetView: View {
@@ -23,7 +23,7 @@ struct LitematicaDetailSheetView: View {
     init(
         filePath: URL,
         gameName: String,
-        litematicaService: LitematicaService = AppServices.litematicaService
+        litematicaService: LitematicaService = AppServices.litematicaService,
     ) {
         self.filePath = filePath
         self.gameName = gameName
@@ -34,7 +34,7 @@ struct LitematicaDetailSheetView: View {
         CommonSheetView(
             header: { headerView },
             body: { bodyView },
-            footer: { footerView }
+            footer: { footerView },
         )
         .frame(minWidth: 500, minHeight: 400)
         .task {
@@ -43,7 +43,7 @@ struct LitematicaDetailSheetView: View {
         .alert("common.error".localized(), isPresented: $showError) {
             Button("common.ok".localized(), role: .cancel) { }
         } message: {
-            if let errorMessage = errorMessage {
+            if let errorMessage {
                 Text(errorMessage)
             }
         }
@@ -67,7 +67,7 @@ struct LitematicaDetailSheetView: View {
         Group {
             if isLoading {
                 loadingView
-            } else if let metadata = metadata {
+            } else if let metadata {
                 metadataContentView(metadata: metadata)
             } else {
                 errorView
@@ -89,7 +89,7 @@ struct LitematicaDetailSheetView: View {
                 .foregroundColor(.orange)
             Text("litematica.detail.load_failed".localized())
                 .font(.headline)
-            if let errorMessage = errorMessage {
+            if let errorMessage {
                 Text(errorMessage)
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -128,7 +128,7 @@ struct LitematicaDetailSheetView: View {
                         if hasSize {
                             infoRow(
                                 label: "litematica.detail.field.enclosing_size".localized(),
-                                value: "\(metadata.enclosingSize.x) × \(metadata.enclosingSize.y) × \(metadata.enclosingSize.z)"
+                                value: "\(metadata.enclosingSize.x) × \(metadata.enclosingSize.y) × \(metadata.enclosingSize.z)",
                             )
                         } else {
                             infoRow(label: "litematica.detail.field.enclosing_size".localized(), value: "common.unknown".localized())
@@ -153,7 +153,7 @@ struct LitematicaDetailSheetView: View {
         }
     }
 
-    private func infoSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+    private func infoSection(title: String, @ViewBuilder content: () -> some View) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.headline)
@@ -184,7 +184,6 @@ struct LitematicaDetailSheetView: View {
 
     private var footerView: some View {
         HStack {
-
             Label {
                 Text(filePath.lastPathComponent)
                     .lineLimit(1)
@@ -218,16 +217,16 @@ struct LitematicaDetailSheetView: View {
                     self.metadata = metadata
                 } else {
                     Logger.shared.warning("投影元数据为nil: \(filePath.lastPathComponent)")
-                    self.errorMessage = "litematica.detail.error.parse_failed".localized()
+                    errorMessage = "litematica.detail.error.parse_failed".localized()
                 }
-                self.isLoading = false
+                isLoading = false
             }
         } catch {
             Logger.shared.error("加载投影详细信息失败: \(error.localizedDescription)")
             await MainActor.run {
-                self.isLoading = false
-                self.errorMessage = String(format: "litematica.detail.error.load_failed".localized(), error.localizedDescription)
-                self.showError = true
+                isLoading = false
+                errorMessage = String(format: "litematica.detail.error.load_failed".localized(), error.localizedDescription)
+                showError = true
             }
         }
     }

@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class ModrinthIndexModelsExtendedTests: XCTestCase {
-
     func testModrinthIndex_codable_roundtrip() throws {
         let index = ModrinthIndex(
             formatVersion: 1,
@@ -28,8 +27,8 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
                 fabric: nil,
                 quilt: nil,
                 neoforge: nil,
-                dependencies: nil
-            )
+                dependencies: nil,
+            ),
         )
         let data = try JSONEncoder().encode(index)
         let decoded = try JSONDecoder().decode(ModrinthIndex.self, from: data)
@@ -59,8 +58,8 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
                 fabric: nil,
                 quilt: nil,
                 neoforge: nil,
-                dependencies: nil
-            )
+                dependencies: nil,
+            ),
         )
         let data = try JSONEncoder().encode(index)
         let decoded = try JSONDecoder().decode(ModrinthIndex.self, from: data)
@@ -78,7 +77,7 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
             fabric: nil,
             quilt: nil,
             neoforge: nil,
-            dependencies: nil
+            dependencies: nil,
         )
         let data = try JSONEncoder().encode(deps)
         let decoded = try JSONDecoder().decode(ModrinthIndexDependencies.self, from: data)
@@ -105,7 +104,7 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
         let dep = ModrinthIndexProjectDependency(
             projectId: "abc123",
             versionId: "def456",
-            dependencyType: "required"
+            dependencyType: "required",
         )
         let data = try JSONEncoder().encode(dep)
         let decoded = try JSONDecoder().decode(ModrinthIndexProjectDependency.self, from: data)
@@ -182,7 +181,7 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
             path: "mods/test.jar",
             hashes: hashes,
             downloads: ["https://example.com/test.jar"],
-            fileSize: 1024
+            fileSize: 1024,
         )
         XCTAssertEqual(file.path, "mods/test.jar")
         XCTAssertEqual(file.hashes.sha1, "abc")
@@ -200,7 +199,7 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
             env: ModrinthIndexFileEnv(client: "required", server: nil),
             source: .modrinth,
             curseForgeProjectId: 123,
-            curseForgeFileId: 456
+            curseForgeFileId: 456,
         )
         let data = try JSONEncoder().encode(file)
         let decoded = try JSONDecoder().decode(ModrinthIndexFile.self, from: data)
@@ -220,7 +219,7 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
             summary: "A test",
             files: [],
             dependencies: [],
-            source: .modrinth
+            source: .modrinth,
         )
         XCTAssertEqual(info.gameVersion, "1.20.1")
         XCTAssertEqual(info.loaderType, "fabric")
@@ -236,7 +235,7 @@ final class ModrinthIndexModelsExtendedTests: XCTestCase {
             modPackVersion: "1.0",
             summary: nil,
             files: [],
-            dependencies: []
+            dependencies: [],
         )
         XCTAssertEqual(info.source, .modrinth)
     }

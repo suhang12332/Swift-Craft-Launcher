@@ -9,7 +9,6 @@ import Foundation
 
 /// Identifies resource files and determines whether to add them to the index or copy them to overrides.
 enum ResourceProcessor {
-
     struct ProcessResult {
         let indexFile: ModrinthIndexFile?
         let shouldCopyToOverrides: Bool
@@ -24,7 +23,7 @@ enum ResourceProcessor {
     /// - Returns: The identification result.
     static func identify(
         file: URL,
-        relativePath: String
+        relativePath: String,
     ) async -> ProcessResult {
         var indexFile: ModrinthIndexFile?
         if let modrinthResult = await ModrinthResourceIdentifier.getModrinthInfo(for: file) {
@@ -32,16 +31,16 @@ enum ResourceProcessor {
                 from: file,
                 fileHash: modrinthResult.fileHash,
                 modrinthInfo: modrinthResult.info,
-                relativePath: relativePath
+                relativePath: relativePath,
             )
         }
 
-        if let indexFile = indexFile {
+        if let indexFile {
             return ProcessResult(
                 indexFile: indexFile,
                 shouldCopyToOverrides: false,
                 sourceFile: file,
-                relativePath: relativePath
+                relativePath: relativePath,
             )
         }
 
@@ -49,7 +48,7 @@ enum ResourceProcessor {
             indexFile: nil,
             shouldCopyToOverrides: true,
             sourceFile: file,
-            relativePath: relativePath
+            relativePath: relativePath,
         )
     }
 
@@ -62,7 +61,7 @@ enum ResourceProcessor {
     static func copyToOverrides(
         file: URL,
         relativePath: String,
-        overridesDir: URL
+        overridesDir: URL,
     ) throws {
         let overridesSubDir = overridesDir.appendingPathComponent(relativePath)
         let destPath = overridesSubDir.appendingPathComponent(file.lastPathComponent)
@@ -80,13 +79,13 @@ enum ResourceProcessor {
         from modFile: URL,
         fileHash: String,
         modrinthInfo: ModrinthResourceIdentifier.ModrinthModInfo,
-        relativePath: String
+        relativePath: String,
     ) async -> ModrinthIndexFile? {
         let matchingFile = modrinthInfo.version.files.first { file in
             file.hashes.sha1 == fileHash
         } ?? modrinthInfo.version.files.first
 
-        guard let matchingFile = matchingFile else {
+        guard let matchingFile else {
             return nil
         }
 
@@ -113,14 +112,13 @@ enum ResourceProcessor {
             downloads: [matchingFile.url],
             fileSize: Int(fileSize),
             env: env,
-            source: .modrinth
+            source: .modrinth,
         )
     }
 }
 
 /// Fetches resource information from the Modrinth API.
 enum ModrinthResourceIdentifier {
-
     struct ModrinthModInfo {
         let projectDetail: ModrinthProjectDetail
         let version: ModrinthProjectDetailVersion
@@ -149,7 +147,7 @@ enum ModrinthResourceIdentifier {
 
         return await withCheckedContinuation { continuation in
             ModrinthService.fetchModrinthDetail(by: hash) { detail in
-                guard let detail = detail else {
+                guard let detail else {
                     continuation.resume(returning: nil)
                     return
                 }
@@ -161,14 +159,14 @@ enum ModrinthResourceIdentifier {
                         }) {
                             let info = ModrinthModInfo(
                                 projectDetail: detail,
-                                version: matchingVersion
+                                version: matchingVersion,
                             )
                             await infoCache.set(info: info, for: hash)
                             continuation.resume(
                                 returning: ModrinthLookupResult(
                                     info: info,
-                                    fileHash: hash
-                                )
+                                    fileHash: hash,
+                                ),
                             )
                         } else {
                             continuation.resume(returning: nil)
@@ -187,7 +185,7 @@ private actor ModrinthInfoCache {
     private var cache: [String: ModrinthResourceIdentifier.ModrinthModInfo] = [:]
 
     func get(hash: String) -> ModrinthResourceIdentifier.ModrinthModInfo? {
-        return cache[hash]
+        cache[hash]
     }
 
     func set(info: ModrinthResourceIdentifier.ModrinthModInfo, for hash: String) {

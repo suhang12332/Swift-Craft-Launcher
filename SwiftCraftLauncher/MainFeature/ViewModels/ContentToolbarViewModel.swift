@@ -62,7 +62,7 @@ final class ContentToolbarViewModel: ObservableObject {
                     NotificationCenter.default.post(
                         name: .playerUpdated,
                         object: nil,
-                        userInfo: ["updatedPlayer": validatedPlayer]
+                        userInfo: ["updatedPlayer": validatedPlayer],
                     )
                 }
             }

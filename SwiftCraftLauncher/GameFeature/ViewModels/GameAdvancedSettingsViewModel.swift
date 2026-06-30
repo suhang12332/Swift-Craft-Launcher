@@ -11,7 +11,6 @@ import UniformTypeIdentifiers
 /// View model for the game advanced settings view, managing JVM arguments, memory, garbage collector, and Java path configuration.
 @MainActor
 final class GameAdvancedSettingsViewModel: ObservableObject {
-
     let selectedGameManager: SelectedGameManager
     let gameSettingsManager: GameSettingsManager
     let javaManager: JavaManager
@@ -38,20 +37,20 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
     init(
         selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
         gameSettingsManager: GameSettingsManager = AppServices.gameSettingsManager,
-        javaManager: JavaManager = AppServices.javaManager
+        javaManager: JavaManager = AppServices.javaManager,
     ) {
         self.selectedGameManager = selectedGameManager
         self.gameSettingsManager = gameSettingsManager
         self.javaManager = javaManager
-        self.memoryRange = Double(gameSettingsManager.globalXms)...Double(gameSettingsManager.globalXmx)
-        self.selectedGarbageCollector = .g1gc
-        self.optimizationPreset = .balanced
-        self.customJvmArguments = ""
-        self.environmentVariables = ""
-        self.javaPath = ""
-        self.javaVersionInfo = ""
-        self.error = nil
-        self.isLoadingSettings = false
+        memoryRange = Double(gameSettingsManager.globalXms) ... Double(gameSettingsManager.globalXmx)
+        selectedGarbageCollector = .g1gc
+        optimizationPreset = .balanced
+        customJvmArguments = ""
+        environmentVariables = ""
+        javaPath = ""
+        javaVersionInfo = ""
+        error = nil
+        isLoadingSettings = false
     }
 
     var currentGame: GameVersionInfo? {
@@ -76,7 +75,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
     var javaDetailsDescription: String {
         JavaDetailsFormatting.description(
             javaExecutablePath: effectiveJavaPath,
-            versionOutput: javaVersionInfo
+            versionOutput: javaVersionInfo,
         )
     }
 
@@ -99,7 +98,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
     }
 
     func setRepository(_ repository: GameRepository) {
-        self.gameRepository = repository
+        gameRepository = repository
     }
 
     func onAppearOrGameChanged() {
@@ -118,7 +117,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
             selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
         }
 
-        if optimizationPreset == .maximum && selectedGarbageCollector != .g1gc {
+        if optimizationPreset == .maximum, selectedGarbageCollector != .g1gc {
             optimizationPreset = .balanced
             applyOptimizationPreset(.balanced)
         }
@@ -148,7 +147,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
         isLoadingSettings = true
         defer { isLoadingSettings = false }
 
-        memoryRange = Double(gameSettingsManager.globalXms)...Double(gameSettingsManager.globalXmx)
+        memoryRange = Double(gameSettingsManager.globalXms) ... Double(gameSettingsManager.globalXmx)
         selectedGarbageCollector = availableGarbageCollectors.first ?? .g1gc
         optimizationPreset = .balanced
         applyOptimizationPreset(.balanced)
@@ -172,7 +171,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
 
     func handleJavaPathSelection(_ result: Result<[URL], Error>) {
         switch result {
-        case .success(let urls):
+        case let .success(urls):
             guard let url = urls.first else { return }
 
             let fileManager = FileManager.default
@@ -180,7 +179,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
                 error = GlobalError.fileSystem(
                     chineseMessage: "选择的文件不存在",
                     i18nKey: "error.filesystem.file_not_found",
-                    level: .notification
+                    level: .notification,
                 )
                 return
             }
@@ -193,15 +192,15 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
                 error = GlobalError.validation(
                     chineseMessage: "选择的文件不是有效的Java可执行文件",
                     i18nKey: "error.validation.invalid_java_executable",
-                    level: .popup
+                    level: .popup,
                 )
             }
 
-        case .failure(let err):
+        case let .failure(err):
             error = GlobalError.fileSystem(
                 chineseMessage: "选择Java路径失败: \(err.localizedDescription)",
                 i18nKey: "error.filesystem.java_path_selection_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }

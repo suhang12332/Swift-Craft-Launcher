@@ -5,10 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import Foundation
-import SwiftUI
 import AppKit
+import Foundation
 import SkinRenderKit
+import SwiftUI
 
 /// A window that displays a 3D preview of the selected Minecraft skin and cape.
 struct SkinPreviewWindowView: View {
@@ -25,15 +25,15 @@ struct SkinPreviewWindowView: View {
         skinImage: NSImage?,
         skinPath: String?,
         capeImage: NSImage?,
-        playerModel: PlayerModel
+        playerModel: PlayerModel,
     ) {
         self.skinImage = skinImage
         self.skinPath = skinPath
         self.capeImage = capeImage
         self.playerModel = playerModel
-        self._capeBinding = State(initialValue: capeImage)
-        self._currentSkinImage = State(initialValue: skinImage)
-        self._currentSkinPath = State(initialValue: skinPath)
+        _capeBinding = State(initialValue: capeImage)
+        _currentSkinImage = State(initialValue: skinImage)
+        _currentSkinPath = State(initialValue: skinPath)
     }
 
     var body: some View {
@@ -58,7 +58,7 @@ struct SkinPreviewWindowView: View {
                 rotationDuration: 0,
                 backgroundColor: NSColor.clear,
                 onSkinDropped: { _ in },
-                onCapeDropped: { _ in }
+                onCapeDropped: { _ in },
             )
         }
     }

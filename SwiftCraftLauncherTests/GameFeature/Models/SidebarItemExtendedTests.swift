@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class SidebarItemExtendedTests: XCTestCase {
-
     func testTitle_game() {
         let item = SidebarItem.game("test-game")
         XCTAssertEqual(item.title, "test-game")
@@ -82,7 +81,7 @@ final class SidebarItemExtendedTests: XCTestCase {
     }
 
     func testResourceType_localizedName_different() {
-        let names = ResourceType.allCases.map { $0.localizedName }
+        let names = ResourceType.allCases.map(\.localizedName)
         let uniqueNames = Set(names)
         XCTAssertEqual(names.count, uniqueNames.count, "All ResourceType localizedName should be unique")
     }

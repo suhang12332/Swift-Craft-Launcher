@@ -18,14 +18,13 @@ class AppCacheManager {
     }
 
     private func fileURL(for namespace: String) throws -> URL {
-
         do {
             try FileManager.default.createDirectory(at: AppPaths.appCache, withIntermediateDirectories: true)
         } catch {
             throw GlobalError.fileSystem(
                 chineseMessage: "创建缓存目录失败: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.cache_directory_creation_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -38,7 +37,7 @@ class AppCacheManager {
     ///   - key: The cache key.
     ///   - value: The value to store.
     /// - Throws: A `GlobalError` when encoding or persistence fails.
-    func set<T: Codable>(namespace: String, key: String, value: T) throws {
+    func set(namespace: String, key: String, value: some Codable) throws {
         try queue.sync {
             var nsDict = try loadNamespace(namespace)
 
@@ -50,7 +49,7 @@ class AppCacheManager {
                 throw GlobalError.validation(
                     chineseMessage: "缓存数据编码失败: \(error.localizedDescription)",
                     i18nKey: "error.validation.cache_data_encode_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
@@ -61,7 +60,7 @@ class AppCacheManager {
     ///   - namespace: The cache namespace.
     ///   - key: The cache key.
     ///   - value: The value to store.
-    func setSilently<T: Codable>(namespace: String, key: String, value: T) {
+    func setSilently(namespace: String, key: String, value: some Codable) {
         do {
             try set(namespace: namespace, key: key, value: value)
         } catch {
@@ -75,8 +74,8 @@ class AppCacheManager {
     ///   - key: The cache key.
     ///   - type: The expected value type.
     /// - Returns: The decoded value, or `nil` if not found or decoding fails.
-    func get<T: Codable>(namespace: String, key: String, as type: T.Type) -> T? {
-        return queue.sync {
+    func get<T: Codable>(namespace: String, key: String, as _: T.Type) -> T? {
+        queue.sync {
             do {
                 let nsDict = try loadNamespace(namespace)
                 guard let data = nsDict[key] else { return nil }
@@ -87,7 +86,7 @@ class AppCacheManager {
                     errorHandler.handle(GlobalError.validation(
                         chineseMessage: "解码缓存数据失败: \(error.localizedDescription)",
                         i18nKey: "error.validation.cache_data_decode_failed",
-                        level: .silent
+                        level: .silent,
                     ))
                     return nil
                 }
@@ -112,7 +111,7 @@ class AppCacheManager {
             throw GlobalError.fileSystem(
                 chineseMessage: "读取缓存文件失败: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.cache_read_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }
@@ -127,7 +126,7 @@ class AppCacheManager {
             throw GlobalError.fileSystem(
                 chineseMessage: "写入缓存文件失败: \(error.localizedDescription)",
                 i18nKey: "error.filesystem.cache_write_failed",
-                level: .notification
+                level: .notification,
             )
         }
     }

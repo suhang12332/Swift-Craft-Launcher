@@ -5,15 +5,14 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
-
     private func makeGameInfo(
         gameVersion: String = "1.20.1",
         modLoader: String = "forge",
-        modVersion: String = "47.2.0"
+        modVersion: String = "47.2.0",
     ) -> GameVersionInfo {
         GameVersionInfo(
             gameName: "TestGame",
@@ -22,7 +21,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             modVersion: modVersion,
             assetIndex: "17",
             modLoader: modLoader,
-            mainClass: "net.minecraft.client.main.Main"
+            mainClass: "net.minecraft.client.main.Main",
         )
     }
 
@@ -39,7 +38,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(modLoader: "vanilla", modVersion: ""),
             modPackName: "VanillaPack",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
         let dict = try parseJSON(json)
         guard let minecraft = dict["minecraft"] as? [String: Any],
@@ -54,7 +53,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(modLoader: "vanilla", modVersion: ""),
             modPackName: "VanillaPack",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         let dict = try parseJSON(json)
@@ -70,7 +69,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
         XCTAssertTrue(json.contains("minecraftModpack"))
     }
@@ -80,7 +79,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         let dict = try parseJSON(json)
@@ -92,7 +91,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
         XCTAssertTrue(json.contains("overrides"))
     }
@@ -102,7 +101,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(),
             modPackName: "MyPack",
             modPackVersion: "2.0",
-            files: []
+            files: [],
         )
         XCTAssertTrue(json.contains("MyPack"))
         XCTAssertTrue(json.contains("2.0"))
@@ -113,7 +112,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(gameVersion: "1.21.1"),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
         XCTAssertTrue(json.contains("1.21.1"))
     }
@@ -123,7 +122,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(modLoader: "forge", modVersion: "47.2.0"),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
         XCTAssertTrue(json.contains("forge-47.2.0"))
     }
@@ -133,7 +132,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(modLoader: "fabric", modVersion: "0.14.21"),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
         XCTAssertTrue(json.contains("fabric-0.14.21"))
     }
@@ -143,7 +142,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(modLoader: "neoforge", modVersion: "21.0.0"),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
         XCTAssertTrue(json.contains("neoforge-21.0.0"))
     }
@@ -153,7 +152,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(modLoader: "quilt", modVersion: "0.26.0"),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
         XCTAssertTrue(json.contains("quilt-0.26.0"))
     }
@@ -163,7 +162,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(modLoader: "forge", modVersion: ""),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: []
+            files: [],
         )
 
         let dict = try parseJSON(json)
@@ -183,7 +182,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: files
+            files: files,
         )
 
         let dict = try parseJSON(json)
@@ -207,7 +206,7 @@ final class CurseForgeManifestBuilderExtendedTests: XCTestCase {
             gameInfo: makeGameInfo(),
             modPackName: "Test",
             modPackVersion: "1.0",
-            files: files
+            files: files,
         )
 
         let dict = try parseJSON(json)

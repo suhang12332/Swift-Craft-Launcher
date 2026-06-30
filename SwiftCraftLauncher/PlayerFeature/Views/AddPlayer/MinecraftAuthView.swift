@@ -14,7 +14,7 @@ struct MinecraftAuthView: View {
 
     init(
         authService: MinecraftAuthService = AppServices.minecraftAuthService,
-        onLoginSuccess: ((MinecraftProfileResponse) -> Void)? = nil
+        onLoginSuccess: ((MinecraftProfileResponse) -> Void)? = nil,
     ) {
         _authService = StateObject(wrappedValue: authService)
         self.onLoginSuccess = onLoginSuccess
@@ -25,16 +25,17 @@ struct MinecraftAuthView: View {
             switch authService.authState {
             case .notAuthenticated:
                 notAuthenticatedView
+
             case .waitingForBrowserAuth:
                 waitingForBrowserAuthView
 
             case .processingAuthCode:
                 processingAuthCodeView
 
-            case .authenticated(let profile):
+            case let .authenticated(profile):
                 authenticatedView(profile: profile)
 
-            case .error(let message):
+            case let .error(message):
                 errorView(message: message)
             }
         }
@@ -101,7 +102,7 @@ struct MinecraftAuthView: View {
     }
 
     private func authenticatedView(
-        profile: MinecraftProfileResponse
+        profile: MinecraftProfileResponse,
     ) -> some View {
         VStack(spacing: 20) {
             if let skinUrl = profile.skins.first?.url {
@@ -113,7 +114,7 @@ struct MinecraftAuthView: View {
                     .overlay(
                         Image(systemName: "person.fill")
                             .font(.system(size: 30))
-                            .foregroundColor(.gray)
+                            .foregroundColor(.gray),
                     )
             }
 
@@ -129,8 +130,8 @@ struct MinecraftAuthView: View {
                 Text(
                     String(
                         format: "minecraft.auth.uuid".localized(),
-                        profile.id
-                    )
+                        profile.id,
+                    ),
                 )
                 .font(.caption)
                 .foregroundColor(.secondary)

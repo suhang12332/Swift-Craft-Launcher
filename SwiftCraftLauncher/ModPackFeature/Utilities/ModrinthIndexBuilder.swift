@@ -9,7 +9,6 @@ import Foundation
 
 /// Builds the `modrinth.index.json` structure for Modrinth modpacks.
 enum ModrinthIndexBuilder {
-
     /// Builds a JSON string representing the Modrinth index file.
     /// - Parameters:
     ///   - gameInfo: The game version and mod loader information.
@@ -23,7 +22,7 @@ enum ModrinthIndexBuilder {
         modPackName: String,
         modPackVersion: String,
         summary: String?,
-        files: [ModrinthIndexFile]
+        files: [ModrinthIndexFile],
     ) async throws -> String {
         let gameVersion = gameInfo.gameVersion
         let loaderType = gameInfo.modLoader.lowercased()
@@ -33,7 +32,7 @@ enum ModrinthIndexBuilder {
         let dependencies = buildDependencies(
             gameVersion: gameVersion,
             loaderType: loaderType,
-            loaderVersion: gameInfo.modVersion
+            loaderVersion: gameInfo.modVersion,
         )
 
         var jsonDict: [String: Any] = [
@@ -43,7 +42,7 @@ enum ModrinthIndexBuilder {
             "name": modPackName,
         ]
 
-        if let summary = summary {
+        if let summary {
             jsonDict["summary"] = summary
         }
 
@@ -96,7 +95,7 @@ enum ModrinthIndexBuilder {
 
         let jsonData = try JSONSerialization.data(
             withJSONObject: jsonDict,
-            options: [.prettyPrinted, .sortedKeys]
+            options: [.prettyPrinted, .sortedKeys],
         )
         return String(data: jsonData, encoding: .utf8) ?? ""
     }
@@ -105,7 +104,7 @@ enum ModrinthIndexBuilder {
     private static func buildDependencies(
         gameVersion: String,
         loaderType: String,
-        loaderVersion: String?
+        loaderVersion: String?,
     ) -> ModrinthIndexDependencies {
         switch loaderType {
         case GameLoader.forge.displayName:
@@ -119,7 +118,7 @@ enum ModrinthIndexBuilder {
                 fabric: nil,
                 quilt: nil,
                 neoforge: nil,
-                dependencies: nil
+                dependencies: nil,
             )
         case GameLoader.fabric.displayName:
             return ModrinthIndexDependencies(
@@ -132,7 +131,7 @@ enum ModrinthIndexBuilder {
                 fabric: nil,
                 quilt: nil,
                 neoforge: nil,
-                dependencies: nil
+                dependencies: nil,
             )
         case GameLoader.quilt.rawValue:
             return ModrinthIndexDependencies(
@@ -145,7 +144,7 @@ enum ModrinthIndexBuilder {
                 fabric: nil,
                 quilt: nil,
                 neoforge: nil,
-                dependencies: nil
+                dependencies: nil,
             )
         case GameLoader.neoforge.displayName:
             return ModrinthIndexDependencies(
@@ -158,7 +157,7 @@ enum ModrinthIndexBuilder {
                 fabric: nil,
                 quilt: nil,
                 neoforge: nil,
-                dependencies: nil
+                dependencies: nil,
             )
         default:
             return ModrinthIndexDependencies(
@@ -171,7 +170,7 @@ enum ModrinthIndexBuilder {
                 fabric: nil,
                 quilt: nil,
                 neoforge: nil,
-                dependencies: nil
+                dependencies: nil,
             )
         }
     }

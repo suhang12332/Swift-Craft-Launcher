@@ -5,8 +5,8 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import Foundation
+import SwiftUI
 
 /// Displays a contributor's avatar from a remote URL.
 struct ContributorAvatarView: View {
@@ -55,7 +55,7 @@ private struct AvatarRemoteImageView: View {
             if let url = optimizedAvatarURL(from: rawValue, size: size) {
                 AsyncImage(url: url) { phase in
                     switch phase {
-                    case .success(let image):
+                    case let .success(image):
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
@@ -69,7 +69,7 @@ private struct AvatarRemoteImageView: View {
                 }
                 .onDisappear {
                     URLCache.shared.removeCachedResponse(
-                        for: URLRequest(url: url)
+                        for: URLRequest(url: url),
                     )
                 }
             } else {

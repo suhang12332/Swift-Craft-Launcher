@@ -30,7 +30,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         resourceType: String,
         gameInfo: GameVersionInfo,
         isUpdateMode: Bool,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.project = project
         self.resourceType = resourceType
@@ -52,7 +52,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         }
     }
 
-    func loadDependencies(for version: ModrinthProjectDetailVersion) {
+    func loadDependencies(for _: ModrinthProjectDetailVersion) {
         dependencyState.isLoading = true
         Task {
             do {
@@ -71,14 +71,14 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
             throw GlobalError.validation(
                 chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
-                level: .notification
+                level: .notification,
             )
         }
 
         let missingWithVersions =
             await ModrinthDependencyDownloader.getMissingDependenciesWithVersions(
                 for: project.projectId,
-                gameInfo: gameInfo
+                gameInfo: gameInfo,
             )
 
         var depVersions: [String: [ModrinthProjectDetailVersion]] = [:]
@@ -95,13 +95,13 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
             dependencies: dependencies,
             versions: depVersions,
             selected: depSelected,
-            isLoading: false
+            isLoading: false,
         )
     }
 
     func downloadAllManual(
         onSuccess: @escaping (String?, String?) -> Void,
-        dismiss: @escaping () -> Void
+        dismiss: @escaping () -> Void,
     ) {
         guard selectedVersion != nil else { return }
         isDownloadingAll = true
@@ -119,13 +119,13 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
 
     private func downloadAllManualThrowing(
         onSuccess: @escaping (String?, String?) -> Void,
-        dismiss: @escaping () -> Void
+        dismiss: @escaping () -> Void,
     ) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
                 chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -133,7 +133,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
             throw GlobalError.configuration(
                 chineseMessage: "缺少 GameRepository",
                 i18nKey: "error.configuration.game_repository_missing",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -147,17 +147,17 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
                     mainProjectVersionId: mainVersionId.isEmpty ? nil : mainVersionId,
                     gameInfo: gameInfo,
                     resourceType: resourceType,
-                    gameRepository: gameRepository
+                    gameRepository: gameRepository,
                 ),
                 onDependencyDownloadStart: { _ in },
-                onDependencyDownloadFinish: { _, _ in }
+                onDependencyDownloadFinish: { _, _ in },
             )
 
         if !success {
             throw GlobalError.download(
                 chineseMessage: "手动下载依赖项失败",
                 i18nKey: "error.download.manual_dependencies_failed",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -168,7 +168,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
 
     func downloadResource(
         onSuccess: @escaping (String?, String?) -> Void,
-        dismiss: @escaping () -> Void
+        dismiss: @escaping () -> Void,
     ) {
         guard selectedVersion != nil else { return }
         isDownloadingAll = true
@@ -186,13 +186,13 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
 
     private func downloadResourceThrowing(
         onSuccess: @escaping (String?, String?) -> Void,
-        dismiss: @escaping () -> Void
+        dismiss: @escaping () -> Void,
     ) async throws {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
                 chineseMessage: "项目ID不能为空",
                 i18nKey: "error.validation.project_id_empty",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -200,7 +200,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
             throw GlobalError.configuration(
                 chineseMessage: "缺少 GameRepository",
                 i18nKey: "error.configuration.game_repository_missing",
-                level: .notification
+                level: .notification,
             )
         }
 
@@ -210,14 +210,14 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
                 gameInfo: gameInfo,
                 query: resourceType,
                 gameRepository: gameRepository,
-                filterLoader: true
+                filterLoader: true,
             )
 
         if !success {
             throw GlobalError.download(
                 chineseMessage: "下载资源失败",
                 i18nKey: "error.download.resource_download_failed",
-                level: .notification
+                level: .notification,
             )
         }
 

@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
-@testable import SwiftCraftLauncher
 import CFModrinthAdapterKit
+@testable import SwiftCraftLauncher
+import XCTest
 
 final class CurseForgeManifestModelTests: XCTestCase {
-
     func testCurseForgeManifest_decodable() throws {
         let json = """
         {
@@ -157,7 +156,7 @@ final class CurseForgeManifestModelTests: XCTestCase {
             projectID: 100,
             fileID: 200,
             required: true,
-            isLocked: false
+            isLocked: false,
         )
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(CurseForgeManifestBuilder.ManifestFile.self, from: data)
@@ -173,7 +172,7 @@ final class CurseForgeManifestModelTests: XCTestCase {
             projectID: 999,
             fileID: 888,
             required: false,
-            isLocked: true
+            isLocked: true,
         )
         let data = try JSONEncoder().encode(original)
         let decoded = try JSONDecoder().decode(CurseForgeManifestBuilder.ManifestFile.self, from: data)

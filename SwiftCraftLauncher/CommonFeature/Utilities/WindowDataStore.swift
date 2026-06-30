@@ -5,9 +5,9 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import AppKit
 import SkinRenderKit
+import SwiftUI
 
 /// Data model for skin preview rendering.
 struct SkinPreviewData {
@@ -22,7 +22,7 @@ struct SkinPreviewData {
 class WindowDataStore: ObservableObject {
     static let shared = WindowDataStore()
 
-    private init() {}
+    private init() { }
 
     @Published var aiChatState: ChatState?
 

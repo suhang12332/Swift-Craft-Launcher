@@ -9,14 +9,13 @@ import Foundation
 
 /// Provides access to the Modrinth API for Minecraft mod information and versions.
 enum ModrinthService {
-
     static func fetchVersionInfo(from version: String) async throws -> MinecraftVersionManifest {
         let cacheKey = "version_info_\(version)"
 
         if let cachedVersionInfo: MinecraftVersionManifest = AppServices.appCacheManager.get(
             namespace: "version_info",
             key: cacheKey,
-            as: MinecraftVersionManifest.self
+            as: MinecraftVersionManifest.self,
         ) {
             return cachedVersionInfo
         }
@@ -26,7 +25,7 @@ enum ModrinthService {
         AppServices.appCacheManager.setSilently(
             namespace: "version_info",
             key: cacheKey,
-            value: versionInfo
+            value: versionInfo,
         )
 
         return versionInfo
@@ -38,7 +37,7 @@ enum ModrinthService {
         if let cachedTime: String = AppServices.appCacheManager.get(
             namespace: "version_time",
             key: cacheKey,
-            as: String.self
+            as: String.self,
         ) {
             return cachedTime
         }
@@ -50,7 +49,7 @@ enum ModrinthService {
             AppServices.appCacheManager.setSilently(
                 namespace: "version_time",
                 key: cacheKey,
-                value: formattedTime
+                value: formattedTime,
             )
             return formattedTime
         } catch {
@@ -73,7 +72,7 @@ enum ModrinthService {
                 throw GlobalError.validation(
                     chineseMessage: "解析版本信息失败",
                     i18nKey: "error.validation.version_info_parse_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }

@@ -24,7 +24,7 @@ extension GameAdvancedSettingsViewModel {
                 let xms = Int(self.memoryRange.lowerBound)
                 let xmx = Int(self.memoryRange.upperBound)
 
-                guard xms > 0 && xmx > 0 else { return }
+                guard xms > 0, xmx > 0 else { return }
                 guard xms <= xmx else { return }
 
                 var updatedGame = game
@@ -40,7 +40,7 @@ extension GameAdvancedSettingsViewModel {
                 let globalError = error as? GlobalError ?? GlobalError.unknown(
                     chineseMessage: "保存设置失败: \(error.localizedDescription)",
                     i18nKey: "error.unknown.settings_save_failed",
-                    level: .notification
+                    level: .notification,
                 )
                 Logger.shared.error("自动保存游戏设置失败: \(globalError.chineseMessage)")
                 await MainActor.run { self.error = globalError }

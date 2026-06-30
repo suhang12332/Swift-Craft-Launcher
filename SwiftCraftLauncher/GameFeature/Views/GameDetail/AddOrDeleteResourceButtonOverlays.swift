@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// View modifier that presents confirmation dialogs and sheets for resource button actions.
+// View modifier that presents confirmation dialogs and sheets for resource button actions.
 import SwiftUI
 
 struct AddOrDeleteResourceButtonOverlays: ViewModifier {
@@ -22,61 +22,61 @@ struct AddOrDeleteResourceButtonOverlays: ViewModifier {
             .confirmationDialog(
                 "common.delete".localized(),
                 isPresented: $viewModel.showDeleteAlert,
-                titleVisibility: .visible
+                titleVisibility: .visible,
             ) {
                 Button("common.delete".localized(), role: .destructive) {
                     viewModel.confirmDelete()
                 }
                 .keyboardShortcut(.defaultAction)
 
-                Button("common.cancel".localized(), role: .cancel) {}
+                Button("common.cancel".localized(), role: .cancel) { }
             } message: {
                 Text(
                     String(
                         format: "resource.delete.confirm".localized(),
-                        project.title
-                    )
+                        project.title,
+                    ),
                 )
             }
             .sheet(
                 isPresented: $viewModel.showGlobalResourceSheet,
-                onDismiss: viewModel.onGlobalResourceSheetDismiss
+                onDismiss: viewModel.onGlobalResourceSheetDismiss,
             ) {
                 GlobalResourceSheet(
                     project: project,
                     resourceType: query,
                     isPresented: $viewModel.showGlobalResourceSheet,
                     preloadedDetail: viewModel.preloadedDetail,
-                    preloadedCompatibleGames: viewModel.preloadedCompatibleGames
+                    preloadedCompatibleGames: viewModel.preloadedCompatibleGames,
                 )
                 .environmentObject(gameRepository)
                 .onDisappear { viewModel.onGlobalResourceSheetDismiss() }
             }
             .sheet(
                 isPresented: $viewModel.showModPackDownloadSheet,
-                onDismiss: viewModel.onModPackDownloadSheetDismiss
+                onDismiss: viewModel.onModPackDownloadSheetDismiss,
             ) {
                 ModPackDownloadSheet(
                     projectId: project.projectId,
                     gameInfo: gameInfo,
                     query: query,
-                    preloadedDetail: viewModel.preloadedDetail
+                    preloadedDetail: viewModel.preloadedDetail,
                 )
                 .environmentObject(gameRepository)
                 .onDisappear { viewModel.onModPackDownloadSheetDismiss() }
             }
             .sheet(
                 isPresented: $viewModel.showGameResourceInstallSheet,
-                onDismiss: viewModel.onGameResourceInstallSheetDismiss
+                onDismiss: viewModel.onGameResourceInstallSheetDismiss,
             ) {
-                if let gameInfo = gameInfo {
+                if let gameInfo {
                     GameResourceInstallSheet(
                         project: project,
                         resourceType: query,
                         gameInfo: gameInfo,
                         isPresented: $viewModel.showGameResourceInstallSheet,
                         preloadedDetail: viewModel.preloadedDetail,
-                        isUpdateMode: viewModel.oldFileNameForUpdate != nil
+                        isUpdateMode: viewModel.oldFileNameForUpdate != nil,
                     ) { newFileName, newHash in
                         viewModel.handleInstallSuccess(newFileName: newFileName, newHash: newHash)
                     }

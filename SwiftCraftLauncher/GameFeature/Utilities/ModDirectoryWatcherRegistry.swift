@@ -36,7 +36,7 @@ actor ModDirectoryWatcherRegistry {
         let watcher = ModsDirectoryTreeWatcher(path: key) {
             self.modScanner.scheduleDirectoryHashRebuild(
                 standardizedDirectoryURL: standardized,
-                gameNameHint: hint
+                gameNameHint: hint,
             )
         }
         watchers[key] = watcher

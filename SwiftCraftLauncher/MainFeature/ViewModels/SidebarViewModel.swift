@@ -38,10 +38,10 @@ final class SidebarViewModel: ObservableObject {
             .sink { [weak self] refreshedGameName in
                 guard let self else { return }
                 if let gameName = refreshedGameName {
-                    self.iconRefreshTriggers[gameName] = UUID()
+                    iconRefreshTriggers[gameName] = UUID()
                 } else {
-                    for gameName in self.iconRefreshTriggers.keys {
-                        self.iconRefreshTriggers[gameName] = UUID()
+                    for gameName in iconRefreshTriggers.keys {
+                        iconRefreshTriggers[gameName] = UUID()
                     }
                 }
             }

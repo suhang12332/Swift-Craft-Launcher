@@ -5,7 +5,7 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-/// A window displaying Java runtime download progress and status.
+// A window displaying Java runtime download progress and status.
 import SwiftUI
 
 struct JavaDownloadProgressWindow: View {
@@ -16,7 +16,7 @@ struct JavaDownloadProgressWindow: View {
 
     init(
         downloadState: JavaDownloadState,
-        javaDownloadManager: JavaDownloadManager = AppServices.javaDownloadManager
+        javaDownloadManager: JavaDownloadManager = AppServices.javaDownloadManager,
     ) {
         self.downloadState = downloadState
         self.javaDownloadManager = javaDownloadManager
@@ -33,7 +33,7 @@ struct JavaDownloadProgressWindow: View {
                     onCancel: {
                         javaDownloadManager.retryDownload()
                     },
-                    downloadState: downloadState
+                    downloadState: downloadState,
                 )
             } else if downloadState.isDownloading {
                 DownloadItemView(
@@ -44,7 +44,7 @@ struct JavaDownloadProgressWindow: View {
                     onCancel: {
                         javaDownloadManager.cancelDownload()
                     },
-                    downloadState: downloadState
+                    downloadState: downloadState,
                 )
             } else {
                 VStack(spacing: 16) {
@@ -96,7 +96,7 @@ struct DownloadItemView: View {
                         .foregroundColor(.secondary)
                 }
 
-                if case .downloading(let progress) = status {
+                if case let .downloading(progress) = status {
                     VStack(alignment: .leading, spacing: 2) {
                         ProgressView(value: progress)
                             .progressViewStyle(LinearProgressViewStyle())

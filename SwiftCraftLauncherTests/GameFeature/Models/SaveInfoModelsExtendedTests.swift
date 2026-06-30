@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class SaveInfoModelsExtendedTests: XCTestCase {
-
     func testWorldInfo_idFromPath() {
         let url = URL(fileURLWithPath: "/tmp/some deeply/nested/world_folder")
         let world = WorldInfo(name: "My World", path: url)
@@ -131,7 +130,7 @@ final class SaveInfoModelsExtendedTests: XCTestCase {
             dayTime: 6000,
             weather: "clear",
             worldBorder: "59999968",
-            gameRules: ["doDaylightCycle", "doMobSpawning"]
+            gameRules: ["doDaylightCycle", "doMobSpawning"],
         )
 
         XCTAssertEqual(metadata.levelName, "My World")
@@ -172,7 +171,7 @@ final class SaveInfoModelsExtendedTests: XCTestCase {
             dayTime: nil,
             weather: nil,
             worldBorder: nil,
-            gameRules: nil
+            gameRules: nil,
         )
 
         XCTAssertNil(metadata.lastPlayed)

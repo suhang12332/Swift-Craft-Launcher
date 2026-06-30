@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class NBTTypeTests: XCTestCase {
-
     func testNBTType_rawValues() {
         XCTAssertEqual(NBTType.end.rawValue, 0)
         XCTAssertEqual(NBTType.byte.rawValue, 1)
@@ -27,7 +26,7 @@ final class NBTTypeTests: XCTestCase {
     }
 
     func testNBTType_initValidValues() {
-        for rawValue: UInt8 in 0...12 {
+        for rawValue: UInt8 in 0 ... 12 {
             XCTAssertNotNil(NBTType(rawValue: rawValue), "NBTType should exist for rawValue \(rawValue)")
         }
     }

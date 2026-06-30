@@ -5,21 +5,20 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
-import SwiftUI
 @testable import SwiftCraftLauncher
+import SwiftUI
+import XCTest
 
 @MainActor
 final class GameCreationViewModelCleanupTests: XCTestCase {
-
     private func makeViewModel() -> GameCreationViewModel {
         let config = GameFormConfiguration(
             isDownloading: .constant(false),
             isFormValid: .constant(false),
             triggerConfirm: .constant(false),
             triggerCancel: .constant(false),
-            onCancel: {},
-            onConfirm: {}
+            onCancel: { },
+            onConfirm: { },
         )
         return GameCreationViewModel(configuration: config)
     }

@@ -41,7 +41,7 @@ enum BlessingSkinProfileListParser {
                         id: "cape_\(capeId)",
                         state: "ACTIVE",
                         url: url,
-                        alias: nil
+                        alias: nil,
                     ))
                 }
 
@@ -55,7 +55,7 @@ enum BlessingSkinProfileListParser {
                     id: resolvedId,
                     name: item.name,
                     skins: skins,
-                    capes: capes.isEmpty ? nil : capes
+                    capes: capes.isEmpty ? nil : capes,
                 )
             }
         }

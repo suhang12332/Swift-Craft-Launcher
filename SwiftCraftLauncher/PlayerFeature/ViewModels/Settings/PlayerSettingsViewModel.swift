@@ -27,20 +27,20 @@ final class PlayerSettingsViewModel: ObservableObject {
         friendsService: MinecraftFriendsService = AppServices.minecraftFriendsService,
         authService: MinecraftAuthService = AppServices.minecraftAuthService,
         dataManager: PlayerDataManager = AppServices.playerDataManager,
-        errorHandler: GlobalErrorHandler = AppServices.errorHandler
+        errorHandler: GlobalErrorHandler = AppServices.errorHandler,
     ) {
         self.friendsService = friendsService
         self.authService = authService
-        self.sideEffects = MinecraftFriendsMicrosoftPlayerSideEffects(
+        sideEffects = MinecraftFriendsMicrosoftPlayerSideEffects(
             dataManager: dataManager,
-            errorHandler: errorHandler
+            errorHandler: errorHandler,
         )
     }
 
     /// Updates whether the authlib-injector JAR file exists on disk.
     func refreshAuthlibInjectorExists() {
         let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(
-            AppConstants.AuthlibInjector.jarFileName
+            AppConstants.AuthlibInjector.jarFileName,
         )
         authlibInjectorExists = FileManager.default.fileExists(atPath: authlibInjectorJarURL.path)
     }
@@ -52,7 +52,7 @@ final class PlayerSettingsViewModel: ObservableObject {
         defer { isDownloadingAuthlibInjector = false }
 
         let authlibInjectorJarURL = AppPaths.authDirectory.appendingPathComponent(
-            AppConstants.AuthlibInjector.jarFileName
+            AppConstants.AuthlibInjector.jarFileName,
         )
 
         do {
@@ -60,14 +60,14 @@ final class PlayerSettingsViewModel: ObservableObject {
             _ = try await DownloadManager.downloadFile(
                 urlString: downloadURL.absoluteString,
                 destinationURL: authlibInjectorJarURL,
-                expectedSha1: nil
+                expectedSha1: nil,
             )
             authlibInjectorExists = true
         } catch {
             let globalError = GlobalError.download(
                 chineseMessage: "下载 authlib-injector 失败: \(error.localizedDescription)",
                 i18nKey: "error.download.authlib_injector_failed",
-                level: .notification
+                level: .notification,
             )
             sideEffects.handle(globalError)
         }
@@ -99,7 +99,7 @@ final class PlayerSettingsViewModel: ObservableObject {
 
         do {
             minecraftFriendAccountPreferences = try await friendsService.fetchFriendAccountPreferences(
-                accessToken: tokenPlayer.authAccessToken
+                accessToken: tokenPlayer.authAccessToken,
             )
             NotificationCenter.default.post(name: .minecraftFriendsAccountPreferencesDidChange, object: nil)
         } catch {
@@ -114,7 +114,7 @@ final class PlayerSettingsViewModel: ObservableObject {
         await persistMinecraftFriendAccountPreferences(
             currentPlayer: currentPlayer,
             enableFriendlist: enabled,
-            enableFriendInvites: invitesOn
+            enableFriendInvites: invitesOn,
         )
     }
 
@@ -124,14 +124,14 @@ final class PlayerSettingsViewModel: ObservableObject {
         await persistMinecraftFriendAccountPreferences(
             currentPlayer: currentPlayer,
             enableFriendlist: friendsOn,
-            enableFriendInvites: enabled
+            enableFriendInvites: enabled,
         )
     }
 
     private func persistMinecraftFriendAccountPreferences(
         currentPlayer: Player?,
         enableFriendlist: Bool,
-        enableFriendInvites: Bool
+        enableFriendInvites: Bool,
     ) async {
         guard let player = currentPlayer, player.isOnlineAccount else { return }
         guard let tokenPlayer = await preparedTokenPlayer(for: player, onMissingCredential: sideEffects.reportMissingAccessToken) else { return }
@@ -143,10 +143,10 @@ final class PlayerSettingsViewModel: ObservableObject {
             try await friendsService.updateFriendSettings(
                 accessToken: tokenPlayer.authAccessToken,
                 enableFriendlist: enableFriendlist,
-                enableFriendInvites: enableFriendInvites
+                enableFriendInvites: enableFriendInvites,
             )
             minecraftFriendAccountPreferences = try await friendsService.fetchFriendAccountPreferences(
-                accessToken: tokenPlayer.authAccessToken
+                accessToken: tokenPlayer.authAccessToken,
             )
             NotificationCenter.default.post(name: .minecraftFriendsAccountPreferencesDidChange, object: nil)
         } catch {

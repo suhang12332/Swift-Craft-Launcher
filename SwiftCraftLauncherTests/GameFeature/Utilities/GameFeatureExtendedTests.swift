@@ -5,11 +5,10 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class GameFeatureExtendedTests: XCTestCase {
-
     func testMacOS_fromJavaArch_aarch64() {
         XCTAssertEqual(MacOS.fromJavaArch("aarch64"), .osxArm64)
     }

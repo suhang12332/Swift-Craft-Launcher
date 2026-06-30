@@ -5,18 +5,17 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import XCTest
 @testable import SwiftCraftLauncher
+import XCTest
 
 final class GameSaveInputTests: XCTestCase {
-
     func testGameSaveInput_init() {
         let input = GameSetupUtil.GameSaveInput(
             gameName: "TestGame",
             selectedGameVersion: "1.20.1",
             selectedModLoader: "fabric",
             specifiedLoaderVersion: "0.14.0",
-            pendingIconData: Data("icon".utf8)
+            pendingIconData: Data("icon".utf8),
         )
 
         XCTAssertEqual(input.gameName, "TestGame")
@@ -32,7 +31,7 @@ final class GameSaveInputTests: XCTestCase {
             selectedGameVersion: "1.20.1",
             selectedModLoader: "vanilla",
             specifiedLoaderVersion: "",
-            pendingIconData: nil
+            pendingIconData: nil,
         )
         XCTAssertNil(input.pendingIconData)
     }

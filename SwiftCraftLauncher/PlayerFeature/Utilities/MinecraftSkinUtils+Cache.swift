@@ -5,12 +5,11 @@
 //  © 2025-2026 Swift Craft Launcher Team. All rights reserved.
 //
 
-import SwiftUI
 import CoreImage
 import Foundation
+import SwiftUI
 
 extension MinecraftSkinUtils {
-
     /// An in-memory cache mapping cache keys to rendered skin images.
     static let imageCache: NSCache<NSString, RenderedImageCache> = {
         let cache = NSCache<NSString, RenderedImageCache>()
@@ -53,7 +52,7 @@ extension MinecraftSkinUtils {
             bitsPerComponent: bitsPerComponent,
             bytesPerRow: bytesPerRow,
             space: colorSpace,
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue,
         ),
         let pixelData = context.data?.assumingMemoryBound(to: UInt8.self) else {
             return false
@@ -61,8 +60,8 @@ extension MinecraftSkinUtils {
 
         context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
 
-        for y in 0..<height {
-            for x in 0..<width {
+        for y in 0 ..< height {
+            for x in 0 ..< width {
                 let pixelOffset = (y * width + x) * bytesPerPixel
                 let alpha = pixelData[pixelOffset + 3]
                 if alpha > 0 {
@@ -85,7 +84,7 @@ extension MinecraftSkinUtils {
             x: MinecraftSkinConstants.headStartX,
             y: ciImage.extent.height - MinecraftSkinConstants.headStartY - MinecraftSkinConstants.headHeight,
             width: MinecraftSkinConstants.headWidth,
-            height: MinecraftSkinConstants.headHeight
+            height: MinecraftSkinConstants.headHeight,
         )
         let headCropped = ciImage.cropped(to: headRect)
 
@@ -93,7 +92,7 @@ extension MinecraftSkinUtils {
             x: MinecraftSkinConstants.layerStartX,
             y: ciImage.extent.height - MinecraftSkinConstants.layerStartY - MinecraftSkinConstants.layerHeight,
             width: MinecraftSkinConstants.layerWidth,
-            height: MinecraftSkinConstants.layerHeight
+            height: MinecraftSkinConstants.layerHeight,
         )
         let layerCropped = ciImage.cropped(to: layerRect)
 

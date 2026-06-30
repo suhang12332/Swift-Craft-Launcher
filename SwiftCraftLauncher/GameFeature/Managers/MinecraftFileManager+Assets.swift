@@ -9,9 +9,8 @@ import Foundation
 
 /// Asset download extension for MinecraftFileManager.
 extension MinecraftFileManager {
-
     func downloadAssets(
-        manifest: MinecraftVersionManifest
+        manifest: MinecraftVersionManifest,
     ) async throws {
         let assetIndex = try await downloadAssetIndex(manifest: manifest)
         resourceTotalFiles = assetIndex.objects.count
@@ -20,11 +19,10 @@ extension MinecraftFileManager {
     }
 
     private func downloadAssetIndex(
-        manifest: MinecraftVersionManifest
+        manifest: MinecraftVersionManifest,
     ) async throws -> DownloadedAssetIndex {
-
         let destinationURL = AppPaths.metaDirectory.appendingPathComponent(
-            "assets/indexes"
+            "assets/indexes",
         )
         .appendingPathComponent("\(manifest.assetIndex.id).json")
 
@@ -32,12 +30,12 @@ extension MinecraftFileManager {
             _ = try await DownloadManager.downloadFile(
                 urlString: manifest.assetIndex.url.absoluteString,
                 destinationURL: destinationURL,
-                expectedSha1: manifest.assetIndex.sha1
+                expectedSha1: manifest.assetIndex.sha1,
             )
             let data = try Data(contentsOf: destinationURL)
             let assetIndexData = try JSONDecoder().decode(
                 AssetIndexData.self,
-                from: data
+                from: data,
             )
             var totalSize = 0
             for object in assetIndexData.objects.values {
@@ -48,7 +46,7 @@ extension MinecraftFileManager {
                 url: manifest.assetIndex.url,
                 sha1: manifest.assetIndex.sha1,
                 totalSize: totalSize,
-                objects: assetIndexData.objects
+                objects: assetIndexData.objects,
             )
         } catch {
             if let globalError = error as? GlobalError {
@@ -57,32 +55,31 @@ extension MinecraftFileManager {
                 throw GlobalError.download(
                     chineseMessage: "下载资源索引失败",
                     i18nKey: "error.download.asset_index_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }
     }
 
     private func downloadAllAssets(
-        assetIndex: DownloadedAssetIndex
+        assetIndex: DownloadedAssetIndex,
     ) async throws {
-
         let objectsDirectory = AppPaths.metaDirectory.appendingPathComponent(
-            "assets/objects"
+            "assets/objects",
         )
         let assets = Array(assetIndex.objects)
 
         let semaphore = AsyncSemaphore(
-            value: AppServices.generalSettingsManager.concurrentDownloads
+            value: AppServices.generalSettingsManager.concurrentDownloads,
         )
 
         for chunk in stride(
             from: 0,
             to: assets.count,
-            by: MinecraftFileManagerConstants.assetChunkSize
+            by: MinecraftFileManagerConstants.assetChunkSize,
         ) {
             let end = min(chunk + MinecraftFileManagerConstants.assetChunkSize, assets.count)
-            let currentChunk = assets[chunk..<end]
+            let currentChunk = assets[chunk ..< end]
 
             try await withThrowingTaskGroup(of: Void.self) { group in
                 for (path, asset) in currentChunk {
@@ -93,7 +90,7 @@ extension MinecraftFileManager {
                         try await self?.downloadAsset(
                             asset: asset,
                             path: path,
-                            objectsDirectory: objectsDirectory
+                            objectsDirectory: objectsDirectory,
                         )
                     }
                 }
@@ -105,7 +102,7 @@ extension MinecraftFileManager {
     private func downloadAsset(
         asset: AssetIndexData.AssetObject,
         path: String,
-        objectsDirectory: URL
+        objectsDirectory: URL,
     ) async throws {
         let hashPrefix = String(asset.hash.prefix(2))
         let assetDirectory = objectsDirectory.appendingPathComponent(hashPrefix)
@@ -116,12 +113,12 @@ extension MinecraftFileManager {
             _ = try await DownloadManager.downloadFile(
                 urlString: urlString,
                 destinationURL: destinationURL,
-                expectedSha1: asset.hash
+                expectedSha1: asset.hash,
             )
             let fileName = path.components(separatedBy: "/").last ?? path
             incrementCompletedFilesCount(
                 fileName: fileName,
-                type: .resources
+                type: .resources,
             )
         } catch {
             if let globalError = error as? GlobalError {
@@ -130,7 +127,7 @@ extension MinecraftFileManager {
                 throw GlobalError.download(
                     chineseMessage: "下载资源文件失败",
                     i18nKey: "error.download.asset_file_failed",
-                    level: .notification
+                    level: .notification,
                 )
             }
         }

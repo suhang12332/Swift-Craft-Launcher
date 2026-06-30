@@ -26,9 +26,9 @@ struct SkinLibraryPopoverContentView: View {
         LazyVGrid(
             columns: Array(
                 repeating: GridItem(.fixed(Self.tileSize), spacing: Self.gridSpacing),
-                count: columnsCount
+                count: columnsCount,
             ),
-            spacing: Self.gridSpacing
+            spacing: Self.gridSpacing,
         ) {
             ForEach(items) { item in
                 MinecraftSkinUtils(type: .local, src: item.fileURL.path, size: Self.tileSize)

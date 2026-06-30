@@ -52,7 +52,7 @@ final class ModPackDownloadService {
     /// - Returns: The local file URL, or nil on failure.
     func downloadModPackFile(
         file: ModrinthVersionFile,
-        projectDetail: ModrinthProjectDetail
+        projectDetail _: ModrinthProjectDetail,
     ) async -> URL? {
         do {
             let tempDir = try createTempDirectory(for: "modpack_download")
@@ -61,7 +61,7 @@ final class ModPackDownloadService {
                 _ = try await downloadFileWithProgress(
                     urlString: file.url,
                     destinationURL: savePath,
-                    expectedSha1: file.hashes.sha1
+                    expectedSha1: file.hashes.sha1,
                 )
                 return savePath
             } catch {
@@ -87,7 +87,7 @@ final class ModPackDownloadService {
     /// - Returns: The icon file name, or nil on failure.
     func downloadGameIcon(
         projectDetail: ModrinthProjectDetail,
-        gameName: String
+        gameName: String,
     ) async -> String? {
         do {
             guard let iconUrl = projectDetail.iconUrl else {
@@ -97,7 +97,7 @@ final class ModPackDownloadService {
             let gameDirectory = AppPaths.profileDirectory(gameName: gameName)
             try FileManager.default.createDirectory(
                 at: gameDirectory,
-                withIntermediateDirectories: true
+                withIntermediateDirectories: true,
             )
 
             let iconFileName = "default_game_icon.png"
@@ -107,20 +107,20 @@ final class ModPackDownloadService {
                 _ = try await DownloadManager.downloadFile(
                     urlString: iconUrl,
                     destinationURL: iconPath,
-                    expectedSha1: nil
+                    expectedSha1: nil,
                 )
                 return iconFileName
             } catch {
                 onError?(
                     "下载游戏图标失败",
-                    "error.network.icon_download_failed"
+                    "error.network.icon_download_failed",
                 )
                 return nil
             }
         } catch {
             onError?(
                 "下载游戏图标失败",
-                "error.network.icon_download_failed"
+                "error.network.icon_download_failed",
             )
             return nil
         }
@@ -136,7 +136,7 @@ final class ModPackDownloadService {
             guard fileExtension == AppConstants.FileExtensions.zip || fileExtension == AppConstants.FileExtensions.mrpack else {
                 onError?(
                     "不支持的整合包格式: \(fileExtension)",
-                    "error.resource.unsupported_modpack_format"
+                    "error.resource.unsupported_modpack_format",
                 )
                 return nil
             }
@@ -145,13 +145,13 @@ final class ModPackDownloadService {
             guard FileManager.default.fileExists(atPath: modPackPathString) else {
                 onError?(
                     "整合包文件不存在: \(modPackPathString)",
-                    "error.filesystem.file_not_found"
+                    "error.filesystem.file_not_found",
                 )
                 return nil
             }
 
             let sourceAttributes = try FileManager.default.attributesOfItem(
-                atPath: modPackPathString
+                atPath: modPackPathString,
             )
             let sourceSize = sourceAttributes[.size] as? Int64 ?? 0
             guard sourceSize > 0 else {
@@ -165,7 +165,7 @@ final class ModPackDownloadService {
         } catch {
             onError?(
                 "解压整合包失败: \(error.localizedDescription)",
-                "error.filesystem.extraction_failed"
+                "error.filesystem.extraction_failed",
             )
             return nil
         }
@@ -174,12 +174,12 @@ final class ModPackDownloadService {
     private func downloadFileWithProgress(
         urlString: String,
         destinationURL: URL,
-        expectedSha1: String?
+        expectedSha1: String?,
     ) async throws -> URL {
-        return try await ProgressDownloadManager.downloadFile(
+        try await ProgressDownloadManager.downloadFile(
             urlString: urlString,
             destinationURL: destinationURL,
-            expectedSha1: expectedSha1
+            expectedSha1: expectedSha1,
         ) { [weak self] downloadedBytes, totalBytes in
             self?.progressHandler?(downloadedBytes, totalBytes)
         }
@@ -192,7 +192,7 @@ final class ModPackDownloadService {
 
         try FileManager.default.createDirectory(
             at: tempDir,
-            withIntermediateDirectories: true
+            withIntermediateDirectories: true,
         )
         return tempDir
     }

@@ -29,7 +29,7 @@ public struct SidebarView: View {
     ///   - selectedGameManager: Tracks the currently selected game.
     init(
         gameDialogsPresenter: GameDialogsPresenter = AppServices.gameDialogsPresenter,
-        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager
+        selectedGameManager: SelectedGameManager = AppServices.selectedGameManager,
     ) {
         _gameDialogsPresenter = ObservedObject(wrappedValue: gameDialogsPresenter)
         _selectedGameManager = ObservedObject(wrappedValue: selectedGameManager)
@@ -53,7 +53,7 @@ public struct SidebarView: View {
                         HStack(spacing: 6) {
                             GameIconView(
                                 game: game,
-                                refreshTrigger: viewModel.refreshTrigger(for: game.gameName)
+                                refreshTrigger: viewModel.refreshTrigger(for: game.gameName),
                             )
                             Text(game.gameName)
                                 .lineLimit(1)
@@ -67,7 +67,7 @@ public struct SidebarView: View {
                             onOpenSettings: { openSettings() },
                             onExport: {
                                 gameDialogsPresenter.presentModPackExport(for: game)
-                            }
+                            },
                         )
                     }
                 }
@@ -83,7 +83,7 @@ public struct SidebarView: View {
                             Button(role: .destructive) {
                                 gameActionManager.deleteCorruptedGame(
                                     name: name,
-                                    gameRepository: gameRepository
+                                    gameRepository: gameRepository,
                                 )
                             } label: {
                                 Label("sidebar.context_menu.delete_game".localized(), systemImage: "trash")

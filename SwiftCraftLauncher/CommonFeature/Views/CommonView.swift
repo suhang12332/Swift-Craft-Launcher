@@ -21,7 +21,7 @@ func emptyDropBackground() -> some View {
         .overlay(
             RoundedRectangle(cornerRadius: 12)
                 .stroke(style: StrokeStyle(lineWidth: 1, dash: [5, 5]))
-                .foregroundColor(.secondary.opacity(0.5))
+                .foregroundColor(.secondary.opacity(0.5)),
         )
 }
 
@@ -119,7 +119,7 @@ struct PathBreadcrumbView: View {
         }
 
         return HStack(spacing: 0) {
-            ForEach(0..<headCount, id: \.self) { idx in
+            ForEach(0 ..< headCount, id: \.self) { idx in
                 if idx > 0 {
                     Image(systemName: "chevron.right")
                         .font(.caption)
@@ -141,7 +141,7 @@ struct PathBreadcrumbView: View {
                     .font(.body)
                     .foregroundColor(.primary)
             }
-            ForEach(startTail..<count, id: \.self) { idx in
+            ForEach(startTail ..< count, id: \.self) { idx in
                 if idx > headCount || (showEllipsis && idx == startTail) {
                     Image(systemName: "chevron.right")
                         .font(.caption)
@@ -163,16 +163,16 @@ extension View {
     @ViewBuilder
     func applyReplaceTransition() -> some View {
         if #available(macOS 15.0, *) {
-            self.contentTransition(.symbolEffect(.replace.magic(fallback: .offUp.byLayer), options: .nonRepeating))
+            contentTransition(.symbolEffect(.replace.magic(fallback: .offUp.byLayer), options: .nonRepeating))
         } else {
-            self.contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
+            contentTransition(.symbolEffect(.replace.offUp.byLayer, options: .nonRepeating))
         }
     }
 
     @ViewBuilder
     func applyPointerHandIfAvailable() -> some View {
         if #available(macOS 15.0, *) {
-            self.pointerStyle(.link)
+            pointerStyle(.link)
         } else {
             self
         }
@@ -181,7 +181,7 @@ extension View {
     @ViewBuilder
     func `if`(
         _ condition: Bool,
-        transform: (Self) -> some View
+        transform: (Self) -> some View,
     ) -> some View {
         if condition {
             transform(self)
@@ -194,7 +194,7 @@ extension View {
 extension Scene {
     func conditionalRestorationBehavior() -> some Scene {
         if #available(macOS 15.0, *) {
-            return self.restorationBehavior(.disabled)
+            return restorationBehavior(.disabled)
         } else {
             return self
         }
@@ -202,7 +202,7 @@ extension Scene {
 
     func applyRestorationBehaviorDisabled() -> some Scene {
         if #available(macOS 15.0, *) {
-            return self.restorationBehavior(.disabled)
+            return restorationBehavior(.disabled)
         } else {
             return self
         }
@@ -221,9 +221,9 @@ struct InfoIconWithPopover<Content: View>: View {
     @State private var hoverTask: Task<Void, Never>?
 
     init(
-        iconSize: CGFloat = 14,
+        iconSize _: CGFloat = 14,
         delay: Double = 0.5,
-        @ViewBuilder content: () -> Content
+        @ViewBuilder content: () -> Content,
     ) {
         self.delay = delay
         self.content = content()
@@ -242,7 +242,7 @@ struct InfoIconWithPopover<Content: View>: View {
             if hovering {
                 hoverTask = Task {
                     try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-                    if !Task.isCancelled && isHovering {
+                    if !Task.isCancelled, isHovering {
                         await MainActor.run {
                             showPopover = true
                         }
@@ -269,7 +269,7 @@ struct InfoIconWithPopover<Content: View>: View {
 extension InfoIconWithPopover {
     init(
         text: String,
-        delay: Double = 0.5
+        delay: Double = 0.5,
     ) where Content == AnyView {
         self.init(delay: delay) {
             AnyView(
@@ -277,15 +277,15 @@ extension InfoIconWithPopover {
                     .font(.system(size: 12))
                     .foregroundColor(.primary)
                     .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
+                    .multilineTextAlignment(.leading),
             )
         }
     }
 
     init(
         text: String,
-        iconSize: CGFloat = 14,
-        delay: Double = 0.5
+        iconSize _: CGFloat = 14,
+        delay: Double = 0.5,
     ) where Content == AnyView {
         self.init(delay: delay) {
             AnyView(
@@ -293,7 +293,7 @@ extension InfoIconWithPopover {
                     .font(.system(size: 12))
                     .foregroundColor(.primary)
                     .lineLimit(nil)
-                    .multilineTextAlignment(.leading)
+                    .multilineTextAlignment(.leading),
             )
         }
     }
@@ -311,7 +311,7 @@ struct HelpButton: NSViewRepresentable {
         return button
     }
 
-    func updateNSView(_ nsView: NSButton, context: Context) {}
+    func updateNSView(_: NSButton, context _: Context) { }
 
     func makeCoordinator() -> Coordinator {
         Coordinator(action: action)
