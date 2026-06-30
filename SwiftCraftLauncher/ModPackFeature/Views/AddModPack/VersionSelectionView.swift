@@ -87,5 +87,8 @@ struct VersionSelectionView: View {
                 }
             }
         }
+        .onChange(of: selectedGameVersion) { _, _ in
+            selectedModPackVersion = nil
+        }
     }
 }
