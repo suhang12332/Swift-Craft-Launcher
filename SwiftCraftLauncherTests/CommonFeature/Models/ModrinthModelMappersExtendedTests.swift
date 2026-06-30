@@ -170,7 +170,6 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
                 ] as [String: Any],
             ] as [String: Any],
         ]
-        // swiftlint:disable:next force_try
         let data = try JSONSerialization.data(withJSONObject: dict)
         let decoder = JSONDecoder()
         let formatter = ISO8601DateFormatter()
@@ -183,7 +182,6 @@ final class ModrinthModelMappersExtendedTests: XCTestCase {
             fallback.formatOptions = [.withInternetDateTime]
             return fallback.date(from: dateString) ?? Date(timeIntervalSince1970: 0)
         }
-        // swiftlint:disable:next force_try
         let v3 = try decoder.decode(ModrinthProjectDetailV3.self, from: data)
 
         let detail = ModrinthProjectDetail.fromV3(v3)
