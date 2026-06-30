@@ -1,5 +1,7 @@
 # 附加條款 - 來源說明與名稱使用要求
 
+*[简体中文](ADDITIONAL_TERMS.md) | [English](ADDITIONAL_TERMS_en.md)*
+
 根據 GNU Affero General Public License v3.0 第 7 條（Additional Terms），本檔案包含適用於本專案的附加條款。
 
 ## 來源說明要求

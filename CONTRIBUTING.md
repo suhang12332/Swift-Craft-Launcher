@@ -1,110 +1,157 @@
-# 贡献指南
+# Contributing Guide
 
-  简体中文 | [🇬🇧English](/doc/CONTRIBUTING_en.md)
+English | [简体中文](doc/CONTRIBUTING.md) | [繁體中文](doc/CONTRIBUTING_zh-TW.md)
 
-#### 欢迎你为 Swift Craft Launcher 贡献！谢谢你愿意参与。请先看这份指南，可以让我们协作更顺畅，也能让你的贡献更容易被接纳。
+Welcome to **Swift Craft Launcher**! Thank you for wanting to contribute. Please read this guide first — it helps us collaborate smoothly and makes it easier for your contributions to be accepted.
 
-### 1. 行为准则 （Code of Conduct）
+### 1. Code of Conduct
 
-尊重他人：保持友善、建设性、不攻击。
+Respect others: stay kind, constructive, and non-confrontational.
 
-开放与包容：欢迎各种背景的贡献者。
+Open and inclusive: contributors from all backgrounds are welcome.
 
-清晰沟通：Issue、PR 描述要尽量清楚，避免误解。
-
----
-
-### 2. 如何报告问题（Issue）
-
-当你发现 bug 或者有改进建议：
-
-在 GitHub 上的 Issues 里新开一个 issue。
-
-标题要简洁醒目，比如：
-
-“[BUG] 启动时崩溃在 macOS 14.1 – Java 路径未找到”
-
-内容包含：
-
-操作系统版本（macOS + 版本号）
-
-Swift Craft Launcher 的版本（release 或者 commit hash）
-
-你做了什么 → 期望是什么 → 实际发生什么
-
-如果可以的话，附上 error log 或者截图
+Clear communication: keep issue and PR descriptions as clear as possible to avoid misunderstandings.
 
 ---
 
-### 3. 贡献代码（Pull Request）流程
+### 2. Reporting Issues
 
-确保你 Fork 了项目，并把原作者最新 dev 分支同步到你的仓库。
+When you find a bug or have a suggestion for improvement:
 
-从最新的 dev 分支创建一个功能分支（feature branch）：
+Open a new issue on GitHub.
 
-dev → feature/你的描述
+Use a concise, descriptive title, for example:
 
-例如 feature/fix-java-path 或 feature/add-mod-support。
+"[BUG] Crash on launch on macOS 14.1 – Java path not found"
 
-在 feature 分支上做改动。改动内容应专注一件事情，尽量小而明确。
+Include:
 
-写清楚 commit message：
+OS version (macOS + version number)
 
-用英文或者中英文混合明确说明做了什么
+Swift Craft Launcher version (release or commit hash)
 
-用动词开头，比如 “Fix …”, “Add …”, “Improve …” 等
+What you did → what you expected → what actually happened
 
-本地测试没问题之后，把分支 push 到你 fork 的仓库。
-
-到 GitHub 上创建 PR，目标库（base repo）是原作者仓库，base 分支是 dev，compare 分支是你的 feature 分支。
-
-在 PR 描述里包含：
-
-为什么要做这个改动
-
-改动是什么
-
-如果可能，有效果截图或者 log
-
-等待 Review，可能会有建议要改的地方，请耐心修改。
+Error logs or screenshots, if possible
 
 ---
 
-### 4. 代码风格和质量
+### 3. Contributing Code (Pull Request) Workflow
 
-语言是 Swift，UI 用 SwiftUI。请遵守 Swift 的命名规范（CamelCase、清晰的变量／函数名）
+Make sure you have forked the project and synced the latest `dev` branch from the upstream repo into your fork.
 
-注释要合理：公共 API／复杂逻辑最好有注释
+Create a feature branch from the latest `dev`:
 
-遵守已有的项目结构，不要把文件乱放
+```
+dev → feature/your-description
+```
 
-写测试（如果合适），确保改动没有破坏已有功能
+For example: `feature/fix-java-path` or `feature/add-mod-support`.
 
-注意处理 edge cases，异常情况不要崩溃
+Make your changes on the feature branch. Keep each change focused on one thing — small and well-defined.
+
+Write clear commit messages:
+
+Explain clearly what you did, in English or a mix of Chinese and English
+
+Start with a verb, such as "Fix …", "Add …", "Improve …", etc.
+
+After local testing passes, push the branch to your fork.
+
+Open a PR on GitHub: base repository is the upstream repo, base branch is `dev`, compare branch is your feature branch.
+
+In the PR description, include:
+
+Why this change is needed
+
+What changed
+
+Screenshots or logs, if applicable
+
+Wait for review. Maintainers may suggest changes — please address feedback patiently.
 
 ---
 
-### 5. 分支管理规则
+### 4. Code Style and Quality
 
-dev 是开发主分支，用于合并所有功能／修复之后再发布／打包
+This project uses [SwiftLint](https://github.com/realm/SwiftLint) for code style checking. Please make sure your code passes lint before submitting.
 
-新功能／修复请都基于 dev 分支创建 feature 分支
+#### 4.1 Running SwiftLint Locally
 
-PR 永远以 dev 为 base 分支提交
+```bash
+# Install (if not already installed)
+brew install swiftlint
+
+# Check all files
+swiftformat . --swift-version 6.1
+
+# Check only modified files (recommended, faster)
+git diff --cached --name-only | grep '\.swift$' | xargs swiftformat
+```
+
+Full configuration is in `.swiftlint.yml` at the project root.
+
+#### 4.3 Style Guidelines
+
+- Language is Swift; UI uses SwiftUI. Follow Swift naming conventions (CamelCase, clear variable/function names)
+- Add comments where appropriate: public APIs and complex logic should ideally be documented
+- Follow the existing project structure — do not place files arbitrarily
+- Write tests when appropriate, and make sure your changes do not break existing behavior
+- Handle edge cases; avoid crashing on unexpected conditions
+- If you must violate a rule, add `// swiftlint:disable:next <rule_name>` above the line and re-enable it afterwards
 
 ---
 
-### 6. 本地开发环境
+### 5. CI Requirements
 
-使用 Xcode（版本 >= 项目要求）
+All pull requests must pass the CI pipeline before merging. The CI runs the following checks:
 
-确保本地 Swift 版本符合项目要求
+- **SwiftLint**: Code must pass `swiftlint lint --strict` with no violations
+- **SwiftFormat**: Code must pass `swiftformat . --swift-version 6.1` formatting check
+- **Localization**: All localization strings must be complete across supported languages
+- **Unit Tests**: All unit tests must pass
 
-可能要安装对应的 Java 版本（若启动器相关功能依赖）
+You can run these checks locally before pushing:
 
-编译、运行、手动测试功能是否一切正常
+```bash
+# SwiftLint
+swiftlint lint --strict
 
-### 6.1 运行单元测试
+# SwiftFormat
+swiftformat . --swift-version 6.1
+
+# Unit tests
+xcodebuild test \
+  -project SwiftCraftLauncher.xcodeproj \
+  -scheme SwiftCraftLauncher \
+  -destination 'platform=macOS' \
+  -skipPackagePluginValidation \
+  CODE_SIGNING_ALLOWED=NO
+```
+
+---
+
+### 6. Branching Rules
+
+`dev` is the main development branch. Features and fixes are merged here before release/packaging.
+
+Create feature branches for new work and fixes from `dev`.
+
+Always open PRs with `dev` as the base branch.
+
+---
+
+### 7. Local Development Environment
+
+Use Xcode (version >= project requirement).
+
+Ensure your local Swift version meets project requirements.
+
+You may need to install the appropriate Java version (if launcher-related features depend on it).
+
+Build, run, and manually test that everything works as expected.
+
+### 7.1 Running Unit Tests
 
 ```bash
 xcodebuild test \
@@ -115,19 +162,19 @@ xcodebuild test \
   CODE_SIGNING_ALLOWED=NO
 ```
 
-或在 Xcode 中使用 **Product → Test**（`⌘U`）。
+Or use **Product → Test** (`⌘U`) in Xcode.
 ---
 
-### 7. 合并与发布
+### 8. Merging and Releases
 
-项目维护者会 Review PR，如果通过，会合并到 dev
+Maintainers will review PRs. If approved, changes are merged into `dev`.
 
-当 dev 达到一个稳定状态或者准备发布版本时，会创建 release tag
+When `dev` reaches a stable state or a release is planned, a release tag is created.
 
-发布版本前会进行测试确认，无重大 BUG
+Before a release, testing is performed to confirm there are no major bugs.
 
 ---
 
-### 8. 感谢你！
+### 9. Thank You!
 
-感谢你愿意贡献时间、精力。每一个 issue、每一个 PR、每一点建议都很宝贵。
+Thank you for contributing your time and effort. Every issue, every PR, and every suggestion is valuable.

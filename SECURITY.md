@@ -1,55 +1,55 @@
-# 安全策略
+# Security Policy
 
-*[English](./doc/SECURITY_en.md)*
+English | [简体中文](doc/SECURITY.md) | [繁體中文](doc/SECURITY_zh-TW.md)
 
-感谢你关注 **Swift Craft Launcher** 的安全！  
-本项目虽然主要面向开发与学习，但我们仍然重视安全问题。  
+Thank you for caring about the security of **Swift Craft Launcher**!
+Although this project is mainly for development and learning, we still take security seriously.
 
 ---
 
-## 支持的版本
+## Supported Versions
 
-我们当前仅对以下分支提供安全更新：
+We currently provide security updates only for the following branches:
 
 - dev
 - main
 
 ---
 
-## 如何报告漏洞
+## Reporting a Vulnerability
 
-**请不要在公共 Issue 中直接报告安全漏洞！**  
-这样可能会让其他用户暴露在风险之中。  
+**Please do not report security vulnerabilities in public Issues!**
+Doing so may put other users at risk.
 
-如果你发现了漏洞，请通过以下方式私下联系：  
+If you discover a vulnerability, please contact us privately through one of the following methods:
 
-- 最推荐：进入我们的QQ群跟群主反馈 或 使用Swift Craft Launcher官方邮箱：
-- 或使用 GitHub 的 **Security Advisories** 功能提交报告
-- 提交给仓库贡献者
-
----
-
-## 报告内容建议
-
-为了帮助我们快速修复，请尽可能提供：  
-
-1. **漏洞描述**：问题是什么，潜在影响是什么
-2. **复现步骤**：怎样触发漏洞（如果能稳定复现更好）
-3. **运行环境**：操作系统版本、Swift Craft Launcher 版本
-4. **日志/截图**：有助于理解问题的相关信息
+- Recommended: join our QQ group and report to the group owner, or use the official Swift Craft Launcher email: `swiftcraftlauncher@outlook.com`
+- Use GitHub's **Security Advisories** feature to submit a report
+- Contact a repository contributor
 
 ---
 
-## 我们的承诺
+## Suggested Report Contents
 
-- 我们会尽快确认收到你的报告  
-- 会在合理的时间范围内修复漏洞  
-- 修复完成后，会发布更新并在变更日志中说明  
-- 在没有修复前，我们不会公开披露细节
+To help us fix the issue quickly, please provide as much of the following as possible:
+
+1. **Vulnerability description**: what the problem is and its potential impact
+2. **Steps to reproduce**: how to trigger the vulnerability (stable reproduction is ideal)
+3. **Environment**: OS version, Swift Craft Launcher version
+4. **Logs/screenshots**: any information that helps us understand the issue
 
 ---
 
-## 致谢
+## Our Commitment
 
-安全依赖于每一位用户的帮助！  
-感谢你为 Swift Craft Launcher 的安全做出的贡献 。
+- We will acknowledge your report as soon as possible
+- We will fix the vulnerability within a reasonable timeframe
+- After the fix is complete, we will release an update and note it in the changelog
+- We will not publicly disclose details before a fix is available
+
+---
+
+## Acknowledgments
+
+Security depends on the help of every user!
+Thank you for contributing to the security of Swift Craft Launcher.

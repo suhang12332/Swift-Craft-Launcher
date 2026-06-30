@@ -1,5 +1,7 @@
 # Additional Terms - Source Attribution and Name Usage Requirements
 
+*[简体中文](ADDITIONAL_TERMS.md) | [繁體中文](ADDITIONAL_TERMS_zh-TW.md)*
+
 Pursuant to Section 7 (Additional Terms) of the GNU Affero General Public License v3.0, this file contains additional terms applicable to this project.
 
 ## Source Attribution Requirements

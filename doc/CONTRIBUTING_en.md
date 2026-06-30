@@ -1,6 +1,6 @@
 # Contributing Guide
 
-[简体中文](../CONTRIBUTING.md) | English
+[English](../CONTRIBUTING.md) | [简体中文](CONTRIBUTING.md) | [繁體中文](CONTRIBUTING_zh-TW.md)
 
 Welcome to **Swift Craft Launcher**! Thank you for wanting to contribute. Please read this guide first — it helps us collaborate smoothly and makes it easier for your contributions to be accepted.
 
@@ -22,7 +22,7 @@ Open a new issue on GitHub.
 
 Use a concise, descriptive title, for example:
 
-“[BUG] Crash on launch on macOS 14.1 – Java path not found”
+"[BUG] Crash on launch on macOS 14.1 – Java path not found"
 
 Include:
 
@@ -54,7 +54,7 @@ Write clear commit messages:
 
 Explain clearly what you did, in English or a mix of Chinese and English
 
-Start with a verb, such as “Fix …”, “Add …”, “Improve …”, etc.
+Start with a verb, such as "Fix …", "Add …", "Improve …", etc.
 
 After local testing passes, push the branch to your fork.
 
@@ -74,19 +74,64 @@ Wait for review. Maintainers may suggest changes — please address feedback pat
 
 ### 4. Code Style and Quality
 
-Language is Swift; UI uses SwiftUI. Follow Swift naming conventions (CamelCase, clear variable/function names).
+This project uses [SwiftLint](https://github.com/realm/SwiftLint) for code style checking. Please make sure your code passes lint before submitting.
 
-Add comments where appropriate: public APIs and complex logic should ideally be documented.
+#### 4.1 Running SwiftLint Locally
 
-Follow the existing project structure — do not place files arbitrarily.
+```bash
+# Install (if not already installed)
+brew install swiftlint
 
-Write tests when appropriate, and make sure your changes do not break existing behavior.
+# Check all files
+swiftformat . --swift-version 6.1
 
-Handle edge cases; avoid crashing on unexpected conditions.
+# Check only modified files (recommended, faster)
+git diff --cached --name-only | grep '\.swift$' | xargs swiftformat
+```
+
+Full configuration is in `.swiftlint.yml` at the project root.
+
+#### 4.3 Style Guidelines
+
+- Language is Swift; UI uses SwiftUI. Follow Swift naming conventions (CamelCase, clear variable/function names)
+- Add comments where appropriate: public APIs and complex logic should ideally be documented
+- Follow the existing project structure — do not place files arbitrarily
+- Write tests when appropriate, and make sure your changes do not break existing behavior
+- Handle edge cases; avoid crashing on unexpected conditions
+- If you must violate a rule, add `// swiftlint:disable:next <rule_name>` above the line and re-enable it afterwards
 
 ---
 
-### 5. Branching Rules
+### 5. CI Requirements
+
+All pull requests must pass the CI pipeline before merging. The CI runs the following checks:
+
+- **SwiftLint**: Code must pass `swiftlint lint --strict` with no violations
+- **SwiftFormat**: Code must pass `swiftformat . --swift-version 6.1` formatting check
+- **Localization**: All localization strings must be complete across supported languages
+- **Unit Tests**: All unit tests must pass
+
+You can run these checks locally before pushing:
+
+```bash
+# SwiftLint
+swiftlint lint --strict
+
+# SwiftFormat
+swiftformat . --swift-version 6.1
+
+# Unit tests
+xcodebuild test \
+  -project SwiftCraftLauncher.xcodeproj \
+  -scheme SwiftCraftLauncher \
+  -destination 'platform=macOS' \
+  -skipPackagePluginValidation \
+  CODE_SIGNING_ALLOWED=NO
+```
+
+---
+
+### 6. Branching Rules
 
 `dev` is the main development branch. Features and fixes are merged here before release/packaging.
 
@@ -96,7 +141,7 @@ Always open PRs with `dev` as the base branch.
 
 ---
 
-### 6. Local Development Environment
+### 7. Local Development Environment
 
 Use Xcode (version >= project requirement).
 
@@ -106,7 +151,7 @@ You may need to install the appropriate Java version (if launcher-related featur
 
 Build, run, and manually test that everything works as expected.
 
-### 6.1 Running Unit Tests
+### 7.1 Running Unit Tests
 
 ```bash
 xcodebuild test \
@@ -120,7 +165,7 @@ xcodebuild test \
 Or use **Product → Test** (`⌘U`) in Xcode.
 ---
 
-### 7. Merging and Releases
+### 8. Merging and Releases
 
 Maintainers will review PRs. If approved, changes are merged into `dev`.
 
@@ -130,6 +175,6 @@ Before a release, testing is performed to confirm there are no major bugs.
 
 ---
 
-### 8. Thank You!
+### 9. Thank You!
 
 Thank you for contributing your time and effort. Every issue, every PR, and every suggestion is valuable.

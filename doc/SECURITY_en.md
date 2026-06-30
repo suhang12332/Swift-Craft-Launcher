@@ -1,8 +1,8 @@
 # Security Policy
 
-*[中文](../SECURITY.md)*
+*[English](../SECURITY.md) | [简体中文](SECURITY.md) | [繁體中文](SECURITY_zh-TW.md)*
 
-Thank you for caring about the security of **SwiftCraftLauncher**!
+Thank you for caring about the security of **Swift Craft Launcher**!
 Although this project is mainly for development and learning, we still take security seriously.
 
 ---
