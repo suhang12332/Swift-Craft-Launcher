@@ -100,11 +100,7 @@ struct PathBreadcrumbView: View {
         func segmentView(idx: Int) -> some View {
             let icon: NSImage = {
                 guard FileManager.default.fileExists(atPath: paths[idx]) else {
-                    if #available(macOS 12.0, *) {
-                        return NSWorkspace.shared.icon(for: .folder)
-                    } else {
-                        return NSWorkspace.shared.icon(forFileType: NSFileTypeForHFSTypeCode(0))
-                    }
+                    return NSWorkspace.shared.icon(for: .folder)
                 }
                 return NSWorkspace.shared.icon(forFile: paths[idx])
             }()
