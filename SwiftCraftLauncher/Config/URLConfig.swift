@@ -606,6 +606,11 @@ enum URLConfig {
             static let ollamaDefaultBaseURL = "http://localhost:11434"
             /// The default avatar URL for AI assistant responses.
             static let defaultAvatarURL = "https://mcskins.top/assets/snippets/download/skin.php?n=7050"
+
+            /// The API endpoint path for OpenAI chat completions.
+            static let openAIChatPath = "/v1/chat/completions"
+            /// The API endpoint path for Ollama chat completions.
+            static let ollamaChatPath = "/api/chat"
         }
 
         enum IPLocation {

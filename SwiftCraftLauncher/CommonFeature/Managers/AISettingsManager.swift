@@ -55,9 +55,9 @@ enum AIProvider: String, CaseIterable, Identifiable {
     var apiPath: String {
         switch self {
         case .openai:
-            return "/v1/chat/completions"
+            return URLConfig.API.AIService.openAIChatPath
         case .ollama:
-            return "/api/chat"
+            return URLConfig.API.AIService.ollamaChatPath
 //        case .gemini:
 //            return "/v1/models/\(defaultModel):streamGenerateContent"
         }
