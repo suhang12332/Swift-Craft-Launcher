@@ -10,12 +10,18 @@ import Foundation
 extension GameCreationViewModel {
     /// Populates the version picker with compatible versions for the selected mod loader.
     func initializeVersionPicker() async {
+        isLoadingLoaderVersions = true
+        updateParentState()
+
         let includeSnapshots = gameSettingsManager.includeSnapshotsForGameVersions
         let compatibleVersions = await CommonService.compatibleVersions(
             for: selectedModLoader,
             includeSnapshots: includeSnapshots,
         )
         await updateAvailableVersions(compatibleVersions)
+
+        isLoadingLoaderVersions = false
+        updateParentState()
     }
 
     /// Updates the available versions list and selects a default version.
@@ -40,6 +46,9 @@ extension GameCreationViewModel {
         iconImage = nil
 
         Task {
+            isLoadingLoaderVersions = true
+            updateParentState()
+
             let includeSnapshots = gameSettingsManager.includeSnapshotsForGameVersions
             let compatibleVersions = await CommonService.compatibleVersions(
                 for: newLoader,
@@ -56,13 +65,22 @@ extension GameCreationViewModel {
                     updateDefaultGameName()
                 }
             }
+
+            isLoadingLoaderVersions = false
+            updateParentState()
         }
     }
 
     /// Responds to a game version change by refreshing loader versions.
     func handleGameVersionChange(_ newGameVersion: String) {
         Task {
+            isLoadingLoaderVersions = true
+            updateParentState()
+
             await updateLoaderVersions(for: selectedModLoader, gameVersion: newGameVersion)
+
+            isLoadingLoaderVersions = false
+            updateParentState()
         }
     }
 

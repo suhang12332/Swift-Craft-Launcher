@@ -29,6 +29,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
 
     @Published var availableLoaderVersions: [String] = []
     @Published var availableVersions: [String] = []
+    @Published var isLoadingLoaderVersions = false
 
     var pendingIconData: Data?
     var pendingIconURL: URL?
@@ -115,7 +116,7 @@ class GameCreationViewModel: BaseGameFormViewModel {
 
     override func computeIsFormValid() -> Bool {
         let isLoaderVersionValid = selectedModLoader == GameLoader.vanilla.displayName || !selectedLoaderVersion.isEmpty
-        return gameNameValidator.isFormValid && isLoaderVersionValid
+        return gameNameValidator.isFormValid && isLoaderVersionValid && !isLoadingLoaderVersions
     }
 
     var shouldShowProgress: Bool {
