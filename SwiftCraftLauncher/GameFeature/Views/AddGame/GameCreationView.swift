@@ -39,6 +39,7 @@ struct GameCreationView: View {
         isFormValid: Binding<Bool>,
         triggerConfirm: Binding<Bool>,
         triggerCancel: Binding<Bool>,
+        isLoadingLoaderVersions: Binding<Bool> = .constant(false),
         onCancel: @escaping () -> Void,
         onConfirm: @escaping () -> Void,
         onRequestImagePicker: @escaping () -> Void,
@@ -53,6 +54,7 @@ struct GameCreationView: View {
             isFormValid: isFormValid,
             triggerConfirm: triggerConfirm,
             triggerCancel: triggerCancel,
+            isLoadingLoaderVersions: isLoadingLoaderVersions,
             onCancel: onCancel,
             onConfirm: onConfirm,
         )

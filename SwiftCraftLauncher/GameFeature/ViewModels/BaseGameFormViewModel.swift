@@ -78,10 +78,12 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
     func updateParentState() {
         let newIsDownloading = computeIsDownloading()
         let newIsFormValid = computeIsFormValid()
+        let newIsLoadingLoaderVersions = computeIsLoadingLoaderVersions()
 
         DispatchQueue.main.async { [weak self] in
             self?.configuration.isDownloading.wrappedValue = newIsDownloading
             self?.configuration.isFormValid.wrappedValue = newIsFormValid
+            self?.configuration.isLoadingLoaderVersions.wrappedValue = newIsLoadingLoaderVersions
 
             self?.isDownloading = newIsDownloading
             self?.isFormValid = newIsFormValid
@@ -105,6 +107,10 @@ class BaseGameFormViewModel: ObservableObject, GameFormStateProtocol {
 
     func computeIsFormValid() -> Bool {
         gameNameValidator.isFormValid
+    }
+
+    func computeIsLoadingLoaderVersions() -> Bool {
+        false
     }
 
     func startDownloadTask(_ task: @escaping () async -> Void) {

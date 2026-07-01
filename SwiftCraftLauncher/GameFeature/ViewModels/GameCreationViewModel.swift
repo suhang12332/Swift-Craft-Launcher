@@ -119,6 +119,10 @@ class GameCreationViewModel: BaseGameFormViewModel {
         return gameNameValidator.isFormValid && isLoaderVersionValid && !isLoadingLoaderVersions
     }
 
+    override func computeIsLoadingLoaderVersions() -> Bool {
+        isLoadingLoaderVersions
+    }
+
     var shouldShowProgress: Bool {
         gameSetupService.downloadState.isDownloading
     }

@@ -43,6 +43,7 @@ struct GameFormConfiguration {
     let isFormValid: Binding<Bool>
     let triggerConfirm: Binding<Bool>
     let triggerCancel: Binding<Bool>
+    let isLoadingLoaderVersions: Binding<Bool>
     let actions: GameFormActions
 
     init(
@@ -50,6 +51,7 @@ struct GameFormConfiguration {
         isFormValid: Binding<Bool>,
         triggerConfirm: Binding<Bool>,
         triggerCancel: Binding<Bool>,
+        isLoadingLoaderVersions: Binding<Bool> = .constant(false),
         onCancel: @escaping () -> Void,
         onConfirm: @escaping () -> Void,
     ) {
@@ -57,6 +59,7 @@ struct GameFormConfiguration {
         self.isFormValid = isFormValid
         self.triggerConfirm = triggerConfirm
         self.triggerCancel = triggerCancel
+        self.isLoadingLoaderVersions = isLoadingLoaderVersions
         actions = GameFormActions(onCancel: onCancel, onConfirm: onConfirm)
     }
 }

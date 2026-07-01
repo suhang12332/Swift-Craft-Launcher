@@ -38,6 +38,7 @@ struct GameFormView: View {
     @State private var isFormValid = false
     @State private var triggerConfirm = false
     @State private var triggerCancel = false
+    @State private var isLoadingLoaderVersions = false
     @State private var showFilePicker = false
     @State private var filePickerType: FilePickerType = .modPack
     @State private var mode: GameFormMode
@@ -66,6 +67,7 @@ struct GameFormView: View {
                             isFormValid: $isFormValid,
                             triggerConfirm: $triggerConfirm,
                             triggerCancel: $triggerCancel,
+                            isLoadingLoaderVersions: $isLoadingLoaderVersions,
                             onCancel: { dismiss() },
                             onConfirm: { dismiss() },
                             onRequestImagePicker: {
@@ -152,6 +154,7 @@ struct GameFormView: View {
 
     private func selectImportMode(_ newValue: ImportModePickerValue) {
         isFormValid = false
+        isLoadingLoaderVersions = false
         switch newValue {
         case .manual:
             mode = .creation
@@ -204,7 +207,7 @@ struct GameFormView: View {
             triggerConfirm = true
         } label: {
             HStack {
-                if isDownloading {
+                if isDownloading || isLoadingLoaderVersions {
                     ProgressView()
                         .controlSize(.small)
                 } else {
@@ -221,6 +224,6 @@ struct GameFormView: View {
             }
         }
         .keyboardShortcut(.defaultAction)
-        .disabled(!isFormValid || isDownloading)
+        .disabled(!isFormValid || isDownloading || isLoadingLoaderVersions)
     }
 }
