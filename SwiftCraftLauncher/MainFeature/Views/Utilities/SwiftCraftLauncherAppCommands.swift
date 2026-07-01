@@ -35,7 +35,7 @@ struct SwiftCraftLauncherAppCommands: Commands {
 
         CommandGroup(after: .help) {
             Button("menu.open.log".localized()) {
-                Logger.shared.openLogFile()
+//                Logger.shared.openLogFile()
             }
             .keyboardShortcut("l", modifiers: [.command, .shift])
 

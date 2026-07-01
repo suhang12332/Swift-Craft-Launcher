@@ -64,7 +64,7 @@ extension SkinToolDetailViewModel {
             self.updateHasChanges()
         }
 
-        AppLog.player.info("Skin image dropped and processed successfully. Model: \(currentModel.rawValue)")
+        AppLog.player.info("Skin image dropped and processed successfully. Model: \(self.currentModel.rawValue)")
     }
 
     /// Handles the result of a file importer selection.

@@ -62,8 +62,8 @@ class PlayerListViewModel: ObservableObject {
     func loadPlayersThrowing() throws {
         players = try dataManager.loadPlayersThrowing()
         currentPlayer = players.first { $0.isCurrent }
-        AppLog.player.debug("Player list loaded, count: \(players.count)")
-        AppLog.player.debug("Current player (after loading): \(currentPlayer?.name ?? "none")")
+        AppLog.player.debug("Player list loaded, count: \(self.players.count)")
+        AppLog.player.debug("Current player (after loading): \(self.currentPlayer?.name ?? "none")")
     }
 
     private func loadPlayersSafely() {
@@ -101,7 +101,7 @@ class PlayerListViewModel: ObservableObject {
         try dataManager.addPlayer(name: name, isOnline: false, avatarName: "")
         try loadPlayersThrowing()
         AppLog.player.debug("Player \(name) added successfully, list updated.")
-        AppLog.player.debug("Current player (after adding): \(currentPlayer?.name ?? "none")")
+        AppLog.player.debug("Current player (after adding): \(self.currentPlayer?.name ?? "none")")
     }
 
     /// Adds an online (Minecraft) player from a profile response.
@@ -138,7 +138,7 @@ class PlayerListViewModel: ObservableObject {
         )
         try loadPlayersThrowing()
         AppLog.player.debug("Player \(profile.name) added successfully, list updated.")
-        AppLog.player.debug("Current player (after adding): \(currentPlayer?.name ?? "none")")
+        AppLog.player.debug("Current player (after adding): \(self.currentPlayer?.name ?? "none")")
     }
 
     /// Adds a Yggdrasil-authenticated player from a profile.
@@ -200,7 +200,7 @@ class PlayerListViewModel: ObservableObject {
         try dataManager.deletePlayer(byID: id)
         try loadPlayersThrowing()
         AppLog.player.debug("Player (ID: \(id)) deleted successfully, list updated.")
-        AppLog.player.debug("Current player (after deletion): \(currentPlayer?.name ?? "none")")
+        AppLog.player.debug("Current player (after deletion): \(self.currentPlayer?.name ?? "none")")
     }
 
     /// Sets the current player by identifier, without propagating errors.
@@ -238,7 +238,7 @@ class PlayerListViewModel: ObservableObject {
 
         try dataManager.savePlayersThrowing(players)
         AppLog.player.debug(
-            "Set player (ID: \(playerId), name: \(currentPlayer?.name ?? "unknown")) as current player, data saved.",
+            "Set player (ID: \(playerId), name: \(self.currentPlayer?.name ?? "unknown")) as current player, data saved.",
         )
     }
 
