@@ -152,7 +152,7 @@ extension MinecraftAuthService {
         JWTDecoder.isTokenExpiringSoon(player.authAccessToken)
     }
 
-    func promptForReauth(player: Player) {
+    func promptForReauth(player _: Player) {
         let notification = GlobalError.authentication(
             i18nKey: "error.authentication.reauth_required",
             level: .notification,

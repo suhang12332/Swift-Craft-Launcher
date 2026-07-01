@@ -229,7 +229,7 @@ final class SkinLibraryStore {
 
     private func executeUpdate(
         _ sql: String,
-        errorPrefix: String = "SQL execution failed",
+        errorPrefix _: String = "SQL execution failed",
         bind: (OpaquePointer) throws -> Void,
     ) throws {
         try database.transaction {

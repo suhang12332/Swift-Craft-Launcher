@@ -253,7 +253,7 @@ class ModPackDownloadSheetViewModel: ObservableObject {
         await downloadService.extractModPack(modPackPath: modPackPath)
     }
 
-    private func handleDownloadError(_ message: String, _ i18nKey: String) {
+    private func handleDownloadError(_: String, _ i18nKey: String) {
         let globalError = GlobalError.resource(
             i18nKey: i18nKey,
             level: .notification,
