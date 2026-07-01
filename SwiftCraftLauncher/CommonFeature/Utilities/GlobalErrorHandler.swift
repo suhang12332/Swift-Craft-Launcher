@@ -15,19 +15,6 @@ enum ErrorLevel: String, CaseIterable {
     case notification
     case silent
     case disabled
-
-    var displayName: String {
-        switch self {
-        case .popup:
-            return "Popup"
-        case .notification:
-            return "Notification"
-        case .silent:
-            return "Silent"
-        case .disabled:
-            return "Disabled"
-        }
-    }
 }
 
 /// Categorizes errors by their domain.
@@ -130,6 +117,7 @@ struct GlobalError: Error, LocalizedError, Identifiable {
         i18nKey.localized()
     }
 
+    /// fallback for logging / debugging
     var description: String {
         message ?? i18nKey.localized()
     }
@@ -227,7 +215,7 @@ extension GlobalError {
 }
 
 extension GlobalError {
-    /// Converts an arbitrary error into a ``GlobalError``.
+    /// Converts an arbitrary error into a GlobalError.
     static func from(_ error: Error) -> GlobalError {
         switch error {
         case let globalError as Self:
@@ -239,24 +227,15 @@ extension GlobalError {
         default:
             if let urlError = error as? URLError {
                 let level: ErrorLevel = urlError.code == .cancelled ? .silent : .notification
-                return Self.network(
-                    i18nKey: "error.network.url",
-                    level: level,
-                )
+                return .network(i18nKey: "error.network.url", level: level)
             }
 
             let nsError = error as NSError
             if nsError.domain == NSCocoaErrorDomain {
-                return Self.fileSystem(
-                    i18nKey: "error.filesystem.cocoa",
-                    level: .notification,
-                )
+                return .fileSystem(i18nKey: "error.filesystem.cocoa")
             }
 
-            return Self.unknown(
-                i18nKey: "error.unknown.generic",
-                level: .silent,
-            )
+            return .unknown(i18nKey: "error.unknown.generic", level: .silent)
         }
     }
 
@@ -271,20 +250,13 @@ extension GlobalError {
     private static func fromMinecraftFriendsServiceError(_ error: MinecraftFriendsServiceError) -> GlobalError {
         switch error {
         case let .network(_, key, level):
-            return Self.network(
-                i18nKey: key,
-                level: minecraftFriendsErrorLevel(level),
-            )
+            return .network(i18nKey: key, level: minecraftFriendsErrorLevel(level))
+
         case let .authentication(_, key, level):
-            return Self.authentication(
-                i18nKey: key,
-                level: minecraftFriendsErrorLevel(level),
-            )
+            return .authentication(i18nKey: key, level: minecraftFriendsErrorLevel(level))
+
         case let .validation(_, key, level):
-            return Self.validation(
-                i18nKey: key,
-                level: minecraftFriendsErrorLevel(level),
-            )
+            return .validation(i18nKey: key, level: minecraftFriendsErrorLevel(level))
         }
     }
 }
@@ -298,20 +270,50 @@ class GlobalErrorHandler: ObservableObject {
 
     private let maxHistoryCount = 100
 
+    private var lastErrorId: String?
+    private var lastErrorTime: Date = .distantPast
+    private let deduplicationWindow: TimeInterval = 3.0
+
+    private var recentErrorTimestamps: [Date] = []
+    private let maxErrorsPerWindow = 5
+    private let rateLimitWindow: TimeInterval = 10.0
+
     private init() { }
 
     func handle(_ error: Error) {
-        let globalError = GlobalError.from(error)
-        handle(globalError)
+        handle(GlobalError.from(error))
     }
 
     func handle(_ globalError: GlobalError) {
-        DispatchQueue.main.async {
-            self.currentError = globalError
-            self.addToHistory(globalError)
-            self.logError(globalError)
-            self.handleErrorByLevel(globalError)
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+
+            let now = Date()
+
+            if globalError.id == lastErrorId,
+               now.timeIntervalSince(lastErrorTime) < deduplicationWindow {
+                return
+            }
+
+            pruneTimestamps(before: now)
+            if recentErrorTimestamps.count >= maxErrorsPerWindow {
+                return
+            }
+
+            lastErrorId = globalError.id
+            lastErrorTime = now
+            recentErrorTimestamps.append(now)
+
+            currentError = globalError
+            addToHistory(globalError)
+            logError(globalError)
+            handleErrorByLevel(globalError)
         }
+    }
+
+    private func pruneTimestamps(before cutoff: Date) {
+        let threshold = cutoff.addingTimeInterval(-rateLimitWindow)
+        recentErrorTimestamps.removeAll { $0 < threshold }
     }
 
     private func handleErrorByLevel(_ error: GlobalError) {
@@ -335,14 +337,12 @@ class GlobalErrorHandler: ObservableObject {
         }
     }
 
-    /// Clears the currently displayed error.
     func clearCurrentError() {
         DispatchQueue.main.async {
             self.currentError = nil
         }
     }
 
-    /// Clears the error history.
     func clearHistory() {
         DispatchQueue.main.async {
             self.errorHistory.removeAll()
@@ -357,11 +357,12 @@ class GlobalErrorHandler: ObservableObject {
         }
     }
 
-    /// Releases memory when the application is terminating.
     func cleanup() {
         DispatchQueue.main.async {
             self.currentError = nil
             self.errorHistory.removeAll(keepingCapacity: false)
+            self.lastErrorId = nil
+            self.recentErrorTimestamps.removeAll(keepingCapacity: false)
         }
     }
 
