@@ -82,8 +82,8 @@ class CommonFileManager {
             let globalError = GlobalError.from(error)
             throw GlobalError.download(
                 i18nKey: "error.download.jar_failed",
-                message: "Failed to download Forge JAR files (\(tasks.count) tasks): \(globalError.localizedDescription)",
                 level: .notification,
+                message: "Failed to download Forge JAR files (\(tasks.count) tasks): \(globalError.localizedDescription)",
             )
         }
     }
@@ -125,8 +125,8 @@ class CommonFileManager {
             let globalError = GlobalError.from(error)
             throw GlobalError.download(
                 i18nKey: "error.download.jar_failed",
-                message: "Failed to download Fabric JAR files (\(tasks.count) tasks): \(globalError.localizedDescription)",
                 level: .notification,
+                message: "Failed to download Fabric JAR files (\(tasks.count) tasks): \(globalError.localizedDescription)",
             )
         }
     }
@@ -181,8 +181,8 @@ class CommonFileManager {
         let javaPath = javaManager.findJavaExecutable(version: versionInfo.javaVersion.component)
 
         for (index, processor) in clientProcessors.enumerated() {
+            let processorName = String(describing: processor.jar)
             do {
-                let processorName = processor.jar ?? "processor.unknown".localized()
                 let message = String(format: "processor.executing".localized(), index + 1, clientProcessors.count, processorName)
                 onProgressUpdate?(message, index + 1, clientProcessors.count)
                 try await executeProcessor(
@@ -197,8 +197,8 @@ class CommonFileManager {
                 AppLog.game.error("Failed to execute processor: \(error.localizedDescription)")
                 throw GlobalError.download(
                     i18nKey: "error.download.processor_start_failed",
-                    message: "Failed to execute processor \(processorName) (index \(index + 1)/\(clientProcessors.count)): \(error.localizedDescription)",
                     level: .notification,
+                    message: "Failed to execute processor \(processorName) (index \(index + 1)/\(clientProcessors.count)): \(error.localizedDescription)",
                 )
             }
         }

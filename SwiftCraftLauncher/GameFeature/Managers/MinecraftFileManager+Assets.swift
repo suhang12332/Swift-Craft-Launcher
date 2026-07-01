@@ -54,8 +54,8 @@ extension MinecraftFileManager {
             } else {
                 throw GlobalError.download(
                     i18nKey: "error.download.asset_index_failed",
-                    message: "Failed to download asset index for manifestId=\(manifest.id), url=\(manifest.assetIndex.url.absoluteString): \(error.localizedDescription)",
                     level: .notification,
+                    message: "Failed to download asset index for manifestId=\(manifest.id), url=\(manifest.assetIndex.url.absoluteString): \(error.localizedDescription)",
                 )
             }
         }
@@ -126,8 +126,8 @@ extension MinecraftFileManager {
             } else {
                 throw GlobalError.download(
                     i18nKey: "error.download.asset_file_failed",
-                    message: "Failed to download asset hash=\(asset.hash), path=\(path): \(error.localizedDescription)",
                     level: .notification,
+                    message: "Failed to download asset hash=\(asset.hash), path=\(path): \(error.localizedDescription)",
                 )
             }
         }

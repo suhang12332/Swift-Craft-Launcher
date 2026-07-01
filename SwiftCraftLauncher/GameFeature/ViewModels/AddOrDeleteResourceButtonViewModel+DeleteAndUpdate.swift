@@ -19,8 +19,8 @@ extension AddOrDeleteResourceButtonViewModel {
         if queryLowercased == ResourceType.modpack.rawValue || !AppConstants.validResourceTypes.contains(queryLowercased) {
             let globalError = GlobalError.configuration(
                 i18nKey: "error.configuration.delete_file_failed",
-                message: "Cannot delete: query=\(query) is modpack or not a valid resource type",
                 level: .notification,
+                message: "Cannot delete: query=\(query) is modpack or not a valid resource type",
             )
             AppLog.game.error("Failed to delete file: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
@@ -32,8 +32,8 @@ extension AddOrDeleteResourceButtonViewModel {
         else {
             let globalError = GlobalError.configuration(
                 i18nKey: "error.configuration.delete_file_failed",
-                message: "Cannot delete: resource directory missing for query=\(query), gameName=\(gameInfo?.gameName ?? "nil")",
                 level: .notification,
+                message: "Cannot delete: resource directory missing for query=\(query), gameName=\(gameInfo?.gameName ?? "nil")",
             )
             AppLog.game.error("Failed to delete file: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
@@ -43,8 +43,8 @@ extension AddOrDeleteResourceButtonViewModel {
         guard let fileName else {
             let globalError = GlobalError.resource(
                 i18nKey: "error.resource.file_name_missing",
-                message: "Cannot delete: fileName is nil for query=\(query)",
                 level: .notification,
+                message: "Cannot delete: fileName is nil for query=\(query)",
             )
             AppLog.game.error("Failed to delete file: \(globalError.localizedDescription)")
             errorHandler.handle(globalError)
@@ -155,8 +155,8 @@ extension AddOrDeleteResourceButtonViewModel {
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
             throw GlobalError.resource(
                 i18nKey: "error.resource.file_not_found",
-                message: "File does not exist at path: \(fileURL.path)",
                 level: .notification,
+                message: "File does not exist at path: \(fileURL.path)",
             )
         }
 
@@ -175,8 +175,8 @@ extension AddOrDeleteResourceButtonViewModel {
         } catch {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.file_deletion_failed",
-                message: "Failed to remove item at \(fileURL.path): \(error.localizedDescription)",
                 level: .notification,
+                message: "Failed to remove item at \(fileURL.path): \(error.localizedDescription)",
             )
         }
     }

@@ -53,8 +53,8 @@ extension MinecraftFileManager {
             } else {
                 throw GlobalError.download(
                     i18nKey: "error.download.client_jar_failed",
-                    message: "Failed to download client.jar for manifestId=\(manifest.id), url=\(manifest.downloads.client.url.absoluteString): \(error.localizedDescription)",
                     level: .notification,
+                    message: "Failed to download client.jar for manifestId=\(manifest.id), url=\(manifest.downloads.client.url.absoluteString): \(error.localizedDescription)",
                 )
             }
         }
@@ -116,8 +116,8 @@ extension MinecraftFileManager {
         guard let artifactURL = library.downloads.artifact.url else {
             throw GlobalError.download(
                 i18nKey: "error.download.missing_library_url",
-                message: "Library artifact URL is nil for \(library.name)",
                 level: .notification,
+                message: "Library artifact URL is nil for \(library.name)",
             )
         }
 
@@ -139,8 +139,8 @@ extension MinecraftFileManager {
             } else {
                 throw GlobalError.download(
                     i18nKey: "error.download.library_failed",
-                    message: "Failed to download library \(library.name) from \(artifactURL.absoluteString): \(error.localizedDescription)",
                     level: .notification,
+                    message: "Failed to download library \(library.name) from \(artifactURL.absoluteString): \(error.localizedDescription)",
                 )
             }
         }
@@ -179,8 +179,8 @@ extension MinecraftFileManager {
         guard let nativeURL = nativeArtifact.url else {
             throw GlobalError.download(
                 i18nKey: "error.download.missing_native_url",
-                message: "Native artifact URL is nil for \(library.name), classifier=\(classifierKey)",
                 level: .notification,
+                message: "Native artifact URL is nil for \(library.name), classifier=\(classifierKey)",
             )
         }
 
@@ -201,8 +201,8 @@ extension MinecraftFileManager {
             } else {
                 throw GlobalError.download(
                     i18nKey: "error.download.native_library_failed",
-                    message: "Failed to download native library \(library.name) from \(nativeURL.absoluteString): \(error.localizedDescription)",
                     level: .notification,
+                    message: "Failed to download native library \(library.name) from \(nativeURL.absoluteString): \(error.localizedDescription)",
                 )
             }
         }
@@ -235,8 +235,8 @@ extension MinecraftFileManager {
             } else {
                 throw GlobalError.download(
                     i18nKey: "error.download.logging_config_failed",
-                    message: "Failed to download logging config \(loggingFile.id) for manifestId=\(manifest.id): \(error.localizedDescription)",
                     level: .notification,
+                    message: "Failed to download logging config \(loggingFile.id) for manifestId=\(manifest.id): \(error.localizedDescription)",
                 )
             }
         }

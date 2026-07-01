@@ -68,13 +68,13 @@ extension MinecraftSkinUtils {
                 throw GlobalError.download(
                     i18nKey: "error.download.network_timeout",
                     level: .silent,
-                    message: "HTTP \(error.statusCode) timeout downloading skin from: \(src)",
+                    message: "HTTP \(String(describing: error.statusCode)) timeout downloading skin from: \(src)",
                 )
             default:
                 throw GlobalError.download(
                     i18nKey: "error.download.skin_download_failed",
                     level: .silent,
-                    message: "HTTP \(error.statusCode) failed to download skin from: \(src)",
+                    message: "HTTP \(String(describing: error.statusCode)) failed to download skin from: \(src)",
                 )
             }
         }

@@ -194,7 +194,7 @@ final class GameAdvancedSettingsViewModel: ObservableObject {
                 )
             }
 
-        case let .failure(err):
+        case .failure:
             error = GlobalError.fileSystem(
                 i18nKey: "error.filesystem.java_path_selection_failed",
                 level: .notification,

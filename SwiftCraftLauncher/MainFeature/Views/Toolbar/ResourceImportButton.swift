@@ -96,7 +96,7 @@ struct ResourceImportButton: View {
                     throw GlobalError.resource(
                         i18nKey: "error.resource.invalid_file_type",
                         level: .notification,
-                        message: "File '\(fileURL.lastPathComponent)' has unsupported extension '\(ext)'",
+                        message: "File '\(fileURL.lastPathComponent)' has unsupported extension '\(fileURL.pathExtension)'",
                     )
                 }
 
