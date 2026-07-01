@@ -58,6 +58,12 @@ jobs:
           fi
 
       # =========================
+      # Code Rules Check
+      # =========================
+      - name: Check code rules
+        run: python3 .github/scripts/check_code_rules.py
+
+      # =========================
       # Localization Check
       # =========================
       - name: Check localization completeness
