@@ -60,7 +60,7 @@ enum CurseForgeService {
     /// - Returns: The mod details.
     /// - Throws: A network or parsing error.
     static func fetchModDetailThrowing(modId: Int) async throws -> CurseForgeModDetail {
-        let url = URLConfig.API.CurseForge.modDescription(modId: modId)
+        let url = URLConfig.API.CurseForge.modDetail(modId: modId)
 
         return try await tryFetchModDetail(from: url.absoluteString)
     }
