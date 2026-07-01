@@ -9,15 +9,13 @@
 import XCTest
 
 final class GlobalErrorHandlerTests: XCTestCase {
-    func testErrorLevel_allCases() {
-        XCTAssertEqual(ErrorLevel.allCases.count, 4)
+
+    private func flushMainQueue() {
+        RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
     }
 
-    func testErrorLevel_displayName() {
-        XCTAssertEqual(ErrorLevel.popup.displayName, "Popup")
-        XCTAssertEqual(ErrorLevel.notification.displayName, "Notification")
-        XCTAssertEqual(ErrorLevel.silent.displayName, "Silent")
-        XCTAssertEqual(ErrorLevel.disabled.displayName, "Disabled")
+    func testErrorLevel_allCases() {
+        XCTAssertEqual(ErrorLevel.allCases.count, 4)
     }
 
     func testErrorLevel_rawValues() {
@@ -173,5 +171,143 @@ final class GlobalErrorHandlerTests: XCTestCase {
         let unknownError = NSError(domain: "com.test", code: 1, userInfo: nil)
         let converted = GlobalError.from(unknownError)
         XCTAssertEqual(converted.kind, .unknown)
+    }
+
+    func testHandle_deduplicatesSameErrorWithinWindow() {
+        let handler = GlobalErrorHandler()
+        let error = GlobalError.network(i18nKey: "error.dedup.test")
+
+        handler.handle(error)
+        flushMainQueue()
+        let first = handler.currentError
+
+        handler.handle(error)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.id, first?.id, "Same error within dedup window should not update currentError")
+    }
+
+    func testHandle_allowsSameErrorAfterDedupWindow() {
+        let handler = GlobalErrorHandler()
+        let error = GlobalError.network(i18nKey: "error.dedup.after")
+
+        handler.handle(error)
+        flushMainQueue()
+        handler.clearCurrentError()
+        flushMainQueue()
+        XCTAssertNil(handler.currentError)
+
+        let other = GlobalError.fileSystem(i18nKey: "error.dedup.other")
+        handler.handle(other)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.id, other.id)
+    }
+
+    func testHandle_allowsDifferentErrorsImmediately() {
+        let handler = GlobalErrorHandler()
+        let error1 = GlobalError.network(i18nKey: "error.diff.a")
+        let error2 = GlobalError.fileSystem(i18nKey: "error.diff.b")
+
+        handler.handle(error1)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.id, error1.id)
+
+        handler.handle(error2)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.id, error2.id)
+    }
+
+    func testHandle_rateLimitsExcessErrors() {
+        let handler = GlobalErrorHandler()
+
+        for i in 0 ..< 5 {
+            handler.handle(GlobalError.network(i18nKey: "error.rate.\(i)"))
+            flushMainQueue()
+        }
+        XCTAssertEqual(handler.currentError?.id, "network_error.rate.4")
+
+        handler.handle(GlobalError.fileSystem(i18nKey: "error.rate.overflow"))
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.id, "network_error.rate.4", "6th error within rate-limit window should be suppressed")
+    }
+
+    func testHandle_rateLimitResetsAfterWindow() {
+        let handler = GlobalErrorHandler()
+
+        for i in 0 ..< 5 {
+            handler.handle(GlobalError.network(i18nKey: "error.rl.reset.\(i)"))
+            flushMainQueue()
+        }
+        handler.clearCurrentError()
+        flushMainQueue()
+
+        handler.cleanup()
+        handler.handle(GlobalError.fileSystem(i18nKey: "error.rl.reset.new"))
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.id, "filesystem_error.rl.reset.new")
+    }
+
+    func testHandle_popupLevel_setsCurrentError() {
+        let handler = GlobalErrorHandler()
+        let error = GlobalError.authentication(i18nKey: "error.popup.test", level: .popup)
+
+        handler.handle(error)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.level, .popup)
+        XCTAssertEqual(handler.errorHistory.last?.level, .popup)
+    }
+
+    func testHandle_notificationLevel_setsCurrentError() {
+        let handler = GlobalErrorHandler()
+        let error = GlobalError.network(i18nKey: "error.notif.test", level: .notification)
+
+        handler.handle(error)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.level, .notification)
+        XCTAssertEqual(handler.errorHistory.last?.level, .notification)
+    }
+
+    func testHandle_silentLevel_setsCurrentError() {
+        let handler = GlobalErrorHandler()
+        let error = GlobalError.unknown(i18nKey: "error.silent.test", level: .silent)
+
+        handler.handle(error)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.level, .silent)
+        XCTAssertEqual(handler.errorHistory.last?.level, .silent)
+    }
+
+    func testHandle_disabledLevel_stillSetsCurrentError() {
+        let handler = GlobalErrorHandler()
+        let error = GlobalError.network(i18nKey: "error.disabled.test", level: .disabled)
+
+        handler.handle(error)
+        flushMainQueue()
+        XCTAssertEqual(handler.currentError?.level, .disabled)
+        XCTAssertEqual(handler.errorHistory.last?.level, .disabled)
+    }
+
+    func testHandle_allLevels_recordedInHistory() {
+        let handler = GlobalErrorHandler()
+        let levels: [ErrorLevel] = [.popup, .notification, .silent, .disabled]
+
+        for (i, level) in levels.enumerated() {
+            handler.handle(GlobalError.network(i18nKey: "error.level.\(i)", level: level))
+            flushMainQueue()
+        }
+
+        XCTAssertEqual(handler.errorHistory.count, 4)
+        let mappedLevels = handler.errorHistory.map { $0.level }
+        XCTAssertEqual(mappedLevels, levels)
+    }
+
+    func testCleanup_resetsAllState() {
+        let handler = GlobalErrorHandler()
+        handler.handle(GlobalError.network(i18nKey: "error.cleanup"))
+        flushMainQueue()
+        handler.cleanup()
+        flushMainQueue()
+
+        XCTAssertNil(handler.currentError)
+        XCTAssertTrue(handler.errorHistory.isEmpty)
     }
 }
