@@ -21,7 +21,7 @@ class PremiumAccountFlagManager {
         UserDefaults.standard.bool(forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
     }
 
-    /// Marks that a premium account has been added.
+    /// Records that a premium account has been added.
     func setPremiumAccountAdded() {
         UserDefaults.standard.set(true, forKey: AppConstants.UserDefaultsKeys.hasAddedPremiumAccount)
         AppLog.player.debug("已设置正版账户添加标记")

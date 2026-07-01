@@ -22,7 +22,7 @@ class AnnouncementStateManager {
         return acknowledgedVersion() == currentVersion
     }
 
-    /// Marks the announcement for the current app version as acknowledged.
+    /// Records that the announcement for the current app version was acknowledged.
     func markAnnouncementAcknowledgedForCurrentVersion() {
         let currentVersion = Bundle.main.appVersion
         defaults.set(

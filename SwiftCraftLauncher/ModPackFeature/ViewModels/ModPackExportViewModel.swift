@@ -103,7 +103,7 @@ class ModPackExportViewModel: ObservableObject {
         saveError = nil
     }
 
-    /// Marks the save dialog as having been shown.
+    /// Records that the save dialog has been shown.
     func markSaveDialogShown() {
         hasShownSaveDialog = true
     }
