@@ -32,6 +32,7 @@ extension MinecraftAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.token_response_parse_failed",
                 level: .notification,
+                message: "Failed to parse OAuth token response from \(url): \(error.localizedDescription)",
             )
         }
     }
@@ -56,6 +57,7 @@ extension MinecraftAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.xbox_live_request_serialize_failed",
                 level: .notification,
+                message: "Failed to serialize Xbox Live auth request body: \(error.localizedDescription)",
             )
         }
 
@@ -68,6 +70,7 @@ extension MinecraftAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.xbox_live_token_parse_failed",
                 level: .notification,
+                message: "Failed to parse Xbox Live token response from \(url): \(error.localizedDescription)",
             )
         }
     }
@@ -91,6 +94,7 @@ extension MinecraftAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.xsts_request_serialize_failed",
                 level: .notification,
+                message: "Failed to serialize XSTS auth request body: \(error.localizedDescription)",
             )
         }
 
@@ -104,6 +108,7 @@ extension MinecraftAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.xsts_token_parse_failed",
                 level: .notification,
+                message: "Failed to parse XSTS token response from \(xstsUrl): \(error.localizedDescription)",
             )
         }
 
@@ -121,6 +126,7 @@ extension MinecraftAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.minecraft_request_serialize_failed",
                 level: .notification,
+                message: "Failed to serialize Minecraft login request body: \(error.localizedDescription)",
             )
         }
 
@@ -137,19 +143,23 @@ extension MinecraftAuthService {
                 throw GlobalError.authentication(
                     i18nKey: "error.authentication.invalid_xbox_token",
                     level: .notification,
+                    message: "Xbox Live token rejected (HTTP 401) when authenticating with Minecraft service at \(minecraftUrl)",
                 )
             case 403:
                 throw GlobalError.authentication(
                     i18nKey: "error.authentication.minecraft_not_owned",
                     level: .notification,
+                    message: "Minecraft ownership check failed (HTTP 403) at \(minecraftUrl)",
                 )
             case 429:
                 throw GlobalError.network(
                     i18nKey: "error.network.rate_limited",
+                    message: "Rate limited by Minecraft authentication service at \(minecraftUrl)",
                 )
             case 503:
                 throw GlobalError.network(
                     i18nKey: "error.network.minecraft_service_unavailable",
+                    message: "Minecraft authentication service unavailable (HTTP 503) at \(minecraftUrl)",
                 )
             default:
                 throw error
@@ -163,6 +173,7 @@ extension MinecraftAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.minecraft_token_parse_failed",
                 level: .notification,
+                message: "Failed to parse Minecraft token response from \(minecraftUrl): \(error.localizedDescription)",
             )
         }
 
@@ -184,11 +195,13 @@ extension MinecraftAuthService {
                 throw GlobalError.authentication(
                     i18nKey: "error.authentication.invalid_minecraft_token",
                     level: .notification,
+                    message: "Minecraft access token rejected (HTTP 401) when checking entitlements at \(url)",
                 )
             case 403:
                 throw GlobalError.authentication(
                     i18nKey: "error.authentication.minecraft_not_purchased",
                     level: .popup,
+                    message: "Minecraft purchase check failed (HTTP 403) at \(url)",
                 )
             default:
                 throw error
@@ -209,12 +222,14 @@ extension MinecraftAuthService {
                 throw GlobalError.authentication(
                     i18nKey: "error.authentication.insufficient_minecraft_entitlements",
                     level: .popup,
+                    message: "Missing required entitlements: hasProduct=\(hasProductMinecraft), hasGame=\(hasGameMinecraft)",
                 )
             }
         } catch let decodingError as DecodingError {
             throw GlobalError.validation(
                 i18nKey: "error.validation.entitlements_parse_failed",
                 level: .notification,
+                message: "Failed to parse Minecraft entitlements response: \(decodingError.localizedDescription)",
             )
         } catch let globalError as GlobalError {
             throw globalError
@@ -222,6 +237,7 @@ extension MinecraftAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.entitlements_check_unknown_error",
                 level: .notification,
+                message: "Unexpected error checking Minecraft ownership: \(error.localizedDescription)",
             )
         }
     }
@@ -251,6 +267,7 @@ extension MinecraftAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.minecraft_profile_parse_failed",
                 level: .notification,
+                message: "Failed to parse Minecraft profile from \(url): \(error.localizedDescription)",
             )
         }
     }

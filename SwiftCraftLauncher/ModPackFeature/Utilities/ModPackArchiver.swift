@@ -33,6 +33,7 @@ enum ModPackArchiver {
             throw GlobalError.fileSystem(
                 i18nKey: "error.modpack.export.archive_creation_failed",
                 level: .notification,
+                message: "Failed to create archive at \(outputPath.path): \(error.localizedDescription)",
             )
         }
 

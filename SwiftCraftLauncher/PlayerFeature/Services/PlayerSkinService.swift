@@ -31,6 +31,7 @@ enum PlayerSkinService {
             throw GlobalError.authentication(
                 i18nKey: "error.authentication.missing_token",
                 level: .popup,
+                message: "Access token is empty for player \"\(player.name)\" (ID: \(player.id))",
             )
         }
     }
@@ -41,25 +42,30 @@ enum PlayerSkinService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.invalid_request",
                 level: .notification,
+                message: "HTTP 400 Bad Request during \(operation)",
             )
         case 401:
             throw GlobalError.authentication(
                 i18nKey: "error.authentication.token_expired",
                 level: .popup,
+                message: "HTTP 401 Unauthorized during \(operation), token may have expired",
             )
         case 403:
             throw GlobalError.authentication(
                 i18nKey: "error.authentication.\(operation)_forbidden",
                 level: .notification,
+                message: "HTTP 403 Forbidden during \(operation)",
             )
         case 404:
             throw GlobalError.resource(
                 i18nKey: "error.resource.not_found",
                 level: .notification,
+                message: "HTTP 404 Not Found during \(operation)",
             )
         case 429:
             throw GlobalError.network(
                 i18nKey: "error.network.rate_limited",
+                message: "HTTP 429 Rate Limited during \(operation)",
             )
         default:
             throw error
@@ -278,6 +284,7 @@ enum PlayerSkinService {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.skin_invalid_file",
                     level: .popup,
+                    message: "HTTP 400 during skin upload, invalid skin file (variant: \(variantValue), size: \(imageData.count) bytes)",
                 )
             default:
                 try handleHTTPError(error, operation: "skin_upload")
@@ -423,6 +430,7 @@ enum PlayerSkinService {
                 throw GlobalError.resource(
                     i18nKey: "error.resource.cape_not_found",
                     level: .notification,
+                    message: "HTTP 404 during equip cape, cape ID \"\(capeId)\" not found",
                 )
             default:
                 try handleHTTPError(error, operation: "equip_cape")

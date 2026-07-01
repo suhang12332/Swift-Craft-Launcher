@@ -34,6 +34,7 @@ class NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_empty_data",
                 level: .notification,
+                message: "NBT data is empty, size: \(data.count) bytes",
             )
         }
 
@@ -42,6 +43,7 @@ class NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_invalid_root",
                 level: .notification,
+                message: "root tag is not compound, got type: \(tagType.rawValue)",
             )
         }
 

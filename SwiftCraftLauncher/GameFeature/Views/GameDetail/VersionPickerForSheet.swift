@@ -83,6 +83,7 @@ struct VersionPickerForSheet: View {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_id_empty",
+                message: "project.projectId is empty when loading versions for project=\(project.title)",
                 level: .notification,
             )
         }

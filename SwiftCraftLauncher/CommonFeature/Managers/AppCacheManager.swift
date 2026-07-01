@@ -24,6 +24,7 @@ class AppCacheManager {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.cache_directory_creation_failed",
                 level: .notification,
+                message: "Failed to create cache directory at \(AppPaths.appCache.path): \(error.localizedDescription)",
             )
         }
 
@@ -48,6 +49,7 @@ class AppCacheManager {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.cache_data_encode_failed",
                     level: .notification,
+                    message: "Failed to encode cache data for namespace \(namespace), key \(key): \(error.localizedDescription)",
                 )
             }
         }
@@ -84,6 +86,7 @@ class AppCacheManager {
                     errorHandler.handle(GlobalError.validation(
                         i18nKey: "error.validation.cache_data_decode_failed",
                         level: .silent,
+                        message: "Failed to decode cache data for namespace \(namespace), key \(key): \(error.localizedDescription)",
                     ))
                     return nil
                 }
@@ -108,6 +111,7 @@ class AppCacheManager {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.cache_read_failed",
                 level: .notification,
+                message: "Failed to read cache file for namespace \(namespace) from \(url.path): \(error.localizedDescription)",
             )
         }
     }
@@ -122,6 +126,7 @@ class AppCacheManager {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.cache_write_failed",
                 level: .notification,
+                message: "Failed to write cache file for namespace \(namespace) to \(url.path): \(error.localizedDescription)",
             )
         }
     }

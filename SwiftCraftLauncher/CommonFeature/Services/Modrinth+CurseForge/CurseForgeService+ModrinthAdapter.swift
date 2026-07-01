@@ -40,6 +40,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_detail_convert_failed",
                 level: .notification,
+                message: "Failed to convert CurseForge project detail to Modrinth format for modId=\(modId)",
             )
         }
         let releaseGameVersions = modrinthDetail.gameVersions.filter {

@@ -15,6 +15,7 @@ extension ModScanner {
             throw GlobalError.resource(
                 i18nKey: "error.resource.directory_not_found",
                 level: .silent,
+                message: "directory not found: \(dir.path)",
             )
         }
 
@@ -28,6 +29,7 @@ extension ModScanner {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.directory_read_failed",
                 level: .silent,
+                message: "failed to read directory: \(dir.path), error: \(error.localizedDescription)",
             )
         }
 

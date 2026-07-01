@@ -40,6 +40,7 @@ class AIChatManager: ObservableObject {
             let error = GlobalError.configuration(
                 i18nKey: "error.configuration.ai_service_not_configured",
                 level: .notification,
+                message: "AI service API key is empty",
             )
             await MainActor.run {
                 chatState.isSending = false
@@ -52,6 +53,7 @@ class AIChatManager: ObservableObject {
             let error = GlobalError.configuration(
                 i18nKey: "error.configuration.ai_model_not_configured",
                 level: .notification,
+                message: "AI model is empty for provider \(settings.selectedProvider.rawValue)",
             )
             await MainActor.run {
                 chatState.isSending = false
@@ -101,6 +103,7 @@ class AIChatManager: ObservableObject {
                     let globalError = GlobalError.network(
                         i18nKey: "error.network.ai_request_failed",
                         level: .notification,
+                        message: "AI request failed: \(error.localizedDescription)",
                     )
                     errorHandler.handle(globalError)
                     if let lastIndex = chatState.messages.indices.last {
@@ -118,6 +121,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 i18nKey: "error.network.invalid_url",
                 level: .notification,
+                message: "Invalid OpenAI API URL: \(apiURL)",
             )
         }
 
@@ -143,6 +147,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 i18nKey: "error.network.api_error",
                 level: .notification,
+                message: "OpenAI API returned HTTP \(httpResponse.statusCode) for \(url.absoluteString): \(errorMessage)",
             )
         }
 
@@ -225,6 +230,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 i18nKey: "error.network.invalid_url",
                 level: .notification,
+                message: "Invalid Ollama API URL: \(apiURL)",
             )
         }
 
@@ -253,6 +259,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 i18nKey: "error.network.api_error",
                 level: .notification,
+                message: "Ollama API returned HTTP \(httpResponse.statusCode) for \(url.absoluteString): \(errorMessage)",
             )
         }
 
@@ -324,6 +331,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 i18nKey: "error.network.invalid_url",
                 level: .notification,
+                message: "Invalid Gemini API URL: \(apiURL)",
             )
         }
 
@@ -346,6 +354,7 @@ class AIChatManager: ObservableObject {
             throw GlobalError.network(
                 i18nKey: "error.network.api_error",
                 level: .notification,
+                message: "Gemini API returned HTTP \(httpResponse.statusCode) for \(url.absoluteString): \(errorMessage)",
             )
         }
 

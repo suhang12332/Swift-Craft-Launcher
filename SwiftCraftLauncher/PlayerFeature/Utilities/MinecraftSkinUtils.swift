@@ -123,6 +123,7 @@ struct MinecraftSkinUtils: View {
                     throw GlobalError.validation(
                         i18nKey: "error.validation.invalid_image_data",
                         level: .silent,
+                        message: "Failed to create CIImage from skin data (size: \(data.count) bytes), source: \(src)",
                     )
                 }
 
@@ -130,6 +131,7 @@ struct MinecraftSkinUtils: View {
                     throw GlobalError.validation(
                         i18nKey: "error.validation.unsupported_skin_format",
                         level: .silent,
+                        message: "Skin dimensions are \(Int(ciImage.extent.width))x\(Int(ciImage.extent.height)), expected 64x64, source: \(src)",
                     )
                 }
 

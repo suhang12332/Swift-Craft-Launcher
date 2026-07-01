@@ -48,6 +48,7 @@ class PlayerDataManager {
             throw GlobalError.player(
                 i18nKey: "error.player.already_exists",
                 level: .notification,
+                message: "Player with name \"\(name)\" already exists",
             )
         }
 
@@ -86,6 +87,7 @@ class PlayerDataManager {
                     throw GlobalError.validation(
                         i18nKey: "error.validation.credential_save_failed",
                         level: .notification,
+                        message: "Failed to save credential to Keychain for player \"\(name)\" (ID: \(newPlayer.id))",
                     )
                 }
             }
@@ -95,6 +97,7 @@ class PlayerDataManager {
             throw GlobalError.player(
                 i18nKey: "error.player.creation_failed",
                 level: .notification,
+                message: "Failed to create player \"\(name)\": \(error.localizedDescription)",
             )
         }
     }
@@ -270,6 +273,7 @@ class PlayerDataManager {
             throw GlobalError.validation(
                 i18nKey: "error.validation.credential_save_failed",
                 level: .notification,
+                message: "Failed to save credential to Keychain for userId: \(credential.userId)",
             )
         }
 
@@ -294,6 +298,7 @@ class PlayerDataManager {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.credential_update_failed",
                     level: .notification,
+                    message: "Failed to save updated credential to Keychain for player \"\(updatedPlayer.name)\" (ID: \(updatedPlayer.id))",
                 )
             }
         } else {

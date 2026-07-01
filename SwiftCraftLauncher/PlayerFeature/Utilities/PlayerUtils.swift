@@ -26,6 +26,7 @@ enum PlayerUtils {
             throw GlobalError.player(
                 i18nKey: "error.player.invalid_username_empty",
                 level: .notification,
+                message: "Username is empty, cannot generate offline UUID",
             )
         }
 
@@ -33,6 +34,7 @@ enum PlayerUtils {
             throw GlobalError.validation(
                 i18nKey: "error.validation.username_encode_failed",
                 level: .notification,
+                message: "Failed to encode \"\(offlinePrefix + username)\" to UTF-8 data",
             )
         }
 

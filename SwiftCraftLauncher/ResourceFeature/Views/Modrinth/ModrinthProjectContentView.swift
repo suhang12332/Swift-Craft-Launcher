@@ -74,6 +74,7 @@ struct ModrinthProjectContentView: View {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
+                message: "projectId is empty",
             )
         }
         let result = await ModrinthService.fetchProjectDetails(id: projectId, type: resourceType == ProjectType.minecraftJavaServer ? resourceType : "")

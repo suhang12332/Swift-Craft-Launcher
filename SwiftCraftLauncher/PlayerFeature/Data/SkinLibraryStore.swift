@@ -239,6 +239,7 @@ final class SkinLibraryStore {
                     throw GlobalError.validation(
                         i18nKey: "error.validation.sql_execution_failed",
                         level: .notification,
+                        message: "SQLite step returned \(sqlite3_step(statement)), expected SQLITE_DONE. DB error: \(sqliteErrorMessage())",
                     )
                 }
             }

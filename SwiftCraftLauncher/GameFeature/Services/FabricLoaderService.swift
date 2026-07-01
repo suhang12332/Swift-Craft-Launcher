@@ -40,6 +40,7 @@ enum FabricLoaderService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.fabric_loader_parse_failed",
                 level: .notification,
+                message: "failed to parse Fabric loader versions for Minecraft \(minecraftVersion), error: \(error.localizedDescription)",
             )
         }
     }
@@ -103,6 +104,7 @@ enum FabricLoaderService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.fabric_loader_version_missing",
                 level: .notification,
+                message: "Fabric profile missing version for game \(gameVersion), loaderVersion \(loaderVersion)",
             )
         }
         return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)

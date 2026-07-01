@@ -162,6 +162,7 @@ struct MinecraftLaunchCommand {
         } catch {
             throw GlobalError.authentication(
                 i18nKey: "error.authentication.token_fetch_failed",
+                message: "Failed to fetch Minecraft token for profile=\(profile.serverBaseURL): \(error.localizedDescription)",
                 level: .popup,
             )
         }
@@ -236,6 +237,7 @@ struct MinecraftLaunchCommand {
         guard !javaExecutable.isEmpty else {
             throw GlobalError.configuration(
                 i18nKey: "error.configuration.java_path_not_set",
+                message: "Java path is empty for game=\(game.gameName), javaPath=\(javaExecutable)",
                 level: .popup,
             )
         }
@@ -281,6 +283,7 @@ struct MinecraftLaunchCommand {
 
             throw GlobalError.gameLaunch(
                 i18nKey: "error.game_launch.process_failed",
+                message: "Failed to start process for game=\(game.gameName), javaPath=\(javaExecutable): \(error.localizedDescription)",
                 level: .popup,
             )
         }

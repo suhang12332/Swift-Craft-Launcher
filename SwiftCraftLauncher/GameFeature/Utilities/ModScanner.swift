@@ -73,6 +73,7 @@ class ModScanner {
             throw GlobalError.validation(
                 i18nKey: "error.validation.file_hash_calculation_failed",
                 level: .silent,
+                message: "SHA1 hash calculation returned nil for file: \(fileURL.path)",
             )
         }
 
@@ -139,6 +140,7 @@ class ModScanner {
             errorHandler.handle(GlobalError.validation(
                 i18nKey: "error.validation.mod_cache_encode_failed",
                 level: .silent,
+                message: "failed to encode mod cache for hash: \(hash)",
             ))
         }
     }

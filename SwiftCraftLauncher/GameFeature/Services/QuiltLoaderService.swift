@@ -88,6 +88,7 @@ enum QuiltLoaderService {
             throw GlobalError.resource(
                 i18nKey: "error.resource.quilt_missing_version",
                 level: .notification,
+                message: "Quilt profile missing version for game \(gameVersion), loaderVersion \(loaderVersion)",
             )
         }
         return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)

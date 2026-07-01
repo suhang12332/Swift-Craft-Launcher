@@ -108,6 +108,7 @@ struct CategoryContentView: View {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_type_empty",
                 level: .notification,
+                message: "project type parameter is empty",
             )
         }
 

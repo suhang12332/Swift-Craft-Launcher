@@ -44,6 +44,7 @@ class IPLocationService: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.ip_location_parse_failed",
                 level: .notification,
+                message: "Failed to parse IP location response (HTTP \(statusCode)): \(error.localizedDescription)",
             )
         }
 
@@ -57,6 +58,7 @@ class IPLocationService: ObservableObject {
             throw GlobalError.network(
                 i18nKey: "error.network.ip_location_failed",
                 level: .notification,
+                message: "IP geolocation API failed: \(errorMessage), countryCode=\(locationResponse.countryCode ?? "unknown")",
             )
         }
 

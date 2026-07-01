@@ -17,6 +17,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_gzip_empty_data",
                 level: .notification,
+                message: "input data is empty, nothing to decompress",
             )
         }
 
@@ -45,6 +46,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_gzip_process_start_failed",
                 level: .notification,
+                message: "failed to start gunzip process at /usr/bin/gunzip, error: \(error.localizedDescription)",
             )
         }
 
@@ -56,6 +58,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_gzip_decompress_failed",
                 level: .notification,
+                message: "gunzip exited with status \(process.terminationStatus), input file: \(tempInputFile.path)",
             )
         }
 
@@ -63,6 +66,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_gzip_decompressed_empty",
                 level: .notification,
+                message: "decompressed data is empty",
             )
         }
 
@@ -78,6 +82,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_empty_data_for_compress",
                 level: .notification,
+                message: "input data is empty, nothing to compress",
             )
         }
 
@@ -106,6 +111,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_gzip_compress_process_start_failed",
                 level: .notification,
+                message: "failed to start gzip process at /usr/bin/gzip, error: \(error.localizedDescription)",
             )
         }
 
@@ -117,6 +123,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_gzip_compress_failed",
                 level: .notification,
+                message: "gzip exited with status \(process.terminationStatus), input file: \(tempInputFile.path)",
             )
         }
 
@@ -124,6 +131,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_gzip_compressed_empty",
                 level: .notification,
+                message: "compressed data is empty",
             )
         }
 

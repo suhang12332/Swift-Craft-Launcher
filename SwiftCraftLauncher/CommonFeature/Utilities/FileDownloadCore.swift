@@ -15,6 +15,7 @@ enum FileDownloadCore {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.invalid_download_url",
                     level: .notification,
+                    message: "Failed to parse URL string: \"\(urlString)\"",
                 )
             }
             return url
@@ -37,6 +38,7 @@ enum FileDownloadCore {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.download_directory_creation_failed",
                 level: .notification,
+                message: "Cannot create parent directory for \(destinationURL.path): \(error.localizedDescription)",
             )
         }
     }
@@ -80,6 +82,7 @@ enum FileDownloadCore {
             throw GlobalError.validation(
                 i18nKey: "error.validation.sha1_check_failed",
                 level: .notification,
+                message: "SHA1 mismatch for \(fileURL.path): expected \(expectedSha1), got \(actualSha1)",
             )
         }
     }

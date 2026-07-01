@@ -54,6 +54,7 @@ final class GeneralSettingsViewModel: ObservableObject {
                 throw GlobalError.configuration(
                     i18nKey: "error.configuration.app_support_directory_not_found",
                     level: .popup,
+                    message: "Application Support directory not found for bundle: \(Bundle.main.appName)",
                 )
             }
 
@@ -76,6 +77,7 @@ final class GeneralSettingsViewModel: ObservableObject {
                     throw GlobalError.fileSystem(
                         i18nKey: "error.filesystem.invalid_directory_selected",
                         level: .notification,
+                        message: "Selected path is not a readable directory: \(url.path)",
                     )
                 }
 
@@ -89,6 +91,7 @@ final class GeneralSettingsViewModel: ObservableObject {
                 GlobalError.fileSystem(
                     i18nKey: "error.filesystem.directory_selection_failed",
                     level: .notification,
+                    message: "Directory selection failed: \(error.localizedDescription)",
                 ),
             )
         }

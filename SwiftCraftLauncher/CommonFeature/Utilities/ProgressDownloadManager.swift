@@ -90,6 +90,7 @@ enum ProgressDownloadManager {
             throw GlobalError.download(
                 i18nKey: "error.download.cannot_get_file_size",
                 level: .notification,
+                message: "HEAD to \(url.absoluteString) returned status \(httpResponse.statusCode), Content-Length: \(httpResponse.value(forHTTPHeaderField: APIClient.Header.contentLength) ?? "nil")",
             )
         }
         return fileSize
@@ -128,6 +129,7 @@ enum ProgressDownloadManager {
             return GlobalError.download(
                 i18nKey: "error.download.http_status_error",
                 level: .notification,
+                message: "HTTP error from download: \(error.localizedDescription)",
             )
         }
         return error
@@ -181,6 +183,7 @@ private final class ProgressDownloadSession: NSObject, URLSessionDownloadDelegat
             throw GlobalError.network(
                 i18nKey: "error.network.invalid_response",
                 level: .notification,
+                message: "HEAD request to \(url.absoluteString) returned non-HTTP response: \(type(of: response))",
             )
         }
         return (data, httpResponse)

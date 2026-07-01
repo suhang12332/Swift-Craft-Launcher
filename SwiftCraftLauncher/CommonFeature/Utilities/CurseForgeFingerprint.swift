@@ -22,6 +22,7 @@ public enum CurseForgeFingerprint {
             throw GlobalError.fileSystem(
                 i18nKey: "error.resource.client_jar_not_found",
                 level: .notification,
+                message: "Normalized length is 0 for file: \(url.path)",
             )
         }
         return try computeHash(fileAt: url, normalizedLength: normalizedLength)
@@ -98,6 +99,7 @@ public enum CurseForgeFingerprint {
             throw GlobalError.fileSystem(
                 i18nKey: "error.resource.client_jar_not_found",
                 level: .notification,
+                message: "Cannot open InputStream for file: \(url.path)",
             )
         }
 
@@ -114,6 +116,7 @@ public enum CurseForgeFingerprint {
                 throw stream.streamError ?? GlobalError.fileSystem(
                     i18nKey: "error.resource.client_jar_not_found",
                     level: .notification,
+                    message: "Stream read error with no streamError at \(url.path), bytesRead=\(bytesRead)",
                 )
             }
             if bytesRead == 0 {

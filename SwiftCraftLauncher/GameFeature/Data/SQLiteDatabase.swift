@@ -63,6 +63,7 @@ class SQLiteDatabase {
                 }
                 throw GlobalError.validation(
                     i18nKey: "error.validation.database_open_failed",
+                    message: "Failed to open database at path=\(dbPath), sqlite3 result=\(result), error=\(errorMessage)",
                     level: .notification,
                 )
             }
@@ -92,6 +93,7 @@ class SQLiteDatabase {
             let errorMessage = String(cString: sqlite3_errmsg(db))
             throw GlobalError.validation(
                 i18nKey: "error.validation.wal_mode_failed",
+                message: "Failed to enable WAL mode on \(dbPath): \(errorMessage)",
                 level: .notification,
             )
         }
@@ -112,6 +114,7 @@ class SQLiteDatabase {
             let errorMessage = String(cString: sqlite3_errmsg(db))
             throw GlobalError.validation(
                 i18nKey: "error.validation.mmap_failed",
+                message: "Failed to enable mmap on \(dbPath) with size \(mmapSize): \(errorMessage)",
                 level: .notification,
             )
         }
@@ -130,6 +133,7 @@ class SQLiteDatabase {
             guard let db else {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.database_not_open",
+                    message: "Database not open when starting transaction on \(dbPath)",
                     level: .notification,
                 )
             }
@@ -139,6 +143,7 @@ class SQLiteDatabase {
                 let errorMessage = String(cString: sqlite3_errmsg(db))
                 throw GlobalError.validation(
                     i18nKey: "error.validation.transaction_begin_failed",
+                    message: "Failed to begin transaction on \(dbPath): \(errorMessage)",
                     level: .notification,
                 )
             }
@@ -151,6 +156,7 @@ class SQLiteDatabase {
                     let errorMessage = String(cString: sqlite3_errmsg(db))
                     throw GlobalError.validation(
                         i18nKey: "error.validation.transaction_commit_failed",
+                        message: "Failed to commit transaction on \(dbPath): \(errorMessage)",
                         level: .notification,
                     )
                 }
@@ -171,6 +177,7 @@ class SQLiteDatabase {
             guard let db else {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.database_not_open",
+                    message: "Database not open when executing SQL on \(dbPath)",
                     level: .notification,
                 )
             }
@@ -183,6 +190,7 @@ class SQLiteDatabase {
                 sqlite3_free(errorMessage)
                 throw GlobalError.validation(
                     i18nKey: "error.validation.sql_execution_failed",
+                    message: "Failed to execute SQL on \(dbPath): \(message)",
                     level: .notification,
                 )
             }
@@ -200,6 +208,7 @@ class SQLiteDatabase {
             guard let db else {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.database_not_open",
+                    message: "Database not open when preparing SQL on \(dbPath)",
                     level: .notification,
                 )
             }
@@ -211,6 +220,7 @@ class SQLiteDatabase {
                 let errorMessage = String(cString: sqlite3_errmsg(db))
                 throw GlobalError.validation(
                     i18nKey: "error.validation.sql_prepare_failed",
+                    message: "Failed to prepare SQL on \(dbPath): \(errorMessage)",
                     level: .notification,
                 )
             }

@@ -212,6 +212,7 @@ class GameSetupUtil: ObservableObject {
                 GlobalError.fileSystem(
                     i18nKey: "error.filesystem.image_save_failed",
                     level: .silent,
+                    message: "game icon save failed for: \(iconURL.path), error: \(error.localizedDescription)",
                 ),
             )
         }
@@ -282,6 +283,7 @@ class GameSetupUtil: ObservableObject {
             throw GlobalError.download(
                 i18nKey: "error.download.asset_index_failed",
                 level: .notification,
+                message: "asset index download failed for version \(manifest.assetIndex.id), url: \(manifest.assetIndex.url), error: \(globalError.localizedDescription)",
             )
         }
     }

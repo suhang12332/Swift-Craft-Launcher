@@ -142,6 +142,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
+                message: "project.projectId is empty for downloadMainOnly, project='\(project.title)'",
             )
         }
 
@@ -158,6 +159,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
             throw GlobalError.download(
                 i18nKey: "error.download.main_resource_failed",
                 level: .notification,
+                message: "downloadMainResourceOnly failed for projectId='\(project.projectId)', game='\(game.gameName)'",
             )
         }
     }
@@ -171,6 +173,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
+                message: "project.projectId is empty for downloadAllManual, project='\(project.title)'",
             )
         }
 
@@ -194,6 +197,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
             throw GlobalError.download(
                 i18nKey: "error.download.manual_dependencies_failed",
                 level: .notification,
+                message: "downloadManualDependenciesAndMain failed for projectId='\(project.projectId)', game='\(game.gameName)', deps=\(dependencyState.dependencies.count)",
             )
         }
     }
@@ -203,6 +207,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
+                message: "project.projectId is empty for downloadResource, project='\(project.title)'",
             )
         }
 
@@ -219,6 +224,7 @@ final class GlobalResourceFooterViewModel: ObservableObject {
             throw GlobalError.download(
                 i18nKey: "error.download.resource_download_failed",
                 level: .notification,
+                message: "downloadMainResourceOnly failed for projectId='\(project.projectId)', game='\(game.gameName)'",
             )
         }
     }

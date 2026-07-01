@@ -38,6 +38,7 @@ enum LocalResourceInstaller {
             throw GlobalError.resource(
                 i18nKey: "error.resource.invalid_file_type",
                 level: .notification,
+                message: "file extension '\(fileURL.pathExtension)' not allowed for \(resourceType.directoryName), allowed: \(resourceType.allowedExtensions)",
             )
         }
 
@@ -46,6 +47,7 @@ enum LocalResourceInstaller {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.destination_unavailable",
                 level: .notification,
+                message: "game root directory does not exist or is not a directory: \(gameRoot.path)",
             )
         }
 
@@ -55,6 +57,7 @@ enum LocalResourceInstaller {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.security_scope_failed",
                 level: .notification,
+                message: "failed to access security-scoped resource: \(fileURL.path)",
             )
         }
 
@@ -70,6 +73,7 @@ enum LocalResourceInstaller {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.copy_failed",
                 level: .notification,
+                message: "failed to copy \(fileURL.path) to \(destURL.path), error: \(error.localizedDescription)",
             )
         }
     }

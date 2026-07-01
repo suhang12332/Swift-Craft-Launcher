@@ -25,6 +25,7 @@ class LitematicaService {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.litematica_list_read_failed",
                 level: .notification,
+                message: "failed to read Litematica files from: \(schematicsDir.path), error: \(error.localizedDescription)",
             )
         }
     }

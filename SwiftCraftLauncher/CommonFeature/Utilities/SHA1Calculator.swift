@@ -55,6 +55,7 @@ public enum SHA1Calculator {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.sha1_calculation_failed",
                 level: .notification,
+                message: "SHA1 calculation failed for file \(url.path): \(error.localizedDescription)",
             )
         }
     }

@@ -27,6 +27,7 @@ enum MinecraftJavaServerResourceUtils {
             throw GlobalError.validation(
                 i18nKey: "error.server.invalid_address",
                 level: .notification,
+                message: "parsed server address is empty from fileName='\(detail.fileName ?? "nil")', title='\(detail.title)'",
             )
         }
 

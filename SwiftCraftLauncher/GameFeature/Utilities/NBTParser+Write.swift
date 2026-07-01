@@ -99,6 +99,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_invalid_byte_value",
                     level: .notification,
+                    message: "cannot convert \(type(of: value)) to NBT byte",
                 )
             }
         case .short:
@@ -111,6 +112,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_invalid_short_value",
                     level: .notification,
+                    message: "cannot convert \(type(of: value)) to NBT short",
                 )
             }
             writeShort(UInt16(bitPattern: shortValue))
@@ -124,6 +126,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_invalid_int_value",
                     level: .notification,
+                    message: "cannot convert \(type(of: value)) to NBT int",
                 )
             }
             writeInt(intValue)
@@ -137,6 +140,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_invalid_long_value",
                     level: .notification,
+                    message: "cannot convert \(type(of: value)) to NBT long",
                 )
             }
             writeLong(longValue)
@@ -145,6 +149,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_invalid_float_value",
                     level: .notification,
+                    message: "cannot convert \(type(of: value)) to NBT float",
                 )
             }
             writeFloat(floatValue)
@@ -153,6 +158,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_invalid_double_value",
                     level: .notification,
+                    message: "cannot convert \(type(of: value)) to NBT double",
                 )
             }
             writeDouble(doubleValue)
@@ -171,6 +177,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_invalid_compound_value",
                     level: .notification,
+                    message: "cannot convert \(type(of: value)) to NBT compound",
                 )
             }
             try writeCompound(compoundValue)
@@ -179,6 +186,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_invalid_byte_array_value",
                     level: .notification,
+                    message: "cannot convert \(type(of: value)) to NBT byteArray",
                 )
             }
             writeInt(Int32(array.count))
@@ -188,6 +196,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_invalid_int_array_value",
                     level: .notification,
+                    message: "cannot convert \(type(of: value)) to NBT intArray",
                 )
             }
             writeInt(Int32(array.count))
@@ -199,6 +208,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_invalid_long_array_value",
                     level: .notification,
+                    message: "cannot convert \(type(of: value)) to NBT longArray",
                 )
             }
             writeInt(Int32(array.count))

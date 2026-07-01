@@ -14,6 +14,7 @@ extension YggdrasilAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.yggdrasil_token_url_invalid",
                 level: .notification,
+                message: "Yggdrasil token URL is nil for server \(server.baseURL.absoluteString)",
             )
         }
 
@@ -42,6 +43,7 @@ extension YggdrasilAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.yggdrasil_token_response_parse_failed",
                 level: .notification,
+                message: "Failed to parse Yggdrasil token response from \(tokenURL): \(error.localizedDescription)",
             )
         }
     }
@@ -54,6 +56,7 @@ extension YggdrasilAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.yggdrasil_profile_url_invalid",
                 level: .notification,
+                message: "Yggdrasil profile URL is nil for server \(server.baseURL.absoluteString)",
             )
         }
 
@@ -64,6 +67,7 @@ extension YggdrasilAuthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.yggdrasil_profile_parse_failed",
                 level: .notification,
+                message: "No profile parser available for parserId=\(server.parserId), server=\(server.baseURL.absoluteString)",
             )
         }
 
@@ -74,6 +78,7 @@ extension YggdrasilAuthService {
         throw GlobalError.validation(
             i18nKey: "error.validation.yggdrasil_profile_parse_failed",
             level: .notification,
+            message: "Profile parser returned nil for parserId=\(server.parserId), server=\(server.baseURL.absoluteString), data size=\(data.count)",
         )
     }
 

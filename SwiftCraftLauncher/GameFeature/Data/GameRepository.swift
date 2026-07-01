@@ -194,6 +194,7 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.game_not_found_delete",
                 level: .notification,
+                message: "Game not found for deletion: id=\(id) in workingPath=\(workingPath)",
             )
         }
         try await Task.detached(priority: .userInitiated) {
@@ -284,6 +285,7 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.game_not_found_status",
                 level: .notification,
+                message: "Game not found for status update: id=\(id) in workingPath=\(workingPath)",
             )
         }
         try await Task.detached(priority: .userInitiated) {
@@ -318,6 +320,7 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.game_not_found_java",
                 level: .notification,
+                message: "Game not found for Java path update: id=\(id)",
             )
         }
 
@@ -342,6 +345,7 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.game_not_found_jvm",
                 level: .notification,
+                message: "Game not found for JVM arguments update: id=\(id)",
             )
         }
 
@@ -366,6 +370,7 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.game_not_found_memory",
                 level: .notification,
+                message: "Game not found for memory size update: id=\(id)",
             )
         }
 
@@ -373,6 +378,7 @@ class GameRepository: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.invalid_memory_params",
                 level: .notification,
+                message: "Invalid memory params: xms=\(xms), xmx=\(xmx) for game id=\(id)",
             )
         }
 

@@ -116,6 +116,7 @@ enum CommonService {
             throw GlobalError.resource(
                 i18nKey: "error.resource.loader_version_not_found",
                 level: .notification,
+                message: "loader version '\(minecraftVersion)' not found in type '\(type)'",
             )
         }
 
@@ -143,6 +144,7 @@ enum CommonService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.version_manifest_parse_failed",
                 level: .notification,
+                message: "failed to parse version manifest for type '\(type)', error: \(error.localizedDescription)",
             )
         }
     }

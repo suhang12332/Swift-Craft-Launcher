@@ -161,6 +161,7 @@ struct GlobalResourceSheet: View {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_id_empty",
                 level: .notification,
+                message: "project.projectId is empty for project '\(project.title)'",
             )
         }
 

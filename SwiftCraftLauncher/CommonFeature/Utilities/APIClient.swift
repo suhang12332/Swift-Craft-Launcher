@@ -235,6 +235,7 @@ enum APIClient {
             throw GlobalError.network(
                 i18nKey: "error.network.invalid_response",
                 level: .notification,
+                message: "Response is not HTTPURLResponse: \(type(of: response)), URL: \(request.url?.absoluteString ?? "nil")",
             )
         }
 
@@ -242,6 +243,7 @@ enum APIClient {
             throw GlobalError.network(
                 i18nKey: "error.network.api_request_failed",
                 statusCode: httpResponse.statusCode,
+                message: "HTTP \(httpResponse.statusCode) for \(request.httpMethod ?? "?") \(request.url?.absoluteString ?? "nil")",
             )
         }
 
@@ -255,6 +257,7 @@ enum APIClient {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw GlobalError.network(
                 i18nKey: "error.network.invalid_response",
+                message: "Response is not HTTPURLResponse for unchecked request: \(request.url?.absoluteString ?? "nil")",
             )
         }
 
@@ -269,6 +272,7 @@ enum APIClient {
             throw GlobalError.network(
                 i18nKey: "error.network.invalid_response",
                 level: .notification,
+                message: "Response is not HTTPURLResponse for stream request: \(request.url?.absoluteString ?? "nil")",
             )
         }
 

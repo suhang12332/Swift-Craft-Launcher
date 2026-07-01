@@ -56,6 +56,7 @@ struct ResourceImportButton: View {
                 errorHandler.handle(GlobalError.fileSystem(
                     i18nKey: "error.filesystem.file_selection_failed",
                     level: .notification,
+                    message: "File picker failed: \(error.localizedDescription)",
                 ))
             }
         }
@@ -70,6 +71,7 @@ struct ResourceImportButton: View {
             errorHandler.handle(GlobalError.configuration(
                 i18nKey: "error.configuration.resource_directory_not_found",
                 level: .notification,
+                message: "Resource type '\(gameResourcesType)' is modpack or not in validResourceTypes",
             ))
             return
         }
@@ -78,6 +80,7 @@ struct ResourceImportButton: View {
             errorHandler.handle(GlobalError.fileSystem(
                 i18nKey: "error.filesystem.game_directory_not_found",
                 level: .notification,
+                message: "Game root not found for type=\(gameResourcesType), game=\(game.gameName)",
             ))
             return
         }
@@ -93,6 +96,7 @@ struct ResourceImportButton: View {
                     throw GlobalError.resource(
                         i18nKey: "error.resource.invalid_file_type",
                         level: .notification,
+                        message: "File '\(fileURL.lastPathComponent)' has unsupported extension '\(ext)'",
                     )
                 }
 

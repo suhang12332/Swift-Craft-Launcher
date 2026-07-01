@@ -62,6 +62,7 @@ enum ResourceDetailLoader {
             AppServices.errorHandler.handle(GlobalError.resource(
                 i18nKey: "error.resource.project_details_not_found",
                 level: .notification,
+                message: "Modrinth project details not found for id=\(projectId)",
             ))
             return nil
         }

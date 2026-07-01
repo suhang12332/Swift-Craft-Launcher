@@ -45,6 +45,7 @@ enum DownloadManager {
             throw GlobalError.validation(
                 i18nKey: "error.validation.invalid_download_url",
                 level: .notification,
+                message: "Invalid URL string: \"\(urlString)\"",
             )
         }
 
@@ -52,6 +53,7 @@ enum DownloadManager {
             throw GlobalError.resource(
                 i18nKey: "error.resource.unknown_type",
                 level: .notification,
+                message: "Unknown resource type: \"\(resourceType)\" for URL: \(urlString)",
             )
         }
 
@@ -80,6 +82,7 @@ enum DownloadManager {
             throw GlobalError.resource(
                 i18nKey: "error.resource.directory_not_found",
                 level: .notification,
+                message: "No resource directory for type \(type.rawValue), game: \(game.gameName), file: \(url.lastPathComponent)",
             )
         }
 
@@ -126,11 +129,13 @@ enum DownloadManager {
             return GlobalError.download(
                 i18nKey: "error.download.network_request_failed",
                 level: .notification,
+                message: "Network error: \((error as NSError).domain) code \((error as NSError).code)",
             )
         }
         return GlobalError.download(
             i18nKey: "error.download.general_failure",
             level: .notification,
+            message: "Unexpected download error: \(error.localizedDescription)",
         )
     }
 
@@ -148,11 +153,13 @@ enum DownloadManager {
                 throw GlobalError.download(
                     i18nKey: "error.download.network_request_failed",
                     level: .notification,
+                    message: "Failed to download data from \(url.absoluteString): \(error.localizedDescription)",
                 )
             } else {
                 throw GlobalError.download(
                     i18nKey: "error.download.general_failure",
                     level: .notification,
+                    message: "Unexpected error downloading data from \(url.absoluteString): \(error.localizedDescription)",
                 )
             }
         }

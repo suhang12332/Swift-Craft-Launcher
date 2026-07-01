@@ -79,6 +79,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.json_encode_failed",
                     level: .notification,
+                    message: "Failed to encode game=\(game.gameName) id=\(game.id) to UTF-8 JSON string",
                 )
             }
 
@@ -109,6 +110,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.game_save_failed",
                     level: .notification,
+                    message: "Failed to save game=\(game.gameName) id=\(game.id) to table=\(tableName), sqlite error=\(errorMessage)",
                 )
             }
         }
@@ -158,6 +160,7 @@ class GameVersionDatabase {
                     throw GlobalError.validation(
                         i18nKey: "error.validation.games_batch_save_failed",
                         level: .notification,
+                        message: "Batch save failed for game=\(game.gameName) id=\(game.id) in table=\(tableName), sqlite error=\(errorMessage)",
                     )
                 }
             }
@@ -300,6 +303,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.game_delete_failed",
                     level: .notification,
+                    message: "Failed to delete game id=\(id) from table=\(tableName), sqlite error=\(errorMessage)",
                 )
             }
         }
@@ -322,6 +326,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.games_delete_failed",
                     level: .notification,
+                    message: "Failed to delete games for workingPath=\(workingPath) from table=\(tableName), sqlite error=\(errorMessage)",
                 )
             }
         }
@@ -349,6 +354,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.game_delete_failed",
                     level: .notification,
+                    message: "Failed to delete games for workingPath=\(workingPath) gameName=\(gameName), sqlite error=\(errorMessage)",
                 )
             }
         }
@@ -384,6 +390,7 @@ class GameVersionDatabase {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.last_played_update_failed",
                     level: .notification,
+                    message: "Failed to update lastPlayed for game id=\(id) in table=\(tableName), sqlite error=\(errorMessage)",
                 )
             }
         }

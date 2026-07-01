@@ -87,6 +87,7 @@ final class CategoryContentViewModel: ObservableObject {
                 throw GlobalError.resource(
                     i18nKey: "error.resource.categories_not_found",
                     level: .notification,
+                    message: "ModrinthService.fetchCategories() returned empty for project='\(project)'",
                 )
             }
 
@@ -94,6 +95,7 @@ final class CategoryContentViewModel: ObservableObject {
                 throw GlobalError.resource(
                     i18nKey: "error.resource.game_versions_not_found",
                     level: .notification,
+                    message: "ModrinthService.fetchGameVersions() returned empty for project='\(project)'",
                 )
             }
 

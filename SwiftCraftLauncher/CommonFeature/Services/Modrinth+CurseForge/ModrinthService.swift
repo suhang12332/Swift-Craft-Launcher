@@ -72,6 +72,7 @@ enum ModrinthService {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.version_info_parse_failed",
                     level: .notification,
+                    message: "Failed to parse Minecraft version manifest for version '\(version)': \(error.localizedDescription)",
                 )
             }
         }

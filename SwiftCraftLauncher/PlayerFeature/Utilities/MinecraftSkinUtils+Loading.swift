@@ -28,6 +28,7 @@ extension MinecraftSkinUtils {
             throw GlobalError.resource(
                 i18nKey: "error.resource.asset_not_found",
                 level: .silent,
+                message: "Asset named \"\(src)\" not found or failed to produce CGImage",
             )
         }
 
@@ -36,6 +37,7 @@ extension MinecraftSkinUtils {
             throw GlobalError.validation(
                 i18nKey: "error.validation.invalid_image_data",
                 level: .silent,
+                message: "Failed to encode asset \"\(src)\" as PNG data",
             )
         }
 
@@ -48,6 +50,7 @@ extension MinecraftSkinUtils {
             throw GlobalError.validation(
                 i18nKey: "error.validation.invalid_url",
                 level: .silent,
+                message: "Invalid URL string: \"\(src)\"",
             )
         }
 
@@ -59,16 +62,19 @@ extension MinecraftSkinUtils {
                 throw GlobalError.resource(
                     i18nKey: "error.resource.skin_not_found",
                     level: .silent,
+                    message: "HTTP 404 skin not found at URL: \(src)",
                 )
             case 408, 504:
                 throw GlobalError.download(
                     i18nKey: "error.download.network_timeout",
                     level: .silent,
+                    message: "HTTP \(error.statusCode) timeout downloading skin from: \(src)",
                 )
             default:
                 throw GlobalError.download(
                     i18nKey: "error.download.skin_download_failed",
                     level: .silent,
+                    message: "HTTP \(error.statusCode) failed to download skin from: \(src)",
                 )
             }
         }

@@ -16,6 +16,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_insufficient_data",
                 level: .notification,
+                message: "insufficient data for string length, offset: \(offset), data.count: \(data.count)",
             )
         }
 
@@ -24,6 +25,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_string_out_of_range",
                 level: .notification,
+                message: "string length \(length) exceeds data bounds, offset: \(offset), data.count: \(data.count)",
             )
         }
 
@@ -115,6 +117,7 @@ extension NBTParser {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.nbt_byte_array_out_of_range",
                     level: .notification,
+                    message: "byte array length \(length) exceeds data bounds at offset: \(offset)",
                 )
             }
             let array = Array(data.subdata(in: offset ..< (offset + length)))
@@ -138,6 +141,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_unexpected_end_tag",
                 level: .notification,
+                message: "unexpected end tag encountered at offset: \(offset)",
             )
         }
     }
@@ -178,6 +182,7 @@ extension NBTParser {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.nbt_insufficient_data_for_list",
                 level: .notification,
+                message: "insufficient data for list tag at offset: \(offset), data.count: \(data.count)",
             )
         }
 

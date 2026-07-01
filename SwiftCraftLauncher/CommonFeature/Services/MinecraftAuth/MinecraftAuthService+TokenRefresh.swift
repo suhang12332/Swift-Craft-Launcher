@@ -24,6 +24,7 @@ extension MinecraftAuthService {
             let globalError = GlobalError.authentication(
                 i18nKey: "error.authentication.unknown_refresh_error",
                 level: .popup,
+                message: "Unexpected error refreshing token for player \(player.name): \(error.localizedDescription)",
             )
             return .failure(globalError)
         }
@@ -34,6 +35,7 @@ extension MinecraftAuthService {
             throw GlobalError.authentication(
                 i18nKey: "error.authentication.missing_token",
                 level: .notification,
+                message: "Access token is empty for player \(player.name)",
             )
         }
 
@@ -52,6 +54,7 @@ extension MinecraftAuthService {
             throw GlobalError.authentication(
                 i18nKey: "error.authentication.token_expired_relogin_required",
                 level: .popup,
+                message: "Refresh token is empty for player \(player.name), re-login required",
             )
         }
 
@@ -132,17 +135,20 @@ extension MinecraftAuthService {
                     throw GlobalError.authentication(
                         i18nKey: "error.authentication.invalid_refresh_token",
                         level: .notification,
+                        message: "Refresh token rejected as invalid_grant for client \(clientId)",
                     )
                 default:
                     throw GlobalError.authentication(
                         i18nKey: "error.authentication.refresh_token_error",
                         level: .notification,
+                        message: "Refresh token error '\(error)' (HTTP \(statusCode)) for client \(clientId)",
                     )
                 }
             }
             throw GlobalError.authentication(
                 i18nKey: "error.authentication.refresh_token_request_failed",
                 level: .notification,
+                message: "Refresh token request failed with HTTP \(statusCode) for client \(clientId)",
             )
         }
         return try JSONDecoder().decode(TokenResponse.self, from: data)
@@ -156,6 +162,7 @@ extension MinecraftAuthService {
         let notification = GlobalError.authentication(
             i18nKey: "error.authentication.reauth_required",
             level: .notification,
+            message: "Re-authentication required",
         )
 
         AppServices.errorHandler.handle(notification)

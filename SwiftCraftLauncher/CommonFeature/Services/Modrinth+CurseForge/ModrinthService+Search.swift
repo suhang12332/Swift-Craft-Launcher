@@ -45,6 +45,7 @@ extension ModrinthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.url_components_build_failed",
                 level: .notification,
+                message: "Failed to build URLComponents from Modrinth search URL: \(URLConfig.API.Modrinth.search.absoluteString)",
             )
         }
         var queryItems = [
@@ -67,6 +68,7 @@ extension ModrinthService {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.search_condition_encode_failed",
                     level: .notification,
+                    message: "Failed to encode Modrinth search facets JSON: \(error.localizedDescription)",
                 )
             }
         }
@@ -75,6 +77,7 @@ extension ModrinthService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.search_url_build_failed",
                 level: .notification,
+                message: "Failed to build Modrinth search URL from components=\(components.debugDescription)",
             )
         }
         let data = try await APIClient.get(url: url)

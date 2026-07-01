@@ -14,6 +14,7 @@ enum ForgeLoaderService {
             throw GlobalError.resource(
                 i18nKey: "error.resource.forge_loader_version_not_found",
                 level: .notification,
+                message: "Forge loader version not found for Minecraft \(minecraftVersion)",
             )
         }
         return result
@@ -100,6 +101,7 @@ enum ForgeLoaderService {
             throw GlobalError.resource(
                 i18nKey: "error.resource.missing_forge_version",
                 level: .notification,
+                message: "Forge profile missing version for game \(gameVersion), loaderVersion \(loaderVersion)",
             )
         }
         return (loaderVersion: version, classpath: classpathString, mainClass: mainClass)

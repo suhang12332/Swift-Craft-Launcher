@@ -98,17 +98,20 @@ struct GlobalError: Error, LocalizedError, Identifiable {
     let i18nKey: String
     let level: ErrorLevel
     let statusCode: Int?
+    let message: String?
 
     init(
         kind: GlobalErrorKind,
         i18nKey: String,
         level: ErrorLevel? = nil,
         statusCode: Int? = nil,
+        message: String? = nil,
     ) {
         self.kind = kind
         self.i18nKey = i18nKey
         self.level = level ?? kind.defaultLevel
         self.statusCode = statusCode
+        self.message = message
     }
 
     var id: String {
@@ -126,6 +129,10 @@ struct GlobalError: Error, LocalizedError, Identifiable {
     var localizedDescription: String {
         i18nKey.localized()
     }
+
+    var description: String {
+        message ?? i18nKey.localized()
+    }
 }
 
 extension GlobalError {
@@ -133,78 +140,89 @@ extension GlobalError {
         i18nKey: String,
         level: ErrorLevel = .notification,
         statusCode: Int? = nil,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .network, i18nKey: i18nKey, level: level, statusCode: statusCode)
+        GlobalError(kind: .network, i18nKey: i18nKey, level: level, statusCode: statusCode, message: message)
     }
 
     static func fileSystem(
         i18nKey: String,
         level: ErrorLevel = .notification,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .fileSystem, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .fileSystem, i18nKey: i18nKey, level: level, message: message)
     }
 
     static func authentication(
         i18nKey: String,
         level: ErrorLevel = .popup,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .authentication, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .authentication, i18nKey: i18nKey, level: level, message: message)
     }
 
     static func validation(
         i18nKey: String,
         level: ErrorLevel = .notification,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .validation, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .validation, i18nKey: i18nKey, level: level, message: message)
     }
 
     static func download(
         i18nKey: String,
         level: ErrorLevel = .notification,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .download, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .download, i18nKey: i18nKey, level: level, message: message)
     }
 
     static func installation(
         i18nKey: String,
         level: ErrorLevel = .notification,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .installation, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .installation, i18nKey: i18nKey, level: level, message: message)
     }
 
     static func gameLaunch(
         i18nKey: String,
         level: ErrorLevel = .popup,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .gameLaunch, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .gameLaunch, i18nKey: i18nKey, level: level, message: message)
     }
 
     static func resource(
         i18nKey: String,
         level: ErrorLevel = .notification,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .resource, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .resource, i18nKey: i18nKey, level: level, message: message)
     }
 
     static func player(
         i18nKey: String,
         level: ErrorLevel = .notification,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .player, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .player, i18nKey: i18nKey, level: level, message: message)
     }
 
     static func configuration(
         i18nKey: String,
         level: ErrorLevel = .notification,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .configuration, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .configuration, i18nKey: i18nKey, level: level, message: message)
     }
 
     static func unknown(
         i18nKey: String,
         level: ErrorLevel = .silent,
+        message: String? = nil,
     ) -> GlobalError {
-        GlobalError(kind: .unknown, i18nKey: i18nKey, level: level)
+        GlobalError(kind: .unknown, i18nKey: i18nKey, level: level, message: message)
     }
 }
 
@@ -299,7 +317,7 @@ class GlobalErrorHandler: ObservableObject {
     private func handleErrorByLevel(_ error: GlobalError) {
         switch error.level {
         case .popup:
-            AppLog.common.error("[GlobalError-Popup] \(error.localizedDescription)")
+            AppLog.common.error("[GlobalError-Popup] \(error.description)")
 
         case .notification:
             Task {
@@ -310,7 +328,7 @@ class GlobalErrorHandler: ObservableObject {
             }
 
         case .silent:
-            AppLog.common.error("[GlobalError-Silent] \(error.localizedDescription)")
+            AppLog.common.error("[GlobalError-Silent] \(error.description)")
 
         case .disabled:
             break
@@ -348,7 +366,7 @@ class GlobalErrorHandler: ObservableObject {
     }
 
     private func logError(_ error: GlobalError) {
-        AppLog.common.error("[GlobalError] \(error.localizedDescription) | Key: \(error.i18nKey) | Level: \(error.level.rawValue)")
+        AppLog.common.error("[GlobalError] \(error.description) | Key: \(error.i18nKey) | Level: \(error.level.rawValue)")
     }
 }
 
@@ -363,7 +381,7 @@ struct GlobalErrorHandlerModifier: ViewModifier {
         content
             .onReceive(errorHandler.$currentError) { error in
                 if let error {
-                    AppLog.common.error("Global error occurred: \(error.localizedDescription)")
+                    AppLog.common.error("Global error occurred: \(error.description)")
                 }
             }
     }

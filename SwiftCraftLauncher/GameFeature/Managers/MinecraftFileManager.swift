@@ -40,6 +40,7 @@ class MinecraftFileManager {
         } catch {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.game_deletion_failed",
+                message: "Failed to remove profile directory \(profileDirectory.path) for gameName=\(gameName): \(error.localizedDescription)",
                 level: .notification,
             )
         }
@@ -134,6 +135,7 @@ class MinecraftFileManager {
             } catch {
                 throw GlobalError.fileSystem(
                     i18nKey: "error.filesystem.directory_creation_failed",
+                    message: "Failed to create directory \(directory.path) for manifestId=\(manifestId): \(error.localizedDescription)",
                     level: .notification,
                 )
             }
@@ -196,6 +198,7 @@ class MinecraftFileManager {
             } else {
                 throw GlobalError.download(
                     i18nKey: "error.download.file_download_failed",
+                    message: "Failed to download file from \(url.absoluteString) to \(destinationURL.path): \(error.localizedDescription)",
                     level: .notification,
                 )
             }

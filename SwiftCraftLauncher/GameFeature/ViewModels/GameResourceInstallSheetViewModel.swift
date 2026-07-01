@@ -70,6 +70,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_id_empty",
+                message: "project.projectId is empty when loading dependencies",
                 level: .notification,
             )
         }
@@ -123,6 +124,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_id_empty",
+                message: "project.projectId is empty when downloading manual dependencies",
                 level: .notification,
             )
         }
@@ -130,6 +132,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         guard let gameRepository else {
             throw GlobalError.configuration(
                 i18nKey: "error.configuration.game_repository_missing",
+                message: "gameRepository is nil when downloading manual dependencies",
                 level: .notification,
             )
         }
@@ -153,6 +156,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         if !success {
             throw GlobalError.download(
                 i18nKey: "error.download.manual_dependencies_failed",
+                message: "ModrinthDependencyDownloader.downloadManualDependenciesAndMain returned false for projectId=\(project.projectId)",
                 level: .notification,
             )
         }
@@ -187,6 +191,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         guard !project.projectId.isEmpty else {
             throw GlobalError.validation(
                 i18nKey: "error.validation.project_id_empty",
+                message: "project.projectId is empty when downloading single resource",
                 level: .notification,
             )
         }
@@ -194,6 +199,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         guard let gameRepository else {
             throw GlobalError.configuration(
                 i18nKey: "error.configuration.game_repository_missing",
+                message: "gameRepository is nil when downloading single resource",
                 level: .notification,
             )
         }
@@ -210,6 +216,7 @@ final class GameResourceInstallSheetViewModel: ObservableObject {
         if !success {
             throw GlobalError.download(
                 i18nKey: "error.download.resource_download_failed",
+                message: "downloadMainResourceOnly returned false for projectId=\(project.projectId), resourceType=\(resourceType)",
                 level: .notification,
             )
         }

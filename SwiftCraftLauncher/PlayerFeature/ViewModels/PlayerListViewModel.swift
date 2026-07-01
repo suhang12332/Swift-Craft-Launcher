@@ -228,6 +228,7 @@ class PlayerListViewModel: ObservableObject {
             throw GlobalError.player(
                 i18nKey: "error.player.not_found",
                 level: .notification,
+                message: "Player with ID \"\(playerId)\" not found in player list",
             )
         }
 

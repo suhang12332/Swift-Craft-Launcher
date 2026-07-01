@@ -205,6 +205,7 @@ final class ModrinthDetailCoordinatorViewModel: ObservableObject {
             throw GlobalError.validation(
                 i18nKey: "error.validation.query_type_empty",
                 level: .notification,
+                message: "context.query is empty, searchText='\(context.searchText)'",
             )
         }
 

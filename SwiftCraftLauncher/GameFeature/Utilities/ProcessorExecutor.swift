@@ -62,6 +62,7 @@ enum ProcessorExecutor {
             throw GlobalError.validation(
                 i18nKey: "error.validation.processor_missing_jar",
                 level: .notification,
+                message: "processor jar is nil",
             )
         }
 
@@ -74,6 +75,7 @@ enum ProcessorExecutor {
                     jar,
                 ),
                 level: .notification,
+                message: "invalid maven coordinate: \(jar)",
             )
         }
 
@@ -85,6 +87,7 @@ enum ProcessorExecutor {
                     jar,
                 ),
                 level: .notification,
+                message: "jar file not found at: \(jarPath.path)",
             )
         }
 
@@ -140,6 +143,7 @@ enum ProcessorExecutor {
                         coordinate,
                     ),
                     level: .notification,
+                    message: "invalid maven coordinate: \(coordinate)",
                 )
             }
             relativePath = path
@@ -264,12 +268,14 @@ enum ProcessorExecutor {
                 throw GlobalError.download(
                     i18nKey: "error.download.processor_execution_failed",
                     level: .notification,
+                    message: "process terminated with status \(process.terminationStatus), javaPath: \(javaPath)",
                 )
             }
         } catch {
             throw GlobalError.download(
                 i18nKey: "error.download.processor_start_failed",
                 level: .notification,
+                message: "failed to start java process at: \(javaPath)",
             )
         }
     }
@@ -315,6 +321,7 @@ enum ProcessorExecutor {
             throw GlobalError.download(
                 i18nKey: "error.download.jar_open_failed",
                 level: .notification,
+                message: "failed to open jar archive at: \(jarPath.path), error: \(error.localizedDescription)",
             )
         }
 
@@ -322,6 +329,7 @@ enum ProcessorExecutor {
             throw GlobalError.download(
                 i18nKey: "error.download.processor_main_class_not_found",
                 level: .notification,
+                message: "no META-INF/MANIFEST.MF in jar: \(jarPath.path)",
             )
         }
 
@@ -335,6 +343,7 @@ enum ProcessorExecutor {
             throw GlobalError.download(
                 i18nKey: "error.download.manifest_parse_failed",
                 level: .notification,
+                message: "manifest data not valid UTF-8, jar: \(jarPath.path)",
             )
         }
 
@@ -350,6 +359,7 @@ enum ProcessorExecutor {
         throw GlobalError.download(
             i18nKey: "error.download.processor_main_class_not_found",
             level: .notification,
+            message: "no Main-Class entry in manifest of jar: \(jarPath.path)",
         )
     }
 }

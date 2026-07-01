@@ -30,6 +30,7 @@ class ServerAddressService {
             throw GlobalError.validation(
                 i18nKey: "error.server.address_empty",
                 level: .notification,
+                message: "Server address is empty for gameName=\(gameName)",
             )
         }
 
@@ -42,6 +43,7 @@ class ServerAddressService {
             throw GlobalError.validation(
                 i18nKey: "error.server.already_added",
                 level: .notification,
+                message: "Server address=\(trimmedAddress) already exists for gameName=\(gameName)",
             )
         }
 

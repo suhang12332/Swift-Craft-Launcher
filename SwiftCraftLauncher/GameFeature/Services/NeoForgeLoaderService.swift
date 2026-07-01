@@ -14,6 +14,7 @@ enum NeoForgeLoaderService {
             throw GlobalError.resource(
                 i18nKey: "error.resource.neoforge_loader_version_not_found",
                 level: .notification,
+                message: "NeoForge loader version not found for Minecraft \(minecraftVersion)",
             )
         }
         return result
@@ -99,6 +100,7 @@ enum NeoForgeLoaderService {
             throw GlobalError.resource(
                 i18nKey: "error.resource.neoforge_missing_version",
                 level: .notification,
+                message: "NeoForge profile missing version for game \(gameVersion), loaderVersion \(loaderVersion)",
             )
         }
 

@@ -40,6 +40,7 @@ enum NotificationManager {
                         throwing: GlobalError.resource(
                             i18nKey: "error.resource.notification_send_failed",
                             level: .silent,
+                            message: "Failed to add notification request '\(title)': \(error.localizedDescription)",
                         ),
                     )
                     return
@@ -76,6 +77,7 @@ enum NotificationManager {
                 throw GlobalError.configuration(
                     i18nKey: "error.configuration.notification_permission_denied",
                     level: .notification,
+                    message: "User denied notification permission",
                 )
             }
         } catch {
@@ -85,6 +87,7 @@ enum NotificationManager {
                 throw GlobalError.configuration(
                     i18nKey: "error.configuration.notification_permission_request_failed",
                     level: .notification,
+                    message: "Notification permission request failed: \(error.localizedDescription)",
                 )
             }
         }

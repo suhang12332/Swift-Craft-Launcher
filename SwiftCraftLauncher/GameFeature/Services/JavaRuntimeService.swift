@@ -45,6 +45,7 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.gamecore_not_found",
                 level: .notification,
+                message: "no 'gamecore' key found in Java runtime API response",
             )
         }
 
@@ -58,6 +59,7 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.platform_data_not_found",
                 level: .notification,
+                message: "no data for platform '\(platform)' in Java runtime API response",
             )
         }
 
@@ -71,6 +73,7 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.version_data_not_found",
                 level: .notification,
+                message: "version '\(version)' data not found or wrong type in platform data",
             )
         }
 
@@ -86,6 +89,7 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.manifest_url_not_found",
                 level: .notification,
+                message: "unable to parse manifest URL from version '\(version)' data structure",
             )
         }
 
@@ -101,6 +105,7 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.json_parse_failed",
                 level: .notification,
+                message: "failed to parse Java runtime API JSON from URL: \(url.absoluteString)",
             )
         }
 
@@ -112,6 +117,7 @@ class JavaRuntimeService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.invalid_url",
                 level: .notification,
+                message: "invalid URL: \(urlString)",
             )
         }
         return try await APIClient.get(url: url)

@@ -190,6 +190,7 @@ private extension YggdrasilAuthService {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.yggdrasil_no_profiles",
                     level: .notification,
+                    message: "Yggdrasil returned 0 player profiles for server \(server.baseURL.absoluteString)",
                 )
             }
 

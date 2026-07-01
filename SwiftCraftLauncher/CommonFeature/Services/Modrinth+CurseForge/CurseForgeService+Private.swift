@@ -18,6 +18,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 i18nKey: "error.network.url",
                 level: .notification,
+                message: "Invalid CurseForge file detail URL: \(urlString)",
             )
         }
 
@@ -37,6 +38,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 i18nKey: "error.network.url",
                 level: .notification,
+                message: "Invalid CurseForge mod detail URL: \(urlString)",
             )
         }
 
@@ -56,6 +58,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 i18nKey: "error.network.url",
                 level: .notification,
+                message: "Invalid CurseForge mod description URL: \(urlString)",
             )
         }
 
@@ -73,6 +76,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.invalid_project_id",
                 level: .notification,
+                message: "CurseForge ID '\(id)' is not a valid integer after stripping 'cf-' prefix, cleanId='\(cleanId)'",
             )
         }
         let normalizedId = id.hasPrefix("cf-") ? id : "cf-\(cleanId)"

@@ -48,6 +48,7 @@ class UserProfileStore {
             throw GlobalError.validation(
                 i18nKey: "error.validation.user_profile_load_failed",
                 level: .notification,
+                message: "Failed to decode user profiles from UserDefaults: \(error.localizedDescription)",
             )
         }
     }
@@ -79,6 +80,7 @@ class UserProfileStore {
             throw GlobalError.validation(
                 i18nKey: "error.validation.user_profile_save_failed",
                 level: .notification,
+                message: "Failed to encode user profiles for UserDefaults: \(error.localizedDescription)",
             )
         }
     }
@@ -96,6 +98,7 @@ class UserProfileStore {
             throw GlobalError.player(
                 i18nKey: "error.player.already_exists",
                 level: .notification,
+                message: "Profile with ID \"\(profile.id)\" (name: \"\(profile.name)\") already exists",
             )
         }
 
@@ -122,6 +125,7 @@ class UserProfileStore {
             throw GlobalError.player(
                 i18nKey: "error.player.not_found_for_update",
                 level: .notification,
+                message: "Profile with ID \"\(profile.id)\" (name: \"\(profile.name)\") not found for update",
             )
         }
 
@@ -155,6 +159,7 @@ class UserProfileStore {
             throw GlobalError.player(
                 i18nKey: "error.player.not_found",
                 level: .notification,
+                message: "Profile with ID \"\(id)\" not found for deletion",
             )
         }
     }

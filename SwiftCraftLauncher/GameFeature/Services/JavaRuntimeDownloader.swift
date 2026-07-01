@@ -50,6 +50,7 @@ class JavaRuntimeDownloader {
             throw GlobalError.validation(
                 i18nKey: "error.validation.manifest_parse_failed",
                 level: .notification,
+                message: "failed to parse Java runtime manifest from URL: \(manifestURL)",
             )
         }
 
@@ -85,6 +86,7 @@ class JavaRuntimeDownloader {
                         throw GlobalError.download(
                             i18nKey: "error.download.cancelled",
                             level: .notification,
+                            message: "Java runtime download cancelled by user",
                         )
                     }
 
@@ -146,6 +148,7 @@ class JavaRuntimeDownloader {
             throw GlobalError.validation(
                 i18nKey: "error.validation.invalid_url",
                 level: .notification,
+                message: "invalid URL: \(urlString)",
             )
         }
         return try await APIClient.get(url: url)
@@ -202,6 +205,7 @@ class JavaRuntimeDownloader {
             throw GlobalError.validation(
                 i18nKey: "error.validation.extract_failed",
                 level: .notification,
+                message: "failed to extract Java runtime from \(zipPath.path), error: \(error.localizedDescription)",
             )
         }
 
@@ -218,6 +222,7 @@ class JavaRuntimeDownloader {
             throw GlobalError.validation(
                 i18nKey: "error.validation.cannot_open_zip",
                 level: .notification,
+                message: "cannot open zip file: \(zipPath.path), error: \(error.localizedDescription)",
             )
         }
 
@@ -252,6 +257,7 @@ class JavaRuntimeDownloader {
             throw GlobalError.validation(
                 i18nKey: "error.validation.zulu_folder_not_found_in_zip",
                 level: .notification,
+                message: "no zulu JRE folder found in zip: \(zipPath.path)",
             )
         }
 

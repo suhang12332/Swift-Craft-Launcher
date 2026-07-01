@@ -74,6 +74,7 @@ class CacheCalculator {
             throw GlobalError.fileSystem(
                 i18nKey: "error.filesystem.directory_enumeration_failed",
                 level: .silent,
+                message: "Failed to create enumerator for directory: \(directory.path)",
             )
         }
 

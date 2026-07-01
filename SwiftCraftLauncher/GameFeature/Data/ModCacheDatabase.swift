@@ -85,6 +85,7 @@ class ModCacheDatabase {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.mod_cache_save_failed",
                     level: .notification,
+                    message: "Failed to save mod cache entry hash=\(hash) in table=\(tableName), sqlite error=\(errorMessage)",
                 )
             }
         }
@@ -121,6 +122,7 @@ class ModCacheDatabase {
                     throw GlobalError.validation(
                         i18nKey: "error.validation.mod_cache_batch_save_failed",
                         level: .notification,
+                        message: "Batch save failed for mod cache hash=\(hash) in table=\(tableName), sqlite error=\(errorMessage)",
                     )
                 }
             }

@@ -112,6 +112,7 @@ extension CurseForgeService {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.encode_category_ids_failed",
                     level: .notification,
+                    message: "Failed to convert categoryIds JSON data to UTF-8 string, ids=\(limitedCategoryIds)",
                 )
             }
             queryItems.append(URLQueryItem(name: "categoryIds", value: jsonArrayString))
@@ -126,6 +127,7 @@ extension CurseForgeService {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.encode_game_versions_failed",
                     level: .notification,
+                    message: "Failed to convert gameVersions JSON data to UTF-8 string, versions=\(limitedGameVersions)",
                 )
             }
             queryItems.append(URLQueryItem(name: "gameVersions", value: jsonArrayString))
@@ -154,6 +156,7 @@ extension CurseForgeService {
                 throw GlobalError.validation(
                     i18nKey: "error.validation.encode_mod_loader_types_failed",
                     level: .notification,
+                    message: "Failed to convert modLoaderTypes JSON data to UTF-8 string, types=\(limitedModLoaderTypes)",
                 )
             }
             queryItems.append(URLQueryItem(name: "modLoaderTypes", value: jsonArrayString))
@@ -166,6 +169,7 @@ extension CurseForgeService {
             throw GlobalError.validation(
                 i18nKey: "error.validation.search_url_build_failed",
                 level: .notification,
+                message: "Failed to build CurseForge search URL from components=\(components.debugDescription)",
             )
         }
 
