@@ -9,7 +9,6 @@
 import XCTest
 
 final class GlobalErrorHandlerTests: XCTestCase {
-
     private func flushMainQueue() {
         RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
     }
@@ -296,7 +295,7 @@ final class GlobalErrorHandlerTests: XCTestCase {
         }
 
         XCTAssertEqual(handler.errorHistory.count, 4)
-        let mappedLevels = handler.errorHistory.map { $0.level }
+        let mappedLevels = handler.errorHistory.map(\.level)
         XCTAssertEqual(mappedLevels, levels)
     }
 
