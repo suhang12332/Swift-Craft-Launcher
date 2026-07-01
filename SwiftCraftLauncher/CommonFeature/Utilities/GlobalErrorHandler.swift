@@ -278,7 +278,7 @@ class GlobalErrorHandler: ObservableObject {
     private let maxErrorsPerWindow = 5
     private let rateLimitWindow: TimeInterval = 10.0
 
-    private init() { }
+    init() { }
 
     func handle(_ error: Error) {
         handle(GlobalError.from(error))
